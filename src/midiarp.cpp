@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
+
+
 #include <qstring.h>
 #include <alsa/asoundlib.h>
 #include "midiarp.h"
@@ -151,7 +154,8 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[], int velocity[], int
   }
 
   do {  
-    if (c = pattern.at(patternIndex)) {
+	  c = (pattern.at(patternIndex));
+    if (c != ' ') {
       if (c.isDigit() || (c == 'p')) {
         tmpIndex[chordIndex] = c.digitValue() + noteOfs;
         if (chordMode) {
@@ -161,7 +165,7 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[], int velocity[], int
         pause = (c == 'p');
       } else {
         gotCC = true;
-        switch(c) { 
+        switch(c.toAscii()) { 
           case '(': chordMode = true;
             break;
           case ')': chordMode = false;

@@ -3,48 +3,71 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h> 
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qstrlist.h>
-#include <qhgroupbox.h>
-#include <qvgroupbox.h>
+#include <qstringlist.h>
+#include <qgroupbox.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include "passwidget.h"
 
-PassWidget::PassWidget(int p_portcount, QWidget *parent, const char *name) : QVBox(parent, name) {
+PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent) {
+QVBoxLayout *passWidgetLayout = new QVBoxLayout;
 
-  setMargin(5);
-  setSpacing(10);
-  QHBox *buttonBox = new QHBox(this);
+  QWidget *buttonBox = new QWidget(this);
+ QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
   QLabel *discardLabel = new QLabel("Discard unmatched events ", buttonBox);
   discardCheck = new QCheckBox(buttonBox);
   discardCheck->setChecked(false);
   QObject::connect(discardCheck, SIGNAL(toggled(bool)), this, SLOT(updateDiscard(bool)));
-  new QWidget(buttonBox);
-  QHBox *portBox = new QHBox(this);
+  buttonBoxLayout->addWidget(discardLabel);
+  buttonBoxLayout->addWidget(discardCheck);
+  buttonBox->setLayout(buttonBoxLayout);
+  //new QWidget(buttonBox);
+  QWidget *portBox = new QWidget(this);
+  QHBoxLayout *portBoxLayout = new QHBoxLayout;
   QLabel *portLabel = new QLabel("Send unmatched events to port ", portBox);
-  portUnmatchedSpin = new QSpinBox(0, p_portcount - 1, 1, portBox);
+  portUnmatchedSpin = new QSpinBox(portBox);
+  portUnmatchedSpin->setRange(0, p_portcount -1);
   QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this, SLOT(updatePortUnmatched(int)));
-  new QWidget(portBox);
-  QHBox *tempoBox = new QHBox(this);
+  portBoxLayout->addWidget(portLabel);
+  portBoxLayout->addWidget(portUnmatchedSpin);
+  portBox->setLayout(portBoxLayout);
+  //new QWidget(portBox);
+  QWidget *tempoBox = new QWidget(this);
+  QHBoxLayout *tempoBoxLayout = new QHBoxLayout;
   QLabel *tempoLabel = new QLabel("Tempo (bpm) ", tempoBox);
-  tempoSpin = new QSpinBox(10, 300, 1, tempoBox);
+  tempoSpin = new QSpinBox(tempoBox);
+  tempoSpin->setRange(10,300);
   tempoSpin->setValue(100);
   QObject::connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(updateTempo(int)));
-  new QWidget(tempoBox);
-  QHBox *runBox = new QHBox(this);
+ 
+  tempoBoxLayout->addWidget(tempoLabel);
+  tempoBoxLayout->addWidget(tempoSpin);
+  tempoBox->setLayout(tempoBoxLayout);
+  //new QWidget(tempoBox);
+  QWidget *runBox = new QWidget(this);
+  QHBoxLayout *runBoxLayout = new QHBoxLayout;
   QLabel *runQueueLabel = new QLabel("Run Arpeggiator Queue ", runBox);
   runQueueCheck = new QCheckBox(runBox);
   runQueueCheck->setChecked(true);
   QObject::connect(runQueueCheck, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
-  new QWidget(runBox);
+  runBoxLayout->addWidget(runQueueLabel);
+  runBoxLayout->addWidget(runQueueCheck);
+  runBox->setLayout(runBoxLayout);
+  //new QWidget(runBox);
 
   new QWidget(this);
+  passWidgetLayout->setMargin(5);
+  passWidgetLayout->setSpacing(10);
+  passWidgetLayout->addWidget(buttonBox);
+  passWidgetLayout->addWidget(portBox);
+  passWidgetLayout->addWidget(tempoBox);
+  passWidgetLayout->addWidget(runBox);
+setLayout(passWidgetLayout);
 }
 
 PassWidget::~PassWidget() {

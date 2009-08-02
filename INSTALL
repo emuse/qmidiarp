@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------
+qmidiarp (C) 2003 by Matthias Nagorni
+Qt4-port 2009 by Frank Kober
+qmidiarp is released under GNU General Public License (refer to LICENSE file)
+--------------------------------------------------------------------------
+Installation
+--------------------------------------------------------------------------
+In the source directory, run the following commands:
+
+qmake -makefile
+make
+
+As root, copy the executable qarecord to /usr/bin or /usr/local/bin
+
+--------------------------------------------------------------------------

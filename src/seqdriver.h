@@ -2,7 +2,7 @@
 #define SEQDRIVER_H
 
 #include <qwidget.h>
-#include <qptrlist.h>
+#include <qlist.h>
 #include <qsocketnotifier.h>
 #include <alsa/asoundlib.h>
 #include "midiarp.h"
@@ -14,7 +14,7 @@ class SeqDriver : public QWidget  {
 
   private:
     int portCount;
-    QPtrList<MidiArp> *midiArpList; 
+    QList<MidiArp *> *midiArpList; 
     QSocketNotifier *seqNotifier;
     snd_seq_t *seq_handle;
     int clientid;
@@ -34,7 +34,7 @@ class SeqDriver : public QWidget  {
     void initSeqNotifier();  
 
   public:
-    SeqDriver(QPtrList<MidiArp> *p_midiArpList, QWidget* parent=0, const char *name=0);
+    SeqDriver(QList<MidiArp*> *p_midiArpList, QWidget* parent=0);
     ~SeqDriver();
     void registerPorts(int num);
     int getPortCount();

@@ -3,29 +3,24 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h> 
-#include <qhbox.h>
-#include <qvbox.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qstrlist.h>
-#include <qhgroupbox.h>
-#include <qvgroupbox.h>
+#include <qstringlist.h>
+#include <qboxlayout.h>
+#include <qgroupbox.h>
 #include <qfile.h>
-#include <qtextstream.h>
 #include <qregexp.h>
 #include <qdatetime.h>
 #include <alsa/asoundlib.h>
 #include "logwidget.h"
 
-LogWidget::LogWidget(QWidget *parent, const char *name) : QVBox(parent, name) {
-
-  setMargin(5);
-  setSpacing(10);
-  logText = new QTextEdit(this);
-  logText->setTextFormat(Qt::LogText);
+LogWidget::LogWidget(QWidget *parent) : QWidget(parent) {
+QVBoxLayout *logWidgetLayout = new QVBoxLayout;
+   logText = new QTextEdit(this);
   logActive = true;
-  QHBox *buttonBox = new QHBox(this);
+  QWidget *buttonBox = new QWidget(this);
+  QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
   QLabel *enableLabel = new QLabel("Enable Log", buttonBox);
   enableLog = new QCheckBox(buttonBox);
   enableLog->setChecked(logActive);
@@ -33,6 +28,18 @@ LogWidget::LogWidget(QWidget *parent, const char *name) : QVBox(parent, name) {
   new QWidget(buttonBox);
   QPushButton *clearButton = new QPushButton("Clear", buttonBox);
   QObject::connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+
+
+  buttonBoxLayout->addWidget(enableLabel);
+  buttonBoxLayout->addWidget(enableLog);
+  buttonBoxLayout->addWidget(clearButton);
+  buttonBoxLayout->setMargin(2);
+  buttonBoxLayout->setSpacing(2);
+  logWidgetLayout->addWidget(logText);
+  logWidgetLayout->addWidget(buttonBox);
+buttonBox->setLayout(buttonBoxLayout);
+setLayout(logWidgetLayout);
+
 }
 
 LogWidget::~LogWidget() {

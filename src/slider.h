@@ -6,11 +6,11 @@
 #include <unistd.h>
 #include <qstring.h>
 #include <qlabel.h>
+#include <qwidget.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 
-class Slider : public QVBox
+class Slider : public QWidget
 
 {
   Q_OBJECT
@@ -21,7 +21,7 @@ class Slider : public QVBox
     
   public:
     Slider(int minValue, int maxValue, int pageStep, int value, 
-           Orientation orientation, QWidget * parent, const char * name = 0 );
+           Qt::Orientation orientation, QWidget * parent);
     ~Slider();
     int value();
     

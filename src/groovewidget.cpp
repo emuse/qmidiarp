@@ -3,43 +3,63 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h> 
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qstrlist.h>
-#include <qhgroupbox.h>
-#include <qvgroupbox.h>
+#include <qstringlist.h>
+#include <qgroupbox.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include "groovewidget.h"
 #include "slider.h"
 
-GrooveWidget::GrooveWidget(QWidget *parent, const char *name) : QVBox(parent, name) {
-
-  setMargin(5);
-  setSpacing(10);
-  QHBox *tickBox = new QHBox(this);
-  new QWidget(tickBox);
-  QLabel *tickLabel = new QLabel("Groove Note Displacement", tickBox);
-  new QWidget(tickBox);
-  grooveTick = new Slider(-100, 100, 0, 0, QSlider::Horizontal, this);
+GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent) {
+QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
+  
+  QWidget *tickBox = new QWidget(this);
+  QHBoxLayout *tickBoxLayout = new QHBoxLayout;
+  QLabel *tickLabel = new QLabel("Groove Shift", tickBox);
+  tickLabel->setFixedWidth(120);
+  grooveTick = new Slider(-100,100,0,0, Qt::Horizontal, this);
   QObject::connect(grooveTick, SIGNAL(valueChanged(int)), this, SLOT(updateGrooveTick(int)));
-  QHBox *velocityBox = new QHBox(this);
-  new QWidget(velocityBox);
+
+  tickBoxLayout->addWidget(tickLabel);
+  tickBoxLayout->addWidget(grooveTick);
+  tickBox->setLayout(tickBoxLayout);
+  
+  QWidget *velocityBox = new QWidget(this);
+  
+  QHBoxLayout *velocityBoxLayout = new QHBoxLayout;
   QLabel *velocityLabel = new QLabel("Groove Velocity", velocityBox);
-  new QWidget(velocityBox);
-  grooveVelocity = new Slider(-100, 100, 0, 0, QSlider::Horizontal, this);
+  velocityLabel->setFixedWidth(120);
+  grooveVelocity = new Slider(-100,100,0,0, Qt::Horizontal, this);
   QObject::connect(grooveVelocity, SIGNAL(valueChanged(int)), this, SLOT(updateGrooveVelocity(int)));
-  QHBox *lengthBox = new QHBox(this);
-  new QWidget(lengthBox);
+
+
+  velocityBoxLayout->addWidget(velocityLabel);
+  velocityBoxLayout->addWidget(grooveVelocity);
+  velocityBox->setLayout(velocityBoxLayout);
+ 
+  QWidget *lengthBox = new QWidget(this);
+  QHBoxLayout *lengthBoxLayout = new QHBoxLayout;
   QLabel *lengthLabel = new QLabel("Groove Length", lengthBox);
-  new QWidget(lengthBox);
-  grooveLength = new Slider(-100, 100, 0, 0, QSlider::Horizontal, this);
+  lengthLabel->setFixedWidth(120);
+  grooveLength = new Slider(-100,100,0,0, Qt::Horizontal, this);
   QObject::connect(grooveLength, SIGNAL(valueChanged(int)), this, SLOT(updateGrooveLength(int)));
-  new QWidget(this);
+ 
+
+  lengthBoxLayout->addWidget(lengthLabel);
+  lengthBoxLayout->addWidget(grooveLength);
+  lengthBox->setLayout(lengthBoxLayout);
+  
+  GrooveWidgetLayout->setMargin(1);
+  GrooveWidgetLayout->setSpacing(1);
+  GrooveWidgetLayout->addWidget(tickBox);
+  GrooveWidgetLayout->addWidget(velocityBox);
+  GrooveWidgetLayout->addWidget(lengthBox);
+  setLayout(GrooveWidgetLayout);
 }
 
 GrooveWidget::~GrooveWidget() {

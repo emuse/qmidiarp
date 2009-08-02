@@ -7,9 +7,8 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qptrlist.h>
+#include <qboxlayout.h>
+#include <qlist.h>
 #include <qmessagebox.h>
 #include <qtabwidget.h>
 #include "arpwidget.h"
@@ -19,9 +18,10 @@
 #include "groovewidget.h"
 
 const QString aboutText = "QMidiArp 0.0.2\nby Matthias Nagorni\n(c)2004 Novell\n\n"
+						  "Qt4 port by Frank Kober 2009\n\n"
                           "QMidiArp is licensed under the GPL.\n";
 
-class Gui : public QVBox
+class Gui : public QWidget
 {
   Q_OBJECT
 
@@ -36,7 +36,7 @@ class Gui : public QVBox
     QPushButton *removeArpButton;
     
   public:
-    Gui(int p_portCount, QWidget* parent=0, const char *name=0);
+    Gui(int p_portCount, QWidget* parent=0);
     ~Gui();
     
   public slots: 

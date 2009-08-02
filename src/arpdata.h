@@ -2,7 +2,7 @@
 #define ARPDATA_H
 
 #include <qwidget.h>
-#include <qptrlist.h>
+#include <qlist.h>
 #include <alsa/asoundlib.h>
 #include "seqdriver.h"
 #include "midiarp.h"
@@ -13,15 +13,15 @@ class ArpData : public QWidget  {
   Q_OBJECT
 
   private:
-    QPtrList<MidiArp> midiArpList;
-    QPtrList<ArpWidget> arpWidgetList;
+    QList<MidiArp *> midiArpList;
+    QList<ArpWidget *> arpWidgetList;
     int portCount;
 
   public:
     SeqDriver *seqDriver;
 
   public:
-    ArpData(QWidget* parent=0, const char *name=0);
+    ArpData(QWidget* parent=0);
     ~ArpData();
     void registerPorts(int num);
     int getPortCount();

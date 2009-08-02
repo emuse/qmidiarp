@@ -7,13 +7,12 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
 
-class PassWidget : public QVBox
+class PassWidget : public QWidget
 
 {
   Q_OBJECT
@@ -24,7 +23,7 @@ class PassWidget : public QVBox
     QSpinBox *tempoSpin;
           
   public:
-    PassWidget(int p_portcount, QWidget* parent=0, const char *name=0);
+    PassWidget(int p_portcount, QWidget* parent=0);
     ~PassWidget();
     void setDiscard(bool on);
     void setPortUnmatched(int id);

@@ -7,10 +7,10 @@
 #include "seqdriver.h"
 #include "arpdata.h"
 
-ArpData::ArpData(QWidget *parent, const char *name) : QWidget(parent, name) {
+ArpData::ArpData(QWidget *parent) : QWidget(parent) {
 
   seqDriver = new SeqDriver(&midiArpList, this);
-  midiArpList.setAutoDelete(true);
+  //midiArpList.setAutoDelete(true);
 }
 
 ArpData::~ArpData(){
@@ -34,12 +34,12 @@ void ArpData::removeMidiArp(MidiArp *midiArp) {
   if (seqDriver->runArp && (midiArpList.count() < 2)) {
     seqDriver->setQueueStatus(false);
   }
-  midiArpList.removeRef(midiArp);
+  midiArpList.removeAll(midiArp);
 }
 
 void ArpData::removeArpWidget(ArpWidget *arpWidget) {
 
-  arpWidgetList.removeRef(arpWidget);
+  arpWidgetList.removeAll(arpWidget);
 }
 
 int ArpData::midiArpCount() {

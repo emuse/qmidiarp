@@ -7,17 +7,17 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
 #include <qfile.h>
 #include <qtextedit.h>
+#include <qtextstream.h>
 #include "midiarp.h"
 #include "slider.h"
 
-class ArpWidget : public QVBox
+class ArpWidget : public QWidget
 
 {
   Q_OBJECT
@@ -36,11 +36,11 @@ class ArpWidget : public QVBox
     QString arpName;
 
   public:
-    ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0, const char *name=0);
+    ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);
     ~ArpWidget();
     MidiArp *getMidiArp();
-    void readArp(QFile *f);
-    void writeArp(QFile *f);
+    void readArp(QTextStream& arpText);
+    void writeArp(QTextStream& arpText);
     void setChIn(int value);
     void setIndexIn(int index, int value);
     void setChannelOut(int value);

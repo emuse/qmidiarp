@@ -7,7 +7,7 @@
 #include "main.h"
 #include "seqdriver.h"
 
-SeqDriver::SeqDriver(QPtrList<MidiArp> *p_midiArpList, QWidget *parent, const char *name) : QWidget(parent, name) {
+SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent) : QWidget(parent) {
 
   midiArpList = p_midiArpList; 
   portCount = 0;

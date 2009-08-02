@@ -3,11 +3,10 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h> 
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qpushbutton.h>
 #include <qsocketnotifier.h>
-#include <qstrlist.h>
+#include <qstringlist.h>
 #include <qspinbox.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
@@ -22,23 +21,22 @@
 #include "groovewidget.h"
 #include "gui.h"
 
-Gui::Gui(int p_portCount, QWidget *parent, const char *name) : QVBox(parent, name) {
+Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
 
-  setSpacing(10);
-  setMargin(10);
-  
+QVBoxLayout *guiBoxLayout = new QVBoxLayout;
+
   arpData = new ArpData(this);
   arpData->registerPorts(p_portCount);
   aboutWidget = new QMessageBox(this); 
   tabWidget = new QTabWidget(this);
   logWidget = new LogWidget(tabWidget);
-  tabWidget->insertTab(logWidget, "Event Log");
+  tabWidget->addTab(logWidget, "Event Log");
   QObject::connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
                    logWidget, SLOT(appendEvent(snd_seq_event_t *)));
   passWidget = new PassWidget(p_portCount, tabWidget);
-  tabWidget->insertTab(passWidget, "Settings");
+  tabWidget->addTab(passWidget, "Settings");
   grooveWidget = new GrooveWidget(tabWidget);
-  tabWidget->insertTab(grooveWidget, "Groove");
+  tabWidget->addTab(grooveWidget, "Groove");
   QObject::connect(passWidget, SIGNAL(discardToggled(bool)), 
                    arpData->seqDriver, SLOT(setDiscardUnmatched(bool)));
   QObject::connect(passWidget, SIGNAL(newPortUnmatched(int)), 
@@ -53,7 +51,8 @@ Gui::Gui(int p_portCount, QWidget *parent, const char *name) : QVBox(parent, nam
                    arpData->seqDriver, SLOT(setGrooveVelocity(int)));
   QObject::connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
                    arpData->seqDriver, SLOT(setGrooveLength(int)));
-  QHBox *arpButtonBox = new QHBox(this);
+  QWidget *arpButtonBox = new QWidget(this);
+  QHBoxLayout *arpButtonBoxLayout = new QHBoxLayout;
   QPushButton *addArpButton = new QPushButton("Add Arp", arpButtonBox);
   QObject::connect(addArpButton, SIGNAL(clicked()), this, SLOT(addArp()));
   QPushButton *renameArpButton = new QPushButton("Rename Arp", arpButtonBox);
@@ -61,6 +60,17 @@ Gui::Gui(int p_portCount, QWidget *parent, const char *name) : QVBox(parent, nam
   removeArpButton = new QPushButton("Remove Arp", arpButtonBox);
   removeArpButton->setDisabled(true);
   QObject::connect(removeArpButton, SIGNAL(clicked()), this, SLOT(removeArp()));
+arpButtonBoxLayout->addWidget(addArpButton);
+arpButtonBoxLayout->addWidget(renameArpButton);
+arpButtonBoxLayout->addWidget(removeArpButton);
+arpButtonBox->setLayout(arpButtonBoxLayout);
+
+guiBoxLayout->addWidget(tabWidget);
+guiBoxLayout->addWidget(arpButtonBox);
+guiBoxLayout->setSpacing(2);
+guiBoxLayout->setMargin(2);
+
+setLayout(guiBoxLayout);
 }
 
 Gui::~Gui() {
@@ -79,8 +89,12 @@ void Gui::addArp() {
   bool ok;
 
   qs2.sprintf("Arp %d", arpData->midiArpCount() + 1);
-  qs = QInputDialog::getText("QMidiArp: Add MIDI Arp", "Add MIDI Arp:", 
-                              QLineEdit::Normal, qs2, &ok, this);
+  //qs = QInputDialog::getText("QMidiArp: Add MIDI Arp", "Add MIDI Arp:", 
+  //                            QLineEdit::Normal, qs2, &ok, this);
+  qs = QInputDialog::getText(this, "QMidiArp: Add MIDI Arp", "Add MIDI Arp",
+                                          QLineEdit::Normal,
+                                          qs2, &ok);
+
   addArp(qs);
 }
 
@@ -92,8 +106,8 @@ void Gui::addArp(QString qs) {
   ArpWidget *arpWidget = new ArpWidget(midiArp, arpData->getPortCount(), tabWidget);
   arpData->addArpWidget(arpWidget);
   arpData->seqDriver->sendGroove();
-  tabWidget->insertTab(arpWidget, qs);
-  tabWidget->showPage(arpWidget);
+  tabWidget->addTab(arpWidget, qs);
+  tabWidget->setCurrentWidget(arpWidget);
   arpWidget->arpName = qs;
 }
 
@@ -102,11 +116,14 @@ void Gui::renameArp() {
   QString qs, qs2;
   bool ok;
   
-  qs2 = tabWidget->label(tabWidget->currentPageIndex());
-  qs = QInputDialog::getText("QMidiArp: Rename Arp", "New Name:", 
-                              QLineEdit::Normal, qs2, &ok, this);
-  tabWidget->setTabLabel(tabWidget->currentPage(), qs);                                
-  ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentPage();
+  qs2 = tabWidget->tabText(tabWidget->currentIndex());
+  qs = QInputDialog::getText(this, "QMidiArp: Rename Arp", "New Name",
+                                          QLineEdit::Normal,
+                                          qs2, &ok);
+//qs = QInputDialog::getText("QMidiArp: Rename Arp", "New Name:", 
+//                              QLineEdit::Normal, qs2, &ok, this);
+  tabWidget->setTabText(tabWidget->currentIndex(), qs);                                
+  ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
   arpWidget->arpName = qs;
 }
 
@@ -114,11 +131,11 @@ void Gui::removeArp() {
 
   QString qs;
 
-  if (tabWidget->currentPageIndex() < 3) {
+  if (tabWidget->currentIndex() < 3) {
     return;
   } 
-  ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentPage();
-  qs.sprintf("Remove %s ?", tabWidget->label(tabWidget->currentPageIndex()).latin1());
+  ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
+  qs.sprintf("Remove %s ?", qPrintable(tabWidget->tabText(tabWidget->currentIndex())));
   if (QMessageBox::question(0, "QMidiArp", qs, QMessageBox::Yes,
                             QMessageBox::No | QMessageBox::Default | QMessageBox::Escape, QMessageBox::NoButton)
       == QMessageBox::No) {
@@ -126,7 +143,7 @@ void Gui::removeArp() {
   }
   arpData->removeMidiArp(arpWidget->getMidiArp());
   arpData->removeArpWidget(arpWidget);
-  tabWidget->removePage(arpWidget);
+  tabWidget->removeTab(tabWidget->currentIndex());
   if (arpData->midiArpCount() < 1) {  
     removeArpButton->setDisabled(true);
   }
@@ -139,7 +156,7 @@ void Gui::removeArp(int index) {
   ArpWidget *arpWidget = arpData->arpWidget(index);
   arpData->removeMidiArp(arpWidget->getMidiArp());
   arpData->removeArpWidget(arpWidget);
-  tabWidget->removePage(arpWidget);
+  tabWidget->removeTab(tabWidget->currentIndex());
   if (arpData->midiArpCount() < 1) {
     removeArpButton->setDisabled(true);
   }                      
@@ -155,21 +172,24 @@ void Gui::clear() {
 void Gui::load() {
 
   QString qs, qs2; 
-  
-  if (!(qs = QString(QFileDialog::getOpenFileName(QString::null, "QMidiArp files (*.qma)")))) {
+  QString selfile =  QFileDialog::getOpenFileName(this, QString::null, "", "QMidiArp files (*.qma)");
+  if (selfile == "") {
     return;
   }
+  clear();
+  qs = selfile;
   load(qs);
+  
 }
 
 void Gui::load(QString name) {
 
-  QString qs, qs2; 
+   QString qs, qs2;
   
   clear();
   QFile f(name);
-  if (!f.open(IO_ReadOnly)) {
-    qs2.sprintf("Could not read from file %s.", qs.latin1());
+  if (!f.open(QIODevice::ReadOnly)) {
+    qs2.sprintf("Could not read from file %s.", qPrintable(qs));
     QMessageBox::information(this, "QMidiArp", qs2);
     return;
   }          
@@ -194,23 +214,23 @@ void Gui::load(QString name) {
   while (!loadText.atEnd()) {
     qs = loadText.readLine();
     addArp(qs);
-    arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(&f);
+    arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
   }
-  tabWidget->showPage(arpData->arpWidget(0));
+  tabWidget->setCurrentWidget(arpData->arpWidget(0));
 }
 
 void Gui::save() {
 
   int l1;
   QString qs, qs2; 
-  
-  if (!(qs = QString(QFileDialog::getSaveFileName(QString::null, "QMidiArp files (*.qma)")))) {
+  QString selfile =  QFileDialog::getSaveFileName(this, QString::null, "", "QMidiArp files (*.qma)");
+  if (selfile == "") {
     return;
   }
-
+  qs = selfile;
   QFile f(qs);
-  if (!f.open(IO_WriteOnly)) {
-    qs2.sprintf("Could not write to file %s.", qs.latin1());
+  if (!f.open(QIODevice::WriteOnly)) {
+    qs2.sprintf("Could not write to file %s.", qPrintable(qs));
     QMessageBox::information(this, "QMidiArp", qs2);
     return;
   }          
@@ -221,7 +241,7 @@ void Gui::save() {
   saveText << " " << arpData->seqDriver->grooveVelocity;
   saveText << " " << arpData->seqDriver->grooveLength << "\n";
   for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) {
-    saveText << arpData->arpWidget(l1)->arpName.latin1() << "\n";
-    arpData->arpWidget(l1)->writeArp(&f);
+    saveText << qPrintable(arpData->arpWidget(l1)->arpName) << "\n";
+    arpData->arpWidget(l1)->writeArp(saveText);
   }
 }

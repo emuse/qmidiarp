@@ -5,7 +5,8 @@
 #include <qapplication.h>
 #include <qmainwindow.h>
 #include <qmenubar.h>   
-#include <qpopupmenu.h>
+#include <qmenu.h>
+
 #include <qstring.h>
 #include "gui.h"
 #include "main.h"
@@ -18,9 +19,8 @@ static struct option options[] =
 
 int main(int argc, char *argv[])  
 {
-  QApplication *qApp = new QApplication(argc, argv);
+  QApplication *app = new QApplication(argc, argv);
   QMainWindow *top = new QMainWindow();
-  top->setCaption("QMidiArp");
   int getopt_return;
   int option_index; 
   int portCount = 2;
@@ -38,26 +38,31 @@ int main(int argc, char *argv[])
         fileName = optarg;
         break;
     case 'h':
-        printf("\n%s\n", aboutText.latin1());
+        printf("\n%s\n", qPrintable(aboutText));
         printf("--file <name>         Load file\n\n");
         printf("--portCount <num>     Number of Output Ports [2]\n\n");
         exit(EXIT_SUCCESS);
     }
   }
   Gui *gui = new Gui(portCount, top);
-  QPopupMenu *filePopup = new QPopupMenu(top); 
-  QPopupMenu *aboutMenu = new QPopupMenu(top);
-  top->menuBar()->insertItem("&File", filePopup);
-  top->menuBar()->insertSeparator(); top->menuBar()->insertItem("&About", aboutMenu); 
-  filePopup->insertItem("&Load", gui, SLOT(load()));
-  filePopup->insertItem("&Save", gui, SLOT(save()));
-  filePopup->insertItem("&Quit", qApp, SLOT(quit()));
-  aboutMenu->insertItem("About QMidiArp", gui, SLOT(displayAbout())); 
+  QMenuBar *menuBar = new QMenuBar; 
+  QMenu *filePopup = new QMenu("&File",top); 
+  QMenu *aboutMenu = new QMenu("&About",top);
+ 
+  filePopup->addAction("&Load", gui, SLOT(load()));
+  filePopup->addAction("&Save", gui, SLOT(save()));
+  filePopup->addAction("&Quit", app, SLOT(quit()));
+  aboutMenu->addAction("About QMidiArp", gui, SLOT(displayAbout())); 
+  menuBar->addMenu(filePopup);
+  menuBar->addMenu(aboutMenu);
+  
+  top->setWindowTitle("QMidiArp");
+  top->setMenuBar(menuBar);
   top->setCentralWidget(gui); 
   top->show();
+  
   if (havePreset) {
     gui->load(fileName);
   }
-  qApp->setMainWidget(top); 
-  return qApp->exec(); 
+  return app->exec(); 
 }

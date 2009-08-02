@@ -7,8 +7,6 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
@@ -16,7 +14,7 @@
 #include <qdatetime.h>
 #include <alsa/asoundlib.h>
 
-class LogWidget : public QVBox
+class LogWidget : public QWidget
 
 {
   Q_OBJECT
@@ -27,7 +25,7 @@ class LogWidget : public QVBox
     bool logActive;
 
   public:
-    LogWidget(QWidget* parent=0, const char *name=0);
+    LogWidget(QWidget* parent=0);
     ~LogWidget();
     
   public slots:

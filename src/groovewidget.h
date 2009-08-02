@@ -7,14 +7,13 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qslider.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <qboxlayout.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
 #include "slider.h"
 
-class GrooveWidget : public QVBox
+class GrooveWidget : public QWidget
 
 {
   Q_OBJECT
@@ -23,7 +22,7 @@ class GrooveWidget : public QVBox
     Slider *grooveVelocity, *grooveTick, *grooveLength;
           
   public:
-    GrooveWidget(QWidget* parent=0, const char *name=0);
+    GrooveWidget(QWidget* parent=0);
     ~GrooveWidget();
     
   signals:
