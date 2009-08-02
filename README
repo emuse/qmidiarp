@@ -1,0 +1,65 @@
+QMidiArp by Matthias Nagorni, (c)2004 by Novell, 
+         published under GNU General Public License
+---------------------------------------------------
+
+QMidiArp is an arpeggiator for ALSA. It can have any number of arpeggiator
+tabs. Each of these tabs defines an independent arpeggiator. Since all
+arpeggiators run on the same sequencer queue, they are automatically in sync
+with each other. 
+ 
+An arpeggio is defined in the "Pattern" window. The notes that are actually
+played depend on the input notes that are received by the respective
+arpeggiator. There is a MIDI filter for this input. Notes that pass this
+filter are sorted by pitch and added to the internal note buffer of the
+arpeggiator. Notes that do not match any filter can either be
+discarded or sent to a selectable MIDI port. Within the pattern, the 
+notes are adressed by the index they have in the sorted buffer. 
+
+The syntax for the pattern is as follows:
+
+0..9 : Note indices
+   + : One octave up
+   - : One octave down
+   = : Reset to standard octave
+   > : Double tempo
+   < : Half tempo
+   . : Reset to standard tempo
+(  ) : Chord, begin..end, 
+       e.g. (012) would be a chord of the 
+       first three notes in the buffer   
+   / : Volume up by 20%
+   \ : Volume down by 20%
+   d : Double length
+   h : Half length
+   p : Pause
+
+Any token is valid until the end of a pattern is reached. The token
+> will e.g. double the tempo for all following notes of the pattern.
+When the loop jumps back to the beginning of the pattern, the tempo
+is reset to its initial value (defined in the "Settings" tab).
+
+The number of notes pressed on the Keyboard will not necessarily coincide
+with the maximum index used in the pattern. In case the pattern adresses
+note indices beyond the notes available in the buffer, the indices are
+calculated modulo the current note count. In the opposite case where there
+are more notes than indices in the pattern, the behaviour depends on the
+setting of "Repeat pattern through chord". If this is set to "Up" or "Down", 
+there will be an offset added to the indices after each traversal of the 
+pattern. This way even simple patterns like "01" (or even "0") will 
+generate a complete arpeggio.
+
+There are currently only two demo arpeggios. 
+I used demo.qma with fluidsynth, the 8 MB GM soundfont of Soundblaster Live
+and the following sound settings: 
+
+Ch 0: 12 Marimba
+Ch 1:  8 Celesta
+Ch 2: 32 Acoustic Bass
+ 
+If you use this with other instruments, you might have to adjust the octave
+settings.
+
+QMidiArp was inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
+Especially the random features help a lot to let it sound less "mechanical".
+
+ 
