@@ -17,6 +17,7 @@
 #include "midiarp.h"
 #include "arpwidget.h"
 #include "slider.h"
+#include "arpscreen.h"
 
 ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent) : QWidget(parent) {
 QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
@@ -82,38 +83,47 @@ QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
   QObject::connect(rangeIn[1], SIGNAL(valueChanged(int)), this, SLOT(updateRangeIn(int)));
   inBoxLayout->addWidget(spinRangeBox);
   inBox->setLayout(inBoxLayout); 
+  
   QGroupBox *patternBox = new QGroupBox("Pattern", this);
   QVBoxLayout *patternBoxLayout = new QVBoxLayout;
   
+  QWidget *arpScreenBox = new QWidget(patternBox);
+  QHBoxLayout *arpScreenBoxLayout = new QHBoxLayout;
+  arpScreen = new ArpScreen(30, arpScreenBox); 
+  arpScreenBoxLayout->addWidget(arpScreen);
+  arpScreenBox->setLayout(arpScreenBoxLayout);
+  arpScreenBox->setMinimumWidth(250);
+  arpScreenBox->setMinimumHeight(100);
+    
   patternText = new QTextEdit(patternBox); 
   patternText->setAutoFormatting(QTextEdit::AutoNone);
   patternText->setLineWrapMode(QTextEdit::NoWrap);
   QObject::connect(patternText, SIGNAL(textChanged()), this, SLOT(updateText()));
-  QObject::connect(this, SIGNAL(newPattern(QString)), midiArp, SLOT(updatePattern(QString)));
-  patternBox->setToolTip("( ) chord Mode on/off\n + - octave up/down\n < . > tempo up/down\n d h note length up/down\n / velocity up/down");
-           
+  //QObject::connect(this, SIGNAL(newPattern(QString)), midiArp, SLOT(updatePattern(QString ArpScreen *)));
+    
+	QWidget *repeatBox = new QWidget(patternBox);
+	QHBoxLayout *repeatBoxLayout = new QHBoxLayout;
+	QStringList repeatPatternNames; 
+	repeatPatternNames << "No" << "Up" << "Down";
+	QLabel *repeatLabel = new QLabel("Repeat pattern through chord: ", repeatBox);
+	repeatPatternThroughChord = new QComboBox(repeatBox);
+	repeatPatternThroughChord->insertItems(0, repeatPatternNames);
+	QObject::connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this, SLOT(updateRepeatPattern(int)));
+	repeatPatternThroughChord->setCurrentIndex(1);
+	repeatBoxLayout->addWidget(repeatLabel);
+	repeatBoxLayout->addWidget(repeatPatternThroughChord);
+	repeatBox->setLayout(repeatBoxLayout);
+	
+  patternBoxLayout->addWidget(arpScreenBox);
   patternBoxLayout->addWidget(patternText);
-  
-  
-  QWidget *repeatBox = new QWidget(patternBox);
-  QHBoxLayout *repeatBoxLayout = new QHBoxLayout;
-  QStringList repeatPatternNames; // = new QStringList(true);
-  repeatPatternNames << "No" << "Up" << "Down";
-  QLabel *repeatLabel = new QLabel("Repeat pattern through chord: ", repeatBox);
-  repeatPatternThroughChord = new QComboBox(repeatBox);
-  repeatPatternThroughChord->insertItems(0, repeatPatternNames);
-  QObject::connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this, SLOT(updateRepeatPattern(int)));
-  repeatPatternThroughChord->setCurrentIndex(1);
-  repeatBoxLayout->addWidget(repeatLabel);
-  repeatBoxLayout->addWidget(repeatPatternThroughChord);
-  repeatBox->setLayout(repeatBoxLayout);
-  QGroupBox *randomBox = new QGroupBox("Random", this);
-  QVBoxLayout *randomBoxLayout = new QVBoxLayout;
-  
   patternBoxLayout->addWidget(repeatBox);
+  patternBox->setToolTip("( ) chord Mode on/off\n + - octave up/down\n < . > tempo up/down\n d h note length up/down\n / velocity up/down");
   patternBoxLayout->setMargin(1);
   patternBoxLayout->setSpacing(1);
   patternBox->setLayout(patternBoxLayout); 
+  
+  QGroupBox *randomBox = new QGroupBox("Random", this);
+  QVBoxLayout *randomBoxLayout = new QVBoxLayout;
   QWidget *tickBox = new QWidget(randomBox);
   QHBoxLayout *tickBoxLayout = new QHBoxLayout;
   QLabel *tickLabel = new QLabel("Random Shift", tickBox);
@@ -187,6 +197,7 @@ QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
  
   arpWidgetLayout->addWidget(inBox);
   arpWidgetLayout->addWidget(patternBox);
+  arpWidgetLayout->addWidget(arpScreenBox);
   arpWidgetLayout->addWidget(randomBox);
   arpWidgetLayout->addWidget(portBox);
   arpWidgetLayout->setMargin(2);
@@ -322,6 +333,7 @@ void ArpWidget::setChannelOut(int value) {
 void ArpWidget::updateText() { 
 
   emit(newPattern(patternText->toPlainText()));
+  midiArp->updatePattern(patternText->toPlainText(), arpScreen);
 }
 
 void ArpWidget::updateRepeatPattern(int val) { 

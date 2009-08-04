@@ -59,6 +59,7 @@ QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
   GrooveWidgetLayout->addWidget(tickBox);
   GrooveWidgetLayout->addWidget(velocityBox);
   GrooveWidgetLayout->addWidget(lengthBox);
+  setMaximumHeight(200);
   setLayout(GrooveWidgetLayout);
 }
 

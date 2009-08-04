@@ -16,6 +16,7 @@
 #include <qtextstream.h>
 #include "midiarp.h"
 #include "slider.h"
+#include "arpscreen.h"
 
 class ArpWidget : public QWidget
 
@@ -29,16 +30,20 @@ class ArpWidget : public QWidget
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     MidiArp *midiArp;
-    QTextEdit *patternText;
+	QTextEdit *patternText;
+    ArpScreen *arpScreen;
     Slider *randomVelocity, *randomTick, *randomLength;
+	
     
   public:
     QString arpName;
+
 
   public:
     ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);
     ~ArpWidget();
     MidiArp *getMidiArp();
+	
     void readArp(QTextStream& arpText);
     void writeArp(QTextStream& arpText);
     void setChIn(int value);

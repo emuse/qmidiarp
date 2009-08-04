@@ -11,6 +11,7 @@
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qspinbox.h>
+//#include "arpdata.h"
 
 class PassWidget : public QWidget
 
@@ -18,9 +19,10 @@ class PassWidget : public QWidget
   Q_OBJECT
 
   private:
-    QCheckBox *discardCheck, *runQueueCheck;
+    QCheckBox *discardCheck, *mbuttonCheck;
     QSpinBox *portUnmatchedSpin;
-    QSpinBox *tempoSpin;
+ 
+	QSpinBox *mtpbSpin;
           
   public:
     PassWidget(int p_portcount, QWidget* parent=0);
@@ -31,14 +33,15 @@ class PassWidget : public QWidget
   signals:
     void discardToggled(bool);  
     void newPortUnmatched(int);
-    void newTempo(int);
-    void runQueue(bool);
-        
+    void midiClockToggle(bool);
+	void newMIDItpb(int);
+	    
   public slots:
-    void updateDiscard(bool on);
+    void updateClockSetting(bool);
+	void updateDiscard(bool on);
     void updatePortUnmatched(int);
-    void updateTempo(int);
-    void updateRunQueue(bool);
+    void updateMIDItpb_pw(int);
+   
 };
   
 #endif

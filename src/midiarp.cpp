@@ -1,10 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-
 #include <qstring.h>
 #include <alsa/asoundlib.h>
 #include "midiarp.h"
+
 
 MidiArp::MidiArp() {
 
@@ -64,6 +63,7 @@ bool MidiArp::isArp(snd_seq_event_t *evIn) {
       || ((evIn->data.note.velocity < rangeIn[0]) || (evIn->data.note.velocity > rangeIn[1]))) {
     return(false);
   }  
+   
   return(true);
 }
 
@@ -135,14 +135,50 @@ void MidiArp::removeNote(snd_seq_event_t *evIn) {
     }  
   }
 }
+void MidiArp::removeNote(int *noteptr) {
+
+  int bufPtr, newBufPtr, l1, l2, l3, note ;
+  note = *noteptr;
+  bufPtr = (noteBufPtr) ? 0 : 1; // modify buffer that is not accessed by arpeggio output
+  //note = evIn->data.note.note;
+  if (!noteCount) {
+    return;
+  }
+  if (note == notes[bufPtr][0][noteCount - 1]) {
+    do {
+      noteCount--;
+    } while (note == notes[bufPtr][0][noteCount - 1]);
+  } else {
+    l1 = 0;
+    while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) {
+      l1++;
+    }
+    while (note == notes[bufPtr][0][l1]) {
+      for (l3 = 0; l3 < 2; l3++) {
+        for (l2 = l1; l2 < noteCount - 1; l2++) {
+          notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 + 1];
+        }  
+      }  
+      noteCount--;
+    }
+  }  
+  newBufPtr = noteBufPtr;
+  noteBufPtr = bufPtr;
+  for (l3 = 0; l3 < 2; l3++) {
+    for (l2 = 0; l2 < noteCount; l2++) {
+      notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
+    }  
+  }
+}
 
 void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[], int velocity[], int *length) { 
 
   QChar c;
   int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
   bool gotCC, outOfRange, pause;
+  
+   *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0, 1000, &outOfRange);
 
-  *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0, 1000, &outOfRange);
   chordIndex = 0;
   tmpIndex[0] = 0;
   tmpIndex[1] = -1;
@@ -316,11 +352,11 @@ void MidiArp::initArpTick(snd_seq_tick_time_t currentTick) {
   noteIndex[0] = -1;
 }
 
-void MidiArp::updatePattern(QString p_pattern) {
+void MidiArp::updatePattern(QString p_pattern, ArpScreen *arpScreen) {
 
   int l1;
   QChar c;
-
+  
   pattern = p_pattern;
   patternLen = pattern.length();
   patternMaxIndex = 0;
@@ -331,6 +367,8 @@ void MidiArp::updatePattern(QString p_pattern) {
     }
   }  
   noteOfs = 0;
+    
+  arpScreen->updateArpScreen(pattern);
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange) {

@@ -1,5 +1,32 @@
-2009-08-04 Guido Scholz <guido.scholz@bayernline.de>
-	* package: autoconf/automake environment added.
+2009-07-12 Frank Kober <goemusic@yahoo.fr>
+	* package: added autotools build environment, moved sources to the
+	src subdirectory, updated COPYING file and added two sentences to
+	the README, updated INSTALL file
+	Remaining issues: 
+	   Tempo needs to be the same as that of the midi clock master
+	   Queue is not automatically started
+	   Queue start button should be grayed when receiving MIDI clock start
+
+2009-02-07 Frank Kober <goemusic@yahoo.fr>
+	* package: added a graphical representation of the pattern text
+	that is updated on every text change, included port counter in out
+	port names and renamed in port to "QMidiARP in", initial MIDI
+	real time clock start and stop support:
+	  When MIDI clock is being checked, the queue is stopped and
+	  started upon reception MIDI_START
+	Known issue: the queue is not started automatically. You need to
+	un/recheck 'start queue'
+	MIDI ticks per beat and MIDI Clock Mode can be selected from the
+	passWidget
+	Added a switchable filter for MIDI Clock events to the logWidget.
+	The logtext is now color
+	minor UI tweaks:
+	   Tempo Spinner and Queue Start Button now in the top row of the
+	   GUI, visible all the time
+	   Fixed maximum size of the groove and pass widgets 
 
 2009-06-25 Frank Kober <goemusic@yahoo.fr>
-	* package: ported to Qt4
+	* package: corrected disable/enable behaviour of rename button,
+	addArp and renameArp do now respect 'cancel' in name dialog
+	corrected: renaming of all tabs including the three 'system' tabs
+	was permitted

@@ -3,8 +3,11 @@
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <alsa/asoundlib.h>
+#include <qthread.h>
+#include <qlist.h>
 #include "midiarp.h"
 #include "main.h"
+#include "gui.h"
 #include "seqdriver.h"
 
 SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent) : QWidget(parent) {
@@ -18,7 +21,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent) : QWidget
     exit(1);  }
   snd_seq_set_client_name(seq_handle, "QMidiArp");
   clientid = snd_seq_client_id(seq_handle);
-  if ((portid_in = snd_seq_create_simple_port(seq_handle, "QMidiArp",
+  if ((portid_in = snd_seq_create_simple_port(seq_handle, "QMidiArp in",
                                         SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
                                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
     fprintf(stderr, "Error creating sequencer port.\n");
@@ -29,11 +32,17 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent) : QWidget
   grooveTick = 0;
   grooveVelocity = 0;
   grooveLength = 0;
-  runArp = false;
+  runArp = true;
   startQueue = false;
   runQueueIfArp = true;
   initArpQueue();
   setQueueTempo(100);
+  midiTime = 0;
+  use_midiclock = false;
+  midiclock_tpb = 96;
+  m_ratio=1.0;
+  sustain=0;
+  //sustainBufferList->clear();
 }
 
 SeqDriver::~SeqDriver(){
@@ -45,7 +54,10 @@ void SeqDriver::registerPorts(int num) {
 
   portCount = num;
   for (l1 = 0; l1 < portCount; l1++) {
-    if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, "QMidiArp",
+	  char buf[16];
+      sprintf(buf,"[%d] QMidiArp %d",l1,l1);
+
+    if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
                                    SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
                                    SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
       fprintf(stderr, "Error creating sequencer port.\n");
@@ -76,6 +88,7 @@ int SeqDriver::getPortCount() {
 void SeqDriver::procEvents(int fd) {
 
   int l1, l2;
+  
   snd_seq_event_t *evIn, evOut;
   int note[MAXCHORD], velocity[MAXCHORD];
   int length;
@@ -84,8 +97,19 @@ void SeqDriver::procEvents(int fd) {
 
   do {
     snd_seq_event_input(seq_handle, &evIn);
+	
+    if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) midiTime += 4;
+
     if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) {
       tick = get_tick();
+	  if (use_midiclock && (midiTime > 0)) 
+	  //m_ratio = (m_ratio+(double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime)/2;
+	  m_ratio = (double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime;
+	  else m_ratio = 1.0;
+	  //m_ratio = 1.0;
+	  //printf("tick %d   ",tick);
+	  //printf("midiTime %d   ",midiTime);
+      //printf("m_ratio %f\n",m_ratio);
       startQueue = false;
       nextEchoTick = 0;
       foundEcho = false;
@@ -93,13 +117,15 @@ void SeqDriver::procEvents(int fd) {
       for (l1 = 0; l1 < midiArpList->count(); l1++) {
         midiArpList->at(l1)->newRandomValues();
         midiArpList->at(l1)->getCurrentNote(tick, &noteTick, note, velocity, &length, &isNew);
-        if (isNew && velocity[0]) {
+        
+		if (isNew && velocity[0]) {
           l2 = 0;
           while(note[l2] >= 0) {
             snd_seq_ev_clear(&evOut);
             snd_seq_ev_set_note(&evOut, 0, note[l2], velocity[l2], length);
+			//printf("Length %d  NoteTick %d",length, noteTick);
             evOut.data.control.channel = midiArpList->at(l1)->channelOut;
-            snd_seq_ev_schedule_tick(&evOut, queue_id,  0, noteTick);
+            snd_seq_ev_schedule_tick(&evOut, queue_id,  0, noteTick*m_ratio);
             snd_seq_ev_set_subs(&evOut);  
             snd_seq_ev_set_source(&evOut, portid_out[midiArpList->at(l1)->portOut]);
             snd_seq_event_output_direct(seq_handle, &evOut);
@@ -120,11 +146,28 @@ void SeqDriver::procEvents(int fd) {
       }            
       snd_seq_ev_clear(evIn);
       evIn->type = SND_SEQ_EVENT_ECHO;
-      snd_seq_ev_schedule_tick(evIn, queue_id,  0, nextEchoTick);
+      snd_seq_ev_schedule_tick(evIn, queue_id,  0, nextEchoTick*m_ratio);
       snd_seq_ev_set_dest(evIn, clientid, portid_in);
       snd_seq_event_output_direct(seq_handle, evIn);
       
     } else {
+		//Sustain Footswitch has changed
+		/*
+		if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
+			if (evIn->data.control.param == 64) sustain=evIn->data.control.value;
+			if (!sustain)
+			   {
+				   for (l1 = 0; l1 < sustainBufferList->count(); l1++) {
+					 for (l2 = 0; l2 < midiArpList->count(); l2++) {  
+					   midiArpList->at(l2)->removeNote(sustainBufferList->at(l1));
+				      }  
+				   }
+				   //sustainBufferList->clear();
+			   }
+			}
+			
+		*/
+		
       emit midiEvent(evIn);
       unmatched = true;
       if ((evIn->type == SND_SEQ_EVENT_NOTEON) || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
@@ -134,19 +177,36 @@ void SeqDriver::procEvents(int fd) {
             if ((evIn->type == SND_SEQ_EVENT_NOTEON) && (evIn->data.note.velocity > 0)) {
               midiArpList->at(l1)->addNote(evIn);
             } else {
-              midiArpList->at(l1)->removeNote(evIn);  
-            }  
+           /*  if (!sustain) midiArpList->at(l1)->removeNote(evIn);
+				else sustainBufferList->append((int *)evIn->data.note.note);  
+            */
+			midiArpList->at(l1)->removeNote(evIn);
+			}  
           }  
         }
       }
+if (use_midiclock){
+  if (evIn->type == SND_SEQ_EVENT_START)
+	  {
+		midiTime = 0;
+		//setQueueTempo(200);
+		setQueueStatus(true);
+  }
+if (evIn->type == SND_SEQ_EVENT_STOP)
+	  {setQueueStatus(false);
+  }
+}
+
       if (!discardUnmatched && unmatched) {
         snd_seq_ev_set_subs(evIn);  
         snd_seq_ev_set_direct(evIn);
         snd_seq_ev_set_source(evIn, portid_out[portUnmatched]);
         snd_seq_event_output_direct(seq_handle, evIn);
       }
-    }  
+  }  
+
   } while (snd_seq_event_input_pending(seq_handle, 0) > 0);  
+	
 }
 
 void SeqDriver::setDiscardUnmatched(bool on) {
@@ -173,9 +233,24 @@ void SeqDriver::setQueueTempo(int bpm) {
   msec_tempo = (int)(6e7 / (double)bpm);
   snd_seq_queue_tempo_set_tempo(queue_tempo, msec_tempo);
   snd_seq_queue_tempo_set_ppq(queue_tempo, TICKS_PER_QUARTER);
+  //snd_seq_queue_tempo_set_ppq(queue_tempo, midiclock_tpb);
   snd_seq_set_queue_tempo(seq_handle, queue_id, queue_tempo);
   snd_seq_queue_tempo_free(queue_tempo);
   tempo = bpm;
+}
+void SeqDriver::setFineTempo(double finetempo) {
+
+  snd_seq_queue_tempo_t *queue_tempo;
+  int msec_tempo;
+  
+  snd_seq_queue_tempo_malloc(&queue_tempo);
+  msec_tempo = (int)(6e7 / finetempo);
+  snd_seq_queue_tempo_set_tempo(queue_tempo, msec_tempo);
+  snd_seq_queue_tempo_set_ppq(queue_tempo, TICKS_PER_QUARTER);
+  //snd_seq_queue_tempo_set_ppq(queue_tempo, midiclock_tpb);
+  snd_seq_set_queue_tempo(seq_handle, queue_id, queue_tempo);
+  snd_seq_queue_tempo_free(queue_tempo);
+  tempo = (int)finetempo;
 }
 
 snd_seq_tick_time_t SeqDriver::get_tick() {
@@ -187,26 +262,30 @@ snd_seq_tick_time_t SeqDriver::get_tick() {
   snd_seq_get_queue_status(seq_handle, queue_id, status);
   current_tick = snd_seq_queue_status_get_tick_time(status);
   snd_seq_queue_status_free(status);
+  //printf("Current Tick: %d\n", current_tick);
   return(current_tick);
+  //return(midiTime);
+
 }
 
 void SeqDriver::runQueue(bool on) {
 
   runQueueIfArp = on;
+  setQueueStatus(on);
 }
 
 void SeqDriver::setQueueStatus(bool run) {
 
   int l1;
   snd_seq_event_t evOut;
-
+ 
   if (run) {
     runArp = true;
     startQueue = true;
     snd_seq_start_queue(seq_handle, queue_id, NULL);
     snd_seq_drain_output(seq_handle);
     tick = get_tick();
-    snd_seq_ev_clear(&evOut);
+	snd_seq_ev_clear(&evOut);
     evOut.type = SND_SEQ_EVENT_NOTEOFF;
     evOut.data.note.note = 0;
     evOut.data.note.velocity = 0;
@@ -216,6 +295,7 @@ void SeqDriver::setQueueStatus(bool run) {
     for (l1 = 0; l1 < midiArpList->count(); l1++) {
       midiArpList->at(l1)->initArpTick(tick);
     }
+
   } else {
     runArp = false;
 //    snd_seq_drop_output(seq_handle);
@@ -270,3 +350,27 @@ void SeqDriver::sendGroove() {
     midiArpList->at(l1)->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
   }
 }
+
+int SeqDriver::getMidiTime() {
+	return(midiTime);
+}
+
+void SeqDriver::resetMidiTime() {
+	midiTime = 0;
+}
+
+void SeqDriver::setUseMidiClock(bool on) {
+	setQueueStatus(false);
+	use_midiclock = on;
+	if (!on) { 
+		//setQueueTempo(100);
+		setQueueStatus(true);
+	}
+	
+}
+
+void SeqDriver::updateMIDItpb(int midiTpb) {
+	midiclock_tpb = midiTpb;
+	}
+
+

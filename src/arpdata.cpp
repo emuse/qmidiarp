@@ -20,7 +20,7 @@ void ArpData::addMidiArp(MidiArp *midiArp) {
 
   midiArpList.append(midiArp);
   if (seqDriver->runQueueIfArp) {
-    seqDriver->setQueueStatus(true);
+//    seqDriver->setQueueStatus(true);
   }
 }
 

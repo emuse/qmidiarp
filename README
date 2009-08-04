@@ -48,6 +48,11 @@ there will be an offset added to the indices after each traversal of the
 pattern. This way even simple patterns like "01" (or even "0") will 
 generate a complete arpeggio.
 
+There is now a graphical representation of the pattern below the text. It
+shows the defined arp lines in a pianoroll. The y-scale of the graphics 
+window corresponds to the number of the pressed note. Octave changes are
+shown as additional horizontal lines. 
+
 There are currently only two demo arpeggios. 
 I used demo.qma with fluidsynth, the 8 MB GM soundfont of Soundblaster Live
 and the following sound settings: 
@@ -62,3 +67,4 @@ settings.
 QMidiArp was inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
 Especially the random features help a lot to let it sound less "mechanical".
 
+ 

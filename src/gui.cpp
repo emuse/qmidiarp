@@ -24,46 +24,81 @@
 Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
 
 QVBoxLayout *guiBoxLayout = new QVBoxLayout;
-
   arpData = new ArpData(this);
   arpData->registerPorts(p_portCount);
   aboutWidget = new QMessageBox(this); 
   tabWidget = new QTabWidget(this);
   logWidget = new LogWidget(tabWidget);
-  tabWidget->addTab(logWidget, "Event Log");
   QObject::connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
                    logWidget, SLOT(appendEvent(snd_seq_event_t *)));
+  tabWidget->addTab(logWidget, "Event Log");
+    	
   passWidget = new PassWidget(p_portCount, tabWidget);
-  tabWidget->addTab(passWidget, "Settings");
-  grooveWidget = new GrooveWidget(tabWidget);
-  tabWidget->addTab(grooveWidget, "Groove");
+   
   QObject::connect(passWidget, SIGNAL(discardToggled(bool)), 
                    arpData->seqDriver, SLOT(setDiscardUnmatched(bool)));
+  QObject::connect(passWidget, SIGNAL(midiClockToggle(bool)), 
+				   arpData->seqDriver, SLOT(setUseMidiClock(bool)));
+  QObject::connect(passWidget, SIGNAL(newMIDItpb(int)), 
+				   arpData->seqDriver, SLOT(updateMIDItpb(int)));
   QObject::connect(passWidget, SIGNAL(newPortUnmatched(int)), 
                    arpData->seqDriver, SLOT(setPortUnmatched(int)));
-  QObject::connect(passWidget, SIGNAL(newTempo(int)), 
+				   
+  QObject::connect(this, SIGNAL(newTempo(int)), 
                    arpData->seqDriver, SLOT(setQueueTempo(int)));
-  QObject::connect(passWidget, SIGNAL(runQueue(bool)), 
-                   arpData, SLOT(runQueue(bool)));
+  QObject::connect(this, SIGNAL(runQueue(bool)), 
+                   arpData->seqDriver, SLOT(runQueue(bool)));
+  				   
+  tabWidget->addTab(passWidget, "Settings");
+ 
+grooveWidget = new GrooveWidget(tabWidget);
   QObject::connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
                    arpData->seqDriver, SLOT(setGrooveTick(int)));
   QObject::connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
                    arpData->seqDriver, SLOT(setGrooveVelocity(int)));
   QObject::connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
                    arpData->seqDriver, SLOT(setGrooveLength(int)));
-  QWidget *arpButtonBox = new QWidget(this);
-  QHBoxLayout *arpButtonBoxLayout = new QHBoxLayout;
-  QPushButton *addArpButton = new QPushButton("Add Arp", arpButtonBox);
+tabWidget->addTab(grooveWidget, "Groove");			
+
+QWidget *arpButtonBox = new QWidget(this);
+QHBoxLayout *arpButtonBoxLayout = new QHBoxLayout;
+  
+  addArpButton = new QPushButton("Add Arp", arpButtonBox);
   QObject::connect(addArpButton, SIGNAL(clicked()), this, SLOT(addArp()));
-  QPushButton *renameArpButton = new QPushButton("Rename Arp", arpButtonBox);
+  
+  renameArpButton = new QPushButton("Rename Arp", arpButtonBox);
   QObject::connect(renameArpButton, SIGNAL(clicked()), this, SLOT(renameArp()));
-  removeArpButton = new QPushButton("Remove Arp", arpButtonBox);
-  removeArpButton->setDisabled(true);
+  renameArpButton->setDisabled(true);
+ 
+  removeArpButton = new QPushButton("Remove Arp", arpButtonBox);  
   QObject::connect(removeArpButton, SIGNAL(clicked()), this, SLOT(removeArp()));
+  removeArpButton->setDisabled(true);
+
+QWidget *runBox = new QWidget(this);
+  QHBoxLayout *runBoxLayout = new QHBoxLayout;
+  QLabel *runQueueLabel = new QLabel("Run Arpeggiator Queue ", runBox);
+  QCheckBox *runQueueCheck = new QCheckBox(runBox);
+  runQueueCheck->setChecked(true);
+  QObject::connect(runQueueCheck, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
+  
+  QLabel *tempoLabel = new QLabel("Tempo (bpm) ", runBox);
+  tempoSpin = new QSpinBox(runBox);
+  tempoSpin->setRange(10,400);
+  tempoSpin->setValue(100);
+  QObject::connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(updateTempo(int)));
+  runBoxLayout->addWidget(runQueueLabel);
+  runBoxLayout->addWidget(runQueueCheck);
+  runBoxLayout->addWidget(tempoLabel);
+  runBoxLayout->addWidget(tempoSpin);
+  runBox->setLayout(runBoxLayout);
+
+
 arpButtonBoxLayout->addWidget(addArpButton);
 arpButtonBoxLayout->addWidget(renameArpButton);
 arpButtonBoxLayout->addWidget(removeArpButton);
 arpButtonBox->setLayout(arpButtonBoxLayout);
+
+guiBoxLayout->addWidget(runBox);
 
 guiBoxLayout->addWidget(tabWidget);
 guiBoxLayout->addWidget(arpButtonBox);
@@ -89,18 +124,16 @@ void Gui::addArp() {
   bool ok;
 
   qs2.sprintf("Arp %d", arpData->midiArpCount() + 1);
-  //qs = QInputDialog::getText("QMidiArp: Add MIDI Arp", "Add MIDI Arp:", 
-  //                            QLineEdit::Normal, qs2, &ok, this);
+ 
   qs = QInputDialog::getText(this, "QMidiArp: Add MIDI Arp", "Add MIDI Arp",
                                           QLineEdit::Normal,
                                           qs2, &ok);
-
-  addArp(qs);
+ if (ok && !qs.isEmpty()) {addArp(qs);}
 }
 
 void Gui::addArp(QString qs) {
 
-  removeArpButton->setEnabled(true);    
+  
   MidiArp *midiArp = new MidiArp();
   arpData->addMidiArp(midiArp);   
   ArpWidget *arpWidget = new ArpWidget(midiArp, arpData->getPortCount(), tabWidget);
@@ -109,22 +142,24 @@ void Gui::addArp(QString qs) {
   tabWidget->addTab(arpWidget, qs);
   tabWidget->setCurrentWidget(arpWidget);
   arpWidget->arpName = qs;
+  removeArpButton->setEnabled(true);    
+  renameArpButton->setEnabled(true);
 }
 
 void Gui::renameArp() {
 
   QString qs, qs2;
   bool ok;
-  
+  if (tabWidget->currentIndex() < 3) {return;}
   qs2 = tabWidget->tabText(tabWidget->currentIndex());
   qs = QInputDialog::getText(this, "QMidiArp: Rename Arp", "New Name",
                                           QLineEdit::Normal,
                                           qs2, &ok);
-//qs = QInputDialog::getText("QMidiArp: Rename Arp", "New Name:", 
-//                              QLineEdit::Normal, qs2, &ok, this);
+  if (ok && !qs.isEmpty()) {										  									 
   tabWidget->setTabText(tabWidget->currentIndex(), qs);                                
   ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
   arpWidget->arpName = qs;
+}
 }
 
 void Gui::removeArp() {
@@ -146,6 +181,7 @@ void Gui::removeArp() {
   tabWidget->removeTab(tabWidget->currentIndex());
   if (arpData->midiArpCount() < 1) {  
     removeArpButton->setDisabled(true);
+	renameArpButton->setDisabled(true);
   }
 }
 
@@ -159,6 +195,7 @@ void Gui::removeArp(int index) {
   tabWidget->removeTab(tabWidget->currentIndex());
   if (arpData->midiArpCount() < 1) {
     removeArpButton->setDisabled(true);
+	renameArpButton->setDisabled(true);
   }                      
 }
 
@@ -244,4 +281,18 @@ void Gui::save() {
     saveText << qPrintable(arpData->arpWidget(l1)->arpName) << "\n";
     arpData->arpWidget(l1)->writeArp(saveText);
   }
+}
+void Gui::updateTempo(int p_tempo) {
+
+  emit(newTempo(p_tempo));
+}
+
+void Gui::updateRunQueue(bool on) {
+
+  emit(runQueue(on));
+}
+void Gui::midiClockToggle (bool on) {
+	arpData->seqDriver->setUseMidiClock(on);
+	runQueueCheck->setDisabled(on);
+	runQueueCheck->setChecked(true);
 }

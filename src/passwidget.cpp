@@ -14,11 +14,12 @@
 #include <qregexp.h>
 #include "passwidget.h"
 
+
 PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent) {
 QVBoxLayout *passWidgetLayout = new QVBoxLayout;
 
   QWidget *buttonBox = new QWidget(this);
- QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
+  QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
   QLabel *discardLabel = new QLabel("Discard unmatched events ", buttonBox);
   discardCheck = new QCheckBox(buttonBox);
   discardCheck->setChecked(false);
@@ -37,36 +38,41 @@ QVBoxLayout *passWidgetLayout = new QVBoxLayout;
   portBoxLayout->addWidget(portUnmatchedSpin);
   portBox->setLayout(portBoxLayout);
   //new QWidget(portBox);
-  QWidget *tempoBox = new QWidget(this);
-  QHBoxLayout *tempoBoxLayout = new QHBoxLayout;
-  QLabel *tempoLabel = new QLabel("Tempo (bpm) ", tempoBox);
-  tempoSpin = new QSpinBox(tempoBox);
-  tempoSpin->setRange(10,300);
-  tempoSpin->setValue(100);
-  QObject::connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(updateTempo(int)));
- 
-  tempoBoxLayout->addWidget(tempoLabel);
-  tempoBoxLayout->addWidget(tempoSpin);
-  tempoBox->setLayout(tempoBoxLayout);
-  //new QWidget(tempoBox);
-  QWidget *runBox = new QWidget(this);
-  QHBoxLayout *runBoxLayout = new QHBoxLayout;
-  QLabel *runQueueLabel = new QLabel("Run Arpeggiator Queue ", runBox);
-  runQueueCheck = new QCheckBox(runBox);
-  runQueueCheck->setChecked(true);
-  QObject::connect(runQueueCheck, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
-  runBoxLayout->addWidget(runQueueLabel);
-  runBoxLayout->addWidget(runQueueCheck);
-  runBox->setLayout(runBoxLayout);
-  //new QWidget(runBox);
+   
+  
+  QWidget *mtpbBox = new QWidget(this);
+  QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
+  QLabel *mtpbLabel = new QLabel("MIDI Clock rate(tpb) ", mtpbBox);
+  mtpbSpin = new QSpinBox(mtpbBox);
+  QObject::connect(mtpbSpin, SIGNAL(valueChanged(int)), this, SLOT(updateMIDItpb_pw(int)));
+  mtpbSpin->setRange(24,384);
+  mtpbSpin->setValue(96);
+  mtpbSpin->setSingleStep(24);
+  mtpbSpin->setDisabled(true);
+  mtpbBoxLayout->addWidget(mtpbLabel);
+  mtpbBoxLayout->addWidget(mtpbSpin);
+  mtpbBox->setLayout(mtpbBoxLayout);
+  
+  QWidget *mbuttonBox = new QWidget(this);
+  QHBoxLayout *mbuttonBoxLayout = new QHBoxLayout;
+  QLabel *mbuttonLabel = new QLabel("Use incoming MIDI Clock", mbuttonBox);
+  mbuttonCheck = new QCheckBox(mbuttonBox);
+  QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this, SLOT(updateClockSetting(bool)));
+  mbuttonCheck->setChecked(false);
+  mbuttonBoxLayout->addWidget(mbuttonLabel);
+  mbuttonBoxLayout->addWidget(mbuttonCheck);
+  mbuttonBox->setLayout(mbuttonBoxLayout);
+   
 
-  new QWidget(this);
+  //new QWidget(this);
   passWidgetLayout->setMargin(5);
   passWidgetLayout->setSpacing(10);
   passWidgetLayout->addWidget(buttonBox);
   passWidgetLayout->addWidget(portBox);
-  passWidgetLayout->addWidget(tempoBox);
-  passWidgetLayout->addWidget(runBox);
+  passWidgetLayout->addWidget(mbuttonBox);
+  passWidgetLayout->addWidget(mtpbBox);
+  setMaximumHeight(200);
+
 setLayout(passWidgetLayout);
 }
 
@@ -79,6 +85,11 @@ void PassWidget::updateDiscard(bool on) {
   emit discardToggled(on);
   portUnmatchedSpin->setDisabled(on);
 }
+void PassWidget::updateClockSetting(bool on) {
+mtpbSpin->setEnabled(on);
+emit midiClockToggle(on);
+}
+
 
 void PassWidget::updatePortUnmatched(int id) {
 
@@ -95,14 +106,9 @@ void PassWidget::setPortUnmatched(int id) {
   portUnmatchedSpin->setValue(id);
 }
 
-void PassWidget::updateTempo(int p_tempo) {
-
-  emit(newTempo(p_tempo));
-}
-
-void PassWidget::updateRunQueue(bool on) {
-
-  emit(runQueue(on));
+void PassWidget::updateMIDItpb_pw(int MIDItpb) {
+emit newMIDItpb(MIDItpb);
+  
 }
 
         

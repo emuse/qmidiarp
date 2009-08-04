@@ -5,27 +5,31 @@
 TEMPLATE = app
 TARGET = qmidiarp
 DEPENDPATH += .
-INCLUDEPATH += /media/disk/src/qmidiarp-0.0.2/. .
+INCLUDEPATH += .
 LIBS+=-lasound
 
 # Input
 HEADERS += arpdata.h \
+           arpscreen.h \
            arpwidget.h \
            groovewidget.h \
-           gui.h \
+           seqdriver.h \
            logwidget.h \
+           passwidget.h \
+           gui.h \
            main.h \
            midiarp.h \
-           passwidget.h \
-           seqdriver.h \
-           slider.h
+           slider.h \
+	  
 SOURCES += arpdata.cpp \
+           arpscreen.cpp \
            arpwidget.cpp \
            groovewidget.cpp \
-           gui.cpp \
+           seqdriver.cpp \
            logwidget.cpp \
+           passwidget.cpp \
+	   gui.cpp \
            main.cpp \
            midiarp.cpp \
-           passwidget.cpp \
-           seqdriver.cpp \
            slider.cpp
+	

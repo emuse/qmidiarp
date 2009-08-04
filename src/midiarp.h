@@ -4,6 +4,9 @@
 #include <qobject.h>
 #include <alsa/asoundlib.h>
 #include <main.h>
+#include <qstring.h>
+#include "arpscreen.h"
+
 
 class MidiArp : public QObject  {
     
@@ -21,8 +24,8 @@ class MidiArp : public QObject  {
     int currentLength;
     bool newCurrent, newNext, chordMode;
     snd_seq_tick_time_t arpTick, lastArpTick;
-    int grooveTick, grooveVelocity, grooveLength, grooveIndex;    
-    
+    int grooveTick, grooveVelocity, grooveLength, grooveIndex;  
+	
   private:
     void initLoop();  
     int clip(int value, int min, int max, bool *outOfRange);
@@ -42,13 +45,16 @@ class MidiArp : public QObject  {
     int randomVelocity, randomTick, randomLength;
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
-          
+    ArpScreen *arpScreen;
+
+           
   public:
     MidiArp();
     ~MidiArp();
     bool isArp(snd_seq_event_t *evIn);   // Check if evIn is in the input range of the map
     void addNote(snd_seq_event_t *evIn); // Add input Note for Arpeggio
     void removeNote(snd_seq_event_t *evIn); // Remove input Note from Arpeggio
+    void removeNote(int *noteptr); // Remove input Note from Arpeggio
     void getCurrentNote(snd_seq_tick_time_t currentTick, snd_seq_tick_time_t *tick, int note[], int velocity[], int *length, bool *isNew);
     void getNextNote(snd_seq_tick_time_t currentTick, snd_seq_tick_time_t *tick, int note[], int velocity[], int *length, bool *isNew);
     void initArpTick(snd_seq_tick_time_t currentTick);
@@ -56,7 +62,7 @@ class MidiArp : public QObject  {
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity, int p_grooveLength);
     
   public slots:  
-    void updatePattern(QString);
+    void updatePattern(QString pattern, ArpScreen *);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);

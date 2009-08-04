@@ -5,6 +5,8 @@
 #include <qlist.h>
 #include <qsocketnotifier.h>
 #include <alsa/asoundlib.h>
+#include <qmutex.h>
+#include <qthread.h>
 #include "midiarp.h"
 #include "main.h"
 
@@ -23,13 +25,22 @@ class SeqDriver : public QWidget  {
     int queue_id;
     bool startQueue;
     snd_seq_tick_time_t tick;
-
+QList<int *> *sustainBufferList;
+	
+  protected: 
+    int midiTime;
+    int midiclock_tpb;
+	double m_ratio;
+	int sustain;
+	//QList<snd_seq_event_t *> *sustainBufferList;
+	
   public:
     bool discardUnmatched, runQueueIfArp, runArp;
     int portUnmatched;
     int tempo;
-    int grooveTick, grooveVelocity, grooveLength;        
-    
+    int grooveTick, grooveVelocity, grooveLength ;        
+    bool use_midiclock;
+	
   private:
     void initSeqNotifier();  
 
@@ -41,6 +52,7 @@ class SeqDriver : public QWidget  {
     void initArpQueue();
     snd_seq_tick_time_t get_tick();
     void setQueueStatus(bool run);
+	int getMidiTime();
     
   signals:
     void midiEvent(snd_seq_event_t *ev);
@@ -50,11 +62,15 @@ class SeqDriver : public QWidget  {
     void setDiscardUnmatched(bool on);
     void setPortUnmatched(int id);
     void setQueueTempo(int bpm);
+    void setFineTempo(double finetempo);
     void runQueue(bool);
     void setGrooveTick(int);
     void setGrooveVelocity(int);
     void setGrooveLength(int);
     void sendGroove();
+	void resetMidiTime();
+    void setUseMidiClock(bool on);
+	void updateMIDItpb(int midiTpb);
 };
                               
 #endif
