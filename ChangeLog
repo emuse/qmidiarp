@@ -1,0 +1,5 @@
+2009-08-04 Guido Scholz <guido.scholz@bayernline.de>
+	* package: autoconf/automake environment added.
+
+2009-06-25 Frank Kober <goemusic@yahoo.fr>
+	* package: ported to Qt4
