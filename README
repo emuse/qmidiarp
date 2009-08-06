@@ -68,3 +68,22 @@ QMidiArp was inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
 Especially the random features help a lot to let it sound less "mechanical".
 
  
+Installation
+-------------
+qmidiarp uses autoconf/automake as build system. For short
+
+  ./configure
+  make
+  make install
+
+does the trick. Please refer to the INSTALL file for more information.
+
+
+CVS check out
+-------------
+If you start with a fresh CVS checkout, please first apply
+
+  autoreconf -i
+
+to get a proper configure script. For more instructions about compiling
+and installing this application please refer to the INSTALL file.
