@@ -15,14 +15,13 @@ AC_PROG_LN_S
 AC_PROG_RANLIB
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lQtCore':
-AC_CHECK_LIB([QtCore], [main])
-# FIXME: Replace `main' with a function in `-lQtGui':
-AC_CHECK_LIB([QtGui], [main])
-# FIXME: Replace `main' with a function in `-lasound':
-AC_CHECK_LIB([asound], [main])
-# FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([QtCore], [main], ,
+             [AC_MSG_ERROR(QtCore is required)])
+AC_CHECK_LIB([QtGui], [main], ,
+             [AC_MSG_ERROR(QtGui is required)])
+AC_CHECK_LIB([asound], [snd_pcm_open], ,
+             [AC_MSG_ERROR(ALSA library (asound) is required)])
+AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
 PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
 if test "x$HAVE_QT4" = "xyes"; then
