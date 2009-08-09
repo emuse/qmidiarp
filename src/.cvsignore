@@ -1,0 +1,7 @@
+stamp-h1
+*_moc.cpp
+qmidiarp
+config.h.in
+config.h
+Makefile.in
+.deps
