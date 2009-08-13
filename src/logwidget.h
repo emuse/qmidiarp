@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qslider.h>
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-#include <qtextedit.h>
-#include <qdatetime.h>
+#include <QString>
+#include <QLabel>
+#include <QSlider>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QTextEdit>
+#include <QDateTime>
 #include <alsa/asoundlib.h>
 #include "arpdata.h"
 

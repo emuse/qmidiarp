@@ -1,76 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qslider.h> 
-#include <qboxlayout.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qstringlist.h>
-#include <qgroupbox.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qregexp.h>
+#include <QString>
+#include <QLabel>
+#include <QSlider> 
+#include <QBoxLayout>
+#include <QPushButton>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QStringList>
+#include <QGroupBox>
+#include <QFile>
+#include <QTextStream>
+#include <QRegExp>
 #include "passwidget.h"
 
 
 PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent) {
 QVBoxLayout *passWidgetLayout = new QVBoxLayout;
 
-  QWidget *buttonBox = new QWidget(this);
   QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
-  QLabel *discardLabel = new QLabel("Discard unmatched events ", buttonBox);
-  discardCheck = new QCheckBox(buttonBox);
+  QLabel *discardLabel = new QLabel("Discard unmatched events ", this);
+  discardCheck = new QCheckBox(this);
   discardCheck->setChecked(false);
   QObject::connect(discardCheck, SIGNAL(toggled(bool)), this, SLOT(updateDiscard(bool)));
   buttonBoxLayout->addWidget(discardLabel);
+  buttonBoxLayout->addStretch(1);
   buttonBoxLayout->addWidget(discardCheck);
-  buttonBox->setLayout(buttonBoxLayout);
-  //new QWidget(buttonBox);
-  QWidget *portBox = new QWidget(this);
+
   QHBoxLayout *portBoxLayout = new QHBoxLayout;
-  QLabel *portLabel = new QLabel("Send unmatched events to port ", portBox);
-  portUnmatchedSpin = new QSpinBox(portBox);
+  QLabel *portLabel = new QLabel("Send unmatched events to port ", this);
+  portUnmatchedSpin = new QSpinBox(this);
   portUnmatchedSpin->setRange(0, p_portcount -1);
   QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this, SLOT(updatePortUnmatched(int)));
   portBoxLayout->addWidget(portLabel);
+  portBoxLayout->addStretch(1);
   portBoxLayout->addWidget(portUnmatchedSpin);
-  portBox->setLayout(portBoxLayout);
-  //new QWidget(portBox);
-   
   
-  QWidget *mtpbBox = new QWidget(this);
   QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
-  QLabel *mtpbLabel = new QLabel("MIDI Clock rate(tpb) ", mtpbBox);
-  mtpbSpin = new QSpinBox(mtpbBox);
+  QLabel *mtpbLabel = new QLabel("MIDI Clock rate(tpb) ", this);
+  mtpbSpin = new QSpinBox(this);
   QObject::connect(mtpbSpin, SIGNAL(valueChanged(int)), this, SLOT(updateMIDItpb_pw(int)));
   mtpbSpin->setRange(24,384);
   mtpbSpin->setValue(96);
   mtpbSpin->setSingleStep(24);
   mtpbSpin->setDisabled(true);
   mtpbBoxLayout->addWidget(mtpbLabel);
+  mtpbBoxLayout->addStretch(1);
   mtpbBoxLayout->addWidget(mtpbSpin);
-  mtpbBox->setLayout(mtpbBoxLayout);
   
-  QWidget *mbuttonBox = new QWidget(this);
   QHBoxLayout *mbuttonBoxLayout = new QHBoxLayout;
-  QLabel *mbuttonLabel = new QLabel("Use incoming MIDI Clock", mbuttonBox);
-  mbuttonCheck = new QCheckBox(mbuttonBox);
+  QLabel *mbuttonLabel = new QLabel("Use incoming MIDI Clock", this);
+  mbuttonCheck = new QCheckBox(this);
   QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this, SLOT(updateClockSetting(bool)));
   mbuttonCheck->setChecked(false);
   mbuttonBoxLayout->addWidget(mbuttonLabel);
+  mbuttonBoxLayout->addStretch(1);
   mbuttonBoxLayout->addWidget(mbuttonCheck);
-  mbuttonBox->setLayout(mbuttonBoxLayout);
-   
 
-  //new QWidget(this);
   passWidgetLayout->setMargin(5);
   passWidgetLayout->setSpacing(10);
-  passWidgetLayout->addWidget(buttonBox);
-  passWidgetLayout->addWidget(portBox);
-  passWidgetLayout->addWidget(mbuttonBox);
-  passWidgetLayout->addWidget(mtpbBox);
+  passWidgetLayout->addLayout(buttonBoxLayout);
+  passWidgetLayout->addLayout(portBoxLayout);
+  passWidgetLayout->addLayout(mbuttonBoxLayout);
+  passWidgetLayout->addLayout(mtpbBoxLayout);
   setMaximumHeight(200);
 
 setLayout(passWidgetLayout);

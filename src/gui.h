@@ -4,46 +4,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qslider.h>
-#include <qboxlayout.h>
-#include <qlist.h>
-#include <qmessagebox.h>
-#include <qtabwidget.h>
+#include <QString>
+#include <QLabel>
+#include <QSlider>
+#include <QBoxLayout>
+#include <QList>
+#include <QMessageBox>
+#include <QTabWidget>
+#include <QToolButton>
+#include <QToolBar>
+
 #include "arpwidget.h"
 #include "logwidget.h"
 #include "arpdata.h"
 #include "passwidget.h"
 #include "groovewidget.h"
 #include "arpscreen.h"
+#include "config.h"
 
-const QString aboutText = "QMidiArp 0.0.2\nby Matthias Nagorni\n(c)2004 Novell\n\n"
-						  "Qt4 port by Frank Kober 2009\n\n"
-                          "QMidiArp is licensed under the GPL.\n";
+const QString aboutText = PACKAGE_STRING "\n"
+                          "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)\n"
+			  "(C) 2009 Frank Kober\n"
+			  "(C) 2009 Guido Scholz\n\n"
+                          PACKAGE " is licensed under the GPL.\n";
 
 class Gui : public QWidget
 {
   Q_OBJECT
 
   private:
+ 	QSpinBox *tempoSpin;
+	QToolButton *runButton, *addArpButton, *removeArpButton, *renameArpButton;
+	QToolBar *runBox;
+	QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
+
     QMessageBox *aboutWidget;
     
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
-    QPushButton *removeArpButton;
-    QPushButton *renameArpButton;
-    QPushButton *addArpButton;
 	QTabWidget *tabWidget;
     LogWidget *logWidget;
     ArpData *arpData;
-    QSpinBox *tempoSpin;
-	QCheckBox  *runQueueCheck;
+	ArpWidget *arpWidget;
+
+
 	
   public:
     Gui(int p_portCount, QWidget* parent=0);
     ~Gui();
-  
+
+	
   signals:  
 	void newTempo(int);
     void runQueue(bool);
@@ -62,7 +72,10 @@ class Gui : public QWidget
     void clear();
 	void updateTempo(int tempo);
 	void updateRunQueue(bool on);
-	void midiClockToggle (bool on);
+	void midiClockToggle(bool on);
+	void resetQueue();
+	void checkRcFile();
+
 };
   
 #endif

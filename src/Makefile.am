@@ -1,4 +1,5 @@
 # Makefile.am for qmidiarp
+SUBDIRS = pixmaps
 
 bin_PROGRAMS = qmidiarp
 
@@ -26,6 +27,7 @@ qmidiarp_SOURCES = \
 	passwidget.cpp passwidget.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
+
 
 AM_LDFLAGS = @QT_LIBS@ @DEFS@
 AM_CXXFLAGS = @QT_CXXFLAGS@

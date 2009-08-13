@@ -1,10 +1,10 @@
 #ifndef MIDIARP_H
 #define MIDIARP_H
 
-#include <qobject.h>
+#include <QObject>
 #include <alsa/asoundlib.h>
 #include <main.h>
-#include <qstring.h>
+#include <QString>
 #include "arpscreen.h"
 
 
@@ -38,7 +38,7 @@ class MidiArp : public QObject  {
     int channelOut;
     int notes[2][2][MAXNOTES]; // Buffer Index, Note/Velocity, Data Index
     int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
-    bool hold;
+    bool hold, isMuted;
     int repeatPatternThroughChord;
     double tempo, len, vel;
     int octave, noteIndex[MAXCHORD], patternIndex;
@@ -60,12 +60,14 @@ class MidiArp : public QObject  {
     void initArpTick(snd_seq_tick_time_t currentTick);
     void newRandomValues();
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity, int p_grooveLength);
-    
+  
+ 	
   public slots:  
     void updatePattern(QString pattern, ArpScreen *);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
+    void muteArp(bool);
 
 };
                               

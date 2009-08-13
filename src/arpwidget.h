@@ -4,16 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qslider.h>
-#include <qboxlayout.h>
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-#include <qfile.h>
-#include <qtextedit.h>
-#include <qtextstream.h>
+#include <QString>
+#include <QLabel>
+#include <QSlider>
+#include <QBoxLayout>
+#include <QToolButton>
+#include <QAction>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QFile>
+#include <QPlainTextEdit>
+#include <QTextStream>
 #include "midiarp.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -29,15 +32,21 @@ class ArpWidget : public QWidget
     QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
-    MidiArp *midiArp;
-	QTextEdit *patternText;
-    ArpScreen *arpScreen;
+    QComboBox *patternPresetBox;
+	QCheckBox *muteOut;
+	QGroupBox *randomBox;
+	QToolButton *textEditButton, *randomButton, *textStoreButton, *textRemoveButton;
+    QAction *textEditAction, *randomAction, *textStoreAction, *textRemoveAction;
+
+	MidiArp *midiArp;
+	QPlainTextEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
 	
     
   public:
     QString arpName;
-
+    ArpScreen *arpScreen;
+	QStringList patternPresets, patternNames;
 
   public:
     ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);
@@ -51,9 +60,12 @@ class ArpWidget : public QWidget
     void setChannelOut(int value);
     void setPortOut(int value);
     void setRangeIn(int index, int value);
-    
+	void loadPatternPresets();
+	void writePatternPresets();
+  
   signals:
     void newPattern(QString);  
+    void patternChanged();
     
   public slots:
     void updateChIn(int value);
@@ -63,6 +75,11 @@ class ArpWidget : public QWidget
     void updatePortOut(int value);
     void updateText();
     void updateRepeatPattern(int);
+	void updatePatternPreset(int);
+	void openTextEditWindow(bool on);
+	void storePatternText();
+	void toggleRandomBox(bool on);
+	void removeCurrentPattern();
 };
   
 #endif

@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qwidget.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qtimer.h>
-#include <qsizepolicy.h>
-#include <qsize.h>
-
+#include <QWidget>
+#include <QString>
+#include <QLabel>
+#include <QTimer>
+#include <QSizePolicy>
+#include <QSize>
+#include <alsa/asoundlib.h>
 
 #define ARPSCREEN_MINIMUM_WIDTH   250
 #define ARPSCREEN_MINIMUM_HEIGHT   80
@@ -33,8 +33,9 @@ class ArpScreen : public QWidget
 
   protected:
     virtual void paintEvent(QPaintEvent *);
-    virtual void resizeEvent (QResizeEvent* );            
-    
+    virtual void resizeEvent(QResizeEvent* );
+	double follower_tick;
+   
   public:
     ArpScreen(int p_maxRef, QWidget* parent=0);
     ~ArpScreen();
@@ -43,6 +44,7 @@ class ArpScreen : public QWidget
    
   public slots: 
     void updateArpScreen(QString);
+	void updateArpScreen(snd_seq_tick_time_t tick);
 };
   
 #endif

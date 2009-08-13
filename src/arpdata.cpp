@@ -1,82 +1,84 @@
-#include <qstring.h>
-#include <qfile.h>
-#include <qfiledialog.h>
-#include <qtextstream.h>
-#include <qmessagebox.h>
+#include <QString>
+#include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QMessageBox>
 #include <alsa/asoundlib.h>
+
 #include "seqdriver.h"
 #include "arpdata.h"
 
-ArpData::ArpData(QWidget *parent) : QWidget(parent) {
 
-  seqDriver = new SeqDriver(&midiArpList, this);
-  //midiArpList.setAutoDelete(true);
+ArpData::ArpData(QWidget *parent) : QWidget(parent)
+{
+    seqDriver = new SeqDriver(&midiArpList, this);
+    //midiArpList.setAutoDelete(true);
 }
 
 ArpData::~ArpData(){
 }
 
-void ArpData::addMidiArp(MidiArp *midiArp) {
-
-  midiArpList.append(midiArp);
-  if (seqDriver->runQueueIfArp) {
-//    seqDriver->setQueueStatus(true);
-  }
+void ArpData::addMidiArp(MidiArp *midiArp)
+{
+    midiArpList.append(midiArp);
+    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
+        seqDriver->setQueueStatus(true);
+    }
 }
 
-void ArpData::addArpWidget(ArpWidget *arpWidget) {
-
-  arpWidgetList.append(arpWidget);
+void ArpData::addArpWidget(ArpWidget *arpWidget)
+{
+    arpWidgetList.append(arpWidget);
 }
 
-void ArpData::removeMidiArp(MidiArp *midiArp) {
-
-  if (seqDriver->runArp && (midiArpList.count() < 2)) {
-    seqDriver->setQueueStatus(false);
-  }
-  midiArpList.removeAll(midiArp);
+void ArpData::removeMidiArp(MidiArp *midiArp)
+{
+    if (seqDriver->runArp && (midiArpList.count() < 2)) {
+        seqDriver->setQueueStatus(false);
+    }
+    midiArpList.removeAll(midiArp);
 }
 
-void ArpData::removeArpWidget(ArpWidget *arpWidget) {
-
-  arpWidgetList.removeAll(arpWidget);
+void ArpData::removeArpWidget(ArpWidget *arpWidget)
+{
+    arpWidgetList.removeAll(arpWidget);
 }
 
-int ArpData::midiArpCount() {
-
-  return(midiArpList.count());
+int ArpData::midiArpCount()
+{
+    return(midiArpList.count());
 }
 
-int ArpData::arpWidgetCount() {
-
-  return(arpWidgetList.count());
+int ArpData::arpWidgetCount()
+{
+    return(arpWidgetList.count());
 }
 
-MidiArp *ArpData::midiArp(int index) {
-
-  return(midiArpList.at(index));
+MidiArp *ArpData::midiArp(int index)
+{
+    return(midiArpList.at(index));
 }
 
-ArpWidget *ArpData::arpWidget(int index) {
-
-  return(arpWidgetList.at(index));
+ArpWidget *ArpData::arpWidget(int index)
+{
+    return(arpWidgetList.at(index));
 }
 
-void ArpData::registerPorts(int num) {
-
-  portCount = num;
-  seqDriver->registerPorts(num);
+void ArpData::registerPorts(int num)
+{
+    portCount = num;
+    seqDriver->registerPorts(num);
 }
 
-int ArpData::getPortCount() {
-
-  return(portCount);
+int ArpData::getPortCount()
+{
+    return(portCount);
 }
 
-void ArpData::runQueue(bool on) {
-
-  seqDriver->runQueue(on);
-  if (midiArpList.count()) {
-    seqDriver->setQueueStatus(on);
-  }
+void ArpData::runQueue(bool on)
+{
+    seqDriver->runQueue(on);
+    if (midiArpList.count()) {
+        seqDriver->setQueueStatus(on);
+    }
 }

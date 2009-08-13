@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qslider.h>
-#include <qboxlayout.h>
+#include <QString>
+#include <QLabel>
+#include <QWidget>
+#include <QSlider>
+#include <QBoxLayout>
 
 class Slider : public QWidget
 

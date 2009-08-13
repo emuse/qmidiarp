@@ -1,3 +1,44 @@
+2009-08-13 Frank Kober <goemusic@yahoo.fr>
+	* package: use xpm icons instead, which are part of sources now and
+	EXTRA_DIST
+	
+2009-08-08 Frank Kober <goemusic@yahoo.fr>
+	* package: optimized layout, removed unnecessary QWidgets (gscholz)
+	* package: icons are now installed properly in 
+	PREFIX/share/qmidiarp/pixmaps by using 
+	a gcc ... -D option as defined in icons/Makefile.am
+	* 
+	* arpwidget.cpp, gui.cpp: pattern preset structure is now saved 
+	in a .qmarc file created in the user's home if non-existent.
+	* arpwidget.cpp: added 'removePattern' Toolbutton
+	* arpwidget.cpp, midiarp.cpp: the mute button is now working by 
+	setting all note velocities = 0 when checked
+	* gui.h, main.cpp: use PACKAGE for version reporting
+
+2009-08-02 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.cpp, arpscreen.cpp: a follower line now indicates the 
+	queue position in the arpscreen pattern. The position is derived 
+	from the current tick and the pattern length and unaware of the actual 
+	output notes. Therefore the queue is restarted at every pattern change.
+	* arpwidget.cpp: a pattern preset structure is now in place in form 
+	of a combobox. Pattern presets can be edited and stored to memory 
+	(no diskwrite yet), pattern text is now hidden by default and 
+	appears upon click of the new 'edit pattern' button
+	* arpwidget.cpp: further GUI refactoring: 
+	qtoolbuttons/actions replace the qpushbuttons, added icons,
+	created a toolbar holding the main buttons and tempo spinner,
+	todo: install icons in PREFIX/share/qmidiarp,
+	added a mute checkbox (non-functional yet),
+	random settings are now hidden by default and appear upon press 
+	of a toolbutton, inserted various stretches to eliminate fixed width 
+	labels, shamefully added arpscreen to the pattern groupbox
+
+2009-07-15 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.cpp: added support for damper footswitch to hold and buffer 
+	incoming notes
+	* seqdriver.cpp: queue start is now back working
+	* gui.cpp: queue start button is grayed when midi clock use checked
+		 
 2009-07-12 Frank Kober <goemusic@yahoo.fr>
 	* package: added autotools build environment, moved sources to the
 	src subdirectory, updated COPYING file and added two sentences to

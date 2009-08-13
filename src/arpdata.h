@@ -1,8 +1,8 @@
 #ifndef ARPDATA_H
 #define ARPDATA_H
 
-#include <qwidget.h>
-#include <qlist.h>
+#include <QWidget>
+#include <QList>
 #include <alsa/asoundlib.h>
 #include "seqdriver.h"
 #include "midiarp.h"

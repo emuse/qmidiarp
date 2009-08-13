@@ -4,14 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <qstring.h>
-#include <qlabel.h>
-#include <qslider.h>
-#include <qboxlayout.h>
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-//#include "arpdata.h"
+#include <QString>
+#include <QLabel>
+#include <QSlider>
+#include <QBoxLayout>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QSpinBox>
 
 class PassWidget : public QWidget
 
