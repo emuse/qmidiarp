@@ -1,5 +1,7 @@
 2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
 	* arpwidget.cpp: Keyboard shortcuts added for some widgets.
+	* arpscreen.cpp: Obsolete p.setPen() calls removed, unused C
+	header files removed.
 	
 2009-08-15 Frank Kober <goemusic@yahoo.fr>
 	* arpscreen.cpp: fixed fall through in switch and unfinished "."

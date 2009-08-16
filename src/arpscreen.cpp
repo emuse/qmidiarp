@@ -19,9 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
 #include <QPolygon>
 #include <QWidget>
@@ -54,7 +51,6 @@ ArpScreen::ArpScreen(int p_maxRef, QWidget* parent) : QWidget (parent)
     follower_tick=0;
     //timer = new QTimer(this);
     //timer->start(200);
-
 }
 
 ArpScreen::~ArpScreen()
@@ -69,6 +65,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
+    p.setPen(pen);
 
     int l1, l2;
     int beat = 4;
@@ -131,7 +128,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
             case '.':
                 tempo = 1.0;
-				break;
+                break;
 				
             case 'p':
                 if (!chordMode)
@@ -175,15 +172,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
         }
 
     }
-    //printf("nsteps : %d",(int)nsteps);
-
+    //qWarning("nsteps: %d", (int)nsteps);
 
     //Green Filled Frame
     p.fillRect(0, 0, w, h, QColor(10, 50, 10));
     p.setViewport(0, 0, width(), height());
     p.setWindow(0, 0, width(), height());
     pen.setColor(QColor(20, 160, 20));
-    p.setPen(pen);
     p.drawRect(0, 0, width() - 1, height() - 1);
 
     //Grid 
@@ -204,19 +199,17 @@ void ArpScreen::paintEvent(QPaintEvent*)
         } else {
             pen.setColor(QColor(60, 180, 150));	  
         }
-        p.setPen(pen);
         x = (int)((double)l1 * xscale);
         p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
                 ARPSCREEN_HMARGIN + x, height()-ARPSCREEN_VMARGIN);
 
         if (l1 < nsteps) {
-            //Beat numbers
 
+            //Beat numbers
             p.drawText(ofs + x, ARPSCREEN_VMARGIN, QString::number(l1+1));
 
             // Beat divisor separators
             pen.setColor(QColor(20, 80, 20));
-            p.setPen(pen);
 
             for (l2 = 1; l2 < 1.0/minTempo; l2++) {
                 x1 = x + l2 * xscale * minTempo;
@@ -229,9 +222,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }
 
     //Octave separators and numbers
-
     pen.setColor(QColor(40, 120, 40));
-    p.setPen(pen);
     noctaves = maxOctave - minOctave + 1;
 
     for (l1 = 0; l1 < noctaves + 1; l1++) {
@@ -245,7 +236,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }	 
 
     //Draw arpTicks
-
     curstep= 0.0;
     notelen = xscale/8;
     tempo = 1.0;
@@ -255,18 +245,17 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
 
     //follower_tick position x1
-
     if (nsteps > 0) {
         x1 = (((int)((follower_tick / TICKS_PER_QUARTER) / minTempo))
                 % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
-  } else
+    } else
         x1 = 0;
 
 
     for (l1 = 0; l1 < patternLen; l1++) {
         c = a_pattern.at(l1);
         if (c.isDigit()) {
-            nlines=c.digitValue()+1;
+            nlines = c.digitValue() + 1;
             if (!chordMode) {
                 curstep = curstep + tempo; 
             }
@@ -276,43 +265,56 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     chordMode = true;
                     curstep = curstep + tempo; 
                     break;
+
                 case ')':
                     chordMode = false;
                     break;
+
                 case '>':
                     tempo /= 2.0;
                     break;
+
                 case '<':
                     tempo *= 2.0;
                     break;
+
                 case '.':
                     tempo = 1.0;
-                    break;           
+                    break;
+
                 case 'p':
                     if (!chordMode)
                         curstep = curstep + tempo;
                     break;
+
                 case '+':
                     octave++;
                     break;
+
                 case '-':
                     octave--;
                     break;
+
                 case '=':
                     octave=0;
-                    break;         
+                    break;
+
                 case '/':
                     vel += 0.2;
                     break;
+
                 case '\\':
                     vel -= 0.2;
-                    break; 
+                    break;
+
                 case 'd':
                     notelen *= 2;
                     break;
+
                 case 'h':
                     notelen /= 2;
                     break;
+
                 default:
                     ;
             }   
@@ -326,7 +328,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
                 if (x1 == x) {
                     pen.setColor(QColor(140, 240, 140));
-                    p.setPen(pen);
                     p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
                             ARPSCREEN_HMARGIN + x, height());
                     p.fillRect(ARPSCREEN_HMARGIN + x, 
@@ -372,5 +373,4 @@ QSizePolicy ArpScreen::sizePolicy() const
     return QSizePolicy(QSizePolicy::MinimumExpanding,
             QSizePolicy::MinimumExpanding);
 }
-
 
