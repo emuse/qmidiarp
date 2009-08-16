@@ -1,9 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider>
@@ -33,49 +30,45 @@ class Gui : public QWidget
   Q_OBJECT
 
   private:
- 	QSpinBox *tempoSpin;
-	QToolButton *runButton, *addArpButton, *removeArpButton, *renameArpButton;
-	QToolBar *runBox;
-	QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
-
-    QMessageBox *aboutWidget;
-    
-    PassWidget *passWidget;
-    GrooveWidget *grooveWidget;
-	QTabWidget *tabWidget;
-    LogWidget *logWidget;
-    ArpData *arpData;
-	ArpWidget *arpWidget;
+      QSpinBox *tempoSpin;
+      QToolButton *runButton, *addArpButton, *removeArpButton, *renameArpButton;
+      QToolBar *runBox;
+      QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
+      QMessageBox *aboutWidget;
+      PassWidget *passWidget;
+      GrooveWidget *grooveWidget;
+      QTabWidget *tabWidget;
+      LogWidget *logWidget;
+      ArpData *arpData;
+      ArpWidget *arpWidget;
 
 
-	
   public:
-    Gui(int p_portCount, QWidget* parent=0);
-    ~Gui();
+      Gui(int p_portCount, QWidget* parent=0);
+      ~Gui();
 
-	
+
   signals:  
-	void newTempo(int);
-    void runQueue(bool);
+      void newTempo(int);
+      void runQueue(bool);
 
-	
+
   public slots: 
-    void displayAbout();
-    void addArp();
-    void addArp(QString qs);
-    void renameArp();
-    void removeArp();
-    void removeArp(int index);
-    void save();
-    void load();
-    void load(QString name);
-    void clear();
-	void updateTempo(int tempo);
-	void updateRunQueue(bool on);
-	void midiClockToggle(bool on);
-	void resetQueue();
-	void checkRcFile();
-
+      void displayAbout();
+      void addArp();
+      void addArp(QString qs);
+      void renameArp();
+      void removeArp();
+      void removeArp(int index);
+      void save();
+      void load();
+      void load(QString name);
+      void clear();
+      void updateTempo(int tempo);
+      void updateRunQueue(bool on);
+      void midiClockToggle(bool on);
+      void resetQueue();
+      void checkRcFile();
 };
   
 #endif

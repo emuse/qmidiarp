@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider> 
@@ -13,7 +11,6 @@
 #include <QGroupBox>
 #include <QFile>
 #include <QTextStream>
-#include <QRegExp>
 #include <QPlainTextEdit>
 #include <QInputDialog>
 #include <QDir>
@@ -23,6 +20,7 @@
 #include "arpwidget.h"
 #include "slider.h"
 #include "arpscreen.h"
+#include "config.h"
 
 #include "pixmaps/editmodeon.xpm"
 #include "pixmaps/patternremove.xpm"
@@ -36,9 +34,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
 
     // Input group box on left side
-    QGroupBox *inBox = new QGroupBox("Input", this);
+    QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
-    QLabel *chInLabel = new QLabel("&Chan", inBox);
+    QLabel *chInLabel = new QLabel(tr("&Chan"), inBox);
     chIn = new QSpinBox(inBox);
     chIn->setRange(0,15);
     chInLabel->setBuddy(chIn);
@@ -50,12 +48,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinInBoxLayout->setMargin(1);
     spinInBoxLayout->setSpacing(1);
 
-    QLabel *indexInLabel = new QLabel("&Note", inBox);
+    QLabel *indexInLabel = new QLabel(tr("&Note"), inBox);
     indexIn[0] = new QSpinBox(inBox);
     indexIn[1] = new QSpinBox(inBox);
     indexInLabel->setBuddy(indexIn[0]);
-    indexIn[0]->setRange(0,127);
-    indexIn[1]->setRange(0,127);
+    indexIn[0]->setRange(0, 127);
+    indexIn[1]->setRange(0, 127);
     indexIn[1]->setValue(127);
     connect(indexIn[0], SIGNAL(valueChanged(int)), this,
             SLOT(updateIndexIn(int)));
@@ -69,12 +67,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinIndexBoxLayout->setMargin(1);
     spinIndexBoxLayout->setSpacing(1);
 
-    QLabel *rangeInLabel = new QLabel("&Vel", inBox);
+    QLabel *rangeInLabel = new QLabel(tr("&Vel"), inBox);
     rangeIn[0] = new QSpinBox(inBox);
     rangeIn[1] = new QSpinBox(inBox);
     rangeInLabel->setBuddy(rangeIn[0]);
-    rangeIn[0]->setRange(0,127);
-    rangeIn[1]->setRange(0,127);
+    rangeIn[0]->setRange(0, 127);
+    rangeIn[1]->setRange(0, 127);
     rangeIn[1]->setValue(127);
     connect(rangeIn[0], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
@@ -99,9 +97,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
 
     // Output group box on right side
-    QGroupBox *portBox = new QGroupBox("Output", this);
+    QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *channelLabel = new QLabel("C&han", portBox);
+    QLabel *channelLabel = new QLabel(tr("C&han"), portBox);
     channelOut = new QSpinBox(portBox);
     channelLabel->setBuddy(channelOut);
     channelOut->setRange(0, 15);
@@ -114,7 +112,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     portChBoxLayout->setMargin(1);
     portChBoxLayout->setSpacing(1);
 
-    QLabel *portLabel = new QLabel("&Port", portBox);
+    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QSpinBox(portBox);
     portLabel->setBuddy(portOut);
     portOut->setRange(0, portCount - 1);
@@ -148,11 +146,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     inOutBoxLayout->setSpacing(1);
 
     // group box for pattern setup
-    QGroupBox *patternBox = new QGroupBox("Pattern", this);
+    QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
 
     textEditButton = new QToolButton(this);	
-    textEditAction = new QAction(QIcon(editmodeon_xpm), "&Edit Pattern", this);
+    textEditAction = new QAction(QIcon(editmodeon_xpm),
+            tr("&Edit Pattern"), this);
     connect(textEditAction, SIGNAL(toggled(bool)), this,
             SLOT(openTextEditWindow(bool)));
     textEditAction->setCheckable(true);
@@ -160,7 +159,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     textRemoveButton = new QToolButton(this);	
     textRemoveAction = new QAction(QIcon(patternremove_xpm),
-            "&Remove Pattern", this);
+            tr("&Remove Pattern"), this);
     connect(textRemoveAction, SIGNAL(triggered()), this,
             SLOT(removeCurrentPattern()));
     textRemoveButton->setDefaultAction(textRemoveAction);
@@ -168,7 +167,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     textStoreButton = new QToolButton(this);
     textStoreAction = new QAction(QIcon(patternstore_xpm),
-            "&Store Pattern", this);
+            tr("&Store Pattern"), this);
     connect(textStoreAction, SIGNAL(triggered()), this,
             SLOT(storePatternText()));
     textStoreButton->setHidden(true);
@@ -178,7 +177,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     loadPatternPresets();
     patternPresetBox->insertItems(0, patternNames);
     patternPresetBox->setCurrentIndex(0);
-    patternPresetBox->setToolTip("PatternPreset");
+    patternPresetBox->setToolTip(tr("Pattern preset"));
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(updatePatternPreset(int)));
@@ -187,7 +186,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     QStringList repeatPatternNames; 
     repeatPatternNames << "Static" << "Up" << "Down";
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
-    repeatPatternThroughChord->setToolTip("Arp through chord");
+    repeatPatternThroughChord->setToolTip(tr("Arp through chord"));
     connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
@@ -210,11 +209,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternText->setHidden(true);
     patternText->setMaximumHeight(50);
     patternText->setToolTip(
-            "( ) chord Mode on/off\n"
+            tr("( ) chord Mode on/off\n"
             " + - octave up/down\n"
             " < . > tempo up/down\n"
             " d h note length up/down\n"
-            " / velocity up/down");
+            " / velocity up/down"));
 
 
     QWidget *arpScreenBox = new QWidget(patternBox);
@@ -235,19 +234,19 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     randomButton = new QToolButton(this);
     randomAction = new QAction(QIcon(randomtoggle_xpm),
-            "&Random Settings", this);
+            tr("&Random settings"), this);
     connect(randomAction, SIGNAL(toggled(bool)), this,
             SLOT(toggleRandomBox(bool)));
     randomAction->setCheckable(true);
     randomButton->setDefaultAction(randomAction);
 
     // group box for random settings
-    randomBox = new QGroupBox("Random", this);
+    randomBox = new QGroupBox(tr("Random"), this);
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
     randomBoxLayout->setMargin(5);
     randomBoxLayout->setSpacing(1);
 
-    QLabel *tickLabel = new QLabel("&Shift", randomBox);
+    QLabel *tickLabel = new QLabel(tr("&Shift"), randomBox);
     randomTick = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
     tickLabel->setBuddy(randomTick);
     connect(randomTick, SIGNAL(valueChanged(int)), midiArp,
@@ -259,7 +258,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     tickBoxLayout->setMargin(1);
     tickBoxLayout->setSpacing(1);
 
-    QLabel *velocityLabel = new QLabel("&Velocity", randomBox);
+    QLabel *velocityLabel = new QLabel(tr("Vel&ocity"), randomBox);
     randomVelocity = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
     velocityLabel->setBuddy(randomVelocity);
     connect(randomVelocity, SIGNAL(valueChanged(int)), midiArp,
@@ -271,7 +270,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     velocityBoxLayout->setMargin(1);
     velocityBoxLayout->setSpacing(1);
 
-    QLabel *lengthLabel = new QLabel("&Length", randomBox);
+    QLabel *lengthLabel = new QLabel(tr("&Length"), randomBox);
     randomLength = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
     lengthLabel->setBuddy(randomLength);
     connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
@@ -343,56 +342,58 @@ void ArpWidget::updateChannelOut(int value) {
 
 void ArpWidget::writeArp(QTextStream& arpText) {
 
-    arpText << midiArp->chIn << " " << midiArp->repeatPatternThroughChord << "\n";
-    arpText << midiArp->indexIn[0] << " " << midiArp->indexIn[1] << "\n";
-    arpText << midiArp->rangeIn[0] << " " << midiArp->rangeIn[1] << "\n";
-    arpText << midiArp->channelOut << " " << midiArp->portOut << "\n";
-    arpText << midiArp->randomTickAmp << " " << midiArp->randomVelocityAmp << " "  << midiArp->randomLengthAmp << "\n";
-    arpText << midiArp->pattern << "\n";
+    arpText << midiArp->chIn << ' '
+        << midiArp->repeatPatternThroughChord << '\n';
+    arpText << midiArp->indexIn[0] << ' ' << midiArp->indexIn[1] << '\n';
+    arpText << midiArp->rangeIn[0] << ' ' << midiArp->rangeIn[1] << '\n';
+    arpText << midiArp->channelOut << ' ' << midiArp->portOut << '\n';
+    arpText << midiArp->randomTickAmp << ' '
+        << midiArp->randomVelocityAmp << ' '
+        << midiArp->randomLengthAmp << '\n';
+    arpText << midiArp->pattern << '\n';
     arpText << "EOP\n"; // End Of Pattern
 }                                      
 
 void ArpWidget::readArp(QTextStream& arpText)
 {
     QString qs, qs2;
-    QRegExp sep(" ");
-    QString stxt = "EOP";
+
     qs = arpText.readLine();
-    qs2 = qs.section(sep, 0, 0); 
+    qs2 = qs.section(' ', 0, 0); 
     chIn->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1);
+    qs2 = qs.section(' ', 1, 1);
     repeatPatternThroughChord->setCurrentIndex(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(sep, 0, 0); 
+    qs2 = qs.section(' ', 0, 0); 
     indexIn[0]->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1); 
+    qs2 = qs.section(' ', 1, 1); 
     indexIn[1]->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(sep, 0, 0); 
+    qs2 = qs.section(' ', 0, 0); 
     rangeIn[0]->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1); 
+    qs2 = qs.section(' ', 1, 1); 
     rangeIn[1]->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(sep, 0, 0); 
+    qs2 = qs.section(' ', 0, 0); 
     channelOut->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1); 
+    qs2 = qs.section(' ', 1, 1); 
     portOut->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(sep, 0, 0); 
+    qs2 = qs.section(' ', 0, 0); 
     randomTick->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1); 
+    qs2 = qs.section(' ', 1, 1); 
     randomVelocity->setValue(qs2.toInt());
-    qs2 = qs.section(sep, 2, 2); 
+    qs2 = qs.section(' ', 2, 2); 
     randomLength->setValue(qs2.toInt());
 
     qs = arpText.readLine();
     while (!arpText.atEnd()) {
         qs2 = arpText.readLine();
 
-        if (qs2.contains(qPrintable(stxt), Qt::CaseSensitivity(TRUE))) {
+        if (qs2.contains("EOP", Qt::CaseSensitivity(TRUE))) {
             break;
         }
-        qs += "\n" + qs2;
+        qs += '\n' + qs2;
     }
     patternText->setPlainText(qs);                    
 }                                      
@@ -449,7 +450,6 @@ void ArpWidget::updatePatternPreset(int val)
 
 void ArpWidget::writePatternPresets()
 {
-    QString qs2;
     int l1;
 
     QDir qmahome = QDir(QDir::homePath());
@@ -457,8 +457,8 @@ void ArpWidget::writePatternPresets()
     QFile f(qmarcpath);
 
     if (!f.open(QIODevice::WriteOnly)) {
-        qs2.sprintf("Could not write to qma rc file");
-        QMessageBox::information(this, "QMidiArp", qs2);
+        QMessageBox::information(this, PACKAGE,
+                tr("Could not write to resource file"));
         return;
     }
     QTextStream writeText(&f);
@@ -478,8 +478,8 @@ void ArpWidget::loadPatternPresets()
     QFile f(qmarcpath);
 
     if (!f.open(QIODevice::ReadOnly)) {
-        qs2.sprintf("Could not read from qma rc file");
-        QMessageBox::information(this, "QMidiArp", qs2);
+        QMessageBox::information(this, PACKAGE,
+                tr("Could not read from resource file"));
         return;
     }	
     QTextStream loadText(&f);
@@ -511,13 +511,11 @@ void ArpWidget::toggleRandomBox(bool on)
 
 void ArpWidget::storePatternText()
 {
-    QString qs, qs2;
+    QString qs;
     bool ok;
 
-    qs2.sprintf("Arp Pattern");
-
-    qs = QInputDialog::getText(this, "QMidiArp: Store Pattern", "New Pattern",
-            QLineEdit::Normal, qs2, &ok);
+    qs = QInputDialog::getText(this, tr("%1: Store pattern").arg(PACKAGE),
+            tr("New pattern"), QLineEdit::Normal, tr("Arp pattern"), &ok);
 
     if (ok && !qs.isEmpty()) {
         patternNames << qPrintable(qs);
@@ -529,16 +527,18 @@ void ArpWidget::storePatternText()
     }
 }
 
-void ArpWidget::removeCurrentPattern() {
-    int currentIndex = patternPresetBox->currentIndex();
+void ArpWidget::removeCurrentPattern()
+{
     QString qs;
 
+    int currentIndex = patternPresetBox->currentIndex();
     if (currentIndex < 1) {
         return;
     } 
 
-    qs.sprintf("Remove %s ?", qPrintable(patternPresetBox->currentText()));
-    if (QMessageBox::question(0, "QMidiArp", qs, QMessageBox::Yes,
+    qs = tr("Remove \"%1\"?").arg(patternPresetBox->currentText());
+
+    if (QMessageBox::question(0, PACKAGE, qs, QMessageBox::Yes,
                 QMessageBox::No | QMessageBox::Default
                 | QMessageBox::Escape, QMessageBox::NoButton)
             == QMessageBox::No) {

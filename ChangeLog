@@ -1,6 +1,6 @@
 2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
-	* arpwidget.cpp: Keyboard shortcuts added for some widgets.
-	Fixed layout bug.
+	* arpwidget.cpp: Keyboard shortcuts added for some widgets,
+	fixed layout bug, texts made translatable
 	* arpscreen.cpp: Obsolete pen.setColor() calls removed, unused C
 	header files removed.
 	* groovewidget.cpp, logwidget.cpp, passwidget.cpp: Keyboard
