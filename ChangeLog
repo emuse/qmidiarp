@@ -1,3 +1,6 @@
+2009-08-16 Frank Kober <goemusic@yahoo.fr>
+	* qmidiarp_fr.ts: French translation added
+
 2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
 	* arpwidget.cpp: Keyboard shortcuts added for some widgets,
 	fixed layout bug, texts made translatable

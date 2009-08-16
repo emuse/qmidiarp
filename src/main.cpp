@@ -64,18 +64,12 @@ int main(int argc, char *argv[])
     if (qtTr.load(QString("qt_") + loc.name(),
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         app.installTranslator(&qtTr);
-    /*else
-        qWarning("No Qt translation for locale '%s' found.",
-                loc.name().toUtf8().constData());*/
 
-    // translator for ams strings       
-    QTranslator amsTr;
+    // translator for qmidiarp strings       
+    QTranslator qmidiarpTr;
 
-    if (amsTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
-        app.installTranslator(&amsTr);
-    /*else
-        qWarning("No " AMS_LONGNAME " translation for locale '%s' found.",
-                loc.name().toUtf8().constData());*/
+    if (qmidiarpTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
+        app.installTranslator(&qmidiarpTr);
 
 
     QMainWindow *top = new QMainWindow();
