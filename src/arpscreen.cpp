@@ -68,6 +68,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     QPolygon points(7);
     QPen pen;
     pen.setWidth(1);
+    p.setFont(QFont("Helvetica", 8));
 
     int l1, l2;
     int beat = 4;
@@ -129,10 +130,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 break;
 
             case '.':
-                if (!chordMode)
-                    nsteps = nsteps + tempo;
                 tempo = 1.0;
-                // CHECK: fall through?
+				break;
+				
             case 'p':
                 if (!chordMode)
                     nsteps = nsteps + tempo;
@@ -212,7 +212,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
         if (l1 < nsteps) {
             //Beat numbers
 
-            p.setFont(QFont("Helvetica", 8));
             p.drawText(ofs + x, ARPSCREEN_VMARGIN, QString::number(l1+1));
 
             // Beat divisor separators
@@ -260,7 +259,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     if (nsteps > 0) {
         x1 = (((int)((follower_tick / TICKS_PER_QUARTER) / minTempo))
                 % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
-    } else
+  } else
         x1 = 0;
 
 
@@ -287,7 +286,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     tempo *= 2.0;
                     break;
                 case '.':
-                    curstep = curstep + tempo;
                     tempo = 1.0;
                     break;           
                 case 'p':
@@ -319,10 +317,10 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     ;
             }   
         }
-        if (c.isDigit()) {
-            x = (int)((curstep - tempo) * xscale);
+		
+      if (c.isDigit()) {
             octYoffset = (octave - minOctave) * (patternMaxIndex+1);
-
+			x = (int)((curstep - tempo) * xscale);
             if (nlines > 0) {
                 ypos = nlines-1;
 
@@ -375,8 +373,4 @@ QSizePolicy ArpScreen::sizePolicy() const
             QSizePolicy::MinimumExpanding);
 }
 
-void ArpScreen::resizeEvent(QResizeEvent *ev)
-{
-    QWidget::resizeEvent(ev);
-}
 

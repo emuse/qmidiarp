@@ -108,7 +108,6 @@ void SeqDriver::procEvents(int)
             if (use_midiclock && (midiTime > 0)) 
                 m_ratio = (double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime;
             else m_ratio = 1.0;
-            emit nextStep(tick-firstArpTick);
             /*	  printf("First Tick %d   ",firstArpTick);
                   printf("tick %d   ",tick);
                   printf("midiTime %d   ",midiTime);
@@ -117,6 +116,7 @@ void SeqDriver::procEvents(int)
             startQueue = false;
             nextEchoTick = 0;
             foundEcho = false;
+            emit nextStep((tick-firstArpTick)/m_ratio);
 
             for (l1 = 0; l1 < midiArpList->count(); l1++) {
                 midiArpList->at(l1)->newRandomValues();
@@ -379,12 +379,8 @@ void SeqDriver::resetMidiTime()
 
 void SeqDriver::setUseMidiClock(bool on)
 {
-    setQueueStatus(false);
+    runQueue(false);
     use_midiclock = on;
-    if (!on) { 
-        //setQueueTempo(100);
-        setQueueStatus(true);
-    }
 }
 
 void SeqDriver::updateMIDItpb(int midiTpb)

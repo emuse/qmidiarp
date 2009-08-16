@@ -18,7 +18,7 @@ class PassWidget : public QWidget
   Q_OBJECT
 
   private:
-    QCheckBox *discardCheck, *mbuttonCheck;
+    QCheckBox *discardCheck;
     QSpinBox *portUnmatchedSpin;
  
 	QSpinBox *mtpbSpin;
@@ -28,6 +28,7 @@ class PassWidget : public QWidget
     ~PassWidget();
     void setDiscard(bool on);
     void setPortUnmatched(int id);
+	QCheckBox *mbuttonCheck;
     
   signals:
     void discardToggled(bool);  

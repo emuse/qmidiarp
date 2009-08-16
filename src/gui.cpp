@@ -97,7 +97,10 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
     runButton->setDefaultAction(runAction);   
     runAction->setCheckable(true);
-    runAction->setChecked(true);
+    runAction->setChecked(false);
+	runAction->setDisabled(true);
+	updateRunQueue(false);
+	
 
     tempoSpin = new QSpinBox(runBox);
     tempoSpin->setRange(10, 400);
@@ -163,6 +166,8 @@ void Gui::addArp(QString qs)
     arpWidget->arpName = qs;
     removeArpButton->setEnabled(true);    
     renameArpButton->setEnabled(true);
+	passWidget->mbuttonCheck->setEnabled(true);
+	runAction->setEnabled(true);
 }
 
 void Gui::renameArp() {
@@ -205,6 +210,10 @@ void Gui::removeArp()
     if (arpData->midiArpCount() < 1) {  
         removeArpButton->setDisabled(true);
         renameArpButton->setDisabled(true);
+		runAction->setDisabled(true);
+		runAction->setChecked(false);
+		passWidget->mbuttonCheck->setDisabled(true);
+		passWidget->mbuttonCheck->setChecked(false);
     }
 }
 
@@ -219,6 +228,11 @@ void Gui::removeArp(int index)
     if (arpData->midiArpCount() < 1) {
         removeArpButton->setDisabled(true);
         renameArpButton->setDisabled(true);
+		runAction->setDisabled(true);
+		runAction->setChecked(false);
+		passWidget->mbuttonCheck->setDisabled(true);
+		passWidget->mbuttonCheck->setChecked(false);
+
     }                      
 }
 
@@ -321,9 +335,10 @@ void Gui::resetQueue()
 
 void Gui::midiClockToggle(bool on)
 {
+    runAction->setChecked(on);
     arpData->seqDriver->setUseMidiClock(on);
     runAction->setDisabled(on);
-    runAction->setChecked(true);
+
 }
 
 void Gui::checkRcFile()

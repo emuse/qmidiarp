@@ -53,6 +53,7 @@ QVBoxLayout *passWidgetLayout = new QVBoxLayout;
   mbuttonCheck = new QCheckBox(this);
   QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this, SLOT(updateClockSetting(bool)));
   mbuttonCheck->setChecked(false);
+  mbuttonCheck->setDisabled(true);
   mbuttonBoxLayout->addWidget(mbuttonLabel);
   mbuttonBoxLayout->addStretch(1);
   mbuttonBoxLayout->addWidget(mbuttonCheck);

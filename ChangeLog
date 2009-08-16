@@ -1,3 +1,18 @@
+2009-08-15 Frank Kober <goemusic@yahoo.fr>
+	* arpscreen.cpp: fixed fall through in switch and unfinished "."
+	interpretation, removed resizeEvent(), set font at beginning of
+	the drawEvent routine
+	* gui.cpp, seqdriver.cpp: fixed queue start issue when no arp is
+	present, the queue is now off on program startup and has to be
+	enabled manually after addArp or load
+	* passwidget.cpp: fixed yet another logic problem with enabling
+	MIDI clock
+	* seqdriver.cpp: take into account MIDI clock for ArpScreen
+	follower line
+	
+2009-08-13 Guido Scholz <guido.scholz@bayernline.de>
+	* package: cleanups, use .qmidiarprc instead of .qmarc
+	
 2009-08-13 Frank Kober <goemusic@yahoo.fr>
 	* package: use xpm icons instead, which are part of sources now and
 	EXTRA_DIST
