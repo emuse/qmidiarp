@@ -1,9 +1,6 @@
 #ifndef LOGWIDGET_H
 #define LOGWIDGET_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider>
@@ -13,6 +10,7 @@
 #include <QTextEdit>
 #include <QDateTime>
 #include <alsa/asoundlib.h>
+
 #include "arpdata.h"
 
 
@@ -26,7 +24,7 @@ class LogWidget : public QWidget
     QCheckBox *enableLog;
     QCheckBox *logMidiClock;
     bool logActive;
-  	bool logMidiActive;
+    bool logMidiActive;
 
 
   public:
@@ -37,9 +35,9 @@ class LogWidget : public QWidget
 	 
   public slots:
     void logMidiToggle(bool on);
-	void enableLogToggle(bool on);
+    void enableLogToggle(bool on);
     void appendEvent(snd_seq_event_t *ev);
-	void appendText(QString);
+    void appendText(const QString&);
     void clear();
 };
   

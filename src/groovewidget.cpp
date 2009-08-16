@@ -7,9 +7,6 @@
 #include <QSpinBox>
 #include <QStringList>
 #include <QGroupBox>
-#include <QFile>
-#include <QTextStream>
-#include <QRegExp>
 
 #include "groovewidget.h"
 #include "slider.h"
@@ -18,10 +15,13 @@
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
+    GrooveWidgetLayout->setMargin(6);
+    GrooveWidgetLayout->setSpacing(8);
 
     QHBoxLayout *tickBoxLayout = new QHBoxLayout;
-    QLabel *tickLabel = new QLabel("Groove Shift", this);
+    QLabel *tickLabel = new QLabel(tr("Groove &shift"), this);
     grooveTick = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
+    tickLabel->setBuddy(grooveTick);
     connect(grooveTick, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveTick(int)));
 
@@ -30,8 +30,9 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     tickBoxLayout->addWidget(grooveTick);
 
     QHBoxLayout *velocityBoxLayout = new QHBoxLayout;
-    QLabel *velocityLabel = new QLabel("Groove Velocity", this);
+    QLabel *velocityLabel = new QLabel(tr("Groove &velocity"), this);
     grooveVelocity = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
+    velocityLabel->setBuddy(grooveVelocity);
     connect(grooveVelocity, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveVelocity(int)));
 
@@ -40,8 +41,9 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     velocityBoxLayout->addWidget(grooveVelocity);
 
     QHBoxLayout *lengthBoxLayout = new QHBoxLayout;
-    QLabel *lengthLabel = new QLabel("Groove Length", this);
+    QLabel *lengthLabel = new QLabel(tr("Groove &length"), this);
     grooveLength = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
+    lengthLabel->setBuddy(grooveLength);
     connect(grooveLength, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveLength(int)));
 
@@ -49,12 +51,11 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     lengthBoxLayout->addStretch(1);
     lengthBoxLayout->addWidget(grooveLength);
 
-    GrooveWidgetLayout->setMargin(1);
-    GrooveWidgetLayout->setSpacing(1);
     GrooveWidgetLayout->addLayout(tickBoxLayout);
     GrooveWidgetLayout->addLayout(velocityBoxLayout);
     GrooveWidgetLayout->addLayout(lengthBoxLayout);
-    setMaximumHeight(200);
+    GrooveWidgetLayout->addStretch();
+
     setLayout(GrooveWidgetLayout);
 }
 

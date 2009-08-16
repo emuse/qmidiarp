@@ -3,6 +3,8 @@
 	Fixed layout bug.
 	* arpscreen.cpp: Obsolete p.setPen() calls removed, unused C
 	header files removed.
+	* groovewidget.cpp, logwidget.cpp, passwidget.cpp: Keyboard
+	shortcuts added, layout improved, label text made translatable
 	
 2009-08-15 Frank Kober <goemusic@yahoo.fr>
 	* arpscreen.cpp: fixed fall through in switch and unfinished "."

@@ -7,8 +7,6 @@
 #include <QStringList>
 #include <QBoxLayout>
 #include <QGroupBox>
-#include <QFile>
-#include <QRegExp>
 #include <QDateTime>
 #include <alsa/asoundlib.h>
 
@@ -21,45 +19,40 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
     logActive = true;
     logMidiActive = false;
 
-    QVBoxLayout *logWidgetLayout = new QVBoxLayout;
     logText = new QTextEdit(this);
     logText->setTextColor(QColor(0,0,255));
-    logText->setCurrentFont(QFont("Courier", 7));
+    logText->setCurrentFont(QFont("Courier", 8));
     
-    QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
-    buttonBoxLayout->setMargin(2);
-    buttonBoxLayout->setSpacing(4);
-
-    QLabel *enableLabel = new QLabel("Enable Log", this);
     QCheckBox *enableLog = new QCheckBox(this);
+    enableLog->setText(tr("&Enable Log"));
     QObject::connect(enableLog, SIGNAL(toggled(bool)), this,
             SLOT(enableLogToggle(bool)));
     enableLog->setChecked(logActive);
     
-    QLabel *MidiClockLabel = new QLabel("Log MIDI Clock", this);
     QCheckBox *logMidiClock = new QCheckBox(this);
+    logMidiClock->setText(tr("Log &MIDI Clock"));
     QObject::connect(logMidiClock, SIGNAL(toggled(bool)), this,
             SLOT(logMidiToggle(bool)));
     logMidiClock->setChecked(logMidiActive);
     
-    QPushButton *clearButton = new QPushButton("Clear", this);
+    QPushButton *clearButton = new QPushButton(tr("&Clear"), this);
     QObject::connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
 
-
-    buttonBoxLayout->addWidget(enableLabel);
+    QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
     buttonBoxLayout->addWidget(enableLog);
-    buttonBoxLayout->addWidget(MidiClockLabel);
     buttonBoxLayout->addWidget(logMidiClock);
+    buttonBoxLayout->addStretch(10);
     buttonBoxLayout->addWidget(clearButton);
 
+    QVBoxLayout *logWidgetLayout = new QVBoxLayout;
     logWidgetLayout->addWidget(logText);
     logWidgetLayout->addLayout(buttonBoxLayout);
-    
+
     setLayout(logWidgetLayout);
 }
 
-LogWidget::~LogWidget() {
-
+LogWidget::~LogWidget()
+{
 }
 
 void LogWidget::appendEvent(snd_seq_event_t *ev) {
@@ -71,7 +64,8 @@ void LogWidget::appendEvent(snd_seq_event_t *ev) {
     }
     switch (ev->type) {
         case SND_SEQ_EVENT_NOTEON:
-            qs.sprintf("Ch %2d, Note On %3d, Vel %3d", ev->data.control.channel, 
+            qs.sprintf("Ch %2d, Note On %3d, Vel %3d",
+                    ev->data.control.channel, 
                     ev->data.note.note, ev->data.note.velocity);
             break;
         case SND_SEQ_EVENT_NOTEOFF:
@@ -119,7 +113,7 @@ void LogWidget::appendEvent(snd_seq_event_t *ev) {
     if ((ev->type != SND_SEQ_EVENT_CLOCK) || logMidiActive)
         logText->append(QTime::currentTime().toString(
                     "hh:mm:ss.zzz") + "  " + qs);
-    logText->setTextColor(QColor(0,0,255));
+    logText->setTextColor(QColor(0, 0, 255));
 }
 
 void LogWidget::enableLogToggle(bool on)
@@ -137,7 +131,7 @@ void LogWidget::clear()
     logText->clear();
 }
 
-void LogWidget::appendText(QString qs)
+void LogWidget::appendText(const QString& qs)
 {
     logText->append(qs);
 }
