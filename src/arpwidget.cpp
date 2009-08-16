@@ -31,17 +31,16 @@
 
 
 ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
-: QWidget(parent)
+: QWidget(parent), midiArp(p_midiArp)
 {
     QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
     QWidget *inOutBox = new QWidget;
     QGroupBox *inBox = new QGroupBox("Input", this);
-    midiArp = p_midiArp;
 
-
-    QLabel *chInLabel = new QLabel("Chan", inBox);
+    QLabel *chInLabel = new QLabel("&Chan", inBox);
     chIn = new QSpinBox(inBox);
     chIn->setRange(0,15);
+    chInLabel->setBuddy(chIn);
     connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
     QHBoxLayout *spinInBoxLayout = new QHBoxLayout;
     spinInBoxLayout->addWidget(chInLabel);
@@ -50,14 +49,17 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinInBoxLayout->setMargin(1);
     spinInBoxLayout->setSpacing(1);
 
-    QLabel *indexInLabel = new QLabel("Note", inBox);
+    QLabel *indexInLabel = new QLabel("&Note", inBox);
     indexIn[0] = new QSpinBox(inBox);
     indexIn[1] = new QSpinBox(inBox);
+    indexInLabel->setBuddy(indexIn[0]);
     indexIn[0]->setRange(0,127);
     indexIn[1]->setRange(0,127);
     indexIn[1]->setValue(127);
-    connect(indexIn[0], SIGNAL(valueChanged(int)), this, SLOT(updateIndexIn(int)));
-    connect(indexIn[1], SIGNAL(valueChanged(int)), this, SLOT(updateIndexIn(int)));
+    connect(indexIn[0], SIGNAL(valueChanged(int)), this,
+            SLOT(updateIndexIn(int)));
+    connect(indexIn[1], SIGNAL(valueChanged(int)), this,
+            SLOT(updateIndexIn(int)));
     QHBoxLayout *spinIndexBoxLayout = new QHBoxLayout; 
     spinIndexBoxLayout->addWidget(indexInLabel);
     spinIndexBoxLayout->addStretch(1);
@@ -66,14 +68,17 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinIndexBoxLayout->setMargin(1);
     spinIndexBoxLayout->setSpacing(1);
 
-    QLabel *rangeInLabel = new QLabel("Vel", inBox);
+    QLabel *rangeInLabel = new QLabel("&Vel", inBox);
     rangeIn[0] = new QSpinBox(inBox);
     rangeIn[1] = new QSpinBox(inBox);
+    rangeInLabel->setBuddy(rangeIn[0]);
     rangeIn[0]->setRange(0,127);
     rangeIn[1]->setRange(0,127);
     rangeIn[1]->setValue(127);
-    connect(rangeIn[0], SIGNAL(valueChanged(int)), this, SLOT(updateRangeIn(int)));
-    connect(rangeIn[1], SIGNAL(valueChanged(int)), this, SLOT(updateRangeIn(int)));
+    connect(rangeIn[0], SIGNAL(valueChanged(int)), this,
+            SLOT(updateRangeIn(int)));
+    connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
+            SLOT(updateRangeIn(int)));
     QHBoxLayout *spinRangeBoxLayout = new QHBoxLayout;
     spinRangeBoxLayout->addWidget(rangeInLabel);
     spinRangeBoxLayout->addStretch(1);
@@ -92,10 +97,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     QGroupBox *portBox = new QGroupBox("Output", this);
 
-    QLabel *channelLabel = new QLabel("Chan", portBox);
+    QLabel *channelLabel = new QLabel("C&han", portBox);
     channelOut = new QSpinBox(portBox);
+    channelLabel->setBuddy(channelOut);
     channelOut->setRange(0, 15);
-    connect(channelOut, SIGNAL(valueChanged(int)), this, SLOT(updateChannelOut(int)));
+    connect(channelOut, SIGNAL(valueChanged(int)), this,
+            SLOT(updateChannelOut(int)));
     QHBoxLayout *portChBoxLayout = new QHBoxLayout;
     portChBoxLayout->addWidget(channelLabel);
     portChBoxLayout->addStretch(1);
@@ -103,8 +110,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     portChBoxLayout->setMargin(1);
     portChBoxLayout->setSpacing(1);
 
-    QLabel *portLabel = new QLabel("Port", portBox);
+    QLabel *portLabel = new QLabel("&Port", portBox);
     portOut = new QSpinBox(portBox);
+    portLabel->setBuddy(portOut);
     portOut->setRange(0, portCount - 1);
     connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
     QHBoxLayout *portOutBoxLayout = new QHBoxLayout;
@@ -114,8 +122,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     portOutBoxLayout->setMargin(1);
     portOutBoxLayout->setSpacing(1);
 
-    QLabel *muteLabel = new QLabel("Mute", portBox);
+    QLabel *muteLabel = new QLabel("&Mute", portBox);
     muteOut = new QCheckBox(portBox);
+    //muteOut->setText("&Mute");
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
     QHBoxLayout *muteOutBoxLayout = new QHBoxLayout;
     muteOutBoxLayout->addWidget(muteLabel);
@@ -144,19 +153,24 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     textEditButton = new QToolButton(this);	
     textEditAction = new QAction(QIcon(editmodeon_xpm), "&Edit Pattern", this);
-    connect(textEditAction, SIGNAL(toggled(bool)), this, SLOT(openTextEditWindow(bool)));
+    connect(textEditAction, SIGNAL(toggled(bool)), this,
+            SLOT(openTextEditWindow(bool)));
     textEditAction->setCheckable(true);
     textEditButton->setDefaultAction(textEditAction);
 
     textRemoveButton = new QToolButton(this);	
-    textRemoveAction = new QAction(QIcon(patternremove_xpm), "&Remove Pattern", this);
-    connect(textRemoveAction, SIGNAL(triggered()), this, SLOT(removeCurrentPattern()));
+    textRemoveAction = new QAction(QIcon(patternremove_xpm),
+            "&Remove Pattern", this);
+    connect(textRemoveAction, SIGNAL(triggered()), this,
+            SLOT(removeCurrentPattern()));
     textRemoveButton->setDefaultAction(textRemoveAction);
     textRemoveButton->setEnabled(false);
 
     textStoreButton = new QToolButton(this);
-    textStoreAction = new QAction(QIcon(patternstore_xpm), "&Store Pattern", this);
-    connect(textStoreAction, SIGNAL(triggered()), this, SLOT(storePatternText()));
+    textStoreAction = new QAction(QIcon(patternstore_xpm),
+            "&Store Pattern", this);
+    connect(textStoreAction, SIGNAL(triggered()), this,
+            SLOT(storePatternText()));
     textStoreButton->setHidden(true);
     textStoreButton->setDefaultAction(textStoreAction);
 
@@ -193,7 +207,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     //connect(this, SIGNAL(newPattern(QString)), midiArp, SLOT(updatePattern(QString, *arpScreen)));
     patternText->setHidden(true);
     patternText->setMaximumHeight(50);
-    patternText->setToolTip("( ) chord Mode on/off\n + - octave up/down\n < . > tempo up/down\n d h note length up/down\n / velocity up/down");
+    patternText->setToolTip(
+            "( ) chord Mode on/off\n"
+            " + - octave up/down\n"
+            " < . > tempo up/down\n"
+            " d h note length up/down\n"
+            " / velocity up/down");
 
 
     QWidget *arpScreenBox = new QWidget(patternBox);
@@ -213,17 +232,21 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternBox->setLayout(patternBoxLayout); 
 
     randomButton = new QToolButton(this);
-    randomAction = new QAction(QIcon(randomtoggle_xpm), "&Random Settings", this);
-    connect(randomAction, SIGNAL(toggled(bool)), this, SLOT(toggleRandomBox(bool)));
+    randomAction = new QAction(QIcon(randomtoggle_xpm),
+            "&Random Settings", this);
+    connect(randomAction, SIGNAL(toggled(bool)), this,
+            SLOT(toggleRandomBox(bool)));
     randomAction->setCheckable(true);
     randomButton->setDefaultAction(randomAction);
 
     randomBox = new QGroupBox("Random", this);
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
 
-    QLabel *tickLabel = new QLabel("Shift", randomBox);
+    QLabel *tickLabel = new QLabel("&Shift", randomBox);
     randomTick = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
-    connect(randomTick, SIGNAL(valueChanged(int)), midiArp, SLOT(updateRandomTickAmp(int)));
+    tickLabel->setBuddy(randomTick);
+    connect(randomTick, SIGNAL(valueChanged(int)), midiArp,
+            SLOT(updateRandomTickAmp(int)));
     QHBoxLayout *tickBoxLayout = new QHBoxLayout;
     tickBoxLayout->addWidget(tickLabel);
     tickBoxLayout->addStretch(1);
@@ -231,9 +254,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     tickBoxLayout->setMargin(1);
     tickBoxLayout->setSpacing(1);
 
-    QLabel *velocityLabel = new QLabel("Velocity", randomBox);
+    QLabel *velocityLabel = new QLabel("&Velocity", randomBox);
     randomVelocity = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
-    connect(randomVelocity, SIGNAL(valueChanged(int)), midiArp, SLOT(updateRandomVelocityAmp(int)));
+    velocityLabel->setBuddy(randomVelocity);
+    connect(randomVelocity, SIGNAL(valueChanged(int)), midiArp,
+            SLOT(updateRandomVelocityAmp(int)));
     QHBoxLayout *velocityBoxLayout = new QHBoxLayout;
     velocityBoxLayout->addWidget(velocityLabel);
     velocityBoxLayout->addStretch(1);
@@ -241,9 +266,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     velocityBoxLayout->setMargin(1);
     velocityBoxLayout->setSpacing(1);
 
-    QLabel *lengthLabel = new QLabel("Length", randomBox);
+    QLabel *lengthLabel = new QLabel("&Length", randomBox);
     randomLength = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
-    connect(randomLength, SIGNAL(valueChanged(int)), midiArp, SLOT(updateRandomVelocityAmp(int)));  
+    lengthLabel->setBuddy(randomLength);
+    connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
+            SLOT(updateRandomVelocityAmp(int)));  
     QHBoxLayout *lengthBoxLayout = new QHBoxLayout;
     lengthBoxLayout->addWidget(lengthLabel);
     lengthBoxLayout->addStretch(1);

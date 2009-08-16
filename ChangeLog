@@ -1,3 +1,6 @@
+2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
+	* arpwidget.cpp: Keyboard shortcuts added for some widgets.
+	
 2009-08-15 Frank Kober <goemusic@yahoo.fr>
 	* arpscreen.cpp: fixed fall through in switch and unfinished "."
 	interpretation, removed resizeEvent(), set font at beginning of
