@@ -68,6 +68,14 @@ int main(int argc, char *argv[])
         qWarning("No Qt translation for locale '%s' found.",
                 loc.name().toUtf8().constData());*/
 
+    // translator for ams strings       
+    QTranslator amsTr;
+
+    if (amsTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
+        app.installTranslator(&amsTr);
+    /*else
+        qWarning("No " AMS_LONGNAME " translation for locale '%s' found.",
+                loc.name().toUtf8().constData());*/
 
 
     QMainWindow *top = new QMainWindow();

@@ -15,6 +15,7 @@
 
 
 
+
 pkgdatadir = $(datadir)/qmidiarp
 pkglibdir = $(libdir)/qmidiarp
 pkgincludedir = $(includedir)/qmidiarp
@@ -41,7 +42,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(translationsdir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_qmidiarp_OBJECTS = arpdata.$(OBJEXT) arpscreen.$(OBJEXT) \
@@ -77,6 +78,14 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+translationsDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(translations_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
@@ -98,7 +107,7 @@ CXX = g++
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
-DEFS = -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DHAVE_CONFIG_H
+DEFS = -Wall -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" -DHAVE_CONFIG_H
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
@@ -115,7 +124,9 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lm -lasound -lQtGui -lQtCore 
 LN_S = ln -s
+LRELEASE = /usr/bin/lrelease-qt4
 LTLIBOBJS = 
+LUPDATE = /usr/bin/lupdate-qt4
 MAKEINFO = ${SHELL} /home/guido/src/c/qt/alsamodular/qmidiarp/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 MOC = /usr/bin/moc-qt4
@@ -200,20 +211,29 @@ qmidiarp_SOURCES = \
 	groovewidget.cpp groovewidget.h \
 	gui.cpp gui.h \
 	logwidget.cpp logwidget.h \
- 	main.cpp main.h \
+	main.cpp main.h \
 	midiarp.cpp midiarp.h \
 	passwidget.cpp passwidget.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
 
+translationsdir = $(pkgdatadir)/translations
+translations = \
+	translations/qmidiarp_de.ts \
+	translations/qmidiarp_fr.ts
+
+translations_DATA = \
+	translations/qmidiarp_de.qm \
+	translations/qmidiarp_fr.qm
+
 AM_LDFLAGS = -lQtCore -lQtGui   -DHAVE_CONFIG_H
 AM_CXXFLAGS = -DQT_SHARED -I/usr/include/qt4 -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL  
 
 # misc files which are distributed but not installed
-EXTRA_DIST = qmidiarp.pro
+EXTRA_DIST = qmidiarp.pro $(translations)
 
 # all generated files to be removed by "make clean"
-CLEANFILES = $(nodist_qmidiarp_SOURCES)
+CLEANFILES = $(nodist_qmidiarp_SOURCES)  $(translations_DATA)
 
 # rule for moc-file generation
 SUFFIXES = _moc.cpp
@@ -221,7 +241,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: _moc.cpp .cpp .h .o .obj
+.SUFFIXES: _moc.cpp .cpp .h .o .obj .qm .ts
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -336,6 +356,23 @@ include ./$(DEPDIR)/slider_moc.Po
 #	source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+install-translationsDATA: $(translations_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(translationsdir)" || $(MKDIR_P) "$(DESTDIR)$(translationsdir)"
+	@list='$(translations_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(translationsDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(translationsdir)/$$f'"; \
+	  $(translationsDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(translationsdir)/$$f"; \
+	done
+
+uninstall-translationsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(translations_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(translationsdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(translationsdir)/$$f"; \
+	done
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -512,10 +549,10 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS) config.h
+all-am: Makefile $(PROGRAMS) $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(translationsdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -563,7 +600,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-translationsDATA
 
 install-dvi: install-dvi-recursive
 
@@ -598,7 +635,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-translationsDATA
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) install-am \
 	install-strip
@@ -612,15 +649,25 @@ uninstall-am: uninstall-binPROGRAMS
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
+	install-ps install-ps-am install-strip \
+	install-translationsDATA installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-binPROGRAMS
+	uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-translationsDATA
 
 
 .h_moc.cpp: $(qmidiarp_SOURCES)
 	$(MOC) $< -o $@
+
+# rule for translation file updates
+$(translations): $(qmidiarp_SOURCES)
+	$(LUPDATE) -verbose $(qmidiarp_SOURCES) -ts $@
+
+# rule to generate binary translation files
+.ts.qm: $(translations)
+	$(LRELEASE) -verbose $< -qm $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

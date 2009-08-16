@@ -6,6 +6,8 @@
 	* groovewidget.cpp, logwidget.cpp, passwidget.cpp: Keyboard
 	shortcuts added, layout improved, label text made translatable
 	* main.cpp: Support for Qt library message translation added
+	* configure.ac, main.cpp, src/translations/*.ts: Support for
+	application message translation added, German translation added
 	
 2009-08-15 Frank Kober <goemusic@yahoo.fr>
 	* arpscreen.cpp: fixed fall through in switch and unfinished "."

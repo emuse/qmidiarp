@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider> 
@@ -17,7 +14,6 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QTextStream>
-#include <QRegExp>
 #include <alsa/asoundlib.h>
 
 #include "arpdata.h"
@@ -34,8 +30,8 @@
 #include "pixmaps/play.xpm"
 
 
-Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
-
+Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent)
+{
     checkRcFile();
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
@@ -44,7 +40,7 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
     logWidget = new LogWidget(tabWidget);
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
-    tabWidget->addTab(logWidget, "Event Log");
+    tabWidget->addTab(logWidget, tr("Event Log"));
 
     passWidget = new PassWidget(p_portCount, tabWidget);
 
@@ -62,7 +58,7 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
             arpData->seqDriver, SLOT(setQueueTempo(int)));
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));				   
-    tabWidget->addTab(passWidget, "Settings");
+    tabWidget->addTab(passWidget, tr("Settings"));
 
     grooveWidget = new GrooveWidget(tabWidget);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
@@ -71,29 +67,29 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent) {
             arpData->seqDriver, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
             arpData->seqDriver, SLOT(setGrooveLength(int)));
-    tabWidget->addTab(grooveWidget, "Groove");			
+    tabWidget->addTab(grooveWidget, tr("Groove"));			
 
     runBox = new QToolBar(this);
 
     addArpButton = new QToolButton(this);
-    addArpAction = new QAction(QIcon(arpadd_xpm),"&Add Arp", runBox);
+    addArpAction = new QAction(QIcon(arpadd_xpm),tr("&Add Arp"), runBox);
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
     addArpButton->setDefaultAction(addArpAction);
 
     renameArpButton = new QToolButton(this);
-    renameArpAction = new QAction(QIcon(arprename_xpm),"&Rename Arp", runBox);
+    renameArpAction = new QAction(QIcon(arprename_xpm),tr("&Rename Arp"), runBox);
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(renameArp()));
     renameArpButton->setDefaultAction(renameArpAction);
     renameArpAction->setDisabled(true);
 
     removeArpButton = new QToolButton(this);
-    removeArpAction = new QAction(QIcon(arpremove_xpm),"&Remove Arp", runBox);
+    removeArpAction = new QAction(QIcon(arpremove_xpm),tr("&Remove Arp"), runBox);
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpButton->setDefaultAction(removeArpAction);
     removeArpAction->setDisabled(true);
 
     runButton = new QToolButton(this);
-    runAction = new QAction(QIcon(play_xpm), "&Run", this);
+    runAction = new QAction(QIcon(play_xpm), tr("&Run"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
     runButton->setDefaultAction(runAction);   
     runAction->setCheckable(true);
@@ -131,21 +127,20 @@ Gui::~Gui()
 
 void Gui::displayAbout()
 {
-    aboutWidget->about(this, "About QMidiArp", aboutText);
+    aboutWidget->about(this, tr("About %1...").arg(PACKAGE), aboutText);
     aboutWidget->raise();
 }
 
 void Gui::addArp()
 {
-    QString qs, qs2;
+    QString name;
     bool ok;
 
-    qs2.sprintf("Arp %d", arpData->midiArpCount() + 1);
-
-    qs = QInputDialog::getText(this, "QMidiArp: Add MIDI Arp",
-            "Add MIDI Arp", QLineEdit::Normal, qs2, &ok);
-    if (ok && !qs.isEmpty()) {
-        addArp(qs);
+    name = QInputDialog::getText(this, PACKAGE,
+            tr("Add MIDI Arpeggiator"), QLineEdit::Normal,
+           tr("Arp %1").arg(arpData->midiArpCount() + 1), &ok);
+    if (ok && !name.isEmpty()) {
+        addArp(name);
     }
 }
 
@@ -172,19 +167,20 @@ void Gui::addArp(QString qs)
 
 void Gui::renameArp() {
 
-    QString qs, qs2;
+    QString newname, oldname;
     bool ok;
 
     if (tabWidget->currentIndex() < 3) {
         return;
     }
-    qs2 = tabWidget->tabText(tabWidget->currentIndex());
-    qs = QInputDialog::getText(this, "QMidiArp: Rename Arp", "New Name",
-            QLineEdit::Normal,
-            qs2, &ok);
-    if (ok && !qs.isEmpty()) {
-        tabWidget->setTabText(tabWidget->currentIndex(), qs);                           ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
-        arpWidget->arpName = qs;
+    oldname = tabWidget->tabText(tabWidget->currentIndex());
+    newname = QInputDialog::getText(this, tr("QMidiArp: Rename Arp"),
+            tr("New Name"), QLineEdit::Normal, oldname, &ok);
+
+    if (ok && !newname.isEmpty()) {
+        tabWidget->setTabText(tabWidget->currentIndex(), newname);
+        ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
+        arpWidget->arpName = newname;
     }
 }
 
@@ -196,9 +192,9 @@ void Gui::removeArp()
         return;
     } 
     ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
-    qs.sprintf("Remove %s ?",
-            qPrintable(tabWidget->tabText(tabWidget->currentIndex())));
-    if (QMessageBox::question(0, "QMidiArp", qs, QMessageBox::Yes,
+    qs = tr("Remove \"%1\"?")
+        .arg(tabWidget->tabText(tabWidget->currentIndex()));
+    if (QMessageBox::question(0, PACKAGE, qs, QMessageBox::Yes,
                 QMessageBox::No | QMessageBox::Default
                 | QMessageBox::Escape, QMessageBox::NoButton)
             == QMessageBox::No) {
@@ -232,7 +228,6 @@ void Gui::removeArp(int index)
 		runAction->setChecked(false);
 		passWidget->mbuttonCheck->setDisabled(true);
 		passWidget->mbuttonCheck->setChecked(false);
-
     }                      
 }
 
@@ -246,7 +241,7 @@ void Gui::clear()
 void Gui::load()
 {
     QString filename =  QFileDialog::getOpenFileName(this,
-            QString::null, "", "QMidiArp files (*.qma)");
+            QString::null, "", tr("QMidiArp files (*.qma)"));
     if (filename == "") {
         return;
     }
@@ -261,26 +256,25 @@ void Gui::load(QString name)
     clear();
     QFile f(name);
     if (!f.open(QIODevice::ReadOnly)) {
-        qs2.sprintf("Could not read from file %s.", qPrintable(qs));
-        QMessageBox::information(this, "QMidiArp", qs2);
+        QMessageBox::information(this, PACKAGE,
+                tr("Could not read from file %1.").arg(name));
         return;
     }          
     QTextStream loadText(&f);
-    QRegExp sep(" ");
     qs = loadText.readLine();
-    qs2 = qs.section(sep, 0, 0);
+    qs2 = qs.section(' ', 0, 0);
     passWidget->setDiscard(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1);
+    qs2 = qs.section(' ', 1, 1);
     passWidget->setPortUnmatched(qs2.toInt());
     qs = loadText.readLine();
-    qs2 = qs.section(sep, 0, 0);
+    qs2 = qs.section(' ', 0, 0);
 
     grooveWidget->grooveTick->setValue(qs2.toInt());
     //  arpData->seqDriver->setGrooveTick(qs2.toInt());
-    qs2 = qs.section(sep, 1, 1);
+    qs2 = qs.section(' ', 1, 1);
     grooveWidget->grooveVelocity->setValue(qs2.toInt());
     //  arpData->seqDriver->setGrooveVelocity(qs2.toInt());
-    qs2 = qs.section(sep, 2, 2);
+    qs2 = qs.section(' ', 2, 2);
     grooveWidget->grooveLength->setValue(qs2.toInt());
     //  arpData->seqDriver->setGrooveLength(qs2.toInt());
     while (!loadText.atEnd()) {
@@ -294,26 +288,26 @@ void Gui::load(QString name)
 void Gui::save()
 {
     int l1;
-    QString qs, qs2; 
-    QString selfile =  QFileDialog::getSaveFileName(this, QString::null, "", "QMidiArp files (*.qma)");
-    if (selfile == "") {
+
+    QString filename =  QFileDialog::getSaveFileName(this,
+            QString::null, "", tr("QMidiArp files (*.qma)"));
+    if (filename == "") {
         return;
     }
-    qs = selfile;
-    QFile f(qs);
+    QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
-        qs2.sprintf("Could not write to file %s.", qPrintable(qs));
-        QMessageBox::information(this, "QMidiArp", qs2);
+        QMessageBox::information(this, PACKAGE,
+                tr("Could not write to file \"%1\".").arg(filename));
         return;
     }          
     QTextStream saveText(&f);
     saveText << (int)arpData->seqDriver->discardUnmatched;
-    saveText << " " << arpData->seqDriver->portUnmatched << "\n";
+    saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
     saveText << arpData->seqDriver->grooveTick;
-    saveText << " " << arpData->seqDriver->grooveVelocity;
-    saveText << " " << arpData->seqDriver->grooveLength << "\n";
+    saveText << ' ' << arpData->seqDriver->grooveVelocity;
+    saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
     for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) {
-        saveText << qPrintable(arpData->arpWidget(l1)->arpName) << "\n";
+        saveText << qPrintable(arpData->arpWidget(l1)->arpName) << '\n';
         arpData->arpWidget(l1)->writeArp(saveText);
     }
 }
@@ -351,11 +345,11 @@ void Gui::checkRcFile()
     if (!qmahome.exists(QMARCNAME)) {
         QString qmarcpath = qmahome.filePath(QMARCNAME);
         QFile f(qmarcpath);
-        printf("Info: Created new qmidiarp rc file in home directory\n");
+        //qWarning("New qmidiarp resource file in home directory created");
 
         if (!f.open(QIODevice::WriteOnly)) {
-            qs2.sprintf("Could not write to qma rc file");
-            QMessageBox::information(this, "QMidiArp", qs2);
+            QMessageBox::information(this, PACKAGE,
+                    tr("Could not write to resource file"));
             return;
         }
 
@@ -385,11 +379,10 @@ void Gui::checkRcFile()
             << ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
             << "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342";
 
-
         QTextStream writeText(&f);
         for (l1 = 0; l1 < defaultPatterns.count(); l1++) {
-            writeText << defaultPatternNames.at(l1) << "\n";
-            writeText << defaultPatterns.at(l1) << "\n";
+            writeText << defaultPatternNames.at(l1) << '\n';
+            writeText << defaultPatterns.at(l1) << '\n';
         }
     }
 }

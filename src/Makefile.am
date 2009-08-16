@@ -22,26 +22,43 @@ qmidiarp_SOURCES = \
 	groovewidget.cpp groovewidget.h \
 	gui.cpp gui.h \
 	logwidget.cpp logwidget.h \
- 	main.cpp main.h \
+	main.cpp main.h \
 	midiarp.cpp midiarp.h \
 	passwidget.cpp passwidget.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
 
+translationsdir = $(pkgdatadir)/translations
+translations = \
+	translations/qmidiarp_de.ts \
+	translations/qmidiarp_fr.ts
+
+translations_DATA = \
+	translations/qmidiarp_de.qm \
+	translations/qmidiarp_fr.qm
+
 
 AM_LDFLAGS = @QT_LIBS@ @DEFS@
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED @DEFS@
+DEFS = -Wall -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
 
 # misc files which are distributed but not installed
-EXTRA_DIST = qmidiarp.pro
+EXTRA_DIST = qmidiarp.pro $(translations)
 
 # all generated files to be removed by "make clean"
-CLEANFILES = $(nodist_qmidiarp_SOURCES)
+CLEANFILES = $(nodist_qmidiarp_SOURCES)  $(translations_DATA)
 
 # rule for moc-file generation
 SUFFIXES = _moc.cpp
 
 .h_moc.cpp: $(qmidiarp_SOURCES)
 	$(MOC) $< -o $@
+
+# rule for translation file updates
+$(translations): $(qmidiarp_SOURCES)
+	$(LUPDATE) -verbose $(qmidiarp_SOURCES) -ts $@
+
+# rule to generate binary translation files
+.ts.qm: $(translations)
+	$(LRELEASE) -verbose $< -qm $@
 

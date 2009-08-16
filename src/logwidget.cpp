@@ -90,24 +90,24 @@ void LogWidget::appendEvent(snd_seq_event_t *ev) {
         case SND_SEQ_EVENT_CLOCK:
             if (logMidiActive) {
                 logText->setTextColor(QColor(150,150,150));
-                qs.sprintf("MIDI Clock");
+                qs = tr("MIDI Clock");
             }
             break;
         case SND_SEQ_EVENT_START:
             logText->setTextColor(QColor(0,192,0));
-            qs.sprintf("MIDI Start (Transport)");
+            qs = tr("MIDI Start (Transport)");
             break;
         case SND_SEQ_EVENT_CONTINUE:
             logText->setTextColor(QColor(0,128,0));
-            qs.sprintf("MIDI Continue (Transport)");
+            qs = tr("MIDI Continue (Transport)");
             break;
         case SND_SEQ_EVENT_STOP:
             logText->setTextColor(QColor(128,96,0));
-            qs.sprintf("MIDI Stop (Transport)");
+            qs = tr("MIDI Stop (Transport)");
             break;
         default:
             logText->setTextColor(QColor(0,0,0));
-            qs.sprintf("Unknown event type");
+            qs = tr("Unknown event type");
             break;
     }
     if ((ev->type != SND_SEQ_EVENT_CLOCK) || logMidiActive)

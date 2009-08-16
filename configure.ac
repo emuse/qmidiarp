@@ -49,6 +49,20 @@ if test "x$MOC" = "xno" ; then
     [cannot find 'moc', please install the Qt4 development tools package.])
 fi
 
+dnl check for lupdate
+AC_PATH_PROGS(LUPDATE, lupdate-qt4 lupdate, no, [$PATH:$QTDIR/bin])
+if test "x$LUPDATE" = "xno" ; then
+  AC_MSG_ERROR(
+    [cannot find 'lupdate', please install the Qt4 development tools package.])
+fi
+
+dnl check for lrelease
+AC_PATH_PROGS(LRELEASE, lrelease-qt4 lrelease, no, [$PATH:$QTDIR/bin])
+if test "x$LRELEASE" = "xno" ; then
+  AC_MSG_ERROR(
+    [cannot find 'lrelease', please install the Qt4 development tools package.])
+fi
+
 # Checks for header files.
 AC_HEADER_STDC
 
