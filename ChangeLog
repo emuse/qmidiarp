@@ -1,5 +1,6 @@
 2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
 	* arpwidget.cpp: Keyboard shortcuts added for some widgets.
+	Fixed layout bug.
 	* arpscreen.cpp: Obsolete p.setPen() calls removed, unused C
 	header files removed.
 	

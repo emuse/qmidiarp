@@ -34,7 +34,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 : QWidget(parent), midiArp(p_midiArp)
 {
     QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
-    QWidget *inOutBox = new QWidget;
+
+    // Input group box on left side
     QGroupBox *inBox = new QGroupBox("Input", this);
 
     QLabel *chInLabel = new QLabel("&Chan", inBox);
@@ -88,13 +89,16 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinRangeBoxLayout->setSpacing(1);
 
     QVBoxLayout *inBoxLayout = new QVBoxLayout;
+    inBoxLayout->setMargin(1);
+    inBoxLayout->setSpacing(1);
     inBoxLayout->addLayout(spinIndexBoxLayout);
     inBoxLayout->addLayout(spinRangeBoxLayout);
     inBoxLayout->addLayout(spinInBoxLayout);
-    inBoxLayout->setMargin(1);
-    inBoxLayout->setSpacing(1);
+    inBoxLayout->addStretch();
     inBox->setLayout(inBoxLayout); 
 
+
+    // Output group box on right side
     QGroupBox *portBox = new QGroupBox("Output", this);
 
     QLabel *channelLabel = new QLabel("C&han", portBox);
@@ -122,33 +126,29 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     portOutBoxLayout->setMargin(1);
     portOutBoxLayout->setSpacing(1);
 
-    QLabel *muteLabel = new QLabel("&Mute", portBox);
     muteOut = new QCheckBox(portBox);
-    //muteOut->setText("&Mute");
+    muteOut->setText("&Mute");
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
-    QHBoxLayout *muteOutBoxLayout = new QHBoxLayout;
-    muteOutBoxLayout->addWidget(muteLabel);
-    muteOutBoxLayout->addStretch(1);
-    muteOutBoxLayout->addWidget(muteOut);
-    muteOutBoxLayout->setMargin(1);
-    muteOutBoxLayout->setSpacing(1);
 
     QVBoxLayout *portBoxLayout = new QVBoxLayout;
-    portBoxLayout->addLayout(muteOutBoxLayout);
-    portBoxLayout->addLayout(portOutBoxLayout);
-    portBoxLayout->addLayout(portChBoxLayout);
     portBoxLayout->setMargin(1);
     portBoxLayout->setSpacing(1);
+    portBoxLayout->addWidget(muteOut);
+    portBoxLayout->addLayout(portOutBoxLayout);
+    portBoxLayout->addLayout(portChBoxLayout);
+    portBoxLayout->addStretch();
     portBox->setLayout(portBoxLayout);
 
-    QHBoxLayout *inOutBoxLayout = new QHBoxLayout(this);
+
+    // Layout for left/right placements of in/out group boxes
+    QHBoxLayout *inOutBoxLayout = new QHBoxLayout();
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->setMargin(1);
     inOutBoxLayout->setSpacing(1);
-    inOutBox->setLayout(inOutBoxLayout);
 
-    QGroupBox *patternBox = new QGroupBox("Pattern", this);			   
+    // group box for pattern setup
+    QGroupBox *patternBox = new QGroupBox("Pattern", this);
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
 
     textEditButton = new QToolButton(this);	
@@ -180,14 +180,16 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternPresetBox->setCurrentIndex(0);
     patternPresetBox->setToolTip("PatternPreset");
     patternPresetBox->setMinimumContentsLength(20);
-    connect(patternPresetBox, SIGNAL(activated(int)), this, SLOT(updatePatternPreset(int)));
+    connect(patternPresetBox, SIGNAL(activated(int)), this,
+            SLOT(updatePatternPreset(int)));
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames; 
     repeatPatternNames << "Static" << "Up" << "Down";
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip("Arp through chord");
-    connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this, SLOT(updateRepeatPattern(int)));
+    connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this,
+            SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
 
     QHBoxLayout *patternPresetLayout = new QHBoxLayout;
@@ -239,8 +241,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     randomAction->setCheckable(true);
     randomButton->setDefaultAction(randomAction);
 
+    // group box for random settings
     randomBox = new QGroupBox("Random", this);
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
+    randomBoxLayout->setMargin(5);
+    randomBoxLayout->setSpacing(1);
 
     QLabel *tickLabel = new QLabel("&Shift", randomBox);
     randomTick = new Slider(0, 100, 0, 0, Qt::Horizontal, randomBox);
@@ -278,15 +283,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     lengthBoxLayout->setMargin(1);
     lengthBoxLayout->setSpacing(1);
 
-    randomBoxLayout->setMargin(5);
-    randomBoxLayout->setSpacing(1);
     randomBoxLayout->addLayout(tickBoxLayout);
     randomBoxLayout->addLayout(velocityBoxLayout);
     randomBoxLayout->addLayout(lengthBoxLayout);  
     randomBox->setLayout(randomBoxLayout);  
     randomBox->hide();
 
-    arpWidgetLayout->addWidget(inOutBox);
+
+    arpWidgetLayout->addLayout(inOutBoxLayout);
     arpWidgetLayout->addWidget(patternBox);
     arpWidgetLayout->addWidget(randomButton);
     arpWidgetLayout->addWidget(randomBox);
