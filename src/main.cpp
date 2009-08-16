@@ -11,6 +11,9 @@
 #include <QSpinBox>
 #include <QPixmap>
 #include <QToolButton>
+#include <QTranslator>
+#include <QLocale>
+#include <QLibraryInfo>
 
 #include "gui.h"
 #include "main.h"
@@ -26,8 +29,6 @@ static struct option options[] = {
 
 int main(int argc, char *argv[])  
 {
-    QApplication *app = new QApplication(argc, argv);
-    QMainWindow *top = new QMainWindow();
     int getopt_return;
     int option_index; 
     int portCount = 2;
@@ -54,15 +55,32 @@ int main(int argc, char *argv[])
         }
     }
 
+    QApplication app(argc, argv);
+
+    // translator for Qt library messages
+    QTranslator qtTr;
+    QLocale loc = QLocale::system();
+
+    if (qtTr.load(QString("qt_") + loc.name(),
+                QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTr);
+    /*else
+        qWarning("No Qt translation for locale '%s' found.",
+                loc.name().toUtf8().constData());*/
+
+
+
+    QMainWindow *top = new QMainWindow();
     Gui *gui = new Gui(portCount, top);
     QMenuBar *menuBar = new QMenuBar; 
-    QMenu *filePopup = new QMenu("&File",top); 
-    QMenu *aboutMenu = new QMenu("&About",top);
+    QMenu *filePopup = new QMenu(QMenu::tr("&File"),top); 
+    QMenu *aboutMenu = new QMenu(QMenu::tr("&About"),top);
 
-    filePopup->addAction("&Load", gui, SLOT(load()));
-    filePopup->addAction("&Save", gui, SLOT(save()));
-    filePopup->addAction("&Quit", app, SLOT(quit()));
-    aboutMenu->addAction("&About " PACKAGE, gui, SLOT(displayAbout())); 
+    filePopup->addAction(QMenu::tr("&Open..."), gui, SLOT(load()));
+    filePopup->addAction(QMenu::tr("&Save"), gui, SLOT(save()));
+    filePopup->addAction(QMenu::tr("&Quit"), &app, SLOT(quit()));
+    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), gui,
+            SLOT(displayAbout())); 
     menuBar->addMenu(filePopup);
     menuBar->addMenu(aboutMenu);
 
@@ -76,5 +94,5 @@ int main(int argc, char *argv[])
     if (havePreset) {
         gui->load(fileName);
     }
-    return app->exec(); 
+    return app.exec(); 
 }
