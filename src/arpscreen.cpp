@@ -178,7 +178,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.fillRect(0, 0, w, h, QColor(10, 50, 10));
     p.setViewport(0, 0, width(), height());
     p.setWindow(0, 0, width(), height());
-    pen.setColor(QColor(20, 160, 20));
+    p.setPen(QColor(20, 160, 20));
     p.drawRect(0, 0, width() - 1, height() - 1);
 
     //Grid 
@@ -195,9 +195,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
             ofs = width() / len * .5 - 6 + ARPSCREEN_HMARGIN;
         }
         if ((bool)(l1%beat)) {
-            pen.setColor(QColor(60, 180, 60));
+            p.setPen(QColor(60, 180, 60));
         } else {
-            pen.setColor(QColor(60, 180, 150));	  
+            p.setPen(QColor(60, 180, 150));	  
         }
         x = (int)((double)l1 * xscale);
         p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
@@ -209,7 +209,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
             p.drawText(ofs + x, ARPSCREEN_VMARGIN, QString::number(l1+1));
 
             // Beat divisor separators
-            pen.setColor(QColor(20, 80, 20));
+            p.setPen(QColor(20, 80, 20));
 
             for (l2 = 1; l2 < 1.0/minTempo; l2++) {
                 x1 = x + l2 * xscale * minTempo;
@@ -222,7 +222,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }
 
     //Octave separators and numbers
-    pen.setColor(QColor(40, 120, 40));
+    p.setPen(QColor(40, 120, 40));
     noctaves = maxOctave - minOctave + 1;
 
     for (l1 = 0; l1 < noctaves + 1; l1++) {
@@ -327,7 +327,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 ypos = nlines-1;
 
                 if (x1 == x) {
-                    pen.setColor(QColor(140, 240, 140));
+                    p.setPen(QColor(140, 240, 140));
                     p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
                             ARPSCREEN_HMARGIN + x, height());
                     p.fillRect(ARPSCREEN_HMARGIN + x, 
