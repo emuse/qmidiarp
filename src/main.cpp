@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     Gui *gui = new Gui(portCount, top);
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *filePopup = new QMenu(QMenu::tr("&File"),top); 
-    QMenu *aboutMenu = new QMenu(QMenu::tr("&About"),top);
+    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),top);
 
     filePopup->addAction(QMenu::tr("&Open..."), gui, SLOT(load()));
     filePopup->addAction(QMenu::tr("&Save"), gui, SLOT(save()));

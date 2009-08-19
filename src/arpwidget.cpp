@@ -36,9 +36,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
-    QLabel *chInLabel = new QLabel(tr("&Chan"), inBox);
+    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QSpinBox(inBox);
-    chIn->setRange(0,15);
+    chIn->setRange(0, 15);
     chInLabel->setBuddy(chIn);
     connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
     QHBoxLayout *spinInBoxLayout = new QHBoxLayout;
@@ -67,7 +67,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinIndexBoxLayout->setMargin(1);
     spinIndexBoxLayout->setSpacing(1);
 
-    QLabel *rangeInLabel = new QLabel(tr("&Vel"), inBox);
+    QLabel *rangeInLabel = new QLabel(tr("&Velocity"), inBox);
     rangeIn[0] = new QSpinBox(inBox);
     rangeIn[1] = new QSpinBox(inBox);
     rangeInLabel->setBuddy(rangeIn[0]);
@@ -87,8 +87,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     spinRangeBoxLayout->setSpacing(1);
 
     QVBoxLayout *inBoxLayout = new QVBoxLayout;
-    inBoxLayout->setMargin(1);
-    inBoxLayout->setSpacing(1);
     inBoxLayout->addLayout(spinIndexBoxLayout);
     inBoxLayout->addLayout(spinRangeBoxLayout);
     inBoxLayout->addLayout(spinInBoxLayout);
@@ -99,7 +97,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *channelLabel = new QLabel(tr("C&han"), portBox);
+    QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QSpinBox(portBox);
     channelLabel->setBuddy(channelOut);
     channelOut->setRange(0, 15);
@@ -184,7 +182,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames; 
-    repeatPatternNames << "Static" << "Up" << "Down";
+    repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Arp through chord"));
     connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this,

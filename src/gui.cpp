@@ -127,7 +127,7 @@ Gui::~Gui()
 
 void Gui::displayAbout()
 {
-    aboutWidget->about(this, tr("About %1...").arg(PACKAGE), aboutText);
+    aboutWidget->about(this, tr("About %1").arg(PACKAGE), aboutText);
     aboutWidget->raise();
 }
 
@@ -174,7 +174,7 @@ void Gui::renameArp() {
         return;
     }
     oldname = tabWidget->tabText(tabWidget->currentIndex());
-    newname = QInputDialog::getText(this, tr("QMidiArp: Rename Arp"),
+    newname = QInputDialog::getText(this, PACKAGE,
             tr("New Name"), QLineEdit::Normal, oldname, &ok);
 
     if (ok && !newname.isEmpty()) {
