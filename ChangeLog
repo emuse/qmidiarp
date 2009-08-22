@@ -1,6 +1,7 @@
 2009-08-22 Guido Scholz <guido.scholz@bayernline.de>
 	* arpdata.cpp arpscreen.* gui.* midiarp.* seqdriver.*: Some
 	cleanups, improved string parameter handling
+	* arpwidget.cpp: Adjust size of Input/Output boxes
 
 2009-08-16 Frank Kober <goemusic@yahoo.fr>
 	* qmidiarp_fr.ts: French translation added

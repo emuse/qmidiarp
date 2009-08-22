@@ -138,8 +138,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     // Layout for left/right placements of in/out group boxes
     QHBoxLayout *inOutBoxLayout = new QHBoxLayout();
-    inOutBoxLayout->addWidget(inBox);
-    inOutBoxLayout->addWidget(portBox);
+    inOutBoxLayout->addWidget(inBox, 3);
+    inOutBoxLayout->addWidget(portBox, 2);
     inOutBoxLayout->setMargin(1);
     inOutBoxLayout->setSpacing(1);
 
