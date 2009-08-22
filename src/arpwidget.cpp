@@ -296,22 +296,22 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     setLayout(arpWidgetLayout);
 }
 
-ArpWidget::~ArpWidget() {
-
+ArpWidget::~ArpWidget()
+{
 }
 
-MidiArp *ArpWidget::getMidiArp() {
-
+MidiArp *ArpWidget::getMidiArp()
+{
     return (midiArp);
 }
 
-void ArpWidget::updateChIn(int value) {
-
+void ArpWidget::updateChIn(int value)
+{
     midiArp->chIn = value;
 }
 
-void ArpWidget::updateIndexIn(int value) {
-
+void ArpWidget::updateIndexIn(int value)
+{
     if (indexIn[0] == sender()) {
         midiArp->indexIn[0] = value; 
     } else {
@@ -319,8 +319,8 @@ void ArpWidget::updateIndexIn(int value) {
     }  
 }
 
-void ArpWidget::updateRangeIn(int value) { 
-
+void ArpWidget::updateRangeIn(int value)
+{ 
     if (rangeIn[0] == sender()) {
         midiArp->rangeIn[0] = value; 
     } else {
@@ -328,18 +328,18 @@ void ArpWidget::updateRangeIn(int value) {
     }  
 }
 
-void ArpWidget::updatePortOut(int value) { 
-
+void ArpWidget::updatePortOut(int value)
+{
     midiArp->portOut = value;
 }
 
-void ArpWidget::updateChannelOut(int value) { 
-
+void ArpWidget::updateChannelOut(int value)
+{
     midiArp->channelOut = value;
 }
 
-void ArpWidget::writeArp(QTextStream& arpText) {
-
+void ArpWidget::writeArp(QTextStream& arpText)
+{
     arpText << midiArp->chIn << ' '
         << midiArp->repeatPatternThroughChord << '\n';
     arpText << midiArp->indexIn[0] << ' ' << midiArp->indexIn[1] << '\n';
@@ -396,8 +396,8 @@ void ArpWidget::readArp(QTextStream& arpText)
     patternText->setPlainText(qs);                    
 }                                      
 
-void ArpWidget::setChIn(int value) {
-
+void ArpWidget::setChIn(int value)
+{
     chIn->setValue(value);
 }
 

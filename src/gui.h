@@ -43,33 +43,31 @@ class Gui : public QWidget
       ArpWidget *arpWidget;
       QString lastDir;
 
+      void addArp(const QString&);
+      void removeArp(int index);
+      void checkRcFile();
 
   public:
       Gui(int p_portCount, QWidget* parent=0);
       ~Gui();
-
+      void load(const QString&);
 
   signals:  
       void newTempo(int);
       void runQueue(bool);
 
-
   public slots: 
       void displayAbout();
       void addArp();
-      void addArp(const QString&);
       void renameArp();
       void removeArp();
-      void removeArp(int index);
       void save();
       void load();
-      void load(const QString&);
       void clear();
       void updateTempo(int tempo);
       void updateRunQueue(bool on);
       void midiClockToggle(bool on);
       void resetQueue();
-      void checkRcFile();
 };
   
 #endif

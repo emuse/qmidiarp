@@ -100,9 +100,9 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent)
     runButton->setDefaultAction(runAction);   
     runAction->setCheckable(true);
     runAction->setChecked(false);
-	runAction->setDisabled(true);
-	updateRunQueue(false);
-	
+    runAction->setDisabled(true);
+    updateRunQueue(false);
+
 
     tempoSpin = new QSpinBox(runBox);
     tempoSpin->setRange(10, 400);

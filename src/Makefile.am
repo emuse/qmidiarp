@@ -40,7 +40,7 @@ translations_DATA = \
 
 AM_LDFLAGS = @QT_LIBS@ @DEFS@
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -Wall -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
+DEFS = -Wall -Wextra -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations)
