@@ -41,6 +41,7 @@ class Gui : public QWidget
       LogWidget *logWidget;
       ArpData *arpData;
       ArpWidget *arpWidget;
+      QString lastDir;
 
 
   public:
@@ -56,13 +57,13 @@ class Gui : public QWidget
   public slots: 
       void displayAbout();
       void addArp();
-      void addArp(QString qs);
+      void addArp(const QString&);
       void renameArp();
       void removeArp();
       void removeArp(int index);
       void save();
       void load();
-      void load(QString name);
+      void load(const QString&);
       void clear();
       void updateTempo(int tempo);
       void updateRunQueue(bool on);

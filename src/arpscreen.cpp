@@ -351,15 +351,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
 }
 
-void ArpScreen::updateArpScreen(QString b_pattern)
+void ArpScreen::updateArpScreen(const QString& pattern)
 {
-    a_pattern = b_pattern;
+    a_pattern = pattern;
     update();
 }
 
 void ArpScreen::updateArpScreen(snd_seq_tick_time_t tick)
 {
-    follower_tick=(double)tick;
+    follower_tick = (double)tick;
     update();
 }
 

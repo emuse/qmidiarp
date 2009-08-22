@@ -28,22 +28,22 @@ class ArpScreen : public QWidget
     int maxRef;
     int globalMax, globalMaxResetCount;
     //QTimer *timer;
-	QString pattern;
-	QString a_pattern;
+    QString pattern;
+    QString a_pattern;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
-	double follower_tick;
+    double follower_tick;
    
   public:
     ArpScreen(int p_maxRef, QWidget* parent=0);
     ~ArpScreen();
-   virtual QSize sizeHint() const;
-   virtual QSizePolicy sizePolicy() const;
+    virtual QSize sizeHint() const;
+    virtual QSizePolicy sizePolicy() const;
    
   public slots: 
-    void updateArpScreen(QString);
-	void updateArpScreen(snd_seq_tick_time_t tick);
+    void updateArpScreen(const QString&);
+    void updateArpScreen(snd_seq_tick_time_t tick);
 };
   
 #endif

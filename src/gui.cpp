@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QIcon>
 #include <QAction>
+#include <QDir>
 #include <QFileDialog>
 #include <QToolButton>
 #include <QToolBar>
@@ -33,8 +34,10 @@
 Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent)
 {
     checkRcFile();
+    lastDir = QDir::homePath();
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
+
     aboutWidget = new QMessageBox(this); 
     tabWidget = new QTabWidget(this);
     logWidget = new LogWidget(tabWidget);
@@ -56,6 +59,7 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent)
 
     connect(this, SIGNAL(newTempo(int)), 
             arpData->seqDriver, SLOT(setQueueTempo(int)));
+    //CHECK: may be receiver is "arpData"
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));				   
     tabWidget->addTab(passWidget, tr("Settings"));
@@ -72,18 +76,20 @@ Gui::Gui(int p_portCount, QWidget *parent) : QWidget(parent)
     runBox = new QToolBar(this);
 
     addArpButton = new QToolButton(this);
-    addArpAction = new QAction(QIcon(arpadd_xpm),tr("&Add Arp"), runBox);
+    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&Add Arp"), runBox);
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
     addArpButton->setDefaultAction(addArpAction);
 
     renameArpButton = new QToolButton(this);
-    renameArpAction = new QAction(QIcon(arprename_xpm),tr("&Rename Arp"), runBox);
+    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename Arp"),
+            runBox);
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(renameArp()));
     renameArpButton->setDefaultAction(renameArpAction);
     renameArpAction->setDisabled(true);
 
     removeArpButton = new QToolButton(this);
-    removeArpAction = new QAction(QIcon(arpremove_xpm),tr("&Remove Arp"), runBox);
+    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Remove Arp"),
+            runBox);
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpButton->setDefaultAction(removeArpAction);
     removeArpAction->setDisabled(true);
@@ -144,7 +150,7 @@ void Gui::addArp()
     }
 }
 
-void Gui::addArp(QString qs)
+void Gui::addArp(const QString& name)
 {
     MidiArp *midiArp = new MidiArp();
     arpData->addMidiArp(midiArp);   
@@ -156,13 +162,13 @@ void Gui::addArp(QString qs)
             this, SLOT(resetQueue()));
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
-    tabWidget->addTab(arpWidget, qs);
+    tabWidget->addTab(arpWidget, name);
     tabWidget->setCurrentWidget(arpWidget);
-    arpWidget->arpName = qs;
+    arpWidget->arpName = name;
     removeArpButton->setEnabled(true);    
     renameArpButton->setEnabled(true);
-	passWidget->mbuttonCheck->setEnabled(true);
-	runAction->setEnabled(true);
+    passWidget->mbuttonCheck->setEnabled(true);
+    runAction->setEnabled(true);
 }
 
 void Gui::renameArp() {
@@ -206,10 +212,10 @@ void Gui::removeArp()
     if (arpData->midiArpCount() < 1) {  
         removeArpButton->setDisabled(true);
         renameArpButton->setDisabled(true);
-		runAction->setDisabled(true);
-		runAction->setChecked(false);
-		passWidget->mbuttonCheck->setDisabled(true);
-		passWidget->mbuttonCheck->setChecked(false);
+        runAction->setDisabled(true);
+        runAction->setChecked(false);
+        passWidget->mbuttonCheck->setDisabled(true);
+        passWidget->mbuttonCheck->setChecked(false);
     }
 }
 
@@ -224,10 +230,10 @@ void Gui::removeArp(int index)
     if (arpData->midiArpCount() < 1) {
         removeArpButton->setDisabled(true);
         renameArpButton->setDisabled(true);
-		runAction->setDisabled(true);
-		runAction->setChecked(false);
-		passWidget->mbuttonCheck->setDisabled(true);
-		passWidget->mbuttonCheck->setChecked(false);
+        runAction->setDisabled(true);
+        runAction->setChecked(false);
+        passWidget->mbuttonCheck->setDisabled(true);
+        passWidget->mbuttonCheck->setChecked(false);
     }                      
 }
 
@@ -241,15 +247,17 @@ void Gui::clear()
 void Gui::load()
 {
     QString filename =  QFileDialog::getOpenFileName(this,
-            QString::null, "", tr("QMidiArp files (*.qma)"));
+            tr("Open arpeggiator file"), lastDir,
+            tr("QMidiArp files (*.qma)"));
     if (filename == "") {
         return;
     }
+    lastDir = filename.left(filename.lastIndexOf('/'));
     clear();
     load(filename);
 }
 
-void Gui::load(QString name)
+void Gui::load(const QString& name)
 {
     QString qs, qs2;
 
@@ -290,7 +298,7 @@ void Gui::save()
     int l1;
 
     QString filename =  QFileDialog::getSaveFileName(this,
-            QString::null, "", tr("QMidiArp files (*.qma)"));
+            tr("Save arpeggiator"), lastDir, tr("QMidiArp files (*.qma)"));
     if (filename == "") {
         return;
     }
@@ -332,7 +340,6 @@ void Gui::midiClockToggle(bool on)
     runAction->setChecked(on);
     arpData->seqDriver->setUseMidiClock(on);
     runAction->setDisabled(on);
-
 }
 
 void Gui::checkRcFile()

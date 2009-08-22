@@ -9,7 +9,7 @@
 #include "midiarp.h"
 #include "main.h"
 
-class SeqDriver : public QWidget  {
+class SeqDriver : public QWidget {
     
   Q_OBJECT
 
@@ -25,25 +25,25 @@ class SeqDriver : public QWidget  {
     bool startQueue;
     snd_seq_tick_time_t tick;
     QList<int> sustainBufferList;
-	int firstArpTick;
+    int firstArpTick;
 	
   protected: 
     int midiTime;
     int midiclock_tpb;
-	double m_ratio;
-	int sustain;
-	
-	//QList<snd_seq_event_t *> *sustainBufferList;
+    double m_ratio;
+    int sustain;
+
+    //QList<snd_seq_event_t *> *sustainBufferList;
 	
   public:
     bool discardUnmatched, runQueueIfArp, runArp;
     int portUnmatched;
     int tempo;
-    int grooveTick, grooveVelocity, grooveLength ;        
+    int grooveTick, grooveVelocity, grooveLength;
     bool use_midiclock;
 	
   private:
-    void initSeqNotifier();  
+    void initSeqNotifier();
 
   public:
     SeqDriver(QList<MidiArp*> *p_midiArpList, QWidget* parent=0);
@@ -53,13 +53,14 @@ class SeqDriver : public QWidget  {
     void initArpQueue();
     snd_seq_tick_time_t get_tick();
     void setQueueStatus(bool run);
-	int getMidiTime();
+    int getMidiTime();
     
   signals:
     void midiEvent(snd_seq_event_t *ev);
     void nextStep(snd_seq_tick_time_t tick);
+
   public slots:
-    void procEvents(int fd);  
+    void procEvents(int fd);
     void setDiscardUnmatched(bool on);
     void setPortUnmatched(int id);
     void setQueueTempo(int bpm);
@@ -69,9 +70,9 @@ class SeqDriver : public QWidget  {
     void setGrooveVelocity(int);
     void setGrooveLength(int);
     void sendGroove();
-	void resetMidiTime();
+    void resetMidiTime();
     void setUseMidiClock(bool on);
-	void updateMIDItpb(int midiTpb);
+    void updateMIDItpb(int midiTpb);
 };
                               
 #endif

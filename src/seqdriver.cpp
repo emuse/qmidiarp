@@ -19,15 +19,17 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
     portCount = 0;
     discardUnmatched = false;
     portUnmatched = 0;
+
+    //TODO: show real error message
     if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
-        fprintf(stderr, "Error opening ALSA sequencer.\n");
+        qWarning("Error opening ALSA sequencer.");
         exit(1);  }
         snd_seq_set_client_name(seq_handle, "QMidiArp");
         clientid = snd_seq_client_id(seq_handle);
         if ((portid_in = snd_seq_create_simple_port(seq_handle, "QMidiArp in",
                         SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
-            fprintf(stderr, "Error creating sequencer port.\n");
+            qWarning("Error creating sequencer port.");
             exit(1);
         }
         snd_seq_set_client_pool_output(seq_handle, SEQPOOL);                                     
@@ -64,7 +66,7 @@ void SeqDriver::registerPorts(int num)
         if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
                         SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
-            fprintf(stderr, "Error creating sequencer port.\n");
+            qWarning("Error creating sequencer port.");
             exit(1);
         }
     }                                    
@@ -101,7 +103,8 @@ void SeqDriver::procEvents(int)
     do {
         snd_seq_event_input(seq_handle, &evIn);
 
-        if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) midiTime += 4;
+        if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK))
+            midiTime += 4;
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) {
             tick = get_tick();
@@ -196,14 +199,13 @@ void SeqDriver::procEvents(int)
                 }
             }
             if (use_midiclock){
-                if (evIn->type == SND_SEQ_EVENT_START)
-                {
+                if (evIn->type == SND_SEQ_EVENT_START) {
                     midiTime = 0;
                     //setQueueTempo(200);
                     setQueueStatus(true);
                 }
-                if (evIn->type == SND_SEQ_EVENT_STOP)
-                {setQueueStatus(false);
+                if (evIn->type == SND_SEQ_EVENT_STOP) {
+                    setQueueStatus(false);
                 }
             }
 
@@ -219,18 +221,18 @@ void SeqDriver::procEvents(int)
 
 }
 
-void SeqDriver::setDiscardUnmatched(bool on) {
-
+void SeqDriver::setDiscardUnmatched(bool on)
+{
     discardUnmatched = on;
 }
 
-void SeqDriver::setPortUnmatched(int id) {
-
+void SeqDriver::setPortUnmatched(int id)
+{
     portUnmatched = id;
 }
 
-void SeqDriver::initArpQueue() {
-
+void SeqDriver::initArpQueue()
+{
     queue_id = snd_seq_alloc_queue(seq_handle);
 }
 
@@ -302,6 +304,7 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_ev_schedule_tick(&evOut, queue_id,  0, tick);
         snd_seq_ev_set_dest(&evOut, clientid, portid_in);
         snd_seq_event_output_direct(seq_handle, &evOut);
+
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->initArpTick(tick);
             firstArpTick=(int)tick;

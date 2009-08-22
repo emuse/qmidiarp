@@ -14,7 +14,8 @@ class MidiArp : public QObject  {
     
   private:
     void updateNotes(snd_seq_tick_time_t currentTick);  
-    void getNote(snd_seq_tick_time_t *tick, int note[], int velocity[], int *length);
+    void getNote(snd_seq_tick_time_t *tick, int note[], int velocity[],
+            int *length);
     bool advancePatternIndex();
     snd_seq_tick_time_t nextNoteTick;
     int nextNote[MAXCHORD], nextVelocity[MAXCHORD];
@@ -55,15 +56,20 @@ class MidiArp : public QObject  {
     void addNote(snd_seq_event_t *evIn); // Add input Note for Arpeggio
     void removeNote(snd_seq_event_t *evIn); // Remove input Note from Arpeggio
     void removeNote(int *noteptr); // Remove input Note from Arpeggio
-    void getCurrentNote(snd_seq_tick_time_t currentTick, snd_seq_tick_time_t *tick, int note[], int velocity[], int *length, bool *isNew);
-    void getNextNote(snd_seq_tick_time_t currentTick, snd_seq_tick_time_t *tick, int note[], int velocity[], int *length, bool *isNew);
+    void getCurrentNote(snd_seq_tick_time_t currentTick,
+            snd_seq_tick_time_t *tick, int note[], int velocity[],
+            int *length, bool *isNew);
+    void getNextNote(snd_seq_tick_time_t currentTick,
+            snd_seq_tick_time_t *tick, int note[], int velocity[],
+            int *length, bool *isNew);
     void initArpTick(snd_seq_tick_time_t currentTick);
     void newRandomValues();
-    void newGrooveValues(int p_grooveTick, int p_grooveVelocity, int p_grooveLength);
+    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+            int p_grooveLength);
   
  	
   public slots:  
-    void updatePattern(QString pattern, ArpScreen *);
+    void updatePattern(const QString&, ArpScreen*);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);

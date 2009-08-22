@@ -354,6 +354,7 @@ void MidiArp::getCurrentNote(snd_seq_tick_time_t currentTick,
 
     updateNotes(currentTick);
     *tick = currentNoteTick;
+
     while ((currentNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
         note[l1] = currentNote[l1];
         velocity[l1] = currentVelocity[l1];
@@ -396,7 +397,7 @@ void MidiArp::initArpTick(snd_seq_tick_time_t currentTick)
     patternIndex = 0;
 }
 
-void MidiArp::updatePattern(QString p_pattern, ArpScreen *arpScreen)
+void MidiArp::updatePattern(const QString& p_pattern, ArpScreen *arpScreen)
 {
     int l1;
     QChar c;

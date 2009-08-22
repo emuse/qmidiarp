@@ -78,7 +78,6 @@ int ArpData::getPortCount()
 void ArpData::runQueue(bool on)
 {
     seqDriver->runQueue(on);
-    if (midiArpList.count()) {
+    if (midiArpList.count() > 0)
         seqDriver->setQueueStatus(on);
-    }
 }

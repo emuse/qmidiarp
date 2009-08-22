@@ -181,84 +181,94 @@
 <context>
     <name>Gui</name>
     <message>
-        <location filename="../gui.cpp" line="43"/>
+        <location filename="../gui.cpp" line="46"/>
         <source>Event Log</source>
         <translation>Protokoll</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="61"/>
+        <location filename="../gui.cpp" line="65"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="70"/>
+        <location filename="../gui.cpp" line="74"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="75"/>
+        <location filename="../gui.cpp" line="79"/>
         <source>&amp;Add Arp</source>
         <translation>Arpeggiator &amp;hinzufügen</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="80"/>
+        <location filename="../gui.cpp" line="84"/>
         <source>&amp;Rename Arp</source>
         <translation>Arpeggiator &amp;umbenennen</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="86"/>
+        <location filename="../gui.cpp" line="91"/>
         <source>&amp;Remove Arp</source>
         <translation>&amp;Arpeggiator entfernen</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="92"/>
+        <location filename="../gui.cpp" line="98"/>
         <source>&amp;Run</source>
         <translation>&amp;Start</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="178"/>
+        <location filename="../gui.cpp" line="184"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="196"/>
+        <location filename="../gui.cpp" line="202"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="293"/>
+        <location filename="../gui.cpp" line="301"/>
         <source>QMidiArp files (*.qma)</source>
         <translation>QMidiArp Dateien (*.qma)</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="260"/>
+        <location filename="../gui.cpp" line="268"/>
         <source>Could not read from file %1.</source>
         <translation>Konnte Datei %1 nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="300"/>
+        <location filename="../gui.cpp" line="308"/>
         <source>Could not write to file &quot;%1&quot;.</source>
         <translation>Konnte Datei quot;%1&quot; nicht speichern.</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="352"/>
+        <location filename="../gui.cpp" line="359"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="140"/>
+        <location filename="../gui.cpp" line="146"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>MIDI-Arpeggiator hinzufügen</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="141"/>
+        <location filename="../gui.cpp" line="147"/>
         <source>Arp %1</source>
         <translation>Arp %1</translation>
     </message>
     <message>
-        <location filename="../gui.cpp" line="130"/>
+        <location filename="../gui.cpp" line="136"/>
         <source>About %1</source>
         <translation>Über %1</translation>
+    </message>
+    <message>
+        <location filename="../gui.cpp" line="250"/>
+        <source>Open arpeggiator file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui.cpp" line="301"/>
+        <source>Save arpeggiator</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
