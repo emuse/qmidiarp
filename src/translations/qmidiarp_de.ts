@@ -59,7 +59,7 @@
  &lt; . &gt; tempo up/down
  d h note length up/down
  / velocity up/down</source>
-        <translation>( ) Akkord-Modus ein/aus
+        <translation type="obsolete">( ) Akkord-Modus ein/aus
  + - Octave auf/ab
  &lt; . &gt; Tempo auf/ab
  d h Notenlänge auf/ab
@@ -149,6 +149,15 @@
         <location filename="../arpwidget.cpp" line="185"/>
         <source>Down</source>
         <translation>Abwärts</translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="214"/>
+        <source>( ) chord Mode on/off
+ + - octave up/down
+ &lt; . &gt; tempo up/down
+ d h note length up/down
+ / \ velocity up/down</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

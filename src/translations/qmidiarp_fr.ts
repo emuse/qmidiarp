@@ -74,7 +74,7 @@
  &lt; . &gt; tempo up/down
  d h note length up/down
  / velocity up/down</source>
-        <translation>( ) mode accord act/désact
+        <translation type="obsolete">( ) mode accord act/désact
 + - octave sup/inf
 &lt; ; &gt; accel/décel
 d h durée de note augm/dim
@@ -163,6 +163,15 @@ d h durée de note augm/dim
     <message>
         <location filename="../arpwidget.cpp" line="185"/>
         <source>Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="214"/>
+        <source>( ) chord Mode on/off
+ + - octave up/down
+ &lt; . &gt; tempo up/down
+ d h note length up/down
+ / \ velocity up/down</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -211,7 +211,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
             " + - octave up/down\n"
             " < . > tempo up/down\n"
             " d h note length up/down\n"
-            " / velocity up/down"));
+            " / \\ velocity up/down"));
 
 
     QWidget *arpScreenBox = new QWidget(patternBox);
