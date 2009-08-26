@@ -28,7 +28,7 @@ if test "x$HAVE_QT4" = "xyes"; then
   dnl Check needed because in some cases the QtGui includedir
   dnl doesn't contain the subsystem dir.
   QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir QtGui`
-  QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui QtOpenGL`
+  QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui`
   EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
   AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
   AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
