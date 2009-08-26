@@ -14,15 +14,18 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
 {
     discardCheck = new QCheckBox(this);
     discardCheck->setText(tr("&Discard unmatched events"));
-    discardCheck->setChecked(false);
+    discardCheck->setChecked(true);
     QObject::connect(discardCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateDiscard(bool)));
 
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
-    QLabel *portLabel = new QLabel(tr("&Send unmatched events to port"), this);
+    portLabel = new QLabel(tr("&Send unmatched events to port"), this);
     portUnmatchedSpin = new QSpinBox(this);
     portLabel->setBuddy(portUnmatchedSpin);
-    portUnmatchedSpin->setRange(0, p_portcount -1);
+    portLabel->setDisabled(true);
+    portUnmatchedSpin->setDisabled(true);
+    portUnmatchedSpin->setRange(1, p_portcount);
+ 	portUnmatchedSpin->setKeyboardTracking(false);
     QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updatePortUnmatched(int)));
     portBoxLayout->addWidget(portLabel);
@@ -30,7 +33,7 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     portBoxLayout->addWidget(portUnmatchedSpin);
 
     QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
-    QLabel *mtpbLabel = new QLabel(tr("MIDI &Clock rate (tpb)"), this);
+    mtpbLabel = new QLabel(tr("MIDI &Clock rate (tpb)"), this);
     mtpbSpin = new QSpinBox(this);
     mtpbLabel->setBuddy(mtpbSpin);
     QObject::connect(mtpbSpin, SIGNAL(valueChanged(int)), this,
@@ -38,7 +41,9 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     mtpbSpin->setRange(24,384);
     mtpbSpin->setValue(96);
     mtpbSpin->setSingleStep(24);
+ 	mtpbSpin->setKeyboardTracking(false);
     mtpbSpin->setDisabled(true);
+    mtpbLabel->setDisabled(true);
     mtpbBoxLayout->addWidget(mtpbLabel);
     mtpbBoxLayout->addStretch(1);
     mtpbBoxLayout->addWidget(mtpbSpin);
@@ -68,17 +73,19 @@ void PassWidget::updateDiscard(bool on)
 {
     emit discardToggled(on);
     portUnmatchedSpin->setDisabled(on);
+    portLabel->setDisabled(on);
 }
 
 void PassWidget::updateClockSetting(bool on)
 {
     mtpbSpin->setEnabled(on);
+    mtpbLabel->setEnabled(on);
     emit midiClockToggle(on);
 }
 
 void PassWidget::updatePortUnmatched(int id)
 {
-    emit newPortUnmatched(id);
+    emit newPortUnmatched(id - 1);
 }
 
 void PassWidget::setDiscard(bool on)

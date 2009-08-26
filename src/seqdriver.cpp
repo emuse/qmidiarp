@@ -61,7 +61,7 @@ void SeqDriver::registerPorts(int num)
     portCount = num;
     for (l1 = 0; l1 < portCount; l1++) {
         char buf[16];
-        sprintf(buf,"[%d] QMidiArp %d",l1,l1);
+        sprintf(buf,"[%d] QMidiArp %d", l1 + 1, l1 + 1);
 
         if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
                         SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
@@ -162,12 +162,17 @@ void SeqDriver::procEvents(int)
             snd_seq_event_output_direct(seq_handle, evIn);
 
         } else {
+			emit midiEvent(evIn);
+            unmatched = true;
+
             //Sustain Footswitch has changed, note offs are buffered
             //when pressed and sent only when released
 
             if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
-                if (evIn->data.control.param == 64)
+                if (evIn->data.control.param == 64) {
                     sustain = evIn->data.control.value;
+					unmatched = false;
+				}
                 if (!sustain) {
                     for (l2 = 0; l2 < midiArpList->count(); l2++) { 
                         for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
@@ -179,8 +184,6 @@ void SeqDriver::procEvents(int)
                 }
             }
 
-            emit midiEvent(evIn);
-            unmatched = true;
             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                     || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
                 for (l1 = 0; l1 < midiArpList->count(); l1++) {

@@ -1,3 +1,22 @@
+2009-08-25 Frank Kober <goemusic@yahoo.fr>
+	* gui.cpp, main.h: automatic filename extension added
+	* gui.*, main.cpp: save and save As support added
+	* gui.cpp: qt4 port error in removeArp(int index) hopefully fixed 
+	(affecting load() when one of the three settings tabs was active)
+	* gui.cpp, main.cpp: buttonBox toolbar gets attached to top widget
+	* seqdriver.cpp: fixed FootSwitch event that still got copied to unmatched
+	* passwidget.cpp: port numbers really starting at 1 now
+	* known issue: Queue start when pattern empty but arp present
+
+2009-08-23 Frank Kober <goemusic@yahoo.fr>
+	* qmidiarp_fr.ts: French translation updated
+	* slider.*, groovewidget.*, arpwidget.h: Sliders improved (idea: gscholz)
+	* arpwidget.cpp: random box again visible, toggle button removed
+	* qmidiarp2.xpm: adjusted image position in pixmap
+	* arpwidget.cpp: in/out boxes Layout improved
+	* arpwidget.cpp, seqdriver.cpp: Channel and Port numbers
+	starting from 1 instead of 0
+
 2009-08-22 Guido Scholz <guido.scholz@bayernline.de>
 	* arpdata.cpp arpscreen.* gui.* midiarp.* seqdriver.*: Some
 	cleanups, improved string parameter handling

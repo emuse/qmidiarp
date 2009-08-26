@@ -19,9 +19,8 @@ class PassWidget : public QWidget
 
   private:
     QCheckBox *discardCheck;
-    QSpinBox *portUnmatchedSpin;
- 
-	QSpinBox *mtpbSpin;
+    QSpinBox *portUnmatchedSpin, *mtpbSpin;
+	QLabel *portLabel, *mtpbLabel;
           
   public:
     PassWidget(int p_portcount, QWidget* parent=0);

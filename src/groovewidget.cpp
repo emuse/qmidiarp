@@ -18,42 +18,21 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     GrooveWidgetLayout->setMargin(6);
     GrooveWidgetLayout->setSpacing(8);
 
-    QHBoxLayout *tickBoxLayout = new QHBoxLayout;
-    QLabel *tickLabel = new QLabel(tr("Groove &shift"), this);
-    grooveTick = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
-    tickLabel->setBuddy(grooveTick);
+    grooveTick = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("Groove &shift"), this);
     connect(grooveTick, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveTick(int)));
 
-    tickBoxLayout->addWidget(tickLabel);
-    tickBoxLayout->addStretch(1);
-    tickBoxLayout->addWidget(grooveTick);
-
-    QHBoxLayout *velocityBoxLayout = new QHBoxLayout;
-    QLabel *velocityLabel = new QLabel(tr("Groove &velocity"), this);
-    grooveVelocity = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
-    velocityLabel->setBuddy(grooveVelocity);
+    grooveVelocity = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("Groove &velocity"), this);
     connect(grooveVelocity, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveVelocity(int)));
 
-    velocityBoxLayout->addWidget(velocityLabel);
-    velocityBoxLayout->addStretch(1);
-    velocityBoxLayout->addWidget(grooveVelocity);
-
-    QHBoxLayout *lengthBoxLayout = new QHBoxLayout;
-    QLabel *lengthLabel = new QLabel(tr("Groove &length"), this);
-    grooveLength = new Slider(-100, 100, 0, 0, Qt::Horizontal, this);
-    lengthLabel->setBuddy(grooveLength);
+    grooveLength = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("Groove &length"), this);
     connect(grooveLength, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveLength(int)));
 
-    lengthBoxLayout->addWidget(lengthLabel);
-    lengthBoxLayout->addStretch(1);
-    lengthBoxLayout->addWidget(grooveLength);
-
-    GrooveWidgetLayout->addLayout(tickBoxLayout);
-    GrooveWidgetLayout->addLayout(velocityBoxLayout);
-    GrooveWidgetLayout->addLayout(lengthBoxLayout);
+    GrooveWidgetLayout->addWidget(grooveTick);
+    GrooveWidgetLayout->addWidget(grooveVelocity);
+    GrooveWidgetLayout->addWidget(grooveLength);
     GrooveWidgetLayout->addStretch();
 
     setLayout(GrooveWidgetLayout);

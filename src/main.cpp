@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     bool havePreset = false;
     QString fileName; 
 
+
     while((getopt_return = getopt_long(argc, argv, "hp:f:", options,
                     &option_index)) >= 0) {
 
@@ -73,23 +74,25 @@ int main(int argc, char *argv[])
 
 
     QMainWindow *top = new QMainWindow();
-    Gui *gui = new Gui(portCount, top);
+    Gui *gui = new Gui(fileName, portCount, top);
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *filePopup = new QMenu(QMenu::tr("&File"),top); 
     QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),top);
 
     filePopup->addAction(QMenu::tr("&Open..."), gui, SLOT(load()));
     filePopup->addAction(QMenu::tr("&Save"), gui, SLOT(save()));
+    filePopup->addAction(QMenu::tr("S&ave As..."), gui, SLOT(saveAs()));
     filePopup->addAction(QMenu::tr("&Quit"), &app, SLOT(quit()));
     aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), gui,
             SLOT(displayAbout())); 
     menuBar->addMenu(filePopup);
     menuBar->addMenu(aboutMenu);
 
-
     top->setWindowTitle(PACKAGE);
     top->setWindowIcon(QPixmap(qmidiarp2_xpm));
     top->setMenuBar(menuBar);
+	top->addToolBar(gui->runBox);
+
     top->setCentralWidget(gui); 
     top->show();
 

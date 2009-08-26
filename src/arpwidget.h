@@ -11,12 +11,12 @@
 #include <QToolButton>
 #include <QAction>
 #include <QComboBox>
-#include <QCheckBox>
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QFile>
 #include <QPlainTextEdit>
 #include <QTextStream>
+#include <QCheckBox>
 #include "midiarp.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -33,14 +33,14 @@ class ArpWidget : public QWidget
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
-	QCheckBox *muteOut;
 	QGroupBox *randomBox;
-	QToolButton *textEditButton, *randomButton, *textStoreButton, *textRemoveButton;
-    QAction *textEditAction, *randomAction, *textStoreAction, *textRemoveAction;
+	QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
+    QAction *textEditAction, *textStoreAction, *textRemoveAction;
 
 	MidiArp *midiArp;
 	QPlainTextEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
+	QCheckBox *muteOut;
 	
     
   public:
@@ -78,7 +78,6 @@ class ArpWidget : public QWidget
 	void updatePatternPreset(int);
 	void openTextEditWindow(bool on);
 	void storePatternText();
-	void toggleRandomBox(bool on);
 	void removeCurrentPattern();
 };
   

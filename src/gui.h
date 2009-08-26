@@ -31,9 +31,6 @@ class Gui : public QWidget
 
   private:
       QSpinBox *tempoSpin;
-      QToolButton *runButton, *addArpButton, *removeArpButton, *renameArpButton;
-      QToolBar *runBox;
-      QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
       QMessageBox *aboutWidget;
       PassWidget *passWidget;
       GrooveWidget *grooveWidget;
@@ -41,15 +38,16 @@ class Gui : public QWidget
       LogWidget *logWidget;
       ArpData *arpData;
       ArpWidget *arpWidget;
-      QString lastDir;
-
       void addArp(const QString&);
       void removeArp(int index);
       void checkRcFile();
+      QString lastDir, filename;
 
   public:
-      Gui(int p_portCount, QWidget* parent=0);
+      Gui(QString fileName, int p_portCount, QWidget* parent=0);
       ~Gui();
+      QToolBar *runBox;
+      QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
       void load(const QString&);
 
   signals:  
@@ -61,6 +59,7 @@ class Gui : public QWidget
       void addArp();
       void renameArp();
       void removeArp();
+      void saveAs();
       void save();
       void load();
       void clear();

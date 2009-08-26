@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <QSlider>
+#include <QSpinBox> 
 #include <QBoxLayout>
 
 class Slider : public QWidget
@@ -17,11 +18,12 @@ class Slider : public QWidget
 
   private:
     QSlider *slider;
-    QLabel *valueLabel, *minLabel, *maxLabel;
+	QSpinBox *sliderSpin;
+	QLabel *sliderLabel;
     
   public:
     Slider(int minValue, int maxValue, int pageStep, int value, 
-           Qt::Orientation orientation, QWidget * parent);
+           Qt::Orientation orientation, QString label, QWidget * parent);
     ~Slider();
     int value();
     
@@ -32,7 +34,7 @@ class Slider : public QWidget
     void setValue(int);
     
   private slots:
-    void updateLabel(int);  
+    void updateSpinBox(int);  
 };
   
 #endif
