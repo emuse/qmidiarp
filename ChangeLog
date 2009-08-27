@@ -1,4 +1,6 @@
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
+	* midiarp.cpp: Queue start with empty pattern fixed 
+2009-08-25 Frank Kober <goemusic@yahoo.fr>
 	* gui.cpp, main.h: automatic filename extension added
 	* gui.*, main.cpp: save and save As support added
 	* gui.cpp: qt4 port error in removeArp(int index) hopefully fixed 

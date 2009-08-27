@@ -201,15 +201,17 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
     tmpIndex[1] = -1;
     gotCC = false;
     pause = false;
-	//the following line is a TEMPORARY dirty insert to avoid crash
-	//upon running Queue and empty arp text
-	if (!patternLen) return;
+
     if (!patternIndex) {
         initLoop();
     }
 
     do {  
-        c = (pattern.at(patternIndex));
+        if (patternLen) 
+            c = (pattern.at(patternIndex)); 
+        else 
+            c = ' ';
+            
         if (c != ' ') {
             if (c.isDigit() || (c == 'p')) {
                 tmpIndex[chordIndex] = c.digitValue() + noteOfs;
