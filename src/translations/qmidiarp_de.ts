@@ -82,7 +82,12 @@
   d h  note length up/down
   / \  velocity up/down
    p   pause</source>
-        <translation type="unfinished"></translation>
+        <translation>( ) Akkord-Modus ein/aus
+ + - Octave auf/ab
+ &lt; . &gt; Tempo auf/ab
+ d h Notenlänge auf/ab
+ / \ Geschwindigkeit auf/ab
+...p...Pause</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="250"/>
@@ -215,7 +220,7 @@ d h Note länger/kürzer
     <message>
         <location filename="../gui.cpp" line="84"/>
         <source>&amp;Control Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Steuerungsleiste</translation>
     </message>
     <message>
         <location filename="../gui.cpp" line="86"/>
@@ -261,7 +266,7 @@ d h Note länger/kürzer
         <location filename="../gui.cpp" line="307"/>
         <location filename="../gui.cpp" line="338"/>
         <source>QMidiArp files</source>
-        <translation type="unfinished"></translation>
+        <translation>QMidiArp Dateien</translation>
     </message>
     <message>
         <location filename="../gui.cpp" line="315"/>
@@ -385,12 +390,12 @@ d h Note länger/kürzer
     <message>
         <location filename="../main.cpp" line="83"/>
         <source>&amp;Save</source>
-        <translation type="unfinished">&amp;Speichern</translation>
+        <translation>&amp;Speichern</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="84"/>
         <source>S&amp;ave As...</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;peichern unter...</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="85"/>

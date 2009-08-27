@@ -232,7 +232,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../gui.cpp" line="84"/>
         <source>&amp;Control Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Barre de contrôle</translation>
     </message>
     <message>
         <location filename="../gui.cpp" line="86"/>
