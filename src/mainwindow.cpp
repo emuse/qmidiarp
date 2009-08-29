@@ -1,37 +1,34 @@
-#include <QString>
-#include <QLabel>
-#include <QSlider> 
-#include <QBoxLayout>
-#include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
 #include <QInputDialog>
-#include <QMessageBox>
 #include <QFile>
 #include <QIcon>
-#include <QAction>
 #include <QDir>
 #include <QFileDialog>
-#include <QToolButton>
-#include <QToolBar>
 #include <QTextStream>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QMenu>
+#include <QMenuBar>
+
 #include <alsa/asoundlib.h>
 
 #include "arpdata.h"
 #include "logwidget.h"
 #include "passwidget.h"
 #include "groovewidget.h"
-#include "gui.h"
+#include "mainwindow.h"
 #include "arpwidget.h"
 #include "arpscreen.h"
 
+#include "pixmaps/qmidiarp2.xpm"
 #include "pixmaps/arpadd.xpm"
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
 
 
-Gui::Gui(QString fileName, int p_portCount, QWidget *parent) : QWidget(parent)
+MainWindow::MainWindow(QString fileName, int p_portCount)
 {
     checkRcFile();
     if (!fileName.isEmpty())
@@ -46,7 +43,10 @@ Gui::Gui(QString fileName, int p_portCount, QWidget *parent) : QWidget(parent)
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
 
+
+
     aboutWidget = new QMessageBox(this); 
+
     tabWidget = new QTabWidget(this);
     logWidget = new LogWidget(tabWidget);
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
@@ -118,27 +118,47 @@ Gui::Gui(QString fileName, int p_portCount, QWidget *parent) : QWidget(parent)
     runBox->addAction(runAction);
     runBox->addWidget(tempoSpin);
     runBox->setMaximumHeight(30);
+	
+    QMenuBar *menuBar = new QMenuBar; 
+    QMenu *filePopup = new QMenu(QMenu::tr("&File"),this); 
+    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
 
+    filePopup->addAction(QMenu::tr("&Open..."), this, SLOT(load()));
+    filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()));
+    filePopup->addAction(QMenu::tr("S&ave As..."), this, SLOT(saveAs()));
+    filePopup->addSeparator();
+    filePopup->addAction(addArpAction);
+    filePopup->addAction(renameArpAction);
+    filePopup->addAction(removeArpAction);
+    filePopup->addSeparator();
+    filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()));
+    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
+            SLOT(displayAbout())); 
+    menuBar->addMenu(filePopup);
+    menuBar->addMenu(aboutMenu);
+	
+	
+    setMenuBar(menuBar);
+	addToolBar(runBox);
+    setCentralWidget(tabWidget);
+	setWindowTitle(filename + " - "  PACKAGE);
+    setWindowIcon(QPixmap(qmidiarp2_xpm));
+	if (!filename.isEmpty()) load(filename);
 
-    QVBoxLayout *guiBoxLayout = new QVBoxLayout;
-    guiBoxLayout->addWidget(tabWidget);
-    guiBoxLayout->setSpacing(2);
-    guiBoxLayout->setMargin(2);
-
-    setLayout(guiBoxLayout);
+    show();
 }
 
-Gui::~Gui()
+MainWindow::~MainWindow()
 {
 }
 
-void Gui::displayAbout()
+void MainWindow::displayAbout()
 {
     aboutWidget->about(this, tr("About %1").arg(PACKAGE), aboutText);
     aboutWidget->raise();
 }
 
-void Gui::addArp()
+void MainWindow::addArp()
 {
     QString name;
     bool ok;
@@ -151,7 +171,7 @@ void Gui::addArp()
     }
 }
 
-void Gui::addArp(const QString& name)
+void MainWindow::addArp(const QString& name)
 {
     MidiArp *midiArp = new MidiArp();
     arpData->addMidiArp(midiArp);   
@@ -172,7 +192,7 @@ void Gui::addArp(const QString& name)
     runAction->setEnabled(true);
 }
 
-void Gui::renameArp() {
+void MainWindow::renameArp() {
 
     QString newname, oldname;
     bool ok;
@@ -191,7 +211,7 @@ void Gui::renameArp() {
     }
 }
 
-void Gui::removeArp()
+void MainWindow::removeArp()
 {
     QString qs;
 
@@ -220,7 +240,7 @@ void Gui::removeArp()
     }
 }
 
-void Gui::removeArp(int index)
+void MainWindow::removeArp(int index)
 {
 //    QString qs;
 
@@ -238,14 +258,14 @@ void Gui::removeArp(int index)
     }                      
 }
 
-void Gui::clear()
+void MainWindow::clear()
 {
     while (arpData->midiArpCount()) {
         removeArp(arpData->midiArpCount() - 1);
     }
 }
 
-void Gui::load()
+void MainWindow::load()
 {
     filename =  QFileDialog::getOpenFileName(this,
             tr("Open arpeggiator file"), lastDir,
@@ -258,7 +278,7 @@ void Gui::load()
     load(filename);
 }
 
-void Gui::load(const QString& name)
+void MainWindow::load(const QString& name)
 {
     QString qs, qs2;
 
@@ -295,7 +315,7 @@ void Gui::load(const QString& name)
     tabWidget->setCurrentWidget(arpData->arpWidget(0));
 }
 
-void Gui::save()
+void MainWindow::save()
 {
     int l1;
 
@@ -329,7 +349,7 @@ void Gui::save()
 	lastDir = filename;
 }
 
-void Gui::saveAs()
+void MainWindow::saveAs()
 {
     if (arpData->midiArpCount() < 1) {  
         return;
@@ -348,29 +368,29 @@ void Gui::saveAs()
 }
 
 
-void Gui::updateTempo(int p_tempo)
+void MainWindow::updateTempo(int p_tempo)
 {
     emit(newTempo(p_tempo));
 }
 
-void Gui::updateRunQueue(bool on)
+void MainWindow::updateRunQueue(bool on)
 {
     emit(runQueue(on));
 }
 
-void Gui::resetQueue()
+void MainWindow::resetQueue()
 {
     arpData->seqDriver->runQueue(runAction->isChecked());
 }
 
-void Gui::midiClockToggle(bool on)
+void MainWindow::midiClockToggle(bool on)
 {
     runAction->setChecked(on);
     arpData->seqDriver->setUseMidiClock(on);
     runAction->setDisabled(on);
 }
 
-void Gui::checkRcFile()
+void MainWindow::checkRcFile()
 {
     QString qs2;
     int l1;

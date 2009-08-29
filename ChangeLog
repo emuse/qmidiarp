@@ -1,3 +1,8 @@
+2009-08-29 Frank Kober <goemusic@yahoo.fr>
+	* gui.* removed
+	* mainwindow.cpp, mainwindow.h: created, containing MainWindow
+	class, all Gui elements moved to MainWindow
+
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
 	* midiarp.cpp: Queue start with empty pattern fixed 
 2009-08-25 Frank Kober <goemusic@yahoo.fr>

@@ -251,7 +251,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
     } else
         x1 = 0;
 
-
     for (l1 = 0; l1 < patternLen; l1++) {
         c = a_pattern.at(l1);
         if (c.isDigit()) {
@@ -325,8 +324,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 			x = (int)((curstep - tempo) * xscale);
             if (nlines > 0) {
                 ypos = nlines-1;
-
-                if (x1 == x) {
+               if (x1 == x) {
                     p.setPen(QColor(140, 240, 140));
                     p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
                             ARPSCREEN_HMARGIN + x, height());

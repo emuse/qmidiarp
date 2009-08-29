@@ -3,21 +3,13 @@
 #include <unistd.h>
 #include <getopt.h>  
 #include <QApplication>
-#include <QMainWindow>
-#include <QMenuBar>   
-#include <QMenu>
 #include <QString>
-#include <QWidget>
-#include <QSpinBox>
-#include <QPixmap>
-#include <QToolButton>
 #include <QTranslator>
 #include <QLocale>
 #include <QLibraryInfo>
 
-#include "gui.h"
+#include "mainwindow.h"
 #include "main.h"
-#include "pixmaps/qmidiarp2.xpm"
 
 
 static struct option options[] = {
@@ -72,32 +64,7 @@ int main(int argc, char *argv[])
     if (qmidiarpTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
         app.installTranslator(&qmidiarpTr);
 
-
-    QMainWindow *top = new QMainWindow();
-    Gui *gui = new Gui(fileName, portCount, top);
-    QMenuBar *menuBar = new QMenuBar; 
-    QMenu *filePopup = new QMenu(QMenu::tr("&File"),top); 
-    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),top);
-
-    filePopup->addAction(QMenu::tr("&Open..."), gui, SLOT(load()));
-    filePopup->addAction(QMenu::tr("&Save"), gui, SLOT(save()));
-    filePopup->addAction(QMenu::tr("S&ave As..."), gui, SLOT(saveAs()));
-    filePopup->addAction(QMenu::tr("&Quit"), &app, SLOT(quit()));
-    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), gui,
-            SLOT(displayAbout())); 
-    menuBar->addMenu(filePopup);
-    menuBar->addMenu(aboutMenu);
-
-    top->setWindowTitle(PACKAGE);
-    top->setWindowIcon(QPixmap(qmidiarp2_xpm));
-    top->setMenuBar(menuBar);
-	top->addToolBar(gui->runBox);
-
-    top->setCentralWidget(gui); 
-    top->show();
-
-    if (havePreset) {
-        gui->load(fileName);
-    }
+    new MainWindow(fileName, portCount);
+ 
     return app.exec(); 
 }

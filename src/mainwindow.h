@@ -1,15 +1,14 @@
-#ifndef GUI_H
-#define GUI_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QString>
-#include <QLabel>
-#include <QSlider>
 #include <QBoxLayout>
-#include <QList>
 #include <QMessageBox>
 #include <QTabWidget>
-#include <QToolButton>
 #include <QToolBar>
+#include <QMainWindow>
+#include <QAction>
+
 
 #include "arpwidget.h"
 #include "logwidget.h"
@@ -25,7 +24,7 @@ const QString aboutText = PACKAGE_STRING "\n"
 			  "(C) 2009 Guido Scholz\n\n"
                           PACKAGE " is licensed under the GPL.\n";
 
-class Gui : public QWidget
+class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
@@ -44,8 +43,8 @@ class Gui : public QWidget
       QString lastDir, filename;
 
   public:
-      Gui(QString fileName, int p_portCount, QWidget* parent=0);
-      ~Gui();
+      MainWindow(QString fileName, int p_portCount);
+      ~MainWindow();
       QToolBar *runBox;
       QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
       void load(const QString&);

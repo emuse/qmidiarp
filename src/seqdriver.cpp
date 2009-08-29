@@ -111,15 +111,14 @@ void SeqDriver::procEvents(int)
             if (use_midiclock && (midiTime > 0)) 
                 m_ratio = (double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime;
             else m_ratio = 1.0;
-            /*	  printf("First Tick %d   ",firstArpTick);
-                  printf("tick %d   ",tick);
-                  printf("midiTime %d   ",midiTime);
-                  printf("m_ratio %f\n",m_ratio);
-                  */	  
+            	  //printf("First Tick %d   ",firstArpTick);
+                  //printf("       tick %d   ",tick);
+                  //printf("midiTime %d   ",midiTime);
+                  //printf("m_ratio %f\n",m_ratio);
+                  
             startQueue = false;
             nextEchoTick = 0;
             foundEcho = false;
-            emit nextStep((tick-firstArpTick)/m_ratio);
 
             for (l1 = 0; l1 < midiArpList->count(); l1++) {
                 midiArpList->at(l1)->newRandomValues();
@@ -160,6 +159,8 @@ void SeqDriver::procEvents(int)
             snd_seq_ev_schedule_tick(evIn, queue_id,  0, nextEchoTick*m_ratio);
             snd_seq_ev_set_dest(evIn, clientid, portid_in);
             snd_seq_event_output_direct(seq_handle, evIn);
+			
+            emit nextStep((tick-firstArpTick)/m_ratio);
 
         } else {
 			emit midiEvent(evIn);

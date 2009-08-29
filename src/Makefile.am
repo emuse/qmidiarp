@@ -8,7 +8,7 @@ nodist_qmidiarp_SOURCES = \
 	arpscreen_moc.cpp \
 	arpwidget_moc.cpp \
 	groovewidget_moc.cpp \
-	gui_moc.cpp \
+	mainwindow_moc.cpp \
 	logwidget_moc.cpp \
 	midiarp_moc.cpp \
 	passwidget_moc.cpp \
@@ -20,7 +20,7 @@ qmidiarp_SOURCES = \
 	arpscreen.cpp arpscreen.h \
 	arpwidget.cpp arpwidget.h \
 	groovewidget.cpp groovewidget.h \
-	gui.cpp gui.h \
+	mainwindow.cpp mainwindow.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
 	midiarp.cpp midiarp.h \
