@@ -7,7 +7,7 @@
 
 #include "midiarp.h"
 #include "main.h"
-#include "gui.h"
+#include "mainwindow.h"
 #include "seqdriver.h"
 
 
