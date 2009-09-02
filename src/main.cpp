@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
                 break;
             case 'h':
                 printf("\n%s\n", qPrintable(aboutText));
-                printf("--file <name>         Load file\n\n");
-                printf("--portCount <num>     Number of Output Ports [2]\n\n");
+                printf("--file <name>         Load file\n");
+                printf("--portCount <num>     Number of Output Ports [2]\n");
                 exit(EXIT_SUCCESS);
         }
     }
