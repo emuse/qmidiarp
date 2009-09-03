@@ -1,3 +1,7 @@
+2009-09-03 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp: new Arp pulldown menu, keyboard shortcuts added
+	* qmidiarp_*.ts: translations updated, obsoletes left atm
+
 2009-08-29 Frank Kober <goemusic@yahoo.fr>
 	* gui.* removed
 	* mainwindow.cpp, mainwindow.h: created, containing MainWindow

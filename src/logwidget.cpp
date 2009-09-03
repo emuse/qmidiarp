@@ -22,7 +22,7 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
     logText = new QTextEdit(this);
     logText->setTextColor(QColor(0,0,255));
     logText->setCurrentFont(QFont("Courier", 8));
-    
+    logText->setReadOnly(true);
     QCheckBox *enableLog = new QCheckBox(this);
     enableLog->setText(tr("&Enable Log"));
     QObject::connect(enableLog, SIGNAL(toggled(bool)), this,

@@ -81,18 +81,20 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
             arpData->seqDriver, SLOT(setGrooveLength(int)));
     tabWidget->addTab(grooveWidget, tr("Groove"));			
 
-    runBox = new QToolBar(tr("&Control Toolbar"), this);
 
-    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&Add Arp"), runBox);
+    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New..."), this);
+    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New")));
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
 
-    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename Arp"),
-            runBox);
+    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."),
+            this);
+	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Arp|Rename")));
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(renameArp()));
     renameArpAction->setDisabled(true);
 
-    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Remove Arp"),
-            runBox);
+    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."),
+            this);
+	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Arp|Delete")));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpAction->setDisabled(true);
 
@@ -103,14 +105,35 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     runAction->setDisabled(true);
     updateRunQueue(false);
 
-
-    tempoSpin = new QSpinBox(runBox);
+    tempoSpin = new QSpinBox(this);
     tempoSpin->setRange(10, 400);
     tempoSpin->setValue(100);
 	tempoSpin->setKeyboardTracking(false);
-
     connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(updateTempo(int)));
+	
+    QMenuBar *menuBar = new QMenuBar; 
+    QMenu *filePopup = new QMenu(QMenu::tr("&File"),this); 
+    QMenu *arpPopup = new QMenu(QMenu::tr("&Arp"),this); 
+    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
 
+    filePopup->addAction(QMenu::tr("&Open..."), this, SLOT(load()),
+					    QKeySequence(QKeySequence::Open));    
+    filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()),
+				    QKeySequence(QKeySequence::Save));    
+    filePopup->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()),
+					QKeySequence(QKeySequence::SaveAs));
+    filePopup->addSeparator();
+    filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
+					QKeySequence(QMenu::tr("Ctrl+Q", "File|Quit")));    
+
+    arpPopup->addAction(addArpAction);
+    arpPopup->addAction(renameArpAction);
+    arpPopup->addAction(removeArpAction);
+
+    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
+            SLOT(displayAbout())); 
+ 
+    runBox = new QToolBar(tr("&Control Toolbar"), this);
     runBox->addAction(addArpAction);
     runBox->addAction(renameArpAction);
     runBox->addAction(removeArpAction);
@@ -118,23 +141,9 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     runBox->addAction(runAction);
     runBox->addWidget(tempoSpin);
     runBox->setMaximumHeight(30);
-	
-    QMenuBar *menuBar = new QMenuBar; 
-    QMenu *filePopup = new QMenu(QMenu::tr("&File"),this); 
-    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
 
-    filePopup->addAction(QMenu::tr("&Open..."), this, SLOT(load()));
-    filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()));
-    filePopup->addAction(QMenu::tr("S&ave As..."), this, SLOT(saveAs()));
-    filePopup->addSeparator();
-    filePopup->addAction(addArpAction);
-    filePopup->addAction(renameArpAction);
-    filePopup->addAction(removeArpAction);
-    filePopup->addSeparator();
-    filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()));
-    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
-            SLOT(displayAbout())); 
     menuBar->addMenu(filePopup);
+    menuBar->addMenu(arpPopup);
     menuBar->addMenu(aboutMenu);
 	
 	

@@ -36,8 +36,6 @@
 #include <alsa/asoundlib.h>
 
 #include "arpscreen.h"
-#include "midiarp.h"
-#include "arpwidget.h"
 #include "arpdata.h"
 
 
