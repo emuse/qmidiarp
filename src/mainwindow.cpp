@@ -120,8 +120,7 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
 					    QKeySequence(QKeySequence::Open));    
     filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()),
 				    QKeySequence(QKeySequence::Save));    
-    filePopup->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()),
-					QKeySequence(QKeySequence::SaveAs));
+    filePopup->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()));
     filePopup->addSeparator();
     filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
 					QKeySequence(QMenu::tr("Ctrl+Q", "File|Quit")));    
