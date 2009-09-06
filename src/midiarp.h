@@ -47,6 +47,9 @@ class MidiArp : public QObject  {
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
     ArpScreen *arpScreen;
+	
+  signals:
+      void toggleMute();
 
            
   public:
@@ -73,7 +76,9 @@ class MidiArp : public QObject  {
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
-    void muteArp(bool);
+    void muteArp(bool); //set mute
+    void muteArp(); //toggle mute
+
 
 };
                               

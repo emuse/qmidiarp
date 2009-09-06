@@ -111,6 +111,12 @@ void MidiArp::muteArp(bool on)
     isMuted = on;
 }
 
+void MidiArp::muteArp()
+{
+    isMuted = not(isMuted);
+	emit(toggleMute());
+}
+
 void MidiArp::removeNote(snd_seq_event_t *evIn)
 {
     int bufPtr, newBufPtr, l1, l2, l3, note;

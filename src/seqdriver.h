@@ -29,11 +29,10 @@ class SeqDriver : public QWidget {
 	
   protected: 
     int midiTime;
-    int midiclock_tpb;
+    int midiclock_tpb, mute_cnumber;
+	bool midi_mutable;
     double m_ratio;
     int sustain;
-
-    //QList<snd_seq_event_t *> *sustainBufferList;
 	
   public:
     bool discardUnmatched, runQueueIfArp, runArp;
@@ -73,6 +72,9 @@ class SeqDriver : public QWidget {
     void resetMidiTime();
     void setUseMidiClock(bool on);
     void updateMIDItpb(int midiTpb);
+	void setMidiMutable(bool on);
+    void updateCnumber(int midiTpb);
+
 };
                               
 #endif

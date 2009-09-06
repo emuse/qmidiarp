@@ -1,3 +1,11 @@
+2009-09-06 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp, midiarp.cpp, seqdriver.cpp, passwidget.cpp: 
+	MIDI controller for muting arps implemented. The controller for the
+	first arp can be configured in the settings tab, the other arps in 
+	row are the following CC numbers. When the corresponding CC with
+	value 127 is received, the arp mute state is toggled.
+	* qmidiarp_*.ts: translations updated, obsoletes left atm
+
 2009-09-03 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp: new Arp pulldown menu, keyboard shortcuts added
 	* qmidiarp_*.ts: translations updated, obsoletes left atm

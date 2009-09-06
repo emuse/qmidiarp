@@ -40,13 +40,13 @@ class ArpWidget : public QWidget
 	MidiArp *midiArp;
 	QPlainTextEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
-	QCheckBox *muteOut;
 	
     
   public:
     QString arpName;
     ArpScreen *arpScreen;
 	QStringList patternPresets, patternNames;
+	QCheckBox *muteOut;
 
   public:
     ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);

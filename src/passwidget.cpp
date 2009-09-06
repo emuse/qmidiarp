@@ -18,7 +18,6 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     QObject::connect(discardCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateDiscard(bool)));
 
-    QHBoxLayout *portBoxLayout = new QHBoxLayout;
     portLabel = new QLabel(tr("&Send unmatched events to port"), this);
     portUnmatchedSpin = new QSpinBox(this);
     portLabel->setBuddy(portUnmatchedSpin);
@@ -28,11 +27,20 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
  	portUnmatchedSpin->setKeyboardTracking(false);
     QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updatePortUnmatched(int)));
+			
+    QHBoxLayout *portBoxLayout = new QHBoxLayout;
     portBoxLayout->addWidget(portLabel);
     portBoxLayout->addStretch(1);
     portBoxLayout->addWidget(portUnmatchedSpin);
 
-    QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
+
+    mbuttonCheck = new QCheckBox(this);
+    mbuttonCheck->setText(tr("&Use incoming MIDI Clock"));
+    QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateClockSetting(bool)));
+    mbuttonCheck->setChecked(false);
+    mbuttonCheck->setDisabled(true);
+	
     mtpbLabel = new QLabel(tr("MIDI &Clock rate (tpb)"), this);
     mtpbSpin = new QSpinBox(this);
     mtpbLabel->setBuddy(mtpbSpin);
@@ -44,22 +52,40 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
  	mtpbSpin->setKeyboardTracking(false);
     mtpbSpin->setDisabled(true);
     mtpbLabel->setDisabled(true);
+	
+    QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
     mtpbBoxLayout->addWidget(mtpbLabel);
     mtpbBoxLayout->addStretch(1);
     mtpbBoxLayout->addWidget(mtpbSpin);
 
-    mbuttonCheck = new QCheckBox(this);
-    mbuttonCheck->setText(tr("&Use incoming MIDI Clock"));
-    QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this,
-            SLOT(updateClockSetting(bool)));
-    mbuttonCheck->setChecked(false);
-    mbuttonCheck->setDisabled(true);
+    cbuttonCheck = new QCheckBox(this);
+    cbuttonCheck->setText(tr("Use MIDI &Controller to mute arps"));
+    cbuttonCheck->setChecked(true);
+    QObject::connect(cbuttonCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateControlSetting(bool)));
+	
+    cnumberSpin = new QSpinBox(this);
+    QObject::connect(cnumberSpin, SIGNAL(valueChanged(int)), this,
+            SLOT(updateCnumber(int)));
+    cnumberSpin->setRange(24,127);
+    cnumberSpin->setValue(37);
+ 	cnumberSpin->setKeyboardTracking(false);
+	
+    cnumberLabel = new QLabel(tr("First arp is muted by CC#"), this);
+    cnumberLabel->setBuddy(cnumberSpin);
+	
+    QHBoxLayout *cnumberLayout = new QHBoxLayout;
+    cnumberLayout->addWidget(cnumberLabel);
+    cnumberLayout->addStretch(1);
+    cnumberLayout->addWidget(cnumberSpin);
 
     QVBoxLayout *passWidgetLayout = new QVBoxLayout;
     passWidgetLayout->addWidget(discardCheck);
     passWidgetLayout->addLayout(portBoxLayout);
     passWidgetLayout->addWidget(mbuttonCheck);
     passWidgetLayout->addLayout(mtpbBoxLayout);
+    passWidgetLayout->addWidget(cbuttonCheck);
+    passWidgetLayout->addLayout(cnumberLayout);
     passWidgetLayout->addStretch();
 
     setLayout(passWidgetLayout);
@@ -102,4 +128,19 @@ void PassWidget::updateMIDItpb_pw(int MIDItpb)
 {
     emit newMIDItpb(MIDItpb);
 }
+
+void PassWidget::updateControlSetting(bool on)
+{
+	cnumberSpin->setEnabled(on);
+    cnumberLabel->setEnabled(on);
+    emit midiMuteToggle(on);
+
+}
+
+void PassWidget::updateCnumber(int cnumber)
+{
+	emit newCnumber(cnumber);
+}
+
+
 

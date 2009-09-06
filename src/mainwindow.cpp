@@ -64,6 +64,11 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
             arpData->seqDriver, SLOT(updateMIDItpb(int)));
     connect(passWidget, SIGNAL(newPortUnmatched(int)), 
             arpData->seqDriver, SLOT(setPortUnmatched(int)));
+    connect(passWidget, SIGNAL(midiMuteToggle(bool)), 
+            arpData->seqDriver, SLOT(setMidiMutable(bool)));
+    connect(passWidget, SIGNAL(newCnumber(int)), 
+            arpData->seqDriver, SLOT(updateCnumber(int)));
+
 
     connect(this, SIGNAL(newTempo(int)), 
             arpData->seqDriver, SLOT(setQueueTempo(int)));
@@ -86,14 +91,12 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New")));
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
 
-    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."),
-            this);
+    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
 	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Arp|Rename")));
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(renameArp()));
     renameArpAction->setDisabled(true);
 
-    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."),
-            this);
+    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
 	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Arp|Delete")));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpAction->setDisabled(true);
@@ -117,9 +120,9 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
 
     filePopup->addAction(QMenu::tr("&Open..."), this, SLOT(load()),
-					    QKeySequence(QKeySequence::Open));    
+					QKeySequence(QKeySequence::Open));    
     filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()),
-				    QKeySequence(QKeySequence::Save));    
+					QKeySequence(QKeySequence::Save));    
     filePopup->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()));
     filePopup->addSeparator();
     filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
@@ -189,8 +192,11 @@ void MainWindow::addArp(const QString& name)
             arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
+	connect(midiArp, SIGNAL(toggleMute()), arpWidget->muteOut, SLOT(toggle()));
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
+	arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
+	arpData->seqDriver->updateCnumber(passWidget->cnumberSpin->value());
     tabWidget->addTab(arpWidget, name);
     tabWidget->setCurrentWidget(arpWidget);
     arpWidget->arpName = name;
@@ -300,6 +306,15 @@ void MainWindow::load(const QString& name)
     }          
     QTextStream loadText(&f);
     qs = loadText.readLine();
+	if (qs == "MIDI Control")
+	{
+		qs = loadText.readLine();
+		qs2 = qs.section(' ', 0, 0);
+		passWidget->cbuttonCheck->setChecked(qs2.toInt());
+		qs2 = qs.section(' ', 1, 1);
+		passWidget->cnumberSpin->setValue(qs2.toInt());
+		qs = loadText.readLine();
+	}
     qs2 = qs.section(' ', 0, 0);
     passWidget->setDiscard(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
@@ -345,6 +360,9 @@ void MainWindow::save()
     }          
 
     QTextStream saveText(&f);
+	saveText << "MIDI Control\n";
+	saveText <<	(int)passWidget->cbuttonCheck->isChecked();
+	saveText <<	' ' << passWidget->cnumberSpin->value() << '\n';
     saveText << (int)arpData->seqDriver->discardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
     saveText << arpData->seqDriver->grooveTick;

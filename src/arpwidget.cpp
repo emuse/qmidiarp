@@ -106,7 +106,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
 	muteLabel->setBuddy(muteOut);
-
     QHBoxLayout *muteBoxLayout = new QHBoxLayout;
     muteBoxLayout->addWidget(muteLabel);
     muteBoxLayout->addStretch();

@@ -19,6 +19,8 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
     portCount = 0;
     discardUnmatched = false;
     portUnmatched = 0;
+	mute_cnumber = 37;
+	midi_mutable = false;
 
     //TODO: show real error message
     if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
@@ -95,7 +97,7 @@ void SeqDriver::procEvents(int)
 {
     int l1, l2;
     int note[MAXCHORD], velocity[MAXCHORD];
-    int length;
+    int length, ccnumber;
     snd_seq_event_t *evIn, evOut;
     snd_seq_tick_time_t noteTick, nextEchoTick;
     bool unmatched, foundEcho, isNew;
@@ -166,24 +168,34 @@ void SeqDriver::procEvents(int)
 			emit midiEvent(evIn);
             unmatched = true;
 
-            //Sustain Footswitch has changed, note offs are buffered
-            //when pressed and sent only when released
 
             if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
-                if (evIn->data.control.param == 64) {
+				ccnumber = (int)evIn->data.control.param;
+                if (ccnumber == 64) 
+				{
+					//Sustain Footswitch has changed, note offs are buffered
+					//when pressed and sent only when released
                     sustain = evIn->data.control.value;
 					unmatched = false;
+					if (!sustain) 
+					{
+						for (l2 = 0; l2 < midiArpList->count(); l2++) { 
+							for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
+								int buf = sustainBufferList.at(l1);
+								midiArpList->at(l2)->removeNote(&buf);
+							}  
+						}
+						sustainBufferList.clear();
+					}
 				}
-                if (!sustain) {
-                    for (l2 = 0; l2 < midiArpList->count(); l2++) { 
-                        for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
-                            int buf = sustainBufferList.at(l1);
-                            midiArpList->at(l2)->removeNote(&buf);
-                        }  
-                    }
-                    sustainBufferList.clear();
-                }
-            }
+				if ((evIn->data.control.value == 127) && (ccnumber > (mute_cnumber - 1)) 
+					&& midi_mutable	&& (ccnumber < (mute_cnumber + midiArpList->count())))
+				{
+					//Mute Toggle Controller received
+					midiArpList->at(ccnumber - mute_cnumber)->muteArp();
+					unmatched = false;
+				}
+			}
 
             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                     || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
@@ -393,5 +405,15 @@ void SeqDriver::setUseMidiClock(bool on)
 void SeqDriver::updateMIDItpb(int midiTpb)
 {
     midiclock_tpb = midiTpb;
+}
+
+void SeqDriver::updateCnumber(int cnumber)
+{
+    mute_cnumber = cnumber;
+}
+
+void SeqDriver::setMidiMutable(bool on)
+{
+	midi_mutable = on;
 }
 
