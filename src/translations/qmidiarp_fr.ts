@@ -117,32 +117,47 @@ d h durée de note augm/dim
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="440"/>
+        <location filename="../arpwidget.cpp" line="271"/>
+        <source>Envelope</source>
+        <translation>Enveloppe</translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="273"/>
+        <source>&amp;Attack (1/beat))</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="276"/>
+        <source>&amp;Release (1/beat))</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="456"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="461"/>
+        <location filename="../arpwidget.cpp" line="477"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="491"/>
+        <location filename="../arpwidget.cpp" line="507"/>
         <source>%1: Store pattern</source>
         <translation>%1: Mémoriser motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="492"/>
+        <location filename="../arpwidget.cpp" line="508"/>
         <source>New pattern</source>
         <translation>Nouveau motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="492"/>
+        <location filename="../arpwidget.cpp" line="508"/>
         <source>Arp pattern</source>
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="513"/>
+        <location filename="../arpwidget.cpp" line="529"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>

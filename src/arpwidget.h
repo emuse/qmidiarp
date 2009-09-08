@@ -33,14 +33,14 @@ class ArpWidget : public QWidget
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
-	QGroupBox *randomBox;
+	QGroupBox *randomBox, *envelopeBox;
 	QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
 
 	MidiArp *midiArp;
 	QPlainTextEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
-	
+	Slider *attackTime, *releaseTime;
     
   public:
     QString arpName;

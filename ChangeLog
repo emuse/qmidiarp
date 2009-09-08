@@ -1,3 +1,11 @@
+2009-09-09 Frank Kober <goemusic@yahoo.fr>
+	* midiarp.*, seqdriver.*, arpwidget.*:
+	Simple envelope implementation started. When attack slider is
+	set > 0, the velocity is ramped up from zero with alsa tick as
+	timescale. When release is > 0, velocities of released notes are 
+	ramped down until velocity=0 and then removed from buffer.
+	Tick and release mark information is stored with note in buffer.  
+	
 2009-09-06 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp, midiarp.cpp, seqdriver.cpp, passwidget.cpp: 
 	MIDI controller for muting arps implemented. The controller for the

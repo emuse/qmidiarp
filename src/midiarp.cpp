@@ -47,6 +47,8 @@ MidiArp::MidiArp()
     grooveLength = 0;
     repeatPatternThroughChord = 1;
     isMuted = false;
+	attack_time = 0.0;
+	release_time = 0.0;
 }
 
 MidiArp::~MidiArp(){
@@ -72,35 +74,43 @@ bool MidiArp::isArp(snd_seq_event_t *evIn) {
     return(true);
 }
 
-void MidiArp::addNote(snd_seq_event_t *evIn)
+void MidiArp::addNote(snd_seq_event_t *evIn, int tick)
 {
     int bufPtr, newBufPtr, l1, l2, l3, note;
 
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
     note = evIn->data.note.note;
-    if (!noteCount || (note >= notes[bufPtr][0][noteCount - 1])) {
+    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1])) {
         notes[bufPtr][0][noteCount] = note;
         notes[bufPtr][1][noteCount] = evIn->data.note.velocity;
+        notes[bufPtr][2][noteCount] = tick;
+        notes[bufPtr][3][noteCount] = 0;
         noteCount++;
-    } else {
+    } 
+	else 
+	{
         l1 = 0;
         while (note > notes[bufPtr][0][l1]) {
             l1++;
         }
-        for (l3 = 0; l3 < 2; l3++) {
+        for (l3 = 0; l3 < 4; l3++) {
             for (l2 = noteCount; l2 > l1; l2--) {
                 notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 - 1];
             }  
         }
         notes[bufPtr][0][l1] = note;
         notes[bufPtr][1][l1] = evIn->data.note.velocity;
+        notes[bufPtr][2][l1] = tick;
+        notes[bufPtr][3][l1] = 0;
         noteCount++;
-    }  
+    } 
     newBufPtr = noteBufPtr;
     noteBufPtr = bufPtr;
-    for (l3 = 0; l3 < 2; l3++) {
-        for (l2 = 0; l2 < noteCount; l2++) {
+    for (l3 = 0; l3 < 4; l3++) 
+	{
+        for (l2 = 0; l2 < noteCount; l2++) 
+		{
             notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
         }  
     }
@@ -117,7 +127,7 @@ void MidiArp::muteArp()
 	emit(toggleMute());
 }
 
-void MidiArp::removeNote(snd_seq_event_t *evIn)
+void MidiArp::removeNote(snd_seq_event_t *evIn, int tick, int keep_rel)
 {
     int bufPtr, newBufPtr, l1, l2, l3, note;
 
@@ -127,69 +137,106 @@ void MidiArp::removeNote(snd_seq_event_t *evIn)
     if (!noteCount) {
         return;
     }
-    if (note == notes[bufPtr][0][noteCount - 1]) {
-        do {
-            noteCount--;
-        } while (note == notes[bufPtr][0][noteCount - 1]);
-    } else {
-        l1 = 0;
-        while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) {
-            l1++;
-        }
-        while (note == notes[bufPtr][0][l1]) {
-            for (l3 = 0; l3 < 2; l3++) {
-                for (l2 = l1; l2 < noteCount - 1; l2++) {
-                    notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 + 1];
-                }  
-            }  
-            noteCount--;
-        }
-    }  
+	if ((!keep_rel) || (!release_time))
+	{	//definitely remove from buffer
+		if (note == notes[bufPtr][0][noteCount - 1]) {
+			do {
+				noteCount--;
+			} while (note == notes[bufPtr][0][noteCount - 1]);
+		} 
+		else 
+		{
+			l1 = 0;
+			while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) {
+				l1++;
+			}
+			while (note == notes[bufPtr][0][l1]) {
+				for (l3 = 0; l3 < 4; l3++) {
+					for (l2 = l1; l2 < noteCount - 1; l2++) {
+						notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 + 1];
+					}
+				}
+				noteCount--;
+			}
+		}
+	}  
+	else 
+	{	//mark as released but keep with tick when note_off was sent
+		l1 = 0;
+		while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) 
+		{
+			l1++;
+		}
+		notes[bufPtr][3][l1] = 1;
+		notes[bufPtr][2][l1] = tick;
+		
+	}
     newBufPtr = noteBufPtr;
     noteBufPtr = bufPtr;
-    for (l3 = 0; l3 < 2; l3++) {
-        for (l2 = 0; l2 < noteCount; l2++) {
+    for (l3 = 0; l3 < 4; l3++) 
+	{
+        for (l2 = 0; l2 < noteCount; l2++) 
+		{
             notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
         }  
     }
 }
 
-void MidiArp::removeNote(int *noteptr)
+void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
 {
     int bufPtr, newBufPtr, l1, l2, l3, note ;
     note = *noteptr;
-
+	int tickmark = tick;
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
-    //note = evIn->data.note.note;
     if (!noteCount) {
         return;
     }
-    if (note == notes[bufPtr][0][noteCount - 1]) {
-        do {
-            noteCount--;
-        } while (note == notes[bufPtr][0][noteCount - 1]);
-    } else {
-        l1 = 0;
-        while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) {
-            l1++;
-        }
-        while (note == notes[bufPtr][0][l1]) {
-            for (l3 = 0; l3 < 2; l3++) {
-                for (l2 = l1; l2 < noteCount - 1; l2++) {
-                    notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 + 1];
-                }  
-            }  
-            noteCount--;
-        }
-    }  
-    newBufPtr = noteBufPtr;
-    noteBufPtr = bufPtr;
-    for (l3 = 0; l3 < 2; l3++) {
-        for (l2 = 0; l2 < noteCount; l2++) {
-            notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
-        }  
-    }
+	if (!keep_rel || (!release_time))
+	{	//definitely remove from buffer, do NOT check for doubles
+		if (note == notes[bufPtr][0][noteCount - 1]) 
+		{
+				noteCount--;
+		} 
+		else 
+		{
+			l1 = 0;
+			while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) 
+			{
+				l1++;
+			}
+			while ((l1 < noteCount) && (!notes[bufPtr][3][l1]) && (tickmark == -1)) 
+			{	//additional forward in buffer to look for release marked note
+				// tickmark is -1 only if removeNote called after release
+				l1++;
+			}
+				for (l3 = 0; l3 < 4; l3++) {
+					for (l2 = l1; l2 < noteCount - 1; l2++) {
+						notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 + 1];
+					}  
+				}  
+				noteCount--;
+		}  
+	}  
+	else 
+	{	//mark as released but keep with note off time tick
+		l1 = 0;
+		while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) 
+		{
+			l1++;
+		}
+		notes[bufPtr][3][l1] = 1;
+		notes[bufPtr][2][l1] = tick;
+	}
+		newBufPtr = noteBufPtr;
+		noteBufPtr = bufPtr;
+
+		for (l3 = 0; l3 < 4; l3++) {
+			for (l2 = 0; l2 < noteCount; l2++) {
+				notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
+			}  
+		}
+
 }
 
 void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
@@ -198,6 +245,7 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
     QChar c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
     bool gotCC, outOfRange, pause;
+	double attackfn, releasefn;
 
     *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0,
             1000, &outOfRange);
@@ -274,15 +322,42 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
         }
     } while (advancePatternIndex() && (gotCC || chordMode));  
     l1 = 0;
-    do {
-        noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0; 
-        note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
-                + octave * 12, 0, 127, &outOfRange);
-        grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
+    if (noteCount) do 
+	{
+		do
+		{
+			noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0; 
+			note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
+					+ octave * 12, 0, 127, &outOfRange);
+			grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
+			
+			releasefn = 1.0;
+			if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]]))
+			{	//Release function active and current note was marked released
+				releasefn = 1.0 - (double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
+						release_time / (double)TICKS_PER_QUARTER;
+				if (releasefn <= 0.0)
+				{	//Release time over, remove note from buffer
+					releasefn = 0.0;
+					removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
+				}
+			} 
+		} while ((releasefn == 0.0) && (noteCount));
+
+		if (attack_time > 0)
+		{
+			if (!notes[noteBufPtr][3][noteIndex[l1]])
+			{
+				attackfn = (double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
+					attack_time / (double)TICKS_PER_QUARTER;
+				if (attackfn > 1.0) attackfn = 1.0;
+				old_attackfn[l1] = attackfn;
+			} else attackfn = old_attackfn[l1];
+		} else attackfn = 1.0;
         velocity[l1] = clip((double)notes[noteBufPtr][1][noteIndex[l1]]
-                * vel * (1.0 + 0.005 * (double)(randomVelocity + grooveTmp)),
-                0, 127, &outOfRange);
-        l1++;
+                * vel * (1.0 + 0.005 * (double)(randomVelocity + grooveTmp))
+				* releasefn * attackfn, 0, 127, &outOfRange);
+		l1++;
     } while ((tmpIndex[l1] >= 0) && (l1 < MAXCHORD - 1) && (l1 < noteCount));
 
     note[l1] = -1; // mark end of array
@@ -338,9 +413,8 @@ void MidiArp::initLoop()
     octave = 0; 
 }
 
-void MidiArp::getNextNote(snd_seq_tick_time_t currentTick,
-        snd_seq_tick_time_t *tick, int note[], int velocity[],
-        int *length, bool *isNew)
+void MidiArp::getNextNote(snd_seq_tick_time_t *tick, int note[], 
+			int velocity[], int *length, bool *isNew)
 { 
     int l1 = 0;
 
@@ -463,6 +537,16 @@ void MidiArp::updateRandomVelocityAmp(int val)
 void MidiArp::updateRandomLengthAmp(int val)
 {
     randomLengthAmp = val;
+}
+
+void MidiArp::updateAttackTime(int val)
+{
+    attack_time = (double)val;
+}
+
+void MidiArp::updateReleaseTime(int val)
+{
+    release_time = (double)val;
 }
 
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

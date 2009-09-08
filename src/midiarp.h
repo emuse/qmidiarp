@@ -25,7 +25,8 @@ class MidiArp : public QObject  {
     int currentLength;
     bool newCurrent, newNext, chordMode;
     snd_seq_tick_time_t arpTick, lastArpTick;
-    int grooveTick, grooveVelocity, grooveLength, grooveIndex;  
+    int grooveTick, grooveVelocity, grooveLength, grooveIndex; 
+	double attack_time, release_time; 
 	
   private:
     void initLoop();  
@@ -37,7 +38,8 @@ class MidiArp : public QObject  {
     int rangeIn[2]; // Parameter that is mapped, [0] low, [1] high boundary
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
-    int notes[2][2][MAXNOTES]; // Buffer Index, Note/Velocity, Data Index
+    int notes[2][4][MAXNOTES]; // Buffer Index, Note/Velocity/Time/releaseMark, Data Index
+	double old_attackfn[MAXNOTES];
     int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
     bool hold, isMuted;
     int repeatPatternThroughChord;
@@ -56,14 +58,13 @@ class MidiArp : public QObject  {
     MidiArp();
     ~MidiArp();
     bool isArp(snd_seq_event_t *evIn);   // Check if evIn is in the input range of the map
-    void addNote(snd_seq_event_t *evIn); // Add input Note for Arpeggio
-    void removeNote(snd_seq_event_t *evIn); // Remove input Note from Arpeggio
-    void removeNote(int *noteptr); // Remove input Note from Arpeggio
+    void addNote(snd_seq_event_t *evIn, int tick); // Add input Note for Arpeggio
+    void removeNote(snd_seq_event_t *evIn, int tick, int keep_rel); // Remove input Note from Arpeggio
+    void removeNote(int *noteptr, int tick, int keep_rel); // Remove input Note from Arpeggio
     void getCurrentNote(snd_seq_tick_time_t currentTick,
             snd_seq_tick_time_t *tick, int note[], int velocity[],
             int *length, bool *isNew);
-    void getNextNote(snd_seq_tick_time_t currentTick,
-            snd_seq_tick_time_t *tick, int note[], int velocity[],
+    void getNextNote(snd_seq_tick_time_t *tick, int note[], int velocity[],
             int *length, bool *isNew);
     void initArpTick(snd_seq_tick_time_t currentTick);
     void newRandomValues();
@@ -76,6 +77,8 @@ class MidiArp : public QObject  {
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
+    void updateAttackTime(int);
+    void updateReleaseTime(int);
     void muteArp(bool); //set mute
     void muteArp(); //toggle mute
 

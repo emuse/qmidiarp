@@ -261,17 +261,33 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     randomLength = new Slider(0, 100, 1, 0, Qt::Horizontal, tr("&Length"), randomBox);
     connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
-            SLOT(updateRandomVelocityAmp(int)));  
-
+            SLOT(updateRandomVelocityAmp(int))); 
+			 
     randomBoxLayout->addWidget(randomTick);
     randomBoxLayout->addWidget(randomVelocity);
     randomBoxLayout->addWidget(randomLength);  
-    randomBox->setLayout(randomBoxLayout);  
+    randomBox->setLayout(randomBoxLayout);
+	  
+    envelopeBox = new QGroupBox(tr("Envelope"), this);
+    QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
+    attackTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Attack (1/beat))"), envelopeBox);
+    connect(attackTime, SIGNAL(valueChanged(int)), midiArp,
+            SLOT(updateAttackTime(int)));
+    releaseTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Release (1/beat))"), envelopeBox);
+    connect(releaseTime, SIGNAL(valueChanged(int)), midiArp,
+            SLOT(updateReleaseTime(int)));
+			  
+    envelopeBoxLayout->addWidget(attackTime);
+    envelopeBoxLayout->addWidget(releaseTime);
+    envelopeBoxLayout->setMargin(5);
+    envelopeBoxLayout->setSpacing(1);
+    envelopeBox->setLayout(envelopeBoxLayout);
 
 
     arpWidgetLayout->addLayout(inOutBoxLayout);
     arpWidgetLayout->addWidget(patternBox);
     arpWidgetLayout->addWidget(randomBox);
+    arpWidgetLayout->addWidget(envelopeBox);
     arpWidgetLayout->setMargin(2);
     arpWidgetLayout->setSpacing(5);
     setLayout(arpWidgetLayout);

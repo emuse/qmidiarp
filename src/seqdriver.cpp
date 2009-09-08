@@ -143,7 +143,7 @@ void SeqDriver::procEvents(int)
                         l2++;
                     } 
                 } 
-                midiArpList->at(l1)->getNextNote(tick, &noteTick, note,
+                midiArpList->at(l1)->getNextNote(&noteTick, note,
                         velocity, &length, &isNew);
                 if (isNew) {
                     if (!foundEcho) {
@@ -182,7 +182,7 @@ void SeqDriver::procEvents(int)
 						for (l2 = 0; l2 < midiArpList->count(); l2++) { 
 							for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
 								int buf = sustainBufferList.at(l1);
-								midiArpList->at(l2)->removeNote(&buf);
+								midiArpList->at(l2)->removeNote(&buf, tick, 1);
 							}  
 						}
 						sustainBufferList.clear();
@@ -204,10 +204,10 @@ void SeqDriver::procEvents(int)
                         unmatched = false;
                         if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                                 && (evIn->data.note.velocity > 0)) {
-                            midiArpList->at(l1)->addNote(evIn);
+                            midiArpList->at(l1)->addNote(evIn, tick);
                         } else {
                             if (!sustain)
-                                midiArpList->at(l1)->removeNote(evIn);
+                                midiArpList->at(l1)->removeNote(evIn, tick, 1);
                             else if (!l1)
                                 sustainBufferList.append((int)evIn->data.note.note);  
                         }  

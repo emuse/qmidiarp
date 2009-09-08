@@ -110,32 +110,47 @@
         <translation>&amp;Dauer</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="440"/>
+        <location filename="../arpwidget.cpp" line="271"/>
+        <source>Envelope</source>
+        <translation>Hüllkurve</translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="273"/>
+        <source>&amp;Attack (1/beat))</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="276"/>
+        <source>&amp;Release (1/beat))</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="456"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="461"/>
+        <location filename="../arpwidget.cpp" line="477"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="491"/>
+        <location filename="../arpwidget.cpp" line="507"/>
         <source>%1: Store pattern</source>
         <translation>%1: Muster speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="492"/>
+        <location filename="../arpwidget.cpp" line="508"/>
         <source>New pattern</source>
         <translation>Neues Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="492"/>
+        <location filename="../arpwidget.cpp" line="508"/>
         <source>Arp pattern</source>
         <translation>Arp-Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="513"/>
+        <location filename="../arpwidget.cpp" line="529"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
