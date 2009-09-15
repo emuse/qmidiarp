@@ -451,8 +451,8 @@ void MainWindow::resetQueue()
 
 void MainWindow::midiClockToggle(bool on)
 {
-    arpData->seqDriver->setUseMidiClock(on);
     runAction->setChecked(on);
+    arpData->seqDriver->setUseMidiClock(on);
     runAction->setDisabled(on);
 	tempoSpin->setDisabled(on);
     removeArpAction->setDisabled(on);    
