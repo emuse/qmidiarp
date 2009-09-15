@@ -6,9 +6,8 @@
 #include <alsa/asoundlib.h>
 
 #include "midiarp.h"
-#include "main.h"
-#include "mainwindow.h"
 #include "seqdriver.h"
+#include "config.h"
 
 
 SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
@@ -26,9 +25,9 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
     if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
         qWarning("Error opening ALSA sequencer.");
         exit(1);  }
-        snd_seq_set_client_name(seq_handle, "QMidiArp");
+        snd_seq_set_client_name(seq_handle, PACKAGE);
         clientid = snd_seq_client_id(seq_handle);
-        if ((portid_in = snd_seq_create_simple_port(seq_handle, "QMidiArp in",
+        if ((portid_in = snd_seq_create_simple_port(seq_handle, "in",
                         SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
             qWarning("Error creating sequencer port.");
@@ -63,7 +62,7 @@ void SeqDriver::registerPorts(int num)
     portCount = num;
     for (l1 = 0; l1 < portCount; l1++) {
         char buf[16];
-        sprintf(buf,"[%d] QMidiArp %d", l1 + 1, l1 + 1);
+        snprintf(buf, sizeof(buf), "out %d", l1 + 1);
 
         if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
                         SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
@@ -198,18 +197,25 @@ void SeqDriver::procEvents(int)
 			}
 
             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                    || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
-                for (l1 = 0; l1 < midiArpList->count(); l1++) {
-                    if (midiArpList->at(l1)->isArp(evIn)) {
+                    || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) 
+			{
+                for (l1 = 0; l1 < midiArpList->count(); l1++) 
+				{
+                    if (midiArpList->at(l1)->isArp(evIn)) 
+					{
                         unmatched = false;
                         if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                && (evIn->data.note.velocity > 0)) {
+                                && (evIn->data.note.velocity > 0)) 
+						{
                             midiArpList->at(l1)->addNote(evIn, tick);
-                        } else {
+                        } else 
+						{
                             if (!sustain)
                                 midiArpList->at(l1)->removeNote(evIn, tick, 1);
-                            else if (!l1)
-                                sustainBufferList.append((int)evIn->data.note.note);  
+                            else
+							{
+                                sustainBufferList.append((int)evIn->data.note.note);
+							}  
                         }  
                     }  
                 }
@@ -329,7 +335,9 @@ void SeqDriver::setQueueStatus(bool run)
     } else {
         runArp = false;
         //    snd_seq_drop_output(seq_handle);
-
+        for (l1 = 0; l1 < midiArpList->count(); l1++) {
+            midiArpList->at(l1)->clearNoteBuffer();
+        }
         snd_seq_remove_events_t *remove_ev;
 
         snd_seq_remove_events_malloc(&remove_ev);

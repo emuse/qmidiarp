@@ -12,6 +12,8 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int value,
 
     QHBoxLayout *sliderLayout = new QHBoxLayout;
     slider = new QSlider(orientation, parent);
+    slider->setTickInterval(pageStep);
+    slider->setTickPosition(QSlider::TicksLeft);
     slider->setRange(minValue, maxValue);
     slider->setSingleStep(pageStep);
     slider->setValue(value);

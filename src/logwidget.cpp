@@ -37,18 +37,16 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
     
     QPushButton *clearButton = new QPushButton(tr("&Clear"), this);
     QObject::connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-
     QHBoxLayout *buttonBoxLayout = new QHBoxLayout;
     buttonBoxLayout->addWidget(enableLog);
     buttonBoxLayout->addWidget(logMidiClock);
     buttonBoxLayout->addStretch(10);
     buttonBoxLayout->addWidget(clearButton);
-
-    QVBoxLayout *logWidgetLayout = new QVBoxLayout;
-    logWidgetLayout->addWidget(logText);
-    logWidgetLayout->addLayout(buttonBoxLayout);
-
-    setLayout(logWidgetLayout);
+	
+    QVBoxLayout *logBoxLayout = new QVBoxLayout;
+    logBoxLayout->addWidget(logText);
+	logBoxLayout->addLayout(buttonBoxLayout);
+	setLayout(logBoxLayout);
 }
 
 LogWidget::~LogWidget()
@@ -65,26 +63,26 @@ void LogWidget::appendEvent(snd_seq_event_t *ev) {
     switch (ev->type) {
         case SND_SEQ_EVENT_NOTEON:
             qs.sprintf("Ch %2d, Note On %3d, Vel %3d",
-                    ev->data.control.channel, 
+                    ev->data.control.channel + 1, 
                     ev->data.note.note, ev->data.note.velocity);
             break;
         case SND_SEQ_EVENT_NOTEOFF:
-            qs.sprintf("Ch %2d, Note Off %3d", ev->data.control.channel, 
+            qs.sprintf("Ch %2d, Note Off %3d", ev->data.control.channel+1, 
                     ev->data.note.note);
             break;
         case SND_SEQ_EVENT_CONTROLLER:
             logText->setTextColor(QColor(100,160,0));
-            qs.sprintf("Ch %2d, Ctrl %3d, Val %3d", ev->data.control.channel, 
+            qs.sprintf("Ch %2d, Ctrl %3d, Val %3d", ev->data.control.channel+1, 
                     ev->data.control.param, ev->data.control.value);
             break;
         case SND_SEQ_EVENT_PITCHBEND:
             logText->setTextColor(QColor(100,0,255));
-            qs.sprintf("Ch %2d, Pitch %5d", ev->data.control.channel, 
+            qs.sprintf("Ch %2d, Pitch %5d", ev->data.control.channel+1, 
                     ev->data.control.value);
             break;
         case SND_SEQ_EVENT_PGMCHANGE:
             logText->setTextColor(QColor(0,100,100));
-            qs.sprintf("Ch %2d, PrgChg %5d", ev->data.control.channel, 
+            qs.sprintf("Ch %2d, PrgChg %5d", ev->data.control.channel+1, 
                     ev->data.control.value);
             break;
         case SND_SEQ_EVENT_CLOCK:

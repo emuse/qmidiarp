@@ -93,7 +93,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
     patternLen = a_pattern.length();
     patternMaxIndex = 0;
 
-    for (l1 = 0; l1 < patternLen; l1++) {
+    for (l1 = 0; l1 < patternLen; l1++) 
+	{
         c = a_pattern.at(l1);
 
         if (c.isDigit()) {
@@ -170,8 +171,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
         }
 
     }
-    //qWarning("nsteps: %d", (int)nsteps);
 
+	
     //Green Filled Frame
     p.fillRect(0, 0, w, h, QColor(10, 50, 10));
     p.setViewport(0, 0, width(), height());
@@ -249,15 +250,21 @@ void ArpScreen::paintEvent(QPaintEvent*)
     } else
         x1 = 0;
 
-    for (l1 = 0; l1 < patternLen; l1++) {
+    for (l1 = 0; l1 < patternLen; l1++) 
+	{
         c = a_pattern.at(l1);
-        if (c.isDigit()) {
+        if (c.isDigit()) 
+		{
             nlines = c.digitValue() + 1;
-            if (!chordMode) {
+            if (!chordMode) 
+			{
                 curstep = curstep + tempo; 
             }
-        } else {
-            switch (c.toAscii()) {
+        }
+		else 
+		{
+            switch (c.toAscii()) 
+			{
                 case '(':
                     chordMode = true;
                     curstep = curstep + tempo; 
@@ -315,8 +322,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 default:
                     ;
             }   
-        }
-		
+		}
+
       if (c.isDigit()) {
             octYoffset = (octave - minOctave) * (patternMaxIndex+1);
 			x = (int)((curstep - tempo) * xscale);

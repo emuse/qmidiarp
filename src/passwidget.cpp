@@ -10,7 +10,7 @@
 #include "passwidget.h"
 
 
-PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
+PassWidget::PassWidget(int p_portcount, QWidget *parent)
 {
     discardCheck = new QCheckBox(this);
     discardCheck->setText(tr("&Discard unmatched events"));
@@ -34,12 +34,6 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     portBoxLayout->addWidget(portUnmatchedSpin);
 
 
-    mbuttonCheck = new QCheckBox(this);
-    mbuttonCheck->setText(tr("&Use incoming MIDI Clock"));
-    QObject::connect(mbuttonCheck, SIGNAL(toggled(bool)), this,
-            SLOT(updateClockSetting(bool)));
-    mbuttonCheck->setChecked(false);
-    mbuttonCheck->setDisabled(true);
 	
     mtpbLabel = new QLabel(tr("MIDI &Clock rate (tpb)"), this);
     mtpbSpin = new QSpinBox(this);
@@ -50,8 +44,6 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     mtpbSpin->setValue(96);
     mtpbSpin->setSingleStep(24);
  	mtpbSpin->setKeyboardTracking(false);
-    mtpbSpin->setDisabled(true);
-    mtpbLabel->setDisabled(true);
 	
     QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
     mtpbBoxLayout->addWidget(mtpbLabel);
@@ -82,7 +74,6 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     QVBoxLayout *passWidgetLayout = new QVBoxLayout;
     passWidgetLayout->addWidget(discardCheck);
     passWidgetLayout->addLayout(portBoxLayout);
-    passWidgetLayout->addWidget(mbuttonCheck);
     passWidgetLayout->addLayout(mtpbBoxLayout);
     passWidgetLayout->addWidget(cbuttonCheck);
     passWidgetLayout->addLayout(cnumberLayout);
@@ -100,13 +91,6 @@ void PassWidget::updateDiscard(bool on)
     emit discardToggled(on);
     portUnmatchedSpin->setDisabled(on);
     portLabel->setDisabled(on);
-}
-
-void PassWidget::updateClockSetting(bool on)
-{
-    mtpbSpin->setEnabled(on);
-    mtpbLabel->setEnabled(on);
-    emit midiClockToggle(on);
 }
 
 void PassWidget::updatePortUnmatched(int id)

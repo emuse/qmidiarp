@@ -66,6 +66,16 @@
         <translation>Arpège dans accord</translation>
     </message>
     <message>
+        <location filename="../arpwidget.cpp" line="273"/>
+        <source>&amp;Attack (s)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="276"/>
+        <source>&amp;Release (s)</source>
+        <translation></translation>
+    </message>
+    <message>
         <source>( ) chord Mode on/off
  + - octave up/down
  &lt; . &gt; tempo up/down
@@ -122,42 +132,32 @@ d h durée de note augm/dim
         <translation>Enveloppe</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="273"/>
-        <source>&amp;Attack (1/beat))</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../arpwidget.cpp" line="276"/>
-        <source>&amp;Release (1/beat))</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../arpwidget.cpp" line="456"/>
+        <location filename="../arpwidget.cpp" line="466"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="477"/>
+        <location filename="../arpwidget.cpp" line="487"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="507"/>
+        <location filename="../arpwidget.cpp" line="517"/>
         <source>%1: Store pattern</source>
         <translation>%1: Mémoriser motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="508"/>
+        <location filename="../arpwidget.cpp" line="518"/>
         <source>New pattern</source>
         <translation>Nouveau motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="508"/>
+        <location filename="../arpwidget.cpp" line="518"/>
         <source>Arp pattern</source>
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="529"/>
+        <location filename="../arpwidget.cpp" line="539"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
@@ -348,27 +348,31 @@ d h durée de note augm/dim
         <translation>&amp;Vider</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="93"/>
+        <source>Event Log</source>
+        <translation type="obsolete">Journal</translation>
+    </message>
+    <message>
+        <location filename="../logwidget.cpp" line="91"/>
         <source>MIDI Clock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="98"/>
+        <location filename="../logwidget.cpp" line="96"/>
         <source>MIDI Start (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="102"/>
+        <location filename="../logwidget.cpp" line="100"/>
         <source>MIDI Continue (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="106"/>
+        <location filename="../logwidget.cpp" line="104"/>
         <source>MIDI Stop (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="110"/>
+        <location filename="../logwidget.cpp" line="108"/>
         <source>Unknown event type</source>
         <translation>Evênement inconnu</translation>
     </message>
@@ -376,37 +380,37 @@ d h durée de note augm/dim
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="54"/>
+        <location filename="../mainwindow.cpp" line="53"/>
         <source>Event Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="78"/>
+        <location filename="../mainwindow.cpp" line="65"/>
         <source>Settings</source>
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="87"/>
+        <location filename="../mainwindow.cpp" line="96"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="90"/>
+        <location filename="../mainwindow.cpp" line="99"/>
         <source>&amp;New...</source>
         <translation>&amp;Nouveau...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="94"/>
+        <location filename="../mainwindow.cpp" line="103"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Renommer...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="99"/>
+        <location filename="../mainwindow.cpp" line="108"/>
         <source>&amp;Delete...</source>
         <translation>&amp;Supprimer...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="138"/>
+        <location filename="../mainwindow.cpp" line="169"/>
         <source>&amp;Control Toolbar</source>
         <translation>&amp;Barre de contrôle</translation>
     </message>
@@ -435,69 +439,96 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;Supprimer Arpège...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="104"/>
+        <location filename="../mainwindow.cpp" line="113"/>
         <source>&amp;Run</source>
         <translation>&amp;Start/Stop</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="168"/>
+        <location filename="../mainwindow.cpp" line="127"/>
+        <source>&amp;Use incoming MIDI Clock</source>
+        <translation>&amp;Utiliser MIDI Clock entrant</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="135"/>
+        <source>&amp;Event Log</source>
+        <translation>&amp;Journal</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="136"/>
+        <source>Ctrl+L</source>
+        <comment>View|Event Log</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="139"/>
+        <source>&amp;Settings</source>
+        <translation>&amp;Paramètres</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="140"/>
+        <source>Ctrl+P</source>
+        <comment>View|Settings</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="200"/>
         <source>About %1</source>
         <translation>A propos de %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="178"/>
+        <location filename="../mainwindow.cpp" line="210"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>Ajouter Arpège MIDI</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="179"/>
+        <location filename="../mainwindow.cpp" line="211"/>
         <source>Arp %1</source>
         <translation>Arp %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="219"/>
+        <location filename="../mainwindow.cpp" line="251"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="236"/>
+        <location filename="../mainwindow.cpp" line="268"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="285"/>
+        <location filename="../mainwindow.cpp" line="317"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="286"/>
+        <location filename="../mainwindow.cpp" line="318"/>
         <source>QMidiArp files (*.qma)</source>
         <translation>Fichiers QMidiArp (*.qma)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="304"/>
+        <location filename="../mainwindow.cpp" line="336"/>
         <source>Could not read from file %1.</source>
         <translation>Erreur de lecture du fichier %1.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="350"/>
-        <location filename="../mainwindow.cpp" line="384"/>
+        <location filename="../mainwindow.cpp" line="388"/>
+        <location filename="../mainwindow.cpp" line="424"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="350"/>
-        <location filename="../mainwindow.cpp" line="384"/>
+        <location filename="../mainwindow.cpp" line="388"/>
+        <location filename="../mainwindow.cpp" line="424"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="358"/>
+        <location filename="../mainwindow.cpp" line="396"/>
         <source>Could not write to file &quot;%1&quot;.</source>
         <translation>Erreur d&apos;écriture du fichier &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="433"/>
+        <location filename="../mainwindow.cpp" line="477"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
@@ -515,64 +546,63 @@ d h durée de note augm/dim
         <translation>&amp;Envoyer évênements non-traités au port</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="44"/>
+        <location filename="../passwidget.cpp" line="38"/>
         <source>MIDI &amp;Clock rate (tpb)</source>
         <translation>Cadence MIDI &amp;Clock (tpb)</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="62"/>
+        <location filename="../passwidget.cpp" line="54"/>
         <source>Use MIDI &amp;Controller to mute arps</source>
         <translation>Utiliser un &amp;contrôleur MIDI pour la fonction muet</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="74"/>
+        <location filename="../passwidget.cpp" line="66"/>
         <source>First arp is muted by CC#</source>
         <translation>Première arpège rendu muet par le CC#</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="38"/>
         <source>&amp;Use incoming MIDI Clock</source>
-        <translation>&amp;Utiliser MIDI Clock entrant</translation>
+        <translation type="obsolete">&amp;Utiliser MIDI Clock entrant</translation>
     </message>
 </context>
 <context>
     <name>QMenu</name>
     <message>
-        <location filename="../mainwindow.cpp" line="91"/>
+        <location filename="../mainwindow.cpp" line="100"/>
         <source>Ctrl+N</source>
         <comment>Arp|New</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="95"/>
+        <location filename="../mainwindow.cpp" line="104"/>
         <source>Ctrl+R</source>
         <comment>Arp|Rename</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="100"/>
+        <location filename="../mainwindow.cpp" line="109"/>
         <source>Ctrl+Del</source>
         <comment>Arp|Delete</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="126"/>
+        <location filename="../mainwindow.cpp" line="154"/>
         <source>Save &amp;As...</source>
         <translation>Enregistrer &amp;sous...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="129"/>
+        <location filename="../mainwindow.cpp" line="157"/>
         <source>Ctrl+Q</source>
         <comment>File|Quit</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="119"/>
+        <location filename="../mainwindow.cpp" line="144"/>
         <source>&amp;Arp</source>
         <translation>&amp;Arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="118"/>
+        <location filename="../mainwindow.cpp" line="143"/>
         <source>&amp;File</source>
         <translation>&amp;Ficher</translation>
     </message>
@@ -581,12 +611,12 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;A propos</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="122"/>
+        <location filename="../mainwindow.cpp" line="147"/>
         <source>&amp;Open...</source>
         <translation>&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="124"/>
+        <location filename="../mainwindow.cpp" line="152"/>
         <source>&amp;Save</source>
         <translation>&amp;Enregistrer</translation>
     </message>
@@ -599,17 +629,17 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;Enregistrer sous...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="128"/>
+        <location filename="../mainwindow.cpp" line="156"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="135"/>
+        <location filename="../mainwindow.cpp" line="166"/>
         <source>&amp;About %1...</source>
         <translation>&amp;A propos de %1...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="120"/>
+        <location filename="../mainwindow.cpp" line="145"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>

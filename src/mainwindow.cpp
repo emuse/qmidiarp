@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QIcon>
 #include <QDir>
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QTextStream>
 #include <QApplication>
@@ -26,6 +27,7 @@
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
+#include "pixmaps/midiclock.xpm"
 
 
 MainWindow::MainWindow(QString fileName, int p_portCount)
@@ -43,23 +45,35 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
 
-
-
     aboutWidget = new QMessageBox(this); 
 
     tabWidget = new QTabWidget(this);
-    logWidget = new LogWidget(tabWidget);
+	
+    logWidget = new LogWidget(this);
+    QDockWidget *logWindow = new QDockWidget(tr("Event Log"), this);
+    logWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    logWindow->setWidget(logWidget);;
+    logWindow->setVisible(false);
+	logWindow->setFloating(true);
+    addDockWidget(Qt::BottomDockWidgetArea, logWindow);
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
-    tabWidget->addTab(logWidget, tr("Event Log"));
 
     passWidget = new PassWidget(p_portCount, tabWidget);
+    QDockWidget *passWindow = new QDockWidget(tr("Settings"), this);
+    passWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    passWindow->setWidget(passWidget);
+    passWindow->setVisible(false);
+	passWindow->setFloating(true);
+    addDockWidget(Qt::BottomDockWidgetArea, passWindow);
 
 
     connect(passWidget, SIGNAL(discardToggled(bool)), 
             arpData->seqDriver, SLOT(setDiscardUnmatched(bool)));
-    connect(passWidget, SIGNAL(midiClockToggle(bool)), 
-            this, SLOT(midiClockToggle(bool)));
     connect(passWidget, SIGNAL(newMIDItpb(int)), 
             arpData->seqDriver, SLOT(updateMIDItpb(int)));
     connect(passWidget, SIGNAL(newPortUnmatched(int)), 
@@ -69,13 +83,8 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     connect(passWidget, SIGNAL(newCnumber(int)), 
             arpData->seqDriver, SLOT(updateCnumber(int)));
 
-
-    connect(this, SIGNAL(newTempo(int)), 
-            arpData->seqDriver, SLOT(setQueueTempo(int)));
-    //CHECK: may be receiver is "arpData"
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));				   
-    tabWidget->addTab(passWidget, tr("Settings"));
 
     grooveWidget = new GrooveWidget(tabWidget);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
@@ -113,24 +122,46 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     tempoSpin->setValue(100);
 	tempoSpin->setKeyboardTracking(false);
     connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(updateTempo(int)));
+
+    midiClockAction = new QAction(QIcon(midiclock_xpm), 
+			tr("&Use incoming MIDI Clock"), this);
+    connect(midiClockAction, SIGNAL(toggled(bool)), this,
+            SLOT(midiClockToggle(bool)));
+	midiClockAction->setCheckable(true);
+    midiClockAction->setChecked(false);
+    midiClockAction->setDisabled(true);
 	
+    QAction* viewLogAction = logWindow->toggleViewAction();
+    viewLogAction->setText(tr("&Event Log"));
+    viewLogAction->setShortcut(QKeySequence(tr("Ctrl+L", "View|Event Log")));
+
+    QAction* viewSettingsAction = passWindow->toggleViewAction();
+    viewSettingsAction->setText(tr("&Settings"));
+    viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P", "View|Settings")));
+
     QMenuBar *menuBar = new QMenuBar; 
-    QMenu *filePopup = new QMenu(QMenu::tr("&File"),this); 
-    QMenu *arpPopup = new QMenu(QMenu::tr("&Arp"),this); 
+    QMenu *fileMenu = new QMenu(QMenu::tr("&File"),this); 
+    QMenu *arpMenu = new QMenu(QMenu::tr("&Arp"),this); 
     QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
 
-    filePopup->addAction(QMenu::tr("&Open..."), this, SLOT(load()),
-					QKeySequence(QKeySequence::Open));    
-    filePopup->addAction(QMenu::tr("&Save"), this, SLOT(save()),
+	fileOpenAction = new QAction(QMenu::tr("&Open..."), this);
+	fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
+	connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(load()));
+
+    fileMenu->addAction(fileOpenAction);    
+    fileMenu->addAction(QMenu::tr("&Save"), this, SLOT(save()),
 					QKeySequence(QKeySequence::Save));    
-    filePopup->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()));
-    filePopup->addSeparator();
-    filePopup->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
+    fileMenu->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()));
+    fileMenu->addSeparator();
+    fileMenu->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
 					QKeySequence(QMenu::tr("Ctrl+Q", "File|Quit")));    
 
-    arpPopup->addAction(addArpAction);
-    arpPopup->addAction(renameArpAction);
-    arpPopup->addAction(removeArpAction);
+    arpMenu->addAction(addArpAction);
+    arpMenu->addAction(renameArpAction);
+    arpMenu->addAction(removeArpAction);
+	arpMenu->addSeparator();
+    arpMenu->addAction(viewLogAction);
+    arpMenu->addAction(viewSettingsAction);
 
     aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
             SLOT(displayAbout())); 
@@ -142,10 +173,11 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     runBox->addSeparator();
     runBox->addAction(runAction);
     runBox->addWidget(tempoSpin);
+	runBox->addAction(midiClockAction);
     runBox->setMaximumHeight(30);
 
-    menuBar->addMenu(filePopup);
-    menuBar->addMenu(arpPopup);
+    menuBar->addMenu(fileMenu);
+    menuBar->addMenu(arpMenu);
     menuBar->addMenu(aboutMenu);
 	
 	
@@ -202,7 +234,7 @@ void MainWindow::addArp(const QString& name)
     arpWidget->arpName = name;
     removeArpAction->setEnabled(true);    
     renameArpAction->setEnabled(true);
-    passWidget->mbuttonCheck->setEnabled(true);
+    midiClockAction->setEnabled(true);
     runAction->setEnabled(true);
 }
 
@@ -211,7 +243,7 @@ void MainWindow::renameArp() {
     QString newname, oldname;
     bool ok;
 
-    if (tabWidget->currentIndex() < 3) {
+    if (tabWidget->currentIndex() < 1) {
         return;
     }
     oldname = tabWidget->tabText(tabWidget->currentIndex());
@@ -229,7 +261,7 @@ void MainWindow::removeArp()
 {
     QString qs;
 
-    if (tabWidget->currentIndex() < 3) {
+    if (tabWidget->currentIndex() < 1) {
         return;
     } 
     ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
@@ -249,8 +281,8 @@ void MainWindow::removeArp()
         renameArpAction->setDisabled(true);
         runAction->setDisabled(true);
         runAction->setChecked(false);
-        passWidget->mbuttonCheck->setDisabled(true);
-        passWidget->mbuttonCheck->setChecked(false);
+        midiClockAction->setDisabled(true);
+        midiClockAction->setChecked(false);
     }
 }
 
@@ -261,14 +293,14 @@ void MainWindow::removeArp(int index)
     ArpWidget *arpWidget = arpData->arpWidget(index);
     arpData->removeMidiArp(arpWidget->getMidiArp());
     arpData->removeArpWidget(arpWidget);
-    tabWidget->removeTab(index + 3);
+    tabWidget->removeTab(index + 1);
     if (arpData->midiArpCount() < 1) {
         removeArpAction->setDisabled(true);
         renameArpAction->setDisabled(true);
         runAction->setDisabled(true);
         runAction->setChecked(false);
-        passWidget->mbuttonCheck->setDisabled(true);
-        passWidget->mbuttonCheck->setChecked(false);
+        midiClockAction->setDisabled(true);
+        midiClockAction->setChecked(false);
     }                      
 }
 
@@ -306,6 +338,12 @@ void MainWindow::load(const QString& name)
     }          
     QTextStream loadText(&f);
     qs = loadText.readLine();
+	if (qs == "Tempo")
+	{
+		qs = loadText.readLine();
+		tempoSpin->setValue(qs.toInt());
+		qs = loadText.readLine();
+	}
 	if (qs == "MIDI Control")
 	{
 		qs = loadText.readLine();
@@ -360,6 +398,8 @@ void MainWindow::save()
     }          
 
     QTextStream saveText(&f);
+	saveText << "Tempo\n";
+	saveText << tempoSpin->value() << '\n';
 	saveText << "MIDI Control\n";
 	saveText <<	(int)passWidget->cbuttonCheck->isChecked();
 	saveText <<	' ' << passWidget->cnumberSpin->value() << '\n';
@@ -396,7 +436,7 @@ void MainWindow::saveAs()
 
 void MainWindow::updateTempo(int p_tempo)
 {
-    emit(newTempo(p_tempo));
+	arpData->seqDriver->setQueueTempo(p_tempo);
 }
 
 void MainWindow::updateRunQueue(bool on)
@@ -411,9 +451,14 @@ void MainWindow::resetQueue()
 
 void MainWindow::midiClockToggle(bool on)
 {
-    runAction->setChecked(on);
     arpData->seqDriver->setUseMidiClock(on);
+    runAction->setChecked(on);
     runAction->setDisabled(on);
+	tempoSpin->setDisabled(on);
+    removeArpAction->setDisabled(on);    
+    renameArpAction->setDisabled(on);
+    addArpAction->setDisabled(on);
+	fileOpenAction->setDisabled(on);
 }
 
 void MainWindow::checkRcFile()
@@ -426,7 +471,6 @@ void MainWindow::checkRcFile()
     if (!qmahome.exists(QMARCNAME)) {
         QString qmarcpath = qmahome.filePath(QMARCNAME);
         QFile f(qmarcpath);
-        //qWarning("New qmidiarp resource file in home directory created");
 
         if (!f.open(QIODevice::WriteOnly)) {
             QMessageBox::information(this, PACKAGE,

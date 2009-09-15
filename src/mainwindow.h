@@ -47,6 +47,7 @@ class MainWindow : public QMainWindow
       ~MainWindow();
       QToolBar *runBox;
       QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
+	  QAction *midiClockAction, *fileOpenAction;
       void load(const QString&);
 
   signals:  

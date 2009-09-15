@@ -27,19 +27,17 @@ class PassWidget : public QWidget
     ~PassWidget();
     void setDiscard(bool on);
     void setPortUnmatched(int id);
-	QCheckBox *mbuttonCheck, *cbuttonCheck;
+	QCheckBox *cbuttonCheck;
 	QSpinBox *cnumberSpin;
     
   signals:
     void discardToggled(bool);  
     void newPortUnmatched(int);
-    void midiClockToggle(bool);
     void midiMuteToggle(bool);
 	void newMIDItpb(int);
 	void newCnumber(int);
 	    
   public slots:
-    void updateClockSetting(bool);
 	void updateDiscard(bool on);
     void updatePortUnmatched(int);
     void updateMIDItpb_pw(int);

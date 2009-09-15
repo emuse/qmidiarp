@@ -1,3 +1,38 @@
+2009-09-15 Frank Kober <goemusic@yahoo.fr>
+	mainwindow.*, passwidget.*: moved midi clock toggler into main
+	toolbar, disable arp menu functions and file load when midi clock
+	enabled
+	midiclock.xpm: icon added
+	
+2009-09-14 Frank Kober <goemusic@yahoo.fr>
+	*midiarp.cpp: removeNote(*ev..) removes only one of potentially
+	multiple occurences of notes at a time, note buffer cleared on queue 
+	stop (both changes from original behaviour), rework note buffer to 
+	correctly account for double strokes/releases also when received
+	at same time (sequencers!), remove released vel=0 notes earlier to
+	avoid temporary silences
+	mainwindow.cpp, arpwidget.cpp: envelope params added to disk-saved 
+	items
+	mainwindow.cpp: unnecessary newTempo signal removed
+	arpwidget.cpp: display attack/release in seconds (not yet real)
+
+2009-09-13 Frank Kober <goemusic@yahoo.fr>
+	*midiarp.cpp: fixed attack function buffer getting corrupted by 
+	removed notes.
+	*seqdriver.cpp: changed ALSA client names in analogy to QMidiRoute,
+	FootSwitch now applies to all arps in list
+	TODO: handle FootSwitch to be channel-filtered as all note events
+	*mainwindow.cpp: tempo added to disk-saved items keeping 
+	compatibility with files saved with older versions
+
+2009-09-12 Frank Kober <goemusic@yahoo.fr>
+	*arpdata.cpp: fixed memory leak due to non-deleted QList item
+	introduced by incomplete Qt4 port (gscholz)
+	*mainwindow.cpp: make passWidget and logWidget dockable, hidden by
+	default, floatable windows, adapt tab index conditions
+	*midiarp.cpp: fixed from original: additional note was produced when 
+	control items were present at end of pattern text.
+
 2009-09-09 Frank Kober <goemusic@yahoo.fr>
 	* midiarp.*, seqdriver.*, arpwidget.*:
 	Simple envelope implementation started. When attack slider is
@@ -5,7 +40,7 @@
 	timescale. When release is > 0, velocities of released notes are 
 	ramped down until velocity=0 and then removed from buffer.
 	Tick and release mark information is stored with note in buffer.  
-	
+
 2009-09-06 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp, midiarp.cpp, seqdriver.cpp, passwidget.cpp: 
 	MIDI controller for muting arps implemented. The controller for the
@@ -25,6 +60,7 @@
 
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
 	* midiarp.cpp: Queue start with empty pattern fixed 
+
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
 	* gui.cpp, main.h: automatic filename extension added
 	* gui.*, main.cpp: save and save As support added

@@ -9,6 +9,7 @@
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QDateTime>
+
 #include <alsa/asoundlib.h>
 
 #include "arpdata.h"
@@ -20,6 +21,7 @@ class LogWidget : public QWidget
   Q_OBJECT
 
   private:
+	QVBoxLayout vBox;
     QTextEdit *logText;
     QCheckBox *enableLog;
     QCheckBox *logMidiClock;
@@ -30,8 +32,6 @@ class LogWidget : public QWidget
   public:
     LogWidget(QWidget* parent=0);
     ~LogWidget();
-  signals:
-	// void runQueue(bool);
 	 
   public slots:
     void logMidiToggle(bool on);

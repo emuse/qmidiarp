@@ -270,10 +270,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 	  
     envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
-    attackTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Attack (1/beat))"), envelopeBox);
+    attackTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Attack (s)"), envelopeBox);
     connect(attackTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateAttackTime(int)));
-    releaseTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Release (1/beat))"), envelopeBox);
+    releaseTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Release (s)"), envelopeBox);
     connect(releaseTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateReleaseTime(int)));
 			  
@@ -345,6 +345,8 @@ void ArpWidget::writeArp(QTextStream& arpText)
     arpText << midiArp->randomTickAmp << ' '
         << midiArp->randomVelocityAmp << ' '
         << midiArp->randomLengthAmp << '\n';
+	arpText << "Envelope" << '\n';
+	arpText << attackTime->value() << ' ' << releaseTime->value() << '\n';
     arpText << midiArp->pattern << '\n';
     arpText << "EOP\n"; // End Of Pattern
 }                                      
@@ -380,8 +382,16 @@ void ArpWidget::readArp(QTextStream& arpText)
     randomVelocity->setValue(qs2.toInt());
     qs2 = qs.section(' ', 2, 2); 
     randomLength->setValue(qs2.toInt());
-
     qs = arpText.readLine();
+	if (qs == "Envelope")
+	{
+		qs = arpText.readLine();
+		qs2 = qs.section(' ', 0, 0);
+		attackTime->setValue(qs2.toInt());
+		qs2 = qs.section(' ', 1, 1);
+		releaseTime->setValue(qs2.toInt());
+		qs = arpText.readLine();
+	}
     while (!arpText.atEnd()) {
         qs2 = arpText.readLine();
 

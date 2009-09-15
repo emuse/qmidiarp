@@ -33,15 +33,18 @@ void ArpData::addArpWidget(ArpWidget *arpWidget)
 
 void ArpData::removeMidiArp(MidiArp *midiArp)
 {
-    if (seqDriver->runArp && (midiArpList.count() < 2)) {
+    if (seqDriver->runArp && (midiArpList.count() < 1)) {
         seqDriver->setQueueStatus(false);
     }
-    midiArpList.removeAll(midiArp);
+    int i = midiArpList.indexOf(midiArp);
+    if (i != -1)
+        delete midiArpList.takeAt(i);
 }
 
 void ArpData::removeArpWidget(ArpWidget *arpWidget)
 {
-    arpWidgetList.removeAll(arpWidget);
+    removeMidiArp(arpWidget->getMidiArp());
+    arpWidgetList.removeOne(arpWidget);
 }
 
 int ArpData::midiArpCount()
