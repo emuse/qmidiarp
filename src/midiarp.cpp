@@ -359,23 +359,20 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
     l1 = 0;
     if (noteCount) do 
 	{
-			noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0; 
-			note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
-					+ octave * 12, 0, 127, &outOfRange);
-			//printf("At %d: Key %d  (noteCount %d)\n", l1, note[l1], noteCount);
-			grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
-			
-			releasefn = 1.0;
-			if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]]))
-			{	//Release function active and current note was marked released
-				releasefn = 1.0 - 
-				(double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
-						release_time / (double)TICKS_PER_QUARTER;
-				if (releasefn <= 0.0)
-				{	//Release time over
-					releasefn = 0.0;
-				}
-			}
+		noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0; 
+		note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
+				+ octave * 12, 0, 127, &outOfRange);
+		//printf("At %d: Key %d  (noteCount %d)\n", l1, note[l1], noteCount);
+		grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
+		
+		releasefn = 1.0;
+		if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]]))
+		{	//Release function active and current note was marked released
+			releasefn = 1.0 - 
+			(double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
+					release_time / (double)TICKS_PER_QUARTER;
+			if (releasefn < 0.0) releasefn = 0.0;
+		}
 
 		if (attack_time > 0)
 		{

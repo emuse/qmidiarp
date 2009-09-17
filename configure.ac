@@ -6,6 +6,7 @@ AC_INIT([qmidiarp], [0.0.3], [alsamodular-devel@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS(src/config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
+AC_DEFINE(APP_NAME, "QMidiArp", [application name])
 
 # Checks for programs.
 AC_PROG_CXX

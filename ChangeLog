@@ -1,8 +1,17 @@
+2009-09-17 Frank Kober <goemusic@yahoo.fr>
+	main.cpp: fixed start options, extended --help message
+	
+2009-09-16 Frank Kober <goemusic@yahoo.fr>
+	*mainwindow.*, main.*: load filename without -f option, store About
+	message in const char, AboutQt added, renamed load(QString) to
+	fileOpen(QString), display filename in window title
+	*configure.ac: APP_NAME added
+	
 2009-09-15 Frank Kober <goemusic@yahoo.fr>
-	mainwindow.*, passwidget.*: moved midi clock toggler into main
+	*mainwindow.*, passwidget.*: moved midi clock toggler into main
 	toolbar, disable arp menu functions and file load when midi clock
 	enabled
-	midiclock.xpm: icon added
+	*midiclock.xpm: icon added
 	
 2009-09-14 Frank Kober <goemusic@yahoo.fr>
 	*midiarp.cpp: removeNote(*ev..) removes only one of potentially
@@ -11,10 +20,10 @@
 	correctly account for double strokes/releases also when received
 	at same time (sequencers!), remove released vel=0 notes earlier to
 	avoid temporary silences
-	mainwindow.cpp, arpwidget.cpp: envelope params added to disk-saved 
+	*mainwindow.cpp, arpwidget.cpp: envelope params added to disk-saved 
 	items
-	mainwindow.cpp: unnecessary newTempo signal removed
-	arpwidget.cpp: display attack/release in seconds (not yet real)
+	*mainwindow.cpp: unnecessary newTempo signal removed
+	*arpwidget.cpp: display attack/release in seconds (not yet real)
 
 2009-09-13 Frank Kober <goemusic@yahoo.fr>
 	*midiarp.cpp: fixed attack function buffer getting corrupted by 

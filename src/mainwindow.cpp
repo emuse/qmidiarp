@@ -14,13 +14,7 @@
 
 #include <alsa/asoundlib.h>
 
-#include "arpdata.h"
-#include "logwidget.h"
-#include "passwidget.h"
-#include "groovewidget.h"
 #include "mainwindow.h"
-#include "arpwidget.h"
-#include "arpscreen.h"
 
 #include "pixmaps/qmidiarp2.xpm"
 #include "pixmaps/arpadd.xpm"
@@ -30,18 +24,12 @@
 #include "pixmaps/midiclock.xpm"
 
 
-MainWindow::MainWindow(QString fileName, int p_portCount)
+MainWindow::MainWindow(int p_portCount)
 {
     checkRcFile();
-    if (!fileName.isEmpty())
-		{
-		filename = fileName;
-		lastDir = fileName;
-	} 
-		else
-		{
-		lastDir = QDir::homePath();
-	}
+    filename = "";
+    lastDir = QDir::homePath();
+	
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
 
@@ -142,7 +130,7 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *fileMenu = new QMenu(QMenu::tr("&File"),this); 
     QMenu *arpMenu = new QMenu(QMenu::tr("&Arp"),this); 
-    QMenu *aboutMenu = new QMenu(QMenu::tr("&Help"),this);
+    QMenu *helpMenu = new QMenu(QMenu::tr("&Help"),this);
 
 	fileOpenAction = new QAction(QMenu::tr("&Open..."), this);
 	fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
@@ -163,9 +151,11 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
     arpMenu->addAction(viewLogAction);
     arpMenu->addAction(viewSettingsAction);
 
-    aboutMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
-            SLOT(displayAbout())); 
- 
+    helpMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
+            SLOT(helpAbout())); 
+    helpMenu->addAction(tr("&About Qt..."), this,
+            SLOT(helpAboutQt())); 
+
     runBox = new QToolBar(tr("&Control Toolbar"), this);
     runBox->addAction(addArpAction);
     runBox->addAction(renameArpAction);
@@ -178,16 +168,14 @@ MainWindow::MainWindow(QString fileName, int p_portCount)
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(arpMenu);
-    menuBar->addMenu(aboutMenu);
+    menuBar->addMenu(helpMenu);
 	
 	
     setMenuBar(menuBar);
 	addToolBar(runBox);
     setCentralWidget(tabWidget);
-	setWindowTitle(filename + " - "  PACKAGE);
     setWindowIcon(QPixmap(qmidiarp2_xpm));
-	if (!filename.isEmpty()) load(filename);
-
+    updateWindowTitle();
     show();
 }
 
@@ -195,10 +183,25 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::displayAbout()
+void MainWindow::updateWindowTitle()
 {
-    aboutWidget->about(this, tr("About %1").arg(PACKAGE), aboutText);
-    aboutWidget->raise();
+    if (filename.isEmpty())
+        setWindowTitle(QString("%1")
+                .arg(APP_NAME));
+    else
+        setWindowTitle(QString("%1 - %2")
+                .arg(filename)
+                .arg(APP_NAME));
+}
+
+void MainWindow::helpAbout()
+{
+    QMessageBox::about(this, tr("About %1").arg(APP_NAME), ABOUTMSG);
+}
+
+void MainWindow::helpAboutQt()
+{
+    QMessageBox::aboutQt(this, tr("About Qt"));
 }
 
 void MainWindow::addArp()
@@ -321,10 +324,10 @@ void MainWindow::load()
     }
     lastDir = filename;
     clear();
-    load(filename);
+    openFile(filename);
 }
 
-void MainWindow::load(const QString& name)
+void MainWindow::openFile(const QString& name)
 {
     QString qs, qs2;
 
@@ -374,6 +377,8 @@ void MainWindow::load(const QString& name)
         arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
     }
     tabWidget->setCurrentWidget(arpData->arpWidget(0));
+	filename = name;
+	updateWindowTitle();
 }
 
 void MainWindow::save()
@@ -429,7 +434,7 @@ void MainWindow::saveAs()
             filename.append(FILEEXT);
 		lastDir = filename;
 		save();
-				
+		updateWindowTitle();
 		}
 }
 
