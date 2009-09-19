@@ -49,6 +49,7 @@ MidiArp::MidiArp()
     isMuted = false;
 	attack_time = 0.0;
 	release_time = 0.0;
+	queueTempo = 100.0;
 }
 
 MidiArp::~MidiArp(){
@@ -373,7 +374,8 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 		{	//Release function active and current note was marked released
 			releasefn = 1.0 - 
 			(double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
-					release_time / (double)TICKS_PER_QUARTER;
+					release_time / (double)TICKS_PER_QUARTER 
+					* 120 / queueTempo;
 			if (releasefn < 0.0) releasefn = 0.0;
 		}
 		else
@@ -384,7 +386,8 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 			if (!notes[noteBufPtr][3][noteIndex[l1]])
 			{
 				attackfn = (double)(arpTick - notes[noteBufPtr][2][noteIndex[l1]]) / 
-					attack_time / (double)TICKS_PER_QUARTER;
+					attack_time / (double)TICKS_PER_QUARTER 
+					* 120 / queueTempo;
 				if (attackfn > 1.0) attackfn = 1.0;
 				old_attackfn[noteIndex[l1]] = attackfn;
 			} 
@@ -609,6 +612,12 @@ void MidiArp::updateReleaseTime(int val)
 {
     release_time = (double)val;
 }
+
+void MidiArp::updateQueueTempo(int val)
+{
+    queueTempo = (double)val;
+}
+
 
 void MidiArp::clearNoteBuffer()
 {

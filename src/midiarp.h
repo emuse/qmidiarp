@@ -24,7 +24,8 @@ class MidiArp : public QObject  {
     int currentLength;
     bool newCurrent, newNext, chordMode;
     snd_seq_tick_time_t arpTick, lastArpTick;
-    int grooveTick, grooveVelocity, grooveLength, grooveIndex; 
+    int grooveTick, grooveVelocity, grooveLength, grooveIndex;
+	double queueTempo;
 	
   private:
     void initLoop();  
@@ -76,6 +77,7 @@ class MidiArp : public QObject  {
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
     void updateAttackTime(int);
+    void updateQueueTempo(int);
     void updateReleaseTime(int);
     void muteArp(bool); //set mute
     void muteArp(); //toggle mute

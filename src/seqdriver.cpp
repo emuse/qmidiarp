@@ -128,6 +128,7 @@ void SeqDriver::procEvents(int)
             for (l1 = 0; l1 < midiArpList->count(); l1++) 
 			{
                 midiArpList->at(l1)->newRandomValues();
+				midiArpList->at(l1)->updateQueueTempo(tempo);
                 midiArpList->at(l1)->getCurrentNote(tick, &noteTick,
                         note, velocity, &length, &isNew);
 

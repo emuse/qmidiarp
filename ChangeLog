@@ -1,11 +1,12 @@
 2009-09-18 Frank Kober <goemusic@yahoo.fr>
-	* arpwidget.cpp, midiarp.cpp: don't pass arpScreen from arpWidget to
-	midiarp, maximum height of arpScreen increased, pass groove values 
-	to arpscreen (not handled yet)
+	* arpwidget.cpp, midiarp.cpp: don't pass arpScreen to midiarp, 
+	maximum height of arpScreen increased, groove values passed
+	to arpscreen (not handled yet), queueTempo awareness added
+	to midiarp for atk/rel display in seconds
 	* arpscreen.cpp: math header removed, replace rectangles by lines to
-	optimize
+	optimize, only one call to height() and width()
 	* seqdriver.cpp: ALSA error number included in message, dependency 
-	on C headers removed
+	on C headers removed, midiarp gets queueTempo on every loop
 	* mainwindow.cpp: PACKAGE replaced by APP_NAME on all occurences 
 	
 2009-09-17 Frank Kober <goemusic@yahoo.fr>
