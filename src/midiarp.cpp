@@ -302,25 +302,29 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
             c = ' ';
 			
         if (c != ' ') {
-            if (c.isDigit() || (c == 'p')) {
+            if (c.isDigit() || (c == 'p')) 
+			{
                 tmpIndex[chordIndex] = c.digitValue() + noteOfs;
-                if (chordMode) {
+                if (chordMode) 
+				{
                     chordIndex++;
                 }
                 gotCC = false;
                 pause = (c == 'p');
-            } else {
+            } else 
+			{
                 gotCC = true;
 
-                switch(c.toAscii()) { 
+                switch(c.toAscii()) 
+				{ 
                     case '(':
                         chordMode = true;
                         break;
                     case ')':
-                        chordMode = false;
                         // mark end of chord
-                        tmpIndex[chordIndex] = -1;
-                        gotCC = false;
+						tmpIndex[chordIndex] = -1;
+						chordMode = false;
+						gotCC = false;
                         break;
                     case '+':
                         octave++;
@@ -365,7 +369,6 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 		//printf("At %d: Key %d  (noteCount %d)\n", l1, note[l1], noteCount);
 		grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
 		
-		releasefn = 1.0;
 		if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]]))
 		{	//Release function active and current note was marked released
 			releasefn = 1.0 - 
@@ -373,6 +376,8 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 					release_time / (double)TICKS_PER_QUARTER;
 			if (releasefn < 0.0) releasefn = 0.0;
 		}
+		else
+		releasefn = 1.0;
 
 		if (attack_time > 0)
 		{
@@ -384,10 +389,10 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 				old_attackfn[noteIndex[l1]] = attackfn;
 			} 
 			else 
-			attackfn = old_attackfn[noteIndex[l1]];
+				attackfn = old_attackfn[noteIndex[l1]];
 		} 
 		else 
-		attackfn = 1.0;
+			attackfn = 1.0;
         
 		velocity[l1] = clip((double)notes[noteBufPtr][1][noteIndex[l1]]
                 * vel * (1.0 + 0.005 * (double)(randomVelocity + grooveTmp))
@@ -396,9 +401,9 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 		if ((notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1]))
 		
 			removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
-			
+
 		else
-		
+
 			l1++;
 			
     } while ((tmpIndex[l1] >= 0) && (l1 < MAXCHORD - 1) && (l1 < noteCount));
@@ -492,6 +497,7 @@ void MidiArp::getCurrentNote(snd_seq_tick_time_t currentTick,
     *length = currentLength;
     *isNew = newCurrent;
     newCurrent = false;
+
 }
 
 void MidiArp::updateNotes(snd_seq_tick_time_t currentTick)
@@ -525,7 +531,7 @@ void MidiArp::initArpTick(snd_seq_tick_time_t currentTick)
     patternIndex = 0;
 }
 
-void MidiArp::updatePattern(const QString& p_pattern, ArpScreen *arpScreen)
+void MidiArp::updatePattern(const QString& p_pattern)
 {
     int l1;
     QChar c;
@@ -552,7 +558,6 @@ void MidiArp::updatePattern(const QString& p_pattern, ArpScreen *arpScreen)
         }
     }  
     noteOfs = 0;
-    arpScreen->updateArpScreen(pattern);
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange)

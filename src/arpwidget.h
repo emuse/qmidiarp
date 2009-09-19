@@ -64,7 +64,6 @@ class ArpWidget : public QWidget
 	void writePatternPresets();
   
   signals:
-    void newPattern(QString);  
     void patternChanged();
     
   public slots:

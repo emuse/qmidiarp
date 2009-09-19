@@ -10,7 +10,7 @@
 #include "passwidget.h"
 
 
-PassWidget::PassWidget(int p_portcount, QWidget *parent)
+PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
 {
     discardCheck = new QCheckBox(this);
     discardCheck->setText(tr("&Discard unmatched events"));

@@ -19,7 +19,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <math.h>
 #include <QPolygon>
 #include <QWidget>
 #include <QString>
@@ -28,7 +27,6 @@
 #include <QPen>
 #include <QPixmap>
 #include <QBrush>
-#include <QTimer>
 #include <QSizePolicy>
 #include <QSize>
 #include <QBoxLayout>
@@ -39,16 +37,16 @@
 #include "arpdata.h"
 
 
-ArpScreen::ArpScreen(int p_maxRef, QWidget* parent) : QWidget (parent)
+ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
 {
-    maxRef = p_maxRef;
     globalMaxResetCount = 0;
     globalMax = 0;
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     a_pattern=" ";
     follower_tick=0;
-    //timer = new QTimer(this);
-    //timer->start(200);
+	grooveTick = 0;
+	grooveVelocity = 0;
+	grooveLength = 0;
 }
 
 ArpScreen::~ArpScreen()
@@ -76,6 +74,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int octYoffset;
     int w = QWidget::width();
     int h = QWidget::height();
+	int notestreak_thick = 3;
 
     double len, xscale, yscale, ofs;
     int x, x1;
@@ -87,6 +86,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double minTempo = 1.0;
     int noctaves=1;
     double vel =1.0;
+	int grooveTmp = 0;
+	int grooveIndex = 0;
+	int chordIndex = 0;
     l2 = 0;
     QChar c;
 
@@ -98,21 +100,22 @@ void ArpScreen::paintEvent(QPaintEvent*)
         c = a_pattern.at(l1);
 
         if (c.isDigit()) {
-            if (!chordMode) {
-                nsteps = nsteps + tempo; 
+            if (!chordIndex) {
+                nsteps += tempo;
+				if (chordMode) chordIndex++;
             }
             if (c.digitValue() > patternMaxIndex)
                 patternMaxIndex = c.digitValue();
-
         }
         switch(c.toAscii()) {
             case '(':
                 chordMode = true;
-                nsteps = nsteps + tempo; 
+				chordIndex = 0;
                 break;
 
             case ')':
                 chordMode = false;
+				chordIndex = 0;
                 break;
 
             case '>':
@@ -131,7 +134,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 				
             case 'p':
                 if (!chordMode)
-                    nsteps = nsteps + tempo;
+                    nsteps += tempo;
                 break;
 
             case '+':
@@ -175,23 +178,23 @@ void ArpScreen::paintEvent(QPaintEvent*)
 	
     //Green Filled Frame
     p.fillRect(0, 0, w, h, QColor(10, 50, 10));
-    p.setViewport(0, 0, width(), height());
-    p.setWindow(0, 0, width(), height());
+    p.setViewport(0, 0, w, h);
+    p.setWindow(0, 0, w, h);
     p.setPen(QColor(20, 160, 20));
-    p.drawRect(0, 0, width() - 1, height() - 1);
+    p.drawRect(0, 0, w - 1, h - 1);
 
     //Grid 
     len = (double)nsteps;  
-    xscale = (double)(width() - 2 * ARPSCREEN_HMARGIN) / len;
-    yscale = (double)height() - 2 * ARPSCREEN_VMARGIN;
+    xscale = (double)(w - 2 * ARPSCREEN_HMARGIN) / len;
+    yscale = (double)h - 2 * ARPSCREEN_VMARGIN;
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
 
         if (l1 < 10) {
-            ofs = width() / len * .5 - 4 + ARPSCREEN_HMARGIN;
+            ofs = w / len * .5 - 4 + ARPSCREEN_HMARGIN;
         } else {
-            ofs = width() / len * .5 - 6 + ARPSCREEN_HMARGIN;
+            ofs = w / len * .5 - 6 + ARPSCREEN_HMARGIN;
         }
         if ((bool)(l1%beat)) {
             p.setPen(QColor(60, 180, 60));
@@ -200,7 +203,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         }
         x = (int)((double)l1 * xscale);
         p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
-                ARPSCREEN_HMARGIN + x, height()-ARPSCREEN_VMARGIN);
+                ARPSCREEN_HMARGIN + x, h-ARPSCREEN_VMARGIN);
 
         if (l1 < nsteps) {
 
@@ -215,7 +218,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 if (x1 < xscale*len)
                     p.drawLine(ARPSCREEN_HMARGIN + x1,
                             ARPSCREEN_VMARGIN, ARPSCREEN_HMARGIN + x1,
-                            height()-ARPSCREEN_VMARGIN);
+                            h - ARPSCREEN_VMARGIN);
             } 
         }
     }
@@ -227,7 +230,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < noctaves + 1; l1++) {
         p.drawLine(ARPSCREEN_HMARGIN,
                 yscale * l1 / noctaves + ARPSCREEN_VMARGIN, 
-                width() - ARPSCREEN_HMARGIN, 
+                w - ARPSCREEN_HMARGIN, 
                 yscale * l1 / noctaves + ARPSCREEN_VMARGIN);		 
         p.drawText(ARPSCREEN_HMARGIN / 2 - 3, 
                 yscale * (l1 + 0.5) / noctaves + ARPSCREEN_VMARGIN + 4, 
@@ -241,10 +244,12 @@ void ArpScreen::paintEvent(QPaintEvent*)
     vel = 0.8;
     octave = 0;
     chordMode = false;
+	chordIndex = 0;
 
 
     //follower_tick position x1
-    if (nsteps > 0) {
+    if (nsteps > 0) 
+	{
         x1 = (((int)((follower_tick / TICKS_PER_QUARTER) / minTempo))
                 % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
     } else
@@ -253,12 +258,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < patternLen; l1++) 
 	{
         c = a_pattern.at(l1);
+		grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick ;
         if (c.isDigit()) 
 		{
             nlines = c.digitValue() + 1;
-            if (!chordMode) 
+            if (!chordIndex) 
 			{
-                curstep = curstep + tempo; 
+				if (chordMode) chordIndex++;
+                curstep += tempo; // * (1.0 + 0.005 * (double)grooveTmp); 
+				grooveIndex++; 
             }
         }
 		else 
@@ -267,11 +275,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
 			{
                 case '(':
                     chordMode = true;
-                    curstep = curstep + tempo; 
+					grooveIndex++;
+					chordIndex = 0;
                     break;
 
                 case ')':
                     chordMode = false;
+					chordIndex = 0;
                     break;
 
                 case '>':
@@ -288,8 +298,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
                 case 'p':
                     if (!chordMode)
-                        curstep = curstep + tempo;
-                    break;
+                        curstep += tempo; // * (1.0 + 0.005 * (double)grooveTmp);
+						grooveIndex++; 
+                   break;
 
                 case '+':
                     octave++;
@@ -324,30 +335,56 @@ void ArpScreen::paintEvent(QPaintEvent*)
             }   
 		}
 
-      if (c.isDigit()) {
+		if (c.isDigit()) 
+		{
             octYoffset = (octave - minOctave) * (patternMaxIndex+1);
 			x = (int)((curstep - tempo) * xscale);
-            if (nlines > 0) {
+//			notestreak_thick = h / (patternMaxIndex + 1) / noctaves / 2;
+			notestreak_thick = 2;
+			if (nlines > 0) 
+			{
                 ypos = nlines-1;
-               if (x1 == x) {
-                    p.setPen(QColor(140, 240, 140));
+				if (x1 == x) 
+				{
+					pen.setColor(QColor(140, 240, 140));
+					p.setPen(pen);
                     p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
-                            ARPSCREEN_HMARGIN + x, height());
-                    p.fillRect(ARPSCREEN_HMARGIN + x, 
+                            ARPSCREEN_HMARGIN + x, h);
+					pen.setWidth(notestreak_thick);
+					pen.setColor(QColor(80 + 60 * (vel - 0.8),
+                               250, 120 + 60 * (vel - 0.8)));
+					p.setPen(pen);
+                    p.drawLine(ARPSCREEN_HMARGIN + x + notestreak_thick / 2, 
                             yscale * (1.0 - (ypos + octYoffset)
-                                / (patternMaxIndex+1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3, 
-                            notelen, 3, QColor(80 + 60 * (vel - 0.8),
-                                250, 120 + 60 * (vel - 0.8)));
-                } else {
-                    p.fillRect(ARPSCREEN_HMARGIN + x, 
-                            yscale * (1.0 - (ypos + octYoffset)
-                                / (patternMaxIndex+1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3, 
-                            notelen, 3, QColor(80 + 60 * (vel - 0.8),
+                            / (patternMaxIndex + 1) / noctaves)
+                            + ARPSCREEN_VMARGIN - 3,
+							
+							ARPSCREEN_HMARGIN + x + notelen - notestreak_thick, 
+                            
+							yscale * (1.0 - (ypos + octYoffset)
+                            / (patternMaxIndex + 1) / noctaves)
+                            + ARPSCREEN_VMARGIN - 3);
+                } else 
+				{
+					pen.setWidth(notestreak_thick);
+					pen.setColor(QColor(80 + 60 * (vel - 0.8),
                                 160 + 40 * (vel - 0.8),
                                 80 + 60 * (vel - 0.8)));
+					p.setPen(pen);
+                    p.drawLine(ARPSCREEN_HMARGIN + x + notestreak_thick / 2,
+					 
+                            yscale * (1.0 - (ypos + octYoffset)
+                            / (patternMaxIndex+1) / noctaves)
+                            + ARPSCREEN_VMARGIN - 3,
+							 
+                            ARPSCREEN_HMARGIN + x + notelen - notestreak_thick,
+							
+							yscale * (1.0 - (ypos + octYoffset)
+                            / (patternMaxIndex+1) / noctaves)
+                            + ARPSCREEN_VMARGIN - 3);
                 }
+				pen.setWidth(1);
+
             }
         }
     }
@@ -363,6 +400,22 @@ void ArpScreen::updateArpScreen(const QString& pattern)
 void ArpScreen::updateArpScreen(snd_seq_tick_time_t tick)
 {
     follower_tick = (double)tick;
+    update();
+}
+
+void ArpScreen::setGrooveTick(int tick)
+{
+	grooveTick = tick;
+    update();
+}
+void ArpScreen::setGrooveVelocity(int vel)
+{
+	grooveVelocity = vel;
+    update();
+}
+void ArpScreen::setGrooveLength(int length)
+{
+	grooveLength = length;
     update();
 }
 

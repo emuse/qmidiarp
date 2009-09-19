@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
 #include <QString>
 #include <QList>
 #include <QSocketNotifier>
@@ -13,6 +12,7 @@
 SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
     : QWidget(parent)
 {
+    int err;
 
     midiArpList = p_midiArpList; 
     portCount = 0;
@@ -21,35 +21,37 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
 	mute_cnumber = 37;
 	midi_mutable = false;
 
-    //TODO: show real error message
-    if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
-        qWarning("Error opening ALSA sequencer.");
+    err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
+	if (err < 0) {
+        qWarning("Error opening ALSA sequencer (%s).", snd_strerror(err));
         exit(1);  }
-        snd_seq_set_client_name(seq_handle, PACKAGE);
-        clientid = snd_seq_client_id(seq_handle);
-        if ((portid_in = snd_seq_create_simple_port(seq_handle, "in",
-                        SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
-                        SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
-            qWarning("Error creating sequencer port.");
-            exit(1);
-        }
-        snd_seq_set_client_pool_output(seq_handle, SEQPOOL);                                     
-        tempo = 100;
-        grooveTick = 0;
-        firstArpTick = 0;
-        grooveVelocity = 0;
-        grooveLength = 0;
-        runArp = false;
-        startQueue = false;
-        runQueueIfArp = true;
-        initArpQueue();
-        setQueueTempo(100);
-        midiTime = 0;
-        use_midiclock = false;
-        midiclock_tpb = 96;
-        m_ratio=1.0;
-        sustain=0;
-        sustainBufferList.clear();
+	snd_seq_set_client_name(seq_handle, PACKAGE);
+	clientid = snd_seq_client_id(seq_handle);
+	if ((portid_in = snd_seq_create_simple_port(seq_handle, "in",
+					SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
+					SND_SEQ_PORT_TYPE_APPLICATION)) < 0) 
+	{
+		qWarning("Error creating sequencer port(%s).",
+			snd_strerror(portid_in));
+		exit(1);
+	}
+	snd_seq_set_client_pool_output(seq_handle, SEQPOOL);                                     
+	tempo = 100;
+	grooveTick = 0;
+	firstArpTick = 0;
+	grooveVelocity = 0;
+	grooveLength = 0;
+	runArp = false;
+	startQueue = false;
+	runQueueIfArp = true;
+	initArpQueue();
+	setQueueTempo(100);
+	midiTime = 0;
+	use_midiclock = false;
+	midiclock_tpb = 96;
+	m_ratio=1.0;
+	sustain=0;
+	sustainBufferList.clear();
 }
 
 SeqDriver::~SeqDriver(){
@@ -58,16 +60,17 @@ SeqDriver::~SeqDriver(){
 void SeqDriver::registerPorts(int num)
 {
     int l1;
+    char buf[16];
 
     portCount = num;
     for (l1 = 0; l1 < portCount; l1++) {
-        char buf[16];
         snprintf(buf, sizeof(buf), "out %d", l1 + 1);
-
-        if ((portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
+        portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
                         SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
-                        SND_SEQ_PORT_TYPE_APPLICATION)) < 0) {
-            qWarning("Error creating sequencer port.");
+                        SND_SEQ_PORT_TYPE_APPLICATION);
+		if (portid_out[l1] < 0) {
+            qWarning("Error creating sequencer port (%s).",
+                    snd_strerror(portid_out[l1]));
             exit(1);
         }
     }                                    
@@ -107,7 +110,8 @@ void SeqDriver::procEvents(int)
         if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK))
             midiTime += 4;
 
-        if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) {
+        if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
+		{
             tick = get_tick();
             if (use_midiclock && (midiTime > 0)) 
                 m_ratio = (double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime;
@@ -121,14 +125,17 @@ void SeqDriver::procEvents(int)
             nextEchoTick = 0;
             foundEcho = false;
 
-            for (l1 = 0; l1 < midiArpList->count(); l1++) {
+            for (l1 = 0; l1 < midiArpList->count(); l1++) 
+			{
                 midiArpList->at(l1)->newRandomValues();
                 midiArpList->at(l1)->getCurrentNote(tick, &noteTick,
                         note, velocity, &length, &isNew);
 
-                if (isNew && velocity[0]) {
+                if (isNew && velocity[0]) 
+				{
                     l2 = 0;
-                    while(note[l2] >= 0) {
+                    while(note[l2] >= 0) 
+					{
                         snd_seq_ev_clear(&evOut);
                         snd_seq_ev_set_note(&evOut, 0, note[l2],
                                 velocity[l2], length);
@@ -144,12 +151,16 @@ void SeqDriver::procEvents(int)
                 } 
                 midiArpList->at(l1)->getNextNote(&noteTick, note,
                         velocity, &length, &isNew);
-                if (isNew) {
-                    if (!foundEcho) {
+                if (isNew) 
+				{
+                    if (!foundEcho) 
+					{
                         foundEcho = true;
                         nextEchoTick = noteTick;
-                    } else {
-                        if (noteTick < nextEchoTick) {
+                    } else 
+					{
+                        if (noteTick < nextEchoTick) 
+						{
                             nextEchoTick = noteTick;
                         }
                     }
@@ -162,8 +173,10 @@ void SeqDriver::procEvents(int)
             snd_seq_event_output_direct(seq_handle, evIn);
 			
             emit nextStep((tick-firstArpTick)/m_ratio);
+			
 
-        } else {
+        } else 
+		{
 			emit midiEvent(evIn);
             unmatched = true;
 
@@ -223,7 +236,6 @@ void SeqDriver::procEvents(int)
             if (use_midiclock){
                 if (evIn->type == SND_SEQ_EVENT_START) {
                     midiTime = 0;
-                    //setQueueTempo(200);
                     setQueueStatus(true);
                 }
                 if (evIn->type == SND_SEQ_EVENT_STOP) {
@@ -297,9 +309,7 @@ snd_seq_tick_time_t SeqDriver::get_tick()
     snd_seq_get_queue_status(seq_handle, queue_id, status);
     current_tick = snd_seq_queue_status_get_tick_time(status);
     snd_seq_queue_status_free(status);
-    //printf("Current Tick: %d\n", current_tick);
     return(current_tick);
-    //return(midiTime);
 }
 
 void SeqDriver::runQueue(bool on)

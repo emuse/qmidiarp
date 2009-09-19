@@ -217,7 +217,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternText = new QPlainTextEdit(patternBox); 
     patternText->setLineWrapMode(QPlainTextEdit::NoWrap);
     connect(patternText, SIGNAL(textChanged()), this, SLOT(updateText()));
-    //connect(this, SIGNAL(newPattern(QString)), midiArp, SLOT(updatePattern(QString, *arpScreen)));
     patternText->setHidden(true);
     patternText->setMaximumHeight(50);
     patternText->setToolTip(
@@ -231,7 +230,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     QWidget *arpScreenBox = new QWidget(patternBox);
     QHBoxLayout *arpScreenBoxLayout = new QHBoxLayout;
-    arpScreen = new ArpScreen(30, patternBox); 
+    arpScreen = new ArpScreen(patternBox); 
     arpScreenBox->setMinimumHeight(80);
     arpScreenBoxLayout->addWidget(arpScreen);
     arpScreenBoxLayout->setMargin(1);
@@ -434,9 +433,8 @@ void ArpWidget::updateText()
     patternPresetBox->setCurrentIndex(0);
     textRemoveButton->setEnabled(false);
     textStoreButton->setHidden(false);
-
-    emit(newPattern(patternText->toPlainText()));
-    midiArp->updatePattern(patternText->toPlainText(), arpScreen);
+    midiArp->updatePattern(patternText->toPlainText());
+	arpScreen->updateArpScreen(patternText->toPlainText());
     emit(patternChanged());
 }
 
@@ -445,7 +443,8 @@ void ArpWidget::updatePatternPreset(int val)
     if (val) {
         patternText->setPlainText(patternPresets.at(val));
         patternPresetBox->setCurrentIndex(val);
-        midiArp->updatePattern(patternText->toPlainText(), arpScreen);
+        midiArp->updatePattern(patternText->toPlainText());
+		arpScreen->updateArpScreen(patternText->toPlainText());
         textStoreButton->setHidden(true);
         emit(patternChanged());
         textRemoveButton->setEnabled(true);

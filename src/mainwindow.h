@@ -7,6 +7,7 @@
 #include <QToolBar>
 #include <QMainWindow>
 #include <QAction>
+#include <alsa/asoundlib.h>
 
 
 #include "arpwidget.h"

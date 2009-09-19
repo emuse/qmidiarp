@@ -12,8 +12,6 @@
 #include <QMenu>
 #include <QMenuBar>
 
-#include <alsa/asoundlib.h>
-
 #include "mainwindow.h"
 
 #include "pixmaps/qmidiarp2.xpm"
@@ -49,7 +47,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
 
-    passWidget = new PassWidget(p_portCount, tabWidget);
+    passWidget = new PassWidget(p_portCount, this);
     QDockWidget *passWindow = new QDockWidget(tr("Settings"), this);
     passWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
@@ -209,7 +207,7 @@ void MainWindow::addArp()
     QString name;
     bool ok;
 
-    name = QInputDialog::getText(this, PACKAGE,
+    name = QInputDialog::getText(this, APP_NAME,
             tr("Add MIDI Arpeggiator"), QLineEdit::Normal,
            tr("Arp %1").arg(arpData->midiArpCount() + 1), &ok);
     if (ok && !name.isEmpty()) {
@@ -228,6 +226,14 @@ void MainWindow::addArp(const QString& name)
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
 	connect(midiArp, SIGNAL(toggleMute()), arpWidget->muteOut, SLOT(toggle()));
+
+    connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
+            arpWidget->arpScreen, SLOT(setGrooveTick(int)));
+    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
+            arpWidget->arpScreen, SLOT(setGrooveVelocity(int)));
+    connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
+            arpWidget->arpScreen, SLOT(setGrooveLength(int)));
+			
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
 	arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
@@ -250,7 +256,7 @@ void MainWindow::renameArp() {
         return;
     }
     oldname = tabWidget->tabText(tabWidget->currentIndex());
-    newname = QInputDialog::getText(this, PACKAGE,
+    newname = QInputDialog::getText(this, APP_NAME,
             tr("New Name"), QLineEdit::Normal, oldname, &ok);
 
     if (ok && !newname.isEmpty()) {
@@ -270,7 +276,7 @@ void MainWindow::removeArp()
     ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
     qs = tr("Remove \"%1\"?")
         .arg(tabWidget->tabText(tabWidget->currentIndex()));
-    if (QMessageBox::question(0, PACKAGE, qs, QMessageBox::Yes,
+    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
                 QMessageBox::No | QMessageBox::Default
                 | QMessageBox::Escape, QMessageBox::NoButton)
             == QMessageBox::No) {
@@ -335,7 +341,7 @@ void MainWindow::openFile(const QString& name)
 	
     QFile f(name);
     if (!f.open(QIODevice::ReadOnly)) {
-        QMessageBox::information(this, PACKAGE,
+        QMessageBox::warning(this, APP_NAME,
                 tr("Could not read from file %1.").arg(name));
         return;
     }          
@@ -397,7 +403,7 @@ void MainWindow::save()
 	if (filename.isEmpty()) return;
     QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
-        QMessageBox::information(this, PACKAGE,
+        QMessageBox::warning(this, APP_NAME,
                 tr("Could not write to file \"%1\".").arg(filename));
         return;
     }          
@@ -478,7 +484,7 @@ void MainWindow::checkRcFile()
         QFile f(qmarcpath);
 
         if (!f.open(QIODevice::WriteOnly)) {
-            QMessageBox::information(this, PACKAGE,
+            QMessageBox::warning(this, APP_NAME,
                     tr("Could not write to resource file"));
             return;
         }
@@ -502,9 +508,9 @@ void MainWindow::checkRcFile()
             << ">0"
             << ">>0"
             << ">>>0"
-            << "(012345)"
+            << "(012345789)"
             << ">>(01234)0(01234)0"
-            << ">>////(012345)\\ \\ \\ +(012345)"
+            << ">>////(0123456789)\\ \\ \\ +(0123456789)"
             << ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"
             << ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
             << "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342";

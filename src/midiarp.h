@@ -5,7 +5,6 @@
 #include <alsa/asoundlib.h>
 #include <main.h>
 #include <QString>
-#include "arpscreen.h"
 
 
 class MidiArp : public QObject  {
@@ -48,7 +47,6 @@ class MidiArp : public QObject  {
     int randomVelocity, randomTick, randomLength;
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
-    ArpScreen *arpScreen;
 	
   signals:
       void toggleMute();
@@ -73,7 +71,7 @@ class MidiArp : public QObject  {
   
  	
   public slots:  
-    void updatePattern(const QString&, ArpScreen*);
+    void updatePattern(const QString&);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
