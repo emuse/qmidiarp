@@ -15,8 +15,8 @@
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
-    GrooveWidgetLayout->setMargin(6);
-    GrooveWidgetLayout->setSpacing(8);
+    GrooveWidgetLayout->setMargin(10);
+    GrooveWidgetLayout->setSpacing(1);
 
     grooveTick = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("&Shift"), this);
     connect(grooveTick, SIGNAL(valueChanged(int)),

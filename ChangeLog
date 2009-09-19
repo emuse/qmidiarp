@@ -1,4 +1,8 @@
 2009-09-18 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp: Layout improved, using more QDockWidgets
+	* arpwidget.cpp: QGridLayout used where appropriate
+	
+2009-09-18 Frank Kober <goemusic@yahoo.fr>
 	* arpwidget.cpp, midiarp.cpp: don't pass arpScreen to midiarp, 
 	maximum height of arpScreen increased, groove values passed
 	to arpscreen (not handled yet), queueTempo awareness added

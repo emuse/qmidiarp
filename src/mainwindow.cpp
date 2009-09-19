@@ -20,6 +20,11 @@
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
 #include "pixmaps/midiclock.xpm"
+#include "pixmaps/fileopen.xpm"
+#include "pixmaps/filenew.xpm"
+#include "pixmaps/filesave.xpm"
+#include "pixmaps/filesaveas.xpm"
+#include "pixmaps/filequit.xpm"
 
 
 MainWindow::MainWindow(int p_portCount)
@@ -41,8 +46,6 @@ MainWindow::MainWindow(int p_portCount)
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     logWindow->setWidget(logWidget);;
-    logWindow->setVisible(false);
-	logWindow->setFloating(true);
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
@@ -73,14 +76,19 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(runQueue(bool)));				   
 
     grooveWidget = new GrooveWidget(tabWidget);
+    QDockWidget *grooveWindow = new QDockWidget(tr("Groove Settings"), this);
+    grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    grooveWindow->setWidget(grooveWidget);;
+    grooveWindow->setVisible(true);
+    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
             arpData->seqDriver, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
             arpData->seqDriver, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
             arpData->seqDriver, SLOT(setGrooveLength(int)));
-    tabWidget->addTab(grooveWidget, tr("Groove"));			
-
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New..."), this);
     addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New")));
@@ -95,6 +103,31 @@ MainWindow::MainWindow(int p_portCount)
 	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Arp|Delete")));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpAction->setDisabled(true);
+
+    fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
+    fileNewAction->setShortcut(QKeySequence(QKeySequence::New));    
+    fileNewAction->setToolTip(tr("Create new arpeggiator file"));
+    connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
+
+    fileOpenAction = new QAction(QIcon(fileopen_xpm), tr("&Open..."), this);
+    fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));    
+    fileOpenAction->setToolTip(tr("Open arpeggiator file"));
+    connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
+
+    fileSaveAction = new QAction(QIcon(filesave_xpm), tr("&Save"), this);
+    fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));    
+    fileSaveAction->setToolTip(tr("Save current arpeggiator file"));
+    connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
+
+    fileSaveAsAction = new QAction(QIcon(filesaveas_xpm), tr("Save &as..."),
+            this);
+    fileSaveAsAction->setToolTip(tr("Save current arpeggiator file with new name"));
+    connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
+
+    fileQuitAction = new QAction(QIcon(filequit_xpm), tr("&Quit"), this);
+    fileQuitAction->setShortcut(QKeySequence(tr("Ctrl+Q", "File|Quit")));    
+    fileQuitAction->setToolTip(tr("Quit application"));
+    connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     runAction = new QAction(QIcon(play_xpm), tr("&Run"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
@@ -130,17 +163,12 @@ MainWindow::MainWindow(int p_portCount)
     QMenu *arpMenu = new QMenu(QMenu::tr("&Arp"),this); 
     QMenu *helpMenu = new QMenu(QMenu::tr("&Help"),this);
 
-	fileOpenAction = new QAction(QMenu::tr("&Open..."), this);
-	fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
-	connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(load()));
-
-    fileMenu->addAction(fileOpenAction);    
-    fileMenu->addAction(QMenu::tr("&Save"), this, SLOT(save()),
-					QKeySequence(QKeySequence::Save));    
-    fileMenu->addAction(QMenu::tr("Save &As..."), this, SLOT(saveAs()));
+    fileMenu->addAction(fileNewAction);
+    fileMenu->addAction(fileOpenAction);
+    fileMenu->addAction(fileSaveAction);
+    fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
-    fileMenu->addAction(QMenu::tr("&Quit"), qApp, SLOT(quit()),
-					QKeySequence(QMenu::tr("Ctrl+Q", "File|Quit")));    
+    fileMenu->addAction(fileQuitAction);    
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(renameArpAction);
@@ -152,7 +180,15 @@ MainWindow::MainWindow(int p_portCount)
     helpMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
             SLOT(helpAbout())); 
     helpMenu->addAction(tr("&About Qt..."), this,
-            SLOT(helpAboutQt())); 
+            SLOT(helpAboutQt()));
+			
+    QToolBar *fileToolBar = new QToolBar(tr("&File Toolbar"), this);
+    fileToolBar->addAction(fileNewAction);    
+    fileToolBar->addAction(fileOpenAction);    
+    fileToolBar->addAction(fileSaveAction);    
+    fileToolBar->addAction(fileSaveAsAction);
+    fileToolBar->setMaximumHeight(30);
+	fileToolBar->setHidden(true);
 
     runBox = new QToolBar(tr("&Control Toolbar"), this);
     runBox->addAction(addArpAction);
@@ -168,8 +204,8 @@ MainWindow::MainWindow(int p_portCount)
     menuBar->addMenu(arpMenu);
     menuBar->addMenu(helpMenu);
 	
-	
     setMenuBar(menuBar);
+	addToolBar(fileToolBar);
 	addToolBar(runBox);
     setCentralWidget(tabWidget);
     setWindowIcon(QPixmap(qmidiarp2_xpm));
@@ -252,9 +288,6 @@ void MainWindow::renameArp() {
     QString newname, oldname;
     bool ok;
 
-    if (tabWidget->currentIndex() < 1) {
-        return;
-    }
     oldname = tabWidget->tabText(tabWidget->currentIndex());
     newname = QInputDialog::getText(this, APP_NAME,
             tr("New Name"), QLineEdit::Normal, oldname, &ok);
@@ -270,9 +303,6 @@ void MainWindow::removeArp()
 {
     QString qs;
 
-    if (tabWidget->currentIndex() < 1) {
-        return;
-    } 
     ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
     qs = tr("Remove \"%1\"?")
         .arg(tabWidget->tabText(tabWidget->currentIndex()));
@@ -302,7 +332,7 @@ void MainWindow::removeArp(int index)
     ArpWidget *arpWidget = arpData->arpWidget(index);
     arpData->removeMidiArp(arpWidget->getMidiArp());
     arpData->removeArpWidget(arpWidget);
-    tabWidget->removeTab(index + 1);
+    tabWidget->removeTab(index);
     if (arpData->midiArpCount() < 1) {
         removeArpAction->setDisabled(true);
         renameArpAction->setDisabled(true);
@@ -320,7 +350,22 @@ void MainWindow::clear()
     }
 }
 
-void MainWindow::load()
+void MainWindow::fileNew()
+{
+         QMessageBox::StandardButton choice = QMessageBox::question(this,
+				tr("New arpeggiator setup"),
+                tr("Do you want to erase your entire arpeggiator setup?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+    if (choice == QMessageBox::Yes) 
+	{
+        clear();
+        filename = "";
+        updateWindowTitle();
+    }
+}
+
+void MainWindow::fileOpen()
 {
     filename =  QFileDialog::getOpenFileName(this,
             tr("Open arpeggiator file"), lastDir,
@@ -387,7 +432,7 @@ void MainWindow::openFile(const QString& name)
 	updateWindowTitle();
 }
 
-void MainWindow::save()
+void MainWindow::fileSave()
 {
     int l1;
 
@@ -426,7 +471,7 @@ void MainWindow::save()
 	lastDir = filename;
 }
 
-void MainWindow::saveAs()
+void MainWindow::fileSaveAs()
 {
     if (arpData->midiArpCount() < 1) {  
         return;
@@ -439,7 +484,7 @@ void MainWindow::saveAs()
         if (!filename.endsWith(FILEEXT))
             filename.append(FILEEXT);
 		lastDir = filename;
-		save();
+		fileSave();
 		updateWindowTitle();
 		}
 }

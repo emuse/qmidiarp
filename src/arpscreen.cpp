@@ -265,7 +265,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
             if (!chordIndex) 
 			{
 				if (chordMode) chordIndex++;
-                curstep += tempo; // * (1.0 + 0.005 * (double)grooveTmp); 
+                curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp); 
 				grooveIndex++; 
             }
         }
@@ -275,7 +275,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
 			{
                 case '(':
                     chordMode = true;
-					grooveIndex++;
 					chordIndex = 0;
                     break;
 
@@ -298,7 +297,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
                 case 'p':
                     if (!chordMode)
-                        curstep += tempo; // * (1.0 + 0.005 * (double)grooveTmp);
+                        curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp);
 						grooveIndex++; 
                    break;
 
@@ -344,6 +343,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 			if (nlines > 0) 
 			{
                 ypos = nlines-1;
+//				printf("x1: %d, x: %d\n",x1 , x);
 				if (x1 == x) 
 				{
 					pen.setColor(QColor(140, 240, 140));

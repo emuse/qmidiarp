@@ -48,7 +48,9 @@ class MainWindow : public QMainWindow
     ~MainWindow();
     QToolBar *runBox;
     QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
-	QAction *midiClockAction, *fileOpenAction;
+    QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
+    QAction *fileQuitAction;
+	QAction *midiClockAction;
     void openFile(const QString&);
 
   signals:  
@@ -61,9 +63,10 @@ class MainWindow : public QMainWindow
     void addArp();
     void renameArp();
     void removeArp();
-    void saveAs();
-    void save();
-    void load();
+    void fileNew();
+    void fileSaveAs();
+    void fileSave();
+    void fileOpen();
     void clear();
     void updateTempo(int tempo);
     void updateRunQueue(bool on);

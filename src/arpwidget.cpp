@@ -31,7 +31,7 @@
 ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 : QWidget(parent), midiArp(p_midiArp)
 {
-    QVBoxLayout *arpWidgetLayout = new QVBoxLayout;
+    QGridLayout *arpWidgetLayout = new QGridLayout;
 
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
@@ -42,12 +42,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 	chIn->setKeyboardTracking(false);
     chInLabel->setBuddy(chIn);
     connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
-    QHBoxLayout *spinInBoxLayout = new QHBoxLayout;
-    spinInBoxLayout->addWidget(chInLabel);
-    spinInBoxLayout->addStretch(1);
-    spinInBoxLayout->addWidget(chIn);
-    spinInBoxLayout->setMargin(1);
-    spinInBoxLayout->setSpacing(1);
 
     QLabel *indexInLabel = new QLabel(tr("&Note"), inBox);
     indexIn[0] = new QSpinBox(inBox);
@@ -62,13 +56,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
             SLOT(updateIndexIn(int)));
     connect(indexIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateIndexIn(int)));
-    QHBoxLayout *spinIndexBoxLayout = new QHBoxLayout; 
-    spinIndexBoxLayout->addWidget(indexInLabel);
-    spinIndexBoxLayout->addStretch(1);
-    spinIndexBoxLayout->addWidget(indexIn[0]);
-    spinIndexBoxLayout->addWidget(indexIn[1]);
-    spinIndexBoxLayout->setMargin(1);
-    spinIndexBoxLayout->setSpacing(1);
 
     QLabel *rangeInLabel = new QLabel(tr("&Velocity"), inBox);
     rangeIn[0] = new QSpinBox(inBox);
@@ -83,19 +70,18 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
             SLOT(updateRangeIn(int)));
     connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
-    QHBoxLayout *spinRangeBoxLayout = new QHBoxLayout;
-    spinRangeBoxLayout->addWidget(rangeInLabel);
-    spinRangeBoxLayout->addStretch(1);
-    spinRangeBoxLayout->addWidget(rangeIn[0]);
-    spinRangeBoxLayout->addWidget(rangeIn[1]);
-    spinRangeBoxLayout->setMargin(1);
-    spinRangeBoxLayout->setSpacing(1);
 
-    QVBoxLayout *inBoxLayout = new QVBoxLayout;
-    inBoxLayout->addLayout(spinIndexBoxLayout);
-    inBoxLayout->addLayout(spinRangeBoxLayout);
-    inBoxLayout->addLayout(spinInBoxLayout);
-    inBoxLayout->addStretch();
+    QGridLayout *inBoxLayout = new QGridLayout;
+
+    inBoxLayout->addWidget(indexInLabel, 0, 0);
+    inBoxLayout->addWidget(indexIn[0], 0, 1);
+    inBoxLayout->addWidget(indexIn[1], 0, 2);
+    inBoxLayout->addWidget(rangeInLabel, 1, 0);
+    inBoxLayout->addWidget(rangeIn[0], 1, 1);
+    inBoxLayout->addWidget(rangeIn[1], 1, 2);
+	inBoxLayout->addWidget(chInLabel, 2, 0);
+    inBoxLayout->addWidget(chIn, 2, 2);
+
     inBox->setLayout(inBoxLayout); 
 
 
@@ -106,12 +92,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
 	muteLabel->setBuddy(muteOut);
-    QHBoxLayout *muteBoxLayout = new QHBoxLayout;
-    muteBoxLayout->addWidget(muteLabel);
-    muteBoxLayout->addStretch();
-    muteBoxLayout->addWidget(muteOut);
-    muteBoxLayout->setMargin(1);
-    muteBoxLayout->setSpacing(1);
 
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QSpinBox(portBox);
@@ -120,12 +100,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
  	channelOut->setKeyboardTracking(false);
     connect(channelOut, SIGNAL(valueChanged(int)), this,
             SLOT(updateChannelOut(int)));
-    QHBoxLayout *portChBoxLayout = new QHBoxLayout;
-    portChBoxLayout->addWidget(channelLabel);
-    portChBoxLayout->addStretch();
-    portChBoxLayout->addWidget(channelOut);
-    portChBoxLayout->setMargin(1);
-    portChBoxLayout->setSpacing(1);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QSpinBox(portBox);
@@ -133,20 +107,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     portOut->setRange(1, portCount);
  	portOut->setKeyboardTracking(false);
     connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
-    QHBoxLayout *portOutBoxLayout = new QHBoxLayout;
-    portOutBoxLayout->addWidget(portLabel);
-    portOutBoxLayout->addStretch(1);
-    portOutBoxLayout->addWidget(portOut);
-    portOutBoxLayout->setMargin(1);
-    portOutBoxLayout->setSpacing(1);
 
-    QVBoxLayout *portBoxLayout = new QVBoxLayout;
-    //portBoxLayout->setMargin(1);
-    //portBoxLayout->setSpacing(1);
-    portBoxLayout->addLayout(muteBoxLayout);
-    portBoxLayout->addLayout(portOutBoxLayout);
-    portBoxLayout->addLayout(portChBoxLayout);
-    portBoxLayout->addStretch();
+    QGridLayout *portBoxLayout = new QGridLayout;
+    portBoxLayout->addWidget(muteLabel, 0, 0);
+    portBoxLayout->addWidget(muteOut, 0, 1);
+    portBoxLayout->addWidget(portLabel, 1, 0);
+    portBoxLayout->addWidget(portOut, 1, 1);
+    portBoxLayout->addWidget(channelLabel, 2, 0);
+    portBoxLayout->addWidget(channelOut, 2, 1);
     portBox->setLayout(portBoxLayout);
 
 
@@ -283,10 +251,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     envelopeBox->setLayout(envelopeBoxLayout);
 
 
-    arpWidgetLayout->addLayout(inOutBoxLayout);
-    arpWidgetLayout->addWidget(patternBox);
-    arpWidgetLayout->addWidget(randomBox);
-    arpWidgetLayout->addWidget(envelopeBox);
+    arpWidgetLayout->addWidget(patternBox,0,0);
+    arpWidgetLayout->addLayout(inOutBoxLayout,1,0);
+    arpWidgetLayout->addWidget(randomBox,0,1);
+    arpWidgetLayout->addWidget(envelopeBox,1,1);
+    arpWidgetLayout->setRowStretch(2,1);
+
+	arpWidgetLayout->setColumnMinimumWidth(1, 250);
     arpWidgetLayout->setMargin(2);
     arpWidgetLayout->setSpacing(5);
     setLayout(arpWidgetLayout);
@@ -461,7 +432,7 @@ void ArpWidget::writePatternPresets()
     QFile f(qmarcpath);
 
     if (!f.open(QIODevice::WriteOnly)) {
-        QMessageBox::information(this, PACKAGE,
+        QMessageBox::warning(this, PACKAGE,
                 tr("Could not write to resource file"));
         return;
     }
@@ -482,7 +453,7 @@ void ArpWidget::loadPatternPresets()
     QFile f(qmarcpath);
 
     if (!f.open(QIODevice::ReadOnly)) {
-        QMessageBox::information(this, PACKAGE,
+        QMessageBox::warning(this, PACKAGE,
                 tr("Could not read from resource file"));
         return;
     }	
