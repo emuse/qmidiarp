@@ -76,7 +76,7 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(runQueue(bool)));				   
 
     grooveWidget = new GrooveWidget(tabWidget);
-    QDockWidget *grooveWindow = new QDockWidget(tr("Groove Settings"), this);
+    QDockWidget *grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);

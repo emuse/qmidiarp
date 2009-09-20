@@ -11,7 +11,7 @@
 #include <QGroupBox>
 #include <QFile>
 #include <QTextStream>
-#include <QPlainTextEdit>
+#include <QLineEdit>
 #include <QInputDialog>
 #include <QDir>
 #include <QMessageBox>
@@ -143,14 +143,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     connect(textRemoveAction, SIGNAL(triggered()), this,
             SLOT(removeCurrentPattern()));
     textRemoveButton->setDefaultAction(textRemoveAction);
-    textRemoveButton->setEnabled(false);
+    textRemoveAction->setEnabled(false);
 
     textStoreButton = new QToolButton(this);
     textStoreAction = new QAction(QIcon(patternstore_xpm),
             tr("&Store Pattern"), this);
     connect(textStoreAction, SIGNAL(triggered()), this,
             SLOT(storePatternText()));
-    textStoreButton->setHidden(true);
+    textStoreAction->setEnabled(false);
     textStoreButton->setDefaultAction(textStoreAction);
 
     patternPresetBox = new QComboBox(patternBox);
@@ -182,11 +182,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternPresetLayout->addStretch(2);
     patternPresetLayout->addWidget(repeatPatternThroughChord);	
 
-    patternText = new QPlainTextEdit(patternBox); 
-    patternText->setLineWrapMode(QPlainTextEdit::NoWrap);
-    connect(patternText, SIGNAL(textChanged()), this, SLOT(updateText()));
+    patternText = new QLineEdit(patternBox); 
+    //patternText->setLineWrapMode(QPlainTextEdit::NoWrap);
+    connect(patternText, SIGNAL(textChanged(QString)), this, SLOT(updateText(QString)));
     patternText->setHidden(true);
-    patternText->setMaximumHeight(50);
+    //patternText->setMaximumHeight(50);
     patternText->setToolTip(
             tr(" ( ) chord mode on/off\n"
             "  + -  octave up/down\n"
@@ -218,15 +218,15 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     randomBoxLayout->setMargin(5);
     randomBoxLayout->setSpacing(1);
 
-    randomTick = new Slider(0, 100, 1, 0, Qt::Horizontal, tr("&Shift"), randomBox);
+    randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("&Shift"), randomBox);
     connect(randomTick, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomTickAmp(int)));
 
-    randomVelocity = new Slider(0, 100, 1, 0, Qt::Horizontal, tr("Vel&ocity"), randomBox);
+    randomVelocity = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("Vel&ocity"), randomBox);
     connect(randomVelocity, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomVelocityAmp(int)));
 
-    randomLength = new Slider(0, 100, 1, 0, Qt::Horizontal, tr("&Length"), randomBox);
+    randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("&Length"), randomBox);
     connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomVelocityAmp(int))); 
 			 
@@ -237,10 +237,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 	  
     envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
-    attackTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Attack (s)"), envelopeBox);
+    attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal, tr("&Attack (s)"), envelopeBox);
     connect(attackTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateAttackTime(int)));
-    releaseTime = new Slider(0, 20, 1, 0, Qt::Horizontal, tr("&Release (s)"), envelopeBox);
+    releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal, tr("&Release (s)"), envelopeBox);
     connect(releaseTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateReleaseTime(int)));
 			  
@@ -257,7 +257,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     arpWidgetLayout->addWidget(envelopeBox,1,1);
     arpWidgetLayout->setRowStretch(2,1);
 
-	arpWidgetLayout->setColumnMinimumWidth(1, 250);
+	arpWidgetLayout->setColumnMinimumWidth(1, 300);
     arpWidgetLayout->setMargin(2);
     arpWidgetLayout->setSpacing(5);
     setLayout(arpWidgetLayout);
@@ -370,7 +370,7 @@ void ArpWidget::readArp(QTextStream& arpText)
         }
         qs += '\n' + qs2;
     }
-    patternText->setPlainText(qs);                    
+    patternText->setText(qs);                    
 }                                      
 
 void ArpWidget::setChIn(int value)
@@ -399,28 +399,28 @@ void ArpWidget::setChannelOut(int value)
     channelOut->setValue(value);
 }
 
-void ArpWidget::updateText()
+void ArpWidget::updateText(QString newtext)
 { 
     patternPresetBox->setCurrentIndex(0);
-    textRemoveButton->setEnabled(false);
-    textStoreButton->setHidden(false);
-    midiArp->updatePattern(patternText->toPlainText());
-	arpScreen->updateArpScreen(patternText->toPlainText());
+    textRemoveAction->setEnabled(false);
+    textStoreAction->setEnabled(false);
+    midiArp->updatePattern(newtext);
+	arpScreen->updateArpScreen(newtext);
     emit(patternChanged());
 }
 
 void ArpWidget::updatePatternPreset(int val)
 {
     if (val) {
-        patternText->setPlainText(patternPresets.at(val));
+        patternText->setText(patternPresets.at(val));
         patternPresetBox->setCurrentIndex(val);
-        midiArp->updatePattern(patternText->toPlainText());
-		arpScreen->updateArpScreen(patternText->toPlainText());
-        textStoreButton->setHidden(true);
+        midiArp->updatePattern(patternText->text());
+		arpScreen->updateArpScreen(patternText->text());
+        textStoreAction->setEnabled(false);
         emit(patternChanged());
-        textRemoveButton->setEnabled(true);
+        textRemoveAction->setEnabled(true);
     } else
-        textRemoveButton->setEnabled(false);
+        textRemoveAction->setEnabled(false);
 }
 
 void ArpWidget::writePatternPresets()
@@ -489,10 +489,10 @@ void ArpWidget::storePatternText()
 
     if (ok && !qs.isEmpty()) {
         patternNames << qPrintable(qs);
-        patternPresets << patternText->toPlainText();
+        patternPresets << patternText->text();
         patternPresetBox->addItem(qPrintable(qs));
         patternPresetBox->setCurrentIndex(patternNames.count() - 1);
-        textRemoveButton->setEnabled(true);
+        textRemoveAction->setEnabled(true);
         writePatternPresets();
     }
 }
@@ -518,7 +518,7 @@ void ArpWidget::removeCurrentPattern()
     patternNames.removeAt(currentIndex);
     patternPresetBox->removeItem(currentIndex);
     patternPresetBox->setCurrentIndex(0);
-    textRemoveButton->setEnabled(false);
+    textRemoveAction->setEnabled(false);
 
     writePatternPresets();
 }

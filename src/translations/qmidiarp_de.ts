@@ -320,7 +320,7 @@ d h Note länger/kürzer
     <message>
         <location filename="../logwidget.cpp" line="33"/>
         <source>Log &amp;MIDI Clock</source>
-        <translation type="unfinished">&amp;MIDI Clock aufzeichnen</translation>
+        <translation>&amp;MIDI Clock aufzeichnen</translation>
     </message>
     <message>
         <location filename="../logwidget.cpp" line="38"/>
@@ -370,8 +370,9 @@ d h Note länger/kürzer
         <translation>Einstellungen</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="79"/>
         <source>Groove</source>
-        <translation type="obsolete">Groove</translation>
+        <translation>Groove</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="93"/>
@@ -540,9 +541,8 @@ d h Note länger/kürzer
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="79"/>
         <source>Groove Settings</source>
-        <translation>Groove Einstellungen</translation>
+        <translation type="obsolete">Groove Einstellungen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="356"/>

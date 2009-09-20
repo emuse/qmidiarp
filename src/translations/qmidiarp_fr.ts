@@ -390,8 +390,9 @@ d h durée de note augm/dim
         <translation>Paramètres</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="79"/>
         <source>Groove</source>
-        <translation type="obsolete">Groove</translation>
+        <translation>Groove</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="93"/>
@@ -572,9 +573,8 @@ d h durée de note augm/dim
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="79"/>
         <source>Groove Settings</source>
-        <translation>Paramètres Groove</translation>
+        <translation type="obsolete">Paramètres Groove</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="356"/>

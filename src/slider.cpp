@@ -7,12 +7,12 @@
 #include "slider.h"
 
 
-Slider::Slider(int minValue, int maxValue, int pageStep, int value,
+Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep, int value,
         Qt::Orientation orientation, QString label, QWidget * parent) : QWidget(parent) {
 
     QHBoxLayout *sliderLayout = new QHBoxLayout;
     slider = new QSlider(orientation, parent);
-    slider->setTickInterval(pageStep);
+    slider->setTickInterval(tickStep);
     slider->setTickPosition(QSlider::TicksLeft);
     slider->setRange(minValue, maxValue);
     slider->setSingleStep(pageStep);

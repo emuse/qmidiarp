@@ -18,15 +18,15 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     GrooveWidgetLayout->setMargin(10);
     GrooveWidgetLayout->setSpacing(1);
 
-    grooveTick = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("&Shift"), this);
+    grooveTick = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal, tr("&Shift"), this);
     connect(grooveTick, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveTick(int)));
 
-    grooveVelocity = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("&Velocity"), this);
+    grooveVelocity = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal, tr("&Velocity"), this);
     connect(grooveVelocity, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveVelocity(int)));
 
-    grooveLength = new Slider(-100, 100, 1, 0, Qt::Horizontal, tr("&Length"), this);
+    grooveLength = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal, tr("&Length"), this);
     connect(grooveLength, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveLength(int)));
 
@@ -34,7 +34,7 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     GrooveWidgetLayout->addWidget(grooveVelocity);
     GrooveWidgetLayout->addWidget(grooveLength);
     GrooveWidgetLayout->addStretch();
-
+	setMinimumWidth(300);
     setLayout(GrooveWidgetLayout);
 }
 

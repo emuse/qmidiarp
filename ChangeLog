@@ -1,6 +1,13 @@
-2009-09-18 Frank Kober <goemusic@yahoo.fr>
+2009-09-20 Frank Kober <goemusic@yahoo.fr>
+	* arpscreen.cpp: more optimizations avoiding double precision
+	calculations
+	* arpwidget.cpp: LineEdit used replacing PlainTextEdit, pattern edit
+	toolbuttons disabled instead of hidden
+
+2009-09-19 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp: Layout improved, using more QDockWidgets
 	* arpwidget.cpp: QGridLayout used where appropriate
+	* slider.*: tickStep parameter added, ticks added
 	
 2009-09-18 Frank Kober <goemusic@yahoo.fr>
 	* arpwidget.cpp, midiarp.cpp: don't pass arpScreen to midiarp, 

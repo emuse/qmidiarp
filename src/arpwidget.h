@@ -14,7 +14,7 @@
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QFile>
-#include <QPlainTextEdit>
+#include <QLineEdit>
 #include <QTextStream>
 #include <QCheckBox>
 #include "midiarp.h"
@@ -38,7 +38,7 @@ class ArpWidget : public QWidget
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
 
 	MidiArp *midiArp;
-	QPlainTextEdit *patternText;
+	QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
 	Slider *attackTime, *releaseTime;
     
@@ -72,7 +72,7 @@ class ArpWidget : public QWidget
     void updateRangeIn(int value);
     void updateChannelOut(int value);
     void updatePortOut(int value);
-    void updateText();
+    void updateText(QString newtext);
     void updateRepeatPattern(int);
 	void updatePatternPreset(int);
 	void openTextEditWindow(bool on);

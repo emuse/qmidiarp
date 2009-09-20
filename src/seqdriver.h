@@ -52,7 +52,6 @@ class SeqDriver : public QWidget {
     void initArpQueue();
     snd_seq_tick_time_t get_tick();
     void setQueueStatus(bool run);
-    int getMidiTime();
     
   signals:
     void midiEvent(snd_seq_event_t *ev);
@@ -63,18 +62,15 @@ class SeqDriver : public QWidget {
     void setDiscardUnmatched(bool on);
     void setPortUnmatched(int id);
     void setQueueTempo(int bpm);
-    void setFineTempo(double finetempo);
     void runQueue(bool);
     void setGrooveTick(int);
     void setGrooveVelocity(int);
     void setGrooveLength(int);
     void sendGroove();
-    void resetMidiTime();
     void setUseMidiClock(bool on);
     void updateMIDItpb(int midiTpb);
 	void setMidiMutable(bool on);
-    void updateCnumber(int midiTpb);
-
+    void updateCnumber(int cnumber);
 };
                               
 #endif

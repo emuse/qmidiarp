@@ -22,7 +22,7 @@ class Slider : public QWidget
 	QLabel *sliderLabel;
     
   public:
-    Slider(int minValue, int maxValue, int pageStep, int value, 
+    Slider(int minValue, int maxValue, int pageStep, int tickStep, int value, 
            Qt::Orientation orientation, QString label, QWidget * parent);
     ~Slider();
     int value();

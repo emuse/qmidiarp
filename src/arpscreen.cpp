@@ -70,13 +70,14 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double curstep = 0.0;
     int nlines = 0; 
     int notelen;
-    double ypos = 0.;
+    int ypos, xpos;
     int octYoffset;
     int w = QWidget::width();
     int h = QWidget::height();
-	int notestreak_thick = 3;
+	int notestreak_thick = 2;
 
-    double len, xscale, yscale, ofs;
+    double len;
+	int xscale, yscale, ofs;
     int x, x1;
     int patternMaxIndex, patternLen;
     bool chordMode = false;
@@ -184,9 +185,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.drawRect(0, 0, w - 1, h - 1);
 
     //Grid 
-    len = (double)nsteps;  
-    xscale = (double)(w - 2 * ARPSCREEN_HMARGIN) / len;
-    yscale = (double)h - 2 * ARPSCREEN_VMARGIN;
+    len = nsteps;  
+    xscale = (w - 2 * ARPSCREEN_HMARGIN) / len;
+    yscale = h - 2 * ARPSCREEN_VMARGIN;
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
@@ -201,7 +202,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         } else {
             p.setPen(QColor(60, 180, 150));	  
         }
-        x = (int)((double)l1 * xscale);
+        x = l1 * xscale;
         p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
                 ARPSCREEN_HMARGIN + x, h-ARPSCREEN_VMARGIN);
 
@@ -226,12 +227,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //Octave separators and numbers
     p.setPen(QColor(40, 120, 40));
     noctaves = maxOctave - minOctave + 1;
-
     for (l1 = 0; l1 < noctaves + 1; l1++) {
-        p.drawLine(ARPSCREEN_HMARGIN,
-                yscale * l1 / noctaves + ARPSCREEN_VMARGIN, 
-                w - ARPSCREEN_HMARGIN, 
-                yscale * l1 / noctaves + ARPSCREEN_VMARGIN);		 
+		ypos = yscale * l1 / noctaves + ARPSCREEN_VMARGIN;
+        p.drawLine(ARPSCREEN_HMARGIN, ypos, w - ARPSCREEN_HMARGIN, ypos);		 
         p.drawText(ARPSCREEN_HMARGIN / 2 - 3, 
                 yscale * (l1 + 0.5) / noctaves + ARPSCREEN_VMARGIN + 4, 
                 QString::number(noctaves - l1 + minOctave - 1));
@@ -250,7 +248,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //follower_tick position x1
     if (nsteps > 0) 
 	{
-        x1 = (((int)((follower_tick / TICKS_PER_QUARTER) / minTempo))
+        x1 = (((int)(follower_tick / TICKS_PER_QUARTER / minTempo))
                 % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
     } else
         x1 = 0;
@@ -336,14 +334,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
 		if (c.isDigit()) 
 		{
-            octYoffset = (octave - minOctave) * (patternMaxIndex+1);
-			x = (int)((curstep - tempo) * xscale);
+            octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
+			x = (curstep - tempo) * xscale;
 //			notestreak_thick = h / (patternMaxIndex + 1) / noctaves / 2;
-			notestreak_thick = 2;
 			if (nlines > 0) 
 			{
-                ypos = nlines-1;
-//				printf("x1: %d, x: %d\n",x1 , x);
+                ypos = yscale - yscale * (nlines - 1 + octYoffset)
+                            / (patternMaxIndex + 1) / noctaves
+                            + ARPSCREEN_VMARGIN - 3 + notestreak_thick;
+				xpos = ARPSCREEN_HMARGIN + x + notestreak_thick / 2;
 				if (x1 == x) 
 				{
 					pen.setColor(QColor(140, 240, 140));
@@ -354,16 +353,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
 					pen.setColor(QColor(80 + 60 * (vel - 0.8),
                                250, 120 + 60 * (vel - 0.8)));
 					p.setPen(pen);
-                    p.drawLine(ARPSCREEN_HMARGIN + x + notestreak_thick / 2, 
-                            yscale * (1.0 - (ypos + octYoffset)
-                            / (patternMaxIndex + 1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3,
-							
-							ARPSCREEN_HMARGIN + x + notelen - notestreak_thick, 
-                            
-							yscale * (1.0 - (ypos + octYoffset)
-                            / (patternMaxIndex + 1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3);
+                    p.drawLine(xpos, ypos,
+							xpos + notelen - notestreak_thick / 2, ypos);
                 } else 
 				{
 					pen.setWidth(notestreak_thick);
@@ -371,17 +362,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
                                 160 + 40 * (vel - 0.8),
                                 80 + 60 * (vel - 0.8)));
 					p.setPen(pen);
-                    p.drawLine(ARPSCREEN_HMARGIN + x + notestreak_thick / 2,
-					 
-                            yscale * (1.0 - (ypos + octYoffset)
-                            / (patternMaxIndex+1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3,
-							 
-                            ARPSCREEN_HMARGIN + x + notelen - notestreak_thick,
-							
-							yscale * (1.0 - (ypos + octYoffset)
-                            / (patternMaxIndex+1) / noctaves)
-                            + ARPSCREEN_VMARGIN - 3);
+                    p.drawLine(xpos, ypos,
+                            xpos + notelen - notestreak_thick / 2, ypos);
                 }
 				pen.setWidth(1);
 

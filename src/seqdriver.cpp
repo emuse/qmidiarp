@@ -18,6 +18,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, QWidget *parent)
     portCount = 0;
     discardUnmatched = false;
     portUnmatched = 0;
+	//TODO check whether mute_cnumber is updated upon addArp
 	mute_cnumber = 37;
 	midi_mutable = false;
 
@@ -112,9 +113,10 @@ void SeqDriver::procEvents(int)
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
 		{
-            tick = get_tick();
+			tick = get_tick();
+			
             if (use_midiclock && (midiTime > 0)) 
-                m_ratio = (double)tick/TICKS_PER_QUARTER*midiclock_tpb/midiTime;
+                m_ratio = (double)tick*midiclock_tpb/midiTime/TICKS_PER_QUARTER;
             else m_ratio = 1.0;
             	  //printf("First Tick %d   ",firstArpTick);
                   //printf("       tick %d   ",tick);
@@ -173,7 +175,7 @@ void SeqDriver::procEvents(int)
             snd_seq_ev_set_dest(evIn, clientid, portid_in);
             snd_seq_event_output_direct(seq_handle, evIn);
 			
-            emit nextStep((tick-firstArpTick)/m_ratio);
+            emit nextStep((tick-firstArpTick) /m_ratio);
 			
 
         } else 
@@ -286,21 +288,6 @@ void SeqDriver::setQueueTempo(int bpm)
     tempo = bpm;
 }
 
-void SeqDriver::setFineTempo(double finetempo)
-{
-    snd_seq_queue_tempo_t *queue_tempo;
-    int msec_tempo;
-
-    snd_seq_queue_tempo_malloc(&queue_tempo);
-    msec_tempo = (int)(6e7 / finetempo);
-    snd_seq_queue_tempo_set_tempo(queue_tempo, msec_tempo);
-    snd_seq_queue_tempo_set_ppq(queue_tempo, TICKS_PER_QUARTER);
-    //snd_seq_queue_tempo_set_ppq(queue_tempo, midiclock_tpb);
-    snd_seq_set_queue_tempo(seq_handle, queue_id, queue_tempo);
-    snd_seq_queue_tempo_free(queue_tempo);
-    tempo = (int)finetempo;
-}
-
 snd_seq_tick_time_t SeqDriver::get_tick()
 {
     snd_seq_queue_status_t *status;
@@ -403,16 +390,6 @@ void SeqDriver::sendGroove()
         midiArpList->at(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
-}
-
-int SeqDriver::getMidiTime()
-{
-    return(midiTime);
-}
-
-void SeqDriver::resetMidiTime()
-{
-    midiTime = 0;
 }
 
 void SeqDriver::setUseMidiClock(bool on)
