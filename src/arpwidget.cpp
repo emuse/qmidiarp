@@ -403,7 +403,7 @@ void ArpWidget::updateText(QString newtext)
 { 
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
-    textStoreAction->setEnabled(false);
+    textStoreAction->setEnabled(true);
     midiArp->updatePattern(newtext);
 	arpScreen->updateArpScreen(newtext);
     emit(patternChanged());
