@@ -32,30 +32,27 @@ int main(int argc, char *argv[])
                 out << ABOUTMSG;
                 out.flush();
                 exit(EXIT_SUCCESS);
+
             case 'h':
-                out << ABOUTMSG << endl;
-				out << endl;
-				out << "Usage" << endl;
-				out << PACKAGE " [--portCount <num>] [<filename>]" << endl;
-				out << PACKAGE " [-v]" << endl;
-				out << PACKAGE " [-h]" << endl;
-				out << endl;
-				out << "Options" << endl;
-				out << QString("--version      -v            "
-						"Print application version") << endl;
-				out << QString("--help         -h            "
-						"Print this message") << endl;
-                out << QString("--portCount    -p  <num>     "
-                        "Number of output ports [%1]\n").arg(portCount) << endl;
+                out << "Usage: " PACKAGE " [OPTION] [FILENAME]" << endl;
+                out << endl;
+                out << "Options:" << endl;
+                out << "  -v, --version            "
+                    "Print application version" << endl;
+                out << "  -h, --help               "
+                    "Print this message" << endl;
+                out << QString("  -p, --portCount <num>    "
+                        "Number of output ports [%1]").arg(portCount) << endl;
                 out.flush();
                 exit(EXIT_SUCCESS);
+
             case 'p':
                 portCount = atoi(optarg);
                 if (portCount > MAX_PORTS) 
-					portCount = MAX_PORTS;
+                    portCount = MAX_PORTS;
                 else if (portCount < 1)
                     portCount = 2;
-            break;
+                break;
         }
     }
 
@@ -69,7 +66,7 @@ int main(int argc, char *argv[])
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         app.installTranslator(&qtTr);
 
-    // translator for qmidiarp strings       
+    // translator for qmidiarp messages       
     QTranslator qmidiarpTr;
 
     if (qmidiarpTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
@@ -83,7 +80,7 @@ int main(int argc, char *argv[])
         else
             qWarning("File not found: %s", argv[optind]);
     }
- 
+
     int result = app.exec();
     delete qmidiarp;
     return result;

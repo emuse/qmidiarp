@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="de">
+<!DOCTYPE TS><TS version="1.1" language="de">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -69,6 +68,7 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>( ) chord Mode on/off
  + - octave up/down
  &lt; . &gt; tempo up/down
@@ -81,11 +81,12 @@
  / Geschwindigkeit auf/ab</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Random settings</source>
         <translation type="obsolete">&amp;Zufallseinstellungen</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="191"/>
+        <location filename="../arpwidget.cpp" line="196"/>
         <source> ( ) chord mode on/off
   + -  octave up/down
  &lt; . &gt; tempo up/reset/down
@@ -185,6 +186,7 @@
         <translation>Abwärts</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>( ) chord Mode on/off
  + - octave up/down
  &lt; . &gt; tempo up/down
@@ -200,14 +202,17 @@ d h Note länger/kürzer
 <context>
     <name>GrooveWidget</name>
     <message>
+        <location filename="" line="0"/>
         <source>Groove &amp;shift</source>
         <translation type="obsolete">&amp;Transposition</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Groove &amp;velocity</source>
         <translation type="obsolete">&amp;Geschwindigkeit</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Groove &amp;length</source>
         <translation type="obsolete">&amp;Dauer</translation>
     </message>
@@ -230,82 +235,102 @@ d h Note länger/kürzer
 <context>
     <name>Gui</name>
     <message>
+        <location filename="" line="0"/>
         <source>Event Log</source>
         <translation type="obsolete">Protokoll</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Settings</source>
         <translation type="obsolete">Einstellungen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Groove</source>
         <translation type="obsolete">Groove</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Control Toolbar</source>
         <translation type="obsolete">&amp;Steuerungsleiste</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Add Arp</source>
         <translation type="obsolete">Arpeggiator &amp;hinzufügen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Rename Arp</source>
         <translation type="obsolete">Arpeggiator &amp;umbenennen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Remove Arp</source>
         <translation type="obsolete">&amp;Arpeggiator entfernen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Run</source>
         <translation type="obsolete">&amp;Start</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>New Name</source>
         <translation type="obsolete">Neuer Name</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation type="obsolete">&quot;%1&quot; löschen?</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>QMidiArp files (*.qma)</source>
         <translation type="obsolete">QMidiArp Dateien (*.qma)</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Could not read from file %1.</source>
         <translation type="obsolete">Konnte Datei %1 nicht lesen.</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>QMidiArp files</source>
         <translation type="obsolete">QMidiArp Dateien</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Could not write to file &quot;%1&quot;.</source>
         <translation type="obsolete">Konnte Datei quot;%1&quot; nicht speichern.</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Could not write to resource file</source>
         <translation type="obsolete">Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Add MIDI Arpeggiator</source>
         <translation type="obsolete">MIDI-Arpeggiator hinzufügen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Arp %1</source>
         <translation type="obsolete">Arp %1</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>About %1</source>
         <translation type="obsolete">Über %1</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Open arpeggiator file</source>
         <translation type="obsolete">Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Save arpeggiator</source>
         <translation type="obsolete">Arpeggiator Speichern</translation>
     </message>
@@ -328,6 +353,7 @@ d h Note länger/kürzer
         <translation>&amp;Löschen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Event Log</source>
         <translation type="obsolete">Protokoll</translation>
     </message>
@@ -456,14 +482,17 @@ d h Note länger/kürzer
         <translation>Den gesamten Arpeggio-Aufbau löschen?</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Add Arp</source>
         <translation type="obsolete">Arpeggiator &amp;hinzufügen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Rename Arp</source>
         <translation type="obsolete">Arpeggiator &amp;umbenennen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Remove Arp</source>
         <translation type="obsolete">&amp;Arpeggiator entfernen</translation>
     </message>
@@ -530,17 +559,17 @@ d h Note länger/kürzer
         <translation>Neuer Name</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="307"/>
+        <location filename="../mainwindow.cpp" line="308"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="114"/>
         <location filename="../mainwindow.cpp" line="371"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Groove Settings</source>
         <translation type="obsolete">Groove Einstellungen</translation>
     </message>
@@ -550,6 +579,7 @@ d h Note länger/kürzer
         <translation>Neue Arpeggiator-Zusammenstellung</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>This will erase your entire current setup. 
 Do you want to continue?</source>
         <translation type="obsolete">Dies wird die gesamte aktuelle Zusammenstellung löschen. Weitermachen?</translation>
@@ -565,14 +595,12 @@ Do you want to continue?</source>
         <translation>Konnte Datei %1 nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="444"/>
         <location filename="../mainwindow.cpp" line="480"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="444"/>
-        <location filename="../mainwindow.cpp" line="480"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
@@ -587,14 +615,17 @@ Do you want to continue?</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;New Arp...</source>
         <translation type="obsolete">&amp;Hinzufügen...</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Rename Arp...</source>
         <translation type="obsolete">&amp;Umbenennen...</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Remove Arp...</source>
         <translation type="obsolete">&amp;Löschen</translation>
     </message>
@@ -627,6 +658,7 @@ Do you want to continue?</source>
         <translation>Erster Arp.stumm durch CC# </translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Use incoming MIDI Clock</source>
         <translation type="obsolete">&amp;Eingehendes MIDI Clock Signal nutzen</translation>
     </message>
@@ -652,6 +684,7 @@ Do you want to continue?</source>
         <translation></translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>Save &amp;As...</source>
         <translation type="obsolete">Speichern &amp;unter...</translation>
     </message>
@@ -666,22 +699,27 @@ Do you want to continue?</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Open...</source>
         <translation type="obsolete">&amp;Öffnen...</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Save As...</source>
         <translation type="obsolete">&amp;Speichern unter...</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Save</source>
         <translation type="obsolete">&amp;Speichern</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>S&amp;ave As...</source>
         <translation type="obsolete">S&amp;peichern unter...</translation>
     </message>
     <message>
+        <location filename="" line="0"/>
         <source>&amp;Quit</source>
         <translation type="obsolete">&amp;Beenden</translation>
     </message>
