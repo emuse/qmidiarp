@@ -1,3 +1,22 @@
+2009-09-23 Frank Kober <goemusic@yahoo.fr>
+	* MIDI LFO added as new feature. GUI-wise LFOs coexist with Arps in 
+	tabwidget. They are handeled in parallel through arpdata.cpp and are
+	using the same queue as the arps. Each LFO outputs MIDI controller 
+	data in adjustable resolution, waveform, amplitude, table length.  
+	* midilfo.*, lfowidget.*, lfoadd.xpm: added
+	* arprename.xpm, arpremove.xpm: changed since they are used for arps
+	and LFOs.
+	* arpdata.*: add midiLfoList in parallel to midiArpList
+	* seqdriver.* : LFO data requesting and queueing added
+	* mainwindow.* : LFO handling added, load/save routines adapted
+	* TODO *: 
+	Widgets in the tabwidget are currently recognized by their name
+	to distinguish between LFO and Arp. A better solution would be nice.
+	LFO Amp offset slider has no function yet
+	LFO mute has no function yet
+	LFO GUI needs improvement
+	implement Guido's file change monitoring/Load/Save/SaveAs
+
 2009-09-22 Guido Scholz <guido.scholz@bayernline.de>
 	* main.cpp: Command line help streamlined.
 
