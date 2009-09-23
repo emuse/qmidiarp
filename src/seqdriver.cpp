@@ -218,7 +218,7 @@ void SeqDriver::procEvents(int)
                     }
                 }
             }
-			if ((int)nextEchoTick != nextLfoTick) {
+			if (((int)nextEchoTick != nextLfoTick) || (!nextLfoTick)){
 				snd_seq_ev_clear(evIn);
 				evIn->type = SND_SEQ_EVENT_ECHO;
 				snd_seq_ev_schedule_tick(evIn, queue_id,  0, nextEchoTick*m_ratio);
@@ -365,7 +365,7 @@ void SeqDriver::setQueueStatus(bool run)
 			lastLfoTick[l1] = 0;
 			lfoPacketSize[l1] = 0;
 		}
-		nextLfoTick = 0; //TICKS_PER_QUARTER;
+		nextLfoTick = 0;
         snd_seq_start_queue(seq_handle, queue_id, NULL);
         snd_seq_drain_output(seq_handle);
         tick = get_tick();
