@@ -7,6 +7,8 @@
 #include "seqdriver.h"
 #include "midiarp.h"
 #include "arpwidget.h"
+#include "midilfo.h"
+#include "lfowidget.h"
 
 class ArpData : public QWidget  {
     
@@ -15,6 +17,8 @@ class ArpData : public QWidget  {
   private:
     QList<MidiArp *> midiArpList;
     QList<ArpWidget *> arpWidgetList;
+    QList<MidiLfo *> midiLfoList;
+    QList<LfoWidget *> lfoWidgetList;
     int portCount;
 
   public:
@@ -25,6 +29,7 @@ class ArpData : public QWidget  {
     ~ArpData();
     void registerPorts(int num);
     int getPortCount();
+	
     void addMidiArp(MidiArp *midiArp);
     void addArpWidget(ArpWidget *arpWidget);
     void removeMidiArp(MidiArp *midiArp);
@@ -33,6 +38,15 @@ class ArpData : public QWidget  {
     int arpWidgetCount();
     MidiArp *midiArp(int index);
     ArpWidget *arpWidget(int index);
+	
+    void addMidiLfo(MidiLfo *midiLfo);
+    void addLfoWidget(LfoWidget *lfoWidget);
+    void removeMidiLfo(MidiLfo *midiLfo);
+    void removeLfoWidget(LfoWidget *lfoWidget);
+    int midiLfoCount();
+    int lfoWidgetCount();
+    MidiLfo *midiLfo(int index);
+    LfoWidget *lfoWidget(int index);
     
   public slots:
     void runQueue(bool);

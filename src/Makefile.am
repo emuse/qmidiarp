@@ -7,10 +7,12 @@ nodist_qmidiarp_SOURCES = \
 	arpdata_moc.cpp \
 	arpscreen_moc.cpp \
 	arpwidget_moc.cpp \
+	lfowidget_moc.cpp \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
 	logwidget_moc.cpp \
 	midiarp_moc.cpp \
+	midilfo_moc.cpp \
 	passwidget_moc.cpp \
 	seqdriver_moc.cpp \
 	slider_moc.cpp
@@ -18,12 +20,14 @@ nodist_qmidiarp_SOURCES = \
 qmidiarp_SOURCES = \
 	arpdata.cpp arpdata.h \
 	arpscreen.cpp arpscreen.h \
+	lfowidget.cpp lfowidget.h \
 	arpwidget.cpp arpwidget.h \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
 	midiarp.cpp midiarp.h \
+	midilfo.cpp midilfo.h \
 	passwidget.cpp passwidget.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h

@@ -38,7 +38,9 @@ class MainWindow : public QMainWindow
     ArpData *arpData;
     ArpWidget *arpWidget;
     void addArp(const QString&);
+    void addLfo(const QString&);
     void removeArp(int index);
+    void removeLfo(int index);
     void checkRcFile();
     void updateWindowTitle();
     QString lastDir, filename;
@@ -48,6 +50,7 @@ class MainWindow : public QMainWindow
     ~MainWindow();
     QToolBar *runBox;
     QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
+	QAction *addLfoAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
 	QAction *midiClockAction;
@@ -61,6 +64,7 @@ class MainWindow : public QMainWindow
 	void helpAbout();
     void helpAboutQt();
     void addArp();
+    void addLfo();
     void renameArp();
     void removeArp();
     void fileNew();

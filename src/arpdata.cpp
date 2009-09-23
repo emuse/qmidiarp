@@ -11,13 +11,13 @@
 
 ArpData::ArpData(QWidget *parent) : QWidget(parent)
 {
-    seqDriver = new SeqDriver(&midiArpList, this);
+    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, this);
     //midiArpList.setAutoDelete(true);
 }
 
 ArpData::~ArpData(){
 }
-
+//Arp handling
 void ArpData::addMidiArp(MidiArp *midiArp)
 {
     midiArpList.append(midiArp);
@@ -66,6 +66,59 @@ ArpWidget *ArpData::arpWidget(int index)
 {
     return(arpWidgetList.at(index));
 }
+
+//LFO handling
+
+void ArpData::addMidiLfo(MidiLfo *midiLfo)
+{
+    midiLfoList.append(midiLfo);
+    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
+        seqDriver->setQueueStatus(true);
+    }
+}
+
+void ArpData::addLfoWidget(LfoWidget *lfoWidget)
+{
+    lfoWidgetList.append(lfoWidget);
+}
+
+void ArpData::removeMidiLfo(MidiLfo *midiLfo)
+{
+    if (seqDriver->runArp && (midiArpList.count() < 1)) {
+        seqDriver->setQueueStatus(false);
+    }
+    int i = midiLfoList.indexOf(midiLfo);
+    if (i != -1)
+        delete midiLfoList.takeAt(i);
+}
+
+void ArpData::removeLfoWidget(LfoWidget *lfoWidget)
+{
+    removeMidiLfo(lfoWidget->getMidiLfo());
+    lfoWidgetList.removeOne(lfoWidget);
+}
+
+int ArpData::midiLfoCount()
+{
+    return(midiLfoList.count());
+}
+
+int ArpData::lfoWidgetCount()
+{
+    return(lfoWidgetList.count());
+}
+
+MidiLfo *ArpData::midiLfo(int index)
+{
+    return(midiLfoList.at(index));
+}
+
+LfoWidget *ArpData::lfoWidget(int index)
+{
+    return(lfoWidgetList.at(index));
+}
+
+//general
 
 void ArpData::registerPorts(int num)
 {

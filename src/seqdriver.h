@@ -7,25 +7,30 @@
 #include <alsa/asoundlib.h>
 
 #include "midiarp.h"
+#include "midilfo.h"
 #include "main.h"
 
 class SeqDriver : public QWidget {
     
   Q_OBJECT
-
+  
   private:
     int portCount;
     QList<MidiArp *> *midiArpList; 
+    QList<MidiLfo *> *midiLfoList; 
     QSocketNotifier *seqNotifier;
     snd_seq_t *seq_handle;
     int clientid;
     int portid_out[MAX_PORTS];
+	int lfoMinPacketSize, lfoPacketSize[20];
     int portid_in;
     int queue_id;
     bool startQueue;
     snd_seq_tick_time_t tick;
     QList<int> sustainBufferList;
-    int firstArpTick;
+    int firstArpTick, lastLfoTick[20], nextLfoTick;
+	int lfoCCnumber;
+	QList<LfoSample> lfoData;
 	
   protected: 
     int midiTime;
@@ -45,7 +50,8 @@ class SeqDriver : public QWidget {
     void initSeqNotifier();
 
   public:
-    SeqDriver(QList<MidiArp*> *p_midiArpList, QWidget* parent=0);
+    SeqDriver(QList<MidiArp*> *p_midiArpList, 
+				QList<MidiLfo *> *p_midiLfoList, QWidget* parent=0);
     ~SeqDriver();
     void registerPorts(int num);
     int getPortCount();

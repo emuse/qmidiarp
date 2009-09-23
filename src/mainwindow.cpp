@@ -16,6 +16,7 @@
 
 #include "pixmaps/qmidiarp2.xpm"
 #include "pixmaps/arpadd.xpm"
+#include "pixmaps/lfoadd.xpm"
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
@@ -90,9 +91,13 @@ MainWindow::MainWindow(int p_portCount)
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
             arpData->seqDriver, SLOT(setGrooveLength(int)));
 
-    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New..."), this);
-    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New")));
+    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
+    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New Arp")));
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
+	
+    addLfoAction = new QAction(QIcon(lfoadd_xpm), tr("&New Lfo..."), this);
+    addLfoAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+L", "Arp|New Lfo")));
+    connect(addLfoAction, SIGNAL(triggered()), this, SLOT(addLfo()));
 
     renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
 	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Arp|Rename")));
@@ -103,7 +108,7 @@ MainWindow::MainWindow(int p_portCount)
 	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Arp|Delete")));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
     removeArpAction->setDisabled(true);
-
+	
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
     fileNewAction->setShortcut(QKeySequence(QKeySequence::New));    
     fileNewAction->setToolTip(tr("Create new arpeggiator file"));
@@ -160,7 +165,7 @@ MainWindow::MainWindow(int p_portCount)
 
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *fileMenu = new QMenu(QMenu::tr("&File"),this); 
-    QMenu *arpMenu = new QMenu(QMenu::tr("&Arp"),this); 
+    QMenu *arpMenu = new QMenu(QMenu::tr("&Module"),this); 
     QMenu *helpMenu = new QMenu(QMenu::tr("&Help"),this);
 
     fileMenu->addAction(fileNewAction);
@@ -171,6 +176,8 @@ MainWindow::MainWindow(int p_portCount)
     fileMenu->addAction(fileQuitAction);    
 
     arpMenu->addAction(addArpAction);
+    arpMenu->addAction(addLfoAction);
+    arpMenu->addSeparator();
     arpMenu->addAction(renameArpAction);
     arpMenu->addAction(removeArpAction);
 	arpMenu->addSeparator();
@@ -192,6 +199,8 @@ MainWindow::MainWindow(int p_portCount)
 
     runBox = new QToolBar(tr("&Control Toolbar"), this);
     runBox->addAction(addArpAction);
+    runBox->addAction(addLfoAction);
+    runBox->addSeparator();
     runBox->addAction(renameArpAction);
     runBox->addAction(removeArpAction);
     runBox->addSeparator();
@@ -245,9 +254,9 @@ void MainWindow::addArp()
 
     name = QInputDialog::getText(this, APP_NAME,
             tr("Add MIDI Arpeggiator"), QLineEdit::Normal,
-           tr("Arp %1").arg(arpData->midiArpCount() + 1), &ok);
+           tr("%1").arg(arpData->midiArpCount() + 1), &ok);
     if (ok && !name.isEmpty()) {
-        addArp(name);
+        addArp("Arp:"+name);
     }
 }
 
@@ -282,6 +291,39 @@ void MainWindow::addArp(const QString& name)
     midiClockAction->setEnabled(true);
     runAction->setEnabled(true);
 }
+void MainWindow::addLfo()
+{
+    QString name;
+    bool ok;
+
+    name = QInputDialog::getText(this, APP_NAME,
+            tr("Add MIDI LFO"), QLineEdit::Normal,
+           tr("%1").arg(arpData->midiLfoCount() + 1), &ok);
+    if (ok && !name.isEmpty()) {
+        addLfo("LFO:"+name);
+    }
+}
+
+void MainWindow::addLfo(const QString& name)
+{
+    MidiLfo *midiLfo = new MidiLfo();
+    arpData->addMidiLfo(midiLfo);   
+    LfoWidget *lfoWidget = new LfoWidget(midiLfo,
+            arpData->getPortCount(), tabWidget);
+	connect(midiLfo, SIGNAL(toggleMute()), lfoWidget->muteOut, SLOT(toggle()));
+
+    arpData->addLfoWidget(lfoWidget);
+    arpData->seqDriver->sendGroove();
+	arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
+	arpData->seqDriver->updateCnumber(passWidget->cnumberSpin->value());
+    tabWidget->addTab(lfoWidget, name);
+    tabWidget->setCurrentWidget(lfoWidget);
+    lfoWidget->lfoName = name;
+    removeArpAction->setEnabled(true);    
+    renameArpAction->setEnabled(true);
+    midiClockAction->setEnabled(true);
+    runAction->setEnabled(true);
+}
 
 void MainWindow::renameArp() {
 
@@ -289,21 +331,31 @@ void MainWindow::renameArp() {
     bool ok;
 
     oldname = tabWidget->tabText(tabWidget->currentIndex());
-    newname = QInputDialog::getText(this, APP_NAME,
-            tr("New Name"), QLineEdit::Normal, oldname, &ok);
 
-    if (ok && !newname.isEmpty()) {
-        tabWidget->setTabText(tabWidget->currentIndex(), newname);
-        ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
-        arpWidget->arpName = newname;
-    }
+		if (oldname.startsWith("LFO:")) {
+			newname = QInputDialog::getText(this, APP_NAME,
+            tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+			if (ok && !newname.isEmpty()) {
+				tabWidget->setTabText(tabWidget->currentIndex(), "LFO:"+newname);
+				LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
+				lfoWidget->lfoName = "LFO:"+newname;
+			}
+		} else {
+			if (!oldname.startsWith("Arp:")) oldname = "";
+			newname = QInputDialog::getText(this, APP_NAME,
+            tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+			if (ok && !newname.isEmpty()) {
+				tabWidget->setTabText(tabWidget->currentIndex(), "Arp:"+newname);
+				ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
+				arpWidget->arpName = "Arp:"+newname;
+			}
+		}
 }
 
 void MainWindow::removeArp()
 {
     QString qs;
-
-    ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
+	
     qs = tr("Remove \"%1\"?")
         .arg(tabWidget->tabText(tabWidget->currentIndex()));
     if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
@@ -312,10 +364,18 @@ void MainWindow::removeArp()
             == QMessageBox::No) {
         return;
     }
-    arpData->removeMidiArp(arpWidget->getMidiArp());
-    arpData->removeArpWidget(arpWidget);
+		if (tabWidget->tabText(tabWidget->currentIndex()).startsWith("A")) {
+			ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
+			arpData->removeMidiArp(arpWidget->getMidiArp());
+			arpData->removeArpWidget(arpWidget);
+		} else {
+			LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
+			arpData->removeMidiLfo(lfoWidget->getMidiLfo());
+			arpData->removeLfoWidget(lfoWidget);
+		}
+
     tabWidget->removeTab(tabWidget->currentIndex());
-    if (arpData->midiArpCount() < 1) {  
+    if (!arpData->midiArpCount() && !arpData->midiLfoCount()) {  
         removeArpAction->setDisabled(true);
         renameArpAction->setDisabled(true);
         runAction->setDisabled(true);
@@ -333,7 +393,25 @@ void MainWindow::removeArp(int index)
     arpData->removeMidiArp(arpWidget->getMidiArp());
     arpData->removeArpWidget(arpWidget);
     tabWidget->removeTab(index);
-    if (arpData->midiArpCount() < 1) {
+    if (!arpData->midiArpCount() && !arpData->midiLfoCount()) {  
+        removeArpAction->setDisabled(true);
+        renameArpAction->setDisabled(true);
+        runAction->setDisabled(true);
+        runAction->setChecked(false);
+        midiClockAction->setDisabled(true);
+        midiClockAction->setChecked(false);
+    }                      
+}
+
+void MainWindow::removeLfo(int index)
+{
+//    QString qs;
+
+    LfoWidget *lfoWidget = arpData->lfoWidget(index);
+    arpData->removeMidiLfo(lfoWidget->getMidiLfo());
+    arpData->removeLfoWidget(lfoWidget);
+    tabWidget->removeTab(index);
+    if (!arpData->midiArpCount() && !arpData->midiLfoCount()) {  
         removeArpAction->setDisabled(true);
         renameArpAction->setDisabled(true);
         runAction->setDisabled(true);
@@ -347,6 +425,10 @@ void MainWindow::clear()
 {
     while (arpData->midiArpCount()) {
         removeArp(arpData->midiArpCount() - 1);
+    }
+	
+    while (arpData->midiLfoCount()) {
+        removeLfo(arpData->midiLfoCount() - 1);
     }
 }
 
@@ -424,8 +506,15 @@ void MainWindow::openFile(const QString& name)
     //  arpData->seqDriver->setGrooveLength(qs2.toInt());
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        addArp(qs);
-        arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
+		//check for full name to give "good chances" to load old files
+		if (qs.startsWith("LFO:")) {
+			addLfo(qs);
+			arpData->lfoWidget(arpData->midiLfoCount() - 1)->readLfo(loadText);
+		} else if (!loadText.atEnd()) {
+			if (!qs.startsWith("Arp:")) qs = "Arp: "+qs;
+			addArp(qs);
+			arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
+		}
     }
     tabWidget->setCurrentWidget(arpData->arpWidget(0));
 	filename = name;
@@ -464,10 +553,20 @@ void MainWindow::fileSave()
     saveText << arpData->seqDriver->grooveTick;
     saveText << ' ' << arpData->seqDriver->grooveVelocity;
     saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
-    for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) {
-        saveText << qPrintable(arpData->arpWidget(l1)->arpName) << '\n';
-        arpData->arpWidget(l1)->writeArp(saveText);
+	int na = 0;
+	int nl = 0;
+    for (l1 = 0; l1 < tabWidget->count(); l1++) {
+		if (tabWidget->tabText(l1).startsWith('L')) {
+			saveText << qPrintable(arpData->lfoWidget(nl)->lfoName) << '\n';
+			arpData->lfoWidget(nl)->writeLfo(saveText);
+			nl++;
+		} else {
+			saveText << qPrintable(arpData->arpWidget(na)->arpName) << '\n';
+			arpData->arpWidget(na)->writeArp(saveText);
+			na++;
+		}
     }
+
 	lastDir = filename;
 }
 
@@ -514,6 +613,7 @@ void MainWindow::midiClockToggle(bool on)
     removeArpAction->setDisabled(on);    
     renameArpAction->setDisabled(on);
     addArpAction->setDisabled(on);
+    addLfoAction->setDisabled(on);
 	fileOpenAction->setDisabled(on);
 }
 
