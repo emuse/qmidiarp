@@ -40,7 +40,7 @@
 #include "midilfo.h"
 #include "lfowidget.h"
 #include "slider.h"
-//#include "arpscreen.h"
+#include "lfoscreen.h"
 #include "config.h"
 
 
@@ -93,6 +93,15 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Wave"), this);
+	
+    QWidget *lfoScreenBox = new QWidget(patternBox);
+    QHBoxLayout *lfoScreenBoxLayout = new QHBoxLayout;
+    lfoScreen = new LfoScreen(patternBox); 
+    lfoScreenBox->setMinimumHeight(80);
+    lfoScreenBoxLayout->addWidget(lfoScreen);
+    lfoScreenBoxLayout->setMargin(1);
+    lfoScreenBoxLayout->setSpacing(1);
+    lfoScreenBox->setLayout(lfoScreenBoxLayout);
 
     QLabel *waveFormBoxLabel = new QLabel(tr("Waveform"), patternBox);
     waveFormBox = new QComboBox(patternBox);
@@ -101,7 +110,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     waveFormBox->insertItems(0, waveForms);
     waveFormBox->setCurrentIndex(0);
     waveFormBox->setToolTip(tr("Waveform Basis"));
-    waveFormBox->setMinimumContentsLength(20);
+    waveFormBox->setMinimumContentsLength(5);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 			
@@ -142,52 +151,47 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     connect(lfoSizeBox, SIGNAL(activated(int)), this,
             SLOT(updateLfoSize(int)));
 
-
-    QGridLayout *patternBoxLayout = new QGridLayout;
-    patternBoxLayout->addWidget(waveFormBoxLabel,0,0);
-    patternBoxLayout->addWidget(waveFormBox,0,1);
-    patternBoxLayout->addWidget(lfoFreqBoxLabel,1,0);
-    patternBoxLayout->addWidget(lfoFreqBox,1,1);
-    patternBoxLayout->addWidget(lfoResBoxLabel,2,0);
-    patternBoxLayout->addWidget(lfoResBox,2,1);
-    patternBoxLayout->addWidget(lfoSizeBoxLabel,3,0);
-    patternBoxLayout->addWidget(lfoSizeBox,3,1);
-	patternBoxLayout->setColumnStretch(0,3);
-    patternBoxLayout->setMargin(1);
-    patternBoxLayout->setSpacing(1);
-    patternBox->setLayout(patternBoxLayout); 
-
-    // group box for random settings
-    randomBox = new QGroupBox(tr("Oscillator"), this);
-    QVBoxLayout *randomBoxLayout = new QVBoxLayout;
-    randomBoxLayout->setMargin(5);
-    randomBoxLayout->setSpacing(1);
-
-    amplitude = new Slider(0, 127, 1, 5, 0, Qt::Horizontal, tr("&Amplitude"), randomBox);
-    connect(amplitude, SIGNAL(valueChanged(int)), midiLfo,
-            SLOT(updateAmplitude(int)));
-
-    offset = new Slider(0, 127, 1, 5, 0, Qt::Horizontal, tr("&Offset"), randomBox);
+    amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal, tr("&Amplitude"), patternBox);
+    connect(amplitude, SIGNAL(valueChanged(int)), this,
+            SLOT(updateLfoAmp(int)));
+	amplitude->setMinimumWidth(250);
+    offset = new Slider(0, 127, 1, 8, 64, Qt::Horizontal, tr("&Offset"), patternBox);
     connect(offset, SIGNAL(valueChanged(int)), midiLfo,
             SLOT(updateOffset(int))); 
-			 
-    randomBoxLayout->addWidget(amplitude);
-    randomBoxLayout->addWidget(offset);
- 
-    randomBox->setLayout(randomBoxLayout);
-	randomBox->setMinimumWidth(200);
+	offset->setDisabled(true);
+
+
+    QGridLayout *patternBoxLayout = new QGridLayout;
+    patternBoxLayout->addWidget(lfoScreenBox,0,0,1,3);
+    patternBoxLayout->addWidget(waveFormBoxLabel,1,0);
+    patternBoxLayout->addWidget(waveFormBox,1,1);
+    patternBoxLayout->addWidget(amplitude,1,2,2,1);
+	
+    patternBoxLayout->addWidget(lfoFreqBoxLabel,2,0);
+    patternBoxLayout->addWidget(lfoFreqBox,2,1);
+    patternBoxLayout->addWidget(offset,3,2,2,1);
+	
+    patternBoxLayout->addWidget(lfoResBoxLabel,3,0);
+    patternBoxLayout->addWidget(lfoResBox,3,1);
+    patternBoxLayout->addWidget(lfoSizeBoxLabel,4,0);
+    patternBoxLayout->addWidget(lfoSizeBox,4,1);
+	patternBoxLayout->setColumnStretch(2,5);
+    //patternBoxLayout->setMargin(1);
+    //patternBoxLayout->setSpacing(1);
+    patternBox->setLayout(patternBoxLayout); 
+
 
 
     QGridLayout *lfoWidgetLayout = new QGridLayout;
     lfoWidgetLayout->addWidget(patternBox,0,0);
     lfoWidgetLayout->addWidget(portBox,0,1);
-    lfoWidgetLayout->addWidget(randomBox,2,0);
-    //lfoWidgetLayout->setRowStretch(2,1);
+    lfoWidgetLayout->setRowStretch(2,1);
 
     lfoWidgetLayout->setMargin(2);
     lfoWidgetLayout->setSpacing(5);
 	
     setLayout(lfoWidgetLayout);
+	updateLfoAmp(64);
 }
 
 LfoWidget::~LfoWidget()
@@ -275,25 +279,41 @@ void LfoWidget::setChannelOut(int value)
 void LfoWidget::updateWaveForm(int val)
 {
 	midiLfo->waveFormIndex = val;
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
 }
 
 void LfoWidget::loadWaveForms()
 {
-    waveForms << "Sine" << "Saw up" << "Triangle" << "Saw down" << "Square";
+    waveForms << tr("Sine") << tr("Saw up") << tr("Triangle") 
+				<< tr("Saw down") << tr("Square");
 }
 
 void LfoWidget::updateLfoFreq(int val)
 {
 	midiLfo->lfoFreq = lfoFreqValues[val];
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
 }
 
 void LfoWidget::updateLfoRes(int val)
 {
 	midiLfo->lfoRes = lfoResValues[val];
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
 }
 
 void LfoWidget::updateLfoSize(int val)
 {
 	midiLfo->lfoSize = val + 1;
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
+}
+
+void LfoWidget::updateLfoAmp(int val)
+{
+	midiLfo->lfoAmp = val;
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
 }
 

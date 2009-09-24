@@ -34,6 +34,7 @@ class ArpScreen : public QWidget
 
   protected:
     virtual void paintEvent(QPaintEvent *);
+	virtual void resizeEvent(QResizeEvent *);
     double follower_tick;
    
   public:

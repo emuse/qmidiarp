@@ -1,3 +1,10 @@
+2009-09-24 Frank Kober <goemusic@yahoo.fr>
+	* midilfo.cpp: fixed triangle waveform in terms of length
+	* lfoscreen.*: new class for waveform display added
+	* lfowidget.*: lfoscreen added and updated on every parameter change
+	* seqdriver.cpp: fixed missing initial echo request when no 
+	LFO present
+	
 2009-09-23 Frank Kober <goemusic@yahoo.fr>
 	* MIDI LFO added as new feature. GUI-wise LFOs coexist with Arps in 
 	tabwidget. They are handeled in parallel through arpdata.cpp and are

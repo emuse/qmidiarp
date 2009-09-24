@@ -40,7 +40,7 @@
 #include <QCheckBox>
 #include "midilfo.h"
 #include "slider.h"
-//#include "arpscreen.h"
+#include "lfoscreen.h"
 
 const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 const int lfoFreqValues[11] = {1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32};
@@ -57,10 +57,11 @@ class LfoWidget : public QWidget
 
 	MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
+	QList<LfoSample> lfoData;
     
   public:
     QString lfoName;
-//    ArpScreen *arpScreen;
+    LfoScreen *lfoScreen;
 	QStringList waveForms;
 	QCheckBox *muteOut;
 
@@ -86,6 +87,7 @@ class LfoWidget : public QWidget
 	void updateLfoSize(int);
 	void updateLfoCCnumber(int val);
 	void updateLfoFreq(int val);
+	void updateLfoAmp(int val);
 };
   
 #endif

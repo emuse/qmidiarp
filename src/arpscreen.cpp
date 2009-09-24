@@ -401,6 +401,11 @@ void ArpScreen::setGrooveLength(int length)
     update();
 }
 
+void ArpScreen::resizeEvent(QResizeEvent *)
+{
+
+}
+
 QSize ArpScreen::sizeHint() const
 {
     return QSize(ARPSCREEN_MINIMUM_WIDTH, ARPSCREEN_MINIMUM_HEIGHT); 

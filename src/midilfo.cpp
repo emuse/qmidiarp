@@ -107,15 +107,15 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 					lfoData.append(lfoSample);
 					lt += step;
 					lfoval += lfoFreq * 2;
-				} while (lfoval < lfoRes * 4);
+				} while ((lfoval < lfoRes * 4) && (lt < TICKS_PER_QUARTER * lfoSize));
 				do {
 					lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
 					lfoSample.lfoTick = lt;
 					lfoData.append(lfoSample);
 					lt += step;
 					lfoval -= lfoFreq * 2;
-				} while (lfoval > 0);
-			} while (lt < lfoSize * TICKS_PER_QUARTER);
+				} while ((lfoval > 0) && (lt < TICKS_PER_QUARTER * lfoSize));
+			} while (lt < TICKS_PER_QUARTER * lfoSize);
 			
 			lfoSample.lfoValue = -1;
 			lfoSample.lfoTick = lt;

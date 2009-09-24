@@ -6,6 +6,7 @@ bin_PROGRAMS = qmidiarp
 nodist_qmidiarp_SOURCES = \
 	arpdata_moc.cpp \
 	arpscreen_moc.cpp \
+	lfoscreen_moc.cpp \
 	arpwidget_moc.cpp \
 	lfowidget_moc.cpp \
 	groovewidget_moc.cpp \
@@ -20,6 +21,7 @@ nodist_qmidiarp_SOURCES = \
 qmidiarp_SOURCES = \
 	arpdata.cpp arpdata.h \
 	arpscreen.cpp arpscreen.h \
+	lfoscreen.cpp lfoscreen.h \
 	lfowidget.cpp lfowidget.h \
 	arpwidget.cpp arpwidget.h \
 	groovewidget.cpp groovewidget.h \
