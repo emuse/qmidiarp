@@ -57,7 +57,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 	sustainBufferList.clear();
 	int l1 = 0;
 	for (l1 = 0; l1 < 20; l1++) lastLfoTick[l1] = 0;
-	nextLfoTick = 0; //TICKS_PER_QUARTER;
+	nextLfoTick = 0;
 }
 
 SeqDriver::~SeqDriver(){
@@ -140,23 +140,25 @@ void SeqDriver::procEvents(int)
 				for (l1 = 0; l1 < midiLfoList->count(); l1++) {
 					if ((int)tick >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
 						midiLfoList->at(l1)->getData(&lfoData);
-						l2 = 0;
-						while (lfoData.at(l2).lfoValue > -1) {
-							snd_seq_ev_clear(&evOut);
-							snd_seq_ev_set_controller(&evOut, 0, 
-									midiLfoList->at(l1)->lfoCCnumber,
-									lfoData.at(l2).lfoValue);
-							evOut.data.control.channel = midiLfoList->at(l1)->channelOut;
-							snd_seq_ev_schedule_tick(&evOut, queue_id, 0,
-									(lfoData.at(l2).lfoTick + nextLfoTick) * m_ratio);
-							snd_seq_ev_set_subs(&evOut);  
-							snd_seq_ev_set_source(&evOut,
-									portid_out[midiLfoList->at(l1)->portOut]);
-							snd_seq_event_output_direct(seq_handle, &evOut);
-							l2++;
+						if (!midiLfoList->at(l1)->isMuted) {
+							l2 = 0;
+							while (lfoData.at(l2).lfoValue > -1) {
+								snd_seq_ev_clear(&evOut);
+								snd_seq_ev_set_controller(&evOut, 0, 
+										midiLfoList->at(l1)->lfoCCnumber,
+										lfoData.at(l2).lfoValue);
+								evOut.data.control.channel = midiLfoList->at(l1)->channelOut;
+								snd_seq_ev_schedule_tick(&evOut, queue_id, 0,
+										(lfoData.at(l2).lfoTick + nextLfoTick) * m_ratio);
+								snd_seq_ev_set_subs(&evOut);  
+								snd_seq_ev_set_source(&evOut,
+										portid_out[midiLfoList->at(l1)->portOut]);
+								snd_seq_event_output_direct(seq_handle, &evOut);
+								l2++;
+							}
 						}
 						lastLfoTick[l1] += lfoPacketSize[l1];
-						lfoPacketSize[l1] = lfoData.at(l2).lfoTick;
+						lfoPacketSize[l1] = lfoData.last().lfoTick;
 						if (!l1) lfoMinPacketSize = lfoPacketSize[l1]; 
 						else if (lfoPacketSize[l1] < lfoMinPacketSize) 
 								lfoMinPacketSize = lfoPacketSize[l1];
