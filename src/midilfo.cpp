@@ -65,6 +65,7 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 	int lt = 0;
 	int step = TICKS_PER_QUARTER / lfoRes;
 	int lfoval = 0;
+	int tempval;
 	//I think it is better to do the array filling on request here instead
 	//of updating on every parameter change. First draft, needs optimization
 	//lfoRes: number of events per beat
@@ -75,7 +76,7 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 	switch(waveFormIndex) {
 		case 0: //sine
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-				lfoSample.lfoValue = (sin((double)(l1 * 6.28 / lfoRes * lfoFreq / 4) 
+				lfoSample.lfoValue = (-cos((double)(l1 * 6.28 / lfoRes * lfoFreq / 4) 
 				) + 1) * lfoAmp / 2;
 				lfoSample.lfoTick = lt;
 				lt += step;
@@ -95,30 +96,23 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 				lfoval += lfoFreq;
 				lfoval %= lfoRes * 4;
 			}
+			
 			lfoSample.lfoValue = -1;
 			lfoSample.lfoTick = lt;
 			lfoData.append(lfoSample);
 		break;
 		case 2: //triangle
-			do {
-				lfoval = 0;
-				do {
-					lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
-					lfoSample.lfoTick = lt;
-					lfoData.append(lfoSample);
-					lt += step;
-					lfoval += (lfoFreq * 2);
-				} while ((lfoval < lfoRes * 32) && (lt < TICKS_PER_QUARTER * lfoSize));
-
-				do {
-					lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
-					lfoSample.lfoTick = lt;
-					lfoData.append(lfoSample);
-					lt += step;
-					lfoval -= (lfoFreq * 2);
-				} while ((lfoval > 0) && (lt < TICKS_PER_QUARTER * lfoSize));
-			} while (lt < TICKS_PER_QUARTER * lfoSize);
-			
+			lfoval = 0;
+			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
+				tempval = lfoval - lfoRes * 2;
+				if (tempval < 0 ) tempval = -tempval;
+				lfoSample.lfoValue = (lfoRes * 2 - tempval) * lfoAmp / lfoRes / 2;
+				lfoSample.lfoTick = lt;
+				lfoData.append(lfoSample);
+				lt += step;
+				lfoval += lfoFreq;
+				lfoval %= lfoRes * 4;
+			}
 			lfoSample.lfoValue = -1;
 			lfoSample.lfoTick = lt;
 			lfoData.append(lfoSample); 
