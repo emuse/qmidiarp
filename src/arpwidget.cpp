@@ -29,7 +29,7 @@
 
 
 ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
-: QWidget(parent), midiArp(p_midiArp)
+: QWidget(parent), midiArp(p_midiArp), modified(false)
 {
     QGridLayout *arpWidgetLayout = new QGridLayout;
 
@@ -319,6 +319,7 @@ void ArpWidget::writeArp(QTextStream& arpText)
 	arpText << attackTime->value() << ' ' << releaseTime->value() << '\n';
     arpText << midiArp->pattern << '\n';
     arpText << "EOP\n"; // End Of Pattern
+    modified = false;
 }                                      
 
 void ArpWidget::readArp(QTextStream& arpText)
@@ -371,32 +372,38 @@ void ArpWidget::readArp(QTextStream& arpText)
         qs += '\n' + qs2;
     }
     patternText->setText(qs);                    
+    modified = false;
 }                                      
 
 void ArpWidget::setChIn(int value)
 {
     chIn->setValue(value);
+    modified = true;
 }
 
 void ArpWidget::setIndexIn(int index, int value)
 {
     indexIn[index]->setValue(value); 
+    modified = true;
 }
 
 void ArpWidget::setRangeIn(int index, int value)
 {
     rangeIn[index]->setValue(value);
+    modified = true;
 }
 
 void ArpWidget::setPortOut(int value)
 {
     portOut->setValue(value);
+    modified = true;
 }
 
 void ArpWidget::setChannelOut(int value)
 {
 
     channelOut->setValue(value);
+    modified = true;
 }
 
 void ArpWidget::updateText(QString newtext)
@@ -407,6 +414,7 @@ void ArpWidget::updateText(QString newtext)
     midiArp->updatePattern(newtext);
 	arpScreen->updateArpScreen(newtext);
     emit(patternChanged());
+    modified = true;
 }
 
 void ArpWidget::updatePatternPreset(int val)
@@ -421,6 +429,7 @@ void ArpWidget::updatePatternPreset(int val)
         textRemoveAction->setEnabled(true);
     } else
         textRemoveAction->setEnabled(false);
+    modified = true;
 }
 
 void ArpWidget::writePatternPresets()
@@ -472,6 +481,7 @@ void ArpWidget::loadPatternPresets()
 void ArpWidget::updateRepeatPattern(int val)
 {
     midiArp->repeatPatternThroughChord = val;
+    modified = true;
 }
 
 void ArpWidget::openTextEditWindow(bool on)
@@ -522,3 +532,14 @@ void ArpWidget::removeCurrentPattern()
 
     writePatternPresets();
 }
+
+bool ArpWidget::isModified()
+{
+    return modified;
+}
+
+void ArpWidget::setModified(bool m)
+{
+    modified = m;
+}
+

@@ -20,6 +20,7 @@ class ArpData : public QWidget  {
     QList<MidiLfo *> midiLfoList;
     QList<LfoWidget *> lfoWidgetList;
     int portCount;
+    bool modified;
 
   public:
     SeqDriver *seqDriver;
@@ -29,6 +30,7 @@ class ArpData : public QWidget  {
     ~ArpData();
     void registerPorts(int num);
     int getPortCount();
+    bool isModified();
 	
     void addMidiArp(MidiArp *midiArp);
     void addArpWidget(ArpWidget *arpWidget);
@@ -44,13 +46,13 @@ class ArpData : public QWidget  {
     void removeMidiLfo(MidiLfo *midiLfo);
     void removeLfoWidget(LfoWidget *lfoWidget);
     int midiLfoCount();
-    int lfoWidgetCount();
+    int lfoWidgetCount();	
     MidiLfo *midiLfo(int index);
     LfoWidget *lfoWidget(int index);
     
   public slots:
     void runQueue(bool);
-    
+	void setModified(bool);    
 };
                               
 #endif

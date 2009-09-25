@@ -54,10 +54,11 @@ class LfoWidget : public QWidget
     QSpinBox *channelOut, *portOut, *lfoCCnumberBox; // Output channel / port (ALSA Sequencer)
     QComboBox *waveFormBox, *lfoResBox, *lfoSizeBox, *lfoFreqBox;
 	QGroupBox *randomBox;
-
+ 
 	MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
 	QList<LfoSample> lfoData;
+    bool modified;
     
   public:
     QString lfoName;
@@ -75,6 +76,8 @@ class LfoWidget : public QWidget
     void setChannelOut(int value);
     void setPortOut(int value);
 	void loadWaveForms();
+    bool isModified();
+    void setModified(bool);
   
   signals:
     void patternChanged();

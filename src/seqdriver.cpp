@@ -11,7 +11,7 @@
 
 SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, 
 					QList<MidiLfo *> *p_midiLfoList, QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), modified(false)
 {
     int err;
 
@@ -106,6 +106,7 @@ void SeqDriver::procEvents(int)
     int l1, l2;
     int note[MAXCHORD], velocity[MAXCHORD];
     int length, ccnumber;
+	int lfoccnumber, lfochannel, lfoport;
     snd_seq_event_t *evIn, evOut;
     snd_seq_tick_time_t noteTick, nextEchoTick;
     bool unmatched, foundEcho, isNew;
@@ -140,19 +141,22 @@ void SeqDriver::procEvents(int)
 				for (l1 = 0; l1 < midiLfoList->count(); l1++) {
 					if ((int)tick >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
 						midiLfoList->at(l1)->getData(&lfoData);
+						lfoccnumber = midiLfoList->at(l1)->lfoCCnumber;
+						lfochannel = midiLfoList->at(l1)->channelOut;
+						lfoport = midiLfoList->at(l1)->portOut;
 						if (!midiLfoList->at(l1)->isMuted) {
 							l2 = 0;
 							while (lfoData.at(l2).lfoValue > -1) {
 								snd_seq_ev_clear(&evOut);
 								snd_seq_ev_set_controller(&evOut, 0, 
-										midiLfoList->at(l1)->lfoCCnumber,
+										lfoccnumber,
 										lfoData.at(l2).lfoValue);
-								evOut.data.control.channel = midiLfoList->at(l1)->channelOut;
+								evOut.data.control.channel = lfochannel;
 								snd_seq_ev_schedule_tick(&evOut, queue_id, 0,
 										(lfoData.at(l2).lfoTick + nextLfoTick) * m_ratio);
 								snd_seq_ev_set_subs(&evOut);  
 								snd_seq_ev_set_source(&evOut,
-										portid_out[midiLfoList->at(l1)->portOut]);
+										portid_out[lfoport]);
 								snd_seq_event_output_direct(seq_handle, &evOut);
 								l2++;
 							}
@@ -310,11 +314,13 @@ void SeqDriver::procEvents(int)
 void SeqDriver::setDiscardUnmatched(bool on)
 {
     discardUnmatched = on;
+    modified = true;
 }
 
 void SeqDriver::setPortUnmatched(int id)
 {
     portUnmatched = id;
+    modified = true;
 }
 
 void SeqDriver::initArpQueue()
@@ -412,6 +418,7 @@ void SeqDriver::setGrooveTick(int val)
         midiArpList->at(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
+    modified = true;
 }
 
 void SeqDriver::setGrooveVelocity(int val)
@@ -423,6 +430,7 @@ void SeqDriver::setGrooveVelocity(int val)
         midiArpList->at(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
+    modified = true;
 }
 
 void SeqDriver::setGrooveLength(int val)
@@ -434,6 +442,7 @@ void SeqDriver::setGrooveLength(int val)
         midiArpList->at(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
+    modified = true;
 }
 
 void SeqDriver::sendGroove()
@@ -460,10 +469,23 @@ void SeqDriver::updateMIDItpb(int midiTpb)
 void SeqDriver::updateCnumber(int cnumber)
 {
     mute_cnumber = cnumber;
+    modified = true;
 }
 
 void SeqDriver::setMidiMutable(bool on)
 {
 	midi_mutable = on;
+    modified = true;
 }
+
+void SeqDriver::setModified(bool m)
+{
+    modified = m;
+}
+
+bool SeqDriver::isModified()
+{
+    return modified;
+}
+
 

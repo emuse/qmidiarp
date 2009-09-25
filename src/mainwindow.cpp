@@ -27,6 +27,7 @@
 #include "pixmaps/filesaveas.xpm"
 #include "pixmaps/filequit.xpm"
 
+static const char FILEEXT[] = ".qma";
 
 MainWindow::MainWindow(int p_portCount)
 {
@@ -92,21 +93,21 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
-    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Arp|New Arp")));
-    connect(addArpAction, SIGNAL(triggered()), this, SLOT(addArp()));
+    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Module|New Arp")));
+    connect(addArpAction, SIGNAL(triggered()), this, SLOT(arpNew()));
 	
-    addLfoAction = new QAction(QIcon(lfoadd_xpm), tr("&New Lfo..."), this);
-    addLfoAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+L", "Arp|New Lfo")));
-    connect(addLfoAction, SIGNAL(triggered()), this, SLOT(addLfo()));
+    addLfoAction = new QAction(QIcon(lfoadd_xpm), tr("&New LFO..."), this);
+    addLfoAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+L", "Module|New LFO")));
+    connect(addLfoAction, SIGNAL(triggered()), this, SLOT(lfoNew()));
 
     renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
-	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Arp|Rename")));
-    connect(renameArpAction, SIGNAL(triggered()), this, SLOT(renameArp()));
+	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Module|Rename")));
+    connect(renameArpAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
     renameArpAction->setDisabled(true);
 
     removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
-	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Arp|Delete")));
-    connect(removeArpAction, SIGNAL(triggered()), this, SLOT(removeArp()));
+	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Module|Delete")));
+    connect(removeArpAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
     removeArpAction->setDisabled(true);
 	
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
@@ -247,7 +248,7 @@ void MainWindow::helpAboutQt()
     QMessageBox::aboutQt(this, tr("About Qt"));
 }
 
-void MainWindow::addArp()
+void MainWindow::arpNew()
 {
     QString name;
     bool ok;
@@ -291,7 +292,7 @@ void MainWindow::addArp(const QString& name)
     midiClockAction->setEnabled(true);
     runAction->setEnabled(true);
 }
-void MainWindow::addLfo()
+void MainWindow::lfoNew()
 {
     QString name;
     bool ok;
@@ -325,7 +326,7 @@ void MainWindow::addLfo(const QString& name)
     runAction->setEnabled(true);
 }
 
-void MainWindow::renameArp() {
+void MainWindow::moduleRename() {
 
     QString newname, oldname;
     bool ok;
@@ -352,7 +353,7 @@ void MainWindow::renameArp() {
 		}
 }
 
-void MainWindow::removeArp()
+void MainWindow::moduleDelete()
 {
     QString qs;
 	
@@ -368,10 +369,12 @@ void MainWindow::removeArp()
 			ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
 			arpData->removeMidiArp(arpWidget->getMidiArp());
 			arpData->removeArpWidget(arpWidget);
+			delete arpWidget;
 		} else {
 			LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
 			arpData->removeMidiLfo(lfoWidget->getMidiLfo());
 			arpData->removeLfoWidget(lfoWidget);
+			delete lfoWidget;
 		}
 
     tabWidget->removeTab(tabWidget->currentIndex());
@@ -400,7 +403,8 @@ void MainWindow::removeArp(int index)
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
-    }                      
+    }
+	delete arpWidget;
 }
 
 void MainWindow::removeLfo(int index)
@@ -418,7 +422,8 @@ void MainWindow::removeLfo(int index)
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
-    }                      
+    }
+	delete lfoWidget;
 }
 
 void MainWindow::clear()
@@ -434,44 +439,48 @@ void MainWindow::clear()
 
 void MainWindow::fileNew()
 {
-         QMessageBox::StandardButton choice = QMessageBox::question(this,
-				tr("New arpeggiator setup"),
-                tr("Do you want to erase your entire arpeggiator setup?"),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::No);
-    if (choice == QMessageBox::Yes) 
-	{
+    if (isSave()) {
         clear();
         filename = "";
         updateWindowTitle();
+        arpData->setModified(false);
     }
-}
+ }
 
 void MainWindow::fileOpen()
 {
-    filename =  QFileDialog::getOpenFileName(this,
-            tr("Open arpeggiator file"), lastDir,
-            tr("QMidiArp files (*.qma)"));
-    if (filename.isEmpty()) {
-        return;
-    }
-    lastDir = filename;
-    clear();
-    openFile(filename);
+    if (isSave())
+        chooseFile();
 }
 
-void MainWindow::openFile(const QString& name)
+void MainWindow::chooseFile()
 {
-    QString qs, qs2;
+    QString fn =  QFileDialog::getOpenFileName(this,
+            tr("Open arpeggiator file"), lastDir,
+            tr("QMidiArp files")  + " (*" + FILEEXT + ")");
+    if (fn.isEmpty())
+        return;
 
-    clear();
-	
-    QFile f(name);
+    openFile(fn);
+}
+
+void MainWindow::openFile(const QString& fn)
+{
+    QString line, qs, qs2;
+
+    lastDir = fn.left(fn.lastIndexOf('/'));
+
+    QFile f(fn);
     if (!f.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(this, APP_NAME,
-                tr("Could not read from file %1.").arg(name));
+                tr("Could not read from file '%1'.").arg(fn));
         return;
-    }          
+    }
+
+    clear();
+    filename = fn;
+    updateWindowTitle();
+
     QTextStream loadText(&f);
     qs = loadText.readLine();
 	if (qs == "Tempo")
@@ -516,31 +525,28 @@ void MainWindow::openFile(const QString& name)
 			arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
 		}
     }
-    tabWidget->setCurrentWidget(arpData->arpWidget(0));
-	filename = name;
-	updateWindowTitle();
+    arpData->setModified(false);
 }
 
 void MainWindow::fileSave()
 {
-    int l1;
+    if (filename.isEmpty())
+        saveFileAs();
+    else
+        saveFile();
+}
 
-    if (arpData->midiArpCount() < 1) return;
-
-	if (lastDir.endsWith('/') || filename.isEmpty()) 
-	{
-				filename =  QFileDialog::getSaveFileName(this,
-            tr("Save arpeggiator"), lastDir, tr("QMidiArp files") 
-			+ " (*" + FILEEXT + ")");
-
-	}
-	if (filename.isEmpty()) return;
+bool MainWindow::saveFile()
+{
+	int l1;
+	int na = 0;
+	int nl = 0;
     QFile f(filename);
     if (!f.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(this, APP_NAME,
-                tr("Could not write to file \"%1\".").arg(filename));
-        return;
-    }          
+                tr("Could not write to file '%1'.").arg(filename));
+        return false;
+    }
 
     QTextStream saveText(&f);
 	saveText << "Tempo\n";
@@ -553,8 +559,6 @@ void MainWindow::fileSave()
     saveText << arpData->seqDriver->grooveTick;
     saveText << ' ' << arpData->seqDriver->grooveVelocity;
     saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
-	int na = 0;
-	int nl = 0;
     for (l1 = 0; l1 < tabWidget->count(); l1++) {
 		if (tabWidget->tabText(l1).startsWith('L')) {
 			saveText << qPrintable(arpData->lfoWidget(nl)->lfoName) << '\n';
@@ -566,32 +570,91 @@ void MainWindow::fileSave()
 			na++;
 		}
     }
+    arpData->setModified(false);
 
-	lastDir = filename;
+	return true;
 }
 
 void MainWindow::fileSaveAs()
 {
-    if (arpData->midiArpCount() < 1) {  
-        return;
-	}
-		filename =  QFileDialog::getSaveFileName(this,
+    saveFileAs();
+}
+
+bool MainWindow::saveFileAs()
+{
+    bool result = false;
+
+    QString fn =  QFileDialog::getSaveFileName(this,
             tr("Save arpeggiator"), lastDir, tr("QMidiArp files") 
 			+ " (*" + FILEEXT + ")");
 
-    if (!filename.isEmpty()) {
-        if (!filename.endsWith(FILEEXT))
-            filename.append(FILEEXT);
-		lastDir = filename;
-		fileSave();
-		updateWindowTitle();
-		}
+    if (!fn.isEmpty()) {
+        if (!fn.endsWith(FILEEXT))
+            fn.append(FILEEXT);
+        lastDir = fn.left(fn.lastIndexOf('/'));
+
+        filename = fn;
+        updateWindowTitle();
+        result = saveFile();
+    }
+    return result;
 }
 
+bool MainWindow::isSave()
+{
+    bool result = false;
+    QString queryStr;
+
+    if (isModified()) {
+        if (filename.isEmpty())
+            queryStr = tr("Unnamed file was changed.\nSave changes?");
+        else
+            queryStr = tr("File '%1' was changed.\n"
+                    "Save changes?").arg(filename);
+
+        QMessageBox::StandardButton choice = QMessageBox::warning(this,
+                tr("Save changes"), queryStr,
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                QMessageBox::Yes);
+
+        switch (choice) {
+            case QMessageBox::Yes:
+                if (filename.isEmpty())
+                    result = saveFileAs();
+                else
+                    result = saveFile();
+                break;
+            case QMessageBox::No:
+                result = true;
+                break;
+            case QMessageBox::Cancel:
+            default:
+                break;
+        }
+    }
+    else
+        result = true;
+
+    return result;
+}
+
+void MainWindow::closeEvent(QCloseEvent* e)
+{
+    if (isSave())
+        e->accept();
+    else 
+        e->ignore();
+}
+
+bool MainWindow::isModified()
+{
+    return arpData->isModified();
+}
 
 void MainWindow::updateTempo(int p_tempo)
 {
 	arpData->seqDriver->setQueueTempo(p_tempo);
+    arpData->setModified(true);
 }
 
 void MainWindow::updateRunQueue(bool on)

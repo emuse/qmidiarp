@@ -26,6 +26,7 @@ class SeqDriver : public QWidget {
     int portid_in;
     int queue_id;
     bool startQueue;
+	bool modified;
     snd_seq_tick_time_t tick;
     QList<int> sustainBufferList;
     int firstArpTick, lastLfoTick[20], nextLfoTick;
@@ -58,7 +59,9 @@ class SeqDriver : public QWidget {
     void initArpQueue();
     snd_seq_tick_time_t get_tick();
     void setQueueStatus(bool run);
-    
+    bool isModified();
+    void setModified(bool);
+	    
   signals:
     void midiEvent(snd_seq_event_t *ev);
     void nextStep(snd_seq_tick_time_t tick);

@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QAction>
+#include <QApplication>
 #include <QBoxLayout>
+#include <QCloseEvent>
 #include <QMessageBox>
+#include <QMainWindow>
 #include <QTabWidget>
 #include <QToolBar>
-#include <QMainWindow>
-#include <QAction>
 #include <alsa/asoundlib.h>
 
 
@@ -36,14 +38,26 @@ class MainWindow : public QMainWindow
     QTabWidget *tabWidget;
     LogWidget *logWidget;
     ArpData *arpData;
-    ArpWidget *arpWidget;
+//    ArpWidget *arpWidget;
+    QString lastDir, filename;
+
+    void chooseFile();
+    bool isSave();
+    void updateWindowTitle();
+    bool saveFile();
+    bool saveFileAs();
+	bool isModified();
+
     void addArp(const QString&);
     void addLfo(const QString&);
     void removeArp(int index);
     void removeLfo(int index);
     void checkRcFile();
-    void updateWindowTitle();
-    QString lastDir, filename;
+    void clear();
+
+	
+  protected:
+    void closeEvent(QCloseEvent*);
 
   public:
     MainWindow(int p_portCount);
@@ -61,17 +75,19 @@ class MainWindow : public QMainWindow
     void runQueue(bool);
 
   public slots: 
+    void fileNew();
+    void fileOpen();
+    void fileSave();
+    void fileSaveAs();
+    void arpNew();
+	void lfoNew();
+    void moduleRename();
+    void moduleDelete();
+
 	void helpAbout();
     void helpAboutQt();
-    void addArp();
-    void addLfo();
-    void renameArp();
-    void removeArp();
-    void fileNew();
-    void fileSaveAs();
-    void fileSave();
-    void fileOpen();
-    void clear();
+
+
     void updateTempo(int tempo);
     void updateRunQueue(bool on);
     void midiClockToggle(bool on);

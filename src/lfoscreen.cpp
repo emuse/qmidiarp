@@ -71,6 +71,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int maxOctave = 1;
     int minOctave = 0;
     int beatRes = 1.0;
+	int beatDiv = 0;
     int noctaves=2;
     l2 = 0;
     QChar c;
@@ -86,6 +87,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 	if (p_lfoData.isEmpty()) return;
 	nsteps = p_lfoData.at(p_lfoData.count() - 1).lfoTick / TICKS_PER_QUARTER;
 	beatRes = (p_lfoData.count() - 1) / nsteps;
+	beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
 	npoints = beatRes * nsteps;
     xscale = (w - 2 * LFOSCREEN_HMARGIN) / nsteps;
     yscale = h - 2 * LFOSCREEN_VMARGIN;
@@ -115,9 +117,9 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
             // Beat divisor separators
             p.setPen(QColor(120, 60, 20));
-
-            for (l2 = 1; l2 < beatRes; l2++) {
-                x1 = x + l2 * xscale / beatRes;
+			x1 = x;
+            for (l2 = 1; l2 < beatDiv; l2++) {
+                x1 = x + l2 * xscale / beatDiv;
                 if (x1 < xscale * nsteps)
                     p.drawLine(LFOSCREEN_HMARGIN + x1,
                             LFOSCREEN_VMARGIN, LFOSCREEN_HMARGIN + x1,
@@ -126,7 +128,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
         }
     }
 
-    //Vertical separators and numbers
+    //Horizontal separators and numbers
     p.setPen(QColor(180, 120, 40));
     noctaves = maxOctave - minOctave + 1;
     for (l1 = 0; l1 < noctaves + 2; l1++) {
@@ -142,15 +144,14 @@ void LfoScreen::paintEvent(QPaintEvent*)
     octave = 0;
 
 	pen.setWidth(notestreak_thick);
-	pen.setColor(QColor(160, 120, 80));
+	pen.setColor(QColor(180, 130, 50));
 	p.setPen(pen);
-
 	for (l1 = 0; l1 < npoints; l1++) {
 
 		octYoffset = 0;
 		x = l1 * xscale * nsteps / npoints;
 		ypos = yscale - yscale * p_lfoData.at(l1).lfoValue / 128
-						+ LFOSCREEN_VMARGIN - 3 + notestreak_thick;
+						+ LFOSCREEN_VMARGIN;
 		xpos = LFOSCREEN_HMARGIN + x + notestreak_thick / 2;
 		p.drawLine(xpos, ypos,
 						xpos + (xscale /beatRes) - notestreak_thick / 2, ypos);

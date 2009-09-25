@@ -7,6 +7,5 @@
 #define TICKS_PER_QUARTER 192
 #define MAXCHORD  33
 #define QMARCNAME ".qmidiarprc"
-#define FILEEXT ".qma"
 
 #endif

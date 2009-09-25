@@ -45,7 +45,7 @@
 
 
 LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
-: QWidget(parent), midiLfo(p_midiLfo)
+: QWidget(parent), midiLfo(p_midiLfo), modified(false)
 {
 
     // Output group box on right side
@@ -206,11 +206,13 @@ MidiLfo *LfoWidget::getMidiLfo()
 void LfoWidget::updatePortOut(int value)
 {
     midiLfo->portOut = value - 1;
+    modified = true;
 }
 
 void LfoWidget::updateChannelOut(int value)
 {
     midiLfo->channelOut = value - 1;
+    modified = true;
 }
 
 void LfoWidget::writeLfo(QTextStream& arpText)
@@ -225,6 +227,7 @@ void LfoWidget::writeLfo(QTextStream& arpText)
 		<< midiLfo->lfoOffs << '\n';
     arpText << waveFormBox->currentIndex() << '\n';
     arpText << "EOP\n"; // End Of Pattern
+    modified = false;
 }                                      
 
 void LfoWidget::readLfo(QTextStream& arpText)
@@ -256,6 +259,7 @@ void LfoWidget::readLfo(QTextStream& arpText)
 	waveFormBox->setCurrentIndex(qs.toInt());
 	updateWaveForm(qs.toInt());
     qs = arpText.readLine();
+    modified = false;
 	
 }                                      
 
@@ -263,17 +267,20 @@ void LfoWidget::readLfo(QTextStream& arpText)
 void LfoWidget::updateLfoCCnumber(int val)
 {
 	midiLfo->lfoCCnumber = val;
+    modified = true;
 }
 
 void LfoWidget::setPortOut(int value)
 {
     portOut->setValue(value);
+    modified = true;
 }
 
 void LfoWidget::setChannelOut(int value)
 {
 
     channelOut->setValue(value);
+    modified = true;
 }
 
 void LfoWidget::updateWaveForm(int val)
@@ -281,6 +288,7 @@ void LfoWidget::updateWaveForm(int val)
 	midiLfo->waveFormIndex = val;
 	midiLfo->getData(&lfoData);
 	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::loadWaveForms()
@@ -294,6 +302,7 @@ void LfoWidget::updateLfoFreq(int val)
 	midiLfo->lfoFreq = lfoFreqValues[val];
 	midiLfo->getData(&lfoData);
 	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::updateLfoRes(int val)
@@ -301,6 +310,7 @@ void LfoWidget::updateLfoRes(int val)
 	midiLfo->lfoRes = lfoResValues[val];
 	midiLfo->getData(&lfoData);
 	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::updateLfoSize(int val)
@@ -308,6 +318,7 @@ void LfoWidget::updateLfoSize(int val)
 	midiLfo->lfoSize = val + 1;
 	midiLfo->getData(&lfoData);
 	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::updateLfoAmp(int val)
@@ -315,5 +326,15 @@ void LfoWidget::updateLfoAmp(int val)
 	midiLfo->lfoAmp = val;
 	midiLfo->getData(&lfoData);
 	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
+}
+bool LfoWidget::isModified()
+{
+    return modified;
+}
+
+void LfoWidget::setModified(bool m)
+{
+    modified = m;
 }
 

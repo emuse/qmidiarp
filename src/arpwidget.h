@@ -41,6 +41,7 @@ class ArpWidget : public QWidget
 	QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
 	Slider *attackTime, *releaseTime;
+    bool modified;
     
   public:
     QString arpName;
@@ -62,7 +63,9 @@ class ArpWidget : public QWidget
     void setRangeIn(int index, int value);
 	void loadPatternPresets();
 	void writePatternPresets();
-  
+    bool isModified();
+    void setModified(bool);
+	  
   signals:
     void patternChanged();
     

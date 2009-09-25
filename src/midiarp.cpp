@@ -113,6 +113,7 @@ void MidiArp::addNote(snd_seq_event_t *evIn, int tick)
         notes[bufPtr][3][l1] = 0;
         noteCount++;
     } 
+	if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
     newBufPtr = noteBufPtr;
     noteBufPtr = bufPtr;
 //		printf("Note Added: Buffer now\n");
@@ -150,8 +151,10 @@ void MidiArp::removeNote(snd_seq_event_t *evIn, int tick, int keep_rel)
     }
 	if ((!keep_rel) || (!release_time))
 	{	//definitely remove from buffer
-		if (note == notes[bufPtr][0][noteCount - 1])
+		if (note == notes[bufPtr][0][noteCount - 1]) {
 			noteCount--; 
+			if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+		}
 		else 
 		{
 			l1 = 0;
@@ -192,7 +195,7 @@ void MidiArp::removeNote(snd_seq_event_t *evIn, int tick, int keep_rel)
 			for (l2 = 0; l2 < noteCount; l2++) 
 			{
 				notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
-//				printf("%d  ", notes[newBufPtr][l3][l2]);
+//			printf("%d  ", notes[newBufPtr][l3][l2]);
 			}  
 //			printf("\n");
 		}
@@ -210,9 +213,9 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
     }
 	if (!keep_rel || (!release_time))
 	{	//definitely remove from buffer, do NOT check for doubles
-		if (note == notes[bufPtr][0][noteCount - 1]) 
-		{
+		if (note == notes[bufPtr][0][noteCount - 1]) {
 				noteCount--;
+				if ((repeatPatternThroughChord == 2) && (noteOfs)) noteOfs--;
 		} 
 		else 
 		{
@@ -367,7 +370,8 @@ void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
 		noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0; 
 		note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
 				+ octave * 12, 0, 127, &outOfRange);
-		//printf("At %d: Key %d  (noteCount %d)\n", l1, note[l1], noteCount);
+//		printf("At %d: Key %d  (noteCount %d)\n", l1, note[l1], noteCount);
+//		printf("chordIndex %d noteOfs %d \n",chordIndex, noteOfs);
 		grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
 		
 		if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]]))
@@ -438,15 +442,16 @@ bool MidiArp::advancePatternIndex()
         switch (repeatPatternThroughChord) {
             case 1:
                 noteOfs++;
-                if (noteCount-1 < patternMaxIndex + noteOfs) {
+                if (noteCount - 1 < patternMaxIndex + noteOfs) {
                     noteOfs = 0;
                 }
                 break;
             case 2:
                 noteOfs--;
-                if (noteOfs < 0) {
-                    noteOfs = noteCount-1 - patternMaxIndex;
-                }
+				if ((noteCount -1 < patternMaxIndex) || 
+					(noteOfs < patternMaxIndex)) {
+					noteOfs = noteCount - 1;
+				}
                 break;
             default:  
                 noteOfs = 0;

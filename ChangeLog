@@ -1,3 +1,18 @@
+2009-09-26 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.*, lfowidget.*, arpwidget.*, seqdriver.*, arpdata.*: 
+	new load/save/saveAs logic adapted from Guido's implementation in 
+	qmidiroute started
+	* seqdriver.cpp: some optimization for LFO data queueing
+	* midiarp.cpp: fixed: repeatPatternMode "down" didn't work with chords
+	in pattern, a bug from original version I think (spotted by Robert 
+	Dietrich)
+	* midilfo.cpp: fixed uninitialized isMuted state
+
+2009-09-25 Frank Kober <goemusic@yahoo.fr>
+	* lfoscreen.cpp: max number of divisor separators limited to 64
+	* seqdriver.cpp: mute state of midilfo now handled, muting gets active 
+	only after a completed LFO cycle
+
 2009-09-24 Frank Kober <goemusic@yahoo.fr>
 	* midilfo.cpp: fixed triangle waveform in terms of length
 	* lfoscreen.*: new class for waveform display added

@@ -39,6 +39,7 @@ MidiLfo::MidiLfo()
     portOut = 0;
     channelOut = 0;
 	waveFormIndex = 0;
+	isMuted = false;
 }
 
 MidiLfo::~MidiLfo(){
@@ -89,10 +90,10 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
 				lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
 				lfoSample.lfoTick = lt;
+				lfoData.append(lfoSample);
 				lt += step;
 				lfoval += lfoFreq;
 				lfoval %= lfoRes * 4;
-				lfoData.append(lfoSample);
 			}
 			lfoSample.lfoValue = -1;
 			lfoSample.lfoTick = lt;
@@ -106,20 +107,21 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 					lfoSample.lfoTick = lt;
 					lfoData.append(lfoSample);
 					lt += step;
-					lfoval += lfoFreq * 2;
-				} while ((lfoval < lfoRes * 4) && (lt < TICKS_PER_QUARTER * lfoSize));
+					lfoval += (lfoFreq * 2);
+				} while ((lfoval < lfoRes * 32) && (lt < TICKS_PER_QUARTER * lfoSize));
+
 				do {
 					lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
 					lfoSample.lfoTick = lt;
 					lfoData.append(lfoSample);
 					lt += step;
-					lfoval -= lfoFreq * 2;
+					lfoval -= (lfoFreq * 2);
 				} while ((lfoval > 0) && (lt < TICKS_PER_QUARTER * lfoSize));
 			} while (lt < TICKS_PER_QUARTER * lfoSize);
 			
 			lfoSample.lfoValue = -1;
 			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample);
+			lfoData.append(lfoSample); 
 		break;
 		case 3: //sawtooth down
 			lfoval = 0;

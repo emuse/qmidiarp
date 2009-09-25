@@ -9,7 +9,7 @@
 #include "arpdata.h"
 
 
-ArpData::ArpData(QWidget *parent) : QWidget(parent)
+ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, this);
     //midiArpList.setAutoDelete(true);
@@ -29,6 +29,7 @@ void ArpData::addMidiArp(MidiArp *midiArp)
 void ArpData::addArpWidget(ArpWidget *arpWidget)
 {
     arpWidgetList.append(arpWidget);
+    modified = true;
 }
 
 void ArpData::removeMidiArp(MidiArp *midiArp)
@@ -45,6 +46,7 @@ void ArpData::removeArpWidget(ArpWidget *arpWidget)
 {
     removeMidiArp(arpWidget->getMidiArp());
     arpWidgetList.removeOne(arpWidget);
+    modified = true;
 }
 
 int ArpData::midiArpCount()
@@ -80,6 +82,7 @@ void ArpData::addMidiLfo(MidiLfo *midiLfo)
 void ArpData::addLfoWidget(LfoWidget *lfoWidget)
 {
     lfoWidgetList.append(lfoWidget);
+    modified = true;
 }
 
 void ArpData::removeMidiLfo(MidiLfo *midiLfo)
@@ -96,6 +99,7 @@ void ArpData::removeLfoWidget(LfoWidget *lfoWidget)
 {
     removeMidiLfo(lfoWidget->getMidiLfo());
     lfoWidgetList.removeOne(lfoWidget);
+    modified = true;
 }
 
 int ArpData::midiLfoCount()
@@ -119,6 +123,38 @@ LfoWidget *ArpData::lfoWidget(int index)
 }
 
 //general
+
+bool ArpData::isModified()
+{
+    bool arpmodified = false;
+    bool lfomodified = false;
+
+    for (int l1 = 0; l1 < arpWidgetCount(); l1++)
+        if (arpWidget(l1)->isModified()) {
+            arpmodified = true;
+            break;
+        }
+    for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
+        if (lfoWidget(l1)->isModified()) {
+            lfomodified = true;
+            break;
+        }
+
+    return modified || seqDriver->isModified() 
+					|| arpmodified || lfomodified;
+}
+
+void ArpData::setModified(bool m)
+{
+    modified = m;
+    seqDriver->setModified(m);
+
+    for (int l1 = 0; l1 < arpWidgetCount(); l1++)
+        arpWidget(l1)->setModified(m);
+
+    for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
+        lfoWidget(l1)->setModified(m);
+}
 
 void ArpData::registerPorts(int num)
 {
