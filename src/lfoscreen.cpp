@@ -160,7 +160,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 	pen.setWidth(1);
 }
 
-void LfoScreen::updateLfoScreen(QList<LfoSample> lfoData)
+void LfoScreen::updateLfoScreen(QVector<LfoSample> lfoData)
 {
     p_lfoData = lfoData;
     update();

@@ -23,10 +23,10 @@
 #define MIDILFO_H
 
 #include <QObject>
-#include <QList>
+#include <QString>
+#include <QVector>
 #include <alsa/asoundlib.h>
 #include <main.h>
-#include <QString>
 
 	struct LfoSample {
 		int lfoValue;
@@ -58,7 +58,7 @@ class MidiLfo : public QObject  {
   public:
 	MidiLfo();
     ~MidiLfo();
-    void getData(QList<LfoSample> *lfoData);  
+    void getData(QVector<LfoSample> *lfoData);  
 	
   public slots:  
     void updateFrequency(int);

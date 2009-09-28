@@ -1,3 +1,11 @@
+2009-09-28 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.*: switched from ALSA tick to ALSA realtime event
+	scheduling to allow for smoother MIDI clock slave operation. 
+	Internal handling continues to be in ticks. On-the-fly tempo changes 
+	while running including those of the incoming MIDI clock are still 
+	troublesome
+	* mainwindow.cpp: fixed unmatched port value update when file loaded
+
 2009-09-26 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.*, lfowidget.*, arpwidget.*, seqdriver.*, arpdata.*: 
 	new load/save/saveAs logic adapted from Guido's implementation in 

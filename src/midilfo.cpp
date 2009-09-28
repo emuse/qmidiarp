@@ -19,10 +19,7 @@
  *      MA 02110-1301, USA.
  */
 
-#include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
-#include <QString>
 #include <alsa/asoundlib.h>
 #include "midilfo.h"
 
@@ -58,7 +55,7 @@ void MidiLfo::muteLfo()
 }
 
 
-void MidiLfo::getData(QList<LfoSample> *p_lfoData)
+void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 { 
 	LfoSample lfoSample;
 	int l1 = 0;
@@ -70,7 +67,7 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 	//of updating on every parameter change. First draft, needs optimization
 	//lfoRes: number of events per beat
 	//lfoSize: size of waveform in beats
-	QList<LfoSample> lfoData;
+	QVector<LfoSample> lfoData;
 	lfoData.clear();
 	
 	switch(waveFormIndex) {
@@ -82,9 +79,6 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 				lt += step;
 				lfoData.append(lfoSample);
 			}
-			lfoSample.lfoValue = -1;
-			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample);
 		break;
 		case 1: //sawtooth up
 			lfoval = 0;
@@ -96,10 +90,6 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 				lfoval += lfoFreq;
 				lfoval %= lfoRes * 4;
 			}
-			
-			lfoSample.lfoValue = -1;
-			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample);
 		break;
 		case 2: //triangle
 			lfoval = 0;
@@ -113,9 +103,6 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 				lfoval += lfoFreq;
 				lfoval %= lfoRes * 4;
 			}
-			lfoSample.lfoValue = -1;
-			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample); 
 		break;
 		case 3: //sawtooth down
 			lfoval = 0;
@@ -127,25 +114,21 @@ void MidiLfo::getData(QList<LfoSample> *p_lfoData)
 				lfoval += lfoFreq;
 				lfoval %= lfoRes * 4;
 			}
-			lfoSample.lfoValue = -1;
-			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample);
 		break;
 		case 4: //square
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-
 				lfoSample.lfoValue = lfoAmp * ((l1 * lfoFreq / 2 / lfoRes) % 2 == 0);
 				lfoSample.lfoTick = lt;
 				lfoData.append(lfoSample);
 				lt+=step;
 			}
-			lfoSample.lfoValue = -1;
-			lfoSample.lfoTick = lt;
-			lfoData.append(lfoSample);
 		break;
 		default:
 		break;
 	}
+	lfoSample.lfoValue = -1;
+	lfoSample.lfoTick = lt;
+	lfoData.append(lfoSample);
 	
 	*p_lfoData = lfoData;
 }

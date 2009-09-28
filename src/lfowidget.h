@@ -22,9 +22,6 @@
 #ifndef LFOWIDGET_H
 #define LFOWIDGET_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider>
@@ -57,7 +54,7 @@ class LfoWidget : public QWidget
  
 	MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
-	QList<LfoSample> lfoData;
+	QVector<LfoSample> lfoData;
     bool modified;
     
   public:

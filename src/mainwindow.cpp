@@ -501,7 +501,7 @@ void MainWindow::openFile(const QString& fn)
     qs2 = qs.section(' ', 0, 0);
     passWidget->setDiscard(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
-    passWidget->setPortUnmatched(qs2.toInt());
+    passWidget->setPortUnmatched(qs2.toInt() + 1);
     qs = loadText.readLine();
     qs2 = qs.section(' ', 0, 0);
 

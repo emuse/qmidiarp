@@ -1,9 +1,6 @@
 #ifndef LFOSCREEN_H
 #define LFOSCREEN_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QWidget>
 #include <QString>
 #include <QLabel>
@@ -18,15 +15,13 @@
 #define LFOSCREEN_HMARGIN          20
 
 
-
-
 class LfoScreen : public QWidget
 {
   Q_OBJECT
 
   private:
     //QTimer *timer;
-	QList<LfoSample> p_lfoData, lfoData;
+	QVector<LfoSample> p_lfoData, lfoData;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -38,7 +33,7 @@ class LfoScreen : public QWidget
     virtual QSizePolicy sizePolicy() const;
    
   public slots: 
-    void updateLfoScreen(QList<LfoSample> lfoData);
+    void updateLfoScreen(QVector<LfoSample> lfoData);
 };
   
 #endif

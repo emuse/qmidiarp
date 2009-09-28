@@ -2,7 +2,7 @@
 #define SEQDRIVER_H
 
 #include <QWidget>
-#include <QList>
+#include <QVector>
 #include <QSocketNotifier>
 #include <alsa/asoundlib.h>
 
@@ -19,6 +19,7 @@ class SeqDriver : public QWidget {
     QList<MidiArp *> *midiArpList; 
     QList<MidiLfo *> *midiLfoList; 
     QSocketNotifier *seqNotifier;
+	snd_seq_queue_timer_t *queue_timer;
     snd_seq_t *seq_handle;
     int clientid;
     int portid_out[MAX_PORTS];
@@ -27,14 +28,18 @@ class SeqDriver : public QWidget {
     int queue_id;
     bool startQueue;
 	bool modified;
-    snd_seq_tick_time_t tick;
-    QList<int> sustainBufferList;
+    snd_seq_tick_time_t tick, nextEchoTick;
+	snd_seq_real_time_t delta;
+	const snd_seq_real_time_t *real_time;
+	const snd_seq_real_time_t *new_real_time;
+    QVector<int> sustainBufferList;
     int firstArpTick, lastLfoTick[20], nextLfoTick;
 	int lfoCCnumber;
-	QList<LfoSample> lfoData;
+	int bpm_sched;
+	QVector<LfoSample> lfoData;
 	
   protected: 
-    int midiTime;
+    int midiTick;
     int midiclock_tpb, mute_cnumber;
 	bool midi_mutable;
     double m_ratio;
@@ -49,7 +54,10 @@ class SeqDriver : public QWidget {
 	
   private:
     void initSeqNotifier();
-
+	const snd_seq_real_time_t *tickToDelta(int tick);
+	int deltaToTick (const snd_seq_real_time_t *delta);
+	void calcMidiRatio();
+	snd_seq_real_time evtime;
   public:
     SeqDriver(QList<MidiArp*> *p_midiArpList, 
 				QList<MidiLfo *> *p_midiLfoList, QWidget* parent=0);
@@ -57,7 +65,7 @@ class SeqDriver : public QWidget {
     void registerPorts(int num);
     int getPortCount();
     void initArpQueue();
-    snd_seq_tick_time_t get_tick();
+    const snd_seq_real_time_t *get_time();
     void setQueueStatus(bool run);
     bool isModified();
     void setModified(bool);
