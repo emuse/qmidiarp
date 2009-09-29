@@ -339,7 +339,7 @@ void SeqDriver::initArpQueue()
 
 void SeqDriver::setQueueTempo(int bpm)
 {
-    snd_seq_queue_tempo_t *queue_tempo;
+/*    snd_seq_queue_tempo_t *queue_tempo;
     int msec_tempo;
 
     snd_seq_queue_tempo_malloc(&queue_tempo);
@@ -348,7 +348,9 @@ void SeqDriver::setQueueTempo(int bpm)
     snd_seq_queue_tempo_set_ppq(queue_tempo, TICKS_PER_QUARTER);
     snd_seq_set_queue_tempo(seq_handle, queue_id, queue_tempo);
     snd_seq_queue_tempo_free(queue_tempo); 
+*/
     tempo = bpm;
+	m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
 }
 
 const snd_seq_real_time_t* SeqDriver::get_time()

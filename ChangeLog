@@ -3,8 +3,12 @@
 	scheduling to allow for smoother MIDI clock slave operation. 
 	Internal handling continues to be in ticks. On-the-fly tempo changes 
 	while running including those of the incoming MIDI clock are still 
-	troublesome
-	* mainwindow.cpp: fixed unmatched port value update when file loaded
+	troublesome, starting midi clock speed is guessed from local 
+	tempo value
+	* mainwindow.cpp: fixed unmatched port value update when file
+	loaded, stop Queue before clear(), add View menu, add tooltips,
+	fix double employed Ctrl-N key sequence
+	* logwidget.cpp: disable logging by default
 
 2009-09-26 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.*, lfowidget.*, arpwidget.*, seqdriver.*, arpdata.*: 

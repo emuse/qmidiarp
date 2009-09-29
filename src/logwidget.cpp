@@ -16,7 +16,7 @@
 
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
 {
-    logActive = true;
+    logActive = false;
     logMidiActive = false;
 
     logText = new QTextEdit(this);

@@ -93,20 +93,24 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
-    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+N", "Module|New Arp")));
+    addArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+A", "Module|New Arp")));
+    addArpAction->setToolTip(tr("Add new arpeggiator to tab bar"));
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(arpNew()));
 	
     addLfoAction = new QAction(QIcon(lfoadd_xpm), tr("&New LFO..."), this);
     addLfoAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+L", "Module|New LFO")));
+    addLfoAction->setToolTip(tr("Add new LFO to tab bar"));
     connect(addLfoAction, SIGNAL(triggered()), this, SLOT(lfoNew()));
 
     renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
 	renameArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+R", "Module|Rename")));
+    renameArpAction->setToolTip(tr("Rename this module"));
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
     renameArpAction->setDisabled(true);
 
     removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
 	removeArpAction->setShortcut(QKeySequence(QMenu::tr("Ctrl+Del", "Module|Delete")));
+    removeArpAction->setToolTip(tr("Delete this module"));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
     removeArpAction->setDisabled(true);
 	
@@ -159,6 +163,10 @@ MainWindow::MainWindow(int p_portCount)
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setText(tr("&Event Log"));
     viewLogAction->setShortcut(QKeySequence(tr("Ctrl+L", "View|Event Log")));
+	
+    QAction* viewGrooveAction = grooveWindow->toggleViewAction();
+    viewGrooveAction->setText(tr("&Groove Settings"));
+    viewGrooveAction->setShortcut(QKeySequence(tr("Ctrl+G", "View|Groove")));
 
     QAction* viewSettingsAction = passWindow->toggleViewAction();
     viewSettingsAction->setText(tr("&Settings"));
@@ -166,7 +174,8 @@ MainWindow::MainWindow(int p_portCount)
 
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *fileMenu = new QMenu(QMenu::tr("&File"),this); 
-    QMenu *arpMenu = new QMenu(QMenu::tr("&Module"),this); 
+    QMenu *arpMenu = new QMenu(QMenu::tr("&Module"),this);
+	QMenu *viewMenu = new QMenu(QMenu::tr("&View"),this);
     QMenu *helpMenu = new QMenu(QMenu::tr("&Help"),this);
 
     fileMenu->addAction(fileNewAction);
@@ -181,9 +190,10 @@ MainWindow::MainWindow(int p_portCount)
     arpMenu->addSeparator();
     arpMenu->addAction(renameArpAction);
     arpMenu->addAction(removeArpAction);
-	arpMenu->addSeparator();
-    arpMenu->addAction(viewLogAction);
-    arpMenu->addAction(viewSettingsAction);
+
+    viewMenu->addAction(viewLogAction);
+    viewMenu->addAction(viewSettingsAction);
+    viewMenu->addAction(viewGrooveAction);
 
     helpMenu->addAction(QMenu::tr("&About %1...").arg(PACKAGE), this,
             SLOT(helpAbout())); 
@@ -212,6 +222,7 @@ MainWindow::MainWindow(int p_portCount)
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(arpMenu);
+    menuBar->addMenu(viewMenu);
     menuBar->addMenu(helpMenu);
 	
     setMenuBar(menuBar);
@@ -428,6 +439,7 @@ void MainWindow::removeLfo(int index)
 
 void MainWindow::clear()
 {
+	updateRunQueue(false);
     while (arpData->midiArpCount()) {
         removeArp(arpData->midiArpCount() - 1);
     }
