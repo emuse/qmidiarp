@@ -1,3 +1,7 @@
+2009-10-07 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp: fixed: do not call delete in moduleDelete()
+	* midilfo.cpp, lfowidget.cpp: offset slider and function enabled
+	
 2009-09-28 Frank Kober <goemusic@yahoo.fr>
 	* seqdriver.*: switched from ALSA tick to ALSA realtime event
 	scheduling to allow for smoother MIDI clock slave operation. 

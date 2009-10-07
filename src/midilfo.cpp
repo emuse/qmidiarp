@@ -63,6 +63,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 	int step = TICKS_PER_QUARTER / lfoRes;
 	int lfoval = 0;
 	int tempval;
+	bool cl = false;
 	//I think it is better to do the array filling on request here instead
 	//of updating on every parameter change. First draft, needs optimization
 	//lfoRes: number of events per beat
@@ -73,17 +74,20 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 	switch(waveFormIndex) {
 		case 0: //sine
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-				lfoSample.lfoValue = (-cos((double)(l1 * 6.28 / lfoRes * lfoFreq / 4) 
-				) + 1) * lfoAmp / 2;
+				lfoSample.lfoValue = clip((-cos((double)(l1 * 6.28 / 
+				lfoRes * lfoFreq / 4)) + 1) * lfoAmp / 2 
+				+ lfoOffs, 0, 128, &cl);
 				lfoSample.lfoTick = lt;
-				lt += step;
 				lfoData.append(lfoSample);
+				lt += step;
 			}
 		break;
 		case 1: //sawtooth up
 			lfoval = 0;
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-				lfoSample.lfoValue = lfoval * lfoAmp / lfoRes / 4;
+				lfoSample.lfoValue = clip(lfoval * lfoAmp / lfoRes / 4
+						+ lfoOffs, 0, 128, &cl);
+				;
 				lfoSample.lfoTick = lt;
 				lfoData.append(lfoSample);
 				lt += step;
@@ -96,7 +100,9 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
 				tempval = lfoval - lfoRes * 2;
 				if (tempval < 0 ) tempval = -tempval;
-				lfoSample.lfoValue = (lfoRes * 2 - tempval) * lfoAmp / lfoRes / 2;
+				lfoSample.lfoValue = clip((lfoRes * 2 - tempval) * lfoAmp 
+						/ lfoRes / 2
+						+ lfoOffs, 0, 128, &cl);
 				lfoSample.lfoTick = lt;
 				lfoData.append(lfoSample);
 				lt += step;
@@ -107,7 +113,9 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 		case 3: //sawtooth down
 			lfoval = 0;
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-				lfoSample.lfoValue = (lfoRes * 4 - lfoval) * lfoAmp / lfoRes / 4;
+				lfoSample.lfoValue = clip((lfoRes * 4 - lfoval) 
+						* lfoAmp / lfoRes / 4
+						+ lfoOffs, 0, 128, &cl);
 				lfoSample.lfoTick = lt;
 				lfoData.append(lfoSample);
 				lt+=step;
@@ -117,7 +125,9 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 		break;
 		case 4: //square
 			for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-				lfoSample.lfoValue = lfoAmp * ((l1 * lfoFreq / 2 / lfoRes) % 2 == 0);
+				lfoSample.lfoValue = clip(lfoAmp * ((l1 * lfoFreq / 2 
+						/ lfoRes) % 2 == 0)
+						+ lfoOffs, 0, 128, &cl);
 				lfoSample.lfoTick = lt;
 				lfoData.append(lfoSample);
 				lt+=step;

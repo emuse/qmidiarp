@@ -380,12 +380,10 @@ void MainWindow::moduleDelete()
 			ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
 			arpData->removeMidiArp(arpWidget->getMidiArp());
 			arpData->removeArpWidget(arpWidget);
-			delete arpWidget;
 		} else {
 			LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
 			arpData->removeMidiLfo(lfoWidget->getMidiLfo());
 			arpData->removeLfoWidget(lfoWidget);
-			delete lfoWidget;
 		}
 
     tabWidget->removeTab(tabWidget->currentIndex());

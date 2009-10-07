@@ -384,8 +384,12 @@ d h durée de note augm/dim
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="125"/>
+        <source>Frequency: Number of wave cycles produced every beat</source>
+        <translation>Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
+    </message>
+    <message>
         <source>Frequency: Number wave cycles produced every beat</source>
-        <translation>Fréquence: Nomber de cycles d&apos;onde produits à chaque quart de temps</translation>
+        <translation type="obsolete">Fréquence: Nomber de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="130"/>
@@ -422,27 +426,27 @@ d h durée de note augm/dim
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="295"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="295"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
@@ -628,31 +632,31 @@ d h durée de note augm/dim
         <translation>Ajouter un LFO MIDI</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="488"/>
+        <location filename="../mainwindow.cpp" line="486"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="559"/>
+        <location filename="../mainwindow.cpp" line="557"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="622"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="624"/>
+        <location filename="../mainwindow.cpp" line="622"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="628"/>
+        <location filename="../mainwindow.cpp" line="626"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
@@ -754,7 +758,7 @@ Enregistrer les modifications?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="124"/>
-        <location filename="../mainwindow.cpp" line="471"/>
+        <location filename="../mainwindow.cpp" line="469"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
@@ -780,13 +784,13 @@ Do you want to continue?</source>
         <translation type="obsolete">Erreur de lecture du fichier %1.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="600"/>
+        <location filename="../mainwindow.cpp" line="598"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="472"/>
-        <location filename="../mainwindow.cpp" line="600"/>
+        <location filename="../mainwindow.cpp" line="470"/>
+        <location filename="../mainwindow.cpp" line="598"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
@@ -795,7 +799,7 @@ Do you want to continue?</source>
         <translation type="obsolete">Erreur d&apos;écriture du fichier &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="708"/>
+        <location filename="../mainwindow.cpp" line="706"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>

@@ -364,8 +364,12 @@ d h Note länger/kürzer
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="125"/>
-        <source>Frequency: Number wave cycles produced every beat</source>
+        <source>Frequency: Number of wave cycles produced every beat</source>
         <translation>Frequenz: Anzahl der erzeugten Wellenzyklen pro beat</translation>
+    </message>
+    <message>
+        <source>Frequency: Number wave cycles produced every beat</source>
+        <translation type="obsolete">Frequenz: Anzahl der erzeugten Wellenzyklen pro beat</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="130"/>
@@ -402,27 +406,27 @@ d h Note länger/kürzer
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="294"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="295"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="295"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
@@ -608,31 +612,31 @@ d h Note länger/kürzer
         <translation>MIDI LFO hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="488"/>
+        <location filename="../mainwindow.cpp" line="486"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Konnte die Datei &apos;%1&apos; nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="559"/>
+        <location filename="../mainwindow.cpp" line="557"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="622"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="624"/>
+        <location filename="../mainwindow.cpp" line="622"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="628"/>
+        <location filename="../mainwindow.cpp" line="626"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
@@ -721,7 +725,7 @@ Die Änderungen speichern?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="124"/>
-        <location filename="../mainwindow.cpp" line="471"/>
+        <location filename="../mainwindow.cpp" line="469"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
@@ -747,13 +751,13 @@ Do you want to continue?</source>
         <translation type="obsolete">Konnte Datei %1 nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="600"/>
+        <location filename="../mainwindow.cpp" line="598"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="472"/>
-        <location filename="../mainwindow.cpp" line="600"/>
+        <location filename="../mainwindow.cpp" line="470"/>
+        <location filename="../mainwindow.cpp" line="598"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
@@ -762,7 +766,7 @@ Do you want to continue?</source>
         <translation type="obsolete">Konnte Datei quot;%1&quot; nicht speichern.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="708"/>
+        <location filename="../mainwindow.cpp" line="706"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>

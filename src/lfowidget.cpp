@@ -122,7 +122,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
 			<< "4" << "5" << "6" << "7" << "8";
     lfoFreqBox->insertItems(0, names);
     lfoFreqBox->setCurrentIndex(3);
-    lfoFreqBox->setToolTip(tr("Frequency: Number wave cycles produced every beat"));
+    lfoFreqBox->setToolTip(tr("Frequency: Number of wave cycles produced every beat"));
     lfoFreqBox->setMinimumContentsLength(3);
     connect(lfoFreqBox, SIGNAL(activated(int)), this,
             SLOT(updateLfoFreq(int)));
@@ -155,11 +155,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoAmp(int)));
 	amplitude->setMinimumWidth(250);
-    offset = new Slider(0, 127, 1, 8, 64, Qt::Horizontal, tr("&Offset"), patternBox);
-    connect(offset, SIGNAL(valueChanged(int)), midiLfo,
-            SLOT(updateOffset(int))); 
-	offset->setDisabled(true);
-
+    offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal, tr("&Offset"), patternBox);
+    connect(offset, SIGNAL(valueChanged(int)), this,
+            SLOT(updateLfoOffs(int)));
 
     QGridLayout *patternBoxLayout = new QGridLayout;
     patternBoxLayout->addWidget(lfoScreenBox,0,0,1,3);
@@ -328,6 +326,15 @@ void LfoWidget::updateLfoAmp(int val)
 	lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
+
+void LfoWidget::updateLfoOffs(int val)
+{
+	midiLfo->lfoOffs = val;
+	midiLfo->getData(&lfoData);
+	lfoScreen->updateLfoScreen(lfoData);
+    modified = true;
+}
+
 bool LfoWidget::isModified()
 {
     return modified;

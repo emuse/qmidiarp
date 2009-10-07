@@ -88,6 +88,7 @@ class LfoWidget : public QWidget
 	void updateLfoCCnumber(int val);
 	void updateLfoFreq(int val);
 	void updateLfoAmp(int val);
+	void updateLfoOffs(int val);
 };
   
 #endif
