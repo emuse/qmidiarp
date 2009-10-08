@@ -77,7 +77,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));				   
 
-    grooveWidget = new GrooveWidget(tabWidget);
+    grooveWidget = new GrooveWidget(this);
     QDockWidget *grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
@@ -726,7 +726,7 @@ void MainWindow::checkRcFile()
             << ">0"
             << ">>0"
             << ">>>0"
-            << "(012345789)"
+            << "(0123456789)"
             << ">>(01234)0(01234)0"
             << ">>////(0123456789)\\ \\ \\ +(0123456789)"
             << ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"

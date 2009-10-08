@@ -117,9 +117,6 @@ void SeqDriver::procEvents(int)
 		
         if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
             midiTick += 4;
-				tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
-				new_real_time = real_time;
-				calcMidiRatio();
 		}
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
@@ -339,16 +336,6 @@ void SeqDriver::initArpQueue()
 
 void SeqDriver::setQueueTempo(int bpm)
 {
-/*    snd_seq_queue_tempo_t *queue_tempo;
-    int msec_tempo;
-
-    snd_seq_queue_tempo_malloc(&queue_tempo);
-    msec_tempo = (int)(6e7 / (double)120);
-    snd_seq_queue_tempo_set_tempo(queue_tempo, msec_tempo);
-    snd_seq_queue_tempo_set_ppq(queue_tempo, TICKS_PER_QUARTER);
-    snd_seq_set_queue_tempo(seq_handle, queue_id, queue_tempo);
-    snd_seq_queue_tempo_free(queue_tempo); 
-*/
     tempo = bpm;
 	m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
 }
@@ -505,23 +492,17 @@ bool SeqDriver::isModified()
 
 const snd_seq_real_time_t* SeqDriver::tickToDelta(int tick)
 {
-	if (use_midiclock) {
-		double tmp =  m_ratio * tick;
-		delta.tv_sec = (int)(tmp * 1e-9);
-		delta.tv_nsec = (long)(tmp - (double)delta.tv_sec * 1e9);
-	} else {
-		delta.tv_sec = (int)((double)tick * 60. / tempo / TICKS_PER_QUARTER);
-		delta.tv_nsec = (long)((double)tick * 60e9 / tempo / TICKS_PER_QUARTER 
-						- (double)delta.tv_sec * 1e9);
-	}
+	double tmp =  m_ratio * tick;
+	delta.tv_sec = (int)(tmp * 1e-9);
+	delta.tv_nsec = (long)(tmp - (double)delta.tv_sec * 1e9);
 	return &delta;
 }
 
-int SeqDriver::deltaToTick(const snd_seq_real_time_t *delta)
+int SeqDriver::deltaToTick(const snd_seq_real_time_t *curtime)
 {
 	double alsatick;
-	alsatick = (double)delta->tv_sec / 60. * tempo * TICKS_PER_QUARTER
-			+ (double)delta->tv_nsec * tempo * TICKS_PER_QUARTER / 60e9;
+	alsatick = (double)curtime->tv_sec * 1e9 / m_ratio
+			+ (double)curtime->tv_nsec / m_ratio;
 	return (int)(alsatick +.5);
 }
 
