@@ -110,7 +110,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     waveFormBox->insertItems(0, waveForms);
     waveFormBox->setCurrentIndex(0);
     waveFormBox->setToolTip(tr("Waveform Basis"));
-    waveFormBox->setMinimumContentsLength(5);
+    waveFormBox->setMinimumContentsLength(8);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 			

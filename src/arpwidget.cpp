@@ -188,7 +188,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternText->setHidden(true);
     //patternText->setMaximumHeight(50);
     patternText->setToolTip(
-            tr(" ( ) chord mode on/off\n"
+            tr("0..9  note played on keyboard, ascending order\n"
+            "( ) chord mode on/off\n"
             "  + -  octave up/down\n"
             " < . > tempo up/reset/down\n"
             "  d h  note length up/down\n"

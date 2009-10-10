@@ -1,3 +1,11 @@
+2009-10-10 Frank Kober <goemusic@yahoo.fr>
+	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
+	changed to "forward to" to be more intuitive
+	* seqdriver.*, midiarp.*: footswitch now properly channel-filtered 
+	and handled in midiarp
+	* seqdriver.*: more cleanups regarding midi clock
+	* mainwindow.cpp: show file menu by default
+
 2009-10-07 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp: fixed: do not call delete in moduleDelete()
 	* midilfo.cpp, lfowidget.cpp: offset slider and function enabled

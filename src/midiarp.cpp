@@ -50,6 +50,7 @@ MidiArp::MidiArp()
 	attack_time = 0.0;
 	release_time = 0.0;
 	queueTempo = 100.0;
+	sustainBufferList.clear();
 }
 
 MidiArp::~MidiArp(){
@@ -57,9 +58,9 @@ MidiArp::~MidiArp(){
 
 bool MidiArp::isArp(snd_seq_event_t *evIn) {
 
-
     if ((evIn->type != SND_SEQ_EVENT_NOTEON)
-            && (evIn->type != SND_SEQ_EVENT_NOTEOFF)) 
+            && (evIn->type != SND_SEQ_EVENT_NOTEOFF)
+            && (evIn->type != SND_SEQ_EVENT_CONTROLLER)) 
 	{
         return(false);
     }
@@ -67,15 +68,17 @@ bool MidiArp::isArp(snd_seq_event_t *evIn) {
             || (evIn->data.control.channel > chIn)) 
 	{
         return(false);
-    }       
-    if (((evIn->data.note.note < indexIn[0])
-                || (evIn->data.note.note > indexIn[1])) 
-            || ((evIn->data.note.velocity < rangeIn[0])
-                || (evIn->data.note.velocity > rangeIn[1]))) 
-	{
-        return(false);
-    }  
-
+    }
+    if ((evIn->type == SND_SEQ_EVENT_NOTEON) 
+			|| (evIn->type != SND_SEQ_EVENT_NOTEOFF)) {
+	    if (((evIn->data.note.note < indexIn[0])
+	                || (evIn->data.note.note > indexIn[1])) 
+	            || ((evIn->data.note.velocity < rangeIn[0])
+	                || (evIn->data.note.velocity > rangeIn[1]))) 
+		{
+	        return(false);
+	    }
+	}
     return(true);
 }
 
@@ -149,6 +152,11 @@ void MidiArp::removeNote(snd_seq_event_t *evIn, int tick, int keep_rel)
     if (!noteCount) {
         return;
     }
+    if (sustain) {
+		sustainBufferList.append((int)evIn->data.note.note);
+		return;
+	}
+
 	if ((!keep_rel) || (!release_time))
 	{	//definitely remove from buffer
 		if (note == notes[bufPtr][0][noteCount - 1]) {
@@ -627,6 +635,19 @@ void MidiArp::updateQueueTempo(int val)
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
+}
+
+void MidiArp::setSustain(bool on, int sustick)
+{
+	int l1 = 0;
+    sustain = on;
+	if (!sustain) {
+		for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
+			int buf = sustainBufferList.at(l1);
+			removeNote(&buf, sustick, 1);
+		}  
+		sustainBufferList.clear();
+	}
 }
 
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

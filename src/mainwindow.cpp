@@ -60,11 +60,12 @@ MainWindow::MainWindow(int p_portCount)
     passWindow->setWidget(passWidget);
     passWindow->setVisible(false);
 	passWindow->setFloating(true);
+	passWindow->setGeometry(10, 10, 400, 200);
     addDockWidget(Qt::BottomDockWidgetArea, passWindow);
 
 
-    connect(passWidget, SIGNAL(discardToggled(bool)), 
-            arpData->seqDriver, SLOT(setDiscardUnmatched(bool)));
+    connect(passWidget, SIGNAL(forwardToggled(bool)), 
+            arpData->seqDriver, SLOT(setForwardUnmatched(bool)));
     connect(passWidget, SIGNAL(newMIDItpb(int)), 
             arpData->seqDriver, SLOT(updateMIDItpb(int)));
     connect(passWidget, SIGNAL(newPortUnmatched(int)), 
@@ -206,7 +207,6 @@ MainWindow::MainWindow(int p_portCount)
     fileToolBar->addAction(fileSaveAction);    
     fileToolBar->addAction(fileSaveAsAction);
     fileToolBar->setMaximumHeight(30);
-	fileToolBar->setHidden(true);
 
     runBox = new QToolBar(tr("&Control Toolbar"), this);
     runBox->addAction(addArpAction);
@@ -509,7 +509,7 @@ void MainWindow::openFile(const QString& fn)
 		qs = loadText.readLine();
 	}
     qs2 = qs.section(' ', 0, 0);
-    passWidget->setDiscard(qs2.toInt());
+    passWidget->setForward(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
     passWidget->setPortUnmatched(qs2.toInt() + 1);
     qs = loadText.readLine();
@@ -564,7 +564,7 @@ bool MainWindow::saveFile()
 	saveText << "MIDI Control\n";
 	saveText <<	(int)passWidget->cbuttonCheck->isChecked();
 	saveText <<	' ' << passWidget->cnumberSpin->value() << '\n';
-    saveText << (int)arpData->seqDriver->discardUnmatched;
+    saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
     saveText << arpData->seqDriver->grooveTick;
     saveText << ' ' << arpData->seqDriver->grooveVelocity;

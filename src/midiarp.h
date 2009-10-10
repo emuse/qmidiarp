@@ -2,9 +2,10 @@
 #define MIDIARP_H
 
 #include <QObject>
+#include <QString>
+#include <QVector>
 #include <alsa/asoundlib.h>
 #include <main.h>
-#include <QString>
 
 
 class MidiArp : public QObject  {
@@ -26,10 +27,12 @@ class MidiArp : public QObject  {
     snd_seq_tick_time_t arpTick, lastArpTick;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
 	double queueTempo;
+    QVector<int> sustainBufferList;
 	
   private:
     void initLoop();  
     int clip(int value, int min, int max, bool *outOfRange);
+    int sustain;
     
   public:
     int chIn;       // Channel of input events
@@ -80,6 +83,7 @@ class MidiArp : public QObject  {
     void updateQueueTempo(int);
     void updateReleaseTime(int);
     void muteArp(bool); //set mute
+    void setSustain(bool, int); //set sustain
     void muteArp(); //toggle mute
 	void clearNoteBuffer();
 

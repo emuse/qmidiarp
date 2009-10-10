@@ -1,8 +1,8 @@
 #ifndef PASSWIDGET_H
 #define PASSWIDGET_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <QString>
 #include <QLabel>
@@ -18,27 +18,27 @@ class PassWidget : public QWidget
   Q_OBJECT
 
   private:
-    QCheckBox *discardCheck;
+    QCheckBox *forwardCheck;
     QSpinBox *portUnmatchedSpin, *mtpbSpin;
 	QLabel *portLabel, *mtpbLabel, *cnumberLabel;
           
   public:
     PassWidget(int p_portcount, QWidget* parent=0);
     ~PassWidget();
-    void setDiscard(bool on);
+    void setForward(bool on);
     void setPortUnmatched(int id);
 	QCheckBox *cbuttonCheck;
 	QSpinBox *cnumberSpin;
     
   signals:
-    void discardToggled(bool);  
+    void forwardToggled(bool);  
     void newPortUnmatched(int);
     void midiMuteToggle(bool);
 	void newMIDItpb(int);
 	void newCnumber(int);
 	    
   public slots:
-	void updateDiscard(bool on);
+	void updateForward(bool on);
     void updatePortUnmatched(int);
     void updateMIDItpb_pw(int);
     void updateCnumber(int);

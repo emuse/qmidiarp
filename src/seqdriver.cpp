@@ -17,9 +17,8 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     midiArpList = p_midiArpList;
 	midiLfoList = p_midiLfoList; 
     portCount = 0;
-    discardUnmatched = false;
+    forwardUnmatched = false;
     portUnmatched = 0;
-	//TODO check whether mute_cnumber is updated upon addArp
 	mute_cnumber = 37;
 	midi_mutable = false;
 
@@ -39,7 +38,6 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 	}
 	snd_seq_set_client_pool_output(seq_handle, SEQPOOL);                                     
 	tempo = 100;
-	bpm_sched = 100;
 	grooveTick = 0;
 	firstArpTick = 0;
 	grooveVelocity = 0;
@@ -53,8 +51,6 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 	use_midiclock = false;
 	midiclock_tpb = 96;
 	m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
-	sustain=0;
-	sustainBufferList.clear();
 	int l1 = 0;
 	for (l1 = 0; l1 < 20; l1++) lastLfoTick[l1] = 0;
 	nextLfoTick = 0;
@@ -121,15 +117,14 @@ void SeqDriver::procEvents(int)
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
 		{
-			real_time = &evIn->time.time;
+			real_time = evIn->time.time;
             if (use_midiclock) {
 				tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
-				new_real_time = real_time;
 				calcMidiRatio();
 			}
             else {
 				m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
-				tick = deltaToTick(&evIn->time.time);
+				tick = deltaToTick(evIn->time.time);
 			}
 
 //                printf("       tick %d     ",tick);
@@ -246,21 +241,14 @@ void SeqDriver::procEvents(int)
 
             if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
 				ccnumber = (int)evIn->data.control.param;
-                if (ccnumber == 64) 
-				{
-					//Sustain Footswitch has changed, note offs are buffered
-					//when pressed and sent only when released
-                    sustain = evIn->data.control.value;
-					unmatched = false;
-					if (!sustain) 
-					{
-						for (l2 = 0; l2 < midiArpList->count(); l2++) { 
-							for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
-								int buf = sustainBufferList.at(l1);
-								midiArpList->at(l2)->removeNote(&buf, tick, 1);
-							}  
+                if (ccnumber == 64) {
+					//Sustain Footswitch has changed
+	                for (l1 = 0; l1 < midiArpList->count(); l1++) {
+	                   if (midiArpList->at(l1)->isArp(evIn)) {
+		                    midiArpList->at(l1)->setSustain(
+											(evIn->data.control.value == 127), tick);
+							unmatched = false;
 						}
-						sustainBufferList.clear();
 					}
 				}
 				if ((evIn->data.control.value == 127) && (ccnumber > (mute_cnumber - 1)) 
@@ -273,27 +261,17 @@ void SeqDriver::procEvents(int)
 			}
 
             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                    || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) 
-			{
-                for (l1 = 0; l1 < midiArpList->count(); l1++) 
-				{
-                    if (midiArpList->at(l1)->isArp(evIn)) 
-					{
+                    || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
+                for (l1 = 0; l1 < midiArpList->count(); l1++) {
+                    if (midiArpList->at(l1)->isArp(evIn)) {
                         unmatched = false;
                         if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                && (evIn->data.note.velocity > 0)) 
-						{
+                                && (evIn->data.note.velocity > 0)) {
                             midiArpList->at(l1)->addNote(evIn, tick);
-                        } else 
-						{
-                            if (!sustain)
-                                midiArpList->at(l1)->removeNote(evIn, tick, 1);
-                            else
-							{
-                                sustainBufferList.append((int)evIn->data.note.note);
-							}  
-                        }  
-                    }  
+                        } else {
+                            midiArpList->at(l1)->removeNote(evIn, tick, 1);
+                        }
+                    }
                 }
             }
             if (use_midiclock){
@@ -305,7 +283,7 @@ void SeqDriver::procEvents(int)
                 }
             }
 
-            if (!discardUnmatched && unmatched) {
+            if (forwardUnmatched && unmatched) {
                 snd_seq_ev_set_subs(evIn);  
                 snd_seq_ev_set_direct(evIn);
                 snd_seq_ev_set_source(evIn, portid_out[portUnmatched]);
@@ -317,9 +295,9 @@ void SeqDriver::procEvents(int)
 
 }
 
-void SeqDriver::setDiscardUnmatched(bool on)
+void SeqDriver::setForwardUnmatched(bool on)
 {
-    discardUnmatched = on;
+    forwardUnmatched = on;
     modified = true;
 }
 
@@ -340,7 +318,7 @@ void SeqDriver::setQueueTempo(int bpm)
 	m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
 }
 
-const snd_seq_real_time_t* SeqDriver::get_time()
+snd_seq_real_time_t SeqDriver::get_time()
 {
     snd_seq_queue_status_t *status;
 
@@ -348,9 +326,9 @@ const snd_seq_real_time_t* SeqDriver::get_time()
     snd_seq_get_queue_status(seq_handle, queue_id, status);
 
     const snd_seq_real_time_t* current_time = 
-			snd_seq_queue_status_get_real_time(status);;
+			snd_seq_queue_status_get_real_time(status);
     snd_seq_queue_status_free(status);
-    return(current_time);
+    return(*current_time);
 }
 
 void SeqDriver::runQueue(bool on)
@@ -376,14 +354,16 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_start_queue(seq_handle, queue_id, NULL);
         snd_seq_drain_output(seq_handle);
         real_time = get_time();
-		new_real_time = real_time;
-		if (use_midiclock) midiTick = 0;
-		tick = deltaToTick(real_time);
+		if (use_midiclock) {
+			midiTick = 0;
+			tick = 0;
+		} else
+			tick = deltaToTick(real_time);
         snd_seq_ev_clear(&evOut);
         evOut.type = SND_SEQ_EVENT_NOTEOFF;
         evOut.data.note.note = 0;
         evOut.data.note.velocity = 0;
-        snd_seq_ev_schedule_real(&evOut, queue_id,  0, real_time);
+        snd_seq_ev_schedule_real(&evOut, queue_id,  0, &real_time);
         snd_seq_ev_set_dest(&evOut, clientid, portid_in);
         snd_seq_event_output_direct(seq_handle, &evOut);
 
@@ -498,22 +478,23 @@ const snd_seq_real_time_t* SeqDriver::tickToDelta(int tick)
 	return &delta;
 }
 
-int SeqDriver::deltaToTick(const snd_seq_real_time_t *curtime)
+int SeqDriver::deltaToTick(snd_seq_real_time_t curtime)
 {
 	double alsatick;
-	alsatick = (double)curtime->tv_sec * 1e9 / m_ratio
-			+ (double)curtime->tv_nsec / m_ratio;
+	alsatick = (double)curtime.tv_sec * 1e9 / m_ratio
+			+ (double)curtime.tv_nsec / m_ratio;
 	return (int)(alsatick +.5);
 }
 
 void SeqDriver::calcMidiRatio()
 {
-	if (tick == 0) 
-		m_ratio = 60e9/TICKS_PER_QUARTER/tempo; 
-	else
-		m_ratio = ((double)new_real_time->tv_sec * 1e9 
-				+ (double)new_real_time->tv_nsec)/tick;
-	if ((m_ratio == 0) || (m_ratio > 60e9/tempo)) 	
-		m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
-
+	double old_m_ratio = m_ratio;
+	if (tick) {
+		m_ratio = ((double)real_time.tv_sec * 1e9 
+				+ (double)real_time.tv_nsec)/tick;
+		m_ratio += old_m_ratio;
+		m_ratio /= 2;
+	}
+	if ((m_ratio == 0) || (m_ratio > 60e9 / tempo)) 	
+		m_ratio = old_m_ratio;
 }
