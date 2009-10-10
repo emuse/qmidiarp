@@ -50,6 +50,7 @@ MidiArp::MidiArp()
 	attack_time = 0.0;
 	release_time = 0.0;
 	queueTempo = 100.0;
+	sustain = false;
 	sustainBufferList.clear();
 }
 
@@ -70,7 +71,7 @@ bool MidiArp::isArp(snd_seq_event_t *evIn) {
         return(false);
     }
     if ((evIn->type == SND_SEQ_EVENT_NOTEON) 
-			|| (evIn->type != SND_SEQ_EVENT_NOTEOFF)) {
+			|| (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
 	    if (((evIn->data.note.note < indexIn[0])
 	                || (evIn->data.note.note > indexIn[1])) 
 	            || ((evIn->data.note.velocity < rangeIn[0])
