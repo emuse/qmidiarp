@@ -216,82 +216,82 @@ d h durée de note augm/dim
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="88"/>
+        <location filename="../lfowidget.cpp" line="92"/>
         <source>Wave</source>
         <translation>Forme</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="106"/>
+        <location filename="../lfowidget.cpp" line="97"/>
         <source>&amp;Waveform</source>
         <translation>Forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="105"/>
+        <location filename="../lfowidget.cpp" line="103"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="117"/>
+        <location filename="../lfowidget.cpp" line="108"/>
         <source>&amp;Frequency (cycles/beat)</source>
         <translation>Fré&amp;quence (cycles/beat)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="120"/>
+        <location filename="../lfowidget.cpp" line="118"/>
         <source>Frequency: Number of wave cycles produced every beat</source>
         <translation>Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="130"/>
+        <location filename="../lfowidget.cpp" line="123"/>
         <source>&amp;Resolution (events/beat)</source>
         <translation>&amp;Résolution (points/beat)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="134"/>
+        <location filename="../lfowidget.cpp" line="132"/>
         <source>Resolution: Number of events produced every beat</source>
         <translation>Résolution: Nomber d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="142"/>
+        <location filename="../lfowidget.cpp" line="137"/>
         <source>&amp;Length (beats)</source>
         <translation>&amp;Longueur (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="146"/>
+        <location filename="../lfowidget.cpp" line="144"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="152"/>
+        <location filename="../lfowidget.cpp" line="150"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="157"/>
+        <location filename="../lfowidget.cpp" line="156"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="286"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="286"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>

@@ -82,19 +82,17 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     portBoxLayout->addWidget(channelLabel, 3, 0);
     portBoxLayout->addWidget(channelOut, 3, 1);
 
-    portBox->setLayout(portBoxLayout);
+    QVBoxLayout* outputLayout = new QVBoxLayout;
+    outputLayout->addLayout(portBoxLayout);
+    outputLayout->addStretch();
 
-    // group box for pattern setup
+    portBox->setLayout(outputLayout);
+
+    // group box for wave setup
     QGroupBox *patternBox = new QGroupBox(tr("Wave"), this);
 
-    QWidget *lfoScreenBox = new QWidget(patternBox);
-    QHBoxLayout *lfoScreenBoxLayout = new QHBoxLayout;
-    lfoScreen = new LfoScreen(patternBox); 
-    lfoScreenBox->setMinimumHeight(80);
-    lfoScreenBoxLayout->addWidget(lfoScreen);
-    lfoScreenBoxLayout->setMargin(1);
-    lfoScreenBoxLayout->setSpacing(1);
-    lfoScreenBox->setLayout(lfoScreenBoxLayout);
+    lfoScreen = new LfoScreen(this); 
+    lfoScreen->setMinimumHeight(80);
 
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), patternBox);
     waveFormBox = new QComboBox(patternBox);
@@ -110,9 +108,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     QLabel *lfoFreqBoxLabel = new QLabel(tr("&Frequency (cycles/beat)"),
             patternBox);
     lfoFreqBox = new QComboBox(patternBox);
-    lfoFreqBoxLabel->setBuddy(lfoResBox);
+    lfoFreqBoxLabel->setBuddy(lfoFreqBox);
     QStringList names;
-    names 	<< "1/4" << "1/2" << "3/4" << "1" << "2" << "3" 
+    names << "1/4" << "1/2" << "3/4" << "1" << "2" << "3" 
         << "4" << "5" << "6" << "7" << "8";
     lfoFreqBox->insertItems(0, names);
     lfoFreqBox->setCurrentIndex(3);
@@ -153,34 +151,46 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoAmp(int)));
     amplitude->setMinimumWidth(250);
+
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), patternBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoOffs(int)));
 
     QGridLayout *patternBoxLayout = new QGridLayout;
-    patternBoxLayout->addWidget(lfoScreenBox, 0, 0, 1, 3);
-    patternBoxLayout->addWidget(waveFormBoxLabel, 1, 0);
-    patternBoxLayout->addWidget(waveFormBox, 1, 1);
-    patternBoxLayout->addWidget(amplitude, 1, 2, 2, 1);
+    patternBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
+    patternBoxLayout->addWidget(waveFormBox, 0, 1);
 
-    patternBoxLayout->addWidget(lfoFreqBoxLabel, 2, 0);
-    patternBoxLayout->addWidget(lfoFreqBox, 2, 1);
-    patternBoxLayout->addWidget(offset, 3, 2, 2, 1);
+    patternBoxLayout->addWidget(lfoFreqBoxLabel, 1, 0);
+    patternBoxLayout->addWidget(lfoFreqBox, 1, 1);
 
-    patternBoxLayout->addWidget(lfoResBoxLabel, 3, 0);
-    patternBoxLayout->addWidget(lfoResBox, 3, 1);
-    patternBoxLayout->addWidget(lfoSizeBoxLabel, 4, 0);
-    patternBoxLayout->addWidget(lfoSizeBox, 4, 1);
-    patternBoxLayout->setColumnStretch(2, 5);
+    patternBoxLayout->addWidget(lfoResBoxLabel, 2, 0);
+    patternBoxLayout->addWidget(lfoResBox, 2, 1);
 
-    patternBox->setLayout(patternBoxLayout); 
+    patternBoxLayout->addWidget(lfoSizeBoxLabel, 3, 0);
+    patternBoxLayout->addWidget(lfoSizeBox, 3, 1);
 
 
-    QGridLayout *lfoWidgetLayout = new QGridLayout;
-    lfoWidgetLayout->addWidget(patternBox, 0, 0);
-    lfoWidgetLayout->addWidget(portBox, 0, 1);
-    lfoWidgetLayout->setRowStretch(2, 1);
+    QVBoxLayout* sliderLayout = new QVBoxLayout;
+    sliderLayout->addWidget(amplitude);
+    sliderLayout->addWidget(offset);
+    sliderLayout->addStretch();
+
+    QHBoxLayout* parameterLayout = new QHBoxLayout;
+    parameterLayout->addLayout(patternBoxLayout);
+    parameterLayout->addSpacing(16);
+    parameterLayout->addLayout(sliderLayout);
+
+    QVBoxLayout* waveBoxLayout = new QVBoxLayout;
+    waveBoxLayout->addWidget(lfoScreen);
+    waveBoxLayout->addSpacing(10);
+    waveBoxLayout->addLayout(parameterLayout);
+
+    patternBox->setLayout(waveBoxLayout); 
+
+    QHBoxLayout *lfoWidgetLayout = new QHBoxLayout;
+    lfoWidgetLayout->addWidget(patternBox);
+    lfoWidgetLayout->addWidget(portBox);
 
     setLayout(lfoWidgetLayout);
     updateLfoAmp(64);

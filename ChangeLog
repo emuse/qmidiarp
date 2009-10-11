@@ -9,7 +9,7 @@
 	Focus follows tab fixed.
 	* groovewidget.cpp: Widget placement by standard layout margins.
 	* lfowidget.*: Obsolete header files removed, missing keyboard
-	shortcuts added.
+	shortcuts added, layout improved
 
 2009-10-10 Frank Kober <goemusic@yahoo.fr>
 	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 

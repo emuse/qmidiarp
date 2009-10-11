@@ -25,7 +25,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="96"/>
         <source>&amp;Port</source>
-        <translation>&amp;Anschluss</translation>
+        <translation>Anschl&amp;uss</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="127"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="243"/>
         <source>&amp;Attack (s)</source>
-        <translation></translation>
+        <translation>A&amp;ttack (s)</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="247"/>
@@ -213,80 +213,80 @@
     <message>
         <location filename="../lfowidget.cpp" line="68"/>
         <source>&amp;Port</source>
-        <translation>&amp;Anschluss</translation>
+        <translation>An&amp;schluss</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="88"/>
+        <location filename="../lfowidget.cpp" line="92"/>
         <source>Wave</source>
         <translation>Welle</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="105"/>
+        <location filename="../lfowidget.cpp" line="103"/>
         <source>Waveform Basis</source>
         <translation>Wellenformbasis</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="117"/>
+        <location filename="../lfowidget.cpp" line="108"/>
         <source>&amp;Frequency (cycles/beat)</source>
         <translation>&amp;Frequenz (Zyklen/Takt)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="120"/>
+        <location filename="../lfowidget.cpp" line="118"/>
         <source>Frequency: Number of wave cycles produced every beat</source>
         <translation>Frequenz: Anzahl der erzeugten Wellenzyklen pro beat</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="130"/>
+        <location filename="../lfowidget.cpp" line="123"/>
         <source>&amp;Resolution (events/beat)</source>
         <translation>&amp;Auflösung (Signale/Takt)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="134"/>
+        <location filename="../lfowidget.cpp" line="132"/>
         <source>Resolution: Number of events produced every beat</source>
         <translation>Auflösung: Anzahl der pro Takt erzeugten MIDI Signale</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="142"/>
+        <location filename="../lfowidget.cpp" line="137"/>
         <source>&amp;Length (beats)</source>
-        <translation>&amp;Länge (Takte)</translation>
+        <translation>Län&amp;ge (Takte)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="146"/>
+        <location filename="../lfowidget.cpp" line="144"/>
         <source>Length of LFO wave in beats</source>
         <translation>Länge der LFO Wellenform in Takten</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="152"/>
+        <location filename="../lfowidget.cpp" line="150"/>
         <source>&amp;Amplitude</source>
-        <translation>&amp;Amplitude</translation>
+        <translation>Am&amp;plitude</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="157"/>
+        <location filename="../lfowidget.cpp" line="156"/>
         <source>&amp;Offset</source>
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="286"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="286"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
@@ -296,7 +296,7 @@
         <translation>&amp;MIDI CC#</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="99"/>
+        <location filename="../lfowidget.cpp" line="97"/>
         <source>&amp;Waveform</source>
         <translation>&amp;Wellenform</translation>
     </message>
