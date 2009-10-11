@@ -23,18 +23,11 @@
 #define LFOWIDGET_H
 
 #include <QString>
-#include <QLabel>
-#include <QSlider>
-#include <QGridLayout>
-#include <QToolButton>
-#include <QAction>
 #include <QComboBox>
-#include <QGroupBox>
 #include <QSpinBox>
-#include <QFile>
-#include <QLineEdit>
 #include <QTextStream>
 #include <QCheckBox>
+
 #include "midilfo.h"
 #include "slider.h"
 #include "lfoscreen.h"
@@ -43,27 +36,24 @@ const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 const int lfoFreqValues[11] = {1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32};
 
 class LfoWidget : public QWidget
-
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  private:
-    QSpinBox *channelOut, *portOut, *lfoCCnumberBox; // Output channel / port (ALSA Sequencer)
+    // Output channel / port (ALSA Sequencer)
+    QSpinBox *channelOut, *portOut, *lfoCCnumberBox;
     QComboBox *waveFormBox, *lfoResBox, *lfoSizeBox, *lfoFreqBox;
-	QGroupBox *randomBox;
  
-	MidiLfo *midiLfo;
+    MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
-	QVector<LfoSample> lfoData;
+    QVector<LfoSample> lfoData;
     bool modified;
     
   public:
     QString lfoName;
     LfoScreen *lfoScreen;
-	QStringList waveForms;
-	QCheckBox *muteOut;
+    QStringList waveForms;
+    QCheckBox *muteOut;
 
-  public:
     LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget* parent=0);
     ~LfoWidget();
     MidiLfo *getMidiLfo();
@@ -72,7 +62,7 @@ class LfoWidget : public QWidget
     void writeLfo(QTextStream& arpText);
     void setChannelOut(int value);
     void setPortOut(int value);
-	void loadWaveForms();
+    void loadWaveForms();
     bool isModified();
     void setModified(bool);
   
@@ -82,13 +72,13 @@ class LfoWidget : public QWidget
   public slots:
     void updateChannelOut(int value);
     void updatePortOut(int value);
-	void updateWaveForm(int);
-	void updateLfoRes(int);
-	void updateLfoSize(int);
-	void updateLfoCCnumber(int val);
-	void updateLfoFreq(int val);
-	void updateLfoAmp(int val);
-	void updateLfoOffs(int val);
+    void updateWaveForm(int);
+    void updateLfoRes(int);
+    void updateLfoSize(int);
+    void updateLfoCCnumber(int val);
+    void updateLfoFreq(int val);
+    void updateLfoAmp(int val);
+    void updateLfoOffs(int val);
 };
   
 #endif

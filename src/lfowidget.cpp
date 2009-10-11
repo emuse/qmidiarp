@@ -23,19 +23,11 @@
 #include <QLabel>
 #include <QSlider> 
 #include <QBoxLayout>
-#include <QPushButton>
-#include <QAction>
-#include <QToolButton>
-#include <QComboBox>
-#include <QSpinBox>
+#include <QGridLayout>
 #include <QStringList>
 #include <QGroupBox>
-#include <QFile>
-#include <QTextStream>
 #include <QLineEdit>
 #include <QInputDialog>
-#include <QDir>
-#include <QMessageBox>
 
 #include "midilfo.h"
 #include "lfowidget.h"
@@ -44,21 +36,21 @@
 #include "config.h"
 
 
-LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
-: QWidget(parent), midiLfo(p_midiLfo), modified(false)
+LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
+    QWidget(parent), midiLfo(p_midiLfo), modified(false)
 {
 
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-	QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
+    QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), midiLfo, SLOT(muteLfo(bool)));
-	muteLabel->setBuddy(muteOut);
-	
-    QLabel *lfoCCnumberLabel = new QLabel(tr("MIDI CC#"), portBox);
+    muteLabel->setBuddy(muteOut);
+
+    QLabel *lfoCCnumberLabel = new QLabel(tr("&MIDI CC#"), portBox);
     lfoCCnumberBox = new QSpinBox(portBox);
-	lfoCCnumberLabel->setBuddy(lfoCCnumberBox);
+    lfoCCnumberLabel->setBuddy(lfoCCnumberBox);
     lfoCCnumberBox->setRange(0, 127);
     lfoCCnumberBox->setValue(74);
     lfoCCnumberBox->setToolTip(tr("MIDI Controller number sent to output"));
@@ -69,7 +61,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     channelOut = new QSpinBox(portBox);
     channelLabel->setBuddy(channelOut);
     channelOut->setRange(1, 16);
- 	channelOut->setKeyboardTracking(false);
+    channelOut->setKeyboardTracking(false);
     connect(channelOut, SIGNAL(valueChanged(int)), this,
             SLOT(updateChannelOut(int)));
 
@@ -77,7 +69,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     portOut = new QSpinBox(portBox);
     portLabel->setBuddy(portOut);
     portOut->setRange(1, portCount);
- 	portOut->setKeyboardTracking(false);
+    portOut->setKeyboardTracking(false);
     connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
 
     QGridLayout *portBoxLayout = new QGridLayout;
@@ -89,11 +81,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     portBoxLayout->addWidget(portOut, 2, 1);
     portBoxLayout->addWidget(channelLabel, 3, 0);
     portBoxLayout->addWidget(channelOut, 3, 1);
+
     portBox->setLayout(portBoxLayout);
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Wave"), this);
-	
+
     QWidget *lfoScreenBox = new QWidget(patternBox);
     QHBoxLayout *lfoScreenBoxLayout = new QHBoxLayout;
     lfoScreen = new LfoScreen(patternBox); 
@@ -103,47 +96,51 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     lfoScreenBoxLayout->setSpacing(1);
     lfoScreenBox->setLayout(lfoScreenBoxLayout);
 
-    QLabel *waveFormBoxLabel = new QLabel(tr("Waveform"), patternBox);
+    QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), patternBox);
     waveFormBox = new QComboBox(patternBox);
-	waveFormBoxLabel->setBuddy(waveFormBox);
-	loadWaveForms();
+    waveFormBoxLabel->setBuddy(waveFormBox);
+    loadWaveForms();
     waveFormBox->insertItems(0, waveForms);
     waveFormBox->setCurrentIndex(0);
     waveFormBox->setToolTip(tr("Waveform Basis"));
     waveFormBox->setMinimumContentsLength(8);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-			
-    QLabel *lfoFreqBoxLabel = new QLabel(tr("Frequency (cycles/beat)"), patternBox);
+
+    QLabel *lfoFreqBoxLabel = new QLabel(tr("&Frequency (cycles/beat)"),
+            patternBox);
     lfoFreqBox = new QComboBox(patternBox);
-	lfoFreqBoxLabel->setBuddy(lfoResBox);
-	QStringList names;
-	names 	<< "1/4" << "1/2" << "3/4" << "1" << "2" << "3" 
-			<< "4" << "5" << "6" << "7" << "8";
+    lfoFreqBoxLabel->setBuddy(lfoResBox);
+    QStringList names;
+    names 	<< "1/4" << "1/2" << "3/4" << "1" << "2" << "3" 
+        << "4" << "5" << "6" << "7" << "8";
     lfoFreqBox->insertItems(0, names);
     lfoFreqBox->setCurrentIndex(3);
-    lfoFreqBox->setToolTip(tr("Frequency: Number of wave cycles produced every beat"));
+    lfoFreqBox->setToolTip(
+            tr("Frequency: Number of wave cycles produced every beat"));
     lfoFreqBox->setMinimumContentsLength(3);
     connect(lfoFreqBox, SIGNAL(activated(int)), this,
             SLOT(updateLfoFreq(int)));
 
-    QLabel *lfoResBoxLabel = new QLabel(tr("Resolution (events/beat)"), patternBox);
+    QLabel *lfoResBoxLabel = new QLabel(tr("&Resolution (events/beat)"),
+            patternBox);
     lfoResBox = new QComboBox(patternBox);
-	lfoResBoxLabel->setBuddy(lfoResBox);
-	names.clear();
-	names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
+    lfoResBoxLabel->setBuddy(lfoResBox);
+    names.clear();
+    names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
     lfoResBox->insertItems(0, names);
     lfoResBox->setCurrentIndex(4);
-    lfoResBox->setToolTip(tr("Resolution: Number of events produced every beat"));
+    lfoResBox->setToolTip(
+            tr("Resolution: Number of events produced every beat"));
     lfoResBox->setMinimumContentsLength(3);
     connect(lfoResBox, SIGNAL(activated(int)), this,
             SLOT(updateLfoRes(int)));
-			
-    QLabel *lfoSizeBoxLabel = new QLabel(tr("Length (beats)"), patternBox);
+
+    QLabel *lfoSizeBoxLabel = new QLabel(tr("&Length (beats)"), patternBox);
     lfoSizeBox = new QComboBox(patternBox);
-	lfoSizeBoxLabel->setBuddy(lfoSizeBox);
-	names.clear();
-	names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+    lfoSizeBoxLabel->setBuddy(lfoSizeBox);
+    names.clear();
+    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
     lfoSizeBox->insertItems(0, names);
     lfoSizeBox->setCurrentIndex(0);
     lfoSizeBox->setToolTip(tr("Length of LFO wave in beats"));
@@ -151,45 +148,42 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent)
     connect(lfoSizeBox, SIGNAL(activated(int)), this,
             SLOT(updateLfoSize(int)));
 
-    amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal, tr("&Amplitude"), patternBox);
+    amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
+            tr("&Amplitude"), patternBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoAmp(int)));
-	amplitude->setMinimumWidth(250);
-    offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal, tr("&Offset"), patternBox);
+    amplitude->setMinimumWidth(250);
+    offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
+            tr("&Offset"), patternBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoOffs(int)));
 
     QGridLayout *patternBoxLayout = new QGridLayout;
-    patternBoxLayout->addWidget(lfoScreenBox,0,0,1,3);
-    patternBoxLayout->addWidget(waveFormBoxLabel,1,0);
-    patternBoxLayout->addWidget(waveFormBox,1,1);
-    patternBoxLayout->addWidget(amplitude,1,2,2,1);
-	
-    patternBoxLayout->addWidget(lfoFreqBoxLabel,2,0);
-    patternBoxLayout->addWidget(lfoFreqBox,2,1);
-    patternBoxLayout->addWidget(offset,3,2,2,1);
-	
-    patternBoxLayout->addWidget(lfoResBoxLabel,3,0);
-    patternBoxLayout->addWidget(lfoResBox,3,1);
-    patternBoxLayout->addWidget(lfoSizeBoxLabel,4,0);
-    patternBoxLayout->addWidget(lfoSizeBox,4,1);
-	patternBoxLayout->setColumnStretch(2,5);
-    //patternBoxLayout->setMargin(1);
-    //patternBoxLayout->setSpacing(1);
+    patternBoxLayout->addWidget(lfoScreenBox, 0, 0, 1, 3);
+    patternBoxLayout->addWidget(waveFormBoxLabel, 1, 0);
+    patternBoxLayout->addWidget(waveFormBox, 1, 1);
+    patternBoxLayout->addWidget(amplitude, 1, 2, 2, 1);
+
+    patternBoxLayout->addWidget(lfoFreqBoxLabel, 2, 0);
+    patternBoxLayout->addWidget(lfoFreqBox, 2, 1);
+    patternBoxLayout->addWidget(offset, 3, 2, 2, 1);
+
+    patternBoxLayout->addWidget(lfoResBoxLabel, 3, 0);
+    patternBoxLayout->addWidget(lfoResBox, 3, 1);
+    patternBoxLayout->addWidget(lfoSizeBoxLabel, 4, 0);
+    patternBoxLayout->addWidget(lfoSizeBox, 4, 1);
+    patternBoxLayout->setColumnStretch(2, 5);
+
     patternBox->setLayout(patternBoxLayout); 
 
 
-
     QGridLayout *lfoWidgetLayout = new QGridLayout;
-    lfoWidgetLayout->addWidget(patternBox,0,0);
-    lfoWidgetLayout->addWidget(portBox,0,1);
-    lfoWidgetLayout->setRowStretch(2,1);
+    lfoWidgetLayout->addWidget(patternBox, 0, 0);
+    lfoWidgetLayout->addWidget(portBox, 0, 1);
+    lfoWidgetLayout->setRowStretch(2, 1);
 
-    lfoWidgetLayout->setMargin(2);
-    lfoWidgetLayout->setSpacing(5);
-	
     setLayout(lfoWidgetLayout);
-	updateLfoAmp(64);
+    updateLfoAmp(64);
 }
 
 LfoWidget::~LfoWidget()
@@ -216,13 +210,13 @@ void LfoWidget::updateChannelOut(int value)
 void LfoWidget::writeLfo(QTextStream& arpText)
 {
     arpText << midiLfo->channelOut << ' ' 
-		<< midiLfo->portOut << ' '
-		<< midiLfo->lfoCCnumber << '\n';
+        << midiLfo->portOut << ' '
+        << midiLfo->lfoCCnumber << '\n';
     arpText << lfoFreqBox->currentIndex() << ' '
         << lfoResBox->currentIndex() << ' '
         << lfoSizeBox->currentIndex() << ' '
         << midiLfo->lfoAmp << ' '
-		<< midiLfo->lfoOffs << '\n';
+        << midiLfo->lfoOffs << '\n';
     arpText << waveFormBox->currentIndex() << '\n';
     arpText << "EOP\n"; // End Of Pattern
     modified = false;
@@ -242,29 +236,28 @@ void LfoWidget::readLfo(QTextStream& arpText)
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0); 
     lfoFreqBox->setCurrentIndex(qs2.toInt());
-	updateLfoFreq(qs2.toInt());
+    updateLfoFreq(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
     lfoResBox->setCurrentIndex(qs2.toInt());
-	updateLfoRes(qs2.toInt());
+    updateLfoRes(qs2.toInt());
     qs2 = qs.section(' ', 2, 2); 
     lfoSizeBox->setCurrentIndex(qs2.toInt());
-	updateLfoSize(qs2.toInt());
+    updateLfoSize(qs2.toInt());
     qs2 = qs.section(' ', 3, 3); 
     amplitude->setValue(qs2.toInt());
     qs2 = qs.section(' ', 4, 4); 
     offset->setValue(qs2.toInt());
     qs = arpText.readLine();
-	waveFormBox->setCurrentIndex(qs.toInt());
-	updateWaveForm(qs.toInt());
+    waveFormBox->setCurrentIndex(qs.toInt());
+    updateWaveForm(qs.toInt());
     qs = arpText.readLine();
     modified = false;
-	
 }                                      
 
 
 void LfoWidget::updateLfoCCnumber(int val)
 {
-	midiLfo->lfoCCnumber = val;
+    midiLfo->lfoCCnumber = val;
     modified = true;
 }
 
@@ -276,62 +269,61 @@ void LfoWidget::setPortOut(int value)
 
 void LfoWidget::setChannelOut(int value)
 {
-
     channelOut->setValue(value);
     modified = true;
 }
 
 void LfoWidget::updateWaveForm(int val)
 {
-	midiLfo->waveFormIndex = val;
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->waveFormIndex = val;
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 
 void LfoWidget::loadWaveForms()
 {
     waveForms << tr("Sine") << tr("Saw up") << tr("Triangle") 
-				<< tr("Saw down") << tr("Square");
+        << tr("Saw down") << tr("Square");
 }
 
 void LfoWidget::updateLfoFreq(int val)
 {
-	midiLfo->lfoFreq = lfoFreqValues[val];
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->lfoFreq = lfoFreqValues[val];
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 
 void LfoWidget::updateLfoRes(int val)
 {
-	midiLfo->lfoRes = lfoResValues[val];
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->lfoRes = lfoResValues[val];
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 
 void LfoWidget::updateLfoSize(int val)
 {
-	midiLfo->lfoSize = val + 1;
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->lfoSize = val + 1;
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 
 void LfoWidget::updateLfoAmp(int val)
 {
-	midiLfo->lfoAmp = val;
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->lfoAmp = val;
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 
 void LfoWidget::updateLfoOffs(int val)
 {
-	midiLfo->lfoOffs = val;
-	midiLfo->getData(&lfoData);
-	lfoScreen->updateLfoScreen(lfoData);
+    midiLfo->lfoOffs = val;
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateLfoScreen(lfoData);
     modified = true;
 }
 

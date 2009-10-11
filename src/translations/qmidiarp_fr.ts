@@ -8,7 +8,7 @@
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="46"/>
+        <location filename="../arpwidget.cpp" line="39"/>
         <source>&amp;Note</source>
         <translation></translation>
     </message>
@@ -18,7 +18,7 @@
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="104"/>
+        <location filename="../arpwidget.cpp" line="96"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
@@ -135,12 +135,12 @@ d h durée de note augm/dim
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="39"/>
+        <location filename="../arpwidget.cpp" line="67"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="60"/>
+        <location filename="../arpwidget.cpp" line="53"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
     </message>
@@ -150,7 +150,7 @@ d h durée de note augm/dim
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="96"/>
+        <location filename="../arpwidget.cpp" line="103"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
@@ -173,7 +173,7 @@ d h durée de note augm/dim
 <context>
     <name>GrooveWidget</name>
     <message>
-        <location filename="../groovewidget.cpp" line="21"/>
+        <location filename="../groovewidget.cpp" line="20"/>
         <source>&amp;Shift</source>
         <translation>&amp;Décalage</translation>
     </message>
@@ -183,7 +183,7 @@ d h durée de note augm/dim
         <translation>&amp;Vélocité</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="29"/>
+        <location filename="../groovewidget.cpp" line="30"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
@@ -191,114 +191,114 @@ d h durée de note augm/dim
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="52"/>
+        <location filename="../lfowidget.cpp" line="44"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="54"/>
+        <location filename="../lfowidget.cpp" line="46"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="59"/>
-        <source>MIDI CC#</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../lfowidget.cpp" line="64"/>
+        <location filename="../lfowidget.cpp" line="56"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="68"/>
+        <location filename="../lfowidget.cpp" line="60"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="76"/>
+        <location filename="../lfowidget.cpp" line="68"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="95"/>
+        <location filename="../lfowidget.cpp" line="88"/>
         <source>Wave</source>
         <translation>Forme</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="106"/>
-        <source>Waveform</source>
+        <source>&amp;Waveform</source>
         <translation>Forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="112"/>
+        <location filename="../lfowidget.cpp" line="105"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="117"/>
-        <source>Frequency (cycles/beat)</source>
-        <translation>Fréquence (cycles/beat)</translation>
+        <source>&amp;Frequency (cycles/beat)</source>
+        <translation>Fré&amp;quence (cycles/beat)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="125"/>
+        <location filename="../lfowidget.cpp" line="120"/>
         <source>Frequency: Number of wave cycles produced every beat</source>
         <translation>Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="130"/>
-        <source>Resolution (events/beat)</source>
-        <translation>Résolution (points/beat)</translation>
+        <source>&amp;Resolution (events/beat)</source>
+        <translation>&amp;Résolution (points/beat)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="137"/>
+        <location filename="../lfowidget.cpp" line="134"/>
         <source>Resolution: Number of events produced every beat</source>
         <translation>Résolution: Nomber d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="142"/>
-        <source>Length (beats)</source>
-        <translation>Longueur (beats)</translation>
+        <source>&amp;Length (beats)</source>
+        <translation>&amp;Longueur (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="149"/>
+        <location filename="../lfowidget.cpp" line="146"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="154"/>
+        <location filename="../lfowidget.cpp" line="152"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="158"/>
+        <location filename="../lfowidget.cpp" line="157"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="294"/>
+        <location filename="../lfowidget.cpp" line="286"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="294"/>
+        <location filename="../lfowidget.cpp" line="286"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="295"/>
+        <location filename="../lfowidget.cpp" line="287"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="295"/>
+        <location filename="../lfowidget.cpp" line="287"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="295"/>
+        <location filename="../lfowidget.cpp" line="287"/>
         <source>Square</source>
         <translation>Créneau</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="51"/>
+        <source>&amp;MIDI CC#</source>
+        <translation>&amp;MIDI CC#</translation>
     </message>
 </context>
 <context>
