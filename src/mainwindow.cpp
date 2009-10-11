@@ -197,7 +197,7 @@ MainWindow::MainWindow(int p_portCount)
     arpMenu->addAction(renameArpAction);
     arpMenu->addAction(removeArpAction);
 
-    helpMenu->addAction(tr("&About %1...").arg(PACKAGE), this,
+    helpMenu->addAction(tr("&About %1...").arg(APP_NAME), this,
             SLOT(helpAbout())); 
     helpMenu->addAction(tr("&About Qt..."), this,
             SLOT(helpAboutQt()));
