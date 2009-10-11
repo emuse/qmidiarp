@@ -36,13 +36,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
-    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QSpinBox(inBox);
-    chIn->setRange(1, 16);
-	chIn->setKeyboardTracking(false);
-    chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
-
     QLabel *indexInLabel = new QLabel(tr("&Note"), inBox);
     indexIn[0] = new QSpinBox(inBox);
     indexIn[1] = new QSpinBox(inBox);
@@ -71,6 +64,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
 
+    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
+    chIn = new QSpinBox(inBox);
+    chIn->setRange(1, 16);
+	chIn->setKeyboardTracking(false);
+    chInLabel->setBuddy(chIn);
+    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
+
     QGridLayout *inBoxLayout = new QGridLayout;
 
     inBoxLayout->addWidget(indexInLabel, 0, 0);
@@ -93,6 +93,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
 	muteLabel->setBuddy(muteOut);
 
+    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
+    portOut = new QSpinBox(portBox);
+    portLabel->setBuddy(portOut);
+    portOut->setRange(1, portCount);
+ 	portOut->setKeyboardTracking(false);
+    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
+
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QSpinBox(portBox);
     channelLabel->setBuddy(channelOut);
@@ -100,13 +107,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
  	channelOut->setKeyboardTracking(false);
     connect(channelOut, SIGNAL(valueChanged(int)), this,
             SLOT(updateChannelOut(int)));
-
-    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QSpinBox(portBox);
-    portLabel->setBuddy(portOut);
-    portOut->setRange(1, portCount);
- 	portOut->setKeyboardTracking(false);
-    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
 
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(muteLabel, 0, 0);
@@ -122,8 +122,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     QHBoxLayout *inOutBoxLayout = new QHBoxLayout();
     inOutBoxLayout->addWidget(inBox, 3);
     inOutBoxLayout->addWidget(portBox, 2);
-    inOutBoxLayout->setMargin(1);
-    inOutBoxLayout->setSpacing(1);
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
@@ -184,7 +182,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
     patternText = new QLineEdit(patternBox); 
     //patternText->setLineWrapMode(QPlainTextEdit::NoWrap);
-    connect(patternText, SIGNAL(textChanged(QString)), this, SLOT(updateText(QString)));
+    connect(patternText, SIGNAL(textChanged(QString)), this,
+            SLOT(updateText(QString)));
     patternText->setHidden(true);
     //patternText->setMaximumHeight(50);
     patternText->setToolTip(
@@ -216,51 +215,52 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     // group box for random settings
     randomBox = new QGroupBox(tr("Random"), this);
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
-    randomBoxLayout->setMargin(5);
-    randomBoxLayout->setSpacing(1);
 
-    randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("&Shift"), randomBox);
+    randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
+            tr("&Shift"), randomBox);
     connect(randomTick, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomTickAmp(int)));
 
-    randomVelocity = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("Vel&ocity"), randomBox);
+    randomVelocity = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
+            tr("Vel&ocity"), randomBox);
     connect(randomVelocity, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomVelocityAmp(int)));
 
-    randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal, tr("&Length"), randomBox);
+    randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
+            tr("&Length"), randomBox);
     connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateRandomVelocityAmp(int))); 
 			 
     randomBoxLayout->addWidget(randomTick);
     randomBoxLayout->addWidget(randomVelocity);
-    randomBoxLayout->addWidget(randomLength);  
+    randomBoxLayout->addWidget(randomLength);
+    randomBoxLayout->addStretch();
     randomBox->setLayout(randomBoxLayout);
 	  
     envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
-    attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal, tr("&Attack (s)"), envelopeBox);
+    attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
+            tr("&Attack (s)"), envelopeBox);
     connect(attackTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateAttackTime(int)));
-    releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal, tr("&Release (s)"), envelopeBox);
+    releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
+            tr("&Release (s)"), envelopeBox);
     connect(releaseTime, SIGNAL(valueChanged(int)), midiArp,
             SLOT(updateReleaseTime(int)));
 			  
     envelopeBoxLayout->addWidget(attackTime);
     envelopeBoxLayout->addWidget(releaseTime);
-    envelopeBoxLayout->setMargin(5);
-    envelopeBoxLayout->setSpacing(1);
+    envelopeBoxLayout->addStretch();
     envelopeBox->setLayout(envelopeBoxLayout);
 
 
-    arpWidgetLayout->addWidget(patternBox,0,0);
-    arpWidgetLayout->addLayout(inOutBoxLayout,1,0);
-    arpWidgetLayout->addWidget(randomBox,0,1);
-    arpWidgetLayout->addWidget(envelopeBox,1,1);
-    arpWidgetLayout->setRowStretch(2,1);
+    arpWidgetLayout->addWidget(patternBox, 0, 0);
+    arpWidgetLayout->addLayout(inOutBoxLayout, 1, 0);
+    arpWidgetLayout->addWidget(randomBox, 0, 1);
+    arpWidgetLayout->addWidget(envelopeBox, 1, 1);
+    arpWidgetLayout->setRowStretch(2, 1);
 
-	arpWidgetLayout->setColumnMinimumWidth(1, 300);
-    arpWidgetLayout->setMargin(2);
-    arpWidgetLayout->setSpacing(5);
+    arpWidgetLayout->setColumnMinimumWidth(1, 300);
     setLayout(arpWidgetLayout);
 }
 

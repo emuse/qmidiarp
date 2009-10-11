@@ -28,37 +28,37 @@
         <translation>&amp;Anschluss</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="129"/>
+        <location filename="../arpwidget.cpp" line="127"/>
         <source>Pattern</source>
         <translation>Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="134"/>
+        <location filename="../arpwidget.cpp" line="132"/>
         <source>&amp;Edit Pattern</source>
         <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="142"/>
+        <location filename="../arpwidget.cpp" line="140"/>
         <source>&amp;Remove Pattern</source>
         <translation>&amp;Löschen</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="150"/>
+        <location filename="../arpwidget.cpp" line="148"/>
         <source>&amp;Store Pattern</source>
         <translation>&amp;Speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="160"/>
+        <location filename="../arpwidget.cpp" line="158"/>
         <source>Pattern preset</source>
         <translation>Voreingestellte Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="169"/>
+        <location filename="../arpwidget.cpp" line="167"/>
         <source>Arp through chord</source>
         <translation>Arpeggio bei Akkord</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="197"/>
+        <location filename="../arpwidget.cpp" line="196"/>
         <source>0..9  note played on keyboard, ascending order
 ( ) chord mode on/off
   + -  octave up/down
@@ -75,12 +75,12 @@
  p Pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="241"/>
+        <location filename="../arpwidget.cpp" line="243"/>
         <source>&amp;Attack (s)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="244"/>
+        <location filename="../arpwidget.cpp" line="247"/>
         <source>&amp;Release (s)</source>
         <translation></translation>
     </message>
@@ -100,17 +100,17 @@
 ...p...Pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="217"/>
+        <location filename="../arpwidget.cpp" line="216"/>
         <source>Random</source>
         <translation>Zufall</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="222"/>
+        <location filename="../arpwidget.cpp" line="220"/>
         <source>&amp;Shift</source>
         <translation>&amp;Verschiebung</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="226"/>
+        <location filename="../arpwidget.cpp" line="225"/>
         <source>Vel&amp;ocity</source>
         <translation>Ans&amp;chlag</translation>
     </message>
@@ -120,7 +120,7 @@
         <translation>&amp;Dauer</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="239"/>
+        <location filename="../arpwidget.cpp" line="240"/>
         <source>Envelope</source>
         <translation>Hüllkurve</translation>
     </message>
@@ -170,17 +170,17 @@
         <translation>Kana&amp;l</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="167"/>
+        <location filename="../arpwidget.cpp" line="165"/>
         <source>Static</source>
         <translation>Statisch</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="167"/>
+        <location filename="../arpwidget.cpp" line="165"/>
         <source>Up</source>
         <translation>Aufwärts</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="167"/>
+        <location filename="../arpwidget.cpp" line="165"/>
         <source>Down</source>
         <translation>Abwärts</translation>
     </message>

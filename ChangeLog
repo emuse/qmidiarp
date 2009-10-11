@@ -5,6 +5,8 @@
 	* mainwindow.cpp, arpdata.*, seqdriver.*: Show ALSA client id in
 	window title
 	* translations/*.ts: Obsolete messages removed
+	* arpwidget.cpp: Widget placement by standard layout margins.
+	Focus follows tab fixed.
 
 2009-10-10 Frank Kober <goemusic@yahoo.fr>
 	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
