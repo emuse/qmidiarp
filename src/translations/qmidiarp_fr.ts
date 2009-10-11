@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -53,7 +54,7 @@
         <translation>Arpège dans accord</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="196"/>
+        <location filename="../arpwidget.cpp" line="190"/>
         <source>0..9  note played on keyboard, ascending order
 ( ) chord mode on/off
   + -  octave up/down
@@ -223,7 +224,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../lfowidget.cpp" line="97"/>
         <source>&amp;Waveform</source>
-        <translation>Forme d&apos;onde</translation>
+        <translation>Forme d&apos;&amp;onde</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="103"/>
@@ -281,7 +282,7 @@ d h durée de note augm/dim
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="298"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
@@ -459,6 +460,7 @@ d h durée de note augm/dim
         <translation>&amp;Barre de contrôle</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="272"/>
         <location filename="../mainwindow.cpp" line="316"/>
         <source>%1</source>
         <translation></translation>
@@ -486,7 +488,7 @@ Save changes?</source>
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="625"/>
+        <location filename="../mainwindow.cpp" line="624"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
@@ -529,7 +531,7 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Paramètres</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="175"/>
+        <location filename="../mainwindow.cpp" line="174"/>
         <source>Ctrl+P</source>
         <comment>View|Settings</comment>
         <translation></translation>
@@ -555,16 +557,18 @@ Enregistrer les modifications?</translation>
         <translation>Ajouter Arpège MIDI</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="352"/>
         <location filename="../mainwindow.cpp" line="361"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="375"/>
+        <location filename="../mainwindow.cpp" line="374"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="123"/>
         <location filename="../mainwindow.cpp" line="468"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
@@ -575,7 +579,8 @@ Enregistrer les modifications?</translation>
         <translation>Enregistrer arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="601"/>
+        <location filename="../mainwindow.cpp" line="469"/>
+        <location filename="../mainwindow.cpp" line="600"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
@@ -598,25 +603,25 @@ Enregistrer les modifications?</translation>
         <location filename="../mainwindow.cpp" line="95"/>
         <source>Ctrl+A</source>
         <comment>Module|New Arp</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="100"/>
         <source>Ctrl+L</source>
         <comment>Module|New LFO</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="105"/>
         <source>Ctrl+R</source>
         <comment>Module|Rename</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="111"/>
         <source>Ctrl+Del</source>
         <comment>Module|Delete</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="178"/>

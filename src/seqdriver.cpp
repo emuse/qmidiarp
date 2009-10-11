@@ -3,7 +3,6 @@
 #include <QSocketNotifier>
 #include <alsa/asoundlib.h>
 
-
 #include "seqdriver.h"
 #include "config.h"
 

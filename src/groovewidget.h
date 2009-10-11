@@ -1,9 +1,6 @@
 #ifndef GROOVEWIDGET_H
 #define GROOVEWIDGET_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QString>
 #include <QLabel>
 #include <QSlider>

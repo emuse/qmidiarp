@@ -1,3 +1,7 @@
+2009-10-11 Frank Kober <goemusic@yahoo.fr>
+	* obsolete C-headers removed or updated
+	* lfowidget.cpp: amplitude slider fixedWidth removed
+	
 2009-10-11 Guido Scholz <guido.scholz@bayernline.de>
 	* mainwindow.*: Obsolete aboutWidget removed.
 	* mainwindow.cpp: Sequence of "View" and "Module" menus changed,

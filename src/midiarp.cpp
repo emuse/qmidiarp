@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <QString>
 #include <alsa/asoundlib.h>
 #include "midiarp.h"

@@ -19,7 +19,7 @@
  *      MA 02110-1301, USA.
  */
 
-#include <math.h>
+#include <cmath>
 #include <alsa/asoundlib.h>
 #include "midilfo.h"
 

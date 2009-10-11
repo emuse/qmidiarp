@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="de">
+<!DOCTYPE TS>
+<TS version="2.0" language="de">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -58,7 +59,7 @@
         <translation>Arpeggio bei Akkord</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="196"/>
+        <location filename="../arpwidget.cpp" line="190"/>
         <source>0..9  note played on keyboard, ascending order
 ( ) chord mode on/off
   + -  octave up/down
@@ -261,32 +262,32 @@
         <translation>Am&amp;plitude</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="156"/>
+        <location filename="../lfowidget.cpp" line="155"/>
         <source>&amp;Offset</source>
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="298"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="298"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="298"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
@@ -459,6 +460,7 @@
         <translation>&amp;Steuerungsleiste</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="272"/>
         <location filename="../mainwindow.cpp" line="316"/>
         <source>%1</source>
         <translation></translation>
@@ -486,7 +488,7 @@ Save changes?</source>
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="625"/>
+        <location filename="../mainwindow.cpp" line="624"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
@@ -524,7 +526,7 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Einstellungen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="175"/>
+        <location filename="../mainwindow.cpp" line="174"/>
         <source>Ctrl+P</source>
         <comment>View|Settings</comment>
         <translation></translation>
@@ -550,16 +552,18 @@ Die Änderungen speichern?</translation>
         <translation>MIDI-Arpeggiator hinzufügen</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="352"/>
         <location filename="../mainwindow.cpp" line="361"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="375"/>
+        <location filename="../mainwindow.cpp" line="374"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="123"/>
         <location filename="../mainwindow.cpp" line="468"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
@@ -570,7 +574,8 @@ Die Änderungen speichern?</translation>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="601"/>
+        <location filename="../mainwindow.cpp" line="469"/>
+        <location filename="../mainwindow.cpp" line="600"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>

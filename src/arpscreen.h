@@ -1,9 +1,6 @@
 #ifndef ARPSCREEN_H
 #define ARPSCREEN_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QWidget>
 #include <QString>
 #include <QLabel>

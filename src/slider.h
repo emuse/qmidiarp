@@ -1,9 +1,6 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <QString>
 #include <QLabel>
 #include <QWidget>

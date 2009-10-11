@@ -150,7 +150,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             tr("&Amplitude"), patternBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoAmp(int)));
-    amplitude->setMinimumWidth(250);
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), patternBox);
