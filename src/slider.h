@@ -18,8 +18,7 @@ class Slider : public QWidget
 
   private:
     QSlider *slider;
-	QSpinBox *sliderSpin;
-	QLabel *sliderLabel;
+    QSpinBox *sliderSpin;
     
   public:
     Slider(int minValue, int maxValue, int pageStep, int tickStep, int value, 

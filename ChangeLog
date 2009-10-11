@@ -10,6 +10,7 @@
 	* groovewidget.cpp: Widget placement by standard layout margins.
 	* lfowidget.*: Obsolete header files removed, missing keyboard
 	shortcuts added, layout improved
+	* slider.*: Layout improved, label member variable removed.
 
 2009-10-10 Frank Kober <goemusic@yahoo.fr>
 	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
