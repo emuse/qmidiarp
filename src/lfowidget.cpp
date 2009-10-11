@@ -185,6 +185,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     waveBoxLayout->addWidget(lfoScreen);
     waveBoxLayout->addSpacing(10);
     waveBoxLayout->addLayout(parameterLayout);
+    waveBoxLayout->addStretch();
 
     patternBox->setLayout(waveBoxLayout); 
 
