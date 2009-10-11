@@ -32,7 +32,6 @@ class MainWindow : public QMainWindow
 
   private:
     QSpinBox *tempoSpin;
-    QMessageBox *aboutWidget;
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
     QTabWidget *tabWidget;

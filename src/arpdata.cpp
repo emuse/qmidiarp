@@ -173,3 +173,8 @@ void ArpData::runQueue(bool on)
     if (midiArpList.count() > 0)
         seqDriver->setQueueStatus(on);
 }
+
+int ArpData::getAlsaClientId()
+{
+    return seqDriver->getAlsaClientId();
+}

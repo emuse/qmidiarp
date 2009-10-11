@@ -1,3 +1,11 @@
+2009-10-11 Guido Scholz <guido.scholz@bayernline.de>
+	* mainwindow.*: Obsolete aboutWidget removed.
+	* mainwindow.cpp: Sequence of "View" and "Module" menus changed,
+	to meet common standards.
+	* mainwindow.cpp, arpdata.*, seqdriver.*: Show ALSA client id in
+	window title
+	* translations/*.ts: Obsolete messages removed
+
 2009-10-10 Frank Kober <goemusic@yahoo.fr>
 	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
 	changed to "forward to" to be more intuitive

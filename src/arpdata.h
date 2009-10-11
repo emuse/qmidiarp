@@ -25,7 +25,6 @@ class ArpData : public QWidget  {
   public:
     SeqDriver *seqDriver;
 
-  public:
     ArpData(QWidget* parent=0);
     ~ArpData();
     void registerPorts(int num);
@@ -49,10 +48,11 @@ class ArpData : public QWidget  {
     int lfoWidgetCount();	
     MidiLfo *midiLfo(int index);
     LfoWidget *lfoWidget(int index);
+    int getAlsaClientId();
     
   public slots:
     void runQueue(bool);
-	void setModified(bool);    
+    void setModified(bool);    
 };
                               
 #endif
