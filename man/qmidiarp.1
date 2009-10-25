@@ -1,0 +1,337 @@
+.\" 
+.\" Manual page for qmidiarp
+.\" Process with:
+.\"   groff -man -Tascii qmidiarp.1 | less
+.\"
+.\" Get a printable version with:
+.\"   groff -t -e -mandoc -Tps qmidiarp.1 > qmidiarp.ps
+.\"
+.TH QMIDIARP 1 2009-10-20
+.SH NAME
+qmidiarp \- MIDI arpeggiator and LFO
+
+.SH SYNOPSIS
+.br
+.B qmidiarp
+[\fIOPTION\fR] [\fIfile\fR]
+.br 
+.B qmidiarp
+{
+.B \-\-help 
+| 
+.B \-\-version
+}
+
+.SH DESCRIPTION
+QMidiArp
+is an advanced arpeggiator and MIDI LFO for the ALSA sequencer. It can 
+have any number of arpeggiator or LFO tabs that run in parallel. The 
+arpeggiator modules produce sequences depending on the notes sent to
+their input port, which is typically connected to a keyboard or a 
+sequencer. The MIDI LFOs independently
+produce MIDI controller data of adjustable waveform, time resolution,
+amplitude and duration. For each module, an input note filter is 
+available, and the output port and channel can be set independently. 
+Since the modules use a common sequencer queue, they are automatically 
+in sync with each other. QMidiArp works with an internal tick resolution
+of 192 ticks per beat. The queue can be synchronized to an incoming MIDI 
+realtime clock.
+QMidiArp
+also has a log tool displaying the history of incoming MIDI events in 
+colors depending on their type.
+QMidiArp is based on the Qt4 toolkit.
+
+.SS "General Operation"
+A new arpeggiator or LFO module can be created by
+clicking the 
+.B Add Arp...
+or 
+.B Add LFO... 
+button. This will show a new
+tab with the chosen module in the main area. The modules can be renamed
+or removed using the corresponding buttons or menu functions. The entire
+setup containing all arps and LFOs in the tab bar along with the 
+parameters set in the 
+.B Settings 
+window can be saved to or loaded from
+a QMidiArp text file (.qma). The 
+.B tempo 
+of the queue can be set in beats per minute and
+affects all arp and LFO modules. The queue is started and stopped by 
+the blue arrow button. 
+
+.SS "MIDI Clock operation"
+QMidiArp can use incoming MIDI clock events as clock and start/stop 
+control source.
+If the 
+.B MIDI clock button 
+left of the tempo box is pressed, the running ALSA queue is stopped, and 
+QMidiArp
+will wait for an incoming "MIDI Clock Start" event from an external 
+source connected to QMidiArp's MIDI input. Once this event is received,
+the queue is started using MIDI realtime clock events as clock
+source. The time resolution of the incoming clock can be set in the 
+.B Settings
+dialog. QMidiArp will best remain in sync with the incoming 
+MIDI clock if its internal tempo value (see above) approximately 
+corresponds to that of the incoming clock. The queue will stop when a 
+MIDI Clock Stop event is received. During MIDI Clock operation, 
+QMidiArp's own clock start and stop function as well as adding or 
+loading new arps or LFOs is disabled. They are enabled again by 
+unchecking the MIDI clock button. 
+
+.SS "Arpeggiator Modules"
+.SS Input and Output panels
+Each arpeggiator has an 
+.B Input 
+and an 
+.B Output
+panel. The Input panel 
+defines the note range and the MIDI channel to which the arp is 
+assigned. Notes that pass this Input
+filter are sorted by pitch and added to the internal note buffer of the
+arpeggiator. Incoming notes that do not match any filter can either be
+discarded or forwarded to a selectable MIDI port (see 
+.B Settings
+). The 
+.B Output 
+panel holds settings for the 
+.B MIDI channel 
+and 
+.B output port 
+to which the arpeggiator notes will be sent. 
+
+.SS "Arpeggiator Patterns"
+
+Arpeggio patterns can be selected and edited in the 
+.B Pattern
+panel. 
+.B Pattern presets 
+are selectable from a combo box. The currently
+active pattern is displayed as a piano roll type screen showing the
+base notes as streaks. The y-scale of the graphics 
+window corresponds to the index of the notes in the pattern. Octave 
+changes (see 
+.B Editing patterns
+) are shown as additional horizontal lines. 
+The notes that are actually
+output depend on the input notes received by the
+arpeggiator. Within the pattern, the received notes
+notes are attributed in ascending order to the notes defined in the 
+pattern. For example, a single streak on the bottom of the arp display 
+("simple" presets) means that at
+the first pass through the pattern, the lowermost note played on the 
+keyboard is played.
+If several notes are played on the keyboard and only one note is
+present in the pattern, only the lowermost pressed note is output at
+the first pass through the pattern. For the following repetitions of 
+the pattern, the chosen "repeat mode" is used to determine the 
+sequence of output notes. 
+If the pattern contains stacked note streaks (chord mode), chords played 
+on the keyboard are also output as chords with polyphony up to the 
+number of notes defined in the stack.
+
+.SS Repeat Mode
+If the arp pattern contains only a single streak and only one note is
+played on the keyboard, this note is repeated with the speed defined
+in the pattern. In case the number of notes pressed on the keyboard is
+higher than the number of notes present in the pattern, the 
+.B Repeat mode 
+defines the behavior of the arpeggio over several repetition of 
+the pattern. 
+When 
+.B Repeat Mode 
+is "Up", the next higher note played on the keyboard 
+is played. With "Down", the next lower note is played. With a single
+note present in the arp pattern, this creates classical linear 
+arpeggios. When "Fixed" is selected, this classical arpeggio mode will
+be disabled, and the output notes remain constant. 
+This way even simple patterns like "01" (or even "0") will 
+generate a complete arpeggio.
+
+.SS "Editing Arp patterns"
+Arp patterns are defined by a text sequence containing the notes 
+themselves as numbers along with control changes for chord, tempo, 
+velocity and octave changes. When the 
+.B Edit pattern
+button in the pattern panel is clicked, the current pattern preset 
+appears as a 
+text input line. The edited pattern can be stored in the preset list 
+by clicking on the 
+.B Store pattern
+button. The currently active pattern 
+can be removed from the
+preset list by clicking on the 
+.B Remove pattern
+button. All preset patterns are immediately saved in the .qmidiarprc
+resource file when a pattern is stored. Pattern presets are automatically 
+loaded on each application start. 
+
+The syntax for the pattern text is as follows:
+
+0..9 : Note indices
+   + : One octave up
+   - : One octave down
+   = : Reset to standard octave
+   > : Double tempo
+   < : Half tempo
+   . : Reset to standard tempo
+(  ) : Chord, begin..end, 
+       e.g. (012) would be a chord of the 
+       lowermost three notes in the buffer   
+   / : Volume up by 20%
+   \ : Volume down by 20%
+   d : Double length
+   h : Half length
+   p : Pause
+
+Any token is valid until the end of a pattern is reached. The token
+> will e.g. double the tempo for all following notes of the pattern.
+When the loop jumps back to the beginning of the pattern, the tempo
+is reset to its initial value, i.e. a quarter note.
+
+
+.SS Random
+The timing, velocity and length of the output notes can be randomized
+using the sliders in the 
+.B Random 
+panel. This settings can be used to make the arpeggiator sound less
+mechanical, but if they are set to higher values, they add
+interesting accents to the patterns.
+
+.SS Envelope
+QMidiArp can modulate the velocity of the arpeggios with an envelope
+function defined by 
+.B Attack 
+time and 
+.B Release
+time. If the attack
+time is set, the velocities of the output notes are ramped up during the
+attack time defined in seconds. If the release time is set, notes
+released from the keyboard are continued to be output while their
+velocity is ramped down linearly and until the release time has reached
+its end. The envelope function only makes sense if the sound adressed
+by the arp is velocity-sensitive. It works best with highly polyphonic
+patterns such as "Chord 16 A".
+
+.SS Groove
+The 
+.B Groove
+sliders control a linear shift of timing, length and 
+velocity within each beat of the output pattern. This can be used to 
+create swing timing and accent. The Groove settings are adjusted for all 
+arps simultaneously. 
+
+.SS "LFO Modules"
+In parallel to the arps, 
+QMidiArp
+can send MIDI controller data in form of a low frequency oscillator (LFO)
+to the assigned output. The LFO data consist of selectable controller
+events with oscillating values that are in sync with the arpeggiator
+queue. Each LFO module has a 
+.B waveform 
+panel, an 
+.B amplifier
+panel and an 
+.B output 
+panel. The waveform can currently be set to Sine,
+Saw Up, Saw Down, Triangle and Square. The 
+.B frequency 
+of the LFO can be
+set in muliples and divisors of the arp 
+.B tempo, 
+such that frequency of 1
+produces one full wave per beat. If frequencies lower than 1 are
+selected, the length of the wavetable has to be adjusted correspondingly
+to produce a full wave. The time 
+.B resolution 
+of the LFO determines the number of events produced every beat and
+can be adjusted to up to 192 events per beat. 
+.B Amplitude 
+and 
+.B offset 
+of the waveform can be adjusted from 0...127. Low resolutions 
+lead to audibly discrete rythmic controller changes whereas higher 
+resolution values lead to 
+more continuous waves. The queue has to be in running state to enable
+the LFO. 
+
+.SS "LFO Output panel"
+The LFO output panel contains the 
+.B port, 
+.B channel 
+and 
+.B controller 
+number settings of the LFO data produced by each LFO tab. It also allows 
+.B muting 
+of each LFO after a completed wave cycle.
+
+.SS "Settings"
+The Settings window allows to configure if and to which port incoming 
+events that do not match any arp's input filter are forwarded (
+.B unmatched
+events). It also
+allows to set whether incoming controller events are recognized for
+.B muting 
+the arpeggiators separately. If this option is set, a 
+.B mute MIDI controller number 
+can be specified. This controller number will
+be used to mute the first arp occurence in the tab row. The next higher
+controller number will toggle the mute state of the second arp in row,
+etc. As an example, if the mute controller number is set to 30, a value
+of 127 received on CC#30 will toggle the mute state of the first arp, 
+CC#31 set to 127 will mute/unmute the second arp in line. 
+The 
+.B Settings 
+dialog also allows to set the tick resolution of the
+.B incoming MIDI clock. 
+The default is 96 ticks per beat. 
+.SS "Event Log"
+The
+.B Event Log 
+displays incoming MIDI events. It is displayed in the bottom area by 
+default, but can be 
+hidden if not
+needed or set floating as a top-level window on the desktop. Logging 
+can also be disabled generally or for MIDI Clock events only. 
+
+.SS Example Files
+There are currently only two demo arpeggios. 
+The demo.qma arpeggio was intended to be used with the following sound 
+types: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
+but you can get interesting results if you use other instrument settings.
+
+QMidiArp was inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
+
+.SH OPTIONS
+.TP
+.BI \-\-portCount\  <num>
+Set the number of available ALSA output ports to <num>. The default
+is 2.
+.TP
+.BI \-\-help
+Print possible command-line options and exit.
+.TP
+.BI \-\-version
+Print version information and exit.
+.TP
+.B file
+Name of a valid QMidiArp (.qma) file to be loaded on start.
+.SH FILES
+.I *.qma
+.RS
+QMidiArp files containing arp and LFO parameters in plain text format.
+.SH EXAMPLES
+An example QMidiArp file can be found in 
+.I /usr/share/qmidiarp
+or in
+.I /usr/local/share/qmidiarp
+.SH NOTES
+Errors and warnings are written to 
+.BR stderr (3).
+.SH SUPPORT
+alsamodular-devel@lists.sourceforge.net
+.SH AUTHORS
+Matthias Nagorni, Frank Kober and Guido Scholz. This
+manual page was written by
+Frank Kober <emuse@users.sourceforge.net>.
