@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QSizePolicy>
 #include <QSize>
@@ -21,8 +22,10 @@ class LfoScreen : public QWidget
 
   private:
     //QTimer *timer;
-	QVector<LfoSample> p_lfoData, lfoData;
-
+    QVector<LfoSample> p_lfoData, lfoData;
+    int mouseX, mouseY;
+    int w, h;
+    
   protected:
     virtual void paintEvent(QPaintEvent *);
    
@@ -31,9 +34,15 @@ class LfoScreen : public QWidget
     ~LfoScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
-   
+    
+  signals:
+    void lfoMousePressed(double, double, int);
+    void lfoMouseMoved(double, double, int);
+    
   public slots: 
     void updateLfoScreen(QVector<LfoSample> lfoData);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event);
 };
   
 #endif

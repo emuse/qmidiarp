@@ -28,38 +28,37 @@
 #include <alsa/asoundlib.h>
 #include <main.h>
 
-	struct LfoSample {
-		int lfoValue;
-		int lfoTick;
-	};    
+    struct LfoSample {
+        int lfoValue;
+        int lfoTick;
+        bool muted;
+    };    
 
 class MidiLfo : public QObject  {
     
   Q_OBJECT
 
   private:
-	double queueTempo;
-	
-  public:
-
-  private:
+    double queueTempo;
     int clip(int value, int min, int max, bool *outOfRange);
+    QVector<LfoSample> customWave;
+    QVector<bool> muteMask;
     
   public:
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     bool hold, isMuted;
     int lfoFreq, lfoAmp, lfoOffs, lfoCCnumber;
-	int lfoSize, lfoRes, waveFormIndex;
-	
+    int lfoSize, lfoRes, waveFormIndex;
+    
   signals:
     void toggleMute();
            
   public:
-	MidiLfo();
+    MidiLfo();
     ~MidiLfo();
     void getData(QVector<LfoSample> *lfoData);  
-	
+    
   public slots:  
     void updateFrequency(int);
     void updateAmplitude(int);
@@ -68,7 +67,9 @@ class MidiLfo : public QObject  {
     void muteLfo(bool); //set mute
     void muteLfo(); //toggle mute
     void updateWaveForm(int val);
-
+    void setCustomWavePoint(double, double);
+    void toggleMutePoint(double);
+    void resizeAll();
 };
                               
 #endif

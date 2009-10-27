@@ -1,3 +1,13 @@
+2009-10-27 Frank Kober <goemusic@yahoo.fr>
+    * midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: 
+    custom mouse-drawable LFO waveform added, muting of single waveform
+    points added. If custom waveform is selected, the waveform can be
+    drawn with the left mouse button. For all waveforms, the right mouse
+    button activates/deactivates event generation for the point under 
+    the mouse cursor
+    TODO: store custom waveform somehow, deactivate freq, amp and offset 
+    for custom waveform
+
 2009-10-25 Frank Kober <goemusic@yahoo.fr>
     * package: first draft of manpage added
     

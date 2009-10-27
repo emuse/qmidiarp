@@ -205,9 +205,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     arpScreenBoxLayout->setSpacing(1);
     arpScreenBox->setLayout(arpScreenBoxLayout);
 
+    patternBoxLayout->addWidget(arpScreenBox);
     patternBoxLayout->addLayout(patternPresetLayout);
     patternBoxLayout->addWidget(patternText);
-    patternBoxLayout->addWidget(arpScreenBox);
     patternBoxLayout->setMargin(1);
     patternBoxLayout->setSpacing(1);
     patternBox->setLayout(patternBoxLayout); 

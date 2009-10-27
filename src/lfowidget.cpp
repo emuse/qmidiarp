@@ -93,7 +93,10 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
 
     lfoScreen = new LfoScreen(this); 
     lfoScreen->setMinimumHeight(80);
-
+    connect(lfoScreen, SIGNAL(lfoMouseMoved(double, double, int)), this,
+            SLOT(mouseMoved(double, double, int)));
+    connect(lfoScreen, SIGNAL(lfoMousePressed(double, double, int)), this,
+            SLOT(mousePressed(double, double, int)));
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), patternBox);
     waveFormBox = new QComboBox(patternBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
@@ -155,6 +158,11 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             tr("&Offset"), patternBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateLfoOffs(int)));
+    
+    QVBoxLayout* sliderLayout = new QVBoxLayout;
+    sliderLayout->addWidget(amplitude);
+    sliderLayout->addWidget(offset);
+    sliderLayout->addStretch();
 
     QGridLayout *patternBoxLayout = new QGridLayout;
     patternBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
@@ -168,23 +176,11 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
 
     patternBoxLayout->addWidget(lfoSizeBoxLabel, 3, 0);
     patternBoxLayout->addWidget(lfoSizeBox, 3, 1);
-
-
-    QVBoxLayout* sliderLayout = new QVBoxLayout;
-    sliderLayout->addWidget(amplitude);
-    sliderLayout->addWidget(offset);
-    sliderLayout->addStretch();
-
-    QHBoxLayout* parameterLayout = new QHBoxLayout;
-    parameterLayout->addLayout(patternBoxLayout);
-    parameterLayout->addSpacing(16);
-    parameterLayout->addLayout(sliderLayout);
-
-    QVBoxLayout* waveBoxLayout = new QVBoxLayout;
-    waveBoxLayout->addWidget(lfoScreen);
-    waveBoxLayout->addSpacing(10);
-    waveBoxLayout->addLayout(parameterLayout);
-    waveBoxLayout->addStretch();
+    
+    QGridLayout* waveBoxLayout = new QGridLayout;
+    waveBoxLayout->addWidget(lfoScreen, 0, 0, 1, 2);
+    waveBoxLayout->addLayout(patternBoxLayout, 1, 0);
+    waveBoxLayout->addLayout(sliderLayout, 1, 1);
 
     patternBox->setLayout(waveBoxLayout); 
 
@@ -285,7 +281,7 @@ void LfoWidget::setChannelOut(int value)
 
 void LfoWidget::updateWaveForm(int val)
 {
-    midiLfo->waveFormIndex = val;
+    midiLfo->updateWaveForm(val);
     midiLfo->getData(&lfoData);
     lfoScreen->updateLfoScreen(lfoData);
     modified = true;
@@ -294,7 +290,7 @@ void LfoWidget::updateWaveForm(int val)
 void LfoWidget::loadWaveForms()
 {
     waveForms << tr("Sine") << tr("Saw up") << tr("Triangle") 
-        << tr("Saw down") << tr("Square");
+        << tr("Saw down") << tr("Square") << tr("Custom");
 }
 
 void LfoWidget::updateLfoFreq(int val)
@@ -308,6 +304,7 @@ void LfoWidget::updateLfoFreq(int val)
 void LfoWidget::updateLfoRes(int val)
 {
     midiLfo->lfoRes = lfoResValues[val];
+    midiLfo->resizeAll();
     midiLfo->getData(&lfoData);
     lfoScreen->updateLfoScreen(lfoData);
     modified = true;
@@ -316,6 +313,7 @@ void LfoWidget::updateLfoRes(int val)
 void LfoWidget::updateLfoSize(int val)
 {
     midiLfo->lfoSize = val + 1;
+    midiLfo->resizeAll();
     midiLfo->getData(&lfoData);
     lfoScreen->updateLfoScreen(lfoData);
     modified = true;
@@ -335,6 +333,28 @@ void LfoWidget::updateLfoOffs(int val)
     midiLfo->getData(&lfoData);
     lfoScreen->updateLfoScreen(lfoData);
     modified = true;
+}
+
+void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
+{
+    if ((buttons == 1) && (waveFormBox->currentIndex() == 5)) {
+        midiLfo->setCustomWavePoint(mouseX, mouseY);
+        midiLfo->getData(&lfoData);
+        lfoScreen->updateLfoScreen(lfoData);
+        }
+}
+void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
+{
+    if (buttons == 2) {
+        midiLfo->toggleMutePoint(mouseX);
+        midiLfo->getData(&lfoData);
+        lfoScreen->updateLfoScreen(lfoData);
+    } else
+        if (waveFormBox->currentIndex() == 5) {
+            midiLfo->setCustomWavePoint(mouseX, mouseY);
+            midiLfo->getData(&lfoData);
+            lfoScreen->updateLfoScreen(lfoData);
+        }
 }
 
 bool LfoWidget::isModified()

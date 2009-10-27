@@ -11,16 +11,16 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
         int value, Qt::Orientation orientation, QString label,
         QWidget * parent): QWidget(parent)
 {
-    QHBoxLayout *sliderLayout = new QHBoxLayout;
-    sliderLayout->setMargin(0);
-
     slider = new QSlider(orientation, parent);
     slider->setTickInterval(tickStep);
     slider->setTickPosition(QSlider::TicksLeft);
     slider->setRange(minValue, maxValue);
     slider->setSingleStep(pageStep);
     slider->setValue(value);
-    slider->setMinimumWidth(150);
+    if (orientation == Qt::Vertical)
+        slider->setMinimumHeight(150);
+    else
+        slider->setMinimumWidth(150);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSpinBox(int)));
 
     sliderSpin = new QSpinBox(this);
@@ -33,11 +33,19 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     sliderLabel->setText(label);
     sliderLabel->setBuddy(sliderSpin);
 
+    QBoxLayout *sliderLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
+    sliderLayout->setMargin(0);
     sliderLayout->addWidget(sliderLabel);
     sliderLayout->addStretch();
     sliderLayout->addWidget(slider);
     sliderLayout->addSpacing(2);
     sliderLayout->addWidget(sliderSpin);
+    if (orientation == Qt::Vertical) {
+        sliderLayout->setDirection(QBoxLayout::TopToBottom);
+        sliderLayout->setAlignment(Qt::AlignHCenter);
+    }
+    else
+        sliderLayout->setDirection(QBoxLayout::LeftToRight);
 
     setLayout(sliderLayout);
 }

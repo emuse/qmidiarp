@@ -47,7 +47,7 @@ class LfoWidget : public QWidget
     Slider *frequency, *amplitude, *offset;
     QVector<LfoSample> lfoData;
     bool modified;
-    
+
   public:
     QString lfoName;
     LfoScreen *lfoScreen;
@@ -57,7 +57,7 @@ class LfoWidget : public QWidget
     LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget* parent=0);
     ~LfoWidget();
     MidiLfo *getMidiLfo();
-	
+    
     void readLfo(QTextStream& arpText);
     void writeLfo(QTextStream& arpText);
     void setChannelOut(int value);
@@ -79,6 +79,8 @@ class LfoWidget : public QWidget
     void updateLfoFreq(int val);
     void updateLfoAmp(int val);
     void updateLfoOffs(int val);
+    void mouseMoved(double, double, int);
+    void mousePressed(double, double, int);
 };
   
 #endif
