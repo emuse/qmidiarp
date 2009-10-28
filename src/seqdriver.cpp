@@ -140,20 +140,20 @@ void SeqDriver::procEvents(int)
                 for (l1 = 0; l1 < midiLfoList->count(); l1++) {
                     if ((int)tick >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
                         midiLfoList->at(l1)->getData(&lfoData);
-                        lfoccnumber = midiLfoList->at(l1)->lfoCCnumber;
+                        lfoccnumber = midiLfoList->at(l1)->ccnumber;
                         lfochannel = midiLfoList->at(l1)->channelOut;
                         lfoport = midiLfoList->at(l1)->portOut;
                         if (!midiLfoList->at(l1)->isMuted) {
                             l2 = 0;
-                            while (lfoData.at(l2).lfoValue > -1) {
+                            while (lfoData.at(l2).value > -1) {
                                 if (!lfoData.at(l2).muted) {
                                     snd_seq_ev_clear(&evOut);
                                     snd_seq_ev_set_controller(&evOut, 0, 
                                             lfoccnumber,
-                                            lfoData.at(l2).lfoValue);
+                                            lfoData.at(l2).value);
                                     evOut.data.control.channel = lfochannel;
                                     snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                            tickToDelta(lfoData.at(l2).lfoTick + nextLfoTick));
+                                            tickToDelta(lfoData.at(l2).tick + nextLfoTick));
                                     snd_seq_ev_set_subs(&evOut);  
                                     snd_seq_ev_set_source(&evOut,
                                             portid_out[lfoport]);
@@ -163,7 +163,7 @@ void SeqDriver::procEvents(int)
                             }
                         }
                         lastLfoTick[l1] += lfoPacketSize[l1];
-                        lfoPacketSize[l1] = lfoData.last().lfoTick;
+                        lfoPacketSize[l1] = lfoData.last().tick;
                         if (!l1) lfoMinPacketSize = lfoPacketSize[l1]; 
                         else if (lfoPacketSize[l1] < lfoMinPacketSize) 
                             lfoMinPacketSize = lfoPacketSize[l1];

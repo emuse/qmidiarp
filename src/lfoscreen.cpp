@@ -87,7 +87,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     //Grid 
     if (p_lfoData.isEmpty()) return;
-    nsteps = p_lfoData.at(p_lfoData.count() - 1).lfoTick / TICKS_PER_QUARTER;
+    nsteps = p_lfoData.at(p_lfoData.count() - 1).tick / TICKS_PER_QUARTER;
     beatRes = (p_lfoData.count() - 1) / nsteps;
     beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     npoints = beatRes * nsteps;
@@ -151,7 +151,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
         octYoffset = 0;
         x = l1 * xscale * nsteps / npoints;
-        ypos = yscale - yscale * p_lfoData.at(l1).lfoValue / 128
+        ypos = yscale - yscale * p_lfoData.at(l1).value / 128
                         + LFOSCREEN_VMARGIN;
         xpos = LFOSCREEN_HMARGIN + x + notestreak_thick / 2;
         if (p_lfoData.at(l1).muted) {  
@@ -169,7 +169,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 }
 
 
-void LfoScreen::updateLfoScreen(QVector<LfoSample> lfoData)
+void LfoScreen::updateScreen(QVector<LfoSample> lfoData)
 {
     p_lfoData = lfoData;
     update();

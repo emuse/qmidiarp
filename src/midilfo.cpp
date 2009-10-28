@@ -27,18 +27,18 @@
 MidiLfo::MidiLfo()
 {
     queueTempo = 100.0;
-    lfoAmp = 0;
-    lfoOffs = 0;
-    lfoFreq = 4;
-    lfoSize = 1;
-    lfoRes = 16;
-    lfoCCnumber = 74;
+    amp = 0;
+    offs = 0;
+    freq = 4;
+    size = 1;
+    res = 16;
+    ccnumber = 74;
     portOut = 0;
     channelOut = 0;
     waveFormIndex = 0;
     isMuted = false;
-    customWave.resize(lfoSize * lfoRes);
-    muteMask.resize(lfoSize * lfoRes);
+    customWave.resize(size * res);
+    muteMask.resize(size * res);
 }
 
 MidiLfo::~MidiLfo(){
@@ -62,77 +62,72 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
     LfoSample lfoSample;
     int l1 = 0;
     int lt = 0;
-    int step = TICKS_PER_QUARTER / lfoRes;
-    int lfoval = 0;
+    int step = TICKS_PER_QUARTER / res;
+    int val = 0;
     int tempval;
     bool cl = false;
-    //lfoRes: number of events per beat
-    //lfoSize: size of waveform in beats
+    //res: number of events per beat
+    //size: size of waveform in beats
     QVector<LfoSample> lfoData;
     lfoData.clear();
     
     switch(waveFormIndex) {
         case 0: //sine
-            for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                lfoSample.lfoValue = clip((-cos((double)(l1 * 6.28 / 
-                lfoRes * lfoFreq / 4)) + 1) * lfoAmp / 2 
-                + lfoOffs, 0, 127, &cl);
-                lfoSample.lfoTick = lt;
+            for (l1 = 0; l1 < size * res; l1++) {
+                lfoSample.value = clip((-cos((double)(l1 * 6.28 / 
+                res * freq / 4)) + 1) * amp / 2 + offs, 0, 127, &cl);
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 lfoData.append(lfoSample);
                 lt += step;
             }
         break;
         case 1: //sawtooth up
-            lfoval = 0;
-            for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                lfoSample.lfoValue = clip(lfoval * lfoAmp / lfoRes / 4
-                        + lfoOffs, 0, 127, &cl);
-                ;
-                lfoSample.lfoTick = lt;
+            val = 0;
+            for (l1 = 0; l1 < size * res; l1++) {
+                lfoSample.value = clip(val * amp / res / 4 
+                + offs, 0, 127, &cl);
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 lfoData.append(lfoSample);
                 lt += step;
-                lfoval += lfoFreq;
-                lfoval %= lfoRes * 4;
+                val += freq;
+                val %= res * 4;
             }
         break;
         case 2: //triangle
-            lfoval = 0;
-            for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                tempval = lfoval - lfoRes * 2;
+            val = 0;
+            for (l1 = 0; l1 < size * res; l1++) {
+                tempval = val - res * 2;
                 if (tempval < 0 ) tempval = -tempval;
-                lfoSample.lfoValue = clip((lfoRes * 2 - tempval) * lfoAmp 
-                        / lfoRes / 2
-                        + lfoOffs, 0, 127, &cl);
-                lfoSample.lfoTick = lt;
+                lfoSample.value = clip((res * 2 - tempval) * amp 
+                        / res / 2 + offs, 0, 127, &cl);
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 lfoData.append(lfoSample);
                 lt += step;
-                lfoval += lfoFreq;
-                lfoval %= lfoRes * 4;
+                val += freq;
+                val %= res * 4;
             }
         break;
         case 3: //sawtooth down
-            lfoval = 0;
-            for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                lfoSample.lfoValue = clip((lfoRes * 4 - lfoval) 
-                        * lfoAmp / lfoRes / 4
-                        + lfoOffs, 0, 127, &cl);
-                lfoSample.lfoTick = lt;
+            val = 0;
+            for (l1 = 0; l1 < size * res; l1++) {
+                lfoSample.value = clip((res * 4 - val) 
+                        * amp / res / 4 + offs, 0, 127, &cl);
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 lfoData.append(lfoSample);
                 lt+=step;
-                lfoval += lfoFreq;
-                lfoval %= lfoRes * 4;
+                val += freq;
+                val %= res * 4;
             }
         break;
         case 4: //square
-            for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                lfoSample.lfoValue = clip(lfoAmp * ((l1 * lfoFreq / 2 
-                        / lfoRes) % 2 == 0)
-                        + lfoOffs, 0, 127, &cl);
-                lfoSample.lfoTick = lt;
+            for (l1 = 0; l1 < size * res; l1++) {
+                lfoSample.value = clip(amp * ((l1 * freq / 2 
+                        / res) % 2 == 0) + offs, 0, 127, &cl);
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 lfoData.append(lfoSample);
                 lt+=step;
@@ -145,8 +140,8 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
         default:
         break;
     }
-    lfoSample.lfoValue = -1;
-    lfoSample.lfoTick = lt;
+    lfoSample.value = -1;
+    lfoSample.tick = lt;
     lfoData.append(lfoSample);    
     *p_lfoData = lfoData;
 }
@@ -157,12 +152,12 @@ void MidiLfo::updateWaveForm(int val)
     if (waveFormIndex == 5) {
         int l1 = 0;
         int lt = 0;
-        int step = TICKS_PER_QUARTER / lfoRes;
+        int step = TICKS_PER_QUARTER / res;
         LfoSample lfoSample;
-        lfoSample.lfoValue = 63;
+        lfoSample.value = 63;
         customWave.clear();
-        for (l1 = 0; l1 < lfoSize * lfoRes; l1++) {
-                lfoSample.lfoTick = lt;
+        for (l1 = 0; l1 < size * res; l1++) {
+                lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
                 customWave.append(lfoSample);
                 lt+=step;
@@ -187,17 +182,17 @@ int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
 
 void MidiLfo::updateFrequency(int val)
 {
-    lfoFreq = val;
+    freq = val;
 }
 
 void MidiLfo::updateAmplitude(int val)
 {
-    lfoAmp = val;
+    amp = val;
 }
 
 void MidiLfo::updateOffset(int val)
 {
-    lfoOffs = val;
+    offs = val;
 }
 
 void MidiLfo::updateQueueTempo(int val)
@@ -208,10 +203,10 @@ void MidiLfo::updateQueueTempo(int val)
 void MidiLfo::setCustomWavePoint(double mouseX, double mouseY)
 {
     LfoSample lfoSample;
-    lfoSample = customWave.at(mouseX * lfoRes * lfoSize);
-    lfoSample.lfoValue = mouseY * 128;
-    lfoSample.lfoTick = mouseX * TICKS_PER_QUARTER * lfoSize;
-    customWave.replace(mouseX * lfoRes * lfoSize, lfoSample);
+    lfoSample = customWave.at(mouseX * res * size);
+    lfoSample.value = mouseY * 128;
+    lfoSample.tick = mouseX * TICKS_PER_QUARTER * size;
+    customWave.replace(mouseX * res * size, lfoSample);
 }
 
 void MidiLfo::resizeAll()
@@ -219,15 +214,15 @@ void MidiLfo::resizeAll()
     int lt = 0;
     int l1 = 0;
     int os;
-    int step = TICKS_PER_QUARTER / lfoRes;
+    int step = TICKS_PER_QUARTER / res;
     LfoSample lfoSample;
     
     os = customWave.count();
-    customWave.resize(lfoSize * lfoRes);
-    muteMask.resize(lfoSize * lfoRes);
+    customWave.resize(size * res);
+    muteMask.resize(size * res);
     for (l1 = 0; l1 < customWave.count(); l1++) {
         lfoSample = customWave.at(l1 % os);
-        lfoSample.lfoTick = lt;
+        lfoSample.tick = lt;
         lfoSample.muted = muteMask.at(l1);
         customWave.replace(l1, lfoSample);
         lt+=step;
@@ -238,12 +233,12 @@ void MidiLfo::toggleMutePoint(double mouseX)
 {
     LfoSample lfoSample;
     bool m;
-    m = muteMask.at(mouseX * lfoRes * lfoSize);
-    muteMask.replace(mouseX * lfoRes * lfoSize, !m);
+    m = muteMask.at(mouseX * res * size);
+    muteMask.replace(mouseX * res * size, !m);
     if (waveFormIndex == 5) {
-        lfoSample = customWave.at(mouseX * lfoRes * lfoSize);
+        lfoSample = customWave.at(mouseX * res * size);
         lfoSample.muted = !m;
-        customWave.replace(mouseX * lfoRes * lfoSize, lfoSample);
+        customWave.replace(mouseX * res * size, lfoSample);
     }
 }
 

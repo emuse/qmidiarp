@@ -29,8 +29,8 @@
 #include <main.h>
 
     struct LfoSample {
-        int lfoValue;
-        int lfoTick;
+        int value;
+        int tick;
         bool muted;
     };    
 
@@ -48,8 +48,8 @@ class MidiLfo : public QObject  {
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     bool hold, isMuted;
-    int lfoFreq, lfoAmp, lfoOffs, lfoCCnumber;
-    int lfoSize, lfoRes, waveFormIndex;
+    int freq, amp, offs, ccnumber;
+    int size, res, waveFormIndex;
     
   signals:
     void toggleMute();

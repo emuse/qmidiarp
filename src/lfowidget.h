@@ -40,8 +40,8 @@ class LfoWidget : public QWidget
     Q_OBJECT
 
     // Output channel / port (ALSA Sequencer)
-    QSpinBox *channelOut, *portOut, *lfoCCnumberBox;
-    QComboBox *waveFormBox, *lfoResBox, *lfoSizeBox, *lfoFreqBox;
+    QSpinBox *channelOut, *portOut, *ccnumberBox;
+    QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
  
     MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
@@ -73,12 +73,12 @@ class LfoWidget : public QWidget
     void updateChannelOut(int value);
     void updatePortOut(int value);
     void updateWaveForm(int);
-    void updateLfoRes(int);
-    void updateLfoSize(int);
-    void updateLfoCCnumber(int val);
-    void updateLfoFreq(int val);
-    void updateLfoAmp(int val);
-    void updateLfoOffs(int val);
+    void updateRes(int);
+    void updateSize(int);
+    void updateCcnumber(int val);
+    void updateFreq(int val);
+    void updateAmp(int val);
+    void updateOffs(int val);
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
 };

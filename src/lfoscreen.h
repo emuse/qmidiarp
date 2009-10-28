@@ -40,7 +40,7 @@ class LfoScreen : public QWidget
     void lfoMouseMoved(double, double, int);
     
   public slots: 
-    void updateLfoScreen(QVector<LfoSample> lfoData);
+    void updateScreen(QVector<LfoSample> lfoData);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
 };
