@@ -232,34 +232,54 @@ d h durée de note augm/dim
         <translation>Base de la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="111"/>
         <source>&amp;Frequency (cycles/beat)</source>
-        <translation>Fré&amp;quence (cycles/beat)</translation>
+        <translation type="obsolete">Fré&amp;quence (cycles/beat)</translation>
+    </message>
+    <message>
+        <source>Frequency: Number of wave cycles produced every beat</source>
+        <translation type="obsolete">Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
+    </message>
+    <message>
+        <source>&amp;Resolution (events/beat)</source>
+        <translation type="obsolete">&amp;Résolution (points/beat)</translation>
+    </message>
+    <message>
+        <source>Resolution: Number of events produced every beat</source>
+        <translation type="obsolete">Résolution: Nomber d&apos;évênements produits à chaque quart de temps</translation>
+    </message>
+    <message>
+        <source>&amp;Length (beats)</source>
+        <translation type="obsolete">&amp;Longueur (beats)</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="111"/>
+        <source>&amp;Frequency</source>
+        <translation>&amp;Fréquence</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="121"/>
-        <source>Frequency: Number of wave cycles produced every beat</source>
-        <translation>Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
+        <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
+        <translation>Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="126"/>
-        <source>&amp;Resolution (events/beat)</source>
-        <translation>&amp;Résolution (points/beat)</translation>
+        <source>&amp;Resolution</source>
+        <translation>&amp;Résolution</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="135"/>
-        <source>Resolution: Number of events produced every beat</source>
-        <translation>Résolution: Nomber d&apos;évênements produits à chaque quart de temps</translation>
+        <source>Resolution (events/beat): Number of events produced every beat</source>
+        <translation>Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="140"/>
-        <source>&amp;Length (beats)</source>
-        <translation>&amp;Longueur (beats)</translation>
+        <source>&amp;Length</source>
+        <translation>&amp;Durée</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="147"/>
         <source>Length of LFO wave in beats</source>
-        <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps</translation>
+        <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="153"/>
@@ -272,34 +292,34 @@ d h durée de note augm/dim
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Libre</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="51"/>

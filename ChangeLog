@@ -1,3 +1,9 @@
+2009-10-28 Frank Kober <goemusic@yahoo.fr>
+    * midilfo.cpp: fixed quantization issue with drawn waveforms
+    * lfowidget.cpp: deactivate freq amp and offset for custom waveform
+    * midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: remove 
+    "lfo..."-particle from variable names where appropriate
+     
 2009-10-27 Frank Kober <goemusic@yahoo.fr>
     * midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: 
     custom mouse-drawable LFO waveform added, muting of single waveform
@@ -5,6 +11,7 @@
     drawn with the left mouse button. For all waveforms, the right mouse
     button activates/deactivates event generation for the point under 
     the mouse cursor
+    * slider.cpp: restore possibility to use Qt:Vertical for sliders
     TODO: store custom waveform somehow, deactivate freq, amp and offset 
     for custom waveform
 

@@ -205,7 +205,7 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY)
     LfoSample lfoSample;
     lfoSample = customWave.at(mouseX * res * size);
     lfoSample.value = mouseY * 128;
-    lfoSample.tick = (int)(mouseX * res) * size * TICKS_PER_QUARTER / res;
+    lfoSample.tick = (int)(mouseX * res * size) * TICKS_PER_QUARTER / res;
     customWave.replace(mouseX * res * size, lfoSample);
 }
 

@@ -227,34 +227,54 @@
         <translation>Wellenformbasis</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="111"/>
         <source>&amp;Frequency (cycles/beat)</source>
-        <translation>&amp;Frequenz (Zyklen/Takt)</translation>
+        <translation type="obsolete">&amp;Frequenz (Zyklen/Takt)</translation>
+    </message>
+    <message>
+        <source>Frequency: Number of wave cycles produced every beat</source>
+        <translation type="obsolete">Frequenz: Anzahl der erzeugten Wellenzyklen pro beat</translation>
+    </message>
+    <message>
+        <source>&amp;Resolution (events/beat)</source>
+        <translation type="obsolete">&amp;Auflösung (Signale/Takt)</translation>
+    </message>
+    <message>
+        <source>Resolution: Number of events produced every beat</source>
+        <translation type="obsolete">Auflösung: Anzahl der pro Takt erzeugten MIDI Signale</translation>
+    </message>
+    <message>
+        <source>&amp;Length (beats)</source>
+        <translation type="obsolete">Län&amp;ge (Takte)</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="111"/>
+        <source>&amp;Frequency</source>
+        <translation>&amp;Frequenz</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="121"/>
-        <source>Frequency: Number of wave cycles produced every beat</source>
-        <translation>Frequenz: Anzahl der erzeugten Wellenzyklen pro beat</translation>
+        <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
+        <translation>Frequenz (Zyklen pro beat): Anzahl der erzeugten Wellenzyklen pro Vierteltakt</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="126"/>
-        <source>&amp;Resolution (events/beat)</source>
-        <translation>&amp;Auflösung (Signale/Takt)</translation>
+        <source>&amp;Resolution</source>
+        <translation>&amp;Auflösung</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="135"/>
-        <source>Resolution: Number of events produced every beat</source>
-        <translation>Auflösung: Anzahl der pro Takt erzeugten MIDI Signale</translation>
+        <source>Resolution (events/beat): Number of events produced every beat</source>
+        <translation>Auflösung (Signale/beat): Anzahl der pro Vierteltakt erzeugten MIDI Signale</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="140"/>
-        <source>&amp;Length (beats)</source>
-        <translation>Län&amp;ge (Takte)</translation>
+        <source>&amp;Length</source>
+        <translation>&amp;Dauer</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="147"/>
         <source>Length of LFO wave in beats</source>
-        <translation>Länge der LFO Wellenform in Takten</translation>
+        <translation>Länge der LFO Wellenform in Vierteltakten</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="153"/>
@@ -267,34 +287,34 @@
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="292"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="297"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Frei</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="51"/>

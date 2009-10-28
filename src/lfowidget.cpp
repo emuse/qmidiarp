@@ -108,7 +108,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 
-    QLabel *freqBoxLabel = new QLabel(tr("&Frequency (cycles/beat)"),
+    QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
             patternBox);
     freqBox = new QComboBox(patternBox);
     freqBoxLabel->setBuddy(freqBox);
@@ -118,12 +118,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     freqBox->insertItems(0, names);
     freqBox->setCurrentIndex(3);
     freqBox->setToolTip(
-            tr("Frequency: Number of wave cycles produced every beat"));
+            tr("Frequency (cycles/beat): Number of wave cycles produced every beat"));
     freqBox->setMinimumContentsLength(3);
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
 
-    QLabel *resBoxLabel = new QLabel(tr("&Resolution (events/beat)"),
+    QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             patternBox);
     resBox = new QComboBox(patternBox);
     resBoxLabel->setBuddy(resBox);
@@ -132,12 +132,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     resBox->insertItems(0, names);
     resBox->setCurrentIndex(4);
     resBox->setToolTip(
-            tr("Resolution: Number of events produced every beat"));
+            tr("Resolution (events/beat): Number of events produced every beat"));
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
 
-    QLabel *sizeBoxLabel = new QLabel(tr("&Length (beats)"), patternBox);
+    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), patternBox);
     sizeBox = new QComboBox(patternBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
@@ -284,6 +284,10 @@ void LfoWidget::updateWaveForm(int val)
     midiLfo->updateWaveForm(val);
     midiLfo->getData(&lfoData);
     lfoScreen->updateScreen(lfoData);
+    bool isCustom = (val == 5);
+    amplitude->setDisabled(isCustom);
+    freqBox->setDisabled(isCustom);
+    offset->setDisabled(isCustom);
     modified = true;
 }
 
