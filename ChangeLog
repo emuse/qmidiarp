@@ -1,3 +1,8 @@
+2009-10-30 Frank Kober <goemusic@yahoo.fr>
+    * midilfo.cpp, lfowidget.cpp: custom waveform and mute pattern now 
+    saved to qma file as clear text, custom waveform initialized in
+    LFO constructor and survives changes of waveform type
+    
 2009-10-28 Frank Kober <goemusic@yahoo.fr>
     * midilfo.cpp: fixed quantization issue with drawn waveforms
     * lfowidget.cpp: deactivate freq amp and offset for custom waveform

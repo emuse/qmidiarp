@@ -215,6 +215,7 @@ void LfoWidget::updateChannelOut(int value)
 
 void LfoWidget::writeLfo(QTextStream& arpText)
 {
+    int l1 = 0;
     arpText << midiLfo->channelOut << ' ' 
         << midiLfo->portOut << ' '
         << midiLfo->ccnumber << '\n';
@@ -224,14 +225,30 @@ void LfoWidget::writeLfo(QTextStream& arpText)
         << midiLfo->amp << ' '
         << midiLfo->offs << '\n';
     arpText << waveFormBox->currentIndex() << '\n';
-    arpText << "EOP\n"; // End Of Pattern
+    // Write Mute Mask
+    while (l1 < midiLfo->muteMask.count()) {
+        arpText << midiLfo->muteMask.at(l1) << ' ';
+        l1++;
+        if (!(l1 % 32)) arpText << "\n";
+    }
+    arpText << "EOM\n"; // End Of Mute
+    // Write Custom Waveform
+    l1 = 0;
+    while (l1 < midiLfo->customWave.count()) {
+        arpText << midiLfo->customWave.at(l1).value << ' ';
+        l1++;
+        if (!(l1 % 16)) arpText << "\n";
+    }
+    arpText << "EOW\n"; // End Of Wave
     modified = false;
 }                                      
 
 void LfoWidget::readLfo(QTextStream& arpText)
 {
     QString qs, qs2;
-
+    int l1, lt, wvtmp;
+    LfoSample lfoSample;
+    
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0); 
     channelOut->setValue(qs2.toInt() + 1);
@@ -254,9 +271,38 @@ void LfoWidget::readLfo(QTextStream& arpText)
     qs2 = qs.section(' ', 4, 4); 
     offset->setValue(qs2.toInt());
     qs = arpText.readLine();
-    waveFormBox->setCurrentIndex(qs.toInt());
-    updateWaveForm(qs.toInt());
+    wvtmp = qs.toInt();
+    // Read Mute Mask
+    int step = TICKS_PER_QUARTER / midiLfo->res;
     qs = arpText.readLine();
+    qs2 = qs.section(' ', 0, 0);
+    midiLfo->muteMask.clear();
+    l1 = 0;
+    while (qs2 !="EOM") {
+        // TODO: the following line produces a pointer deref warning, why?
+        midiLfo->muteMask.append(qs2.toInt());
+        l1++;
+        if (!(l1%32)) qs = arpText.readLine();
+        qs2 = qs.section(' ', l1%32, l1%32);
+    }
+    // Read Custom Waveform
+    qs = arpText.readLine();
+    qs2 = qs.section(' ', 0, 0);
+    midiLfo->customWave.clear();
+    l1 = 0;
+    lt = 0;
+    while (qs2 !="EOW") {
+        lfoSample.value=qs2.toInt();
+        lfoSample.tick = lt;
+        lfoSample.muted = midiLfo->muteMask.at(l1);
+        midiLfo->customWave.append(lfoSample);
+        lt+=step;
+        l1++;
+        if (!(l1%16)) qs = arpText.readLine();
+        qs2 = qs.section(' ', l1%16, l1%16);
+    }
+    waveFormBox->setCurrentIndex(wvtmp);
+    updateWaveForm(wvtmp);
     modified = false;
 }                                      
 
@@ -345,6 +391,7 @@ void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
         midiLfo->setCustomWavePoint(mouseX, mouseY);
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
+        modified = true;
         }
 }
 void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
@@ -353,11 +400,13 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
         midiLfo->toggleMutePoint(mouseX);
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
+        modified = true;
     } else
         if (waveFormBox->currentIndex() == 5) {
             midiLfo->setCustomWavePoint(mouseX, mouseY);
             midiLfo->getData(&lfoData);
             lfoScreen->updateScreen(lfoData);
+            modified = true;
         }
 }
 

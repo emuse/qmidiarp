@@ -287,32 +287,32 @@
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Custom</source>
         <translation>Frei</translation>
     </message>

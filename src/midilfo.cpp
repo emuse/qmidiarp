@@ -37,8 +37,19 @@ MidiLfo::MidiLfo()
     channelOut = 0;
     waveFormIndex = 0;
     isMuted = false;
-    customWave.resize(size * res);
-    muteMask.resize(size * res);
+    int l1 = 0;
+    int lt = 0;
+    int step = TICKS_PER_QUARTER / res;
+    LfoSample lfoSample;
+    lfoSample.value = 63;
+    customWave.clear();
+    for (l1 = 0; l1 < size * res; l1++) {
+            lfoSample.tick = lt;
+            lfoSample.muted = false;
+            customWave.append(lfoSample);
+            lt+=step;
+    }
+    muteMask.fill(false, size * res);
 }
 
 MidiLfo::~MidiLfo(){
@@ -149,20 +160,6 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 void MidiLfo::updateWaveForm(int val)
 {
     waveFormIndex = val;
-    if (waveFormIndex == 5) {
-        int l1 = 0;
-        int lt = 0;
-        int step = TICKS_PER_QUARTER / res;
-        LfoSample lfoSample;
-        lfoSample.value = 63;
-        customWave.clear();
-        for (l1 = 0; l1 < size * res; l1++) {
-                lfoSample.tick = lt;
-                lfoSample.muted = muteMask.at(l1);
-                customWave.append(lfoSample);
-                lt+=step;
-        }
-    }
 }
 
 int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
@@ -207,6 +204,7 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY)
     lfoSample.value = mouseY * 128;
     lfoSample.tick = (int)(mouseX * res * size) * TICKS_PER_QUARTER / res;
     customWave.replace(mouseX * res * size, lfoSample);
+    
 }
 
 void MidiLfo::resizeAll()

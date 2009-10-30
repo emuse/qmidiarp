@@ -292,32 +292,32 @@ d h durée de note augm/dim
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="342"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="297"/>
+        <location filename="../lfowidget.cpp" line="343"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>

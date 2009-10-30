@@ -41,15 +41,15 @@ class MidiLfo : public QObject  {
   private:
     double queueTempo;
     int clip(int value, int min, int max, bool *outOfRange);
-    QVector<LfoSample> customWave;
-    QVector<bool> muteMask;
-    
+     
   public:
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     bool hold, isMuted;
     int freq, amp, offs, ccnumber;
     int size, res, waveFormIndex;
+    QVector<LfoSample> customWave;
+    QVector<bool> muteMask;
     
   signals:
     void toggleMute();
