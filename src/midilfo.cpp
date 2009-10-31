@@ -227,6 +227,17 @@ void MidiLfo::resizeAll()
     }
 }
 
+void MidiLfo::copyToCustom()
+{
+    QVector<LfoSample> lfoData;
+    int m;
+    lfoData.clear();
+    getData(&lfoData);
+    m = lfoData.count();
+    lfoData.remove(m - 1);
+    customWave = lfoData;
+}
+
 void MidiLfo::toggleMutePoint(double mouseX)
 {
     LfoSample lfoSample;

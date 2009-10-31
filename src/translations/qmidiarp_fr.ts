@@ -192,42 +192,42 @@ d h durée de note augm/dim
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="44"/>
+        <location filename="../lfowidget.cpp" line="45"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="46"/>
+        <location filename="../lfowidget.cpp" line="47"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="56"/>
+        <location filename="../lfowidget.cpp" line="57"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="60"/>
+        <location filename="../lfowidget.cpp" line="61"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="68"/>
+        <location filename="../lfowidget.cpp" line="69"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="92"/>
+        <location filename="../lfowidget.cpp" line="93"/>
         <source>Wave</source>
         <translation>Forme</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="100"/>
+        <location filename="../lfowidget.cpp" line="101"/>
         <source>&amp;Waveform</source>
         <translation>Forme d&apos;&amp;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="106"/>
+        <location filename="../lfowidget.cpp" line="107"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
@@ -252,77 +252,82 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;Longueur (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="111"/>
+        <location filename="../lfowidget.cpp" line="112"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Fréquence</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="121"/>
+        <location filename="../lfowidget.cpp" line="122"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="126"/>
+        <location filename="../lfowidget.cpp" line="127"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="135"/>
+        <location filename="../lfowidget.cpp" line="136"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="140"/>
+        <location filename="../lfowidget.cpp" line="141"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="147"/>
+        <location filename="../lfowidget.cpp" line="148"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="153"/>
+        <location filename="../lfowidget.cpp" line="155"/>
+        <source>&amp;Copy to custom wave</source>
+        <translation>&amp;Copier dans la forme d&apos;onde libre</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="162"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="158"/>
+        <location filename="../lfowidget.cpp" line="167"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="342"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="342"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="342"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="343"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Saw down</source>
         <translation>Scie déscendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="343"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="343"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="51"/>
+        <location filename="../lfowidget.cpp" line="52"/>
         <source>&amp;MIDI CC#</source>
         <translation>&amp;MIDI CC#</translation>
     </message>

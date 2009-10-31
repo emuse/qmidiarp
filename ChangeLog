@@ -1,4 +1,8 @@
 2009-10-30 Frank Kober <goemusic@yahoo.fr>
+    * midilfo.cpp, lfowidget.*, lfowavcp.xpm:  toolbutton to copy 
+    current wave to custom wave added
+
+2009-10-30 Frank Kober <goemusic@yahoo.fr>
     * midilfo.cpp, lfowidget.cpp: custom waveform and mute pattern now 
     saved to qma file as clear text, custom waveform initialized in
     LFO constructor and survives changes of waveform type

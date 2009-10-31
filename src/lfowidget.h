@@ -27,6 +27,8 @@
 #include <QSpinBox>
 #include <QTextStream>
 #include <QCheckBox>
+#include <QAction>
+#include <QToolButton>
 
 #include "midilfo.h"
 #include "slider.h"
@@ -42,6 +44,8 @@ class LfoWidget : public QWidget
     // Output channel / port (ALSA Sequencer)
     QSpinBox *channelOut, *portOut, *ccnumberBox;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
+    QAction *copyToCustomAction;
+    QToolButton *copyToCustomButton;
  
     MidiLfo *midiLfo;
     Slider *frequency, *amplitude, *offset;
@@ -81,6 +85,7 @@ class LfoWidget : public QWidget
     void updateOffs(int val);
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
+    void copyToCustom();
 };
   
 #endif

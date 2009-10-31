@@ -70,6 +70,7 @@ class MidiLfo : public QObject  {
     void setCustomWavePoint(double, double);
     void toggleMutePoint(double);
     void resizeAll();
+    void copyToCustom();
 };
                               
 #endif

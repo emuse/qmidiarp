@@ -33,6 +33,7 @@
 #include "lfowidget.h"
 #include "slider.h"
 #include "lfoscreen.h"
+#include "pixmaps/lfowavcp.xpm"
 #include "config.h"
 
 
@@ -148,6 +149,14 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
+    
+    copyToCustomButton = new QToolButton(this); 
+    copyToCustomAction = new QAction( QIcon(lfowavcp_xpm),
+            tr("&Copy to custom wave"), this);
+    connect(copyToCustomAction, SIGNAL(triggered()), this,
+            SLOT(copyToCustom()));
+    copyToCustomButton->setDefaultAction(copyToCustomAction);
+    copyToCustomAction->setEnabled(true);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), patternBox);
@@ -160,6 +169,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             SLOT(updateOffs(int)));
     
     QVBoxLayout* sliderLayout = new QVBoxLayout;
+    sliderLayout->addWidget(copyToCustomButton);
     sliderLayout->addWidget(amplitude);
     sliderLayout->addWidget(offset);
     sliderLayout->addStretch();
@@ -272,6 +282,7 @@ void LfoWidget::readLfo(QTextStream& arpText)
     offset->setValue(qs2.toInt());
     qs = arpText.readLine();
     wvtmp = qs.toInt();
+    
     // Read Mute Mask
     int step = TICKS_PER_QUARTER / midiLfo->res;
     qs = arpText.readLine();
@@ -285,6 +296,7 @@ void LfoWidget::readLfo(QTextStream& arpText)
         if (!(l1%32)) qs = arpText.readLine();
         qs2 = qs.section(' ', l1%32, l1%32);
     }
+    
     // Read Custom Waveform
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0);
@@ -334,6 +346,7 @@ void LfoWidget::updateWaveForm(int val)
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
     offset->setDisabled(isCustom);
+    copyToCustomAction->setDisabled(isCustom);
     modified = true;
 }
 
@@ -382,6 +395,14 @@ void LfoWidget::updateOffs(int val)
     midiLfo->offs = val;
     midiLfo->getData(&lfoData);
     lfoScreen->updateScreen(lfoData);
+    modified = true;
+}
+
+void LfoWidget::copyToCustom()
+{
+    midiLfo->copyToCustom();
+    waveFormBox->setCurrentIndex(5);
+    updateWaveForm(5);
     modified = true;
 }
 
