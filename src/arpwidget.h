@@ -2,17 +2,11 @@
 #define ARPWIDGET_H
 
 #include <QString>
-#include <QLabel>
-#include <QSlider>
-#include <QBoxLayout>
 #include <QToolButton>
 #include <QAction>
 #include <QComboBox>
-#include <QGroupBox>
 #include <QSpinBox>
-#include <QFile>
 #include <QLineEdit>
-#include <QTextStream>
 #include <QCheckBox>
 #include "midiarp.h"
 #include "slider.h"
@@ -30,27 +24,26 @@ class ArpWidget : public QWidget
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
-	QGroupBox *randomBox, *envelopeBox;
-	QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
+    QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
 
-	MidiArp *midiArp;
-	QLineEdit *patternText;
+    MidiArp *midiArp;
+    QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
-	Slider *attackTime, *releaseTime;
+    Slider *attackTime, *releaseTime;
     bool modified;
     
   public:
     QString arpName;
     ArpScreen *arpScreen;
-	QStringList patternPresets, patternNames;
-	QCheckBox *muteOut;
+    QStringList patternPresets, patternNames;
+    QCheckBox *muteOut;
 
   public:
     ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);
     ~ArpWidget();
     MidiArp *getMidiArp();
-	
+    
     void readArp(QTextStream& arpText);
     void writeArp(QTextStream& arpText);
     void setChIn(int value);
@@ -58,11 +51,11 @@ class ArpWidget : public QWidget
     void setChannelOut(int value);
     void setPortOut(int value);
     void setRangeIn(int index, int value);
-	void loadPatternPresets();
-	void writePatternPresets();
+    void loadPatternPresets();
+    void writePatternPresets();
     bool isModified();
     void setModified(bool);
-	  
+      
   signals:
     void patternChanged();
     
@@ -74,10 +67,10 @@ class ArpWidget : public QWidget
     void updatePortOut(int value);
     void updateText(QString newtext);
     void updateRepeatPattern(int);
-	void updatePatternPreset(int);
-	void openTextEditWindow(bool on);
-	void storePatternText();
-	void removeCurrentPattern();
+    void updatePatternPreset(int);
+    void openTextEditWindow(bool on);
+    void storePatternText();
+    void removeCurrentPattern();
 };
   
 #endif

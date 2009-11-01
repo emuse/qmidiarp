@@ -3,7 +3,6 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QBoxLayout>
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QMainWindow>
@@ -22,8 +21,8 @@
 
 static const char ABOUTMSG[] = APP_NAME " " PACKAGE_VERSION "\n"
                           "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)\n"
-			  "(C) 2009 Frank Kober\n"
-			  "(C) 2009 Guido Scholz\n\n"
+              "(C) 2009 Frank Kober\n"
+              "(C) 2009 Guido Scholz\n\n"
                           APP_NAME " is licensed under the GPL.\n";
 
 class MainWindow : public QMainWindow
@@ -37,7 +36,6 @@ class MainWindow : public QMainWindow
     QTabWidget *tabWidget;
     LogWidget *logWidget;
     ArpData *arpData;
-//    ArpWidget *arpWidget;
     QString lastDir, filename;
 
     void chooseFile();
@@ -45,7 +43,7 @@ class MainWindow : public QMainWindow
     void updateWindowTitle();
     bool saveFile();
     bool saveFileAs();
-	bool isModified();
+    bool isModified();
 
     void addArp(const QString&);
     void addLfo(const QString&);
@@ -54,7 +52,7 @@ class MainWindow : public QMainWindow
     void checkRcFile();
     void clear();
 
-	
+    
   protected:
     void closeEvent(QCloseEvent*);
 
@@ -63,10 +61,10 @@ class MainWindow : public QMainWindow
     ~MainWindow();
     QToolBar *runBox;
     QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
-	QAction *addLfoAction;
+    QAction *addLfoAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
-	QAction *midiClockAction;
+    QAction *midiClockAction;
     void openFile(const QString&);
 
   signals:  
@@ -79,11 +77,11 @@ class MainWindow : public QMainWindow
     void fileSave();
     void fileSaveAs();
     void arpNew();
-	void lfoNew();
+    void lfoNew();
     void moduleRename();
     void moduleDelete();
 
-	void helpAbout();
+    void helpAbout();
     void helpAboutQt();
 
 

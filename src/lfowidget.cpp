@@ -211,18 +211,6 @@ MidiLfo *LfoWidget::getMidiLfo()
     return (midiLfo);
 }
 
-void LfoWidget::updatePortOut(int value)
-{
-    midiLfo->portOut = value - 1;
-    modified = true;
-}
-
-void LfoWidget::updateChannelOut(int value)
-{
-    midiLfo->channelOut = value - 1;
-    modified = true;
-}
-
 void LfoWidget::writeLfo(QTextStream& arpText)
 {
     int l1 = 0;
@@ -318,11 +306,10 @@ void LfoWidget::readLfo(QTextStream& arpText)
     modified = false;
 }                                      
 
-
-void LfoWidget::updateCcnumber(int val)
+void LfoWidget::loadWaveForms()
 {
-    midiLfo->ccnumber = val;
-    modified = true;
+    waveForms << tr("Sine") << tr("Saw up") << tr("Triangle") 
+        << tr("Saw down") << tr("Square") << tr("Custom");
 }
 
 void LfoWidget::setPortOut(int value)
@@ -337,6 +324,24 @@ void LfoWidget::setChannelOut(int value)
     modified = true;
 }
 
+void LfoWidget::updatePortOut(int value)
+{
+    midiLfo->portOut = value - 1;
+    modified = true;
+}
+
+void LfoWidget::updateChannelOut(int value)
+{
+    midiLfo->channelOut = value - 1;
+    modified = true;
+}
+
+void LfoWidget::updateCcnumber(int val)
+{
+    midiLfo->ccnumber = val;
+    modified = true;
+}
+
 void LfoWidget::updateWaveForm(int val)
 {
     midiLfo->updateWaveForm(val);
@@ -348,12 +353,6 @@ void LfoWidget::updateWaveForm(int val)
     offset->setDisabled(isCustom);
     copyToCustomAction->setDisabled(isCustom);
     modified = true;
-}
-
-void LfoWidget::loadWaveForms()
-{
-    waveForms << tr("Sine") << tr("Saw up") << tr("Triangle") 
-        << tr("Saw down") << tr("Square") << tr("Custom");
 }
 
 void LfoWidget::updateFreq(int val)

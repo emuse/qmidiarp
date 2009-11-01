@@ -55,7 +55,6 @@ MidiLfo::MidiLfo()
 MidiLfo::~MidiLfo(){
 }
 
-
 void MidiLfo::muteLfo(bool on)
 {
     isMuted = on;
@@ -157,11 +156,6 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
     *p_lfoData = lfoData;
 }
 
-void MidiLfo::updateWaveForm(int val)
-{
-    waveFormIndex = val;
-}
-
 int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
 {
     int tmp = value;
@@ -175,6 +169,11 @@ int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
         *outOfRange = true;
     }  
     return(tmp);
+}
+
+void MidiLfo::updateWaveForm(int val)
+{
+    waveFormIndex = val;
 }
 
 void MidiLfo::updateFrequency(int val)

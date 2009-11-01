@@ -81,7 +81,8 @@ loading new arps or LFOs is disabled. They are enabled again by
 unchecking the MIDI clock button. 
 
 .SS "Arpeggiator Modules"
-.SS Input and Output panels
+.B Input and Output panels
+.PP
 Each arpeggiator has an 
 .B Input 
 and an 
@@ -100,9 +101,9 @@ panel holds settings for the
 and 
 .B output port 
 to which the arpeggiator notes will be sent. 
-
-.SS "Arpeggiator Patterns"
-
+.PP
+.B "Arpeggiator Patterns"
+.PP
 Arpeggio patterns can be selected and edited in the 
 .B Pattern
 panel. 
@@ -130,8 +131,9 @@ sequence of output notes.
 If the pattern contains stacked note streaks (chord mode), chords played 
 on the keyboard are also output as chords with polyphony up to the 
 number of notes defined in the stack.
-
-.SS Repeat Mode
+.PP
+.B Repeat Mode
+.PP
 If the arp pattern contains only a single streak and only one note is
 played on the keyboard, this note is repeated with the speed defined
 in the pattern. In case the number of notes pressed on the keyboard is
@@ -148,8 +150,9 @@ arpeggios. When "Fixed" is selected, this classical arpeggio mode will
 be disabled, and the output notes remain constant. 
 This way even simple patterns like "01" (or even "0") will 
 generate a complete arpeggio.
-
-.SS "Editing Arp patterns"
+.PP
+.B "Editing Arp patterns"
+.PP
 Arp patterns are defined by a text sequence containing the notes 
 themselves as numbers along with control changes for chord, tempo, 
 velocity and octave changes. When the 
@@ -189,17 +192,18 @@ Any token is valid until the end of a pattern is reached. The token
 > will e.g. double the tempo for all following notes of the pattern.
 When the loop jumps back to the beginning of the pattern, the tempo
 is reset to its initial value, i.e. a quarter note.
-
-
-.SS Random
+.PP
+.B Random
+.PP
 The timing, velocity and length of the output notes can be randomized
 using the sliders in the 
 .B Random 
 panel. This settings can be used to make the arpeggiator sound less
 mechanical, but if they are set to higher values, they add
 interesting accents to the patterns.
-
-.SS Envelope
+.PP
+.B Envelope
+.PP
 QMidiArp can modulate the velocity of the arpeggios with an envelope
 function defined by 
 .B Attack 
@@ -213,8 +217,9 @@ velocity is ramped down linearly and until the release time has reached
 its end. The envelope function only makes sense if the sound adressed
 by the arp is velocity-sensitive. It works best with highly polyphonic
 patterns such as "Chord 16 A".
-
-.SS Groove
+.PP
+.B Groove
+.PP
 The 
 .B Groove
 sliders control a linear shift of timing, length and 
@@ -228,14 +233,15 @@ QMidiArp
 can send MIDI controller data in form of a low frequency oscillator (LFO)
 to the assigned output. The LFO data consist of selectable controller
 events with oscillating values that are in sync with the arpeggiator
-queue. Each LFO module has a 
+queue. The queue has to be in running state to enable
+the LFO. Each LFO module has a 
 .B waveform 
 panel, an 
 .B amplifier
 panel and an 
 .B output 
 panel. The waveform can currently be set to Sine,
-Saw Up, Saw Down, Triangle and Square. The 
+Saw Up, Saw Down, Triangle, Square and Custom. The 
 .B frequency 
 of the LFO can be
 set in muliples and divisors of the arp 
@@ -253,10 +259,31 @@ and
 of the waveform can be adjusted from 0...127. Low resolutions 
 lead to audibly discrete rythmic controller changes whereas higher 
 resolution values lead to 
-more continuous waves. The queue has to be in running state to enable
-the LFO. 
-
-.SS "LFO Output panel"
+more continuous waves.
+.PP
+.B Muting individual wave points
+.PP
+The output of individual wave points can be muted/unmuted by clicking on
+the corresponding location in the wave display with the 
+.I right mouse button.
+A muted wave point is shown in darker color.
+.PP
+.B Custom Waveforms
+.PP
+When
+.B Custom
+is selected, the waveform can be drawn with the
+.I left mouse button
+in the waveform display. A calculated waveform can be copied to the
+custom waveform by clicking on the
+.B Copy to custom
+button, which will overwrite the previous custom waveform with the 
+currently displayed waveform. As all LFO operations, drawing and muting
+can be done while the queue is running and will have effect on the next
+output wavecycle.
+.PP
+.B "LFO Output panel"
+.PP
 The LFO output panel contains the 
 .B port, 
 .B channel 

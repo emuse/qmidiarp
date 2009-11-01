@@ -1,4 +1,8 @@
-2009-10-30 Frank Kober <goemusic@yahoo.fr>
+2009-11-01 Frank Kober <goemusic@yahoo.fr>
+    * arpwidget.*: obsolete headers removed
+    * man/qmidiarp.1: manpage updated
+
+2009-10-31 Frank Kober <goemusic@yahoo.fr>
     * midilfo.cpp, lfowidget.*, lfowavcp.xpm:  toolbutton to copy 
     current wave to custom wave added
 

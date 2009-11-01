@@ -1,3 +1,4 @@
+#include <QBoxLayout>
 #include <QStringList>
 #include <QSpinBox>
 #include <QInputDialog>
@@ -74,7 +75,7 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(updateCnumber(int)));
 
     connect(this, SIGNAL(runQueue(bool)), 
-            arpData->seqDriver, SLOT(runQueue(bool)));				   
+            arpData->seqDriver, SLOT(runQueue(bool)));                 
 
     grooveWidget = new GrooveWidget(this);
     QDockWidget *grooveWindow = new QDockWidget(tr("Groove"), this);
@@ -563,8 +564,8 @@ bool MainWindow::saveFile()
     saveText << "Tempo\n";
     saveText << tempoSpin->value() << '\n';
     saveText << "MIDI Control\n";
-    saveText <<	(int)passWidget->cbuttonCheck->isChecked();
-    saveText <<	' ' << passWidget->cnumberSpin->value() << '\n';
+    saveText << (int)passWidget->cbuttonCheck->isChecked();
+    saveText << ' ' << passWidget->cnumberSpin->value() << '\n';
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
     saveText << arpData->seqDriver->grooveTick;
@@ -710,17 +711,17 @@ void MainWindow::checkRcFile()
         }
 
         defaultPatternNames
-            <<	"                         "
+            <<  "                         "
             <<  "Simple 4"   
-            <<	"Simple 8"   
-            <<	"Simple 16"  
-            <<	"Simple 32"  
-            << 	"Chord 8"    
-            << 	"Chord+Bass 16"   
-            <<	"Chord Oct 16 A"  
-            <<	"Chord Oct 16 B"  
-            << 	"Chord Oct 16 C"  
-            << 	"Chords/Glissando 16";
+            <<  "Simple 8"   
+            <<  "Simple 16"  
+            <<  "Simple 32"  
+            <<  "Chord 8"    
+            <<  "Chord+Bass 16"   
+            <<  "Chord Oct 16 A"  
+            <<  "Chord Oct 16 B"  
+            <<  "Chord Oct 16 C"  
+            <<  "Chords/Glissando 16";
 
         defaultPatterns
             << ""
