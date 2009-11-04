@@ -32,7 +32,6 @@ static const char FILEEXT[] = ".qma";
 
 MainWindow::MainWindow(int p_portCount)
 {
-    checkRcFile();
     filename = "";
     lastDir = QDir::homePath();
 
@@ -42,7 +41,7 @@ MainWindow::MainWindow(int p_portCount)
     tabWidget = new QTabWidget(this);
 
     logWidget = new LogWidget(this);
-    QDockWidget *logWindow = new QDockWidget(tr("Event Log"), this);
+    logWindow = new QDockWidget(tr("Event Log"), this);
     logWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -52,7 +51,7 @@ MainWindow::MainWindow(int p_portCount)
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
 
     passWidget = new PassWidget(p_portCount, this);
-    QDockWidget *passWindow = new QDockWidget(tr("Settings"), this);
+    passWindow = new QDockWidget(tr("Settings"), this);
     passWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -78,7 +77,7 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(runQueue(bool)));                 
 
     grooveWidget = new GrooveWidget(this);
-    QDockWidget *grooveWindow = new QDockWidget(tr("Groove"), this);
+    grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -106,13 +105,11 @@ MainWindow::MainWindow(int p_portCount)
     renameArpAction->setShortcut(QKeySequence(tr("Ctrl+R", "Module|Rename")));
     renameArpAction->setToolTip(tr("Rename this module"));
     connect(renameArpAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-    renameArpAction->setDisabled(true);
 
     removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
     removeArpAction->setShortcut(QKeySequence(tr("Ctrl+Del", "Module|Delete")));
     removeArpAction->setToolTip(tr("Delete this module"));
     connect(removeArpAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
-    removeArpAction->setDisabled(true);
 
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
     fileNewAction->setShortcut(QKeySequence(QKeySequence::New));    
@@ -142,10 +139,6 @@ MainWindow::MainWindow(int p_portCount)
 
     runAction = new QAction(QIcon(play_xpm), tr("&Run"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
-    runAction->setCheckable(true);
-    runAction->setChecked(false);
-    runAction->setDisabled(true);
-    updateRunQueue(false);
 
     tempoSpin = new QSpinBox(this);
     tempoSpin->setRange(10, 400);
@@ -158,9 +151,16 @@ MainWindow::MainWindow(int p_portCount)
             tr("&Use incoming MIDI Clock"), this);
     connect(midiClockAction, SIGNAL(toggled(bool)), this,
             SLOT(midiClockToggle(bool)));
+
+    renameArpAction->setDisabled(true);
+    removeArpAction->setDisabled(true);
     midiClockAction->setCheckable(true);
     midiClockAction->setChecked(false);
     midiClockAction->setDisabled(true);
+    runAction->setCheckable(true);
+    runAction->setChecked(false);
+    runAction->setDisabled(true);
+    updateRunQueue(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setText(tr("&Event Log"));
@@ -203,7 +203,7 @@ MainWindow::MainWindow(int p_portCount)
     helpMenu->addAction(tr("&About Qt..."), this,
             SLOT(helpAboutQt()));
 
-    QToolBar *fileToolBar = new QToolBar(tr("&File Toolbar"), this);
+    fileToolBar = new QToolBar(tr("&File Toolbar"), this);
     fileToolBar->addAction(fileNewAction);    
     fileToolBar->addAction(fileOpenAction);    
     fileToolBar->addAction(fileSaveAction);    
@@ -233,6 +233,8 @@ MainWindow::MainWindow(int p_portCount)
     setCentralWidget(tabWidget);
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     updateWindowTitle();
+    checkRcFile();
+    readRcFile();
     show();
 }
 
@@ -286,6 +288,8 @@ void MainWindow::addArp(const QString& name)
             arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
+    connect(arpWidget, SIGNAL(presetsChanged(QString, QString, int)), 
+            this, SLOT(updatePatternPresets(QString, QString, int)));
     connect(midiArp, SIGNAL(toggleMute()), arpWidget->muteOut, SLOT(toggle()));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
@@ -653,9 +657,10 @@ bool MainWindow::isSave()
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
-    if (isSave())
+    if (isSave()) {
+        writeRcFile();
         e->accept();
-    else 
+    } else 
         e->ignore();
 }
 
@@ -673,6 +678,7 @@ void MainWindow::updateTempo(int p_tempo)
 void MainWindow::updateRunQueue(bool on)
 {
     emit(runQueue(on));
+    tempoSpin->setDisabled(on);
 }
 
 void MainWindow::resetQueue()
@@ -695,22 +701,10 @@ void MainWindow::midiClockToggle(bool on)
 
 void MainWindow::checkRcFile()
 {
-    QString qs2;
-    int l1;
-    QStringList defaultPatternNames, defaultPatterns;
-
     QDir qmahome = QDir(QDir::homePath());
     if (!qmahome.exists(QMARCNAME)) {
-        QString qmarcpath = qmahome.filePath(QMARCNAME);
-        QFile f(qmarcpath);
 
-        if (!f.open(QIODevice::WriteOnly)) {
-            QMessageBox::warning(this, APP_NAME,
-                    tr("Could not write to resource file"));
-            return;
-        }
-
-        defaultPatternNames
+        patternNames
             <<  "                         "
             <<  "Simple 4"   
             <<  "Simple 8"   
@@ -723,7 +717,7 @@ void MainWindow::checkRcFile()
             <<  "Chord Oct 16 C"  
             <<  "Chords/Glissando 16";
 
-        defaultPatterns
+        patternPresets
             << ""
             << "0"
             << ">0"
@@ -735,11 +729,144 @@ void MainWindow::checkRcFile()
             << ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"
             << ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
             << "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342";
+            
+        writeRcFile();
+    }
+}
 
-        QTextStream writeText(&f);
-        for (l1 = 0; l1 < defaultPatterns.count(); l1++) {
-            writeText << defaultPatternNames.at(l1) << '\n';
-            writeText << defaultPatterns.at(l1) << '\n';
+void MainWindow::readRcFile()
+{
+    QString qs, qs2;
+    QDir qmahome = QDir(QDir::homePath());
+    QString qmarcpath = qmahome.filePath(QMARCNAME);
+    QFile f(qmarcpath);
+
+    if (!f.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this, PACKAGE,
+                tr("Could not read from resource file"));
+        return;
+    }   
+    QTextStream loadText(&f);
+    patternNames.clear();
+    patternPresets.clear();
+
+    while (!loadText.atEnd()) {
+        qs = loadText.readLine();
+        if (qs.startsWith('[')) break;
+        qs2 = loadText.readLine();
+        patternNames << qs;
+        patternPresets << qs2;
+    }
+    if (qs.startsWith("[GUI")) {
+        int i = 0;
+        qs = loadText.readLine();
+        passWindow->setVisible(qs.section(' ', i, i).toInt());
+        i++;
+        passWindow->setFloating(qs.section(' ', i, i).toInt());
+        i++;
+        passWindow->move(qs.section(' ', i, i).toInt(), 
+                        qs.section(' ', i+1, i+1).toInt());
+        i+=2;
+        
+        logWindow->setVisible(qs.section(' ', i, i).toInt());
+        i++;       
+        logWindow->setFloating(qs.section(' ', i, i).toInt());
+        i++;       
+        logWindow->move(qs.section(' ', i, i).toInt(), 
+            qs.section(' ', i+1, i+1).toInt());
+        i+=2;       
+        logWindow->resize(qs.section(' ', i, i).toInt(), 
+            qs.section(' ', i+1, i+1).toInt() );
+        i+=2;       
+        logWidget->enableLog->setChecked(qs.section(' ', i, i).toInt());
+        i++;       
+        logWidget->logMidiClock->setChecked(qs.section(' ', i, i).toInt());
+        i++;
+        
+        grooveWindow->setVisible(qs.section(' ', i, i).toInt());
+        i++;       
+        grooveWindow->setFloating(qs.section(' ', i, i).toInt());
+        i++;       
+        grooveWindow->move(qs.section(' ', i, i).toInt(), 
+            qs.section(' ', i+1, i+1).toInt());
+        i+=2;       
+        grooveWindow->resize(qs.section(' ', i, i+1).toInt(), 
+            qs.section(' ', i+1, i+1).toInt());
+        
+        i+=2;       
+        fileToolBar->setVisible(qs.section(' ', i, i).toInt());
+        
+        i++;       
+        move(qs.section(' ', i, i).toInt(), qs.section(' ', i+1, i+1).toInt());
+        i+=2;       
+        resize(qs.section(' ', i, i).toInt(), qs.section(' ', i+1, i+1).toInt()); 
+        
+        qs = loadText.readLine();
+        if (qs.startsWith("[Last")) {
+            qs = loadText.readLine();
+            lastDir = qs;
         }
     }
+}
+
+void MainWindow::writeRcFile()
+{
+    int l1;
+
+    QDir qmahome = QDir(QDir::homePath());
+    QString qmarcpath = qmahome.filePath(QMARCNAME);
+    QFile f(qmarcpath);
+
+    if (!f.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, PACKAGE,
+                tr("Could not write to resource file"));
+        return;
+    }
+    QTextStream writeText(&f);
+
+    for (l1 = 0; l1 < patternNames.count(); l1++) 
+    {
+        writeText << qPrintable(patternNames.at(l1)) << endl;
+        writeText << qPrintable(patternPresets.at(l1)) << endl;
+    }
+    writeText << "[GUI settings]" << endl
+    << passWindow->isVisible() << ' '
+    << passWindow->isFloating() << ' '
+    << passWindow->x() << ' ' << passWindow->y() << ' '
+    
+    << logWindow->isVisible() << ' '
+    << logWindow->isFloating() << ' '
+    << logWindow->x() << ' ' << logWindow->y() << ' '
+    << logWindow->width() << ' ' << logWindow->height() << ' '
+    
+    << logWidget->enableLog->isChecked() << ' '
+    << logWidget->logMidiClock->isChecked() << ' '
+    
+    << grooveWindow->isVisible() << ' '
+    << grooveWindow->isFloating() << ' '
+    << grooveWindow->x() << ' ' << grooveWindow->y() << ' '
+    << grooveWindow->width() << ' ' << grooveWindow->height() << ' '
+   
+    << fileToolBar->isVisible() << ' '
+    
+    << x() << ' ' << y() << ' ' 
+    << width() << ' ' << height() << endl;
+    
+    writeText << "[Last Dir]" << endl;
+    writeText << lastDir << endl;
+    
+}
+
+void MainWindow::updatePatternPresets(QString n, QString p, int index)
+{
+    if (index) {
+        patternNames.removeAt(index);
+        patternPresets.removeAt(index);
+
+    } else {
+        patternNames.append(n);
+        patternPresets.append(p);
+    }
+    arpData->updatePatternPresets(n, p, index);
+    writeRcFile();
 }

@@ -93,6 +93,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     QGroupBox *patternBox = new QGroupBox(tr("Wave"), this);
 
     lfoScreen = new LfoScreen(this); 
+    lfoScreen->setToolTip(
+        tr("Right button to mute points, left button to draw custom wave"));
     lfoScreen->setMinimumHeight(80);
     connect(lfoScreen, SIGNAL(lfoMouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
@@ -274,6 +276,7 @@ void LfoWidget::readLfo(QTextStream& arpText)
     // Read Mute Mask
     int step = TICKS_PER_QUARTER / midiLfo->res;
     qs = arpText.readLine();
+    if (qs.isEmpty()) return;
     qs2 = qs.section(' ', 0, 0);
     midiLfo->muteMask.clear();
     l1 = 0;

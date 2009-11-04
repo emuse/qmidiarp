@@ -4,10 +4,12 @@
 #include <QAction>
 #include <QApplication>
 #include <QCloseEvent>
+#include <QDockWidget>
 #include <QMessageBox>
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QToolBar>
+#include <QString>
 #include <alsa/asoundlib.h>
 
 
@@ -37,7 +39,9 @@ class MainWindow : public QMainWindow
     LogWidget *logWidget;
     ArpData *arpData;
     QString lastDir, filename;
-
+    QStringList patternNames, patternPresets;
+    QDockWidget *logWindow, *grooveWindow, *passWindow;
+    
     void chooseFile();
     bool isSave();
     void updateWindowTitle();
@@ -50,8 +54,9 @@ class MainWindow : public QMainWindow
     void removeArp(int index);
     void removeLfo(int index);
     void checkRcFile();
+    void writeRcFile();
+    void readRcFile();
     void clear();
-
     
   protected:
     void closeEvent(QCloseEvent*);
@@ -59,7 +64,7 @@ class MainWindow : public QMainWindow
   public:
     MainWindow(int p_portCount);
     ~MainWindow();
-    QToolBar *runBox;
+    QToolBar *runBox, *fileToolBar;
     QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
     QAction *addLfoAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
@@ -89,6 +94,7 @@ class MainWindow : public QMainWindow
     void updateRunQueue(bool on);
     void midiClockToggle(bool on);
     void resetQueue();
+    void updatePatternPresets(QString n, QString p, int index);
 };
   
 #endif

@@ -21,10 +21,8 @@ class LogWidget : public QWidget
   Q_OBJECT
 
   private:
-	QVBoxLayout vBox;
+    QVBoxLayout vBox;
     QTextEdit *logText;
-    QCheckBox *enableLog;
-    QCheckBox *logMidiClock;
     bool logActive;
     bool logMidiActive;
 
@@ -32,7 +30,9 @@ class LogWidget : public QWidget
   public:
     LogWidget(QWidget* parent=0);
     ~LogWidget();
-	 
+    QCheckBox *enableLog;
+    QCheckBox *logMidiClock;
+     
   public slots:
     void logMidiToggle(bool on);
     void enableLogToggle(bool on);

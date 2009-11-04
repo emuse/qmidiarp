@@ -49,6 +49,14 @@ void ArpData::removeArpWidget(ArpWidget *arpWidget)
     modified = true;
 }
 
+void ArpData::updatePatternPresets(QString n, QString p, int index)
+{
+    int l1;
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        arpWidgetList.at(l1)->updatePatternPresets(n, p, index);
+    }
+}
+
 int ArpData::midiArpCount()
 {
     return(midiArpList.count());
@@ -141,7 +149,7 @@ bool ArpData::isModified()
         }
 
     return modified || seqDriver->isModified() 
-					|| arpmodified || lfomodified;
+                    || arpmodified || lfomodified;
 }
 
 void ArpData::setModified(bool m)

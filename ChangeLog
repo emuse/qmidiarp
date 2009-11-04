@@ -1,3 +1,14 @@
+2009-11-04 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.*, arpdata.*, arpwidget.*: arp preset pattern handling
+    changed. If the preset list is modified in one arp, all arps get
+    updated. GUI settings stored to .qmidiarprc file along with arp 
+    patterns. rc file is written on exit of the application and when
+    the arp preset list is modified.
+    * lfowidget.cpp: abort reading LFO waveform data when none was saved 
+
+2009-11-02 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: tempoSpin box disabled when queue running atm
+    
 2009-11-01 Frank Kober <goemusic@yahoo.fr>
     * arpwidget.*: obsolete headers removed
     * man/qmidiarp.1: manpage updated

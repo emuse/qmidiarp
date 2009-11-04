@@ -65,7 +65,7 @@ QMidiArp can use incoming MIDI clock events as clock and start/stop
 control source.
 If the 
 .B MIDI clock button 
-left of the tempo box is pressed, the running ALSA queue is stopped, and 
+right of the tempo box is pressed, the running ALSA queue is stopped, and 
 QMidiArp
 will wait for an incoming "MIDI Clock Start" event from an external 
 source connected to QMidiArp's MIDI input. Once this event is received,
@@ -183,7 +183,7 @@ The syntax for the pattern text is as follows:
        e.g. (012) would be a chord of the 
        lowermost three notes in the buffer   
    / : Volume up by 20%
-   \ : Volume down by 20%
+   \\ : Volume down by 20%
    d : Double length
    h : Half length
    p : Pause
@@ -225,7 +225,7 @@ The
 sliders control a linear shift of timing, length and 
 velocity within each beat of the output pattern. This can be used to 
 create swing timing and accent. The Groove settings are adjusted for all 
-arps simultaneously. 
+arps simultaneously.
 
 .SS "LFO Modules"
 In parallel to the arps, 

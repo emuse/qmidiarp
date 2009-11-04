@@ -52,12 +52,14 @@ class ArpWidget : public QWidget
     void setPortOut(int value);
     void setRangeIn(int index, int value);
     void loadPatternPresets();
-    void writePatternPresets();
     bool isModified();
     void setModified(bool);
       
   signals:
     void patternChanged();
+    void presetsChanged(QString, QString, int); 
+                    //int 0 for pattern to append
+                    //or index>0 for pattern to remove
     
   public slots:
     void updateChIn(int value);
@@ -67,9 +69,10 @@ class ArpWidget : public QWidget
     void updatePortOut(int value);
     void updateText(QString newtext);
     void updateRepeatPattern(int);
-    void updatePatternPreset(int);
+    void selectPatternPreset(int);
+    void updatePatternPresets(QString n, QString p, int index);
     void openTextEditWindow(bool on);
-    void storePatternText();
+    void storeCurrentPattern();
     void removeCurrentPattern();
 };
   

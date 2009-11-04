@@ -139,7 +139,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     textStoreAction = new QAction(QIcon(patternstore_xpm),
             tr("&Store Pattern"), this);
     connect(textStoreAction, SIGNAL(triggered()), this,
-            SLOT(storePatternText()));
+            SLOT(storeCurrentPattern()));
     textStoreAction->setEnabled(false);
     textStoreButton->setDefaultAction(textStoreAction);
 
@@ -150,7 +150,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternPresetBox->setToolTip(tr("Pattern preset"));
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
-            SLOT(updatePatternPreset(int)));
+            SLOT(selectPatternPreset(int)));
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames; 
@@ -410,7 +410,7 @@ void ArpWidget::updateText(QString newtext)
     modified = true;
 }
 
-void ArpWidget::updatePatternPreset(int val)
+void ArpWidget::selectPatternPreset(int val)
 {
     if (val) {
         patternText->setText(patternPresets.at(val));
@@ -423,28 +423,6 @@ void ArpWidget::updatePatternPreset(int val)
     } else
         textRemoveAction->setEnabled(false);
     modified = true;
-}
-
-void ArpWidget::writePatternPresets()
-{
-    int l1;
-
-    QDir qmahome = QDir(QDir::homePath());
-    QString qmarcpath = qmahome.filePath(QMARCNAME);
-    QFile f(qmarcpath);
-
-    if (!f.open(QIODevice::WriteOnly)) {
-        QMessageBox::warning(this, PACKAGE,
-                tr("Could not write to resource file"));
-        return;
-    }
-    QTextStream writeText(&f);
-
-    for (l1 = 0; l1 < patternNames.count(); l1++) 
-    {
-        writeText << qPrintable(patternNames.at(l1)) << "\n";
-        writeText << qPrintable(patternPresets.at(l1)) << "\n";
-    }
 }
 
 void ArpWidget::loadPatternPresets()
@@ -465,6 +443,7 @@ void ArpWidget::loadPatternPresets()
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
+        if (qs.startsWith('[')) break;
         qs2 = loadText.readLine();
         patternNames << qs;
         patternPresets << qs2;
@@ -482,7 +461,7 @@ void ArpWidget::openTextEditWindow(bool on)
     patternText->setHidden(!on);
 }
 
-void ArpWidget::storePatternText()
+void ArpWidget::storeCurrentPattern()
 {
     QString qs;
     bool ok;
@@ -491,13 +470,23 @@ void ArpWidget::storePatternText()
             tr("New pattern"), QLineEdit::Normal, tr("Arp pattern"), &ok);
 
     if (ok && !qs.isEmpty()) {
-        patternNames << qPrintable(qs);
-        patternPresets << patternText->text();
-        patternPresetBox->addItem(qPrintable(qs));
+        
+        emit presetsChanged(qs, patternText->text(), 0);
         patternPresetBox->setCurrentIndex(patternNames.count() - 1);
         textRemoveAction->setEnabled(true);
-        writePatternPresets();
     }
+}
+
+void ArpWidget::updatePatternPresets(QString n, QString p, int index)
+{
+    if (index) {
+        patternNames.removeAt(index);
+        patternPresets.removeAt(index);
+    } else {
+        patternNames.append(n);
+        patternPresets.append(p);
+    }
+    patternPresetBox->addItem(qPrintable(n));
 }
 
 void ArpWidget::removeCurrentPattern()
@@ -517,13 +506,10 @@ void ArpWidget::removeCurrentPattern()
             == QMessageBox::No) {
         return;
     }
-    patternPresets.removeAt(currentIndex);
-    patternNames.removeAt(currentIndex);
-    patternPresetBox->removeItem(currentIndex);
+        
+    emit presetsChanged("", "", currentIndex);
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
-
-    writePatternPresets();
 }
 
 bool ArpWidget::isModified()

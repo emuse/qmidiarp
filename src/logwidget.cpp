@@ -23,13 +23,13 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
     logText->setTextColor(QColor(0,0,255));
     logText->setCurrentFont(QFont("Courier", 8));
     logText->setReadOnly(true);
-    QCheckBox *enableLog = new QCheckBox(this);
+    enableLog = new QCheckBox(this);
     enableLog->setText(tr("&Enable Log"));
     QObject::connect(enableLog, SIGNAL(toggled(bool)), this,
             SLOT(enableLogToggle(bool)));
     enableLog->setChecked(logActive);
     
-    QCheckBox *logMidiClock = new QCheckBox(this);
+    logMidiClock = new QCheckBox(this);
     logMidiClock->setText(tr("Log &MIDI Clock"));
     QObject::connect(logMidiClock, SIGNAL(toggled(bool)), this,
             SLOT(logMidiToggle(bool)));
@@ -42,11 +42,11 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent)
     buttonBoxLayout->addWidget(logMidiClock);
     buttonBoxLayout->addStretch(10);
     buttonBoxLayout->addWidget(clearButton);
-	
+    
     QVBoxLayout *logBoxLayout = new QVBoxLayout;
     logBoxLayout->addWidget(logText);
-	logBoxLayout->addLayout(buttonBoxLayout);
-	setLayout(logBoxLayout);
+    logBoxLayout->addLayout(buttonBoxLayout);
+    setLayout(logBoxLayout);
 }
 
 LogWidget::~LogWidget()
