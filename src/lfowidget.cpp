@@ -276,7 +276,7 @@ void LfoWidget::readLfo(QTextStream& arpText)
     // Read Mute Mask
     int step = TICKS_PER_QUARTER / midiLfo->res;
     qs = arpText.readLine();
-    if (qs.isEmpty()) return;
+    if (qs.isEmpty() || (qs == "EOP")) return;
     qs2 = qs.section(' ', 0, 0);
     midiLfo->muteMask.clear();
     l1 = 0;
