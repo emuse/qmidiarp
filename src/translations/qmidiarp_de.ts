@@ -135,7 +135,7 @@
         <translation>Arp-Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="501"/>
+        <location filename="../arpwidget.cpp" line="506"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
@@ -223,7 +223,7 @@
     <message>
         <location filename="../lfowidget.cpp" line="97"/>
         <source>Right button to mute points, left button to draw custom wave</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechte Maustaste: Stummschalten einzelner Punkte, linke Maustaste: Zeichnen der Wellenform</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="109"/>
@@ -465,7 +465,7 @@
         <location filename="../mainwindow.cpp" line="136"/>
         <source>Ctrl+Q</source>
         <comment>File|Quit</comment>
-        <translation></translation>
+        <translation>Strg+Q</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="137"/>
@@ -481,7 +481,7 @@
         <location filename="../mainwindow.cpp" line="171"/>
         <source>Ctrl+G</source>
         <comment>View|Groove</comment>
-        <translation></translation>
+        <translation>Strg+G</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="206"/>
@@ -536,7 +536,7 @@ Die Änderungen speichern?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="746"/>
         <source>Could not read from resource file</source>
-        <translation type="unfinished">Konnte Ressourcendatei nicht einlesen</translation>
+        <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="140"/>
@@ -557,7 +557,7 @@ Die Änderungen speichern?</translation>
         <location filename="../mainwindow.cpp" line="167"/>
         <source>Ctrl+L</source>
         <comment>View|Event Log</comment>
-        <translation></translation>
+        <translation>Strg+L</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="174"/>
@@ -568,7 +568,7 @@ Die Änderungen speichern?</translation>
         <location filename="../mainwindow.cpp" line="175"/>
         <source>Ctrl+P</source>
         <comment>View|Settings</comment>
-        <translation></translation>
+        <translation>Strg+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="203"/>

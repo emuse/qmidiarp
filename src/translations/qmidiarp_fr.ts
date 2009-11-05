@@ -31,27 +31,27 @@
     <message>
         <location filename="../arpwidget.cpp" line="124"/>
         <source>&amp;Edit Pattern</source>
-        <translation>&amp;Editer Motif</translation>
+        <translation>&amp;Editer le Motif</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="132"/>
         <source>&amp;Remove Pattern</source>
-        <translation>&amp;Supprimer Motif</translation>
+        <translation>&amp;Supprimer le Motif</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="140"/>
         <source>&amp;Store Pattern</source>
-        <translation>&amp;Mémoriser Motif</translation>
+        <translation>&amp;Mémoriser le Motif</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="150"/>
         <source>Pattern preset</source>
-        <translation>Preset motif</translation>
+        <translation>Preset de motif</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="159"/>
         <source>Arp through chord</source>
-        <translation>Arpège dans accord</translation>
+        <translation>Arpège dans l&apos;accord</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="182"/>
@@ -117,7 +117,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../arpwidget.cpp" line="469"/>
         <source>%1: Store pattern</source>
-        <translation>%1: Mémoriser motif</translation>
+        <translation>%1: Mémoriser le motif</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="470"/>
@@ -130,7 +130,7 @@ d h durée de note augm/dim
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="501"/>
+        <location filename="../arpwidget.cpp" line="506"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
@@ -167,7 +167,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../arpwidget.cpp" line="157"/>
         <source>Down</source>
-        <translation>Déscend</translation>
+        <translation>Descend</translation>
     </message>
 </context>
 <context>
@@ -223,7 +223,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../lfowidget.cpp" line="97"/>
         <source>Right button to mute points, left button to draw custom wave</source>
-        <translation type="unfinished"></translation>
+        <translation>Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="103"/>
@@ -341,12 +341,12 @@ d h durée de note augm/dim
     <message>
         <location filename="../logwidget.cpp" line="27"/>
         <source>&amp;Enable Log</source>
-        <translation>&amp;Activer Journal</translation>
+        <translation>&amp;Activer le journal</translation>
     </message>
     <message>
         <location filename="../logwidget.cpp" line="33"/>
         <source>Log &amp;MIDI Clock</source>
-        <translation>Rapporter &amp;MIDI Clock</translation>
+        <translation>Rapporter l&apos;horologe &amp;MIDI</translation>
     </message>
     <message>
         <location filename="../logwidget.cpp" line="38"/>
@@ -429,7 +429,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../mainwindow.cpp" line="116"/>
         <source>Create new arpeggiator file</source>
-        <translation>Creer un nouveau fichier d&apos;arpège</translation>
+        <translation>Créer un nouveau fichier d&apos;arpège</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="119"/>
@@ -536,7 +536,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="746"/>
         <source>Could not read from resource file</source>
-        <translation type="unfinished">Erreur de lecture du fichier ressources</translation>
+        <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="94"/>
@@ -593,7 +593,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="274"/>
         <source>Add MIDI Arpeggiator</source>
-        <translation>Ajouter Arpège MIDI</translation>
+        <translation>Ajouter un arpège MIDI</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="357"/>
@@ -615,7 +615,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="605"/>
         <source>Save arpeggiator</source>
-        <translation>Enregistrer arpège</translation>
+        <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="474"/>
@@ -665,7 +665,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="179"/>
         <source>&amp;File</source>
-        <translation>&amp;Ficher</translation>
+        <translation>&amp;Fichier</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="180"/>

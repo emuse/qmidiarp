@@ -1,8 +1,26 @@
-qmidiarp-0.0.3 (2009-??-??)
+qmidiarp-0.?.0 (2009-12-??)
 
 New Features
-  o ...
-
+  o Arpeggio pattern preset infrastructure
+  o synchronized MIDI LFO modules added
+  o LFOs have calculated and drawable waveforms, selectable frequency, 
+    amplitude, offset, time resolution and length
+  o Pianoroll-type display of arp patterns and cursor line
+  o Envelope function for chord arpeggios with high polyphony
+  o Footswitch controller for holding notes in arpeggio buffer
+  o MIDI-controllable muting of arpeggio outputs
+  o MIDI realtime clock slave synchronization
+  o Event log entries are color-coded, optional MIDI Clock event display
+  o Re-designed graphical user interface: event log and groove settings 
+    are dockable floatable windows, main and file icon toolbars added
+  o new .qmidiarprc file containing GUI settings, user arp patterns and 
+    last file path
+  o Save and SaveAs functions with modification monitoring, all relevant
+    session parameters stored in .qma session file, file extension
+    auto-completion
+  o Manual pages in English, TODO:French and TODO:German
 
 General Changes
   o Port form Qt3 to Qt4 library.
+  o MIDI Channels and ALSA port id's displayed from 1...16
+  o on-the-fly tempo changes are disabled

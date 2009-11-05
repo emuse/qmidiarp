@@ -480,8 +480,10 @@ void ArpWidget::storeCurrentPattern()
 void ArpWidget::updatePatternPresets(QString n, QString p, int index)
 {
     if (index) {
-       if (index == patternPresetBox->currentIndex())
-        patternPresetBox->setCurrentIndex(0);
+       if (index == patternPresetBox->currentIndex()) {
+            patternPresetBox->setCurrentIndex(0);
+            textRemoveAction->setEnabled(false);
+        }
         patternNames.removeAt(index);
         patternPresets.removeAt(index);
         patternPresetBox->removeItem(index);
@@ -511,7 +513,6 @@ void ArpWidget::removeCurrentPattern()
     }
         
     emit presetsChanged("", "", currentIndex);
-    textRemoveAction->setEnabled(false);
 }
 
 bool ArpWidget::isModified()

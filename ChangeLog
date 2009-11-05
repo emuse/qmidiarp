@@ -1,3 +1,7 @@
+2009-11-05 Frank Kober <goemusic@yahoo.fr>
+    * NEWS, README: updated
+    * mainwindow.cpp: fixed disabling of removePattern action for all arps
+    
 2009-11-04 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.*, arpdata.*, arpwidget.*: arp preset pattern handling
     changed. If the preset list is modified in one arp, all arps get
