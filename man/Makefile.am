@@ -1,6 +1,6 @@
 # Makefile.am for qmidiarp
 
-# SUBDIRS = de fr
+SUBDIRS = fr
 
 dist_man_MANS = qmidiarp.1
 

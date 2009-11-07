@@ -25,7 +25,7 @@ qmidiarp \- MIDI arpeggiator and LFO
 .SH DESCRIPTION
 QMidiArp
 is an advanced arpeggiator and MIDI LFO for the ALSA sequencer. It can 
-have any number of arpeggiator or LFO tabs that run in parallel. The 
+hold any number of arpeggiator or LFO tabs running in parallel. The 
 arpeggiator modules produce sequences depending on the notes sent to
 their input port, which is typically connected to a keyboard or a 
 sequencer. The MIDI LFOs independently
@@ -117,39 +117,37 @@ changes (see
 ) are shown as additional horizontal lines. 
 The notes that are actually
 output depend on the input notes received by the
-arpeggiator. Within the pattern, the received notes
+arpeggiator. The received notes
 notes are attributed in ascending order to the notes defined in the 
 pattern. For example, a single streak on the bottom of the arp display 
 ("simple" presets) means that at
 the first pass through the pattern, the lowermost note played on the 
 keyboard is played.
-If several notes are played on the keyboard and only one note is
+If a chord is played on the keyboard and only one note is
 present in the pattern, only the lowermost pressed note is output at
 the first pass through the pattern. For the following repetitions of 
 the pattern, the chosen "repeat mode" is used to determine the 
-sequence of output notes. 
+following notes. 
 If the pattern contains stacked note streaks (chord mode), chords played 
 on the keyboard are also output as chords with polyphony up to the 
 number of notes defined in the stack.
 .PP
 .B Repeat Mode
 .PP
-If the arp pattern contains only a single streak and only one note is
-played on the keyboard, this note is repeated with the speed defined
-in the pattern. In case the number of notes pressed on the keyboard is
-higher than the number of notes present in the pattern, the 
+The 
 .B Repeat mode 
-defines the behavior of the arpeggio over several repetition of 
-the pattern. 
+defines the behavior of the arpeggio over several repetitions of 
+the pattern when the number of notes pressed on the keyboard is higher
+than the number of notes present in the pattern.
 When 
 .B Repeat Mode 
-is "Up", the next higher note played on the keyboard 
-is played. With "Down", the next lower note is played. With a single
+is "Up", the next higher note played on the keyboard is played at each
+repetition. With "Down", the next lower note is played. With a single
 note present in the arp pattern, this creates classical linear 
-arpeggios. When "Fixed" is selected, this classical arpeggio mode will
-be disabled, and the output notes remain constant. 
-This way even simple patterns like "01" (or even "0") will 
+arpeggios. This way even simple patterns like "01" (or even "0") will 
 generate a complete arpeggio.
+When "Static" is selected, this classical arpeggio mode will
+be disabled, and the output notes remain constant. 
 .PP
 .B "Editing Arp patterns"
 .PP
@@ -198,7 +196,7 @@ is reset to its initial value, i.e. a quarter note.
 The timing, velocity and length of the output notes can be randomized
 using the sliders in the 
 .B Random 
-panel. This settings can be used to make the arpeggiator sound less
+panel. These settings can be used to make the arpeggiator sound less
 mechanical, but if they are set to higher values, they add
 interesting accents to the patterns.
 .PP
@@ -209,14 +207,14 @@ function defined by
 .B Attack 
 time and 
 .B Release
-time. If the attack
+time. If an attack
 time is set, the velocities of the output notes are ramped up during the
-attack time defined in seconds. If the release time is set, notes
+attack time defined in seconds. If a release time is set, notes
 released from the keyboard are continued to be output while their
 velocity is ramped down linearly and until the release time has reached
-its end. The envelope function only makes sense if the sound adressed
+its end. The envelope function only makes sense if the sound driven
 by the arp is velocity-sensitive. It works best with highly polyphonic
-patterns such as "Chord 16 A".
+patterns such as "Chord Oct 16 A".
 .PP
 .B Groove
 .PP
@@ -231,16 +229,14 @@ arps simultaneously.
 In parallel to the arps, 
 QMidiArp
 can send MIDI controller data in form of a low frequency oscillator (LFO)
-to the assigned output. The LFO data consist of selectable controller
-events with oscillating values that are in sync with the arpeggiator
-queue. The queue has to be in running state to enable
-the LFO. Each LFO module has a 
+to the assigned output. The LFO data consist of controller events that 
+are in sync with the arpeggiator queue. The queue has to be in running 
+state to enable the LFO. Each LFO module has a 
 .B waveform 
-panel, an 
-.B amplifier
-panel and an 
+panel to define the shape of the outgoing data and an 
 .B output 
-panel. The waveform can currently be set to Sine,
+panel to define MIDI Channel, ALSA port and controller number to be
+produced. The waveform can currently be set to Sine,
 Saw Up, Saw Down, Triangle, Square and Custom. The 
 .B frequency 
 of the LFO can be
@@ -256,14 +252,15 @@ can be adjusted to up to 192 events per beat.
 .B Amplitude 
 and 
 .B offset 
-of the waveform can be adjusted from 0...127. Low resolutions 
+of the waveform can be adjusted from 0...127. Low 
+.B resolutions 
 lead to audibly discrete rythmic controller changes whereas higher 
 resolution values lead to 
 more continuous waves.
 .PP
 .B Muting individual wave points
 .PP
-The output of individual wave points can be muted/unmuted by clicking on
+Individual wave points can be muted/unmuted by clicking on
 the corresponding location in the wave display with the 
 .I right mouse button.
 A muted wave point is shown in darker color.
@@ -317,13 +314,12 @@ The default is 96 ticks per beat.
 The
 .B Event Log 
 displays incoming MIDI events. It is displayed in the bottom area by 
-default, but can be 
-hidden if not
+default, but can be hidden if not
 needed or set floating as a top-level window on the desktop. Logging 
 can also be disabled generally or for MIDI Clock events only. 
 
 .SS Example Files
-There are currently only two demo arpeggios. 
+There are currently three demo arpeggios. 
 The demo.qma arpeggio was intended to be used with the following sound 
 types: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
 but you can get interesting results if you use other instrument settings.

@@ -54,9 +54,8 @@
         <translation>Voreingestellte Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="159"/>
         <source>Arp through chord</source>
-        <translation>Arpeggio bei Akkord</translation>
+        <translation type="obsolete">Arpeggio bei Akkord</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="182"/>
@@ -89,6 +88,11 @@
         <location filename="../arpwidget.cpp" line="208"/>
         <source>Random</source>
         <translation>Zufall</translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="159"/>
+        <source>Repeat mode</source>
+        <translation>Wiederholungsmodus</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="212"/>
@@ -206,12 +210,12 @@
         <translation>Nummer des gesendeten MIDI Controllers</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="61"/>
+        <location filename="../lfowidget.cpp" line="68"/>
         <source>C&amp;hannel</source>
         <translation>Kana&amp;l</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="69"/>
+        <location filename="../lfowidget.cpp" line="61"/>
         <source>&amp;Port</source>
         <translation>An&amp;schluss</translation>
     </message>
@@ -473,6 +477,12 @@
         <translation>Die Anwendung beenden</translation>
     </message>
     <message>
+        <location filename="../mainwindow.cpp" line="167"/>
+        <source>Ctrl+H</source>
+        <comment>View|Event Log</comment>
+        <translation>Strg+H</translation>
+    </message>
+    <message>
         <location filename="../mainwindow.cpp" line="170"/>
         <source>&amp;Groove Settings</source>
         <translation>&amp;Groove</translation>
@@ -505,36 +515,36 @@
         <translation>MIDI LFO hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="490"/>
+        <location filename="../mainwindow.cpp" line="491"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Konnte die Datei &apos;%1&apos; nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="563"/>
+        <location filename="../mainwindow.cpp" line="574"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="627"/>
+        <location filename="../mainwindow.cpp" line="642"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="629"/>
+        <location filename="../mainwindow.cpp" line="644"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="648"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="746"/>
+        <location filename="../mainwindow.cpp" line="761"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
@@ -554,10 +564,9 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Protokoll</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="167"/>
         <source>Ctrl+L</source>
         <comment>View|Event Log</comment>
-        <translation>Strg+L</translation>
+        <translation type="obsolete">Strg+L</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="174"/>
@@ -608,18 +617,18 @@ Die Änderungen speichern?</translation>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="605"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="474"/>
-        <location filename="../mainwindow.cpp" line="605"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="822"/>
+        <location filename="../mainwindow.cpp" line="837"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>

@@ -156,7 +156,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     QStringList repeatPatternNames; 
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
-    repeatPatternThroughChord->setToolTip(tr("Arp through chord"));
+    repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
     connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);

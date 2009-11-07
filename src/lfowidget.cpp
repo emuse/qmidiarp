@@ -58,6 +58,13 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     connect(ccnumberBox, SIGNAL(valueChanged(int)), this,
             SLOT(updateCcnumber(int)));
 
+    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
+    portOut = new QSpinBox(portBox);
+    portLabel->setBuddy(portOut);
+    portOut->setRange(1, portCount);
+    portOut->setKeyboardTracking(false);
+    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
+
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QSpinBox(portBox);
     channelLabel->setBuddy(channelOut);
@@ -65,13 +72,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     channelOut->setKeyboardTracking(false);
     connect(channelOut, SIGNAL(valueChanged(int)), this,
             SLOT(updateChannelOut(int)));
-
-    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QSpinBox(portBox);
-    portLabel->setBuddy(portOut);
-    portOut->setRange(1, portCount);
-    portOut->setKeyboardTracking(false);
-    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
 
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(muteLabel, 0, 0);

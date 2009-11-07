@@ -88,5 +88,5 @@ AC_CHECK_FUNCS([floor ftruncate getcwd memset mkdir pow rint sqrt])
 AC_CHECK_FUNCS([strdup])
 
 AC_CONFIG_FILES([Makefile] [examples/Makefile] [src/Makefile])
-AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile])
+AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
 AC_OUTPUT

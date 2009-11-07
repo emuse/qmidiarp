@@ -38,7 +38,7 @@ class SeqDriver : public QWidget {
 
     protected: 
         int midiTick;
-        int midiclock_tpb, mute_cnumber;
+        int mute_cnumber;
         bool midi_mutable;
         double m_ratio;
         snd_seq_real_time_t delta, real_time;
@@ -46,7 +46,7 @@ class SeqDriver : public QWidget {
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
-        int tempo;
+        int tempo, midiclock_tpb;
         int grooveTick, grooveVelocity, grooveLength;
         bool use_midiclock;
 

@@ -164,7 +164,7 @@ MainWindow::MainWindow(int p_portCount)
 
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setText(tr("&Event Log"));
-    viewLogAction->setShortcut(QKeySequence(tr("Ctrl+L", "View|Event Log")));
+    viewLogAction->setShortcut(QKeySequence(tr("Ctrl+H", "View|Event Log")));
 
     QAction* viewGrooveAction = grooveWindow->toggleViewAction();
     viewGrooveAction->setText(tr("&Groove Settings"));
@@ -481,6 +481,7 @@ void MainWindow::chooseFile()
 void MainWindow::openFile(const QString& fn)
 {
     QString line, qs, qs2;
+    bool midiclocktmp = false;
 
     lastDir = fn.left(fn.lastIndexOf('/'));
 
@@ -510,6 +511,15 @@ void MainWindow::openFile(const QString& fn)
         passWidget->cbuttonCheck->setChecked(qs2.toInt());
         qs2 = qs.section(' ', 1, 1);
         passWidget->cnumberSpin->setValue(qs2.toInt());
+        qs = loadText.readLine();
+    }
+    if (qs == "MIDI Clock")
+    {
+        qs = loadText.readLine();
+        qs2 = qs.section(' ', 0, 0);
+        midiclocktmp = qs2.toInt();
+        qs2 = qs.section(' ', 1, 1);
+        passWidget->mtpbSpin->setValue(qs2.toInt());
         qs = loadText.readLine();
     }
     qs2 = qs.section(' ', 0, 0);
@@ -542,6 +552,7 @@ void MainWindow::openFile(const QString& fn)
         }
     }
     arpData->setModified(false);
+    midiClockAction->setChecked(midiclocktmp);
 }
 
 void MainWindow::fileSave()
@@ -570,8 +581,12 @@ bool MainWindow::saveFile()
     saveText << "MIDI Control\n";
     saveText << (int)passWidget->cbuttonCheck->isChecked();
     saveText << ' ' << passWidget->cnumberSpin->value() << '\n';
+    saveText << "MIDI Clock\n";
+    saveText << (int)arpData->seqDriver->use_midiclock << ' ';
+    saveText << (int)arpData->seqDriver->midiclock_tpb << '\n';
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
+    
     saveText << arpData->seqDriver->grooveTick;
     saveText << ' ' << arpData->seqDriver->grooveVelocity;
     saveText << ' ' << arpData->seqDriver->grooveLength << '\n';

@@ -1,0 +1,360 @@
+.\" 
+.\" Page de manuel pour qmidiarp
+.\" Traiter avec:
+.\"   groff -man -Tascii qmidiarp.1 | less
+.\"
+.\" Une version imprimable peut être obtenue par:
+.\"   groff -t -e -mandoc -Tps qmidiarp.1 > qmidiarp.ps
+.\"
+.TH QMIDIARP 1 2009-11-06
+.SH NOM
+qmidiarp \- Arpégiateur et LFO MIDI pour le séquenceur ALSA
+
+.SH SYNOPSIS
+.br
+.B qmidiarp
+[\fIOPTION\fR] [\fIfile\fR]
+.br 
+.B qmidiarp
+{
+.B \-\-help 
+| 
+.B \-\-version
+}
+
+.SH DESCRIPTION
+QMidiArp
+est un arpégiateur et oscillateur à basse fréquence (LFO)
+MIDI avancé pour le séquenceur ALSA. Un
+nombre illimité d'arpégiateurs et LFOs peuvent être définis comme
+onglets pour fonctionner en parallèle. Les modules arpégiateurs 
+produisent des séquences de notes dépendant des notes reçues sur leur
+port d'entrée, qui est typiquement connecté à un clavier MIDI ou un 
+séquenceur. Les LFOs MIDI, de manière indépendante, produisent des
+données de contrôleur MIDI avec forme d'onde, résolution temporelle,
+amplitude et durée ajustables. Pour chaque module, un filtre d'entrée
+est disponible. Le port de sortie et le canal MIDI peuvent être 
+attribués pour chaque module indépendamment. Puisque les modules 
+utilisent un séquenceur commun, ils sont automatiquement synchronisés
+entre eux. QMidiArp fonctionne avec une résolution interne de 192 ticks
+par quart de mesure (beat). La queue peut être synchronisée à une 
+horologe MIDI entrant.
+QMidiArp possède également un outil de journalisation d'évênements MIDI
+entrants. 
+QMidiArp utilise les bibliothèques du kit Qt4.
+
+.SS "Fonctionnement Général"
+En cliquant sur les boutons
+.B Nouvel Arpège...
+ou
+.B Nouveau LFO... 
+le module choisi apparaît en tant qu'onglet dans la zone principale. Les
+modules peuvent être renommés ou supprimés avec les boutons et fonctions
+de menu correspondants. Le montage entier contenant tous les arpèges et
+LFOs de la barre d'onglets ainsi que les définitions de la 
+fenêtre 
+.B Paramètres 
+peuvent être sauvegardées dans un fichier texte QMidiArp (.qma). Le
+.B tempo
+du séquenceur est défini de manière commune pour tous les modules
+en unités de beats par minute (bpm). La queue du séquenceur est démarrée
+en cliquant sur le bouton indiquant une flêche bleue.
+
+.SS "Fonctionnement en mode MIDI Clock"
+QMidiArp peut utiliser les évênements MIDI clock entrant en tant 
+que source d'horologe et de contrôle start/stop.
+Si le 
+.B bouton MIDI clock
+à droite de la boîte de réglage du tempo est enfoncé, 
+la queue du séquenceur est arrêtée et
+QMidiArp
+attendra la réception d'un évênement "MIDI Clock Start" d'une source
+externe connectée à son entrée MIDI. Une fois cet évênement reçu, 
+la queue est démarrée en utilisant les évênements d'horologe MIDI comme
+source. La résolution temporelle de l'horologe externe peut être ajustée
+dans la fenêtre
+.B Paramètres.
+La synchronisation fonctionne au mieux si le tempo de la source externe
+correspond à peu près à celui de QMidiArp. La queue s'arrêtera
+sur réception d'un évênement MIDI Clock Stop. Pendant le fonctionnement
+en mode MIDI Clock, les fonctions internes de start/stop ainsi que 
+l'ajout ou le chargement de fichiers sont desactivées. Elles sont 
+réactivées en cliquant sur le bouton MIDI Clock à nouveau. 
+
+.SS "Les Modules Arpégiateur"
+.B Les champs Entrée et Sortie
+.PP
+Chaque arpégiateur possède un champ 
+.B Entrée
+et un champ
+.B Sortie.
+Le champ d'entrée définit la gamme de notes et le canal MIDI auxquels
+l'arpeggiator est assigné. Les notes qui passent par ce filtre sont
+triées par leur hauteur et ajoutées au tampon interne de notes de 
+l'arpégiateur. Les notes ne passant par aucun filtre peuvent être 
+acheminées à un port MIDI défini dans la fenêtre 
+.B Paramètres
+ou ignorées. Le champ 
+.B Sortie
+contient les réglages du 
+.B canal MIDI
+et du 
+.B port de sortie 
+auxquels les notes de l'arpège seront envoyées.
+.PP
+.B "Motifs d'arpège"
+.PP
+Le motif de l'arpège peut être sélectionné et édité dans le champ
+.B Motif.
+Les motifs prédéfinis 
+.B (presets) 
+sont accessibles d'un menu déroulant. Le motif actif est affiché dans un
+écran dédié montrant les notes de base comme traits. L'échelle verticale
+de cet écran correspond à l'index des notes dans le motif. Les 
+changements d'octave (voir
+.B Editer le motif)
+sont affichés comme des séparateurs horizontaux supplémentaires. Les 
+notes sortant de l'arpéggiateur dépendent des notes reçues à l'entrée, 
+qui sont attribuées par ordre ascendant aux notes de base définies dans 
+le motif. Par exemple, un trait unique en bas de l'écran d'affichage 
+(presets "simple") signifie qu'au premier passage, la note la plus basse
+jouée sur le clavier est produite. Si plusieurs notes sont appuyées sur
+le clavier et si seulement une note est présente dans le motif, c'est le 
+.B mode de répétition 
+qui détermine la séquence de notes jouées à la sortie. Si le motif 
+contient des traits de note empîlés (mode accord), les accords joués sur 
+le clavier deviennent aussi des accords à la sortie avec une polyphonie 
+dans la limite du nombre de notes définies dans cette pîle.
+.PP
+.B Mode de répétition
+.PP
+Le mode de répétition 
+définit le comportement de l'arpège sur plusieurs répétitions du motif
+quand le nombre de notes jouées sur le clavier dépasse le nombre
+de notes présentes dans le motif, par exemple avec une seule note dans
+le motif mais un accord de trois notes joué sur le clavier.
+Avec le
+.B mode de répétition 
+"Monte", la note produite est incrémentée à chaque répétition vers la 
+prochaine note 
+jouée sur le clavier. Avec le mode "Descend", la prochaine note
+plus basse est jouée. Avec une seule note présente dans le motif, ceci
+produit un arpège classique linéaire. Ainsi, même avec des motifs 
+simples comme "01" ou "0", on génère des arpèges complets. En revanche, 
+avec le mode de répétition "Statique", les notes à la sortie seront 
+constantes.
+.PP
+.B "Editer les motifs d'arpège"
+.PP
+Les motifs d'arpège de QMidiArp sont définis par une séquence de 
+caractères contenant les notes même ainsi que des caractères de 
+contrôle pour des changements de tempo, de vélocité, de durée,
+d'octave, et de mode accord. En appuyant sur le bouton
+.B Editer le motif, 
+le preset de motif apparaît sous forme d'un champ de texte modifiable.
+Le motif modifié peut être sauvegardé dans la liste des motifs 
+prédéfinis en cliquant le bouton
+.B Mémoriser le motif.
+Le motif actif peut être supprimé de la liste en cliquant sur le bouton
+.B Supprimer le motif.
+Les modifications de la liste des motifs s'appliquent simultanément à
+tous les arpéggiateurs dans la barre des onglets.
+La syntaxe du texte d'un motif est la suivante:
+
+0..9 : Indice de note jouée sur le clavier en ordre ascendant
+   + : Augmente d'une octave
+   - : Diminue d'une octave
+   = : Retour à l'octave de base
+   > : Double tempo
+   < : Demi tempo
+   . : Retour au tempo standard: un quart de mesure
+   
+(  ) : Mode accord début / fin
+       e.g. (012) produit un accord des trois
+       notes les plus basses dans le tampon 
+   / : Augmente la vélocité de 20%
+   \\ : Diminue la vélocité de 20%
+   d : Double durée de note
+   h : Demi durée de note
+   p : Pause
+
+Tous les contrôles sont valides jusqu'à la fin du motif. 
+Par exemple, le contrôle > doublera la vitesse de l'arpège pour toutes
+les notes suivantes dans le motif jusqu'à la prochaine répétition à 
+laquelle la vitesse reprendra à un quart de mesure. 
+.PP
+.B Randomisation
+.PP
+Le rythme, la vélocité et la durée des notes produites peuvent être 
+randomisés par les réglettes du champ
+.B Randomisation.
+Ces réglages peuvent être utilisés pour produire des motifs moins 
+mécaniques, mais à des valeurs plus élevées, ils ajoutent des accents
+intéressants au motif joué.
+.PP
+.B Enveloppe
+.PP
+QMidiArp peut superposer une fonction d'enveloppe aux vélocités des 
+arpèges. La dynamique de cette enveloppe est définie par les réglettes
+.B Attack 
+et
+.B Release.
+En ajustant un temps d'"attack" non-nul, les vélocités de notes à la 
+sortie sont incrémentées pendant le temps d'attack défini en secondes. 
+Si un temps "release" est spécifié, les notes relâchées sont gardées dans 
+le tampon, et leur vélocité est linéairement diminuée jusqu'à la fin du 
+temps "release". Cette fonction n'a un effet sur le son que si le 
+synthétiseur connecté à la sortie produit des sons sensible à la 
+vélocité. Elle fonctionne aux mieux avec des motifs à haute polyphonie
+comme par exemple le motif "Chord Oct 16 A".
+.PP
+.B Groove
+.PP
+Les réglettes de la fenêtre
+.B Groove
+permettent de contrôler un décalage linéaire du rythme, de la durée des
+notes et de leur vélocité à l'intérieur de chaque quart de mesure du 
+motif. Ceci permet de créer un rythme du type swing ou d'accentuer le 
+motif. Les ajustements Groove sont valables pour tous les arpégiateurs
+simultanément.
+
+.SS "Les modules LFO"
+En parallèle aux arpégiateurs,  
+QMidiArp
+peut envoyer des données de contrôle MIDI sous forme d'un oscillateur
+à basse fréquence (LFO) à une sortie spécifiée. Les données LFO sont des
+évênements MIDI envoyés en synchronie avec la queue de l'arpégiateur.
+La queue doit être en état démarré pour activer les LFOs. 
+Chaque module LFO possède un champ
+.B forme d'onde
+pour définir la forme des données produites et un champ
+.B Sortie
+pour définir leur canal MIDI, port ALSA ainsi que le numéro de 
+contrôleur à produire. Actuellement, la forme d'onde peut être choisie 
+entre Sinus, Scie montant, Scie descendant, Triangle, Créneau et Libre. 
+La  
+.B fréquence
+du LFO est définie en multiples et diviseurs du
+.B tempo
+de l'arpégiateur, une fréquence de 1 produit une onde entière à chaque
+quart de mesure. Si l'on spécifie des fréquences plus basses, la 
+longueur de la table d'onde doit être ajustée en conséquence si l'on 
+souhaite produire un cycle d'onde complet. La 
+.B résolution 
+temporelle du LFO détermine le nombre d'évênements produits à chaque 
+quart de temps. Elle peut aller de 1 à 192 évênements par quart de temps.
+.B L'amplitude 
+et
+.B l'offset
+de l'onde peuvent être spécifiés entre 0 et 127. A basse résolution
+temporelle, le LFO produira des changements rythmiques du contrôle, 
+tandis que des résolutions élevées mènent à des ondes de plus en plus
+continues.
+.PP
+.B Rendre muet l'onde point par point
+.PP
+On peut retenir l'emission d'un point individuel sur la forme d'onde
+en cliquant avec le 
+.I bouton droit 
+de la souris à l'endroit correspondant dans l'écran d'affichage de 
+l'onde. Les points muets de l'onde sont affichés en couleur sombre.
+.PP
+.B Formes Libres
+.PP
+En sélectionnant la forme
+.B Libre,
+l'onde peut être dessinée ou modifiée avec le 
+.I bouton gauche 
+de la souris. Le bouton 
+.B Copier dans l'onde libre
+permet de copier la forme actuellement affichée vers la forme libre pour
+être modifiée. La forme libre précédente sera écrasée en utilisant cette
+fonction.
+Toutes les opérations du LFO incluant le dessin peuvent être faites 
+pendant que la queue est en route, et elles auront leur effet au 
+prochain cycle de l'onde.
+.PP
+.B "Le champ Sortie du LFO"
+.PP
+Ce champ contient les réglages du  
+.B port, 
+.B canal
+et
+.B contrôleur 
+des données produites par chaque onglet LFO. Il permet également de 
+rendre muet chaque LFO entièrement après un cycle d'onde complet.
+
+.SS "Paramètres"
+La fenêtre "Paramètres" permet de configurer vers quel port ALSA les
+évênements passant par le filtre d'entrée d'aucun arpégiateur sont
+acheminés. Si ces évênements devront être ignorés, la case correspondante
+doit être décochée. Dans cette fenêtre on spécifie également si QMidiArp
+permet de rendre silencieux ses modules d'arpégiateur par un contrôle
+MIDI externe reçu. Si cette option est cochée, le numéro du contrôleur
+du premier arpégiateur dans la barre d'onglets peut être spécifié.
+L'arpégiateur suivant sera addressé par le numéro de contrôleur 
+suivant et ainsi de suite. Par exemple, si le numéro du contrôleur
+est spécifié à 30, une valeur de 127 reçu avec un évênement MIDI CC#30
+basculera le premier arpégiateur en silencieux/non-silencieux. Le 
+CC#31 agira sur l'arpégiateur dans l'onglet suivant. La fenêtre
+.B Paramètres
+permet également de définir la résolution de l'horologe MIDI externe
+utilisée pour la synchronisation. Sa valeur par défaut est de 96
+ticks par quart de temps (tpb). 
+.SS "Journal"
+La fenêtre du
+.B Journal 
+d'évênements liste les évênements MIDI entrants. Les évênements sont 
+affichés en couleur dépendant de leur type. 
+Le journal est affiché dans la partie inférieure du logiciel par défaut, 
+mais il peut être caché ou détaché en tant que fenêtre indépendante.
+La journalisation peut être desactivée entièrement ou uniquement pour 
+les évênements d'horologe MIDI.
+
+.SS Fichiers d'exemple
+Il y a actuellement trois fichiers de démonstration. 
+Le fichier demo.qma a été conçu pour être utilisé avec des sons de type
+suivant: Canal 1: Marimba, Canal 2: Celesta, Canal 3: Basse acoustique, 
+mais on peut obtenir des résultats intéressants en employant d'autres
+types de son.
+
+QMidiArp a été inspiré par l'arpégiateur matériel MAP1 par Rudi Linhard.
+
+.SH OPTIONS
+.B \-\-portCount <num>
+Définir le nombre de ports ALSA disponibles égal à <num>. La valeur 
+par défaut est 2.
+.TP
+.B \-\-help                      
+Affiche les options de ligne de commande disponibles et quitte le 
+programme.
+.TP
+.B \-\-version                   
+Affiche l'information de version du programme et quitte celui-ci.
+.TP
+.B fichier
+Nom d'un fichier QMidiArp (.qma) valide à charger au démarrage du 
+programme.
+.SH FICHIERS
+.I *.qma
+.RS
+Fichiers QMidiArp contenant les données au format
+plein texte.
+
+.SH EXEMPLES
+Les fichiers d'exemple de QMidiArp se situent dans  
+.I /usr/share/qmidiarp
+ou dans
+.I /usr/local/share/qmidiarp
+
+.SH NOTES
+Les erreurs et avertissements sont écrits dans 
+.BR stderr (3).
+.PP
+.SH SUPPORT
+alsamodular-devel@lists.sourceforge.net
+
+.SH AUTEURS
+Matthias Nagorni, Frank Kober et Guido Scholz. Cette page de manuel 
+a été écrite par
+Frank Kober <emuse@users.sourceforge.net>.

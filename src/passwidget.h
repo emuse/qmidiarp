@@ -19,26 +19,26 @@ class PassWidget : public QWidget
 
   private:
     QCheckBox *forwardCheck;
-    QSpinBox *portUnmatchedSpin, *mtpbSpin;
-	QLabel *portLabel, *mtpbLabel, *cnumberLabel;
+    QSpinBox *portUnmatchedSpin;
+    QLabel *portLabel, *mtpbLabel, *cnumberLabel;
           
   public:
     PassWidget(int p_portcount, QWidget* parent=0);
     ~PassWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);
-	QCheckBox *cbuttonCheck;
-	QSpinBox *cnumberSpin;
+    QCheckBox *cbuttonCheck;
+    QSpinBox *cnumberSpin, *mtpbSpin;
     
   signals:
     void forwardToggled(bool);  
     void newPortUnmatched(int);
     void midiMuteToggle(bool);
-	void newMIDItpb(int);
-	void newCnumber(int);
-	    
+    void newMIDItpb(int);
+    void newCnumber(int);
+        
   public slots:
-	void updateForward(bool on);
+    void updateForward(bool on);
     void updatePortUnmatched(int);
     void updateMIDItpb_pw(int);
     void updateCnumber(int);

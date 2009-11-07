@@ -1,3 +1,15 @@
+2009-11-07 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: MIDI clock resolution and toggle added to saved 
+    items
+    * translations/*.ts: minor fixes
+    * man/fr/qmidiarp.1, Makefile.am, configure.ac: French manpage added
+    * man/qmidiarp.1: slight editing
+
+2009-11-06 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: fixed double employed Ctrl-L keysequence
+    * lfowidget.cpp: fixed keyboard tab focus sequence
+    * man/qmidiarp.1: streamlined
+    
 2009-11-05 Frank Kober <goemusic@yahoo.fr>
     * NEWS, README: updated
     * mainwindow.cpp: fixed disabling of removePattern action for all arps
