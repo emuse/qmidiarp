@@ -18,6 +18,9 @@
 #include "pixmaps/qmidiarp2.xpm"
 #include "pixmaps/arpadd.xpm"
 #include "pixmaps/lfoadd.xpm"
+#include "pixmaps/settings.xpm"
+#include "pixmaps/eventlog.xpm"
+#include "pixmaps/groovetog.xpm"
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
@@ -163,14 +166,17 @@ MainWindow::MainWindow(int p_portCount)
     updateRunQueue(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
+    viewLogAction->setIcon(QIcon(eventlog_xpm));
     viewLogAction->setText(tr("&Event Log"));
     viewLogAction->setShortcut(QKeySequence(tr("Ctrl+H", "View|Event Log")));
 
     QAction* viewGrooveAction = grooveWindow->toggleViewAction();
+    viewGrooveAction->setIcon(QIcon(groovetog_xpm));
     viewGrooveAction->setText(tr("&Groove Settings"));
     viewGrooveAction->setShortcut(QKeySequence(tr("Ctrl+G", "View|Groove")));
 
     QAction* viewSettingsAction = passWindow->toggleViewAction();
+    viewSettingsAction->setIcon(QIcon(settings_xpm));
     viewSettingsAction->setText(tr("&Settings"));
     viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P",
                     "View|Settings")));
@@ -189,8 +195,8 @@ MainWindow::MainWindow(int p_portCount)
     fileMenu->addAction(fileQuitAction);    
 
     viewMenu->addAction(viewLogAction);
-    viewMenu->addAction(viewSettingsAction);
     viewMenu->addAction(viewGrooveAction);
+    viewMenu->addAction(viewSettingsAction);
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(addLfoAction);
@@ -211,6 +217,9 @@ MainWindow::MainWindow(int p_portCount)
     fileToolBar->setMaximumHeight(30);
 
     runBox = new QToolBar(tr("&Control Toolbar"), this);
+    runBox->addAction(viewLogAction);
+    runBox->addAction(viewGrooveAction);
+    runBox->addSeparator();
     runBox->addAction(addArpAction);
     runBox->addAction(addLfoAction);
     runBox->addSeparator();

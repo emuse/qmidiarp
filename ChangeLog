@@ -1,3 +1,9 @@
+2009-11-08 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: some icons added, View items added to toolbar
+    * eventlog.xpm, groovetog.xpm, settings.xpm, pixmaps/Makefile.am: 
+    some icons added
+    * filesave.xpm, filesaveas.xpm: icons polished
+    
 2009-11-07 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.cpp: MIDI clock resolution and toggle added to saved 
     items
