@@ -242,9 +242,9 @@ MainWindow::MainWindow(int p_portCount)
     setCentralWidget(tabWidget);
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     updateWindowTitle();
+    show();
     checkRcFile();
     readRcFile();
-    show();
 }
 
 MainWindow::~MainWindow()
