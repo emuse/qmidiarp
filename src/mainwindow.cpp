@@ -242,9 +242,8 @@ MainWindow::MainWindow(int p_portCount)
     setCentralWidget(tabWidget);
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     updateWindowTitle();
+    if (checkRcFile()) readRcFile();
     show();
-    checkRcFile();
-    readRcFile();
 }
 
 MainWindow::~MainWindow()
@@ -723,9 +722,10 @@ void MainWindow::midiClockToggle(bool on)
     fileOpenAction->setDisabled(on);
 }
 
-void MainWindow::checkRcFile()
+bool MainWindow::checkRcFile()
 {
     QDir qmahome = QDir(QDir::homePath());
+    bool retval = true;
     if (!qmahome.exists(QMARCNAME)) {
 
         patternNames
@@ -755,7 +755,9 @@ void MainWindow::checkRcFile()
             << "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342";
             
         writeRcFile();
+        retval = false;
     }
+    return retval;
 }
 
 void MainWindow::readRcFile()

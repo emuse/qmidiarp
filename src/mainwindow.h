@@ -53,7 +53,7 @@ class MainWindow : public QMainWindow
     void addLfo(const QString&);
     void removeArp(int index);
     void removeLfo(int index);
-    void checkRcFile();
+    bool checkRcFile();
     void writeRcFile();
     void readRcFile();
     void clear();
