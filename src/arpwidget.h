@@ -2,6 +2,7 @@
 #define ARPWIDGET_H
 
 #include <QString>
+#include <QTextStream>
 #include <QToolButton>
 #include <QAction>
 #include <QComboBox>
