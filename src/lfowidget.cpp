@@ -85,7 +85,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
 
     QVBoxLayout* outputLayout = new QVBoxLayout;
     outputLayout->addLayout(portBoxLayout);
-    outputLayout->addStretch();
 
     portBox->setLayout(outputLayout);
 
@@ -179,15 +178,13 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     QGridLayout *patternBoxLayout = new QGridLayout;
     patternBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
     patternBoxLayout->addWidget(waveFormBox, 0, 1);
-
     patternBoxLayout->addWidget(freqBoxLabel, 1, 0);
     patternBoxLayout->addWidget(freqBox, 1, 1);
-
     patternBoxLayout->addWidget(resBoxLabel, 2, 0);
     patternBoxLayout->addWidget(resBox, 2, 1);
-
     patternBoxLayout->addWidget(sizeBoxLabel, 3, 0);
     patternBoxLayout->addWidget(sizeBox, 3, 1);
+    patternBoxLayout->setRowStretch(4, 1);
     
     QGridLayout* waveBoxLayout = new QGridLayout;
     waveBoxLayout->addWidget(lfoScreen, 0, 0, 1, 2);
@@ -196,9 +193,13 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
 
     patternBox->setLayout(waveBoxLayout); 
 
+    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
+    inOutBoxLayout->addWidget(portBox);
+    inOutBoxLayout->addStretch();
+
     QHBoxLayout *lfoWidgetLayout = new QHBoxLayout;
     lfoWidgetLayout->addWidget(patternBox);
-    lfoWidgetLayout->addWidget(portBox);
+    lfoWidgetLayout->addLayout(inOutBoxLayout);
 
     setLayout(lfoWidgetLayout);
     updateAmp(64);
