@@ -1,3 +1,13 @@
+2009-11-15 Frank Kober <goemusic@yahoo.fr>
+    * seqdriver.cpp: Compute MIDI Clock timing on every MIDI Clock event
+    to better follow MIDI Clock tempo changes, stabilize LFO wrt MIDI 
+    Clock tempo changes
+    
+2009-11-09 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.*: fixed: startup with GUI settings defined in
+    MainWindow constructor, also when .qmidiarprc is being created the 
+    first time
+    
 2009-11-08 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.cpp: some icons added, View items added to toolbar
     * eventlog.xpm, groovetog.xpm, settings.xpm, pixmaps/Makefile.am: 
@@ -371,3 +381,6 @@
     addArp and renameArp do now respect 'cancel' in name dialog
     corrected: renaming of all tabs including the three 'system' tabs
     was permitted
+
+2009-06-24 Frank Kober <goemusic@yahoo.fr>
+    * package: ported from Qt3 to Qt4 library

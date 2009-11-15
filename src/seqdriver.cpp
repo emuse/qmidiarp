@@ -122,7 +122,7 @@ void SeqDriver::procEvents(int)
 
         }
 
-        if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
+        if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue || fallback)) 
         {
             fallback = false;
             real_time = evIn->time.time;
