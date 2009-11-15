@@ -106,16 +106,25 @@ void SeqDriver::procEvents(int)
     snd_seq_event_t *evIn, evOut;
     snd_seq_tick_time_t noteTick;
     bool unmatched, foundEcho, isNew;
+    bool fallback = false;
 
     do {
         snd_seq_event_input(seq_handle, &evIn);
 
         if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
             midiTick += 4;
+            real_time = get_time();
+            calcMidiRatio();
+            tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
+            if (((int)tick > nextLfoTick) && (midiLfoList->count())) {
+                fallback = true; 
+            }
+
         }
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue)) 
         {
+            fallback = false;
             real_time = evIn->time.time;
             if (use_midiclock) {
                 tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
