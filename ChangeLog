@@ -11,16 +11,6 @@
     * src/pixmaps/seqadd.xpm, src/pixmaps/seqwavcp.xpm: seq icons added
     * mainwindow.*, seqdriver.*, arpdata.*, Makefile.am, configure.ac: 
     incorporate stepsequencer handling
-
-2009-11-09 Frank Kober <goemusic@yahoo.fr>
-    * mainwindow.*: fixed: startup with GUI settings defined in
-    MainWindow constructor, also when .qmidiarprc is being created the 
-    first time
-    
-2009-11-15 Frank Kober <goemusic@yahoo.fr>
-    * seqdriver.cpp: Compute MIDI Clock timing on every MIDI Clock event
-    to better follow MIDI Clock tempo changes, stabilize LFO wrt MIDI 
-    Clock tempo changes
     
 2009-11-09 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.*: fixed: startup with GUI settings defined in
