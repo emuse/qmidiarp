@@ -19,15 +19,12 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QString>
-#include <QLabel>
-#include <QSlider> 
 #include <QBoxLayout>
 #include <QGridLayout>
-#include <QStringList>
-#include <QGroupBox>
-#include <QLineEdit>
 #include <QInputDialog>
+#include <QGroupBox>
+#include <QLabel>
+#include <QStringList>
 
 #include "midilfo.h"
 #include "lfowidget.h"
@@ -53,6 +50,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     ccnumberBox = new QSpinBox(portBox);
     ccnumberLabel->setBuddy(ccnumberBox);
     ccnumberBox->setRange(0, 127);
+    ccnumberBox->setKeyboardTracking(false);
     ccnumberBox->setValue(74);
     ccnumberBox->setToolTip(tr("MIDI Controller number sent to output"));
     connect(ccnumberBox, SIGNAL(valueChanged(int)), this,
@@ -191,8 +189,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     waveBoxLayout->addLayout(patternBoxLayout, 1, 0);
     waveBoxLayout->addLayout(sliderLayout, 1, 1);
 
-    patternBox->setLayout(waveBoxLayout); 
-
+    patternBox->setLayout(waveBoxLayout);
+    
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();

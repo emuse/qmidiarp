@@ -9,6 +9,8 @@
 #include "arpwidget.h"
 #include "midilfo.h"
 #include "lfowidget.h"
+#include "midiseq.h"
+#include "seqwidget.h"
 
 class ArpData : public QWidget  {
     
@@ -19,6 +21,8 @@ class ArpData : public QWidget  {
     QList<ArpWidget *> arpWidgetList;
     QList<MidiLfo *> midiLfoList;
     QList<LfoWidget *> lfoWidgetList;
+    QList<MidiSeq *> midiSeqList;
+    QList<SeqWidget *> seqWidgetList;
     int portCount;
     bool modified;
 
@@ -48,6 +52,15 @@ class ArpData : public QWidget  {
     int lfoWidgetCount();   
     MidiLfo *midiLfo(int index);
     LfoWidget *lfoWidget(int index);
+    
+    void addMidiSeq(MidiSeq *midiSeq);
+    void addSeqWidget(SeqWidget *seqWidget);
+    void removeMidiSeq(MidiSeq *midiSeq);
+    void removeSeqWidget(SeqWidget *seqWidget);
+    int midiSeqCount();
+    int seqWidgetCount();   
+    MidiSeq *midiSeq(int index);
+    SeqWidget *seqWidget(int index);
     int getAlsaClientId();
     
   public slots:

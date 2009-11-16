@@ -7,18 +7,16 @@
 #include <QDockWidget>
 #include <QMessageBox>
 #include <QMainWindow>
+#include <QString>
 #include <QTabWidget>
 #include <QToolBar>
-#include <QString>
+
 #include <alsa/asoundlib.h>
 
-
-#include "arpwidget.h"
 #include "logwidget.h"
 #include "arpdata.h"
 #include "passwidget.h"
 #include "groovewidget.h"
-#include "arpscreen.h"
 #include "config.h"
 
 static const char ABOUTMSG[] = APP_NAME " " PACKAGE_VERSION "\n"
@@ -51,8 +49,10 @@ class MainWindow : public QMainWindow
 
     void addArp(const QString&);
     void addLfo(const QString&);
+    void addSeq(const QString&);
     void removeArp(int index);
     void removeLfo(int index);
+    void removeSeq(int index);
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
@@ -66,7 +66,7 @@ class MainWindow : public QMainWindow
     ~MainWindow();
     QToolBar *runBox, *fileToolBar;
     QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
-    QAction *addLfoAction;
+    QAction *addLfoAction, *addSeqAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
     QAction *midiClockAction;
@@ -83,6 +83,7 @@ class MainWindow : public QMainWindow
     void fileSaveAs();
     void arpNew();
     void lfoNew();
+    void seqNew();
     void moduleRename();
     void moduleDelete();
 

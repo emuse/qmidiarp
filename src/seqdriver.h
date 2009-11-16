@@ -7,6 +7,7 @@
 
 #include "midiarp.h"
 #include "midilfo.h"
+#include "midiseq.h"
 #include "main.h"
 
 class SeqDriver : public QWidget {
@@ -17,19 +18,23 @@ class SeqDriver : public QWidget {
         int portCount;
         QList<MidiArp *> *midiArpList; 
         QList<MidiLfo *> *midiLfoList; 
+        QList<MidiSeq *> *midiSeqList; 
         QSocketNotifier *seqNotifier;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
         int lfoMinPacketSize, lfoPacketSize[20];
+        int seqMinPacketSize, seqPacketSize[20];
         int portid_in;
         int queue_id;
         bool startQueue;
         bool modified;
         snd_seq_tick_time_t tick, nextEchoTick;
         int firstArpTick, lastLfoTick[20], nextLfoTick;
-        int lfoCCnumber;
+        int lastSeqTick[20], nextSeqTick;
+        int lfoCCnumber, seqCCnumber;
         QVector<LfoSample> lfoData;
+        QVector<SeqSample> seqData;
 
         void initSeqNotifier();
         const snd_seq_real_time_t *tickToDelta(int tick);
@@ -52,7 +57,8 @@ class SeqDriver : public QWidget {
 
     public:
         SeqDriver(QList<MidiArp*> *p_midiArpList, 
-                QList<MidiLfo *> *p_midiLfoList, QWidget* parent=0);
+                QList<MidiLfo *> *p_midiLfoList,
+                QList<MidiSeq *> *p_midiSeqList, QWidget* parent=0);
         ~SeqDriver();
         void registerPorts(int num);
         int getPortCount();

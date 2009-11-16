@@ -1,4 +1,23 @@
 2009-11-15 Frank Kober <goemusic@yahoo.fr>
+    * seqdriver.cpp: compute MIDI clock slave timing on every received
+    clock event and stabilized a bit against MIDI clock tempo changes
+    
+2009-11-13 Frank Kober <goemusic@yahoo.fr>
+    * midiseq.*, seqwidget.*, seqscreen.*: step Sequencer module added.
+    Current features: adjustable resolution, length and global velocity,
+    note length, transpose. Velocity and transpose can optionally be 
+    obtained from input notes played on keyboard. Notes can be drawn and
+    muted by left/right mouse click.
+    * src/pixmaps/seqadd.xpm, src/pixmaps/seqwavcp.xpm: seq icons added
+    * mainwindow.*, seqdriver.*, arpdata.*, Makefile.am, configure.ac: 
+    incorporate stepsequencer handling
+
+2009-11-09 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.*: fixed: startup with GUI settings defined in
+    MainWindow constructor, also when .qmidiarprc is being created the 
+    first time
+    
+2009-11-15 Frank Kober <goemusic@yahoo.fr>
     * seqdriver.cpp: Compute MIDI Clock timing on every MIDI Clock event
     to better follow MIDI Clock tempo changes, stabilize LFO wrt MIDI 
     Clock tempo changes
@@ -7,7 +26,7 @@
     * mainwindow.*: fixed: startup with GUI settings defined in
     MainWindow constructor, also when .qmidiarprc is being created the 
     first time
-    
+
 2009-11-08 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.cpp: some icons added, View items added to toolbar
     * eventlog.xpm, groovetog.xpm, settings.xpm, pixmaps/Makefile.am: 

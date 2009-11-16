@@ -1,5 +1,5 @@
 /*
- *      lfowidget.h
+ *      seqwidget.h
  *      
  *      Copyright 2009 <alsamodular-devel@lists.sourceforge.net>
  *      
@@ -19,51 +19,55 @@
  *      MA 02110-1301, USA.
  */
 
-#ifndef LFOWIDGET_H
-#define LFOWIDGET_H
+#ifndef SEQWIDGET_H
+#define SEQWIDGET_H
 
-#include <QAction>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QSpinBox>
 #include <QString>
+#include <QComboBox>
+#include <QSpinBox>
 #include <QTextStream>
+#include <QCheckBox>
+#include <QAction>
 #include <QToolButton>
 
-#include "midilfo.h"
+#include "midiseq.h"
 #include "slider.h"
-#include "lfoscreen.h"
+#include "seqscreen.h"
 
-const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
-const int lfoFreqValues[11] = {1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32};
+const int seqResValues[5] = {1, 2, 4, 8, 16};
 
-class LfoWidget : public QWidget
+class SeqWidget : public QWidget
 {
     Q_OBJECT
 
-    // Output channel / port (ALSA Sequencer)
-    QSpinBox *channelOut, *portOut, *ccnumberBox;
+    QSpinBox *chIn;
+    QSpinBox *channelOut, *portOut;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
     QToolButton *copyToCustomButton;
  
-    MidiLfo *midiLfo;
-    Slider *frequency, *amplitude, *offset;
-    QVector<LfoSample> lfoData;
+    MidiSeq *midiSeq;
+    Slider *velocity, *transpose, *notelength;
+    QVector<SeqSample> seqData;
     bool modified;
 
   public:
-    QString lfoName;
-    LfoScreen *lfoScreen;
+    QString seqName;
+    SeqScreen *seqScreen;
     QStringList waveForms;
     QCheckBox *muteOut;
-
-    LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget* parent=0);
-    ~LfoWidget();
-    MidiLfo *getMidiLfo();
+    QCheckBox *enableNoteIn;               
+    QCheckBox *enableVelIn; 
     
-    void readLfo(QTextStream& arpText);
-    void writeLfo(QTextStream& arpText);
+    SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget* parent=0);
+    ~SeqWidget();
+    MidiSeq *getMidiSeq();
+    
+    void readSeq(QTextStream& arpText);
+    void writeSeq(QTextStream& arpText);
+    void setChIn(int value);
+    void setEnableNoteIn(bool on);
+    void setEnableVelIn(bool on);
     void setChannelOut(int value);
     void setPortOut(int value);
     void loadWaveForms();
@@ -74,15 +78,17 @@ class LfoWidget : public QWidget
     void patternChanged();
     
   public slots:
+    void updateChIn(int value);
+    void updateEnableNoteIn(bool on);
+    void updateEnableVelIn(bool on);
     void updateChannelOut(int value);
     void updatePortOut(int value);
     void updateWaveForm(int);
     void updateRes(int);
     void updateSize(int);
-    void updateCcnumber(int val);
-    void updateFreq(int val);
-    void updateAmp(int val);
-    void updateOffs(int val);
+    void updateNoteLength(int val);
+    void updateVelocity(int val);
+    void updateTranspose(int val);
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
     void copyToCustom();

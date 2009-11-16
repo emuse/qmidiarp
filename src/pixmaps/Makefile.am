@@ -4,6 +4,7 @@ pixmaps = \
 	arpadd.xpm arprename.xpm formsave.xpm patternstore.xpm \
 	arpremove.xpm editmodeon.xpm play.xpm patternremove.xpm \
 	qmidiarp2.xpm midiclock.xpm lfoadd.xpm lfowavcp.xpm\
+	seqadd.xpm seqwavcp.xpm\
 	settings.xpm groovetog.xpm eventlog.xpm \
 	filenew.xpm filesave.xpm filesaveas.xpm fileopen.xpm filequit.xpm
 	

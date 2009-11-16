@@ -20,8 +20,6 @@
  */
 
 #include <QPolygon>
-#include <QWidget>
-#include <QString>
 #include <QPainter>
 #include <QPaintDevice>
 #include <QPen>
@@ -29,8 +27,7 @@
 #include <QBrush>
 #include <QSizePolicy>
 #include <QSize>
-#include <QBoxLayout>
-#include <QTabWidget>
+
 #include <alsa/asoundlib.h>
 
 #include "lfoscreen.h"

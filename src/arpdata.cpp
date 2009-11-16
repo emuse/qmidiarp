@@ -11,7 +11,7 @@
 
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, this);
+    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
     //midiArpList.setAutoDelete(true);
 }
 
@@ -130,12 +130,66 @@ LfoWidget *ArpData::lfoWidget(int index)
     return(lfoWidgetList.at(index));
 }
 
+//SEQ handling
+
+void ArpData::addMidiSeq(MidiSeq *midiSeq)
+{
+    midiSeqList.append(midiSeq);
+    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
+        seqDriver->setQueueStatus(true);
+    }
+}
+
+void ArpData::addSeqWidget(SeqWidget *seqWidget)
+{
+    seqWidgetList.append(seqWidget);
+    modified = true;
+}
+
+void ArpData::removeMidiSeq(MidiSeq *midiSeq)
+{
+    if (seqDriver->runArp && (midiSeqList.count() < 1)) {
+        seqDriver->setQueueStatus(false);
+    }
+    int i = midiSeqList.indexOf(midiSeq);
+    if (i != -1)
+        delete midiSeqList.takeAt(i);
+}
+
+void ArpData::removeSeqWidget(SeqWidget *seqWidget)
+{
+    removeMidiSeq(seqWidget->getMidiSeq());
+    seqWidgetList.removeOne(seqWidget);
+    modified = true;
+}
+
+int ArpData::midiSeqCount()
+{
+    return(midiSeqList.count());
+}
+
+int ArpData::seqWidgetCount()
+{
+    return(seqWidgetList.count());
+}
+
+MidiSeq *ArpData::midiSeq(int index)
+{
+    return(midiSeqList.at(index));
+}
+
+SeqWidget *ArpData::seqWidget(int index)
+{
+    return(seqWidgetList.at(index));
+}
+
 //general
 
 bool ArpData::isModified()
 {
     bool arpmodified = false;
     bool lfomodified = false;
+    bool seqmodified = false;
 
     for (int l1 = 0; l1 < arpWidgetCount(); l1++)
         if (arpWidget(l1)->isModified()) {
@@ -147,9 +201,15 @@ bool ArpData::isModified()
             lfomodified = true;
             break;
         }
+        
+    for (int l1 = 0; l1 < seqWidgetCount(); l1++)
+        if (seqWidget(l1)->isModified()) {
+            seqmodified = true;
+            break;
+        }
 
     return modified || seqDriver->isModified() 
-                    || arpmodified || lfomodified;
+                    || arpmodified || lfomodified || seqmodified;
 }
 
 void ArpData::setModified(bool m)
@@ -162,6 +222,9 @@ void ArpData::setModified(bool m)
 
     for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
         lfoWidget(l1)->setModified(m);
+
+    for (int l1 = 0; l1 < seqWidgetCount(); l1++)
+        seqWidget(l1)->setModified(m);
 }
 
 void ArpData::registerPorts(int num)
