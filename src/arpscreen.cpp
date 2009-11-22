@@ -36,8 +36,6 @@
 
 ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
 {
-    globalMaxResetCount = 0;
-    globalMax = 0;
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     a_pattern=" ";
     follower_tick=0;
@@ -82,7 +80,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int maxOctave = 0;
     int minOctave = 0;
     double minTempo = 1.0;
-    int noctaves=1;
+    int noctaves = 1;
     double vel =1.0;
     int grooveTmp = 0;
     int grooveIndex = 0;

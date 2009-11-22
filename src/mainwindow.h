@@ -56,6 +56,8 @@ class MainWindow : public QMainWindow
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
+    void checkIfLastModule();
+    void checkIfFirstModule();
     void clear();
     
   protected:

@@ -291,6 +291,32 @@ void MainWindow::arpNew()
     }
 }
 
+void MainWindow::lfoNew()
+{
+    QString name;
+    bool ok;
+
+    name = QInputDialog::getText(this, APP_NAME,
+            tr("Add MIDI LFO"), QLineEdit::Normal,
+            tr("%1").arg(arpData->midiLfoCount() + 1), &ok);
+    if (ok && !name.isEmpty()) {
+        addLfo("LFO:"+name);
+    }
+}
+
+void MainWindow::seqNew()
+{
+    QString name;
+    bool ok;
+
+    name = QInputDialog::getText(this, APP_NAME,
+            tr("Add Step Sequencer"), QLineEdit::Normal,
+            tr("%1").arg(arpData->midiSeqCount() + 1), &ok);
+    if (ok && !name.isEmpty()) {
+        addSeq("Seq:"+name);
+    }
+}
+
 void MainWindow::addArp(const QString& name)
 {
     MidiArp *midiArp = new MidiArp();
@@ -319,35 +345,7 @@ void MainWindow::addArp(const QString& name)
     tabWidget->addTab(arpWidget, name);
     tabWidget->setCurrentWidget(arpWidget);
     arpWidget->arpName = name;
-    removeArpAction->setEnabled(true);    
-    renameArpAction->setEnabled(true);
-    midiClockAction->setEnabled(true);
-    runAction->setEnabled(true);
-}
-void MainWindow::lfoNew()
-{
-    QString name;
-    bool ok;
-
-    name = QInputDialog::getText(this, APP_NAME,
-            tr("Add MIDI LFO"), QLineEdit::Normal,
-            tr("%1").arg(arpData->midiLfoCount() + 1), &ok);
-    if (ok && !name.isEmpty()) {
-        addLfo("LFO:"+name);
-    }
-}
-
-void MainWindow::seqNew()
-{
-    QString name;
-    bool ok;
-
-    name = QInputDialog::getText(this, APP_NAME,
-            tr("Add Step Sequencer"), QLineEdit::Normal,
-            tr("%1").arg(arpData->midiSeqCount() + 1), &ok);
-    if (ok && !name.isEmpty()) {
-        addSeq("Seq:"+name);
-    }
+    checkIfFirstModule();
 }
 
 void MainWindow::addLfo(const QString& name)
@@ -362,10 +360,7 @@ void MainWindow::addLfo(const QString& name)
     tabWidget->addTab(lfoWidget, name);
     tabWidget->setCurrentWidget(lfoWidget);
     lfoWidget->lfoName = name;
-    removeArpAction->setEnabled(true);    
-    renameArpAction->setEnabled(true);
-    midiClockAction->setEnabled(true);
-    runAction->setEnabled(true);
+    checkIfFirstModule();
 }
 
 void MainWindow::addSeq(const QString& name)
@@ -380,10 +375,7 @@ void MainWindow::addSeq(const QString& name)
     tabWidget->addTab(seqWidget, name);
     tabWidget->setCurrentWidget(seqWidget);
     seqWidget->seqName = name;
-    removeArpAction->setEnabled(true);    
-    renameArpAction->setEnabled(true);
-    midiClockAction->setEnabled(true);
-    runAction->setEnabled(true);
+    checkIfFirstModule();
 }
 
 void MainWindow::moduleRename() {
@@ -392,7 +384,7 @@ void MainWindow::moduleRename() {
     bool ok;
     oldname = tabWidget->tabText(tabWidget->currentIndex());
 
-        newname = QInputDialog::getText(this, APP_NAME,
+    newname = QInputDialog::getText(this, APP_NAME,
                 tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
                 
         if (ok && !newname.isEmpty()) {
@@ -446,15 +438,7 @@ void MainWindow::moduleDelete()
     }
 
     tabWidget->removeTab(tabWidget->currentIndex());
-    if (!arpData->midiArpCount() && !arpData->midiLfoCount() && 
-        !arpData->midiSeqCount()) {  
-        removeArpAction->setDisabled(true);
-        renameArpAction->setDisabled(true);
-        runAction->setDisabled(true);
-        runAction->setChecked(false);
-        midiClockAction->setDisabled(true);
-        midiClockAction->setChecked(false);
-    }
+    checkIfLastModule();
 }
 
 void MainWindow::removeArp(int index)
@@ -463,14 +447,7 @@ void MainWindow::removeArp(int index)
     arpData->removeMidiArp(arpWidget->getMidiArp());
     arpData->removeArpWidget(arpWidget);
     tabWidget->removeTab(index);
-    if (!arpData->midiArpCount() && !arpData->midiLfoCount()) {  
-        removeArpAction->setDisabled(true);
-        renameArpAction->setDisabled(true);
-        runAction->setDisabled(true);
-        runAction->setChecked(false);
-        midiClockAction->setDisabled(true);
-        midiClockAction->setChecked(false);
-    }
+    checkIfLastModule();
     delete arpWidget;
 }
 
@@ -480,14 +457,7 @@ void MainWindow::removeLfo(int index)
     arpData->removeMidiLfo(lfoWidget->getMidiLfo());
     arpData->removeLfoWidget(lfoWidget);
     tabWidget->removeTab(index);
-    if (!arpData->midiArpCount() && !arpData->midiLfoCount()) {  
-        removeArpAction->setDisabled(true);
-        renameArpAction->setDisabled(true);
-        runAction->setDisabled(true);
-        runAction->setChecked(false);
-        midiClockAction->setDisabled(true);
-        midiClockAction->setChecked(false);
-    }
+    checkIfLastModule();
     delete lfoWidget;
 }
 
@@ -497,15 +467,7 @@ void MainWindow::removeSeq(int index)
     arpData->removeMidiSeq(seqWidget->getMidiSeq());
     arpData->removeSeqWidget(seqWidget);
     tabWidget->removeTab(index);
-    if (!arpData->midiArpCount() && !arpData->midiLfoCount() && 
-        !arpData->midiSeqCount()) {  
-        removeArpAction->setDisabled(true);
-        renameArpAction->setDisabled(true);
-        runAction->setDisabled(true);
-        runAction->setChecked(false);
-        midiClockAction->setDisabled(true);
-        midiClockAction->setChecked(false);
-    }
+    checkIfLastModule();
     delete seqWidget;
 }
 
@@ -615,7 +577,6 @@ void MainWindow::openFile(const QString& fn)
  
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        //check for full name to give "good chances" to load old files
         if (qs.startsWith("Seq:")) c = 1;
         if (qs.startsWith("LFO:")) c = 2;
         if (qs.startsWith("Arp:")) c = 3;
@@ -792,7 +753,7 @@ void MainWindow::updateRunQueue(bool on)
 
 void MainWindow::resetQueue()
 {
-    arpData->seqDriver->runQueue(runAction->isChecked());
+    arpData->seqDriver->runQueue(arpData->seqDriver->runArp);
 }
 
 void MainWindow::midiClockToggle(bool on)
@@ -967,7 +928,6 @@ void MainWindow::writeRcFile()
     
     writeText << "[Last Dir]" << endl;
     writeText << lastDir << endl;
-    
 }
 
 void MainWindow::updatePatternPresets(QString n, QString p, int index)
@@ -982,4 +942,26 @@ void MainWindow::updatePatternPresets(QString n, QString p, int index)
     }
     arpData->updatePatternPresets(n, p, index);
     writeRcFile();
+}
+
+void MainWindow::checkIfLastModule()
+{
+    if (!tabWidget->count()) {
+        removeArpAction->setDisabled(true);
+        renameArpAction->setDisabled(true);
+        runAction->setDisabled(true);
+        runAction->setChecked(false);
+        midiClockAction->setDisabled(true);
+        midiClockAction->setChecked(false);
+    }
+}
+
+void MainWindow::checkIfFirstModule()
+{
+    if (tabWidget->count() == 1) {
+        removeArpAction->setEnabled(true);    
+        renameArpAction->setEnabled(true);
+        midiClockAction->setEnabled(true);
+        runAction->setEnabled(true);
+    }
 }

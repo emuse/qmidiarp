@@ -24,13 +24,15 @@ qmidiarp \- Arpégiateur et LFO MIDI pour le séquenceur ALSA
 
 .SH DESCRIPTION
 QMidiArp
-est un arpégiateur et oscillateur à basse fréquence (LFO)
-MIDI avancé pour le séquenceur ALSA. Un
-nombre illimité d'arpégiateurs et LFOs peuvent être définis comme
-onglets pour fonctionner en parallèle. Les modules arpégiateurs 
+est un arpégiateur, séquenceur linéaire et oscillateur à basse fréquence 
+(LFO) MIDI avancé pour le séquenceur ALSA. Un
+nombre illimité d'arpégiateurs, séquenceurs et LFOs peuvent être définis 
+comme onglets pour fonctionner en parallèle. Les modules arpégiateurs 
 produisent des séquences de notes dépendant des notes reçues sur leur
 port d'entrée, qui est typiquement connecté à un clavier MIDI ou un 
-séquenceur. Les LFOs MIDI, de manière indépendante, produisent des
+séquenceur. Les modules séquenceur sont similaires aux premiers 
+séquenceurs analogiques, linéaires, monophoniques et ajustables en étant
+en marche. Les LFOs MIDI, de manière indépendante, produisent des
 données de contrôleur MIDI avec forme d'onde, résolution temporelle,
 amplitude et durée ajustables. Pour chaque module, un filtre d'entrée
 est disponible. Le port de sortie et le canal MIDI peuvent être 
@@ -45,9 +47,9 @@ QMidiArp utilise les bibliothèques du kit Qt4.
 
 .SS "Fonctionnement Général"
 En cliquant sur les boutons
-.B Nouvel Arpège...
+.B Nouvel Arpège..., Nouveau LFO... 
 ou
-.B Nouveau LFO... 
+.B Nouveau Séquenceur...
 le module choisi apparaît en tant qu'onglet dans la zone principale. Les
 modules peuvent être renommés ou supprimés avec les boutons et fonctions
 de menu correspondants. Le montage entier contenant tous les arpèges et
@@ -82,6 +84,11 @@ l'ajout ou le chargement de fichiers sont desactivées. Elles sont
 réactivées en cliquant sur le bouton MIDI Clock à nouveau. 
 
 .SS "Les Modules Arpégiateur"
+Les arpégiateurs de QMidiArp fonctionnent
+uniquement en mode continu, c'est à dire les notes produites ne sont 
+pas déclenchées directement par les notes jouées à l'entrée, mais en 
+synchronisation avec le séquenceur interne. 
+.PP
 .B Les champs Entrée et Sortie
 .PP
 Chaque arpégiateur possède un champ 
@@ -283,6 +290,62 @@ et
 .B contrôleur 
 des données produites par chaque onglet LFO. Il permet également de 
 rendre muet chaque LFO entièrement après un cycle d'onde complet.
+
+.SS "Les modules séquenceur"
+En cliquant sur le bouton 
+.B "Nouveau Séquenceur..."
+dans la barre de contrôle, un nouveau module
+.B Seq
+peut être ajouté à la barre d'onglets. Chacun de ces modules produit une
+séquence simple, linéaire et monophonique, similaire aux premiers
+séquenceurs matériels analogiques. Les modules Seq sont contrôlables
+en étant en marche, également similaire aux séquenceurs analogiques.
+.PP
+.B Programmer une séquence
+.PP
+Comme les modules LFO de QMidiArp, le séquenceur peut être programmé en 
+ajustant les notes avec le bouton gauche de la souris sur l'écran
+d'affichage. La gamme d'octaves est fixée à 4, la note la plus basse 
+étant C2, si la transposition globale est zéro. Les notes peuvent être 
+rendues muettes avec le bouton droit de la souris. La
+.B durée
+de la séquence peut être ajustée entre 1 et 8 beats (quarts de mesure),
+la résolution temporelle entre 1 et 16 par beat. Une 
+résolution de 4 produit 4 notes par beat, donc des notes double crochet.
+.PP
+.B Contrôler la séquence globalement
+.PP
+Le module Seq possède des réglettes pour ajuster la
+.B vélocité
+(volume), la
+.B durée des notes
+et la
+.B transposition
+de la séquence par demi-notes. Tous les changements de ces contrôles
+s'appliquent à chaque nouveau tour de la boucle.
+.PP
+.B Les champs Entrée et Sortie du séquenceur
+.PP
+Le champ
+.B Entrée
+définit comment gérer les notes reçues sur le
+.B Canal
+MIDI ajusté. Si la case
+.B Note
+est cochée, la séquence est globalement transposée avec la note reçue
+comme valeur de transposition. Si la case
+.B Vélocité
+est cochée également, la séquence produira des notes avec la même
+vélocité que celle de la note reçue. Si aucun des deux cases est cochée,
+les notes reçues seront ignorées. Tous les changements de contrôle
+s'appliquent au prochain passage dans la boucle de la séquence. Le 
+champ
+.B Sortie
+est équivalent à celui des arpégiateurs et LFOs. 
+.PP 
+On peut produire des accents dans une séquence en ajoutant des
+modules LFO en parallèle aux modules Seq. Pour ceci, il suffit que le LFO
+envoie ses données vers le même port et canal MIDI que les modules Seq.
 
 .SS "Paramètres"
 La fenêtre "Paramètres" permet de configurer vers quel port ALSA les

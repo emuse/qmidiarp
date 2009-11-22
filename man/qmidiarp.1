@@ -24,11 +24,14 @@ qmidiarp \- MIDI arpeggiator and LFO
 
 .SH DESCRIPTION
 QMidiArp
-is an advanced arpeggiator and MIDI LFO for the ALSA sequencer. It can 
+is an advanced MIDI arpeggiator, step sequencer and LFO for the ALSA 
+sequencer. It can 
 hold any number of arpeggiator or LFO tabs running in parallel. The 
 arpeggiator modules produce sequences depending on the notes sent to
 their input port, which is typically connected to a keyboard or a 
-sequencer. The MIDI LFOs independently
+sequencer. The step sequencer modules allow to create simple linear, 
+monophonic and globally transposable sequences similar to the first 
+analog sequencers. The MIDI LFOs independently
 produce MIDI controller data of adjustable waveform, time resolution,
 amplitude and duration. For each module, an input note filter is 
 available, and the output port and channel can be set independently. 
@@ -43,15 +46,15 @@ QMidiArp is based on the Qt4 toolkit.
 
 .SS "General Operation"
 A new arpeggiator or LFO module can be created by
-clicking the 
-.B Add Arp...
-or 
-.B Add LFO... 
-button. This will show a new
+clicking one of the 
+.B Add Arp..., Add LFO...
+or
+.B Add Step Sequencer...
+buttons, which will show a new
 tab with the chosen module in the main area. The modules can be renamed
 or removed using the corresponding buttons or menu functions. The entire
-setup containing all arps and LFOs in the tab bar along with the 
-parameters set in the 
+setup containing all arps, sequences and LFOs in the tab bar along with 
+the parameters set in the 
 .B Settings 
 window can be saved to or loaded from
 a QMidiArp text file (.qma). The 
@@ -65,8 +68,8 @@ QMidiArp can use incoming MIDI clock events as clock and start/stop
 control source.
 If the 
 .B MIDI clock button 
-right of the tempo box is pressed, the running ALSA queue is stopped, and 
-QMidiArp
+right of the tempo box is pressed, the running ALSA queue is stopped, 
+and QMidiArp
 will wait for an incoming "MIDI Clock Start" event from an external 
 source connected to QMidiArp's MIDI input. Once this event is received,
 the queue is started using MIDI realtime clock events as clock
@@ -74,13 +77,21 @@ source. The time resolution of the incoming clock can be set in the
 .B Settings
 dialog. QMidiArp will best remain in sync with the incoming 
 MIDI clock if its internal tempo value (see above) approximately 
-corresponds to that of the incoming clock. The queue will stop when a 
+corresponds to that of the incoming clock. The MIDI clock tempo is,
+however, measured while the queue is running. Therefore, if the tempos of 
+the MIDI clock and that of QMidiArp differ, synchronization should 
+become stable from the second queue start. The queue will stop when a 
 MIDI Clock Stop event is received. During MIDI Clock operation, 
-QMidiArp's own clock start and stop function as well as adding or 
-loading new arps or LFOs is disabled. They are enabled again by 
+QMidiArp's own clock start and stop functions as well as adding or 
+loading new setups are disabled. They are enabled again by 
 unchecking the MIDI clock button. 
 
 .SS "Arpeggiator Modules"
+QMidiArp's arpeggiators only work in continuous mode. This means that
+the outgoing notes are not directly triggered by the notes played on the
+keyboard. They are produced in continuous patterns, in synchronization
+with a continuously running sequencer.
+.PP
 .B Input and Output panels
 .PP
 Each arpeggiator has an 
@@ -134,9 +145,7 @@ number of notes defined in the stack.
 .PP
 .B Repeat Mode
 .PP
-The 
-.B Repeat mode 
-defines the behavior of the arpeggio over several repetitions of 
+The defines the behavior of the arpeggio over several repetitions of 
 the pattern when the number of notes pressed on the keyboard is higher
 than the number of notes present in the pattern.
 When 
@@ -289,6 +298,65 @@ and
 number settings of the LFO data produced by each LFO tab. It also allows 
 .B muting 
 of each LFO after a completed wave cycle.
+
+.SS "Step Sequencer Modules"
+By clicking 
+.B "Add Step Sequencer..." 
+in the control tool bar, a new 
+.B Seq 
+module can be added to the tab bar. Each of these modules produce a 
+simple linear (monophonic) sequence, similar to the first analog 
+hardware sequencers. The Seq modules are controllable while
+running, also in a similar way to analog step sequencers.
+.PP
+.B Programming a sequence
+.PP
+As QMidiArp's LFO modules, the step sequencer can be programmed
+by adjusting notes with left mouse 
+clicks on the sequence display. The octave range is fixed to 4. The
+lowest note is C2 if the global transpose is set to 0. Notes can be 
+muted with the right mouse click. The sequence 
+.B length 
+can be adjusted between 1 and 8 beats, and the time 
+.B resolution 
+can be set to values between 1 and 16 per beat. A resolution of 4 means 
+that 4 notes are output every beat, i.e. sixteenth notes. 
+.PP
+.B Controlling the sequence globally
+.PP
+There are sliders to adjust the global 
+.B velocity 
+(volume), 
+.B note length 
+and 
+.B transpose 
+of the sequence in semitones. All changes made to these controls
+apply after completion of the current loop.
+.PP
+.B Seq Input and Output panels
+.PP
+The Seq 
+.B Input
+panel determines how to handle incoming notes on the MIDI
+.B Channel
+set in the channel box. If 
+.B Note
+is checked, the sequence will be globally transposed with the incoming
+note as transpose value. If 
+.B Velocity
+is checked in addition, the sequence will output notes with the same 
+velocity as that received on its input. If neither
+.B Note
+nor
+.B Velocity
+are checked, incoming notes will have no effect. All changes due to 
+incoming notes apply after completion of the current loop. The Seq
+.B Output
+panel is equivalent to that of arpeggiator and LFO modules. 
+.PP 
+Note that accents within a pattern can be produced by running LFO 
+modules in parallel to the Seq module, and by sending to the same 
+channel and port as the Seq module.
 
 .SS "Settings"
 The Settings window allows to configure if and to which port incoming 

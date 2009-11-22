@@ -71,7 +71,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int minOctave = 0;
     int beatRes = 1.0;
     int beatDiv = 0;
-    int noctaves=2;
+    int noctaves = 2;
     l2 = 0;
     QChar c;
 
@@ -195,7 +195,6 @@ void LfoScreen::mouseMoveEvent(QMouseEvent *event)
                             (w - 2 * LFOSCREEN_HMARGIN), 
                 1. - ((double)mouseY - LFOSCREEN_VMARGIN) / 
                 (h - 2 * LFOSCREEN_VMARGIN), event->buttons());
-    
 }
 
 void LfoScreen::mousePressEvent(QMouseEvent *event)

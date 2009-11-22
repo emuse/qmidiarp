@@ -1,3 +1,10 @@
+2009-11-22 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: use seqdriver->runArp instead of 
+    runQueue->isChecked() for resetting queue, group action disabling in
+    functions
+    * arpscreen.*: obsolete variables removed
+    * man/*/qmidiarp.1: man pages updated
+        
 2009-11-15 Frank Kober <goemusic@yahoo.fr>
     * seqdriver.cpp: compute MIDI clock slave timing on every received
     clock event and stabilized a bit against MIDI clock tempo changes
