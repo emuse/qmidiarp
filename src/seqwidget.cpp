@@ -175,7 +175,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     waveFormBoxLabel->setVisible(false);
 
 
-    velocity = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
+    velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Velocity"), patternBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
@@ -185,7 +185,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
             
-    transpose = new Slider(-24, 24, 1, 24, 0, Qt::Horizontal,
+    transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), patternBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
