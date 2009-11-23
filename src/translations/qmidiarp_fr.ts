@@ -746,7 +746,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="80"/>
         <source>&amp;Mute</source>
-        <translation>&amp;Muet</translation>
+        <translation>M&amp;uet</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="114"/>
@@ -775,12 +775,29 @@ Enregistrer les modifications?</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="165"/>
+        <source>C&amp;opy to new wave</source>
+        <translation>C&amp;opier dans la forme d&apos;onde libre</translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="179"/>
+        <source>Veloc&amp;ity</source>
+        <translation>Véloc&amp;ité</translation>
+    </message>
+    <message>
         <source>&amp;Copy to new wave</source>
-        <translation>&amp;Copier dans une nouvelle forme d&apos;onde</translation>
+        <translation type="obsolete">&amp;Copier dans une nouvelle forme d&apos;onde</translation>
+    </message>
+    <message>
+        <source>Velo&amp;city</source>
+        <translation type="obsolete">Vélo&amp;cité</translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="184"/>
+        <source>N&amp;ote Length</source>
+        <translation>Du&amp;rée des Notes</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="49"/>
-        <location filename="../seqwidget.cpp" line="179"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
     </message>
@@ -805,9 +822,8 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="184"/>
         <source>&amp;Note Length</source>
-        <translation>&amp;Durée des notes</translation>
+        <translation type="obsolete">&amp;Durée des notes</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="189"/>
@@ -830,7 +846,7 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="92"/>
         <source>C&amp;hannel</source>
-        <translation>C&amp;anal</translation>
+        <translation>Cana&amp;l</translation>
     </message>
     <message>
         <source>Wave</source>

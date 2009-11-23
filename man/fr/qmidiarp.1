@@ -30,7 +30,7 @@ nombre illimité d'arpégiateurs, séquenceurs et LFOs peuvent être définis
 comme onglets pour fonctionner en parallèle. Les modules arpégiateurs 
 produisent des séquences de notes dépendant des notes reçues sur leur
 port d'entrée, qui est typiquement connecté à un clavier MIDI ou un 
-séquenceur. Les modules séquenceur sont similaires aux premiers 
+séquenceur. Les modules séquenceurs sont similaires aux premiers 
 séquenceurs analogiques, linéaires, monophoniques et ajustables en étant
 en marche. Les LFOs MIDI, de manière indépendante, produisent des
 données de contrôleur MIDI avec forme d'onde, résolution temporelle,
@@ -119,7 +119,7 @@ sont accessibles d'un menu déroulant. Le motif actif est affiché dans un
 écran dédié montrant les notes de base comme traits. L'échelle verticale
 de cet écran correspond à l'index des notes dans le motif. Les 
 changements d'octave (voir
-.B Editer le motif)
+.B Editer les motifs d'arpège)
 sont affichés comme des séparateurs horizontaux supplémentaires. Les 
 notes sortant de l'arpéggiateur dépendent des notes reçues à l'entrée, 
 qui sont attribuées par ordre ascendant aux notes de base définies dans 
@@ -291,7 +291,7 @@ et
 des données produites par chaque onglet LFO. Il permet également de 
 rendre muet chaque LFO entièrement après un cycle d'onde complet.
 
-.SS "Les modules séquenceur"
+.SS "Les modules séquenceurs"
 En cliquant sur le bouton 
 .B "Nouveau Séquenceur..."
 dans la barre de contrôle, un nouveau module
@@ -311,7 +311,7 @@ rendues muettes avec le bouton droit de la souris. La
 .B durée
 de la séquence peut être ajustée entre 1 et 8 beats (quarts de mesure),
 la résolution temporelle entre 1 et 16 par beat. Une 
-résolution de 4 produit 4 notes par beat, donc des notes double crochet.
+résolution de 4 produit 4 notes par beat, donc des notes double croche.
 .PP
 .B Contrôler la séquence globalement
 .PP
@@ -363,7 +363,12 @@ CC#31 agira sur l'arpégiateur dans l'onglet suivant. La fenêtre
 .B Paramètres
 permet également de définir la résolution de l'horologe MIDI externe
 utilisée pour la synchronisation. Sa valeur par défaut est de 96
-ticks par quart de temps (tpb). 
+ticks par quart de temps (tpb).
+.PP
+Tous les ajustements faits dans le dialogue 
+.B Paramètres
+sont sauvegardés avec les données des modules dans le fichier .qma.
+
 .SS "Journal"
 La fenêtre du
 .B Journal 
@@ -381,7 +386,8 @@ suivant: Canal 1: Marimba, Canal 2: Celesta, Canal 3: Basse acoustique,
 mais on peut obtenir des résultats intéressants en employant d'autres
 types de son.
 
-QMidiArp a été inspiré par l'arpégiateur matériel MAP1 par Rudi Linhard.
+Les modules arpégiateurs de QMidiArp ont été inspiré par l'arpégiateur 
+matériel MAP1 par Rudi Linhard.
 
 .SH OPTIONS
 .B \-\-portCount <num>
@@ -401,8 +407,7 @@ programme.
 .SH FICHIERS
 .I *.qma
 .RS
-Fichiers QMidiArp contenant les données au format
-plein texte.
+Fichiers QMidiArp contenant les données au format plein texte.
 
 .SH EXEMPLES
 Les fichiers d'exemple de QMidiArp se situent dans  

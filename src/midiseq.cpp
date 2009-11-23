@@ -153,11 +153,12 @@ void MidiSeq::updateQueueTempo(int val)
 void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 {
     SeqSample seqSample;
-    seqSample = customWave.at(mouseX * res * size);
-    seqSample.value = mouseY * 48 + 36;
-    seqSample.tick = (int)(mouseX * res * size) * TICKS_PER_QUARTER / res;
-    customWave.replace(mouseX * res * size, seqSample);
+    int loc = mouseX * res * size;
     
+    seqSample = customWave.at(loc);
+    seqSample.value = mouseY * 48 + 36;
+    seqSample.tick = loc * TICKS_PER_QUARTER / res;
+    customWave.replace(loc, seqSample);
 }
 
 void MidiSeq::resizeAll()
@@ -184,6 +185,7 @@ void MidiSeq::copyToCustom()
 {
     QVector<SeqSample> seqData;
     int m;
+    
     seqData.clear();
     getData(&seqData);
     m = seqData.count();
@@ -195,10 +197,12 @@ void MidiSeq::toggleMutePoint(double mouseX)
 {
     SeqSample seqSample;
     bool m;
-    m = muteMask.at(mouseX * res * size);
-    muteMask.replace(mouseX * res * size, !m);
-    seqSample = customWave.at(mouseX * res * size);
+    int loc = mouseX * res * size;
+    
+    m = muteMask.at(loc);
+    muteMask.replace(loc, !m);
+    seqSample = customWave.at(loc);
     seqSample.muted = !m;
-    customWave.replace(mouseX * res * size, seqSample);
+    customWave.replace(loc, seqSample);
 }
 

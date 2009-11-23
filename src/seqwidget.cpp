@@ -162,7 +162,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     
     copyToCustomButton = new QToolButton(this); 
     copyToCustomAction = new QAction( QIcon(seqwavcp_xpm),
-            tr("&Copy to new wave"), this);
+            tr("C&opy to new wave"), this);
     connect(copyToCustomAction, SIGNAL(triggered()), this,
             SLOT(copyToCustom()));
     copyToCustomButton->setDefaultAction(copyToCustomAction);
@@ -176,12 +176,12 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
 
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
-            tr("&Velocity"), patternBox);
+            tr("Veloc&ity"), patternBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
             
     notelength = new Slider(0, 255, 1, 16, 64, Qt::Horizontal,
-            tr("&Note Length"), patternBox);
+            tr("N&ote Length"), patternBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
             

@@ -1,3 +1,11 @@
+2009-11-23 Frank Kober <goemusic@yahoo.fr>
+    * midilfo.cpp, midiseq.cpp: small computation optimization
+    * midiarp.cpp: debug printf removed
+    * seqwidget.cpp: keyboard shortcuts cleaned up
+    * man/de/qmidiarp.1: German translation of manpage added
+    provided by Robert Dietrich
+    * man/*/qmidiarp.1: improvements/corrections
+    
 2009-11-22 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.cpp: use seqdriver->runArp instead of 
     runQueue->isChecked() for resetting queue, group action disabling in

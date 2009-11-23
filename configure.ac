@@ -89,4 +89,5 @@ AC_CHECK_FUNCS([strdup])
 
 AC_CONFIG_FILES([Makefile] [examples/Makefile] [src/Makefile])
 AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
+AC_CONFIG_FILES([man/de/Makefile])
 AC_OUTPUT

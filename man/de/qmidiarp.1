@@ -1,0 +1,455 @@
+.\" 
+.\" Handbuchseite für qmidiarp
+.\" zu bearbeiten mit:
+.\"   groff -man -Tascii qmidiarp.1 | less
+.\"
+.\" Eine Druckform kann erzeugt werden mit:
+.\"   groff -t -e -mandoc -Tps qmidiarp.1 > qmidiarp.ps
+.\"
+.TH QMIDIARP 1 2009-11-20
+.SH NAME
+qmidiarp \- MIDI Arpeggiator, Sequenzer und LFO
+
+.SH SYNOPSIS
+.br
+.B qmidiarp
+[\fIOPTION\fR] [\fIfile\fR]
+.br 
+.B qmidiarp
+{
+.B \-\-help 
+| 
+.B \-\-version
+}
+
+.SH BESCHREIBUNG
+QMidiArp
+ist ein erweiterter Arpeggiator, Stepsequenzer und MIDI LFO für den 
+ALSA-Sequenzer. Er kann beliebig viele Module parallel ausführen.
+Die Arpeggiatormodule erzeugen Sequenzen in Abhängigkeit von den Noten,
+die üblicherweise von einem MIDI-Keyboard oder einem Sequenzer an deren
+Eingang geschickt werden. Die Stepsequenzermodule sind angelehnt an die
+ersten analogen Sequenzer und erzeugen einfache, lineare und monophone
+Notenmuster. Die MIDI LFOs erzeugen davon unabhängig MIDI-
+Controller-Daten in wählbarer Wellenform, Auflösung, Amplitude und
+Dauer. Jedes Modul besitzt ein Filter für eingehende Noten und sein
+Ausgabeport bzw. Ausgabekanal kann frei eingestellt werden.
+Da die Module auf einer gemeinsamen Sequenzerschiene arbeiten, sind sie
+automatisch zueinander synchron. QMidiArp arbeitet mit einer 
+internen Zeitauflösung von 192 ticks per beat. 
+Die Queue kann mit einer externen MIDI-Echtzeituhr synchronisiert werden.
+QMidiArp verfügt ebenso über ein Protokoll-Werkzeug, welches eingehende 
+MIDI Ereignisse abhängig von ihrem Typ in verschiedenen Farben darstellt.
+QMidiArp basiert auf dem Qt4 Toolkit.
+
+.SS "Allgemeine Funktion"
+Ein neuer Arpeggiator, Sequenzer oder LFO wird erzeugt durch Klicken auf
+.B Modul-->Neuer Arp..., Modul-->Neuer Sequenzer...,
+oder 
+.B Modul-->Neuer LFO... 
+in der Werkzeugleiste oder im Menu 
+.I Modul.
+Ein neuer Reiter mit dem gewählten Modul erscheint im Hauptbedienfenster.
+Module können mit den entsprechenden Symbolen der Werkzeugleiste oder 
+Menüfunktionen umbenannt oder gelöscht werden.
+Alle Einstellungen (d.h. alle Module, deren Parameter sowie
+alle sonstigen Änderungen, die unter
+.B Ansicht-->Einstellungen
+getätigt wurden) können in einer QMidiArp-Textdatei (.qma) gespeichert 
+und von dort wieder geladen werden. Das 
+.B Tempo 
+kann in beats pro Minute (BPM) eingestellt werden und
+gilt für alle Module. Die Queue wird mit dem blauen Pfeilsymbol
+gestartet/gestoppt.
+
+.SS "MIDI-Clock-Betrieb"
+QMidiArp kann eingehende MIDI-Realtime-Clock Signale als Taktquelle
+und Start/Stop-Signale verwenden.
+Sobald der
+.B "MIDI-Uhr"-Knopf 
+rechts vom Tempo-Wahlfeld betätigt wird, wird der ALSA-Sequenzer
+gestoppt und
+QMidiArp
+wartet auf das "MIDI Clock Start"-Signal einer externen Quelle,
+die an QMidiArp's MIDI-Eingang angeschlossen wurde. Sobald dieses
+Signal eintrifft, wird die Sequenzerzeugung mit der MIDI-Taktvorgabe der
+externen Quelle gestartet.
+Die Auflösung des eingehenden MIDI-Zeittaktes kann im Dialog
+.B Ansicht-->Einstellungen->"Kadenz der eingehenden MIDI Clock"
+gewählt werden. Der Sequenzer/Arpeggiator hält an, sobald ein 
+"MIDI Clock Stop"-Signal empfangen wird. Während des 
+"MIDI-Clock-Betriebs" sind die QMidiArp-eigenen Start/Stop-Funktionen 
+sowie das Hinzufügen oder Laden weiterer Module gesperrt. Sie werden 
+erst bei erneutem Klick auf das MIDI-Uhrsymbol wieder verfügbar. Die 
+Synchronisation mit der externen Quelle funktioniert am besten, wenn das 
+.B Tempo 
+von QMidiArp mit dem der externen Quelle übereinstimmt. Das externe 
+Tempo wird jedoch bei laufendem Sequenzer gemessen, sodaß ab dem 
+zweiten Start die Synchronisation funktioniert, auch wenn das 
+ursprüngliche Tempo nicht übereinstimmt.
+
+.SS "Arpeggiatormodule"
+.B Eingangs- and Ausgangsfelder
+.PP
+Jeder Arpeggiator hat ein
+.B Eingangs-Feld
+und ein
+.B Ausgangs-Feld.
+Das Eingangsfeld definiert den Notenbereich und den MIDI-Kanal, für den
+der jeweilige Arp empfänglich sein soll. 
+Noten, die dieses Filter passieren, werden nach Tonhöhe sortiert dem
+internen Notenpuffer des Arpeggiators zugefügt.
+Noten, die nicht vom Filter erfasst werden, können entweder verworfen oder
+an einen bestimmten Port weitergeleitet werden (siehe
+.B Ansicht-->Einstellungen). 
+Das Feld 
+.B Ausgang 
+enthält die Einstellungen für
+.B MIDI-Kanal 
+und
+.B Ausgabeport, 
+an den der Arpeggiator seine Noten sendet. 
+.PP
+.B "Arpeggiator-Muster"
+.PP
+Arpeggio-Muster können im
+.B Muster-
+Feld gewählt und geändert werden. Bereits definierte
+.B Arpeggio-Vorlagen 
+können via Drop-Down-Menü ausgewählt werden. Das gerade aktive Muster wird
+im Stile einer "Piano-Stanzrolle" dargestellt, in der die Basisnoten als
+Streifen erscheinen. Die Position der Streifen in vertikaler Richtung
+entspricht dem jeweiligen Notenwert. Oktavenübergänge (siehe 
+.B Arpeggio-Vorlagen bearbeiten
+) werden als hervorgehobenene horizontale Linien dargestellt. Die
+tatsächlich gesendeten Noten hängen ab von den empfangenen Eingangsnoten.
+Diese werden in aufsteigender Reihenfolge den im Muster definierten
+Noten zugeordnet. Zum Beispiel bedeutet ein einzelner Streifen im unteren
+Teil der Grafik ("Simple"-Muster), daß beim ersten Durchlauf durch das
+Muster die unterste empfangene Note gespielt wird.
+Wenn ein Akkord auf dem Keyboard gespielt wird, und nur eine Note im 
+Muster definiert ist, wird beim ersten Durchlauf die unterste Note 
+gespielt und die Noten der folgenden Durchläufe von dem eingestellten
+"Wiederholungsmodus" bestimmt. 
+Wenn das Muster mehrere übereinander liegende Streifen enthält 
+(Akkord-Modus), werden auf dem Keyboard gespielte Akkorde auch als
+Akkorde gesendet. Die maximale Polyphonie der gesendeten Akkorde 
+entspricht der Anzahl der übereinander liegenden Streifen.
+.PP
+.B Wiederholungsmodus
+.PP
+Der
+.B Wiederholungsmodus
+bestimmt das Verhalten der Arpeggios über mehrere Durchläufe des
+Musters hinweg. Er ist entscheidend, wenn die Anzahl der auf dem Keyboard 
+gespielten Noten die Anzahl der Noten im Muster übersteigt. Wenn
+"Aufsteigend" gewählt ist, wird bei jedem Durchlauf die nächst höhere 
+Note des Keyboard-Akkordes gespielt. Ist "Absteigend" gewählt, so wird
+die nächst tiefere Note gespielt. Wenn nur eine Note im Muster vorhanden
+ist, erzeugt dies ein klassisches lineares Arpeggio. So kann man selbst 
+mit einfachen Mustern wie "01" oder "0" ein komplettes Arpeggio leicht 
+erzeugen. Wenn der Wiederholungsmodus "Statisch" gewählt ist, ist
+dieser klassische Arpeggio-Modus deaktiviert, und die gesendeten Noten
+bleiben konstant. 
+.PP
+.B "Muster Bearbeiten"
+.PP
+Die Arpeggio-Muster sind durch eine Text-Sequenz definiert, die einerseits
+die Noten selbst als Zahlen von 0...9 enthält, aber andererseits auch
+Steuersymbole zur Änderung von Tempo, Anschlagsdynamik, Oktave und 
+Akkord-Modus. Durch Anwählen des Symbols
+.B Muster bearbeiten
+im Muster-Feld macht man das momentane Muster als Text sichtbar und
+veränderbar. Die Änderungen können bei laufender Queue geschehen, jedoch
+wird bei jeder Änderung die Sequenzerzeugung erneut gestartet.
+Das geänderte Muster kann durch Anwählen des Symbols
+.B Muster Speichern
+als neues Muster in die Vorlagenliste abgespeichert werden. Das momentan
+aktive Muster kann durch Anwählen des
+.B Muster löschen
+Symbols aus der Liste entfernt werden.
+Alle Muster-Vorlagen werden beim Speichern eines neuen Musters unmittelbar
+in die .qmidiarprc Ressourcen-Datei geschrieben, und eventuell vorhandenen 
+weiteren Arpeggiatoren in der Reiterleiste zur Verfügung gestellt. 
+Die Vorlagenliste wird beim Starten von QMidiArp geladen. 
+
+Die Syntax des Muster-Textes ist folgende:
+
+0..9 : Indizes der Noten
+   + : Eine Oktave höher
+   - : Eine Oktave tiefer
+   = : Standard-Oktave
+   > : doppeltes Tempo
+   < : halbes Tempo
+   . : Standard-Tempo
+(  ) : Beginn und Ende des Akkord Modus, 
+       z.B. erzeugt (012) einen Akkord der untersten drei Noten  
+   / : Anschlag erhöhen um 20%
+   \\ : Anschlag senken um 20%
+   d : doppelte Notenlänge
+   h : halbe Notenlänge
+   p : Pause
+
+Die Wirkung Steuersymbole bleibt bis zum Ende eines Muster-Durchlaufes
+bestehen. Das Symbol > erhöht zum Beispiel das Tempo aller folgenden
+Noten im Muster bis zu seinem Ende. Beim nächsten Durchlauf des Musters 
+wird das Tempo dann wieder auf seinen Ausgangswert (Viertelnoten)
+geschaltet. 
+.PP
+.B Zufallsfunktion
+.PP
+Das Timing, der Anschlag und die Länge der gesendeten Noten können mit
+Hilfe der Zufallsfunktionen zu Abweichungen gebracht werden. Diese 
+werden mit den entsprechenden Reglern im Feld
+.B Zufall
+eingestellt. Man kann dadurch den Arpeggiator weniger mechanisch
+klingen lassen. Bei höheren Werten erzeugt man interessante Akzente 
+innerhalb der Muster. 
+.PP
+.B Hüllkurve
+.PP
+QMidiArp kann der Anschlagsdynamik der Arpeggios eine Hüllkurve 
+überlagern, um langsame Übergänge von Akkordmustern zu erzeugen.
+Die Funktion dieser Hüllkurve wird durch 
+.B Attack 
+-Zeit und
+.B Release
+-Zeit definiert. Wird eine von Null verschiedene Attackzeit gewählt, so
+werden die Anschläge der gesendeten Noten während der Attackzeit von 
+Null bis zu ihrem eigentlichen Wert hochgefahren. Ist eine Releasezeit
+verschieden von Null eingestellt, so werden die losgelassenen Noten 
+weiterhin gesendet, und ihre Anschlagsdynamik wird während der 
+Releasezeit auf Null heruntergefahren. Erst dann wird die Note aus dem 
+internen Puffer entfernt. Die Hüllkurven-Funktion hat nur dann Wirkung, 
+wenn der angesteuerte Klang anschlagsempfindlich ist. Sie funktioniert 
+am besten mit Mustern mit hoher Polyphonie, zum Beispiel "Chord Oct 16 A". 
+.PP
+.B Groove
+.PP
+Die
+.B Groove
+-Regler erlauben es, Noten innerhalb eines Taktes linear zu verschieben
+in ihrer Zeit, Länge und ihrem Anschlag. Dies kann benutzt werden, um
+Swing-Rythmen und Akzente zu erzeugen, oder um den Akzent auf eine 
+bestimmte Stelle jedes Taktes zu setzen. Die Groove-Einstellungen gelten 
+für alle Arpeggios in der Reiterleiste.
+
+.SS "LFO-Module"
+Parallel zu den Arpeggiatoren kann QMidiArp auch MIDI-Steuerdaten in Form
+von Niederfrequenz-Oszillatoren (LFOs) an einen zugeordneten Ausgang 
+schicken. Die LFO-Daten bestehen aus MIDI-Controller-Signalen, die mit
+den Arpeggiator-Sequenzen synchron sind. Der Sequenzer muss gestartet
+werden, damit die LFOs Daten produzieren. Jedes LFO-Modul hat ein
+.B Wellenform-
+Feld, in dem die Form der gesendeten Daten bestimmt wird, und ein
+.B Ausgangs-
+Feld, um den MIDI-Kanal, ALSA-Ausgangsport und die ID des zu erzeugenden
+Controllers einzustellen. Die folgenden Wellenformen stehen im Moment
+zur Verfügung: Sinus, Sägezahn steigend, Dreieck, Sägezahn fallend, 
+Rechteck und Frei. 
+Die 
+.B Frequenz
+der LFOs wird in Vielfachen und Teilern des Sequenzer-
+.B Tempos
+eingestellt, dabei bedeutet eine LFO-Frequenz von 1, dass eine volle
+Welle pro beat (Vierteltakt) erzeugt wird. Wenn niedrigere Frequenzen
+als 1 gewählt werden, muss auch die
+.B Länge
+der Wellenform angepaßt werden, um eine volle Welle zu erzeugen. Die
+zeitliche 
+.B Auflösung
+der LFOs bestimmt die Anzahl der Signale, die in jedem Vierteltakt 
+ausgegeben werden. Die höchste Auflösung beträgt 192 Signale pro 
+Vierteltakt.
+Niedrige Werte der
+.B Auflösung
+führen zu hörbar rythmischen Controller-Änderungen, während höhere
+Auflösungen zu mehr und mehr kontinuierlichen Wellenformen führen.
+.B Amplitude 
+und
+.B Offset
+der Wellenform können von 0...127 eingestellt werden.
+
+.PP
+.B Stummschalten einzelner Punkte der Wellenform
+.PP
+Einzelne Punkte der Wellenform kann man mit der
+.I rechten Maustaste
+stumm schalten. Stummgeschaltete Wellenform-Punkte erscheinen in 
+dunklerer Farbe.
+.PP
+.B Freie Wellenform
+.PP
+Wenn
+.B Frei
+gewählt wird, kann die Wellenform mit der
+.I linken Maustaste
+in der Wellenform-Graphik gezeichnet werden. Durch klicken auf 
+.B Kopieren in freie Wellenform
+kann eine errechnete Wellenform in die freie Form kopiert werden, um sie
+zu verändern. Dies überschreibt die vorhergehende freie Wellenform mit
+der gerade dargestellten Form. Wie alle LFO-Funktionen kann auch das 
+Zeichnen oder Stummschalten bei laufendem Sequenzer geschehen. Alle
+Änderungen werden beim nächsten ausgespielten Wellenzyklus wirkend.
+.PP
+.B "LFO Ausgangs-Feld"
+.PP
+Das LFO Ausgangs-Feld enthält die Einstellungen für
+.B Ausgang, 
+.B Kanal
+und 
+.B Controller 
+ID der LFO-Daten jedes LFO-Reiters. Es erlaubt auch ein komplettes 
+Stummschalten jedes LFOs nach einem kompletten Wellenzyklus durch 
+markieren des 
+.B Stumm 
+Knopfes.
+
+.SS "Step-Sequenzer-Module"
+Durch klicken auf
+.B "Neuer Sequenzer..." 
+in der Werkzeugleiste wird ein neues
+.B Seq 
+Modul hinzugefügt. Jedes dieser Module erzeugt eine einfache, lineare
+und monophone Sequenz, ähnlich wie die ersten Hardware-Analogsequenzer.
+So wie die LFOs sind auch die Seq Module bei laufendem Sequenzer 
+steuerbar, ebenfalls ähnlich einem analogen Stepsequenzer. 
+.PP
+.B Programmieren einer Sequenz
+.PP
+So wie bei den LFO-Modulen, kann man Sequenzen programmieren, in dem man 
+mit der linken Maustaste in der grafischen Darstellung jede Notenhöhe 
+einstellt. Es steht ein Notenbereich von 4 Oktaven zur Verfügung, wobei
+die niedrigste Note ein C2 ist, wenn die globale Stimmung auf Null steht.
+Die 
+.B Länge
+der Sequenz kann zwischen 1 und 8 Vierteltakten liegen. Die
+zeitliche 
+.B Auflösung 
+wird zwischen 1 und 16 Noten pro Vierteltakt eingestellt.
+Eine Auflösung von 4 bedeutet daher, daß der Sequenzer Sechzehntel-Noten
+spielt.
+.PP
+.B Regler für alle Noten
+.PP
+QMidiArp erlaubt die globale Einstellung des
+.B Anschlags
+(Lautstärke), der
+.B Notenlänge
+und der
+.B Transposition
+der Sequenz in Halbtönen. Alle hier eingestellten Änderungen werden nach
+dem momentanen Durchlauf der Sequenz wirksam.
+.PP
+.B Eingans- und Ausgangsfelder der Seq Module
+.PP
+Die Einstellungen im
+.B Eingangs-Feld
+bestimmen, wie die über den einstellbaren MIDI-
+.B Kanal
+empfangenen Noten verarbeitet werden. Wenn 
+.B Note
+angekreuzt ist, wird die komplette Sequenz beim nächsten Durchlauf auf 
+die Tonhöhe der empfangenen Note transponiert. Wenn zusätzlich
+.B Anschlag
+angekreuzt ist, werden auch die Anschlagsdynamik-Daten der empfangenen
+Noten auf die Sequenz übertragen, und die gesendeten Noten bekommen
+dieselbe Anschlagsdynamik wie die auf der Tastatur gespielte Note.
+Sind weder 
+.B Note
+noch
+.B Anschlag
+angekreuzt, so werden empfangene Noten ignoriert.
+Das
+.B Ausgangs-Feld
+der Seq-Module ist das gleiche wie das der Arpeggiator- oder LFO-Module.
+.PP
+Man kann die Sequenz mit Akzenten versehen, wenn man zusätzlich ein 
+LFO-Modul aufbaut, welches an denselben Kanal und Ausgang zum Beispiel
+Filterfrequenz-Controller schickt (CC#74).
+
+.SS "Einstellungen"
+Dieses Fenster erlaubt die Konfigurierung, ob und an welchen Ausgang
+diejenigen Signale weitergeleitet werden, die von keinem der Module
+verarbeitet werden (
+.B unpassende
+Signale). Hier wird auch bestimmt, ob empfangene MIDI Steuersignale 
+(Control events) benutzt werden, um Arpeggiatoren
+.B Stumm
+zu schalten. Wenn diese Funktion angekreuzt ist, kann eine  
+.B Stummschaltungs-Controller ID
+festgelegt werden. Diese Controller ID wird dann benutzt, um den ersten
+Arpeggiator in der Reiterliste stummzuschalten. Die nächst-höhere 
+MIDI-Controller-ID schaltet den zweiten Arpeggiator in der Reihe stumm, 
+und so fort. Ein Beispiel: Wenn die Stummschaltungs-Controller ID auf
+30 steht, und ein Steuersignal CC#30 mit dem Wert 127 empfangen wird, 
+wird der erste Arpeggiator in der Reiterleiste stumm/lautgeschaltet. Das 
+Signal CC#31 betrifft den zweiten Arpeggiator in der Leiste. 
+Die
+.B Einstellungen
+erlauben auch die Bestimmung der Auflösung der empfangenen 
+.B MIDI-Clock
+Signale. Dieser Wert steht zu Beginn auf 96 ticks per beat (tpb).
+.PP
+Die 
+.B Einstellungen 
+werden zusammen mit den Moduldaten in der .qma-Datei gespeichert.
+
+.SS "Protokoll"
+Das Protokoll-Fenster zeichnet empfangene MIDI-Daten mit Zeitinformation
+auf und stellt diese als Liste dar. 
+Das 
+.I Protokoll 
+wird zu Beginn am unteren Ende des Programmfensters angezeigt und kann
+verborgen oder als separates Fenster frei beweglich auf der
+Arbeitsfläche platziert werden. Das Aufzeichnen der MIDI-Signale kann
+generell abgeschaltet oder auch selektiv für Signale der MIDI-Echtzeituhr
+eingeschaltet werden. 
+
+.SS Beispieldateien
+Es gibt zurzeit drei Beispiel-Arpeggios.
+Das Arpeggio demo.qma ist ursprünglich für die folgende Klang-Auswahl
+gedacht: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
+aber man kann interessante Ergebnisse auch mit einer anderen Instrument-
+Belegung erhalten.
+
+Die Arpeggiator-Module von QMidiArp wurden inspiriert durch den MAP1 
+Hardware-Arpeggiator von Rudi Linhard.
+
+.SH OPTIONEN
+.TP
+.BI \-\-portCount\  <Anzahl>
+Setz die Anzahl der verfügbaren ALSA-Ausgänge auf den Wert <Anzahl>. Der
+voreingestellte Wert beträgt 2.
+.TP
+.BI \-\-help
+Gibt die verfügbaren Kommandozeilenoptionen aus und beendet das
+Programm.
+.TP
+.BI \-\-version
+Gibt die Programmversion aus und beendet das Programm.
+.TP
+.B Datei
+Name einer QMidiArp-Datei (.qma) zum Öffnen beim Start des Programms.
+.SH DATEIEN
+.I *.qma
+.RS
+QMidiArp-Dateien, enthalten Daten aller Module sowie Einstellungen in
+einem reinen Textformat.
+.SH BEISPIELE
+Eine Beispieldatei kann in einem der folgenden Verzeichnisse gefunden
+werden:
+.I /usr/share/qmidiarp
+oder
+.I /usr/local/share/qmidiarp
+.SH BEMERKUNGEN
+Fehler und Warnungen werden nach 
+.BR stderr (3)
+geschrieben.
+.SH UNTERSTÜTZUNG
+alsamodular-devel@lists.sourceforge.net
+.SH AUTOREN
+Matthias Nagorni, Frank Kober and Guido Scholz. Das Original dieser
+Handbuchseite wurde von Frank Kober <emuse@users.sourceforge.net>
+geschrieben; die deutsche Übersetzung wurde von Robert Dietrich
+<flyingrobin@online.de> angefertigt.

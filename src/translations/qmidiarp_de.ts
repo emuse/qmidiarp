@@ -51,7 +51,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="150"/>
         <source>Pattern preset</source>
-        <translation>Voreingestellte Muster</translation>
+        <translation>Mustervorlage</translation>
     </message>
     <message>
         <source>Arp through chord</source>
@@ -780,12 +780,29 @@ Die Änderungen speichern?</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="165"/>
-        <source>&amp;Copy to new wave</source>
+        <source>C&amp;opy to new wave</source>
         <translation>In neue Wellenform &amp;kopieren</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="49"/>
         <location filename="../seqwidget.cpp" line="179"/>
+        <source>Veloc&amp;ity</source>
+        <translation>An&amp;schlag</translation>
+    </message>
+    <message>
+        <source>&amp;Copy to new wave</source>
+        <translation type="obsolete">In neue Wellenform &amp;kopieren</translation>
+    </message>
+    <message>
+        <source>Velo&amp;city</source>
+        <translation type="obsolete">An&amp;schlag</translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="184"/>
+        <source>N&amp;ote Length</source>
+        <translation>N&amp;otenlänge</translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="49"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Anschlag</translation>
     </message>
@@ -810,9 +827,8 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Kanal</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="184"/>
         <source>&amp;Note Length</source>
-        <translation>&amp;Notenlänge</translation>
+        <translation type="obsolete">&amp;Notenlänge</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="189"/>

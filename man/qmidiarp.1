@@ -174,8 +174,9 @@ can be removed from the
 preset list by clicking on the 
 .B Remove pattern
 button. All preset patterns are immediately saved in the .qmidiarprc
-resource file when a pattern is stored. Pattern presets are automatically 
-loaded on each application start. 
+resource file when a pattern is stored or removed, and the new pattern 
+list is made available to the other arps in the tab bar. Pattern presets 
+are automatically loaded on each application start. 
 
 The syntax for the pattern text is as follows:
 
@@ -378,6 +379,10 @@ The
 dialog also allows to set the tick resolution of the
 .B incoming MIDI clock. 
 The default is 96 ticks per beat. 
+.PP
+All settings in this dialog are stored along with the module data in the
+.qma file.
+
 .SS "Event Log"
 The
 .B Event Log 
@@ -392,7 +397,8 @@ The demo.qma arpeggio was intended to be used with the following sound
 types: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
 but you can get interesting results if you use other instrument settings.
 
-QMidiArp was inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
+QMidiArp's arpeggiator modules were inspired by the MAP1 hardware 
+arpeggiator by Rudi Linhard.
 
 .SH OPTIONS
 .TP
