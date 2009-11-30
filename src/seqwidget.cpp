@@ -25,11 +25,14 @@
 #include <QStringList>
 #include <QGroupBox>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include "midiseq.h"
 #include "seqwidget.h"
 #include "slider.h"
 #include "seqscreen.h"
+#include "pixmaps/arpremove.xpm"
+#include "pixmaps/arprename.xpm"
 #include "pixmaps/seqwavcp.xpm"
 #include "config.h"
 
@@ -37,6 +40,25 @@
 SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     QWidget(parent), midiSeq(p_midiSeq), modified(false)
 {
+    // Management Buttons on the right top
+    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
+
+    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
+    renameAction->setToolTip(tr("Rename this Sequencer"));
+    QToolButton *renameButton = new QToolButton(this);
+    renameButton->setDefaultAction(renameAction);
+    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
+    
+    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
+    deleteAction->setToolTip(tr("Delete this Sequencer"));
+    QToolButton *deleteButton = new QToolButton(this);
+    deleteButton->setDefaultAction(deleteAction);
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
+    
+    manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(renameButton);
+    manageBoxLayout->addWidget(deleteButton);
+
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
@@ -110,6 +132,12 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
 
     portBox->setLayout(outputLayout);
 
+    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
+    inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(inBox);
+    inOutBoxLayout->addWidget(portBox);
+    inOutBoxLayout->addStretch();
+    
     // group box for sequence setup
     QGroupBox *patternBox = new QGroupBox(tr("Sequence"), this);
 
@@ -213,11 +241,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     waveBoxLayout->addLayout(sliderLayout, 1, 1);
 
     patternBox->setLayout(waveBoxLayout); 
-    
-    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    inOutBoxLayout->addWidget(inBox);
-    inOutBoxLayout->addWidget(portBox);
-    inOutBoxLayout->addStretch();
     
     QHBoxLayout *seqWidgetLayout = new QHBoxLayout;
     seqWidgetLayout->addWidget(patternBox);
@@ -493,3 +516,32 @@ void SeqWidget::setModified(bool m)
     modified = m;
 }
 
+void SeqWidget::moduleDelete()
+{
+    QString qs;
+    qs = tr("Delete \"%1\"?")
+        .arg(name);
+    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default
+                | QMessageBox::Escape, QMessageBox::NoButton)
+            == QMessageBox::No) {
+        return;
+    }
+    emit seqRemove(ID);
+}
+
+void SeqWidget::moduleRename()
+{
+    QString newname, oldname;
+    bool ok;
+    
+    oldname = name;
+
+    newname = QInputDialog::getText(this, APP_NAME,
+                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+                
+    if (ok && !newname.isEmpty()) {
+        name = "Seq:" + newname;
+        emit dockRename(name, parentDockID);
+    }
+}

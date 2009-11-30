@@ -44,9 +44,10 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
         sliderLayout->setDirection(QBoxLayout::TopToBottom);
         sliderLayout->setAlignment(Qt::AlignHCenter);
     }
-    else
+    else {
         sliderLayout->setDirection(QBoxLayout::LeftToRight);
-
+        sliderLayout->setAlignment(Qt::AlignTop);
+    }
     setLayout(sliderLayout);
 }
 

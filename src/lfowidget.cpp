@@ -24,19 +24,47 @@
 #include <QInputDialog>
 #include <QGroupBox>
 #include <QLabel>
+#include <QMessageBox>
 #include <QStringList>
 
 #include "midilfo.h"
 #include "lfowidget.h"
 #include "slider.h"
 #include "lfoscreen.h"
+#include "pixmaps/arpremove.xpm"
+#include "pixmaps/arprename.xpm"
 #include "pixmaps/lfowavcp.xpm"
+#include "pixmaps/lfowsine.xpm"
+#include "pixmaps/lfowsawup.xpm"
+#include "pixmaps/lfowsawdn.xpm"
+#include "pixmaps/lfowtri.xpm"
+#include "pixmaps/lfowsquare.xpm"
+#include "pixmaps/lfowcustm.xpm"
 #include "config.h"
 
 
 LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     QWidget(parent), midiLfo(p_midiLfo), modified(false)
 {
+
+    // Management Buttons on the right top
+    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
+
+    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
+    renameAction->setToolTip(tr("Rename this LFO"));
+    QToolButton *renameButton = new QToolButton(this);
+    renameButton->setDefaultAction(renameAction);
+    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
+    
+    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
+    deleteAction->setToolTip(tr("Delete this LFO"));
+    QToolButton *deleteButton = new QToolButton(this);
+    deleteButton->setDefaultAction(deleteAction);
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
+    
+    manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(renameButton);
+    manageBoxLayout->addWidget(deleteButton);
 
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
@@ -100,11 +128,16 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), patternBox);
     waveFormBox = new QComboBox(patternBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
-    loadWaveForms();
-    waveFormBox->insertItems(0, waveForms);
+    //loadWaveForms();
+    waveFormBox->addItem(QIcon(lfowsine_xpm),"");
+    waveFormBox->addItem(QIcon(lfowsawup_xpm),"");
+    waveFormBox->addItem(QIcon(lfowtri_xpm),"");
+    waveFormBox->addItem(QIcon(lfowsawdn_xpm),"");
+    waveFormBox->addItem(QIcon(lfowsquare_xpm),"");
+    waveFormBox->addItem(QIcon(lfowcustm_xpm),"");
     waveFormBox->setCurrentIndex(0);
     waveFormBox->setToolTip(tr("Waveform Basis"));
-    waveFormBox->setMinimumContentsLength(8);
+    //waveFormBox->setMinimumContentsLength(8);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 
@@ -192,6 +225,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     patternBox->setLayout(waveBoxLayout);
     
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
+    inOutBoxLayout->addLayout(manageBoxLayout);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
 
@@ -442,3 +476,32 @@ void LfoWidget::setModified(bool m)
     modified = m;
 }
 
+void LfoWidget::moduleDelete()
+{
+    QString qs;
+    qs = tr("Delete \"%1\"?")
+        .arg(name);
+    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default
+                | QMessageBox::Escape, QMessageBox::NoButton)
+            == QMessageBox::No) {
+        return;
+    }
+    emit lfoRemove(ID);
+}
+
+void LfoWidget::moduleRename()
+{
+    QString newname, oldname;
+    bool ok;
+    
+    oldname = name;
+
+    newname = QInputDialog::getText(this, APP_NAME,
+                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+                
+    if (ok && !newname.isEmpty()) {
+        name = "LFO:" + newname;
+        emit dockRename(name, parentDockID);
+    }
+}

@@ -45,6 +45,7 @@ class LfoWidget : public QWidget
     QSpinBox *channelOut, *portOut, *ccnumberBox;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
+    QAction *deleteAction, *renameAction;
     QToolButton *copyToCustomButton;
  
     MidiLfo *midiLfo;
@@ -53,10 +54,11 @@ class LfoWidget : public QWidget
     bool modified;
 
   public:
-    QString lfoName;
+    QString name;
     LfoScreen *lfoScreen;
     QStringList waveForms;
     QCheckBox *muteOut;
+    int ID, parentDockID;
 
     LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget* parent=0);
     ~LfoWidget();
@@ -72,7 +74,9 @@ class LfoWidget : public QWidget
   
   signals:
     void patternChanged();
-    
+    void lfoRemove(int ID);
+    void dockRename(QString name, int parentDockID);
+        
   public slots:
     void updateChannelOut(int value);
     void updatePortOut(int value);
@@ -86,6 +90,8 @@ class LfoWidget : public QWidget
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
     void copyToCustom();
+    void moduleDelete();
+    void moduleRename();
 };
   
 #endif

@@ -44,6 +44,7 @@ class SeqWidget : public QWidget
     QSpinBox *channelOut, *portOut;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
+    QAction *deleteAction, *renameAction;
     QToolButton *copyToCustomButton;
  
     MidiSeq *midiSeq;
@@ -52,12 +53,13 @@ class SeqWidget : public QWidget
     bool modified;
 
   public:
-    QString seqName;
+    QString name;
     SeqScreen *seqScreen;
     QStringList waveForms;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;               
     QCheckBox *enableVelIn; 
+    int ID, parentDockID;
     
     SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget* parent=0);
     ~SeqWidget();
@@ -76,6 +78,8 @@ class SeqWidget : public QWidget
   
   signals:
     void patternChanged();
+    void seqRemove(int ID);
+    void dockRename(QString name, int parentDockID);  
     
   public slots:
     void updateChIn(int value);
@@ -92,6 +96,8 @@ class SeqWidget : public QWidget
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
     void copyToCustom();
+    void moduleDelete();
+    void moduleRename();
 };
   
 #endif

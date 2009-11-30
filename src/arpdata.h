@@ -2,6 +2,7 @@
 #define ARPDATA_H
 
 #include <QWidget>
+#include <QDockWidget>
 #include <QList>
 #include <alsa/asoundlib.h>
 #include "seqdriver.h"
@@ -19,6 +20,7 @@ class ArpData : public QWidget  {
   private:
     QList<MidiArp *> midiArpList;
     QList<ArpWidget *> arpWidgetList;
+    QList<QDockWidget *> moduleWindowList;
     QList<MidiLfo *> midiLfoList;
     QList<LfoWidget *> lfoWidgetList;
     QList<MidiSeq *> midiSeqList;
@@ -34,6 +36,12 @@ class ArpData : public QWidget  {
     void registerPorts(int num);
     int getPortCount();
     bool isModified();
+
+    void addModuleWindow(QDockWidget *moduleWindow);
+    void removeModuleWindow(QDockWidget *moduleWindow);
+    QDockWidget *moduleWindow(int index);
+    int moduleWindowCount();
+    void updateIDs(int curID);
     
     void addMidiArp(MidiArp *midiArp);
     void addArpWidget(ArpWidget *arpWidget);

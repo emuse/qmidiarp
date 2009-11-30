@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include <QMainWindow>
 #include <QString>
-#include <QTabWidget>
 #include <QToolBar>
 
 #include <alsa/asoundlib.h>
@@ -33,7 +32,6 @@ class MainWindow : public QMainWindow
     QSpinBox *tempoSpin;
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
-    QTabWidget *tabWidget;
     LogWidget *logWidget;
     ArpData *arpData;
     QString lastDir, filename;
@@ -50,9 +48,6 @@ class MainWindow : public QMainWindow
     void addArp(const QString&);
     void addLfo(const QString&);
     void addSeq(const QString&);
-    void removeArp(int index);
-    void removeLfo(int index);
-    void removeSeq(int index);
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
@@ -67,7 +62,7 @@ class MainWindow : public QMainWindow
     MainWindow(int p_portCount);
     ~MainWindow();
     QToolBar *runBox, *fileToolBar;
-    QAction *runAction, *addArpAction, *removeArpAction, *renameArpAction;
+    QAction *runAction, *addArpAction;
     QAction *addLfoAction, *addSeqAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
@@ -86,8 +81,10 @@ class MainWindow : public QMainWindow
     void arpNew();
     void lfoNew();
     void seqNew();
-    void moduleRename();
-    void moduleDelete();
+    void renameDock(QString name, int index);
+    void removeArp(int index);
+    void removeLfo(int index);
+    void removeSeq(int index);
 
     void helpAbout();
     void helpAboutQt();

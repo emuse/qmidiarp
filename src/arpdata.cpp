@@ -183,6 +183,57 @@ SeqWidget *ArpData::seqWidget(int index)
     return(seqWidgetList.at(index));
 }
 
+//module Window handling (dockWidgets)
+
+void ArpData::addModuleWindow(QDockWidget *moduleWindow)
+{
+    moduleWindowList.append(moduleWindow);
+    modified = true;
+}
+
+void ArpData::removeModuleWindow(QDockWidget *moduleWindow)
+{
+    moduleWindowList.removeOne(moduleWindow);
+    delete moduleWindow;
+    modified = true;
+}
+
+QDockWidget *ArpData::moduleWindow(int index)
+{
+    return(moduleWindowList.at(index));
+}
+
+int ArpData::moduleWindowCount()
+{
+    return(moduleWindowList.count());
+}
+
+void ArpData::updateIDs(int curID)
+{
+    int l1, tempDockID;
+    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+        arpWidget(l1)->ID = l1;
+        tempDockID = arpWidget(l1)->parentDockID;
+        if (tempDockID > curID) {
+            arpWidget(l1)->parentDockID = tempDockID - 1;
+            }
+    }
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+        lfoWidget(l1)->ID = l1;
+        tempDockID = lfoWidget(l1)->parentDockID;
+        if (tempDockID > curID) {
+            lfoWidget(l1)->parentDockID = tempDockID - 1;
+        }
+    }
+    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+        seqWidget(l1)->ID = l1;
+        tempDockID = seqWidget(l1)->parentDockID;
+        if (tempDockID > curID) {
+            seqWidget(l1)->parentDockID = tempDockID - 1;
+        }
+    }
+}
+
 //general
 
 bool ArpData::isModified()

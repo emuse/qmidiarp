@@ -26,9 +26,9 @@ class MidiArp : public QObject  {
     bool newCurrent, newNext, chordMode;
     snd_seq_tick_time_t arpTick, lastArpTick;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
-	double queueTempo;
+    double queueTempo;
     QVector<int> sustainBufferList;
-	
+    
   private:
     void initLoop();  
     int clip(int value, int min, int max, bool *outOfRange);
@@ -41,17 +41,17 @@ class MidiArp : public QObject  {
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     int notes[2][4][MAXNOTES]; // Buffer Index, Note/Velocity/On-offTick/releaseMark, Data Index
-	double old_attackfn[MAXNOTES];
+    double old_attackfn[MAXNOTES];
     int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
     bool hold, isMuted;
     int repeatPatternThroughChord;
     double tempo, len, vel;
-	double attack_time, release_time; 
+    double attack_time, release_time; 
     int octave, noteIndex[MAXCHORD], patternIndex;
     int randomVelocity, randomTick, randomLength;
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
-	
+    
   signals:
       void toggleMute();
 
@@ -73,7 +73,7 @@ class MidiArp : public QObject  {
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
   
- 	
+    
   public slots:  
     void updatePattern(const QString&);
     void updateRandomTickAmp(int);
@@ -85,8 +85,7 @@ class MidiArp : public QObject  {
     void muteArp(bool); //set mute
     void setSustain(bool, int); //set sustain
     void muteArp(); //toggle mute
-	void clearNoteBuffer();
-
+    void clearNoteBuffer();
 };
                               
 #endif

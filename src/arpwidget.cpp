@@ -14,6 +14,8 @@
 #include "arpscreen.h"
 #include "config.h"
 
+#include "pixmaps/arpremove.xpm"
+#include "pixmaps/arprename.xpm"
 #include "pixmaps/editmodeon.xpm"
 #include "pixmaps/patternremove.xpm"
 #include "pixmaps/patternstore.xpm"
@@ -25,6 +27,25 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 {
     QGridLayout *arpWidgetLayout = new QGridLayout;
 
+    // Management Buttons on the right top
+    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
+
+    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
+    renameAction->setToolTip(tr("Rename this Arp"));
+    QToolButton *renameButton = new QToolButton(this);
+    renameButton->setDefaultAction(renameAction);
+    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
+    
+    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
+    deleteAction->setToolTip(tr("Delete this Arp"));
+    QToolButton *deleteButton = new QToolButton(this);
+    deleteButton->setDefaultAction(deleteAction);
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
+    
+    manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(renameButton);
+    manageBoxLayout->addWidget(deleteButton);
+    
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
@@ -77,7 +98,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     inBox->setLayout(inBoxLayout); 
 
 
-    // Output group box on right side
+    // Output group box on left side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
@@ -111,9 +132,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
 
 
     // Layout for left/right placements of in/out group boxes
-    QHBoxLayout *inOutBoxLayout = new QHBoxLayout();
-    inOutBoxLayout->addWidget(inBox, 3);
-    inOutBoxLayout->addWidget(portBox, 2);
+    QVBoxLayout *inOutBoxLayout = new QVBoxLayout();
+    inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(inBox);
+    inOutBoxLayout->addWidget(portBox);
+    inOutBoxLayout->addStretch();
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
@@ -244,15 +267,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     envelopeBoxLayout->addWidget(releaseTime);
     envelopeBoxLayout->addStretch();
     envelopeBox->setLayout(envelopeBoxLayout);
-
-
+    
     arpWidgetLayout->addWidget(patternBox, 0, 0);
-    arpWidgetLayout->addLayout(inOutBoxLayout, 1, 0);
-    arpWidgetLayout->addWidget(randomBox, 0, 1);
-    arpWidgetLayout->addWidget(envelopeBox, 1, 1);
-    arpWidgetLayout->setRowStretch(2, 1);
-
-    arpWidgetLayout->setColumnMinimumWidth(1, 300);
+    arpWidgetLayout->addWidget(randomBox, 1, 0);
+    arpWidgetLayout->addWidget(envelopeBox, 2, 0);
+    arpWidgetLayout->addLayout(inOutBoxLayout, 0, 1, 3, 1);
+    arpWidgetLayout->setRowStretch(3, 1);
+    arpWidgetLayout->setColumnStretch(0, 5);
+    arpWidgetLayout->setColumnMinimumWidth(0, 300);
     setLayout(arpWidgetLayout);
 }
 
@@ -525,3 +547,32 @@ void ArpWidget::setModified(bool m)
     modified = m;
 }
 
+void ArpWidget::moduleDelete()
+{
+    QString qs;
+    qs = tr("Delete \"%1\"?")
+        .arg(name);
+    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default
+                | QMessageBox::Escape, QMessageBox::NoButton)
+            == QMessageBox::No) {
+        return;
+    }
+    emit arpRemove(ID);
+}
+
+void ArpWidget::moduleRename()
+{
+    QString newname, oldname;
+    bool ok;
+    
+    oldname = name;
+
+    newname = QInputDialog::getText(this, APP_NAME,
+                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+                
+    if (ok && !newname.isEmpty()) {
+        name = "Arp:" + newname;
+        emit dockRename(name, parentDockID);
+    }
+}

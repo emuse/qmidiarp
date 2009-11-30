@@ -5,7 +5,8 @@ pixmaps = \
 	arpremove.xpm editmodeon.xpm play.xpm patternremove.xpm \
 	qmidiarp2.xpm midiclock.xpm lfoadd.xpm lfowavcp.xpm\
 	seqadd.xpm seqwavcp.xpm\
-	settings.xpm groovetog.xpm eventlog.xpm \
+	lfowcustm.xpm lfowsawdn.xpm lfowsawup.xpm lfowsine.xpm lfowtri.xpm\
+	lfowsquare.xpm settings.xpm groovetog.xpm eventlog.xpm \
 	filenew.xpm filesave.xpm filesaveas.xpm fileopen.xpm filequit.xpm
 	
 EXTRA_DIST = $(pixmaps)

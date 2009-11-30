@@ -1,3 +1,10 @@
+2009-11-29 Frank Kober <goemusic@yahoo.fr>
+    * midi*.*, *widget.*, mainwindow.*: goodbye tabWidget, hello 
+    dockWidget, all modules are floatable, by default tabified
+    Dock Windows now
+    * lfowidget.*: small pixmaps for waveform combobox included
+    * pixmaps/lfow*.xpm: pixmaps for waveform combobox added
+    
 2009-11-23 Frank Kober <goemusic@yahoo.fr>
     * midilfo.cpp, midiseq.cpp: small computation optimization
     * midiarp.cpp: debug printf removed

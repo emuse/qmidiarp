@@ -233,13 +233,13 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
             notes[bufPtr][2][l1] = tickmark;
         }
     }
-        newBufPtr = noteBufPtr;
-        noteBufPtr = bufPtr;
-        for (l3 = 0; l3 < 4; l3++) {
-            for (l2 = 0; l2 < noteCount; l2++) {
-                notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
-            }  
-        }
+    newBufPtr = noteBufPtr;
+    noteBufPtr = bufPtr;
+    for (l3 = 0; l3 < 4; l3++) {
+        for (l2 = 0; l2 < noteCount; l2++) {
+            notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
+        }  
+    }
 }
 
 void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
@@ -576,7 +576,6 @@ void MidiArp::updateQueueTempo(int val)
 {
     queueTempo = (double)val;
 }
-
 
 void MidiArp::clearNoteBuffer()
 {

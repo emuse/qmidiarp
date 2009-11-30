@@ -27,7 +27,7 @@ class ArpWidget : public QWidget
     QComboBox *patternPresetBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
-
+    QAction *deleteAction, *renameAction;
     MidiArp *midiArp;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
@@ -35,7 +35,8 @@ class ArpWidget : public QWidget
     bool modified;
     
   public:
-    QString arpName;
+    QString name;
+    int ID, parentDockID;
     ArpScreen *arpScreen;
     QStringList patternPresets, patternNames;
     QCheckBox *muteOut;
@@ -61,6 +62,8 @@ class ArpWidget : public QWidget
     void presetsChanged(QString, QString, int); 
                     //int 0 for pattern to append
                     //or index>0 for pattern to remove
+    void arpRemove(int ID);
+    void dockRename(QString name, int parentDockID);
     
   public slots:
     void updateChIn(int value);
@@ -75,6 +78,8 @@ class ArpWidget : public QWidget
     void openTextEditWindow(bool on);
     void storeCurrentPattern();
     void removeCurrentPattern();
+    void moduleDelete();
+    void moduleRename();
 };
   
 #endif

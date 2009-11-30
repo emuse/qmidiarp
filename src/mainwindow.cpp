@@ -19,8 +19,6 @@
 #include "pixmaps/settings.xpm"
 #include "pixmaps/eventlog.xpm"
 #include "pixmaps/groovetog.xpm"
-#include "pixmaps/arpremove.xpm"
-#include "pixmaps/arprename.xpm"
 #include "pixmaps/play.xpm"
 #include "pixmaps/midiclock.xpm"
 #include "pixmaps/fileopen.xpm"
@@ -38,8 +36,6 @@ MainWindow::MainWindow(int p_portCount)
 
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
-
-    tabWidget = new QTabWidget(this);
 
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
@@ -107,15 +103,6 @@ MainWindow::MainWindow(int p_portCount)
     addSeqAction->setToolTip(tr("Add new Sequencer to tab bar"));
     connect(addSeqAction, SIGNAL(triggered()), this, SLOT(seqNew()));
 
-    renameArpAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
-    renameArpAction->setShortcut(QKeySequence(tr("Ctrl+R", "Module|Rename")));
-    renameArpAction->setToolTip(tr("Rename this module"));
-    connect(renameArpAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-
-    removeArpAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
-    removeArpAction->setShortcut(QKeySequence(tr("Ctrl+Del", "Module|Delete")));
-    removeArpAction->setToolTip(tr("Delete this module"));
-    connect(removeArpAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
 
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
     fileNewAction->setShortcut(QKeySequence(QKeySequence::New));    
@@ -158,8 +145,6 @@ MainWindow::MainWindow(int p_portCount)
     connect(midiClockAction, SIGNAL(toggled(bool)), this,
             SLOT(midiClockToggle(bool)));
 
-    renameArpAction->setDisabled(true);
-    removeArpAction->setDisabled(true);
     midiClockAction->setCheckable(true);
     midiClockAction->setChecked(false);
     midiClockAction->setDisabled(true);
@@ -205,8 +190,6 @@ MainWindow::MainWindow(int p_portCount)
     arpMenu->addAction(addLfoAction);
     arpMenu->addAction(addSeqAction);
     arpMenu->addSeparator();
-    arpMenu->addAction(renameArpAction);
-    arpMenu->addAction(removeArpAction);
 
     helpMenu->addAction(tr("&About %1...").arg(APP_NAME), this,
             SLOT(helpAbout())); 
@@ -228,9 +211,6 @@ MainWindow::MainWindow(int p_portCount)
     runBox->addAction(addLfoAction);
     runBox->addAction(addSeqAction);
     runBox->addSeparator();
-    runBox->addAction(renameArpAction);
-    runBox->addAction(removeArpAction);
-    runBox->addSeparator();
     runBox->addAction(runAction);
     runBox->addWidget(tempoSpin);
     runBox->addAction(midiClockAction);
@@ -244,7 +224,7 @@ MainWindow::MainWindow(int p_portCount)
     setMenuBar(menuBar);
     addToolBar(fileToolBar);
     addToolBar(runBox);
-    setCentralWidget(tabWidget);
+
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     updateWindowTitle();
     if (checkRcFile()) readRcFile();
@@ -319,16 +299,21 @@ void MainWindow::seqNew()
 
 void MainWindow::addArp(const QString& name)
 {
+    int count, widgetID;
     MidiArp *midiArp = new MidiArp();
     arpData->addMidiArp(midiArp);   
     ArpWidget *arpWidget = new ArpWidget(midiArp,
-            arpData->getPortCount(), tabWidget);
+            arpData->getPortCount(), this);
     connect(arpData->seqDriver, SIGNAL(nextStep(snd_seq_tick_time_t)),
             arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
     connect(arpWidget, SIGNAL(presetsChanged(QString, QString, int)), 
             this, SLOT(updatePatternPresets(QString, QString, int)));
+    connect(arpWidget, SIGNAL(arpRemove(int)), 
+            this, SLOT(removeArp(int)));
+    connect(arpWidget, SIGNAL(dockRename(QString, int)), 
+            this, SLOT(renameDock(QString, int)));
     connect(midiArp, SIGNAL(toggleMute()), arpWidget->muteOut, SLOT(toggle()));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
@@ -338,137 +323,149 @@ void MainWindow::addArp(const QString& name)
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
             arpWidget->arpScreen, SLOT(setGrooveLength(int)));
 
+    widgetID = arpData->arpWidgetCount();
+    arpWidget->name = name;
+    arpWidget->ID = widgetID;
+    
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
     arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
     arpData->seqDriver->updateCnumber(passWidget->cnumberSpin->value());
-    tabWidget->addTab(arpWidget, name);
-    tabWidget->setCurrentWidget(arpWidget);
-    arpWidget->arpName = name;
+    
+    QDockWidget *moduleWindow = new QDockWidget(name, this);
+    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    moduleWindow->setWidget(arpWidget);
+    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    
+    count = arpData->moduleWindowCount();
+    arpWidget->parentDockID = count;
+    
+    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
+    moduleWindow->setFocus();
+    arpData->addModuleWindow(moduleWindow);
     checkIfFirstModule();
 }
 
 void MainWindow::addLfo(const QString& name)
 {
+    int count, widgetID;
     MidiLfo *midiLfo = new MidiLfo();
     arpData->addMidiLfo(midiLfo);   
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
-            arpData->getPortCount(), tabWidget);
+            arpData->getPortCount(), this);
     connect(midiLfo, SIGNAL(toggleMute()), lfoWidget->muteOut, SLOT(toggle()));
+    connect(lfoWidget, SIGNAL(lfoRemove(int)), 
+            this, SLOT(removeLfo(int)));
+    connect(lfoWidget, SIGNAL(dockRename(QString, int)), 
+            this, SLOT(renameDock(QString, int)));
+
+    widgetID = arpData->lfoWidgetCount();
+    lfoWidget->name = name;
+    lfoWidget->ID = widgetID;
 
     arpData->addLfoWidget(lfoWidget);
-    tabWidget->addTab(lfoWidget, name);
-    tabWidget->setCurrentWidget(lfoWidget);
-    lfoWidget->lfoName = name;
+
+    QDockWidget *moduleWindow = new QDockWidget(name, this);
+    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    moduleWindow->setWidget(lfoWidget);
+    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    
+    count = arpData->moduleWindowCount();
+    lfoWidget->parentDockID = count;
+    
+    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
+    arpData->addModuleWindow(moduleWindow);
     checkIfFirstModule();
 }
 
 void MainWindow::addSeq(const QString& name)
 {
+    int count, widgetID;
     MidiSeq *midiSeq = new MidiSeq();
     arpData->addMidiSeq(midiSeq);   
     SeqWidget *seqWidget = new SeqWidget(midiSeq,
-            arpData->getPortCount(), tabWidget);
+            arpData->getPortCount(), this);
     connect(midiSeq, SIGNAL(toggleMute()), seqWidget->muteOut, SLOT(toggle()));
-
+    connect(seqWidget, SIGNAL(seqRemove(int)), 
+            this, SLOT(removeSeq(int)));
+    connect(seqWidget, SIGNAL(dockRename(QString, int)), 
+            this, SLOT(renameDock(QString, int)));
+            
+    widgetID = arpData->seqWidgetCount();
+    seqWidget->name = name;
+    seqWidget->ID = widgetID;
+    
     arpData->addSeqWidget(seqWidget);
-    tabWidget->addTab(seqWidget, name);
-    tabWidget->setCurrentWidget(seqWidget);
-    seqWidget->seqName = name;
+    
+    QDockWidget *moduleWindow = new QDockWidget(name, this);
+    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    moduleWindow->setWidget(seqWidget);
+    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    
+    count = arpData->moduleWindowCount();
+    seqWidget->parentDockID = count;
+    
+    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
+    arpData->addModuleWindow(moduleWindow);
+
     checkIfFirstModule();
 }
 
-void MainWindow::moduleRename() {
-
-    QString newname, oldname;
-    bool ok;
-    oldname = tabWidget->tabText(tabWidget->currentIndex());
-
-    newname = QInputDialog::getText(this, APP_NAME,
-                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
-                
-        if (ok && !newname.isEmpty()) {
-        if (oldname.startsWith("Seq:")) {
-            tabWidget->setTabText(tabWidget->currentIndex(), "Seq:"+newname);
-            SeqWidget *seqWidget = (SeqWidget *)tabWidget->currentWidget();
-            seqWidget->seqName = "Seq:"+newname;
-            }
-        if (oldname.startsWith("LFO:")) {
-            tabWidget->setTabText(tabWidget->currentIndex(), "LFO:"+newname);
-            LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
-            lfoWidget->lfoName = "LFO:"+newname;
-            }
-        if (oldname.startsWith("Arp:")) {
-            tabWidget->setTabText(tabWidget->currentIndex(), "Arp:"+newname);
-            ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
-            arpWidget->arpName = "Arp:"+newname;
-            }
-    }
-}
-
-void MainWindow::moduleDelete()
+void MainWindow::renameDock(QString name, int parentDockID) 
 {
-    QString qs;
-
-    qs = tr("Remove \"%1\"?")
-        .arg(tabWidget->tabText(tabWidget->currentIndex()));
-    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
-                QMessageBox::No | QMessageBox::Default
-                | QMessageBox::Escape, QMessageBox::NoButton)
-            == QMessageBox::No) {
-        return;
-    }
-    
-    qs = tabWidget->tabText(tabWidget->currentIndex());
-    
-    if (qs.startsWith("S")) {
-        SeqWidget *seqWidget = (SeqWidget *)tabWidget->currentWidget();
-        arpData->removeMidiSeq(seqWidget->getMidiSeq());
-        arpData->removeSeqWidget(seqWidget);
-    }
-    if (qs.startsWith("A")) {
-        ArpWidget *arpWidget = (ArpWidget *)tabWidget->currentWidget();
-        arpData->removeMidiArp(arpWidget->getMidiArp());
-        arpData->removeArpWidget(arpWidget);
-    }
-    if (qs.startsWith("L")) {
-        LfoWidget *lfoWidget = (LfoWidget *)tabWidget->currentWidget();
-        arpData->removeMidiLfo(lfoWidget->getMidiLfo());
-        arpData->removeLfoWidget(lfoWidget);
-    }
-
-    tabWidget->removeTab(tabWidget->currentIndex());
-    checkIfLastModule();
+    arpData->moduleWindow(parentDockID)->setWindowTitle(name);
+    arpData->setModified(true);
 }
 
 void MainWindow::removeArp(int index)
 {
+    int parentDockID;
     ArpWidget *arpWidget = arpData->arpWidget(index);
+    
+    parentDockID = arpWidget->parentDockID;
+    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    
     arpData->removeMidiArp(arpWidget->getMidiArp());
     arpData->removeArpWidget(arpWidget);
-    tabWidget->removeTab(index);
-    checkIfLastModule();
     delete arpWidget;
+    arpData->removeModuleWindow(dockWidget);
+    arpData->updateIDs(parentDockID);
+    checkIfLastModule();
 }
 
 void MainWindow::removeLfo(int index)
 {
+    int parentDockID;
     LfoWidget *lfoWidget = arpData->lfoWidget(index);
+    
+    parentDockID = lfoWidget->parentDockID;
+    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    
     arpData->removeMidiLfo(lfoWidget->getMidiLfo());
     arpData->removeLfoWidget(lfoWidget);
-    tabWidget->removeTab(index);
-    checkIfLastModule();
     delete lfoWidget;
+    arpData->removeModuleWindow(dockWidget);
+    arpData->updateIDs(parentDockID);
+    checkIfLastModule();
 }
 
 void MainWindow::removeSeq(int index)
 {
+    int parentDockID;
     SeqWidget *seqWidget = arpData->seqWidget(index);
+    
+    parentDockID = seqWidget->parentDockID;
+    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    
     arpData->removeMidiSeq(seqWidget->getMidiSeq());
     arpData->removeSeqWidget(seqWidget);
-    tabWidget->removeTab(index);
-    checkIfLastModule();
     delete seqWidget;
+    arpData->removeModuleWindow(dockWidget);
+    arpData->updateIDs(parentDockID);
+    checkIfLastModule();
 }
 
 void MainWindow::clear()
@@ -615,10 +612,13 @@ void MainWindow::fileSave()
 bool MainWindow::saveFile()
 {
     int l1;
-    int na = 0;
-    int nl = 0;
     int ns = 0;
+    int nl = 0;
+    int na = 0;
+    
+    QString nameTest;
     QFile f(filename);
+    
     if (!f.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(this, APP_NAME,
                 tr("Could not write to file '%1'.").arg(filename));
@@ -641,19 +641,22 @@ bool MainWindow::saveFile()
     saveText << ' ' << arpData->seqDriver->grooveVelocity;
     saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
 
-    for (l1 = 0; l1 < tabWidget->count(); l1++) {
-        if (tabWidget->tabText(l1).startsWith('S')) {
-            saveText << qPrintable(arpData->seqWidget(ns)->seqName) << '\n';
+    for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
+        
+        nameTest = arpData->moduleWindow(l1)->windowTitle();
+        
+        if (nameTest.startsWith('S')) {
+            saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
             arpData->seqWidget(ns)->writeSeq(saveText);
             ns++;
         } 
-        if (tabWidget->tabText(l1).startsWith('L')) {
-            saveText << qPrintable(arpData->lfoWidget(nl)->lfoName) << '\n';
+        if (nameTest.startsWith('L')) {
+            saveText << qPrintable(arpData->lfoWidget(nl)->name) << '\n';
             arpData->lfoWidget(nl)->writeLfo(saveText);
             nl++;
         }
-        if (tabWidget->tabText(l1).startsWith('A')) {
-            saveText << qPrintable(arpData->arpWidget(na)->arpName) << '\n';
+        if (nameTest.startsWith('A')) {
+            saveText << qPrintable(arpData->arpWidget(na)->name) << '\n';
             arpData->arpWidget(na)->writeArp(saveText);
             na++;
         }
@@ -762,8 +765,6 @@ void MainWindow::midiClockToggle(bool on)
     arpData->seqDriver->setUseMidiClock(on);
     runAction->setDisabled(on);
     tempoSpin->setDisabled(on);
-    removeArpAction->setDisabled(on);    
-    renameArpAction->setDisabled(on);
     addArpAction->setDisabled(on);
     addLfoAction->setDisabled(on);
     addSeqAction->setDisabled(on);
@@ -946,9 +947,7 @@ void MainWindow::updatePatternPresets(QString n, QString p, int index)
 
 void MainWindow::checkIfLastModule()
 {
-    if (!tabWidget->count()) {
-        removeArpAction->setDisabled(true);
-        renameArpAction->setDisabled(true);
+    if (!arpData->moduleWindowCount()) {
         runAction->setDisabled(true);
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
@@ -958,9 +957,7 @@ void MainWindow::checkIfLastModule()
 
 void MainWindow::checkIfFirstModule()
 {
-    if (tabWidget->count() == 1) {
-        removeArpAction->setEnabled(true);    
-        renameArpAction->setEnabled(true);
+    if (arpData->moduleWindowCount() == 1) {
         midiClockAction->setEnabled(true);
         runAction->setEnabled(true);
     }
