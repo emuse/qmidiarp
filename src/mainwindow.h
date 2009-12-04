@@ -61,7 +61,7 @@ class MainWindow : public QMainWindow
   public:
     MainWindow(int p_portCount);
     ~MainWindow();
-    QToolBar *runBox, *fileToolBar;
+    QToolBar *controlToolBar, *fileToolBar;
     QAction *runAction, *addArpAction;
     QAction *addLfoAction, *addSeqAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;

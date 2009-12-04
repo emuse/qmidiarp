@@ -26,7 +26,7 @@ qmidiarp \- MIDI arpeggiator and LFO
 QMidiArp
 is an advanced MIDI arpeggiator, step sequencer and LFO for the ALSA 
 sequencer. It can 
-hold any number of arpeggiator or LFO tabs running in parallel. The 
+hold any number of arpeggiator or LFO modules running in parallel. The 
 arpeggiator modules produce sequences depending on the notes sent to
 their input port, which is typically connected to a keyboard or a 
 sequencer. The step sequencer modules allow to create simple linear, 
@@ -52,7 +52,10 @@ or
 .B Add Step Sequencer...
 buttons, which will show a new
 tab with the chosen module in the main area. The modules can be renamed
-or removed using the corresponding buttons or menu functions. The entire
+or removed using the corresponding buttons or menu functions. Modules
+can be detached from the main window to control and view them in
+parallel. They can be brought back to the main window again by clicking
+on the icon on the left side of each module title bar. The entire
 setup containing all arps, sequences and LFOs in the tab bar along with 
 the parameters set in the 
 .B Settings 
@@ -60,7 +63,7 @@ window can be saved to or loaded from
 a QMidiArp text file (.qma). The 
 .B tempo 
 of the queue can be set in beats per minute and
-affects all arp and LFO modules. The queue is started and stopped by 
+affects all modules. The queue is started and stopped by 
 the blue arrow button. 
 
 .SS "MIDI Clock operation"
@@ -361,24 +364,27 @@ channel and port as the Seq module.
 
 .SS "Settings"
 The Settings window allows to configure if and to which port incoming 
-events that do not match any arp's input filter are forwarded (
+events that do not match any module's input filter are forwarded (
 .B unmatched
 events). It also
 allows to set whether incoming controller events are recognized for
 .B muting 
-the arpeggiators separately. If this option is set, a 
+the modules separately. If this option is set, a 
 .B mute MIDI controller number 
 can be specified. This controller number will
-be used to mute the first arp occurence in the tab row. The next higher
-controller number will toggle the mute state of the second arp in row,
-etc. As an example, if the mute controller number is set to 30, a value
-of 127 received on CC#30 will toggle the mute state of the first arp, 
-CC#31 set to 127 will mute/unmute the second arp in line. 
+be used to mute the first module occurence in the tab row. The next 
+higher controller number will toggle the mute state of the second module 
+in row, etc. As an example, if the mute controller number is set to 30, 
+a value of 127 received on CC#30 will toggle the mute state of the first 
+module, CC#31 set to 127 will mute/unmute the second module in line. 
 The 
 .B Settings 
 dialog also allows to set the tick resolution of the
 .B incoming MIDI clock. 
-The default is 96 ticks per beat. 
+The default is 96 ticks per beat. By checking the 
+.B compact module style
+all new created modules will show with small GUI elements to be more 
+economic in space when distributed as separate windows over the desktop.
 .PP
 All settings in this dialog are stored along with the module data in the
 .qma file.

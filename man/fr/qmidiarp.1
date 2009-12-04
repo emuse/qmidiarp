@@ -56,7 +56,9 @@ de menu correspondants. Le montage entier contenant tous les arpèges et
 LFOs de la barre d'onglets ainsi que les définitions de la 
 fenêtre 
 .B Paramètres 
-peuvent être sauvegardées dans un fichier texte QMidiArp (.qma). Le
+peuvent être sauvegardées dans un fichier texte QMidiArp (.qma). Les 
+modules peuvent être détachées en tant que fenêtres indépendantes pour
+les contrôler et visualiser en parallèle. Le
 .B tempo
 du séquenceur est défini de manière commune pour tous les modules
 en unités de beats par minute (bpm). La queue du séquenceur est démarrée
@@ -354,16 +356,19 @@ acheminés. Si ces évênements devront être ignorés, la case correspondante
 doit être décochée. Dans cette fenêtre on spécifie également si QMidiArp
 permet de rendre silencieux ses modules d'arpégiateur par un contrôle
 MIDI externe reçu. Si cette option est cochée, le numéro du contrôleur
-du premier arpégiateur dans la barre d'onglets peut être spécifié.
-L'arpégiateur suivant sera addressé par le numéro de contrôleur 
+du premier module dans la barre d'onglets peut être spécifié.
+Le module suivant sera addressé par le numéro de contrôleur 
 suivant et ainsi de suite. Par exemple, si le numéro du contrôleur
 est spécifié à 30, une valeur de 127 reçu avec un évênement MIDI CC#30
-basculera le premier arpégiateur en silencieux/non-silencieux. Le 
-CC#31 agira sur l'arpégiateur dans l'onglet suivant. La fenêtre
+basculera le premier module en silencieux/non-silencieux. Le 
+CC#31 agira sur le module dans l'onglet suivant. La fenêtre
 .B Paramètres
 permet également de définir la résolution de l'horologe MIDI externe
 utilisée pour la synchronisation. Sa valeur par défaut est de 96
-ticks par quart de temps (tpb).
+ticks par quart de temps (tpb). En cochant la case
+.B Style compact d'affichage des modules
+tous les nouveaux modules créés auront une apparence économique en place
+pour la distribution sur le bureau de l'ordinateur. 
 .PP
 Tous les ajustements faits dans le dialogue 
 .B Paramètres

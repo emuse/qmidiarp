@@ -22,9 +22,9 @@
 
 
 
-ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
+ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidget *parent)
 : QWidget(parent), midiArp(p_midiArp), modified(false)
-{
+{    
     QGridLayout *arpWidgetLayout = new QGridLayout;
 
     // Management Buttons on the right top
@@ -94,7 +94,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     inBoxLayout->addWidget(rangeIn[1], 1, 2);
     inBoxLayout->addWidget(chInLabel, 2, 0);
     inBoxLayout->addWidget(chIn, 2, 2);
-
     inBox->setLayout(inBoxLayout); 
 
 
@@ -196,11 +195,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     patternPresetLayout->addWidget(repeatPatternThroughChord);  
 
     patternText = new QLineEdit(patternBox); 
-    //patternText->setLineWrapMode(QPlainTextEdit::NoWrap);
     connect(patternText, SIGNAL(textChanged(QString)), this,
             SLOT(updateText(QString)));
     patternText->setHidden(true);
-    //patternText->setMaximumHeight(50);
     patternText->setToolTip(
             tr("0..9  note played on keyboard, ascending order\n"
             "( ) chord mode on/off\n"
@@ -250,6 +247,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     randomBoxLayout->addWidget(randomVelocity);
     randomBoxLayout->addWidget(randomLength);
     randomBoxLayout->addStretch();
+    if (compactStyle) {
+        randomBoxLayout->setSpacing(0);
+        randomBoxLayout->setMargin(1);
+    }
     randomBox->setLayout(randomBoxLayout);
       
     QGroupBox *envelopeBox = new QGroupBox(tr("Envelope"), this);
@@ -266,6 +267,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     envelopeBoxLayout->addWidget(attackTime);
     envelopeBoxLayout->addWidget(releaseTime);
     envelopeBoxLayout->addStretch();
+    if (compactStyle) {
+        envelopeBoxLayout->setSpacing(0);
+        envelopeBoxLayout->setMargin(1);
+    }
     envelopeBox->setLayout(envelopeBoxLayout);
     
     arpWidgetLayout->addWidget(patternBox, 0, 0);
@@ -274,7 +279,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, QWidget *parent)
     arpWidgetLayout->addLayout(inOutBoxLayout, 0, 1, 3, 1);
     arpWidgetLayout->setRowStretch(3, 1);
     arpWidgetLayout->setColumnStretch(0, 5);
-    arpWidgetLayout->setColumnMinimumWidth(0, 300);
     setLayout(arpWidgetLayout);
 }
 

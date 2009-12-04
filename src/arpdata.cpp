@@ -12,7 +12,8 @@
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
-    //midiArpList.setAutoDelete(true);
+    connect(seqDriver, SIGNAL(controlEvent(int, int)), 
+            this, SLOT(handleController(int, int)));
 }
 
 ArpData::~ArpData(){
@@ -299,4 +300,39 @@ void ArpData::runQueue(bool on)
 int ArpData::getAlsaClientId()
 {
     return seqDriver->getAlsaClientId();
+}
+
+void ArpData::handleController(int ccnumber, int value)
+{
+    bool m;
+    int muted_dockwindow;
+    if ((value == 127) && (ccnumber > (mute_ccnumber - 1)) 
+        && (ccnumber < (mute_ccnumber + moduleWindowCount()))) {
+        //Find and Mute DockWindow 
+        muted_dockwindow = ccnumber - mute_ccnumber;
+            
+        for (int l1 = 0; l1 < arpWidgetCount(); l1++)
+            if (arpWidget(l1)->parentDockID == muted_dockwindow) {
+                m = arpWidget(l1)->muteOut->isChecked();
+                arpWidget(l1)->muteOut->setChecked(!m);
+                return;
+            }
+        for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
+            if (lfoWidget(l1)->parentDockID == muted_dockwindow) {
+                m = lfoWidget(l1)->muteOut->isChecked();
+                lfoWidget(l1)->muteOut->setChecked(!m);
+                return;
+            }
+        for (int l1 = 0; l1 < seqWidgetCount(); l1++)
+            if (seqWidget(l1)->parentDockID == muted_dockwindow) {
+                m = seqWidget(l1)->muteOut->isChecked();
+                seqWidget(l1)->muteOut->setChecked(!m); 
+                return;  
+            }
+    }
+}
+void ArpData::updateCCnumber(int ccnumber)
+{
+    mute_ccnumber = ccnumber;
+    modified = true;
 }

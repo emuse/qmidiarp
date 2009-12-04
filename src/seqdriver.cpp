@@ -20,7 +20,6 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     portCount = 0;
     forwardUnmatched = false;
     portUnmatched = 0;
-    mute_cnumber = 37;
     midi_mutable = false;
 
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
@@ -142,11 +141,11 @@ void SeqDriver::procEvents(int)
                 tick = deltaToTick(evIn->time.time);
             }
 
-            //                printf("       tick %d     ",tick);
-            //                printf("nextLfoTick %d",nextLfoTick);
-            //                printf("nextSeqTick %d\n",nextSeqTick);
-            //                printf("midiTick %d   ",midiTick);
-            //                printf("m_ratio %f\n",m_ratio);
+//                            printf("       tick %d     ",tick);
+//                            printf("nextLfoTick %d",nextLfoTick);
+//                            printf("nextSeqTick %d\n",nextSeqTick);
+//                            printf("midiTick %d   ",midiTick);
+//                            printf("m_ratio %f\n",m_ratio);
             emit nextStep((tick-firstArpTick));
             startQueue = false;
             foundEcho = false;
@@ -322,12 +321,11 @@ void SeqDriver::procEvents(int)
                         }
                     }
                 }
-                if ((evIn->data.control.value == 127) && (ccnumber > (mute_cnumber - 1)) 
-                        && midi_mutable && (ccnumber < (mute_cnumber + midiArpList->count())))
-                {
-                    //Mute Toggle Controller received
-                    midiArpList->at(ccnumber - mute_cnumber)->muteArp();
-                    unmatched = false;
+                else {
+                    if (midi_mutable) {
+                        emit controlEvent(ccnumber, evIn->data.control.value);
+                        unmatched = false;
+                    }
                 }
             }
 
@@ -538,18 +536,6 @@ void SeqDriver::updateMIDItpb(int midiTpb)
     midiclock_tpb = midiTpb;
 }
 
-void SeqDriver::updateCnumber(int cnumber)
-{
-    mute_cnumber = cnumber;
-    modified = true;
-}
-
-void SeqDriver::setMidiMutable(bool on)
-{
-    midi_mutable = on;
-    modified = true;
-}
-
 void SeqDriver::setModified(bool m)
 {
     modified = m;
@@ -593,4 +579,10 @@ void SeqDriver::calcMidiRatio()
 int SeqDriver::getAlsaClientId()
 {
         return clientid;
+}
+
+void SeqDriver::setMidiMutable(bool on)
+{
+    midi_mutable = on;
+    modified = true;
 }

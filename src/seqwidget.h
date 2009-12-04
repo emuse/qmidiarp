@@ -61,7 +61,7 @@ class SeqWidget : public QWidget
     QCheckBox *enableVelIn; 
     int ID, parentDockID;
     
-    SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget* parent=0);
+    SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidget* parent=0);
     ~SeqWidget();
     MidiSeq *getMidiSeq();
     

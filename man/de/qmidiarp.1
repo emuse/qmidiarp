@@ -51,7 +51,11 @@ in der Werkzeugleiste oder im Menu
 .I Modul.
 Ein neuer Reiter mit dem gewählten Modul erscheint im Hauptbedienfenster.
 Module können mit den entsprechenden Symbolen der Werkzeugleiste oder 
-Menüfunktionen umbenannt oder gelöscht werden.
+Menüfunktionen umbenannt oder gelöscht werden. Die Module können vom
+Hauptfenster gelöst und parallel dargestellt und gesteuert werden. Hierzu
+klickt man auf das Symbol rechts oben in der Titelleiste jedes Moduls.
+Durch erneutes klicken dieses Symbols werden die Module wieder in die
+Reiterleiste eingefügt.
 Alle Einstellungen (d.h. alle Module, deren Parameter sowie
 alle sonstigen Änderungen, die unter
 .B Ansicht-->Einstellungen
@@ -374,22 +378,27 @@ diejenigen Signale weitergeleitet werden, die von keinem der Module
 verarbeitet werden (
 .B unpassende
 Signale). Hier wird auch bestimmt, ob empfangene MIDI Steuersignale 
-(Control events) benutzt werden, um Arpeggiatoren
+(Control events) benutzt werden, um Module
 .B Stumm
 zu schalten. Wenn diese Funktion angekreuzt ist, kann eine  
 .B Stummschaltungs-Controller ID
-festgelegt werden. Diese Controller ID wird dann benutzt, um den ersten
-Arpeggiator in der Reiterliste stummzuschalten. Die nächst-höhere 
-MIDI-Controller-ID schaltet den zweiten Arpeggiator in der Reihe stumm, 
+festgelegt werden. Diese Controller ID wird dann benutzt, um das erste
+Modul in der Reiterliste stummzuschalten. Die nächst-höhere 
+MIDI-Controller-ID schaltet das zweite Modul in der Reihe stumm, 
 und so fort. Ein Beispiel: Wenn die Stummschaltungs-Controller ID auf
 30 steht, und ein Steuersignal CC#30 mit dem Wert 127 empfangen wird, 
-wird der erste Arpeggiator in der Reiterleiste stumm/lautgeschaltet. Das 
-Signal CC#31 betrifft den zweiten Arpeggiator in der Leiste. 
+wird das erste Modul in der Reiterleiste stumm/lautgeschaltet. Das 
+Signal CC#31 betrifft das zweite Modul in der Leiste. 
 Die
 .B Einstellungen
 erlauben auch die Bestimmung der Auflösung der empfangenen 
 .B MIDI-Clock
-Signale. Dieser Wert steht zu Beginn auf 96 ticks per beat (tpb).
+Signale. Dieser Wert steht zu Beginn auf 96 ticks per beat (tpb). Durch
+ankreuzen des Kästchens
+.B Kompakte Darstellung der Module
+werden alle folgenden erzeugten Module in einer Platzsparenden Art 
+dargestellt, um eine bessere Parallel-Darstellung auf dem Schreibtisch
+zu ermöglichen.
 .PP
 Die 
 .B Einstellungen 

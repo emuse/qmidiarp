@@ -42,7 +42,7 @@ class ArpWidget : public QWidget
     QCheckBox *muteOut;
 
   public:
-    ArpWidget(MidiArp *p_midiArp, int portCount, QWidget* parent=0);
+    ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidget* parent=0);
     ~ArpWidget();
     MidiArp *getMidiArp();
     

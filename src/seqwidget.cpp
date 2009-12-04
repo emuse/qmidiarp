@@ -37,7 +37,7 @@
 #include "config.h"
 
 
-SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
+SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiSeq(p_midiSeq), modified(false)
 {
     // Management Buttons on the right top
@@ -139,7 +139,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     inOutBoxLayout->addStretch();
     
     // group box for sequence setup
-    QGroupBox *patternBox = new QGroupBox(tr("Sequence"), this);
+    QGroupBox *seqBox = new QGroupBox(tr("Sequence"), this);
 
     seqScreen = new SeqScreen(this); 
     seqScreen->setToolTip(
@@ -150,8 +150,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     connect(seqScreen, SIGNAL(seqMousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
             
-    QLabel *waveFormBoxLabel = new QLabel(tr("&Sequence"), patternBox);
-    waveFormBox = new QComboBox(patternBox);
+    QLabel *waveFormBoxLabel = new QLabel(tr("&Sequence"), seqBox);
+    waveFormBox = new QComboBox(seqBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
     loadWaveForms();
     waveFormBox->insertItems(0, waveForms);
@@ -162,8 +162,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
             SLOT(updateWaveForm(int)));
     
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
-            patternBox);
-    resBox = new QComboBox(patternBox);
+            seqBox);
+    resBox = new QComboBox(seqBox);
     resBoxLabel->setBuddy(resBox);
     QStringList names;
     names.clear();
@@ -176,8 +176,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
 
-    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), patternBox);
-    sizeBox = new QComboBox(patternBox);
+    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
+    sizeBox = new QComboBox(seqBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
@@ -204,17 +204,17 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
 
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
-            tr("Veloc&ity"), patternBox);
+            tr("Veloc&ity"), seqBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
             
     notelength = new Slider(0, 255, 1, 16, 64, Qt::Horizontal,
-            tr("N&ote Length"), patternBox);
+            tr("N&ote Length"), seqBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
             
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
-            tr("&Transpose"), patternBox);
+            tr("&Transpose"), seqBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
 
@@ -225,26 +225,29 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, QWidget *parent):
     sliderLayout->addWidget(notelength, 2, 0);
     sliderLayout->addWidget(transpose, 3, 0);
     sliderLayout->setRowStretch(4, 1);
+    if (compactStyle) {
+        sliderLayout->setSpacing(0);
+        sliderLayout->setMargin(1);
+    }
 
-    QGridLayout *patternBoxLayout = new QGridLayout;
-    patternBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
-    patternBoxLayout->addWidget(waveFormBox, 0, 1);
-    patternBoxLayout->addWidget(resBoxLabel, 1, 0);
-    patternBoxLayout->addWidget(resBox, 1, 1);
-    patternBoxLayout->addWidget(sizeBoxLabel, 2, 0);
-    patternBoxLayout->addWidget(sizeBox, 2, 1);
-    patternBoxLayout->setRowStretch(3, 1);
+    QGridLayout *paramBoxLayout = new QGridLayout;
+    paramBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
+    paramBoxLayout->addWidget(waveFormBox, 0, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 1, 0);
+    paramBoxLayout->addWidget(resBox, 1, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 2, 0);
+    paramBoxLayout->addWidget(sizeBox, 2, 1);
+    paramBoxLayout->setRowStretch(3, 1);
     
-    QGridLayout* waveBoxLayout = new QGridLayout;
-    waveBoxLayout->addWidget(seqScreen, 0, 0, 1, 2);
-    waveBoxLayout->addLayout(patternBoxLayout, 1, 0);
-    waveBoxLayout->addLayout(sliderLayout, 1, 1);
-
-    patternBox->setLayout(waveBoxLayout); 
+    QGridLayout* seqBoxLayout = new QGridLayout;
+    seqBoxLayout->addWidget(seqScreen, 0, 0, 1, 2);
+    seqBoxLayout->addLayout(paramBoxLayout, 1, 0);
+    seqBoxLayout->addLayout(sliderLayout, 1, 1);
+    seqBox->setLayout(seqBoxLayout); 
     
     QHBoxLayout *seqWidgetLayout = new QHBoxLayout;
-    seqWidgetLayout->addWidget(patternBox);
-    seqWidgetLayout->addLayout(inOutBoxLayout);
+    seqWidgetLayout->addWidget(seqBox, 1);
+    seqWidgetLayout->addLayout(inOutBoxLayout, 0);
 
     setLayout(seqWidgetLayout);
     updateVelocity(64);

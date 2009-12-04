@@ -43,10 +43,9 @@
 #include "config.h"
 
 
-LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
+LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiLfo(p_midiLfo), modified(false)
 {
-
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
@@ -115,7 +114,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     portBox->setLayout(outputLayout);
 
     // group box for wave setup
-    QGroupBox *patternBox = new QGroupBox(tr("Wave"), this);
+    QGroupBox *waveBox = new QGroupBox(tr("Wave"), this);
 
     lfoScreen = new LfoScreen(this); 
     lfoScreen->setToolTip(
@@ -125,8 +124,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             SLOT(mouseMoved(double, double, int)));
     connect(lfoScreen, SIGNAL(lfoMousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
-    QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), patternBox);
-    waveFormBox = new QComboBox(patternBox);
+    QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), waveBox);
+    waveFormBox = new QComboBox(waveBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
     //loadWaveForms();
     waveFormBox->addItem(QIcon(lfowsine_xpm),"");
@@ -142,8 +141,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             SLOT(updateWaveForm(int)));
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
-            patternBox);
-    freqBox = new QComboBox(patternBox);
+            waveBox);
+    freqBox = new QComboBox(waveBox);
     freqBoxLabel->setBuddy(freqBox);
     QStringList names;
     names << "1/4" << "1/2" << "3/4" << "1" << "2" << "3" 
@@ -157,8 +156,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
             SLOT(updateFreq(int)));
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
-            patternBox);
-    resBox = new QComboBox(patternBox);
+            waveBox);
+    resBox = new QComboBox(waveBox);
     resBoxLabel->setBuddy(resBox);
     names.clear();
     names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
@@ -170,8 +169,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
 
-    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), patternBox);
-    sizeBox = new QComboBox(patternBox);
+    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
+    sizeBox = new QComboBox(waveBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
@@ -191,12 +190,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     copyToCustomAction->setEnabled(true);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
-            tr("&Amplitude"), patternBox);
+            tr("&Amplitude"), waveBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
-            tr("&Offset"), patternBox);
+            tr("&Offset"), waveBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
     
@@ -205,24 +204,31 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     sliderLayout->addWidget(amplitude);
     sliderLayout->addWidget(offset);
     sliderLayout->addStretch();
+    if (compactStyle) {
+        sliderLayout->setSpacing(0);
+        sliderLayout->setMargin(1);
+    }
 
-    QGridLayout *patternBoxLayout = new QGridLayout;
-    patternBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
-    patternBoxLayout->addWidget(waveFormBox, 0, 1);
-    patternBoxLayout->addWidget(freqBoxLabel, 1, 0);
-    patternBoxLayout->addWidget(freqBox, 1, 1);
-    patternBoxLayout->addWidget(resBoxLabel, 2, 0);
-    patternBoxLayout->addWidget(resBox, 2, 1);
-    patternBoxLayout->addWidget(sizeBoxLabel, 3, 0);
-    patternBoxLayout->addWidget(sizeBox, 3, 1);
-    patternBoxLayout->setRowStretch(4, 1);
-    
+    QGridLayout *paramBoxLayout = new QGridLayout;
+    paramBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
+    paramBoxLayout->addWidget(waveFormBox, 0, 1);
+    paramBoxLayout->addWidget(freqBoxLabel, 1, 0);
+    paramBoxLayout->addWidget(freqBox, 1, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 2, 0);
+    paramBoxLayout->addWidget(resBox, 2, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 3, 0);
+    paramBoxLayout->addWidget(sizeBox, 3, 1);
+    paramBoxLayout->setRowStretch(4, 1);
+    if (compactStyle) {
+        paramBoxLayout->setSpacing(0);
+        paramBoxLayout->setMargin(1);
+    }
+           
     QGridLayout* waveBoxLayout = new QGridLayout;
     waveBoxLayout->addWidget(lfoScreen, 0, 0, 1, 2);
-    waveBoxLayout->addLayout(patternBoxLayout, 1, 0);
+    waveBoxLayout->addLayout(paramBoxLayout, 1, 0);
     waveBoxLayout->addLayout(sliderLayout, 1, 1);
-
-    patternBox->setLayout(waveBoxLayout);
+    waveBox->setLayout(waveBoxLayout);
     
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addLayout(manageBoxLayout);
@@ -230,8 +236,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget *parent):
     inOutBoxLayout->addStretch();
 
     QHBoxLayout *lfoWidgetLayout = new QHBoxLayout;
-    lfoWidgetLayout->addWidget(patternBox);
-    lfoWidgetLayout->addLayout(inOutBoxLayout);
+    lfoWidgetLayout->addWidget(waveBox, 1);
+    lfoWidgetLayout->addLayout(inOutBoxLayout, 0);
 
     setLayout(lfoWidgetLayout);
     updateAmp(64);

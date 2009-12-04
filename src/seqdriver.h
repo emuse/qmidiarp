@@ -29,10 +29,10 @@ class SeqDriver : public QWidget {
         int queue_id;
         bool startQueue;
         bool modified;
+        bool midi_mutable;
         snd_seq_tick_time_t tick, nextEchoTick;
         int firstArpTick, lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
-        int lfoCCnumber, seqCCnumber;
         QVector<LfoSample> lfoData;
         QVector<SeqSample> seqData;
 
@@ -43,8 +43,6 @@ class SeqDriver : public QWidget {
 
     protected: 
         int midiTick;
-        int mute_cnumber;
-        bool midi_mutable;
         double m_ratio;
         snd_seq_real_time_t delta, real_time;
 
@@ -71,6 +69,7 @@ class SeqDriver : public QWidget {
 
    signals:
         void midiEvent(snd_seq_event_t *ev);
+        void controlEvent(int ccnumber, int value);
         void nextStep(snd_seq_tick_time_t tick);
 
    public slots:
@@ -86,7 +85,6 @@ class SeqDriver : public QWidget {
         void setUseMidiClock(bool on);
         void updateMIDItpb(int midiTpb);
         void setMidiMutable(bool on);
-        void updateCnumber(int cnumber);
 };
 
 #endif

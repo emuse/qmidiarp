@@ -27,7 +27,9 @@ class ArpData : public QWidget  {
     QList<SeqWidget *> seqWidgetList;
     int portCount;
     bool modified;
-
+    int mute_ccnumber;
+    bool midi_mutable;
+    
   public:
     SeqDriver *seqDriver;
 
@@ -36,6 +38,7 @@ class ArpData : public QWidget  {
     void registerPorts(int num);
     int getPortCount();
     bool isModified();
+
 
     void addModuleWindow(QDockWidget *moduleWindow);
     void removeModuleWindow(QDockWidget *moduleWindow);
@@ -75,6 +78,8 @@ class ArpData : public QWidget  {
     void runQueue(bool);
     void setModified(bool);
     void updatePatternPresets(QString n, QString p, int index);
+    void handleController(int ccnumber, int value);
+    void updateCCnumber(int ccnumber);
 };
                               
 #endif

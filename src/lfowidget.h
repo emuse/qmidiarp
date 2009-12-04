@@ -60,7 +60,7 @@ class LfoWidget : public QWidget
     QCheckBox *muteOut;
     int ID, parentDockID;
 
-    LfoWidget(MidiLfo *p_midiLfo, int portCount, QWidget* parent=0);
+    LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidget* parent=0);
     ~LfoWidget();
     MidiLfo *getMidiLfo();
     

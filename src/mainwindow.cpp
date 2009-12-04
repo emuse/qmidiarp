@@ -36,13 +36,14 @@ MainWindow::MainWindow(int p_portCount)
 
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
-
+            
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
     logWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     logWindow->setWidget(logWidget);
+    logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
@@ -53,6 +54,7 @@ MainWindow::MainWindow(int p_portCount)
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     passWindow->setWidget(passWidget);
+    passWindow->setObjectName("passWidget");
     passWindow->setVisible(false);
     passWindow->setFloating(true);
     passWindow->setGeometry(10, 10, 400, 200);
@@ -68,7 +70,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(passWidget, SIGNAL(midiMuteToggle(bool)), 
             arpData->seqDriver, SLOT(setMidiMutable(bool)));
     connect(passWidget, SIGNAL(newCnumber(int)), 
-            arpData->seqDriver, SLOT(updateCnumber(int)));
+            arpData, SLOT(updateCCnumber(int)));
 
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));                 
@@ -79,6 +81,7 @@ MainWindow::MainWindow(int p_portCount)
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     grooveWindow->setWidget(grooveWidget);;
+    grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
@@ -201,20 +204,22 @@ MainWindow::MainWindow(int p_portCount)
     fileToolBar->addAction(fileOpenAction);    
     fileToolBar->addAction(fileSaveAction);    
     fileToolBar->addAction(fileSaveAsAction);
+    fileToolBar->setObjectName("fileToolBar");
     fileToolBar->setMaximumHeight(30);
 
-    runBox = new QToolBar(tr("&Control Toolbar"), this);
-    runBox->addAction(viewLogAction);
-    runBox->addAction(viewGrooveAction);
-    runBox->addSeparator();
-    runBox->addAction(addArpAction);
-    runBox->addAction(addLfoAction);
-    runBox->addAction(addSeqAction);
-    runBox->addSeparator();
-    runBox->addAction(runAction);
-    runBox->addWidget(tempoSpin);
-    runBox->addAction(midiClockAction);
-    runBox->setMaximumHeight(30);
+    controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
+    controlToolBar->addAction(viewLogAction);
+    controlToolBar->addAction(viewGrooveAction);
+    controlToolBar->addSeparator();
+    controlToolBar->addAction(addArpAction);
+    controlToolBar->addAction(addLfoAction);
+    controlToolBar->addAction(addSeqAction);
+    controlToolBar->addSeparator();
+    controlToolBar->addAction(runAction);
+    controlToolBar->addWidget(tempoSpin);
+    controlToolBar->addAction(midiClockAction);
+    controlToolBar->setObjectName("controlToolBar");
+    controlToolBar->setMaximumHeight(30);
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(viewMenu);
@@ -223,7 +228,7 @@ MainWindow::MainWindow(int p_portCount)
 
     setMenuBar(menuBar);
     addToolBar(fileToolBar);
-    addToolBar(runBox);
+    addToolBar(controlToolBar);
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     updateWindowTitle();
@@ -303,7 +308,9 @@ void MainWindow::addArp(const QString& name)
     MidiArp *midiArp = new MidiArp();
     arpData->addMidiArp(midiArp);   
     ArpWidget *arpWidget = new ArpWidget(midiArp,
-            arpData->getPortCount(), this);
+            arpData->getPortCount(), passWidget->compactStyle, this);
+    // passing compactStyle property was necessary because stylesheet
+    // seems to have no effect on layout spacing/margin
     connect(arpData->seqDriver, SIGNAL(nextStep(snd_seq_tick_time_t)),
             arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
     connect(arpWidget, SIGNAL(patternChanged()), 
@@ -314,7 +321,6 @@ void MainWindow::addArp(const QString& name)
             this, SLOT(removeArp(int)));
     connect(arpWidget, SIGNAL(dockRename(QString, int)), 
             this, SLOT(renameDock(QString, int)));
-    connect(midiArp, SIGNAL(toggleMute()), arpWidget->muteOut, SLOT(toggle()));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
             arpWidget->arpScreen, SLOT(setGrooveTick(int)));
@@ -326,23 +332,23 @@ void MainWindow::addArp(const QString& name)
     widgetID = arpData->arpWidgetCount();
     arpWidget->name = name;
     arpWidget->ID = widgetID;
+    if (passWidget->compactStyle) arpWidget->setStyleSheet(COMPACT_STYLE);
     
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
     arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
-    arpData->seqDriver->updateCnumber(passWidget->cnumberSpin->value());
+    arpData->updateCCnumber(passWidget->cnumberSpin->value());
     
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(arpWidget);
+    moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     
     count = arpData->moduleWindowCount();
     arpWidget->parentDockID = count;
-    
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
-    moduleWindow->setFocus();
     arpData->addModuleWindow(moduleWindow);
     checkIfFirstModule();
 }
@@ -353,7 +359,7 @@ void MainWindow::addLfo(const QString& name)
     MidiLfo *midiLfo = new MidiLfo();
     arpData->addMidiLfo(midiLfo);   
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
-            arpData->getPortCount(), this);
+            arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiLfo, SIGNAL(toggleMute()), lfoWidget->muteOut, SLOT(toggle()));
     connect(lfoWidget, SIGNAL(lfoRemove(int)), 
             this, SLOT(removeLfo(int)));
@@ -363,6 +369,7 @@ void MainWindow::addLfo(const QString& name)
     widgetID = arpData->lfoWidgetCount();
     lfoWidget->name = name;
     lfoWidget->ID = widgetID;
+    if (passWidget->compactStyle) lfoWidget->setStyleSheet(COMPACT_STYLE);
 
     arpData->addLfoWidget(lfoWidget);
 
@@ -370,6 +377,7 @@ void MainWindow::addLfo(const QString& name)
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(lfoWidget);
+    moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     
     count = arpData->moduleWindowCount();
@@ -386,7 +394,7 @@ void MainWindow::addSeq(const QString& name)
     MidiSeq *midiSeq = new MidiSeq();
     arpData->addMidiSeq(midiSeq);   
     SeqWidget *seqWidget = new SeqWidget(midiSeq,
-            arpData->getPortCount(), this);
+            arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiSeq, SIGNAL(toggleMute()), seqWidget->muteOut, SLOT(toggle()));
     connect(seqWidget, SIGNAL(seqRemove(int)), 
             this, SLOT(removeSeq(int)));
@@ -396,6 +404,7 @@ void MainWindow::addSeq(const QString& name)
     widgetID = arpData->seqWidgetCount();
     seqWidget->name = name;
     seqWidget->ID = widgetID;
+    if (passWidget->compactStyle) seqWidget->setStyleSheet(COMPACT_STYLE);
     
     arpData->addSeqWidget(seqWidget);
     
@@ -403,6 +412,7 @@ void MainWindow::addSeq(const QString& name)
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(seqWidget);
+    moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     
     count = arpData->moduleWindowCount();
@@ -618,16 +628,15 @@ bool MainWindow::saveFile()
     
     QString nameTest;
     QFile f(filename);
-    
+
     if (!f.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(this, APP_NAME,
                 tr("Could not write to file '%1'.").arg(filename));
         return false;
     }
-
+    
+    
     QTextStream saveText(&f);
-    saveText << "Tempo\n";
-    saveText << tempoSpin->value() << '\n';
     saveText << "MIDI Control\n";
     saveText << (int)passWidget->cbuttonCheck->isChecked();
     saveText << ' ' << passWidget->cnumberSpin->value() << '\n';
@@ -835,6 +844,8 @@ void MainWindow::readRcFile()
     if (qs.startsWith("[GUI")) {
         int i = 0;
         qs = loadText.readLine();
+        passWidget->compactStyleCheck->setChecked(qs.section(' ', i, i).toInt());
+        i++;
         passWindow->setVisible(qs.section(' ', i, i).toInt());
         i++;
         passWindow->setFloating(qs.section(' ', i, i).toInt());
@@ -905,6 +916,7 @@ void MainWindow::writeRcFile()
         writeText << qPrintable(patternPresets.at(l1)) << endl;
     }
     writeText << "[GUI settings]" << endl
+    << passWidget->compactStyle << ' '
     << passWindow->isVisible() << ' '
     << passWindow->isFloating() << ' '
     << passWindow->x() << ' ' << passWindow->y() << ' '

@@ -1,3 +1,15 @@
+2009-12-04 Frank Kober <goemusic@yahoo.fr>
+    * seqdriver.*, arpdata.*, *widget.*: all modules MIDI-mutable,
+    mute MIDI controller depends on position in tabbed dock (order of
+    module creation) instead of position in midiArpList
+    * passwidget.*, mainwindow.*, main.h, *widget.*: "compact style" can
+    be checked in passwidget acting on font size, grid spacing and
+    element heights for all modules, to allow for placing several
+    modules next to each other on desktop. compactStyle property
+    added to rc-file items.
+    * man/*/qmidiarp.1: updated
+    * NEWS: updated
+    
 2009-11-29 Frank Kober <goemusic@yahoo.fr>
     * midi*.*, *widget.*, mainwindow.*: goodbye tabWidget, hello 
     dockWidget, all modules are floatable, by default tabified
