@@ -117,8 +117,6 @@ void SeqDriver::procEvents(int)
 
         if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
             midiTick += 4;
-            real_time = get_time();
-            calcMidiRatio();
             tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
             if (((int)tick > nextLfoTick) && (midiLfoList->count())) {
                 fallback = true; 
