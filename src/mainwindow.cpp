@@ -637,6 +637,8 @@ bool MainWindow::saveFile()
     
     
     QTextStream saveText(&f);
+    saveText << "Tempo\n";   
+    saveText << tempoSpin->value() << '\n';    
     saveText << "MIDI Control\n";
     saveText << (int)passWidget->cbuttonCheck->isChecked();
     saveText << ' ' << passWidget->cnumberSpin->value() << '\n';
