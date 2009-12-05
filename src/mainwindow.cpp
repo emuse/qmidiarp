@@ -231,6 +231,8 @@ MainWindow::MainWindow(int p_portCount)
     addToolBar(controlToolBar);
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
+    QWidget *centWidget = new QWidget(this);
+    setCentralWidget(centWidget);
     updateWindowTitle();
     if (checkRcFile()) readRcFile();
     show();
