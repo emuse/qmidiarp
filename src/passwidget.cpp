@@ -1,14 +1,7 @@
-#include <QLabel>
-#include <QSlider> 
 #include <QBoxLayout>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QStringList>
-#include <QGroupBox>
+#include <QLabel>
 
 #include "passwidget.h"
-
 
 PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
 {
@@ -55,7 +48,7 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     cnumberLayout->addWidget(cnumberSpin);
  
     
-    mtpbLabel = new QLabel(tr("Incoming MIDI &Clock rate (tpb)"), this);
+    QLabel *mtpbLabel = new QLabel(tr("Incoming MIDI &Clock rate (tpb)"), this);
     mtpbSpin = new QSpinBox(this);
     mtpbLabel->setBuddy(mtpbSpin);
     QObject::connect(mtpbSpin, SIGNAL(valueChanged(int)), this,

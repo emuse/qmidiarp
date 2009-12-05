@@ -1,14 +1,6 @@
 #ifndef PASSWIDGET_H
 #define PASSWIDGET_H
 
-#include <cstdio>
-#include <cstdlib>
-#include <unistd.h>
-#include <QString>
-#include <QLabel>
-#include <QSlider>
-#include <QBoxLayout>
-#include <QComboBox>
 #include <QCheckBox>
 #include <QSpinBox>
 
@@ -20,7 +12,6 @@ class PassWidget : public QWidget
   private:
     QCheckBox *forwardCheck;
     QSpinBox *portUnmatchedSpin;
-    QLabel *portLabel, *mtpbLabel, *cnumberLabel;
           
   public:
     PassWidget(int p_portcount, QWidget* parent=0);
