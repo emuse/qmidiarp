@@ -12,7 +12,6 @@
     QToolButton { max-height: 20px;} \
     QSpinBox { font: 7pt; max-height: 20px;} \
     QCheckBox { font: 7pt; max-height: 20px;} \
-    QLayout { margin: 0px 0; spacing: 0px 0;} \
-    QGroupBox { font: 7pt;}"
+    QGroupBox {font: 7pt;}"
 
 #endif

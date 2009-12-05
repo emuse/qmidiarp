@@ -51,10 +51,6 @@ class MidiArp : public QObject  {
     int randomVelocity, randomTick, randomLength;
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
-    
-  signals:
-      void toggleMute();
-
            
   public:
     MidiArp();
@@ -72,7 +68,6 @@ class MidiArp : public QObject  {
     void newRandomValues();
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
-  
     
   public slots:  
     void updatePattern(const QString&);
@@ -84,7 +79,6 @@ class MidiArp : public QObject  {
     void updateReleaseTime(int);
     void muteArp(bool); //set mute
     void setSustain(bool, int); //set sustain
-    void muteArp(); //toggle mute
     void clearNoteBuffer();
 };
                               

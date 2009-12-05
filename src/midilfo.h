@@ -50,9 +50,6 @@ class MidiLfo : public QObject  {
     int size, res, waveFormIndex;
     QVector<LfoSample> customWave;
     QVector<bool> muteMask;
-    
-  signals:
-    void toggleMute();
            
   public:
     MidiLfo();
@@ -65,7 +62,6 @@ class MidiLfo : public QObject  {
     void updateOffset(int);
     void updateQueueTempo(int);
     void muteLfo(bool); //set mute
-    void muteLfo(); //toggle mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double);
     void toggleMutePoint(double);

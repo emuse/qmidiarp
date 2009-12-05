@@ -60,12 +60,6 @@ void MidiLfo::muteLfo(bool on)
     isMuted = on;
 }
 
-void MidiLfo::muteLfo()
-{
-    isMuted = not(isMuted);
-    emit(toggleMute());
-}
-
 void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 { 
     LfoSample lfoSample;

@@ -62,12 +62,6 @@ void MidiSeq::muteSeq(bool on)
     isMuted = on;
 }
 
-void MidiSeq::muteSeq()
-{
-    isMuted = not(isMuted);
-    emit(toggleMute());
-}
-
 bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
 
     if ((evIn->type != SND_SEQ_EVENT_NOTEON)
