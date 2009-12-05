@@ -14,6 +14,7 @@ ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
     connect(seqDriver, SIGNAL(controlEvent(int, int)), 
             this, SLOT(handleController(int, int)));
+    mute_ccnumber = 37;
 }
 
 ArpData::~ArpData(){

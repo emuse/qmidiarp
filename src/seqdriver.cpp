@@ -20,7 +20,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     portCount = 0;
     forwardUnmatched = false;
     portUnmatched = 0;
-    midi_mutable = false;
+    midi_mutable = true;
 
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0) {
