@@ -851,56 +851,16 @@ void MainWindow::readRcFile()
         patternPresets << qs2;
     }
     if (qs.startsWith("[GUI")) {
-        int i = 0;
         qs = loadText.readLine();
-        passWidget->compactStyleCheck->setChecked(qs.section(' ', i, i).toInt());
-        i++;
-        passWindow->setVisible(qs.section(' ', i, i).toInt());
-        i++;
-        passWindow->setFloating(qs.section(' ', i, i).toInt());
-        i++;
-        passWindow->move(qs.section(' ', i, i).toInt(), 
-                        qs.section(' ', i+1, i+1).toInt());
-        i+=2;
-        
-        logWindow->setVisible(qs.section(' ', i, i).toInt());
-        i++;       
-        logWindow->setFloating(qs.section(' ', i, i).toInt());
-        i++;       
-        logWindow->move(qs.section(' ', i, i).toInt(), 
-            qs.section(' ', i+1, i+1).toInt());
-        i+=2;       
-        logWindow->resize(qs.section(' ', i, i).toInt(), 
-            qs.section(' ', i+1, i+1).toInt() );
-        i+=2;       
-        logWidget->enableLog->setChecked(qs.section(' ', i, i).toInt());
-        i++;       
-        logWidget->logMidiClock->setChecked(qs.section(' ', i, i).toInt());
-        i++;
-        
-        grooveWindow->setVisible(qs.section(' ', i, i).toInt());
-        i++;       
-        grooveWindow->setFloating(qs.section(' ', i, i).toInt());
-        i++;       
-        grooveWindow->move(qs.section(' ', i, i).toInt(), 
-            qs.section(' ', i+1, i+1).toInt());
-        i+=2;       
-        grooveWindow->resize(qs.section(' ', i, i+1).toInt(), 
-            qs.section(' ', i+1, i+1).toInt());
-        
-        i+=2;       
-        fileToolBar->setVisible(qs.section(' ', i, i).toInt());
-        
-        i++;       
-        move(qs.section(' ', i, i).toInt(), qs.section(' ', i+1, i+1).toInt());
-        i+=2;       
-        resize(qs.section(' ', i, i).toInt(), qs.section(' ', i+1, i+1).toInt()); 
-        
+        passWidget->compactStyleCheck->setChecked(qs.toInt());
         qs = loadText.readLine();
-        if (qs.startsWith("[Last")) {
-            qs = loadText.readLine();
-            lastDir = qs;
-        }
+        QByteArray array = QByteArray::fromHex(qs.toUtf8());
+        restoreState(array);
+        qs = loadText.readLine();
+    }        
+    if (qs.startsWith("[Last")) {
+        qs = loadText.readLine();
+        lastDir = qs;
     }
 }
 
@@ -924,30 +884,11 @@ void MainWindow::writeRcFile()
         writeText << qPrintable(patternNames.at(l1)) << endl;
         writeText << qPrintable(patternPresets.at(l1)) << endl;
     }
-    writeText << "[GUI settings]" << endl
-    << passWidget->compactStyle << ' '
-    << passWindow->isVisible() << ' '
-    << passWindow->isFloating() << ' '
-    << passWindow->x() << ' ' << passWindow->y() << ' '
+    writeText << "[GUI settings]" << endl;
     
-    << logWindow->isVisible() << ' '
-    << logWindow->isFloating() << ' '
-    << logWindow->x() << ' ' << logWindow->y() << ' '
-    << logWindow->width() << ' ' << logWindow->height() << ' '
-    
-    << logWidget->enableLog->isChecked() << ' '
-    << logWidget->logMidiClock->isChecked() << ' '
-    
-    << grooveWindow->isVisible() << ' '
-    << grooveWindow->isFloating() << ' '
-    << grooveWindow->x() << ' ' << grooveWindow->y() << ' '
-    << grooveWindow->width() << ' ' << grooveWindow->height() << ' '
-   
-    << fileToolBar->isVisible() << ' '
-    
-    << x() << ' ' << y() << ' ' 
-    << width() << ' ' << height() << endl;
-    
+    writeText << passWidget->compactStyle << endl;
+    writeText << saveState().toHex() << endl;
+
     writeText << "[Last Dir]" << endl;
     writeText << lastDir << endl;
 }

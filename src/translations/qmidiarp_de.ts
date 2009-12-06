@@ -713,7 +713,7 @@ Die Änderungen speichern?</translation>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="917"/>
+        <location filename="../mainwindow.cpp" line="877"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
@@ -793,7 +793,7 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Kompakter Layout-Stil für Module</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="33"/>
+        <location filename="../passwidget.cpp" line="34"/>
         <source>&amp;Modules mutable by MIDI controller starting at CC#</source>
         <translation>&amp;Module stummschaltbar durch MIDI controller beginnend mit CC#</translation>
     </message>
@@ -802,7 +802,7 @@ Die Änderungen speichern?</translation>
         <translation type="obsolete">&amp;Arps stummschaltbar durch MIDI CC beginnend mit CC#</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="51"/>
+        <location filename="../passwidget.cpp" line="52"/>
         <source>Incoming MIDI &amp;Clock rate (tpb)</source>
         <translation>Kadenz der eingehenden MIDI &amp;Clock (tpb)</translation>
     </message>

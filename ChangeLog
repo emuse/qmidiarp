@@ -1,3 +1,8 @@
+2009-12-06 Frank Kober <goemusic@yahoo.fr>
+    * mainwindow.cpp: GUI settings stored through saveState() Qt function
+    applying to *.qma files and .qmidiarprc file as a Hex-encoded part.
+    * passwidget.cpp: compact style for modules is now default 
+
 2009-12-04 Frank Kober <goemusic@yahoo.fr>
     * seqdriver.*, arpdata.*, *widget.*: all modules MIDI-mutable,
     mute MIDI controller depends on position in tabbed dock (order of
