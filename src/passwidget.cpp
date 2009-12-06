@@ -23,7 +23,7 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateCompactStyle(bool)));
     compactStyleCheck->setChecked(true);
-    compactStyle = false;
+    compactStyle = true;
     
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
     portBoxLayout->addWidget(forwardCheck);
