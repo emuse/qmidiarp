@@ -22,6 +22,7 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     compactStyleCheck->setText(tr("&Compact module layout style"));
     QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateCompactStyle(bool)));
+    compactStyleCheck->setChecked(true);
     compactStyle = false;
     
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
