@@ -583,6 +583,7 @@ void MainWindow::openFile(const QString& fn)
  
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
+        if (qs.startsWith("GUI")) break;
         if (qs.startsWith("Seq:")) c = 1;
         if (qs.startsWith("LFO:")) c = 2;
         if (qs.startsWith("Arp:")) c = 3;
@@ -605,6 +606,11 @@ void MainWindow::openFile(const QString& fn)
                 arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
             break;
         }
+    }
+    if (qs.startsWith("GUI")) {
+        qs = loadText.readLine();
+        QByteArray array = QByteArray::fromHex(qs.toLatin1());
+        restoreState(array);
     }
     arpData->setModified(false);
     midiClockAction->setChecked(midiclocktmp);
@@ -671,6 +677,8 @@ bool MainWindow::saveFile()
             na++;
         }
     }
+    saveText << "GUI Settings\n";
+    saveText << saveState().toHex();
     arpData->setModified(false);
     return true;
 }

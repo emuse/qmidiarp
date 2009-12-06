@@ -586,53 +586,53 @@
         <translation>&amp;Steuerungsleiste</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="273"/>
-        <location filename="../mainwindow.cpp" line="286"/>
-        <location filename="../mainwindow.cpp" line="299"/>
+        <location filename="../mainwindow.cpp" line="275"/>
+        <location filename="../mainwindow.cpp" line="288"/>
+        <location filename="../mainwindow.cpp" line="301"/>
         <source>%1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="285"/>
+        <location filename="../mainwindow.cpp" line="287"/>
         <source>Add MIDI LFO</source>
         <translation>MIDI LFO hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="298"/>
+        <location filename="../mainwindow.cpp" line="300"/>
         <source>Add Step Sequencer</source>
         <translation>Sequenzer hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="532"/>
+        <location filename="../mainwindow.cpp" line="534"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Konnte die Datei &apos;%1&apos; nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="631"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="708"/>
+        <location filename="../mainwindow.cpp" line="718"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="710"/>
+        <location filename="../mainwindow.cpp" line="720"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="714"/>
+        <location filename="../mainwindow.cpp" line="724"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="829"/>
+        <location filename="../mainwindow.cpp" line="839"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
@@ -673,17 +673,17 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Über Qt...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="258"/>
+        <location filename="../mainwindow.cpp" line="260"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="263"/>
+        <location filename="../mainwindow.cpp" line="265"/>
         <source>About Qt</source>
         <translation>Über Qt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="272"/>
+        <location filename="../mainwindow.cpp" line="274"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>MIDI-Arpeggiator hinzufügen</translation>
     </message>
@@ -697,23 +697,23 @@ Die Änderungen speichern?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="117"/>
-        <location filename="../mainwindow.cpp" line="513"/>
+        <location filename="../mainwindow.cpp" line="515"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="686"/>
+        <location filename="../mainwindow.cpp" line="696"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="514"/>
-        <location filename="../mainwindow.cpp" line="686"/>
+        <location filename="../mainwindow.cpp" line="516"/>
+        <location filename="../mainwindow.cpp" line="696"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="917"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
@@ -783,17 +783,17 @@ Die Änderungen speichern?</translation>
 <context>
     <name>PassWidget</name>
     <message>
-        <location filename="../passwidget.cpp" line="16"/>
+        <location filename="../passwidget.cpp" line="9"/>
         <source>&amp;Forward unmatched events to port</source>
         <translation>&amp;Unpassende MIDI Signale weiterleiten an Anschluss</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="29"/>
+        <location filename="../passwidget.cpp" line="22"/>
         <source>&amp;Compact module layout style</source>
         <translation>&amp;Kompakter Layout-Stil für Module</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="40"/>
+        <location filename="../passwidget.cpp" line="33"/>
         <source>&amp;Modules mutable by MIDI controller starting at CC#</source>
         <translation>&amp;Module stummschaltbar durch MIDI controller beginnend mit CC#</translation>
     </message>
@@ -802,7 +802,7 @@ Die Änderungen speichern?</translation>
         <translation type="obsolete">&amp;Arps stummschaltbar durch MIDI CC beginnend mit CC#</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="58"/>
+        <location filename="../passwidget.cpp" line="51"/>
         <source>Incoming MIDI &amp;Clock rate (tpb)</source>
         <translation>Kadenz der eingehenden MIDI &amp;Clock (tpb)</translation>
     </message>

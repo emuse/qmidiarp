@@ -55,6 +55,7 @@ class MainWindow : public QMainWindow
     void checkIfFirstModule();
     void clear();
     
+        
   protected:
     void closeEvent(QCloseEvent*);
 
