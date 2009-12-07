@@ -852,7 +852,10 @@ void MainWindow::readRcFile()
     }
     if (qs.startsWith("[GUI")) {
         qs = loadText.readLine();
-        passWidget->compactStyleCheck->setChecked(qs.toInt());
+        passWidget->compactStyleCheck->setChecked(qs.section(' ', 0, 0).toInt());
+        logWidget->enableLog->setChecked(qs.section(' ', 1, 1).toInt());
+        logWidget->logMidiClock->setChecked(qs.section(' ', 2, 2).toInt());
+
         qs = loadText.readLine();
         QByteArray array = QByteArray::fromHex(qs.toUtf8());
         restoreState(array);
@@ -886,7 +889,9 @@ void MainWindow::writeRcFile()
     }
     writeText << "[GUI settings]" << endl;
     
-    writeText << passWidget->compactStyle << endl;
+    writeText << passWidget->compactStyle << ' '
+            << logWidget->enableLog->isChecked() << ' '
+            << logWidget->logMidiClock->isChecked() << ' ' << endl;
     writeText << saveState().toHex() << endl;
 
     writeText << "[Last Dir]" << endl;
