@@ -118,12 +118,14 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidg
 
     lfoScreen = new LfoScreen(this); 
     lfoScreen->setToolTip(
-        tr("Right button to mute points, left button to draw custom wave"));
+        tr("Right button to mute points\nLeft button to draw custom wave\nWheel to change offset"));
     lfoScreen->setMinimumHeight(80);
     connect(lfoScreen, SIGNAL(lfoMouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
     connect(lfoScreen, SIGNAL(lfoMousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
+    connect(lfoScreen, SIGNAL(lfoWheel(int)), this,
+            SLOT(mouseWheel(int)));
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), waveBox);
     waveFormBox = new QComboBox(waveBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
@@ -469,6 +471,22 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
             midiLfo->getData(&lfoData);
             lfoScreen->updateScreen(lfoData);
             modified = true;
+        }
+}
+
+void LfoWidget::mouseWheel(int step)
+{
+    int cv;
+        if (waveFormBox->currentIndex() == 5) {
+            midiLfo->updateCustomWaveOffset(step + step);
+            midiLfo->getData(&lfoData);
+            lfoScreen->updateScreen(lfoData);
+            modified = true;
+        }
+        else {
+            cv = offset->value() + step;
+            if ((cv < 127) && (cv > 0))
+            offset->setValue(cv + step);
         }
 }
 

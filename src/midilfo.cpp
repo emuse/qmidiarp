@@ -234,6 +234,29 @@ void MidiLfo::copyToCustom()
     customWave = lfoData;
 }
 
+void MidiLfo::updateCustomWaveOffset(int step)
+{
+    LfoSample lfoSample;
+    const int count = customWave.count();
+    int l1 = 0;
+    bool cl = false;
+    
+    while ((!cl) && (l1 < count)) {
+        lfoSample.value = clip(customWave.at(l1).value + step,
+                            0, 127, &cl);
+        l1++;
+        }
+        
+    if (cl) return;
+    
+    for (l1 = 0; l1 < count; l1++) {
+        lfoSample.value = customWave.at(l1).value + step;
+        lfoSample.tick = customWave.at(l1).tick;
+        lfoSample.muted = customWave.at(l1).muted;
+        customWave.replace(l1, lfoSample);
+    }
+}
+
 void MidiLfo::toggleMutePoint(double mouseX)
 {
     LfoSample lfoSample;

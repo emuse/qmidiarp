@@ -1,3 +1,7 @@
+2009-12-23 Frank Kober <goemusic@yahoo.fr>
+    * *lfo*.cpp: implement mouse wheel on lfoscreen to change offset of
+    LFO waveform. This is of interest mainly for the custom drawn wave
+    
 2009-12-06 Frank Kober <goemusic@yahoo.fr>
     * mainwindow.cpp: GUI settings stored through saveState() Qt function
     applying to *.qma files and .qmidiarprc file as a Hex-encoded part.

@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QSizePolicy>
 #include <QSize>
+#include <QWheelEvent>
 #include "midilfo.h"
 
 #define LFOSCREEN_MINIMUM_WIDTH   250
@@ -23,7 +24,7 @@ class LfoScreen : public QWidget
   private:
     //QTimer *timer;
     QVector<LfoSample> p_lfoData, lfoData;
-    int mouseX, mouseY;
+    int mouseX, mouseY, mouseW;
     int w, h;
     
   protected:
@@ -38,11 +39,13 @@ class LfoScreen : public QWidget
   signals:
     void lfoMousePressed(double, double, int);
     void lfoMouseMoved(double, double, int);
+    void lfoWheel(int);
     
   public slots: 
     void updateScreen(QVector<LfoSample> lfoData);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void wheelEvent(QWheelEvent* event);
 };
   
 #endif

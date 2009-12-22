@@ -195,6 +195,8 @@ void LfoScreen::mouseMoveEvent(QMouseEvent *event)
                             (w - 2 * LFOSCREEN_HMARGIN), 
                 1. - ((double)mouseY - LFOSCREEN_VMARGIN) / 
                 (h - 2 * LFOSCREEN_VMARGIN), event->buttons());
+    const int buttons = event->buttons();
+    printf("Buttons move: %d\n",buttons);
 }
 
 void LfoScreen::mousePressEvent(QMouseEvent *event)
@@ -209,4 +211,11 @@ void LfoScreen::mousePressEvent(QMouseEvent *event)
                             (w - 2 * LFOSCREEN_HMARGIN), 
                 1. - ((double)mouseY - LFOSCREEN_VMARGIN) / 
                 (h - 2 * LFOSCREEN_VMARGIN), event->buttons());
+}
+
+void LfoScreen::wheelEvent(QWheelEvent *event)
+{
+    mouseW = event->delta();
+    emit lfoWheel(mouseW / 120);
+    event->accept();
 }

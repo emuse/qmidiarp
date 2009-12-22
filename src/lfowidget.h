@@ -89,6 +89,7 @@ class LfoWidget : public QWidget
     void updateOffs(int val);
     void mouseMoved(double, double, int);
     void mousePressed(double, double, int);
+    void mouseWheel(int);
     void copyToCustom();
     void moduleDelete();
     void moduleRename();

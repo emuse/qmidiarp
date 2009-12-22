@@ -285,12 +285,11 @@
         <translation>Welle</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="121"/>
         <source>Right button to mute points, left button to draw custom wave</source>
-        <translation>Rechte Maustaste: Stummschalten einzelner Punkte, linke Maustaste: Zeichnen der Wellenform</translation>
+        <translation type="obsolete">Rechte Maustaste: Stummschalten einzelner Punkte, linke Maustaste: Zeichnen der Wellenform</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="138"/>
+        <location filename="../lfowidget.cpp" line="140"/>
         <source>Waveform Basis</source>
         <translation>Wellenformbasis</translation>
     </message>
@@ -315,87 +314,96 @@
         <translation type="obsolete">Län&amp;ge (Takte)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="143"/>
+        <location filename="../lfowidget.cpp" line="121"/>
+        <source>Right button to mute points
+Left button to draw custom wave
+Wheel to change offset</source>
+        <translation>Rechte Maustaste: Stummschalten einzelner Punkte
+Linke Maustaste: Zeichnen der Wellenform
+Mausrad: Verschieben des Offsets</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="145"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Frequenz</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="153"/>
+        <location filename="../lfowidget.cpp" line="155"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Frequenz (Zyklen pro beat): Anzahl der erzeugten Wellenzyklen pro Vierteltakt</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="158"/>
+        <location filename="../lfowidget.cpp" line="160"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Auflösung</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="167"/>
+        <location filename="../lfowidget.cpp" line="169"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Auflösung (Signale/beat): Anzahl der pro Vierteltakt erzeugten MIDI Signale</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="172"/>
+        <location filename="../lfowidget.cpp" line="174"/>
         <source>&amp;Length</source>
         <translation>&amp;Dauer</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="179"/>
+        <location filename="../lfowidget.cpp" line="181"/>
         <source>Length of LFO wave in beats</source>
         <translation>Länge der LFO Wellenform in Vierteltakten</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="186"/>
+        <location filename="../lfowidget.cpp" line="188"/>
         <source>&amp;Copy to custom wave</source>
         <translation>&amp;In die freie Wellenform kopieren</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="193"/>
+        <location filename="../lfowidget.cpp" line="195"/>
         <source>&amp;Amplitude</source>
         <translation>Am&amp;plitude</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="198"/>
+        <location filename="../lfowidget.cpp" line="200"/>
         <source>&amp;Offset</source>
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Custom</source>
         <translation>Frei</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="488"/>
+        <location filename="../lfowidget.cpp" line="506"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="507"/>
+        <location filename="../lfowidget.cpp" line="525"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
@@ -405,7 +413,7 @@
         <translation>&amp;MIDI CC#</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="127"/>
+        <location filename="../lfowidget.cpp" line="129"/>
         <source>&amp;Waveform</source>
         <translation>&amp;Wellenform</translation>
     </message>
@@ -713,7 +721,7 @@ Die Änderungen speichern?</translation>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="877"/>
+        <location filename="../mainwindow.cpp" line="880"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>

@@ -275,17 +275,16 @@ d h durée de note augm/dim
         <translation>Forme</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="121"/>
         <source>Right button to mute points, left button to draw custom wave</source>
-        <translation>Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
+        <translation type="obsolete">Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="127"/>
+        <location filename="../lfowidget.cpp" line="129"/>
         <source>&amp;Waveform</source>
         <translation>Forme d&apos;&amp;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="138"/>
+        <location filename="../lfowidget.cpp" line="140"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
@@ -310,87 +309,96 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;Longueur (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="143"/>
+        <location filename="../lfowidget.cpp" line="121"/>
+        <source>Right button to mute points
+Left button to draw custom wave
+Wheel to change offset</source>
+        <translation>Bouton droit de la souris pour rendre muet chaque point
+Bouton gauche pour dessiner la forme d&apos;onde
+Molette pour changer l&apos;offset</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="145"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Fréquence</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="153"/>
+        <location filename="../lfowidget.cpp" line="155"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="158"/>
+        <location filename="../lfowidget.cpp" line="160"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="167"/>
+        <location filename="../lfowidget.cpp" line="169"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="172"/>
+        <location filename="../lfowidget.cpp" line="174"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="179"/>
+        <location filename="../lfowidget.cpp" line="181"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="186"/>
+        <location filename="../lfowidget.cpp" line="188"/>
         <source>&amp;Copy to custom wave</source>
         <translation>&amp;Copier dans la forme d&apos;onde libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="193"/>
+        <location filename="../lfowidget.cpp" line="195"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="198"/>
+        <location filename="../lfowidget.cpp" line="200"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="353"/>
+        <location filename="../lfowidget.cpp" line="355"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Saw down</source>
         <translation>Scie descendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="354"/>
+        <location filename="../lfowidget.cpp" line="356"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="488"/>
+        <location filename="../lfowidget.cpp" line="506"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="507"/>
+        <location filename="../lfowidget.cpp" line="525"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -703,7 +711,7 @@ Enregistrer les modifications?</translation>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="877"/>
+        <location filename="../mainwindow.cpp" line="880"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>

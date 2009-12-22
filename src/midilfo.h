@@ -60,6 +60,7 @@ class MidiLfo : public QObject  {
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
+    void updateCustomWaveOffset(int);
     void updateQueueTempo(int);
     void muteLfo(bool); //set mute
     void updateWaveForm(int val);
