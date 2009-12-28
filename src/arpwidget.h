@@ -59,11 +59,11 @@ class ArpWidget : public QWidget
       
   signals:
     void patternChanged();
-    void presetsChanged(QString, QString, int); 
+    void presetsChanged(const QString&, const QString&, int); 
                     //int 0 for pattern to append
                     //or index>0 for pattern to remove
     void arpRemove(int ID);
-    void dockRename(QString name, int parentDockID);
+    void dockRename(const QString& name, int parentDockID);
     
   public slots:
     void updateChIn(int value);

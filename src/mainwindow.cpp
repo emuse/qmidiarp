@@ -317,12 +317,14 @@ void MainWindow::addArp(const QString& name)
             arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
-    connect(arpWidget, SIGNAL(presetsChanged(QString, QString, int)), 
-            this, SLOT(updatePatternPresets(QString, QString, int)));
+    connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
+                    QString&, int)), 
+            this, SLOT(updatePatternPresets(const QString&, const
+                    QString&, int)));
     connect(arpWidget, SIGNAL(arpRemove(int)), 
             this, SLOT(removeArp(int)));
-    connect(arpWidget, SIGNAL(dockRename(QString, int)), 
-            this, SLOT(renameDock(QString, int)));
+    connect(arpWidget, SIGNAL(dockRename(const QString&, int)), 
+            this, SLOT(renameDock(const QString&, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
             arpWidget->arpScreen, SLOT(setGrooveTick(int)));
@@ -423,7 +425,7 @@ void MainWindow::addSeq(const QString& name)
     checkIfFirstModule();
 }
 
-void MainWindow::renameDock(QString name, int parentDockID) 
+void MainWindow::renameDock(const QString& name, int parentDockID) 
 {
     arpData->moduleWindow(parentDockID)->setWindowTitle(name);
     arpData->setModified(true);
@@ -898,9 +900,10 @@ void MainWindow::writeRcFile()
     writeText << lastDir << endl;
 }
 
-void MainWindow::updatePatternPresets(QString n, QString p, int index)
+void MainWindow::updatePatternPresets(const QString& n, const QString& p,
+        int index)
 {
-    if (index) {
+    if (index > 0) {
         patternNames.removeAt(index);
         patternPresets.removeAt(index);
 

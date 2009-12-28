@@ -82,7 +82,7 @@ class MainWindow : public QMainWindow
     void arpNew();
     void lfoNew();
     void seqNew();
-    void renameDock(QString name, int index);
+    void renameDock(const QString& name, int index);
     void removeArp(int index);
     void removeLfo(int index);
     void removeSeq(int index);
@@ -95,7 +95,7 @@ class MainWindow : public QMainWindow
     void updateRunQueue(bool on);
     void midiClockToggle(bool on);
     void resetQueue();
-    void updatePatternPresets(QString n, QString p, int index);
+    void updatePatternPresets(const QString& n, const QString& p, int index);
 };
   
 #endif
