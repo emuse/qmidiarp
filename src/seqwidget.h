@@ -79,7 +79,7 @@ class SeqWidget : public QWidget
   signals:
     void patternChanged();
     void seqRemove(int ID);
-    void dockRename(QString name, int parentDockID);  
+    void dockRename(const QString& name, int parentDockID);  
     
   public slots:
     void updateChIn(int value);

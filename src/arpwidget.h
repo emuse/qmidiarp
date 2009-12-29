@@ -71,10 +71,10 @@ class ArpWidget : public QWidget
     void updateRangeIn(int value);
     void updateChannelOut(int value);
     void updatePortOut(int value);
-    void updateText(QString newtext);
+    void updateText(const QString& newtext);
     void updateRepeatPattern(int);
     void selectPatternPreset(int);
-    void updatePatternPresets(QString n, QString p, int index);
+    void updatePatternPresets(const QString& n, const QString& p, int index);
     void openTextEditWindow(bool on);
     void storeCurrentPattern();
     void removeCurrentPattern();

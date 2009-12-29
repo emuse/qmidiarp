@@ -195,8 +195,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidg
     patternPresetLayout->addWidget(repeatPatternThroughChord);  
 
     patternText = new QLineEdit(patternBox); 
-    connect(patternText, SIGNAL(textChanged(QString)), this,
-            SLOT(updateText(QString)));
+    connect(patternText, SIGNAL(textChanged(const QString&)), this,
+            SLOT(updateText(const QString&)));
     patternText->setHidden(true);
     patternText->setToolTip(
             tr("0..9  note played on keyboard, ascending order\n"
@@ -425,7 +425,7 @@ void ArpWidget::setChannelOut(int value)
     modified = true;
 }
 
-void ArpWidget::updateText(QString newtext)
+void ArpWidget::updateText(const QString& newtext)
 { 
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
@@ -503,7 +503,7 @@ void ArpWidget::storeCurrentPattern()
     }
 }
 
-void ArpWidget::updatePatternPresets(QString n, QString p, int index)
+void ArpWidget::updatePatternPresets(const QString& n, const QString& p, int index)
 {
     if (index) {
        if (index == patternPresetBox->currentIndex()) {

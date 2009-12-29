@@ -75,7 +75,7 @@ class LfoWidget : public QWidget
   signals:
     void patternChanged();
     void lfoRemove(int ID);
-    void dockRename(QString name, int parentDockID);
+    void dockRename(const QString& name, int parentDockID);
         
   public slots:
     void updateChannelOut(int value);
