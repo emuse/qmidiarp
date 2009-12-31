@@ -35,6 +35,16 @@
 #include "seqscreen.h"
 
 const int seqResValues[5] = {1, 2, 4, 8, 16};
+#ifndef MIDICC_H
+struct MidiCC {
+        QString name;
+        int min;
+        int max;
+        int ccnumber;
+        int ID;
+    };    
+#define MIDICC_H
+#endif
 
 class SeqWidget : public QWidget
 {
@@ -48,7 +58,6 @@ class SeqWidget : public QWidget
     QToolButton *copyToCustomButton;
  
     MidiSeq *midiSeq;
-    Slider *velocity, *transpose, *notelength;
     QVector<SeqSample> seqData;
     bool modified;
 
@@ -59,8 +68,10 @@ class SeqWidget : public QWidget
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;               
     QCheckBox *enableVelIn; 
+    Slider *velocity, *transpose, *notelength;
     int ID, parentDockID;
-    
+    QVector<MidiCC> ccList;
+        
     SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidget* parent=0);
     ~SeqWidget();
     MidiSeq *getMidiSeq();
@@ -80,6 +91,8 @@ class SeqWidget : public QWidget
     void patternChanged();
     void seqRemove(int ID);
     void dockRename(const QString& name, int parentDockID);  
+    void setMidiLearn(int parentDockID, int ID, int controlID);
+    void setMidiForget(int parentDockID, int ID);
     
   public slots:
     void updateChIn(int value);
@@ -98,6 +111,15 @@ class SeqWidget : public QWidget
     void copyToCustom();
     void moduleDelete();
     void moduleRename();
+    void appendMidiCC(int ID, int min, int max, int ccnumber);
+    void removeMidiCC(int ID, int ccnumber);
+    void midiLearnMute();
+    void midiForgetMute();
+    void midiLearnVel();
+    void midiForgetVel();
+    void midiLearnNoteLen();
+    void midiForgetNoteLen();
+    void midiLearnCancel();
 };
   
 #endif

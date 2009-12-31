@@ -29,7 +29,7 @@ class SeqDriver : public QWidget {
         int queue_id;
         bool startQueue;
         bool modified;
-        bool midi_mutable;
+        bool midi_controllable;
         snd_seq_tick_time_t tick, nextEchoTick;
         int firstArpTick, lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
@@ -84,7 +84,7 @@ class SeqDriver : public QWidget {
         void sendGroove();
         void setUseMidiClock(bool on);
         void updateMIDItpb(int midiTpb);
-        void setMidiMutable(bool on);
+        void setMidiControllable(bool on);
 };
 
 #endif

@@ -27,8 +27,8 @@ class ArpData : public QWidget  {
     QList<SeqWidget *> seqWidgetList;
     int portCount;
     bool modified;
-    int mute_ccnumber;
-    bool midi_mutable;
+    int mute_ccnumber, midiLearnID, midiLearnWindowID, midiLearnModuleID;
+    bool midi_mutable, midiLearnFlag;
     
   public:
     SeqDriver *seqDriver;
@@ -77,9 +77,9 @@ class ArpData : public QWidget  {
   public slots:
     void runQueue(bool);
     void setModified(bool);
-    void updatePatternPresets(QString n, QString p, int index);
+    void updatePatternPresets(const QString& n, const QString& p, int index);
     void handleController(int ccnumber, int value);
-    void updateCCnumber(int ccnumber);
+    void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
 };
                               
 #endif

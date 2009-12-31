@@ -13,6 +13,17 @@
 #include "slider.h"
 #include "arpscreen.h"
 
+#ifndef MIDICC_H
+struct MidiCC {
+        QString name;
+        int min;
+        int max;
+        int ccnumber;
+        int ID;
+    };    
+#define MIDICC_H
+#endif
+
 class ArpWidget : public QWidget
 
 {
@@ -56,6 +67,7 @@ class ArpWidget : public QWidget
     void loadPatternPresets();
     bool isModified();
     void setModified(bool);
+    QVector<MidiCC> ccList;
       
   signals:
     void patternChanged();
@@ -64,6 +76,7 @@ class ArpWidget : public QWidget
                     //or index>0 for pattern to remove
     void arpRemove(int ID);
     void dockRename(const QString& name, int parentDockID);
+    void setMidiLearn(int parentDockID, int ID, int controlID);
     
   public slots:
     void updateChIn(int value);
@@ -80,6 +93,11 @@ class ArpWidget : public QWidget
     void removeCurrentPattern();
     void moduleDelete();
     void moduleRename();
+    void appendMidiCC(int ID, int min, int max, int ccnumber);
+    void removeMidiCC(int ID, int ccnumber);
+    void midiLearnMute();
+    void midiForgetMute();
+    void midiLearnCancel();
 };
   
 #endif

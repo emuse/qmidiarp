@@ -1,3 +1,11 @@
+2009-12-31 Frank Kober <goemusic@yahoo.fr>
+	* MIDI control handling modified: controllers can be attributed to
+	mute checkbox and various sliders by context menu and MIDI 
+	learn/forget. 
+	Each module holds a control/controller item list, incoming 
+	controllers are	handled in arpdata.cpp
+	* midicctable.*: control editor implementation started
+	
 2009-12-23 Frank Kober <goemusic@yahoo.fr>
     * *lfo*.cpp: implement mouse wheel on lfoscreen to change offset of
     LFO waveform. This is of interest mainly for the custom drawn wave

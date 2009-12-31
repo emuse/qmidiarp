@@ -102,6 +102,18 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidg
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
+
+    muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
+    muteOut->addAction(muteLearnAction);
+    connect(muteLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnMute()));
+    QAction *muteCancelLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    muteOut->addAction(muteCancelLearnAction);
+    connect(muteCancelLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
+    muteOut->addAction(muteForgetAction);
+    connect(muteForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetMute()));
+
     connect(muteOut, SIGNAL(toggled(bool)), midiArp, SLOT(muteArp(bool)));
     muteLabel->setBuddy(muteOut);
 
@@ -280,6 +292,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidg
     arpWidgetLayout->setRowStretch(3, 1);
     arpWidgetLayout->setColumnStretch(0, 5);
     setLayout(arpWidgetLayout);
+    ccList.clear();
 }
 
 ArpWidget::~ArpWidget()
@@ -334,6 +347,14 @@ void ArpWidget::writeArp(QTextStream& arpText)
     arpText << midiArp->randomTickAmp << ' '
         << midiArp->randomVelocityAmp << ' '
         << midiArp->randomLengthAmp << '\n';
+    arpText << "MIDICC" << endl;
+    for (int l1 = 0; l1 < ccList.count(); l1++) {
+		arpText	<< ccList.at(l1).ID << ' '
+				<< ccList.at(l1).ccnumber << ' '
+				<< ccList.at(l1).min << ' '
+				<< ccList.at(l1).max << endl;
+	}
+	arpText << "EOCC" << endl;
     arpText << "Envelope" << '\n';
     arpText << attackTime->value() << ' ' << releaseTime->value() << '\n';
     arpText << midiArp->pattern << '\n';
@@ -344,7 +365,7 @@ void ArpWidget::writeArp(QTextStream& arpText)
 void ArpWidget::readArp(QTextStream& arpText)
 {
     QString qs, qs2;
-
+	MidiCC midiCC;
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0); 
     chIn->setValue(qs2.toInt() + 1);
@@ -373,6 +394,23 @@ void ArpWidget::readArp(QTextStream& arpText)
     qs2 = qs.section(' ', 2, 2); 
     randomLength->setValue(qs2.toInt());
     qs = arpText.readLine();
+    if (qs == "MIDICC")
+    {
+        qs = arpText.readLine();
+        while (qs != "EOCC") {
+	        qs2 = qs.section(' ', 0, 0);
+	        int ID = qs2.toInt();
+	        qs2 = qs.section(' ', 1, 1);
+	        int ccnumber = qs2.toInt();
+	        qs2 = qs.section(' ', 2, 2);
+	        int min = qs2.toInt();
+	        qs2 = qs.section(' ', 3, 3);
+	        int max = qs2.toInt();
+	        appendMidiCC(ID, ccnumber, min, max);
+	        qs = arpText.readLine();
+		}
+	qs = arpText.readLine();
+    }
     if (qs == "Envelope")
     {
         qs = arpText.readLine();
@@ -579,4 +617,50 @@ void ArpWidget::moduleRename()
         name = "Arp:" + newname;
         emit dockRename(name, parentDockID);
     }
+}
+
+void ArpWidget::appendMidiCC(int ID, int ccnumber, int min, int max)
+{
+    MidiCC midiCC;
+    switch (ID) {
+		case 0: midiCC.name = "MuteToggle";
+		break;
+		default: midiCC.name = "Unknown";
+	}
+    midiCC.ID = ID;
+    midiCC.ccnumber = ccnumber;
+    midiCC.min = min;
+    midiCC.max = max;
+    ccList.append(midiCC);
+    qWarning("MIDI Controller %d appended for %s", ccnumber, qPrintable(midiCC.name));
+}
+
+void ArpWidget::removeMidiCC(int ID, int ccnumber)
+{
+	for (int l1 = 0; l1 < ccList.count(); l1++) {
+		if (ccList.at(l1).ID == ID) {
+			if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+				ccList.remove(l1);
+				l1--;
+				qWarning("controller removed");
+			}
+		}
+	}
+}
+
+void ArpWidget::midiLearnMute()
+{
+	emit setMidiLearn(parentDockID, ID, 0);
+	qWarning("Requesting Midi Learn for MuteToggle");
+}
+
+void ArpWidget::midiForgetMute()
+{
+	removeMidiCC(0, -1);
+}
+
+void ArpWidget::midiLearnCancel()
+{
+	emit setMidiLearn(parentDockID, ID, -1);
+	qWarning("Cancelling Midi Learn request");
 }

@@ -1,4 +1,7 @@
+#include <QString>
 #include <QLabel>
+#include <QSlider> 
+#include <QSpinBox> 
 #include <QBoxLayout>
 
 #include "slider.h"

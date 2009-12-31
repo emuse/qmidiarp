@@ -1,10 +1,12 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <QBoxLayout>
+#include <QString>
+#include <QLabel>
+#include <QWidget>
 #include <QSlider>
 #include <QSpinBox> 
-#include <QWidget>
+#include <QBoxLayout>
 
 class Slider : public QWidget
 

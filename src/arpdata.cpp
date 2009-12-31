@@ -51,7 +51,7 @@ void ArpData::removeArpWidget(ArpWidget *arpWidget)
     modified = true;
 }
 
-void ArpData::updatePatternPresets(QString n, QString p, int index)
+void ArpData::updatePatternPresets(const QString& n, const QString& p, int index)
 {
     int l1;
     for (l1 = 0; l1 < midiArpCount(); l1++) {
@@ -306,34 +306,107 @@ int ArpData::getAlsaClientId()
 void ArpData::handleController(int ccnumber, int value)
 {
     bool m;
-    int muted_dockwindow;
-    if ((value == 127) && (ccnumber > (mute_ccnumber - 1)) 
-        && (ccnumber < (mute_ccnumber + moduleWindowCount()))) {
-        //Find and Mute DockWindow 
-        muted_dockwindow = ccnumber - mute_ccnumber;
-            
-        for (int l1 = 0; l1 < arpWidgetCount(); l1++)
-            if (arpWidget(l1)->parentDockID == muted_dockwindow) {
-                m = arpWidget(l1)->muteOut->isChecked();
-                arpWidget(l1)->muteOut->setChecked(!m);
-                return;
-            }
-        for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
-            if (lfoWidget(l1)->parentDockID == muted_dockwindow) {
-                m = lfoWidget(l1)->muteOut->isChecked();
-                lfoWidget(l1)->muteOut->setChecked(!m);
-                return;
-            }
-        for (int l1 = 0; l1 < seqWidgetCount(); l1++)
-            if (seqWidget(l1)->parentDockID == muted_dockwindow) {
-                m = seqWidget(l1)->muteOut->isChecked();
-                seqWidget(l1)->muteOut->setChecked(!m); 
-                return;  
-            }
-    }
+    QVector<MidiCC> cclist;
+    if (!midiLearnFlag) {
+	    for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
+	        cclist = arpWidget(l1)->ccList;
+	        for (int l2 = 0; l2 < cclist.count(); l2++) {
+	            if (ccnumber == cclist.at(l2).ccnumber) {
+	                switch (cclist.at(l2).ID) {
+	                    case 0: if (value == 127) {
+	                                m = arpWidget(l1)->muteOut->isChecked();
+	                                arpWidget(l1)->muteOut->setChecked(!m);
+	                                return;
+	                            }
+	                    break;
+	                    default:
+	                    break;
+	                }
+	            }
+	        }
+	    }
+	
+	    for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
+	        cclist = lfoWidget(l1)->ccList;
+	        for (int l2 = 0; l2 < cclist.count(); l2++) {
+	            if (ccnumber == cclist.at(l2).ccnumber) {
+	                switch (cclist.at(l2).ID) {
+	                    case 0: if (value == 127) {
+	                                m = lfoWidget(l1)->muteOut->isChecked();
+	                                lfoWidget(l1)->muteOut->setChecked(!m);
+	                                return;
+	                            }
+	                    break;
+	                    
+	                    case 1: lfoWidget(l1)->amplitude->setValue(value);
+	                            return;
+	                    break;
+	                    
+	                    case 2: lfoWidget(l1)->offset->setValue(value);
+	                            return;
+	                    break;
+	                    default:
+	                    break;
+	                }
+	            }
+	        }
+	    }
+	    
+	    for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
+	        cclist = seqWidget(l1)->ccList;
+	        for (int l2 = 0; l2 < cclist.count(); l2++) {
+	            if (ccnumber == cclist.at(l2).ccnumber) {
+	                switch (cclist.at(l2).ID) {
+	                    case 0: if (value == 127) {
+	                                m = seqWidget(l1)->muteOut->isChecked();
+	                                seqWidget(l1)->muteOut->setChecked(!m);
+	                                return;
+	                            }
+	                    break;
+	                    
+	                    case 1: seqWidget(l1)->velocity->setValue(value);
+	                            return;
+	                    break;
+	                    
+	                    case 2: seqWidget(l1)->notelength->setValue(value + value);
+								// send 2*value until range handling is implemented
+	                            return;
+	                    break;
+	                    default:
+	                    break;
+	                }
+	            }
+	        }
+	    }
+	}
+	else {
+		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
+			arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+					ccnumber, 0, 127);
+		}
+		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
+			lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+					ccnumber, 0, 127);
+		}
+		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
+			seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+					ccnumber, 0, 127);
+		}
+		
+		midiLearnFlag = false;
+	}
 }
-void ArpData::updateCCnumber(int ccnumber)
+
+void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 {
-    mute_ccnumber = ccnumber;
-    modified = true;
+    if (0 > controlID) {
+		midiLearnFlag = false;
+		return;
+	}
+	else {
+		midiLearnFlag = true;
+	    midiLearnWindowID = moduleWindowID;
+	    midiLearnModuleID = moduleID;
+	    midiLearnID = controlID;
+	}
 }

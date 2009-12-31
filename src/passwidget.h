@@ -19,22 +19,20 @@ class PassWidget : public QWidget
     void setForward(bool on);
     void setPortUnmatched(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck;
-    QSpinBox *cnumberSpin, *mtpbSpin;
+    QSpinBox *mtpbSpin;
     bool compactStyle;
     
   signals:
     void forwardToggled(bool);  
     void newPortUnmatched(int);
-    void midiMuteToggle(bool);
+    void midiControlToggle(bool);
     void compactLayoutToggle(bool);
     void newMIDItpb(int);
-    void newCnumber(int);
         
   public slots:
     void updateForward(bool on);
     void updatePortUnmatched(int);
     void updateMIDItpb_pw(int);
-    void updateCnumber(int);
     void updateControlSetting(bool);   
     void updateCompactStyle(bool);   
 };

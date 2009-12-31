@@ -20,7 +20,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     portCount = 0;
     forwardUnmatched = false;
     portUnmatched = 0;
-    midi_mutable = true;
+    midi_controllable = true;
 
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0) {
@@ -320,7 +320,7 @@ void SeqDriver::procEvents(int)
                     }
                 }
                 else {
-                    if (midi_mutable) {
+                    if (midi_controllable) {
                         emit controlEvent(ccnumber, evIn->data.control.value);
                         unmatched = false;
                     }
@@ -579,8 +579,8 @@ int SeqDriver::getAlsaClientId()
         return clientid;
 }
 
-void SeqDriver::setMidiMutable(bool on)
+void SeqDriver::setMidiControllable(bool on)
 {
-    midi_mutable = on;
+    midi_controllable = on;
     modified = true;
 }

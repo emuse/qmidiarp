@@ -36,6 +36,16 @@
 
 const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 const int lfoFreqValues[11] = {1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32};
+#ifndef MIDICC_H
+struct MidiCC {
+        QString name;
+        int min;
+        int max;
+        int ccnumber;
+        int ID;
+    };    
+#define MIDICC_H
+#endif
 
 class LfoWidget : public QWidget
 {
@@ -49,16 +59,17 @@ class LfoWidget : public QWidget
     QToolButton *copyToCustomButton;
  
     MidiLfo *midiLfo;
-    Slider *frequency, *amplitude, *offset;
     QVector<LfoSample> lfoData;
     bool modified;
-
+    
   public:
     QString name;
     LfoScreen *lfoScreen;
     QStringList waveForms;
     QCheckBox *muteOut;
+    Slider *frequency, *amplitude, *offset;
     int ID, parentDockID;
+    QVector<MidiCC> ccList;
 
     LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidget* parent=0);
     ~LfoWidget();
@@ -76,6 +87,9 @@ class LfoWidget : public QWidget
     void patternChanged();
     void lfoRemove(int ID);
     void dockRename(const QString& name, int parentDockID);
+    void setMidiLearn(int parentDockID, int ID, int controlID);
+    void unsetMidiLearn();
+    void midiForget(int parentDockID, int ID);
         
   public slots:
     void updateChannelOut(int value);
@@ -93,6 +107,16 @@ class LfoWidget : public QWidget
     void copyToCustom();
     void moduleDelete();
     void moduleRename();
+    void appendMidiCC(int ID, int min, int max, int ccnumber);
+    void removeMidiCC(int ID, int ccnumber);
+    void midiLearnMute();
+    void midiForgetMute();
+    void midiLearnOffs();
+    void midiForgetOffs();
+    void midiLearnAmp();
+    void midiForgetAmp();
+    void midiLearnCancel();
+
 };
   
 #endif

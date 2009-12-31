@@ -14,6 +14,7 @@
 
 #include "logwidget.h"
 #include "arpdata.h"
+#include "midicctable.h"
 #include "passwidget.h"
 #include "groovewidget.h"
 #include "config.h"
@@ -96,6 +97,7 @@ class MainWindow : public QMainWindow
     void midiClockToggle(bool on);
     void resetQueue();
     void updatePatternPresets(const QString& n, const QString& p, int index);
+    void showMidiCCDialog();
 };
   
 #endif

@@ -101,6 +101,21 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
+
+    QAction *cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+
+    muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    
+    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
+    muteOut->addAction(muteLearnAction);
+    connect(muteLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnMute()));
+    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
+    muteOut->addAction(muteForgetAction);
+    connect(muteForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetMute()));
+
+    muteOut->addAction(cancelMidiLearnAction);
+
     connect(muteOut, SIGNAL(toggled(bool)), midiSeq, SLOT(muteSeq(bool)));
     muteLabel->setBuddy(muteOut);
 
@@ -205,11 +220,35 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
+            
+    velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    
+    QAction *velocityLearnAction = new QAction(tr("MIDI &Learn"), this);
+    velocity->addAction(velocityLearnAction);
+    connect(velocityLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnVel()));
+    QAction *velocityForgetAction = new QAction(tr("MIDI &Forget"), this);
+    velocity->addAction(velocityForgetAction);
+    connect(velocityForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetVel()));
+    
+    velocity->addAction(cancelMidiLearnAction);
+
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
             
     notelength = new Slider(0, 255, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
+
+    notelength->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    
+    QAction *notelengthLearnAction = new QAction(tr("MIDI &Learn"), this);
+    notelength->addAction(notelengthLearnAction);
+    connect(notelengthLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnNoteLen()));
+    QAction *notelengthForgetAction = new QAction(tr("MIDI &Forget"), this);
+    notelength->addAction(notelengthForgetAction);
+    connect(notelengthForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetNoteLen()));
+    
+    notelength->addAction(cancelMidiLearnAction);
+    
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
             
@@ -252,6 +291,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     setLayout(seqWidgetLayout);
     updateVelocity(64);
     updateWaveForm(0);
+    ccList.clear();
 }
 
 SeqWidget::~SeqWidget()
@@ -276,6 +316,15 @@ void SeqWidget::writeSeq(QTextStream& arpText)
         << sizeBox->currentIndex() << ' '
         << midiSeq->vel << ' '
         << midiSeq->transp << '\n';
+    arpText << "MIDICC" << endl;
+    for (int l1 = 0; l1 < ccList.count(); l1++) {
+		arpText	<< ccList.at(l1).ID << ' '
+				<< ccList.at(l1).ccnumber << ' '
+				<< ccList.at(l1).min << ' '
+				<< ccList.at(l1).max << endl;
+	}
+	arpText << "EOCC" << endl;
+
     arpText << waveFormBox->currentIndex() << '\n';
     // Write Mute Mask
     while (l1 < midiSeq->muteMask.count()) {
@@ -327,6 +376,24 @@ void SeqWidget::readSeq(QTextStream& arpText)
     qs2 = qs.section(' ', 3, 3); 
     transpose->setValue(qs2.toInt());
     qs = arpText.readLine();
+    if (qs == "MIDICC")
+    {
+        qs = arpText.readLine();
+        while (qs != "EOCC") {
+	        qs2 = qs.section(' ', 0, 0);
+	        int ID = qs2.toInt();
+	        qs2 = qs.section(' ', 1, 1);
+	        int ccnumber = qs2.toInt();
+	        qs2 = qs.section(' ', 2, 2);
+	        int min = qs2.toInt();
+	        qs2 = qs.section(' ', 3, 3);
+	        int max = qs2.toInt();
+	        appendMidiCC(ID, ccnumber, min, max);
+	        qs = arpText.readLine();
+		}
+	qs = arpText.readLine();
+    }
+
     wvtmp = qs.toInt();
     
     // Read Mute Mask
@@ -547,4 +614,76 @@ void SeqWidget::moduleRename()
         name = "Seq:" + newname;
         emit dockRename(name, parentDockID);
     }
+}
+
+void SeqWidget::appendMidiCC(int ID, int ccnumber, int min, int max)
+{
+    MidiCC midiCC;
+    switch (ID) {
+		case 0: midiCC.name = "Mute Toggle";
+		break;
+		case 1: midiCC.name = "Velocity";
+		break;
+		case 2: midiCC.name = "Note Length";
+		break;
+		default: midiCC.name = "Unknown";
+	}
+    midiCC.ID = ID;
+    midiCC.ccnumber = ccnumber;
+    midiCC.min = min;
+    midiCC.max = max;
+    ccList.append(midiCC);
+    qWarning("MIDI Controller %d appended for %s", ccnumber, qPrintable(midiCC.name));
+}
+
+void SeqWidget::removeMidiCC(int ID, int ccnumber)
+{
+	for (int l1 = 0; l1 < ccList.count(); l1++) {
+		if (ccList.at(l1).ID == ID) {
+			if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+				ccList.remove(l1);
+				l1--;
+				qWarning("controller removed");
+			}
+		}
+	}
+}
+
+void SeqWidget::midiLearnMute()
+{
+	emit setMidiLearn(parentDockID, ID, 0);
+	qWarning("Requesting Midi Learn for Mute Toggle");
+}
+
+void SeqWidget::midiForgetMute()
+{
+	removeMidiCC(0, -1);
+}
+
+void SeqWidget::midiLearnNoteLen()
+{
+	emit setMidiLearn(parentDockID, ID, 2);
+	qWarning("Requesting Midi Learn for NoteLength");
+}
+
+void SeqWidget::midiForgetNoteLen()
+{
+	removeMidiCC(2, -1);
+}
+
+void SeqWidget::midiLearnVel()
+{
+	emit setMidiLearn(parentDockID, ID, 1);
+	qWarning("Requesting Midi Learn for Velocity");
+}
+
+void SeqWidget::midiForgetVel()
+{
+	removeMidiCC(1, -1);
+}
+
+void SeqWidget::midiLearnCancel()
+{
+	emit setMidiLearn(parentDockID, ID, -1);
+	qWarning("Cancelling Midi Learn request");
 }

@@ -4,10 +4,12 @@
 #include <QFileDialog>
 #include <QIcon>
 #include <QInputDialog>
+#include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QStringList>
 #include <QSpinBox>
+#include <QTableWidget>
 #include <QTextStream>
 
 #include "mainwindow.h"
@@ -60,17 +62,14 @@ MainWindow::MainWindow(int p_portCount)
     passWindow->setGeometry(10, 10, 400, 200);
     addDockWidget(Qt::BottomDockWidgetArea, passWindow);
 
-
     connect(passWidget, SIGNAL(forwardToggled(bool)), 
             arpData->seqDriver, SLOT(setForwardUnmatched(bool)));
     connect(passWidget, SIGNAL(newMIDItpb(int)), 
             arpData->seqDriver, SLOT(updateMIDItpb(int)));
     connect(passWidget, SIGNAL(newPortUnmatched(int)), 
             arpData->seqDriver, SLOT(setPortUnmatched(int)));
-    connect(passWidget, SIGNAL(midiMuteToggle(bool)), 
-            arpData->seqDriver, SLOT(setMidiMutable(bool)));
-    connect(passWidget, SIGNAL(newCnumber(int)), 
-            arpData, SLOT(updateCCnumber(int)));
+    connect(passWidget, SIGNAL(midiControlToggle(bool)), 
+            arpData->seqDriver, SLOT(setMidiControllable(bool)));
 
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));                 
@@ -188,6 +187,7 @@ MainWindow::MainWindow(int p_portCount)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
+    //viewMenu->addAction(tr("&MIDI Controllers..."), this, SLOT(showMidiCCDialog()));
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(addLfoAction);
@@ -325,6 +325,8 @@ void MainWindow::addArp(const QString& name)
             this, SLOT(removeArp(int)));
     connect(arpWidget, SIGNAL(dockRename(const QString&, int)), 
             this, SLOT(renameDock(const QString&, int)));
+    connect(arpWidget, SIGNAL(setMidiLearn(int, int, int)), 
+            arpData, SLOT(setMidiLearn(int, int, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
             arpWidget->arpScreen, SLOT(setGrooveTick(int)));
@@ -340,8 +342,6 @@ void MainWindow::addArp(const QString& name)
     
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
-    arpData->seqDriver->setMidiMutable(passWidget->cbuttonCheck->isChecked());
-    arpData->updateCCnumber(passWidget->cnumberSpin->value());
     
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -368,6 +368,8 @@ void MainWindow::addLfo(const QString& name)
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)), 
             this, SLOT(renameDock(const QString&, int)));
+    connect(lfoWidget, SIGNAL(setMidiLearn(int, int, int)), 
+            arpData, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = arpData->lfoWidgetCount();
     lfoWidget->name = name;
@@ -385,7 +387,6 @@ void MainWindow::addLfo(const QString& name)
     
     count = arpData->moduleWindowCount();
     lfoWidget->parentDockID = count;
-    
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
     checkIfFirstModule();
@@ -401,6 +402,8 @@ void MainWindow::addSeq(const QString& name)
     connect(seqWidget, SIGNAL(seqRemove(int)), this, SLOT(removeSeq(int)));
     connect(seqWidget, SIGNAL(dockRename(const QString&, int)), 
             this, SLOT(renameDock(const QString&, int)));
+    connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)), 
+            arpData, SLOT(setMidiLearn(int, int, int)));
             
     widgetID = arpData->seqWidgetCount();
     seqWidget->name = name;
@@ -418,7 +421,6 @@ void MainWindow::addSeq(const QString& name)
     
     count = arpData->moduleWindowCount();
     seqWidget->parentDockID = count;
-    
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
 
@@ -554,8 +556,6 @@ void MainWindow::openFile(const QString& fn)
         qs = loadText.readLine();
         qs2 = qs.section(' ', 0, 0);
         passWidget->cbuttonCheck->setChecked(qs2.toInt());
-        qs2 = qs.section(' ', 1, 1);
-        passWidget->cnumberSpin->setValue(qs2.toInt());
         qs = loadText.readLine();
     }
     if (qs == "MIDI Clock")
@@ -647,8 +647,7 @@ bool MainWindow::saveFile()
     saveText << "Tempo\n";   
     saveText << tempoSpin->value() << '\n';    
     saveText << "MIDI Control\n";
-    saveText << (int)passWidget->cbuttonCheck->isChecked();
-    saveText << ' ' << passWidget->cnumberSpin->value() << '\n';
+    saveText << (int)passWidget->cbuttonCheck->isChecked() << '\n';
     saveText << "MIDI Clock\n";
     saveText << (int)arpData->seqDriver->use_midiclock << ' ';
     saveText << (int)arpData->seqDriver->midiclock_tpb << '\n';
@@ -661,7 +660,7 @@ bool MainWindow::saveFile()
 
     for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
         
-        nameTest = arpData->moduleWindow(l1)->windowTitle();
+        nameTest = arpData->moduleWindow(l1)->objectName();
         
         if (nameTest.startsWith('S')) {
             saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
@@ -931,4 +930,9 @@ void MainWindow::checkIfFirstModule()
         midiClockAction->setEnabled(true);
         runAction->setEnabled(true);
     }
+}
+
+void MainWindow::showMidiCCDialog()
+{
+	new MidiCCTable(arpData, this);
 }
