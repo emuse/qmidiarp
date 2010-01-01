@@ -39,6 +39,7 @@ class ArpWidget : public QWidget
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
     QAction *deleteAction, *renameAction;
+    QAction *cancelMidiLearnAction;
     MidiArp *midiArp;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
@@ -93,8 +94,8 @@ class ArpWidget : public QWidget
     void removeCurrentPattern();
     void moduleDelete();
     void moduleRename();
-    void appendMidiCC(int ID, int min, int max, int ccnumber);
-    void removeMidiCC(int ID, int ccnumber);
+    void appendMidiCC(int ctrlID, int min, int max, int ccnumber);
+    void removeMidiCC(int ctrlID, int ccnumber);
     void midiLearnMute();
     void midiForgetMute();
     void midiLearnCancel();

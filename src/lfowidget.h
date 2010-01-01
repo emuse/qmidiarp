@@ -56,6 +56,7 @@ class LfoWidget : public QWidget
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
     QAction *deleteAction, *renameAction;
+    QAction *cancelMidiLearnAction;
     QToolButton *copyToCustomButton;
  
     MidiLfo *midiLfo;
@@ -107,8 +108,8 @@ class LfoWidget : public QWidget
     void copyToCustom();
     void moduleDelete();
     void moduleRename();
-    void appendMidiCC(int ID, int min, int max, int ccnumber);
-    void removeMidiCC(int ID, int ccnumber);
+    void appendMidiCC(int ctrlID, int min, int max, int ccnumber);
+    void removeMidiCC(int ctrlID, int ccnumber);
     void midiLearnMute();
     void midiForgetMute();
     void midiLearnOffs();

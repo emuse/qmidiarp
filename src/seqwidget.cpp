@@ -102,8 +102,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
 
-    QAction *cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
     connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    cancelMidiLearnAction->setEnabled(false);
 
     muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     
@@ -381,14 +382,14 @@ void SeqWidget::readSeq(QTextStream& arpText)
         qs = arpText.readLine();
         while (qs != "EOCC") {
 	        qs2 = qs.section(' ', 0, 0);
-	        int ID = qs2.toInt();
+	        int ctrlID = qs2.toInt();
 	        qs2 = qs.section(' ', 1, 1);
 	        int ccnumber = qs2.toInt();
 	        qs2 = qs.section(' ', 2, 2);
 	        int min = qs2.toInt();
 	        qs2 = qs.section(' ', 3, 3);
 	        int max = qs2.toInt();
-	        appendMidiCC(ID, ccnumber, min, max);
+	        appendMidiCC(ctrlID, ccnumber, min, max);
 	        qs = arpText.readLine();
 		}
 	qs = arpText.readLine();
@@ -616,30 +617,31 @@ void SeqWidget::moduleRename()
     }
 }
 
-void SeqWidget::appendMidiCC(int ID, int ccnumber, int min, int max)
+void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
 {
     MidiCC midiCC;
-    switch (ID) {
-		case 0: midiCC.name = "Mute Toggle";
+    switch (ctrlID) {
+		case 0: midiCC.name = "MuteToggle";
 		break;
 		case 1: midiCC.name = "Velocity";
 		break;
-		case 2: midiCC.name = "Note Length";
+		case 2: midiCC.name = "NoteLength";
 		break;
 		default: midiCC.name = "Unknown";
 	}
-    midiCC.ID = ID;
+    midiCC.ID = ctrlID;
     midiCC.ccnumber = ccnumber;
     midiCC.min = min;
     midiCC.max = max;
     ccList.append(midiCC);
     qWarning("MIDI Controller %d appended for %s", ccnumber, qPrintable(midiCC.name));
+    cancelMidiLearnAction->setEnabled(false);
 }
 
-void SeqWidget::removeMidiCC(int ID, int ccnumber)
+void SeqWidget::removeMidiCC(int ctrlID, int ccnumber)
 {
 	for (int l1 = 0; l1 < ccList.count(); l1++) {
-		if (ccList.at(l1).ID == ID) {
+		if (ccList.at(l1).ID == ctrlID) {
 			if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
 				ccList.remove(l1);
 				l1--;
@@ -652,7 +654,8 @@ void SeqWidget::removeMidiCC(int ID, int ccnumber)
 void SeqWidget::midiLearnMute()
 {
 	emit setMidiLearn(parentDockID, ID, 0);
-	qWarning("Requesting Midi Learn for Mute Toggle");
+	qWarning("Requesting Midi Learn for MuteToggle");
+    cancelMidiLearnAction->setEnabled(true);
 }
 
 void SeqWidget::midiForgetMute()
@@ -664,6 +667,7 @@ void SeqWidget::midiLearnNoteLen()
 {
 	emit setMidiLearn(parentDockID, ID, 2);
 	qWarning("Requesting Midi Learn for NoteLength");
+    cancelMidiLearnAction->setEnabled(true);
 }
 
 void SeqWidget::midiForgetNoteLen()
@@ -675,6 +679,7 @@ void SeqWidget::midiLearnVel()
 {
 	emit setMidiLearn(parentDockID, ID, 1);
 	qWarning("Requesting Midi Learn for Velocity");
+    cancelMidiLearnAction->setEnabled(true);
 }
 
 void SeqWidget::midiForgetVel()
@@ -686,4 +691,5 @@ void SeqWidget::midiLearnCancel()
 {
 	emit setMidiLearn(parentDockID, ID, -1);
 	qWarning("Cancelling Midi Learn request");
+    cancelMidiLearnAction->setEnabled(true);
 }

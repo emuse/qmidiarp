@@ -187,7 +187,7 @@ MainWindow::MainWindow(int p_portCount)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
-    //viewMenu->addAction(tr("&MIDI Controllers..."), this, SLOT(showMidiCCDialog()));
+    viewMenu->addAction(tr("&MIDI Controllers..."), this, SLOT(showMidiCCDialog()));
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(addLfoAction);

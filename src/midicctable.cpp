@@ -46,72 +46,69 @@ MidiCCTable::~MidiCCTable()
 void MidiCCTable::getCurrentControls(ArpData * arpData, QTableWidget * midiCCTable)
 {
     QVector<MidiCC> ccList;
-    int l1, l2, parentDockID;
+    int l1, l2;
     int nrows = 0;
     
     for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) {
         ccList = arpData->arpWidget(l1)->ccList;
-        parentDockID = arpData->arpWidget(l1)->parentDockID;
         
         for (l2 = 0; l2 < arpData->arpWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(parentDockID + l2,
+			midiCCTable->setVerticalHeaderItem(nrows,
 					new QTableWidgetItem(arpData->arpWidget(l1)->name));
 					
-	        midiCCTable->setItem(parentDockID + l2, 0, 
+	        midiCCTable->setItem(nrows, 0, 
 					new QTableWidgetItem(ccList.at(l2).name));
-	        midiCCTable->setItem(parentDockID + l2, 1, 
+	        midiCCTable->setItem(nrows, 1, 
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).ccnumber)));
-	        midiCCTable->setItem(parentDockID + l2, 2,
+	        midiCCTable->setItem(nrows, 2,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).min)));
-	        midiCCTable->setItem(parentDockID + l2, 3,
+	        midiCCTable->setItem(nrows, 3,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).max)));
 			
-			midiCCTable->setRowHeight(parentDockID + l2, 20);
+			midiCCTable->setRowHeight(nrows, 20);
 			nrows++;
 		}
     }
     
     for (l1 = 0; l1 < arpData->lfoWidgetCount(); l1++) {
         ccList = arpData->lfoWidget(l1)->ccList;
-        parentDockID = arpData->lfoWidget(l1)->parentDockID;
         
         for (l2 = 0; l2 < arpData->lfoWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(parentDockID + l2,
+			midiCCTable->setVerticalHeaderItem(nrows,
 					new QTableWidgetItem(arpData->lfoWidget(l1)->name));
 					
-	        midiCCTable->setItem(parentDockID + l2, 0, 
+	        midiCCTable->setItem(nrows, 0, 
 					new QTableWidgetItem(ccList.at(l2).name));
-	        midiCCTable->setItem(parentDockID + l2, 1, 
+	        midiCCTable->setItem(nrows, 1, 
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).ccnumber)));
-	        midiCCTable->setItem(parentDockID + l2, 2,
+	        midiCCTable->setItem(nrows, 2,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).min)));
-	        midiCCTable->setItem(parentDockID + l2, 3,
+	        midiCCTable->setItem(nrows, 3,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).max)));
-			midiCCTable->setRowHeight(parentDockID + l2, 20);
+			midiCCTable->setRowHeight(nrows, 20);
 			nrows++;
 		}
     }
     
     for (l1 = 0; l1 < arpData->seqWidgetCount(); l1++) {
         ccList = arpData->seqWidget(l1)->ccList;
-        parentDockID = arpData->seqWidget(l1)->parentDockID;
         
         for (l2 = 0; l2 < arpData->seqWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(parentDockID + l2,
+			midiCCTable->setVerticalHeaderItem(nrows,
 					new QTableWidgetItem(arpData->seqWidget(l1)->name));
 					
-	        midiCCTable->setItem(parentDockID + l2, 0, 
+	        midiCCTable->setItem(nrows, 0, 
 					new QTableWidgetItem(ccList.at(l2).name));
-	        midiCCTable->setItem(parentDockID + l2, 1, 
+	        midiCCTable->setItem(nrows, 1, 
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).ccnumber)));
-	        midiCCTable->setItem(parentDockID + l2, 2,
+	        midiCCTable->setItem(nrows, 2,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).min)));
-	        midiCCTable->setItem(parentDockID + l2, 3,
+	        midiCCTable->setItem(nrows, 3,
 					new QTableWidgetItem(QString("%1").arg(ccList.at(l2).max)));
-			midiCCTable->setRowHeight(parentDockID + l2, 20);
+			midiCCTable->setRowHeight(nrows, 20);
 			nrows++;
 		}
     }
