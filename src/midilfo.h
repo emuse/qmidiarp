@@ -48,6 +48,7 @@ class MidiLfo : public QObject  {
     bool hold, isMuted;
     int freq, amp, offs, ccnumber;
     int size, res, waveFormIndex;
+    int cwmin;
     QVector<LfoSample> customWave;
     QVector<bool> muteMask;
            

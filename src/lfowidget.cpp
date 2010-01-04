@@ -463,9 +463,9 @@ void LfoWidget::updateWaveForm(int val)
     midiLfo->getData(&lfoData);
     lfoScreen->updateScreen(lfoData);
     bool isCustom = (val == 5);
+    if (isCustom) newCustomOffset();
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
-    offset->setDisabled(isCustom);
     copyToCustomAction->setDisabled(isCustom);
     modified = true;
 }
@@ -506,7 +506,10 @@ void LfoWidget::updateAmp(int val)
 
 void LfoWidget::updateOffs(int val)
 {
-    midiLfo->offs = val;
+	if (waveFormBox->currentIndex() == 5) {
+		midiLfo->updateCustomWaveOffset(val);
+	}
+	midiLfo->offs = val;
     midiLfo->getData(&lfoData);
     lfoScreen->updateScreen(lfoData);
     modified = true;
@@ -520,15 +523,29 @@ void LfoWidget::copyToCustom()
     modified = true;
 }
 
+void LfoWidget::newCustomOffset()
+{
+	int min = 127;
+	int value;
+	for (int l1 = 0; l1 < lfoData.count() - 1; l1++) {
+		value = lfoData.at(l1).value;
+		if (value < min) min = value;
+	}
+	midiLfo->cwmin = min;
+	offset->setValue(min);
+}
+
 void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if ((buttons == 1) && (waveFormBox->currentIndex() == 5)) {
-        midiLfo->setCustomWavePoint(mouseX, mouseY);
+		midiLfo->setCustomWavePoint(mouseX, mouseY);
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
+        newCustomOffset();
         modified = true;
-        }
+    }
 }
+
 void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
@@ -536,29 +553,24 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
         modified = true;
-    } else
+    } 
+    else {
         if (waveFormBox->currentIndex() == 5) {
             midiLfo->setCustomWavePoint(mouseX, mouseY);
             midiLfo->getData(&lfoData);
             lfoScreen->updateScreen(lfoData);
+			newCustomOffset();
             modified = true;
         }
+	}
 }
 
 void LfoWidget::mouseWheel(int step)
 {
     int cv;
-        if (waveFormBox->currentIndex() == 5) {
-            midiLfo->updateCustomWaveOffset(step + step);
-            midiLfo->getData(&lfoData);
-            lfoScreen->updateScreen(lfoData);
-            modified = true;
-        }
-        else {
-            cv = offset->value() + step;
-            if ((cv < 127) && (cv > 0))
-            offset->setValue(cv + step);
-        }
+	cv = offset->value() + step;
+	if ((cv < 127) && (cv > 0))
+	offset->setValue(cv + step);
 }
 
 bool LfoWidget::isModified()
@@ -678,4 +690,3 @@ void LfoWidget::midiLearnCancel()
 	qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
 }
-

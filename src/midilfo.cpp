@@ -43,6 +43,7 @@ MidiLfo::MidiLfo()
     LfoSample lfoSample;
     lfoSample.value = 63;
     customWave.clear();
+    cwmin = 0;
     for (l1 = 0; l1 < size * res; l1++) {
             lfoSample.tick = lt;
             lfoSample.muted = false;
@@ -234,7 +235,7 @@ void MidiLfo::copyToCustom()
     customWave = lfoData;
 }
 
-void MidiLfo::updateCustomWaveOffset(int step)
+void MidiLfo::updateCustomWaveOffset(int cwoffs)
 {
     LfoSample lfoSample;
     const int count = customWave.count();
@@ -242,7 +243,7 @@ void MidiLfo::updateCustomWaveOffset(int step)
     bool cl = false;
     
     while ((!cl) && (l1 < count)) {
-        lfoSample.value = clip(customWave.at(l1).value + step,
+        lfoSample.value = clip(customWave.at(l1).value + cwoffs - cwmin,
                             0, 127, &cl);
         l1++;
         }
@@ -250,11 +251,12 @@ void MidiLfo::updateCustomWaveOffset(int step)
     if (cl) return;
     
     for (l1 = 0; l1 < count; l1++) {
-        lfoSample.value = customWave.at(l1).value + step;
+        lfoSample.value = customWave.at(l1).value + cwoffs - cwmin;
         lfoSample.tick = customWave.at(l1).tick;
         lfoSample.muted = customWave.at(l1).muted;
         customWave.replace(l1, lfoSample);
     }
+    cwmin = cwoffs;
 }
 
 void MidiLfo::toggleMutePoint(double mouseX)

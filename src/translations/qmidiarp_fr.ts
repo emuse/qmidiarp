@@ -427,12 +427,12 @@ Molette pour changer l&apos;offset</translation>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="577"/>
+        <location filename="../lfowidget.cpp" line="589"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="596"/>
+        <location filename="../lfowidget.cpp" line="608"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>

@@ -83,6 +83,7 @@ class LfoWidget : public QWidget
     void loadWaveForms();
     bool isModified();
     void setModified(bool);
+    void newCustomOffset();
   
   signals:
     void patternChanged();
@@ -117,7 +118,6 @@ class LfoWidget : public QWidget
     void midiLearnAmp();
     void midiForgetAmp();
     void midiLearnCancel();
-
 };
   
 #endif

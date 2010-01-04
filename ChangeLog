@@ -1,3 +1,6 @@
+2010-01-04 Frank Kober <goemusic@yahoo.fr>
+	* lfo*.*: custom wave made controllable by offset slider (and MIDI)
+	
 2009-12-31 Frank Kober <goemusic@yahoo.fr>
 	* MIDI control handling modified: controllers can be attributed to
 	mute checkbox and various sliders by context menu and MIDI 
