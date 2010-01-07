@@ -186,7 +186,7 @@ d h durée de note augm/dim
     <message>
         <location filename="../arpwidget.cpp" line="114"/>
         <source>MIDI &amp;Forget</source>
-        <translation type="unfinished">&amp;Oublier les contrôleurs MIDI</translation>
+        <translation>&amp;Oublier les contrôleurs MIDI</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="128"/>
@@ -640,36 +640,36 @@ Molette pour changer l&apos;offset</translation>
         <translation>Ajouter un séquenceur</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="538"/>
+        <location filename="../mainwindow.cpp" line="539"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="641"/>
+        <location filename="../mainwindow.cpp" line="642"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="719"/>
+        <location filename="../mainwindow.cpp" line="720"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="721"/>
+        <location filename="../mainwindow.cpp" line="722"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="725"/>
+        <location filename="../mainwindow.cpp" line="726"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="840"/>
+        <location filename="../mainwindow.cpp" line="841"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
@@ -734,23 +734,23 @@ Enregistrer les modifications?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="116"/>
-        <location filename="../mainwindow.cpp" line="519"/>
+        <location filename="../mainwindow.cpp" line="520"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="697"/>
+        <location filename="../mainwindow.cpp" line="698"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="520"/>
-        <location filename="../mainwindow.cpp" line="697"/>
+        <location filename="../mainwindow.cpp" line="521"/>
+        <location filename="../mainwindow.cpp" line="698"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="881"/>
+        <location filename="../mainwindow.cpp" line="882"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
@@ -805,27 +805,37 @@ Enregistrer les modifications?</translation>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="53"/>
+        <location filename="../midicctable.cpp" line="44"/>
+        <source>Re&amp;move</source>
+        <translation>&amp;Supprimer</translation>
+    </message>
+    <message>
+        <location filename="../midicctable.cpp" line="45"/>
+        <source>Re&amp;vert</source>
+        <translation>&amp;Rétablir</translation>
+    </message>
+    <message>
+        <location filename="../midicctable.cpp" line="58"/>
         <source>MIDI Controllers - </source>
         <translation>Contrôles MIDI - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="107"/>
+        <location filename="../midicctable.cpp" line="113"/>
         <source>Control</source>
         <translation>Contrôle</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="111"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="115"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>min</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="119"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>max</source>
         <translation></translation>
     </message>

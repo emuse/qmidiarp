@@ -650,36 +650,36 @@ Mausrad: Verschieben des Offsets</translation>
         <translation>Sequenzer hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="538"/>
+        <location filename="../mainwindow.cpp" line="539"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Konnte die Datei &apos;%1&apos; nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="641"/>
+        <location filename="../mainwindow.cpp" line="642"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="719"/>
+        <location filename="../mainwindow.cpp" line="720"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="721"/>
+        <location filename="../mainwindow.cpp" line="722"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="725"/>
+        <location filename="../mainwindow.cpp" line="726"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="840"/>
+        <location filename="../mainwindow.cpp" line="841"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
@@ -744,23 +744,23 @@ Die Änderungen speichern?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="116"/>
-        <location filename="../mainwindow.cpp" line="519"/>
+        <location filename="../mainwindow.cpp" line="520"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="697"/>
+        <location filename="../mainwindow.cpp" line="698"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="520"/>
-        <location filename="../mainwindow.cpp" line="697"/>
+        <location filename="../mainwindow.cpp" line="521"/>
+        <location filename="../mainwindow.cpp" line="698"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="881"/>
+        <location filename="../mainwindow.cpp" line="882"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
@@ -830,27 +830,37 @@ Die Änderungen speichern?</translation>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="53"/>
+        <location filename="../midicctable.cpp" line="44"/>
+        <source>Re&amp;move</source>
+        <translation>Ent&amp;fernen</translation>
+    </message>
+    <message>
+        <location filename="../midicctable.cpp" line="45"/>
+        <source>Re&amp;vert</source>
+        <translation>&amp;Wiederherstellen</translation>
+    </message>
+    <message>
+        <location filename="../midicctable.cpp" line="58"/>
         <source>MIDI Controllers - </source>
         <translation>MIDI-Steuerungen - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="107"/>
+        <location filename="../midicctable.cpp" line="113"/>
         <source>Control</source>
         <translation>Steuerung</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="111"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="115"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>min</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="119"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>max</source>
         <translation></translation>
     </message>

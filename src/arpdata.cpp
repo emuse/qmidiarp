@@ -317,7 +317,7 @@ void ArpData::handleController(int ccnumber, int value)
 
 	            if (ccnumber == cclist.at(l2).ccnumber) {
 	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == 127) {
+	                    case 0: if (value == max) {
 	                                m = arpWidget(l1)->muteOut->isChecked();
 	                                arpWidget(l1)->muteOut->setChecked(!m);
 	                                return;
@@ -337,7 +337,7 @@ void ArpData::handleController(int ccnumber, int value)
 				max = cclist.at(l2).max;
 				if (ccnumber == cclist.at(l2).ccnumber) {
 	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == 127) {
+	                    case 0: if (value == max) {
 	                                m = lfoWidget(l1)->muteOut->isChecked();
 	                                lfoWidget(l1)->muteOut->setChecked(!m);
 	                                return;
@@ -371,7 +371,7 @@ void ArpData::handleController(int ccnumber, int value)
 				max = cclist.at(l2).max;
 	            if (ccnumber == cclist.at(l2).ccnumber) {
 	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == 127) {
+	                    case 0: if (value == max) {
 	                                m = seqWidget(l1)->muteOut->isChecked();
 	                                seqWidget(l1)->muteOut->setChecked(!m);
 	                                return;
@@ -400,17 +400,18 @@ void ArpData::handleController(int ccnumber, int value)
 	    }
 	}
 	else {
+		int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
 		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
 			arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, 0, 127);
+					ccnumber, min, 127);
 		}
 		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
 			lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, 0, 127);
+					ccnumber, min, 127);
 		}
 		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
 			seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, 0, 127);
+					ccnumber, min, 127);
 		}
 		
 		midiLearnFlag = false;

@@ -1,3 +1,11 @@
+2010-01-08 Frank Kober <goemusic@yahoo.fr>
+	* arp/lfo/seqwidget.cpp: modified flags upon midi controller
+	attribution change added, check for double-attributed controllers
+	added
+	* arpdata.cpp, midicctable.cpp: min/max settings adapted for toggler
+	controls
+	* midicctable.cpp: revert and remove row functions added
+	
 2010-01-07 Frank Kober <goemusic@yahoo.fr>
 	* seqwidget.cpp: note length slider maximum set to 127
 	* midicctable.*: items made editable, "OK" button replaces current

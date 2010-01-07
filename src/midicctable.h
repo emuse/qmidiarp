@@ -24,6 +24,7 @@
 
 #include <QDialog>
 #include <QTableWidget>
+#include <QPushButton>
 #include "arpdata.h"
 
 class MidiCCTable : public QDialog
@@ -37,7 +38,8 @@ class MidiCCTable : public QDialog
 
  private:
 	QTableWidget *midiCCTable;
-	void getCurrentControls(QTableWidget *);
+	QPushButton *removeButton, *revertButton;
+	void getCurrentControls();
 	void fillControlRow(int nrows, MidiCC midiCC, int moduleID);
 	ArpData *arpData;
 	
@@ -46,6 +48,9 @@ class MidiCCTable : public QDialog
 	void reject();
 	void itemChanged(QTableWidgetItem *item);
 	void closeEvent(QCloseEvent *e);
+	void revert();
+	void apply();
+	void removeCurrent();
 };
 
 #endif

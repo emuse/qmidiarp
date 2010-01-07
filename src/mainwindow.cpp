@@ -354,6 +354,7 @@ void MainWindow::addArp(const QString& name)
     arpWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
+    moduleWindow->show();
     checkIfFirstModule();
 }
 

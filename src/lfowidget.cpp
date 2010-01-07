@@ -616,6 +616,8 @@ void LfoWidget::moduleRename()
 void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
 {
     MidiCC midiCC;
+    int l1 = 0;
+    
     switch (ctrlID) {
 		case 0: midiCC.name = "MuteToggle";
 		break;
@@ -629,9 +631,22 @@ void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
     midiCC.ccnumber = ccnumber;
     midiCC.min = min;
     midiCC.max = max;
-    ccList.append(midiCC);
-    qWarning("MIDI Controller %d appended for %s", ccnumber, qPrintable(midiCC.name));
+    
+   while ( (l1 < ccList.count()) && 
+   		((ctrlID != ccList.at(l1).ID) ||
+   		(ccnumber != ccList.at(l1).ccnumber)) ) l1++;
+    
+    if (ccList.count() == l1) {
+	    ccList.append(midiCC);
+	    qWarning("MIDI Controller %d appended for %s"
+	    , ccnumber, qPrintable(midiCC.name));
+	}
+	else {
+		qWarning("MIDI Controller %d already attributed to %s"
+				, ccnumber, qPrintable(midiCC.name));
+	}
     cancelMidiLearnAction->setEnabled(false);
+    modified = true;
 }
 
 
@@ -646,6 +661,7 @@ void LfoWidget::removeMidiCC(int ctrlID, int ccnumber)
 			}
 		}
 	}
+    modified = true;
 }
 
 void LfoWidget::midiLearnMute()
