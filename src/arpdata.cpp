@@ -309,125 +309,125 @@ void ArpData::handleController(int ccnumber, int value)
     int min, max, sval;
     QVector<MidiCC> cclist;
     if (!midiLearnFlag) {
-	    for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
-	        cclist = arpWidget(l1)->ccList;
-	        for (int l2 = 0; l2 < cclist.count(); l2++) {
-				min = cclist.at(l2).min;
-				max = cclist.at(l2).max;
+        for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
+            cclist = arpWidget(l1)->ccList;
+            for (int l2 = 0; l2 < cclist.count(); l2++) {
+                min = cclist.at(l2).min;
+                max = cclist.at(l2).max;
 
-	            if (ccnumber == cclist.at(l2).ccnumber) {
-	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == max) {
-	                                m = arpWidget(l1)->muteOut->isChecked();
-	                                arpWidget(l1)->muteOut->setChecked(!m);
-	                                return;
-	                            }
-	                    break;
-	                    default:
-	                    break;
-	                }
-	            }
-	        }
-	    }
-	
-	    for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
-	        cclist = lfoWidget(l1)->ccList;
-	        for (int l2 = 0; l2 < cclist.count(); l2++) {
-				min = cclist.at(l2).min;
-				max = cclist.at(l2).max;
-				if (ccnumber == cclist.at(l2).ccnumber) {
-	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == max) {
-	                                m = lfoWidget(l1)->muteOut->isChecked();
-	                                lfoWidget(l1)->muteOut->setChecked(!m);
-	                                return;
-	                            }
-	                    break;
-	                    
-	                    case 1: 
-								sval = min + ((double)value * (max - min)
-										/ 127);
-								lfoWidget(l1)->amplitude->setValue(sval);
-	                            return;
-	                    break;
-	                    
-	                    case 2: 
-								sval = min + ((double)value * (max - min)
-										/ 127);
-								lfoWidget(l1)->offset->setValue(sval);
-	                            return;
-	                    break;
-	                    default:
-	                    break;
-	                }
-	            }
-	        }
-	    }
-	    
-	    for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
-	        cclist = seqWidget(l1)->ccList;
-	        for (int l2 = 0; l2 < cclist.count(); l2++) {
-				min = cclist.at(l2).min;
-				max = cclist.at(l2).max;
-	            if (ccnumber == cclist.at(l2).ccnumber) {
-	                switch (cclist.at(l2).ID) {
-	                    case 0: if (value == max) {
-	                                m = seqWidget(l1)->muteOut->isChecked();
-	                                seqWidget(l1)->muteOut->setChecked(!m);
-	                                return;
-	                            }
-	                    break;
-	                    
-	                    case 1: 
-								sval = min + ((double)value * (max - min)
-										/ 127);
-								seqWidget(l1)->velocity->setValue(sval);
-	                            return;
-	                    break;
-	                    
-	                    case 2: 
-								sval = min + ((double)value * (max - min)
-										/ 127);
-								seqWidget(l1)->notelength->setValue(sval);
-								// send 2*value until range handling is implemented
-	                            return;
-	                    break;
-	                    default:
-	                    break;
-	                }
-	            }
-	        }
-	    }
-	}
-	else {
-		int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
-		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
-			arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, min, 127);
-		}
-		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
-			lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, min, 127);
-		}
-		if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
-			seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-					ccnumber, min, 127);
-		}
-		
-		midiLearnFlag = false;
-	}
+                if (ccnumber == cclist.at(l2).ccnumber) {
+                    switch (cclist.at(l2).ID) {
+                        case 0: if (value == max) {
+                                    m = arpWidget(l1)->muteOut->isChecked();
+                                    arpWidget(l1)->muteOut->setChecked(!m);
+                                    return;
+                                }
+                        break;
+                        default:
+                        break;
+                    }
+                }
+            }
+        }
+    
+        for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
+            cclist = lfoWidget(l1)->ccList;
+            for (int l2 = 0; l2 < cclist.count(); l2++) {
+                min = cclist.at(l2).min;
+                max = cclist.at(l2).max;
+                if (ccnumber == cclist.at(l2).ccnumber) {
+                    switch (cclist.at(l2).ID) {
+                        case 0: if (value == max) {
+                                    m = lfoWidget(l1)->muteOut->isChecked();
+                                    lfoWidget(l1)->muteOut->setChecked(!m);
+                                    return;
+                                }
+                        break;
+                        
+                        case 1: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->amplitude->setValue(sval);
+                                return;
+                        break;
+                        
+                        case 2: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->offset->setValue(sval);
+                                return;
+                        break;
+                        default:
+                        break;
+                    }
+                }
+            }
+        }
+        
+        for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
+            cclist = seqWidget(l1)->ccList;
+            for (int l2 = 0; l2 < cclist.count(); l2++) {
+                min = cclist.at(l2).min;
+                max = cclist.at(l2).max;
+                if (ccnumber == cclist.at(l2).ccnumber) {
+                    switch (cclist.at(l2).ID) {
+                        case 0: if (value == max) {
+                                    m = seqWidget(l1)->muteOut->isChecked();
+                                    seqWidget(l1)->muteOut->setChecked(!m);
+                                    return;
+                                }
+                        break;
+                        
+                        case 1: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->velocity->setValue(sval);
+                                return;
+                        break;
+                        
+                        case 2: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->notelength->setValue(sval);
+                                // send 2*value until range handling is implemented
+                                return;
+                        break;
+                        default:
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    else {
+        int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
+        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
+            arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+                    ccnumber, min, 127);
+        }
+        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
+            lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+                    ccnumber, min, 127);
+        }
+        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
+            seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+                    ccnumber, min, 127);
+        }
+        
+        midiLearnFlag = false;
+    }
 }
 
 void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 {
     if (0 > controlID) {
-		midiLearnFlag = false;
-		return;
-	}
-	else {
-		midiLearnFlag = true;
-	    midiLearnWindowID = moduleWindowID;
-	    midiLearnModuleID = moduleID;
-	    midiLearnID = controlID;
-	}
+        midiLearnFlag = false;
+        return;
+    }
+    else {
+        midiLearnFlag = true;
+        midiLearnWindowID = moduleWindowID;
+        midiLearnModuleID = moduleID;
+        midiLearnID = controlID;
+    }
 }

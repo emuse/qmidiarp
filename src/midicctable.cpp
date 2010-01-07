@@ -27,8 +27,8 @@
 
 MidiCCTable::MidiCCTable(ArpData *p_arpData, QWidget *parent) : QDialog(parent)
 {
-	arpData = p_arpData;
-	QGridLayout *boxLayout = new QGridLayout(this);
+    arpData = p_arpData;
+    QGridLayout *boxLayout = new QGridLayout(this);
     midiCCTable = new QTableWidget(this);
     
     midiCCTable->clear();
@@ -36,25 +36,25 @@ MidiCCTable::MidiCCTable(ArpData *p_arpData, QWidget *parent) : QDialog(parent)
     midiCCTable->setColumnCount(6);
     midiCCTable->setColumnHidden(4, true);
     midiCCTable->setColumnHidden(5, true);
-	connect(midiCCTable, SIGNAL(itemChanged(QTableWidgetItem*)),
-					this, SLOT(itemChanged(QTableWidgetItem*)));    
+    connect(midiCCTable, SIGNAL(itemChanged(QTableWidgetItem*)),
+                    this, SLOT(itemChanged(QTableWidgetItem*)));    
     
-	QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-									| QDialogButtonBox::Cancel);
-	removeButton = new QPushButton(tr("Re&move"), this);
-	revertButton = new QPushButton(tr("Re&vert"), this);
-	buttonBox->addButton(removeButton, QDialogButtonBox::ActionRole);
-	buttonBox->addButton(revertButton, QDialogButtonBox::ResetRole);
-	connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));    
-	connect(removeButton, SIGNAL(clicked()), this, SLOT(removeCurrent()));    
-	connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));    
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                    | QDialogButtonBox::Cancel);
+    removeButton = new QPushButton(tr("Re&move"), this);
+    revertButton = new QPushButton(tr("Re&vert"), this);
+    buttonBox->addButton(removeButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(revertButton, QDialogButtonBox::ResetRole);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));    
+    connect(removeButton, SIGNAL(clicked()), this, SLOT(removeCurrent()));    
+    connect(revertButton, SIGNAL(clicked()), this, SLOT(revert()));    
     
     boxLayout->addWidget(midiCCTable, 0, 0);
     boxLayout->addWidget(buttonBox, 1, 0);
     
-	setModal(true);
-	resize(250, 200);
+    setModal(true);
+    resize(250, 200);
     setWindowTitle(tr("MIDI Controllers - ") + APP_NAME);
     getCurrentControls();
     show();
@@ -75,12 +75,12 @@ void MidiCCTable::getCurrentControls()
         
         for (l2 = 0; l2 < arpData->arpWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(nrows,
-					new QTableWidgetItem(arpData->arpWidget(l1)->name));
-					
-			fillControlRow(nrows, ccList.at(l2), arpData->arpWidget(l1)->ID);
-			nrows++;
-		}
+            midiCCTable->setVerticalHeaderItem(nrows,
+                    new QTableWidgetItem(arpData->arpWidget(l1)->name));
+                    
+            fillControlRow(nrows, ccList.at(l2), arpData->arpWidget(l1)->ID);
+            nrows++;
+        }
     }
     
     for (l1 = 0; l1 < arpData->lfoWidgetCount(); l1++) {
@@ -88,12 +88,12 @@ void MidiCCTable::getCurrentControls()
         
         for (l2 = 0; l2 < arpData->lfoWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(nrows,
-					new QTableWidgetItem(arpData->lfoWidget(l1)->name));
-					
-			fillControlRow(nrows, ccList.at(l2), arpData->lfoWidget(l1)->ID);
-			nrows++;
-		}
+            midiCCTable->setVerticalHeaderItem(nrows,
+                    new QTableWidgetItem(arpData->lfoWidget(l1)->name));
+                    
+            fillControlRow(nrows, ccList.at(l2), arpData->lfoWidget(l1)->ID);
+            nrows++;
+        }
     }
     
     for (l1 = 0; l1 < arpData->seqWidgetCount(); l1++) {
@@ -101,37 +101,37 @@ void MidiCCTable::getCurrentControls()
         
         for (l2 = 0; l2 < arpData->seqWidget(l1)->ccList.count(); l2++) {
         
-			midiCCTable->setVerticalHeaderItem(nrows,
-					new QTableWidgetItem(arpData->seqWidget(l1)->name));
-					
-			fillControlRow(nrows, ccList.at(l2), arpData->seqWidget(l1)->ID);
-			nrows++;
-		}
+            midiCCTable->setVerticalHeaderItem(nrows,
+                    new QTableWidgetItem(arpData->seqWidget(l1)->name));
+                    
+            fillControlRow(nrows, ccList.at(l2), arpData->seqWidget(l1)->ID);
+            nrows++;
+        }
     }
 
-	midiCCTable->setHorizontalHeaderItem(0,
-			new QTableWidgetItem(tr("Control")));
-	midiCCTable->setColumnWidth(0, 80);
-	
-	midiCCTable->setHorizontalHeaderItem(1,
-			new QTableWidgetItem(tr("CC#")));
-	midiCCTable->setColumnWidth(1, 30);
-	
-	midiCCTable->setHorizontalHeaderItem(2,
-			new QTableWidgetItem(tr("min")));
-	midiCCTable->setColumnWidth(2, 30);
-	
-	midiCCTable->setHorizontalHeaderItem(3,
-			new QTableWidgetItem(tr("max")));
-	midiCCTable->setColumnWidth(3, 30);
-	
-	midiCCTable->setRowCount(nrows);
+    midiCCTable->setHorizontalHeaderItem(0,
+            new QTableWidgetItem(tr("Control")));
+    midiCCTable->setColumnWidth(0, 80);
+    
+    midiCCTable->setHorizontalHeaderItem(1,
+            new QTableWidgetItem(tr("CC#")));
+    midiCCTable->setColumnWidth(1, 30);
+    
+    midiCCTable->setHorizontalHeaderItem(2,
+            new QTableWidgetItem(tr("min")));
+    midiCCTable->setColumnWidth(2, 30);
+    
+    midiCCTable->setHorizontalHeaderItem(3,
+            new QTableWidgetItem(tr("max")));
+    midiCCTable->setColumnWidth(3, 30);
+    
+    midiCCTable->setRowCount(nrows);
 }
 
 void MidiCCTable::accept()
 {
-	apply();
-	close();
+    apply();
+    close();
 }
 
 void MidiCCTable::apply()
@@ -142,116 +142,116 @@ void MidiCCTable::apply()
     QChar moduleType;
     
     for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) 
-			arpData->arpWidget(l1)->ccList.clear();
+            arpData->arpWidget(l1)->ccList.clear();
     for (l1 = 0; l1 < arpData->lfoWidgetCount(); l1++) 
-			arpData->lfoWidget(l1)->ccList.clear();
+            arpData->lfoWidget(l1)->ccList.clear();
     for (l1 = 0; l1 < arpData->seqWidgetCount(); l1++) 
-			arpData->seqWidget(l1)->ccList.clear();
-			
+            arpData->seqWidget(l1)->ccList.clear();
+            
     for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
-		ccnumber = midiCCTable->item(l1, 1)->text().toInt();
-		min = midiCCTable->item(l1, 2)->text().toInt();
-		max = midiCCTable->item(l1, 3)->text().toInt();
-		ctrlID = midiCCTable->item(l1, 4)->text().toInt();
-		moduleID = midiCCTable->item(l1, 5)->text().toInt();
-		moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
-		
-		switch (moduleType.toLatin1()) {
-			case 'A': 
-					arpData->arpWidget(moduleID)
-					->appendMidiCC(ctrlID, ccnumber, min, max);
-			break;
-			case 'L': 
-					arpData->lfoWidget(moduleID)
-					->appendMidiCC(ctrlID, ccnumber, min, max);
-			break;
-			case 'S': 
-					arpData->seqWidget(moduleID)
-					->appendMidiCC(ctrlID, ccnumber, min, max);
-			break;
-		}
-	}
+        ccnumber = midiCCTable->item(l1, 1)->text().toInt();
+        min = midiCCTable->item(l1, 2)->text().toInt();
+        max = midiCCTable->item(l1, 3)->text().toInt();
+        ctrlID = midiCCTable->item(l1, 4)->text().toInt();
+        moduleID = midiCCTable->item(l1, 5)->text().toInt();
+        moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
+        
+        switch (moduleType.toLatin1()) {
+            case 'A': 
+                    arpData->arpWidget(moduleID)
+                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+            break;
+            case 'L': 
+                    arpData->lfoWidget(moduleID)
+                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+            break;
+            case 'S': 
+                    arpData->seqWidget(moduleID)
+                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+            break;
+        }
+    }
 }
 
 void MidiCCTable::reject()
 {
-	close();
+    close();
 }
 
 void MidiCCTable::closeEvent(QCloseEvent *e)
 {
-	e->accept();
+    e->accept();
 }
 
 void MidiCCTable::itemChanged(QTableWidgetItem *item)
 {
-	int test, row, comp;
-	
-	row = midiCCTable->currentRow();
-	test = item->text().toInt();
-	
-	switch (midiCCTable->currentColumn()) {
-		case 1: // CC Number
-				if (test > 127) item->setText("127");
-				if (test < 1) item->setText("0");
-		break;
-		case 2: // min
-				if (!midiCCTable->item(row, 4)->text().toInt()) {
-					if (test > 127) item->setText("127");
-					if (test < 1) item->setText("0");
-					midiCCTable->item(row, 3)->setText(item->text());
-				}
-				else {
-					comp = midiCCTable->item(row, 3)->text().toInt();
-					if (test > comp) item->setText(QString::number(comp));
-					if (test < 1) item->setText("0");
-				}
-		break;
-		case 3: // max
-				if (!midiCCTable->item(row, 4)->text().toInt()) {
-					if (test > 127) item->setText("127");
-					if (test < 1) item->setText("0");
-					midiCCTable->item(row, 2)->setText(item->text());
-				}
-				else {
-					comp = midiCCTable->item(row, 2)->text().toInt();
-					if (test > 127) item->setText("127");
-					if (test < comp) item->setText(QString::number(comp));
-				}
-		break;
-		default: 
-		break;
-	}
+    int test, row, comp;
+    
+    row = midiCCTable->currentRow();
+    test = item->text().toInt();
+    
+    switch (midiCCTable->currentColumn()) {
+        case 1: // CC Number
+                if (test > 127) item->setText("127");
+                if (test < 1) item->setText("0");
+        break;
+        case 2: // min
+                if (!midiCCTable->item(row, 4)->text().toInt()) {
+                    if (test > 127) item->setText("127");
+                    if (test < 1) item->setText("0");
+                    midiCCTable->item(row, 3)->setText(item->text());
+                }
+                else {
+                    comp = midiCCTable->item(row, 3)->text().toInt();
+                    if (test > comp) item->setText(QString::number(comp));
+                    if (test < 1) item->setText("0");
+                }
+        break;
+        case 3: // max
+                if (!midiCCTable->item(row, 4)->text().toInt()) {
+                    if (test > 127) item->setText("127");
+                    if (test < 1) item->setText("0");
+                    midiCCTable->item(row, 2)->setText(item->text());
+                }
+                else {
+                    comp = midiCCTable->item(row, 2)->text().toInt();
+                    if (test > 127) item->setText("127");
+                    if (test < comp) item->setText(QString::number(comp));
+                }
+        break;
+        default: 
+        break;
+    }
 }
 void MidiCCTable::fillControlRow(int row, MidiCC midiCC, int moduleID)
 {
-	QTableWidgetItem *nameItem = new QTableWidgetItem(midiCC.name);
-	nameItem->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable 
-									|Qt::ItemIsEnabled));
-	nameItem->setBackground(QBrush(QColor(200,200,200)));
-	midiCCTable->setItem(row, 0, nameItem);
-	midiCCTable->setItem(row, 1, 
-			new QTableWidgetItem(QString::number(midiCC.ccnumber)));
-	midiCCTable->setItem(row, 2,
-			new QTableWidgetItem(QString::number(midiCC.min)));
-	midiCCTable->setItem(row, 3,
-			new QTableWidgetItem(QString::number(midiCC.max)));
-	midiCCTable->setItem(row, 4,
-			new QTableWidgetItem(QString::number(midiCC.ID)));
-	midiCCTable->setItem(row, 5,
-			new QTableWidgetItem(QString::number(moduleID)));
-	
-	midiCCTable->setRowHeight(row, 20);
+    QTableWidgetItem *nameItem = new QTableWidgetItem(midiCC.name);
+    nameItem->setFlags(Qt::ItemFlags(Qt::ItemIsSelectable 
+                                    |Qt::ItemIsEnabled));
+    nameItem->setBackground(QBrush(QColor(200,200,200)));
+    midiCCTable->setItem(row, 0, nameItem);
+    midiCCTable->setItem(row, 1, 
+            new QTableWidgetItem(QString::number(midiCC.ccnumber)));
+    midiCCTable->setItem(row, 2,
+            new QTableWidgetItem(QString::number(midiCC.min)));
+    midiCCTable->setItem(row, 3,
+            new QTableWidgetItem(QString::number(midiCC.max)));
+    midiCCTable->setItem(row, 4,
+            new QTableWidgetItem(QString::number(midiCC.ID)));
+    midiCCTable->setItem(row, 5,
+            new QTableWidgetItem(QString::number(moduleID)));
+    
+    midiCCTable->setRowHeight(row, 20);
 }
 
 void MidiCCTable::revert()
 {
-	midiCCTable->clear();
+    midiCCTable->clear();
     midiCCTable->setRowCount(arpData->moduleWindowCount()*10);
-	getCurrentControls();
+    getCurrentControls();
 }
 
 void MidiCCTable::removeCurrent()
 {
-	midiCCTable->removeRow(midiCCTable->currentRow());
+    midiCCTable->removeRow(midiCCTable->currentRow());
 }

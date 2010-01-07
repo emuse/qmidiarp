@@ -33,24 +33,24 @@ class MidiCCTable : public QDialog
 
  public:
 
-	MidiCCTable(ArpData *p_arpData, QWidget *parent);
-	~MidiCCTable();
+    MidiCCTable(ArpData *p_arpData, QWidget *parent);
+    ~MidiCCTable();
 
  private:
-	QTableWidget *midiCCTable;
-	QPushButton *removeButton, *revertButton;
-	void getCurrentControls();
-	void fillControlRow(int nrows, MidiCC midiCC, int moduleID);
-	ArpData *arpData;
-	
+    QTableWidget *midiCCTable;
+    QPushButton *removeButton, *revertButton;
+    void getCurrentControls();
+    void fillControlRow(int nrows, MidiCC midiCC, int moduleID);
+    ArpData *arpData;
+    
  public slots:
-	void accept();
-	void reject();
-	void itemChanged(QTableWidgetItem *item);
-	void closeEvent(QCloseEvent *e);
-	void revert();
-	void apply();
-	void removeCurrent();
+    void accept();
+    void reject();
+    void itemChanged(QTableWidgetItem *item);
+    void closeEvent(QCloseEvent *e);
+    void revert();
+    void apply();
+    void removeCurrent();
 };
 
 #endif

@@ -350,12 +350,12 @@ void ArpWidget::writeArp(QTextStream& arpText)
         << midiArp->randomLengthAmp << '\n';
     arpText << "MIDICC" << endl;
     for (int l1 = 0; l1 < ccList.count(); l1++) {
-		arpText	<< ccList.at(l1).ID << ' '
-				<< ccList.at(l1).ccnumber << ' '
-				<< ccList.at(l1).min << ' '
-				<< ccList.at(l1).max << endl;
-	}
-	arpText << "EOCC" << endl;
+        arpText << ccList.at(l1).ID << ' '
+                << ccList.at(l1).ccnumber << ' '
+                << ccList.at(l1).min << ' '
+                << ccList.at(l1).max << endl;
+    }
+    arpText << "EOCC" << endl;
     arpText << "Envelope" << '\n';
     arpText << attackTime->value() << ' ' << releaseTime->value() << '\n';
     arpText << midiArp->pattern << '\n';
@@ -366,7 +366,7 @@ void ArpWidget::writeArp(QTextStream& arpText)
 void ArpWidget::readArp(QTextStream& arpText)
 {
     QString qs, qs2;
-	MidiCC midiCC;
+    MidiCC midiCC;
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0); 
     chIn->setValue(qs2.toInt() + 1);
@@ -399,18 +399,18 @@ void ArpWidget::readArp(QTextStream& arpText)
     {
         qs = arpText.readLine();
         while (qs != "EOCC") {
-	        qs2 = qs.section(' ', 0, 0);
-	        int ctrlID = qs2.toInt();
-	        qs2 = qs.section(' ', 1, 1);
-	        int ccnumber = qs2.toInt();
-	        qs2 = qs.section(' ', 2, 2);
-	        int min = qs2.toInt();
-	        qs2 = qs.section(' ', 3, 3);
-	        int max = qs2.toInt();
-	        appendMidiCC(ctrlID, ccnumber, min, max);
-	        qs = arpText.readLine();
-		}
-	qs = arpText.readLine();
+            qs2 = qs.section(' ', 0, 0);
+            int ctrlID = qs2.toInt();
+            qs2 = qs.section(' ', 1, 1);
+            int ccnumber = qs2.toInt();
+            qs2 = qs.section(' ', 2, 2);
+            int min = qs2.toInt();
+            qs2 = qs.section(' ', 3, 3);
+            int max = qs2.toInt();
+            appendMidiCC(ctrlID, ccnumber, min, max);
+            qs = arpText.readLine();
+        }
+    qs = arpText.readLine();
     }
     if (qs == "Envelope")
     {
@@ -626,62 +626,62 @@ void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
     int l1 = 0;
 
     switch (ctrlID) {
-		case 0: midiCC.name = "MuteToggle";
-		break;
-		default: midiCC.name = "Unknown";
-	}
+        case 0: midiCC.name = "MuteToggle";
+        break;
+        default: midiCC.name = "Unknown";
+    }
     midiCC.ID = ctrlID;
     midiCC.ccnumber = ccnumber;
     midiCC.min = min;
     midiCC.max = max;
     
-	while ( (l1 < ccList.count()) && 
-   		((ctrlID != ccList.at(l1).ID) ||
-   		(ccnumber != ccList.at(l1).ccnumber)) ) l1++;
+    while ( (l1 < ccList.count()) && 
+        ((ctrlID != ccList.at(l1).ID) ||
+        (ccnumber != ccList.at(l1).ccnumber)) ) l1++;
     
     if (ccList.count() == l1) {
-	    ccList.append(midiCC);
-	    qWarning("MIDI Controller %d appended for %s"
-	    , ccnumber, qPrintable(midiCC.name));
-	}
-	else {
-		qWarning("MIDI Controller %d already attributed to %s"
-				, ccnumber, qPrintable(midiCC.name));
-	}
-	
+        ccList.append(midiCC);
+        qWarning("MIDI Controller %d appended for %s"
+        , ccnumber, qPrintable(midiCC.name));
+    }
+    else {
+        qWarning("MIDI Controller %d already attributed to %s"
+                , ccnumber, qPrintable(midiCC.name));
+    }
+    
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
 }
 
 void ArpWidget::removeMidiCC(int ctrlID, int ccnumber)
 {
-	for (int l1 = 0; l1 < ccList.count(); l1++) {
-		if (ccList.at(l1).ID == ctrlID) {
-			if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
-				ccList.remove(l1);
-				l1--;
-				qWarning("controller removed");
-			}
-		}
-	}
+    for (int l1 = 0; l1 < ccList.count(); l1++) {
+        if (ccList.at(l1).ID == ctrlID) {
+            if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+                ccList.remove(l1);
+                l1--;
+                qWarning("controller removed");
+            }
+        }
+    }
     modified = true;
 }
 
 void ArpWidget::midiLearnMute()
 {
-	emit setMidiLearn(parentDockID, ID, 0);
-	cancelMidiLearnAction->setEnabled(true);
-	qWarning("Requesting Midi Learn for MuteToggle");
+    emit setMidiLearn(parentDockID, ID, 0);
+    cancelMidiLearnAction->setEnabled(true);
+    qWarning("Requesting Midi Learn for MuteToggle");
 }
 
 void ArpWidget::midiForgetMute()
 {
-	removeMidiCC(0, -1);
+    removeMidiCC(0, -1);
 }
 
 void ArpWidget::midiLearnCancel()
 {
-	emit setMidiLearn(parentDockID, ID, -1);
-	cancelMidiLearnAction->setEnabled(false);
-	qWarning("Cancelling Midi Learn request");
+    emit setMidiLearn(parentDockID, ID, -1);
+    cancelMidiLearnAction->setEnabled(false);
+    qWarning("Cancelling Midi Learn request");
 }

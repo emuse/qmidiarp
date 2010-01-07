@@ -935,5 +935,5 @@ void MainWindow::checkIfFirstModule()
 
 void MainWindow::showMidiCCDialog()
 {
-	new MidiCCTable(arpData, this);
+    new MidiCCTable(arpData, this);
 }

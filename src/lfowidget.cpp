@@ -311,12 +311,12 @@ void LfoWidget::writeLfo(QTextStream& arpText)
         << midiLfo->offs << '\n';
     arpText << "MIDICC" << endl;
     for (int l1 = 0; l1 < ccList.count(); l1++) {
-		arpText	<< ccList.at(l1).ID << ' '
-				<< ccList.at(l1).ccnumber << ' '
-				<< ccList.at(l1).min << ' '
-				<< ccList.at(l1).max << endl;
-	}
-	arpText << "EOCC" << endl;
+        arpText << ccList.at(l1).ID << ' '
+                << ccList.at(l1).ccnumber << ' '
+                << ccList.at(l1).min << ' '
+                << ccList.at(l1).max << endl;
+    }
+    arpText << "EOCC" << endl;
 
     arpText << waveFormBox->currentIndex() << '\n';
     // Write Mute Mask
@@ -369,18 +369,18 @@ void LfoWidget::readLfo(QTextStream& arpText)
     {
         qs = arpText.readLine();
         while (qs != "EOCC") {
-	        qs2 = qs.section(' ', 0, 0);
-	        int ctrlID = qs2.toInt();
-	        qs2 = qs.section(' ', 1, 1);
-	        int ccnumber = qs2.toInt();
-	        qs2 = qs.section(' ', 2, 2);
-	        int min = qs2.toInt();
-	        qs2 = qs.section(' ', 3, 3);
-	        int max = qs2.toInt();
-	        appendMidiCC(ctrlID, ccnumber, min, max);
-	        qs = arpText.readLine();
-		}
-	qs = arpText.readLine();
+            qs2 = qs.section(' ', 0, 0);
+            int ctrlID = qs2.toInt();
+            qs2 = qs.section(' ', 1, 1);
+            int ccnumber = qs2.toInt();
+            qs2 = qs.section(' ', 2, 2);
+            int min = qs2.toInt();
+            qs2 = qs.section(' ', 3, 3);
+            int max = qs2.toInt();
+            appendMidiCC(ctrlID, ccnumber, min, max);
+            qs = arpText.readLine();
+        }
+    qs = arpText.readLine();
     }
 
     wvtmp = qs.toInt();
@@ -506,10 +506,10 @@ void LfoWidget::updateAmp(int val)
 
 void LfoWidget::updateOffs(int val)
 {
-	if (waveFormBox->currentIndex() == 5) {
-		midiLfo->updateCustomWaveOffset(val);
-	}
-	midiLfo->offs = val;
+    if (waveFormBox->currentIndex() == 5) {
+        midiLfo->updateCustomWaveOffset(val);
+    }
+    midiLfo->offs = val;
     midiLfo->getData(&lfoData);
     lfoScreen->updateScreen(lfoData);
     modified = true;
@@ -525,20 +525,20 @@ void LfoWidget::copyToCustom()
 
 void LfoWidget::newCustomOffset()
 {
-	int min = 127;
-	int value;
-	for (int l1 = 0; l1 < lfoData.count() - 1; l1++) {
-		value = lfoData.at(l1).value;
-		if (value < min) min = value;
-	}
-	midiLfo->cwmin = min;
-	offset->setValue(min);
+    int min = 127;
+    int value;
+    for (int l1 = 0; l1 < lfoData.count() - 1; l1++) {
+        value = lfoData.at(l1).value;
+        if (value < min) min = value;
+    }
+    midiLfo->cwmin = min;
+    offset->setValue(min);
 }
 
 void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if ((buttons == 1) && (waveFormBox->currentIndex() == 5)) {
-		midiLfo->setCustomWavePoint(mouseX, mouseY);
+        midiLfo->setCustomWavePoint(mouseX, mouseY);
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
         newCustomOffset();
@@ -559,18 +559,18 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
             midiLfo->setCustomWavePoint(mouseX, mouseY);
             midiLfo->getData(&lfoData);
             lfoScreen->updateScreen(lfoData);
-			newCustomOffset();
+            newCustomOffset();
             modified = true;
         }
-	}
+    }
 }
 
 void LfoWidget::mouseWheel(int step)
 {
     int cv;
-	cv = offset->value() + step;
-	if ((cv < 127) && (cv > 0))
-	offset->setValue(cv + step);
+    cv = offset->value() + step;
+    if ((cv < 127) && (cv > 0))
+    offset->setValue(cv + step);
 }
 
 bool LfoWidget::isModified()
@@ -619,32 +619,32 @@ void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
     int l1 = 0;
     
     switch (ctrlID) {
-		case 0: midiCC.name = "MuteToggle";
-		break;
-		case 1: midiCC.name = "Amplitude";
-		break;
-		case 2: midiCC.name = "Offset";
-		break;
-		default: midiCC.name = "Unknown";
-	}
+        case 0: midiCC.name = "MuteToggle";
+        break;
+        case 1: midiCC.name = "Amplitude";
+        break;
+        case 2: midiCC.name = "Offset";
+        break;
+        default: midiCC.name = "Unknown";
+    }
     midiCC.ID = ctrlID;
     midiCC.ccnumber = ccnumber;
     midiCC.min = min;
     midiCC.max = max;
     
    while ( (l1 < ccList.count()) && 
-   		((ctrlID != ccList.at(l1).ID) ||
-   		(ccnumber != ccList.at(l1).ccnumber)) ) l1++;
+        ((ctrlID != ccList.at(l1).ID) ||
+        (ccnumber != ccList.at(l1).ccnumber)) ) l1++;
     
     if (ccList.count() == l1) {
-	    ccList.append(midiCC);
-	    qWarning("MIDI Controller %d appended for %s"
-	    , ccnumber, qPrintable(midiCC.name));
-	}
-	else {
-		qWarning("MIDI Controller %d already attributed to %s"
-				, ccnumber, qPrintable(midiCC.name));
-	}
+        ccList.append(midiCC);
+        qWarning("MIDI Controller %d appended for %s"
+        , ccnumber, qPrintable(midiCC.name));
+    }
+    else {
+        qWarning("MIDI Controller %d already attributed to %s"
+                , ccnumber, qPrintable(midiCC.name));
+    }
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
 }
@@ -652,57 +652,57 @@ void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
 
 void LfoWidget::removeMidiCC(int ctrlID, int ccnumber)
 {
-	for (int l1 = 0; l1 < ccList.count(); l1++) {
-		if (ccList.at(l1).ID == ctrlID) {
-			if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
-				ccList.remove(l1);
-				l1--;
-				qWarning("controller removed");
-			}
-		}
-	}
+    for (int l1 = 0; l1 < ccList.count(); l1++) {
+        if (ccList.at(l1).ID == ctrlID) {
+            if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+                ccList.remove(l1);
+                l1--;
+                qWarning("controller removed");
+            }
+        }
+    }
     modified = true;
 }
 
 void LfoWidget::midiLearnMute()
 {
-	emit setMidiLearn(parentDockID, ID, 0);
-	qWarning("Requesting Midi Learn for MuteToggle");
+    emit setMidiLearn(parentDockID, ID, 0);
+    qWarning("Requesting Midi Learn for MuteToggle");
     cancelMidiLearnAction->setEnabled(true);
 }
 
 void LfoWidget::midiForgetMute()
 {
-	removeMidiCC(0, -1);
+    removeMidiCC(0, -1);
 }
 
 void LfoWidget::midiLearnOffs()
 {
-	emit setMidiLearn(parentDockID, ID, 2);
-	qWarning("Requesting Midi Learn for Offset");
+    emit setMidiLearn(parentDockID, ID, 2);
+    qWarning("Requesting Midi Learn for Offset");
     cancelMidiLearnAction->setEnabled(true);
 }
 
 void LfoWidget::midiForgetOffs()
 {
-	removeMidiCC(2, -1);
+    removeMidiCC(2, -1);
 }
 
 void LfoWidget::midiLearnAmp()
 {
-	emit setMidiLearn(parentDockID, ID, 1);
-	qWarning("Requesting Midi Learn for Amplitude");
+    emit setMidiLearn(parentDockID, ID, 1);
+    qWarning("Requesting Midi Learn for Amplitude");
     cancelMidiLearnAction->setEnabled(true);
 }
 
 void LfoWidget::midiForgetAmp()
 {
-	removeMidiCC(1, -1);
+    removeMidiCC(1, -1);
 }
 
 void LfoWidget::midiLearnCancel()
 {
-	emit setMidiLearn(parentDockID, ID, -1);
-	qWarning("Cancelling Midi Learn request");
+    emit setMidiLearn(parentDockID, ID, -1);
+    qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
 }

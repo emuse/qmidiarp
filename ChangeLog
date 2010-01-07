@@ -1,28 +1,28 @@
 2010-01-08 Frank Kober <goemusic@yahoo.fr>
-	* arp/lfo/seqwidget.cpp: modified flags upon midi controller
-	attribution change added, check for double-attributed controllers
-	added
-	* arpdata.cpp, midicctable.cpp: min/max settings adapted for toggler
-	controls
-	* midicctable.cpp: revert and remove row functions added
-	
+    * arp/lfo/seqwidget.cpp: modified flags upon midi controller
+    attribution change added, check for double-attributed controllers
+    added
+    * arpdata.cpp, midicctable.cpp: min/max settings adapted for toggler
+    controls
+    * midicctable.cpp: revert and remove row functions added
+    
 2010-01-07 Frank Kober <goemusic@yahoo.fr>
-	* seqwidget.cpp: note length slider maximum set to 127
-	* midicctable.*: items made editable, "OK" button replaces current
-	controllers by table content, "Cancel" quits without applying changes
-	* arpdata.cpp: min and max controller settings made active
-	
+    * seqwidget.cpp: note length slider maximum set to 127
+    * midicctable.*: items made editable, "OK" button replaces current
+    controllers by table content, "Cancel" quits without applying changes
+    * arpdata.cpp: min and max controller settings made active
+    
 2010-01-04 Frank Kober <goemusic@yahoo.fr>
-	* lfo*.*: custom wave made controllable by offset slider (and MIDI)
-	
+    * lfo*.*: custom wave made controllable by offset slider (and MIDI)
+    
 2009-12-31 Frank Kober <goemusic@yahoo.fr>
-	* MIDI control handling modified: controllers can be attributed to
-	mute checkbox and various sliders by context menu and MIDI 
-	learn/forget. 
-	Each module holds a control/controller item list, incoming 
-	controllers are	handled in arpdata.cpp
-	* midicctable.*: control editor implementation started
-	
+    * MIDI control handling modified: controllers can be attributed to
+    mute checkbox and various sliders by context menu and MIDI 
+    learn/forget. 
+    Each module holds a control/controller item list, incoming 
+    controllers are handled in arpdata.cpp
+    * midicctable.*: control editor implementation started
+    
 2009-12-23 Frank Kober <goemusic@yahoo.fr>
     * *lfo*.cpp: implement mouse wheel on lfoscreen to change offset of
     LFO waveform. This is of interest mainly for the custom drawn wave
