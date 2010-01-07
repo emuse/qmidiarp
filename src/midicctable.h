@@ -30,14 +30,22 @@ class MidiCCTable : public QDialog
 {
     Q_OBJECT
 
-public:
+ public:
 
-	MidiCCTable(ArpData *arpData, QWidget *parent);
+	MidiCCTable(ArpData *p_arpData, QWidget *parent);
 	~MidiCCTable();
 
-private:
-
-	void getCurrentControls(ArpData *, QTableWidget *);
+ private:
+	QTableWidget *midiCCTable;
+	void getCurrentControls(QTableWidget *);
+	void fillControlRow(int nrows, MidiCC midiCC, int moduleID);
+	ArpData *arpData;
+	
+ public slots:
+	void accept();
+	void reject();
+	void itemChanged(QTableWidgetItem *item);
+	void closeEvent(QCloseEvent *e);
 };
 
 #endif

@@ -805,27 +805,27 @@ Enregistrer les modifications?</translation>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="38"/>
+        <location filename="../midicctable.cpp" line="53"/>
         <source>MIDI Controllers - </source>
         <translation>Contrôles MIDI - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="117"/>
+        <location filename="../midicctable.cpp" line="107"/>
         <source>Control</source>
         <translation>Contrôle</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="121"/>
+        <location filename="../midicctable.cpp" line="111"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="125"/>
+        <location filename="../midicctable.cpp" line="115"/>
         <source>min</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="129"/>
+        <location filename="../midicctable.cpp" line="119"/>
         <source>max</source>
         <translation></translation>
     </message>

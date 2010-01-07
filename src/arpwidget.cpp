@@ -665,6 +665,6 @@ void ArpWidget::midiForgetMute()
 void ArpWidget::midiLearnCancel()
 {
 	emit setMidiLearn(parentDockID, ID, -1);
-	cancelMidiLearnAction->setDisabled(true);
+	cancelMidiLearnAction->setEnabled(false);
 	qWarning("Cancelling Midi Learn request");
 }

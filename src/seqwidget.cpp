@@ -236,7 +236,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
             
-    notelength = new Slider(0, 255, 1, 16, 64, Qt::Horizontal,
+    notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
 
     notelength->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
@@ -502,7 +502,7 @@ void SeqWidget::updateChannelOut(int value)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    midiSeq->notelength = val;
+    midiSeq->notelength = val + val;
     modified = true;
 }
 
@@ -691,5 +691,5 @@ void SeqWidget::midiLearnCancel()
 {
 	emit setMidiLearn(parentDockID, ID, -1);
 	qWarning("Cancelling Midi Learn request");
-    cancelMidiLearnAction->setEnabled(true);
+    cancelMidiLearnAction->setEnabled(false);
 }

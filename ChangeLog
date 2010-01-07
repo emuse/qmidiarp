@@ -1,3 +1,9 @@
+2010-01-07 Frank Kober <goemusic@yahoo.fr>
+	* seqwidget.cpp: note length slider maximum set to 127
+	* midicctable.*: items made editable, "OK" button replaces current
+	controllers by table content, "Cancel" quits without applying changes
+	* arpdata.cpp: min and max controller settings made active
+	
 2010-01-04 Frank Kober <goemusic@yahoo.fr>
 	* lfo*.*: custom wave made controllable by offset slider (and MIDI)
 	
