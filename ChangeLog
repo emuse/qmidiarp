@@ -1,3 +1,8 @@
+2010-01-08 Guido Scholz <guido.scholz@bayernline.de>
+	* mainwindow.*: Handler for SIGINT added to handle unsaved or
+	changed files more carefully at program termination. Handler for
+	SIGUSR1 added to provide support for LADISH level 1.
+
 2010-01-08 Frank Kober <goemusic@yahoo.fr>
 	* arp/lfo/seqwidget.cpp: modified flags upon midi controller
 	attribution change added, check for double-attributed controllers

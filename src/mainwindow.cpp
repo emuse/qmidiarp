@@ -7,10 +7,16 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
+#include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
 #include <QTableWidget>
 #include <QTextStream>
+#include <cerrno>   // for errno
+#include <csignal>  // for sigaction()
+#include <cstring>  // for strerror()
+#include <unistd.h> // for pipe()
+
 
 #include "mainwindow.h"
 
@@ -29,7 +35,10 @@
 #include "pixmaps/filesaveas.xpm"
 #include "pixmaps/filequit.xpm"
 
+
 static const char FILEEXT[] = ".qma";
+
+int MainWindow::sigpipe[2];
 
 MainWindow::MainWindow(int p_portCount)
 {
@@ -187,7 +196,8 @@ MainWindow::MainWindow(int p_portCount)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
-    viewMenu->addAction(tr("&MIDI Controllers..."), this, SLOT(showMidiCCDialog()));
+    viewMenu->addAction(tr("&MIDI Controllers..."),
+            this, SLOT(showMidiCCDialog()));
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(addLfoAction);
@@ -234,7 +244,13 @@ MainWindow::MainWindow(int p_portCount)
     QWidget *centWidget = new QWidget(this);
     setCentralWidget(centWidget);
     updateWindowTitle();
-    if (checkRcFile()) readRcFile();
+
+    if (checkRcFile())
+        readRcFile();
+    
+    if (!installSignalHandlers())
+        qWarning("%s", "Signal handlers not installed!");
+    
     show();
 }
 
@@ -586,10 +602,15 @@ void MainWindow::openFile(const QString& fn)
  
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        if (qs.startsWith("GUI")) break;
-        if (qs.startsWith("Seq:")) c = 1;
-        if (qs.startsWith("LFO:")) c = 2;
-        if (qs.startsWith("Arp:")) c = 3;
+        if (qs.startsWith("GUI"))
+            break;
+        if (qs.startsWith("Seq:"))
+            c = 1;
+        if (qs.startsWith("LFO:"))
+            c = 2;
+        if (qs.startsWith("Arp:"))
+            c = 3;
+
         switch (c) {
             case 1:
                 addSeq(qs);
@@ -610,11 +631,13 @@ void MainWindow::openFile(const QString& fn)
             break;
         }
     }
+
     if (qs.startsWith("GUI")) {
         qs = loadText.readLine();
         QByteArray array = QByteArray::fromHex(qs.toLatin1());
         restoreState(array);
     }
+
     arpData->setModified(false);
     midiClockAction->setChecked(midiclocktmp);
 }
@@ -937,3 +960,71 @@ void MainWindow::showMidiCCDialog()
 {
     new MidiCCTable(arpData, this);
 }
+
+/* Handler for system signals (SIGUSR1, SIGINT...)
+ * Write a message to the pipe and leave as soon as possible
+ */
+void MainWindow::handleSignal(int sig)
+{
+    if (write(sigpipe[1], &sig, sizeof(sig)) == -1) {
+        qWarning("write() failed: %s", std::strerror(errno));
+    }
+}
+
+bool MainWindow::installSignalHandlers()
+{
+    /*install pipe to forward received system signals*/
+    if (pipe(sigpipe) < 0) {
+        qWarning("pipe() failed: %s", std::strerror(errno));
+        return false;
+    }
+
+    /*install notifier to handle pipe messages*/
+    QSocketNotifier* signalNotifier = new QSocketNotifier(sigpipe[0],
+            QSocketNotifier::Read, this);
+    connect(signalNotifier, SIGNAL(activated(int)),
+            this, SLOT(signalAction(int)));
+
+    /*install signal handlers*/
+    struct sigaction action;
+    memset(&action, 0, sizeof(action));
+    action.sa_handler = handleSignal;
+
+    if (sigaction(SIGUSR1, &action, NULL) == -1) {
+        qWarning("sigaction() failed: %s", std::strerror(errno));
+        return false;
+    }
+
+    if (sigaction(SIGINT, &action, NULL) == -1) {
+        qWarning("sigaction() failed: %s", std::strerror(errno));
+        return false;
+    }
+
+    return true;
+}
+
+/* Slot to give response to the incoming pipe message */
+void MainWindow::signalAction(int fd)
+{
+    int message;
+
+    if (read(fd, &message, sizeof(message)) == -1) {
+        qWarning("read() failed: %s", std::strerror(errno));
+        return;
+    }
+    
+    switch (message) {
+        case SIGUSR1:
+            saveFile();
+            break;
+
+        case SIGINT:
+            close();
+            break;
+
+        default:
+            qWarning("Unexpected signal received: %d", message);
+            break;
+    }
+}
+

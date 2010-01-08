@@ -27,9 +27,9 @@ static const char ABOUTMSG[] = APP_NAME " " PACKAGE_VERSION "\n"
 
 class MainWindow : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  private:
+    static int sigpipe[2];
     QSpinBox *tempoSpin;
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
@@ -55,6 +55,8 @@ class MainWindow : public QMainWindow
     void checkIfLastModule();
     void checkIfFirstModule();
     void clear();
+    static void handleSignal(int);
+    bool installSignalHandlers();
     
         
   protected:
@@ -87,17 +89,15 @@ class MainWindow : public QMainWindow
     void removeArp(int index);
     void removeLfo(int index);
     void removeSeq(int index);
-
     void helpAbout();
     void helpAboutQt();
-
-
     void updateTempo(int tempo);
     void updateRunQueue(bool on);
     void midiClockToggle(bool on);
     void resetQueue();
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void showMidiCCDialog();
+    void signalAction(int);
 };
   
 #endif
