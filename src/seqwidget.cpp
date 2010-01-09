@@ -321,6 +321,7 @@ void SeqWidget::writeSeq(QTextStream& arpText)
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         arpText << ccList.at(l1).ID << ' '
                 << ccList.at(l1).ccnumber << ' '
+                << ccList.at(l1).channel << ' '
                 << ccList.at(l1).min << ' '
                 << ccList.at(l1).max << endl;
     }
@@ -386,10 +387,12 @@ void SeqWidget::readSeq(QTextStream& arpText)
             qs2 = qs.section(' ', 1, 1);
             int ccnumber = qs2.toInt();
             qs2 = qs.section(' ', 2, 2);
-            int min = qs2.toInt();
+            int channel = qs2.toInt();
             qs2 = qs.section(' ', 3, 3);
+            int min = qs2.toInt();
+            qs2 = qs.section(' ', 4, 4);
             int max = qs2.toInt();
-            appendMidiCC(ctrlID, ccnumber, min, max);
+            appendMidiCC(ctrlID, ccnumber, channel, min, max);
             qs = arpText.readLine();
         }
     qs = arpText.readLine();
@@ -617,7 +620,7 @@ void SeqWidget::moduleRename()
     }
 }
 
-void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
+void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
     int l1 = 0;
@@ -632,6 +635,7 @@ void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
     }
     midiCC.ID = ctrlID;
     midiCC.ccnumber = ccnumber;
+    midiCC.channel = channel;
     midiCC.min = min;
     midiCC.max = max;
     
@@ -653,11 +657,13 @@ void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
     modified = true;
 }
 
-void SeqWidget::removeMidiCC(int ctrlID, int ccnumber)
+void SeqWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
 {
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         if (ccList.at(l1).ID == ctrlID) {
-            if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+            if (((ccList.at(l1).ccnumber == ccnumber)
+                    && (ccList.at(l1).channel == channel)) 
+                    || (0 > ccnumber)) {
                 ccList.remove(l1);
                 l1--;
                 qWarning("controller removed");
@@ -676,7 +682,7 @@ void SeqWidget::midiLearnMute()
 
 void SeqWidget::midiForgetMute()
 {
-    removeMidiCC(0, -1);
+    removeMidiCC(0, 0, -1);
 }
 
 void SeqWidget::midiLearnNoteLen()
@@ -688,7 +694,7 @@ void SeqWidget::midiLearnNoteLen()
 
 void SeqWidget::midiForgetNoteLen()
 {
-    removeMidiCC(2, -1);
+    removeMidiCC(2, 0, -1);
 }
 
 void SeqWidget::midiLearnVel()
@@ -700,7 +706,7 @@ void SeqWidget::midiLearnVel()
 
 void SeqWidget::midiForgetVel()
 {
-    removeMidiCC(1, -1);
+    removeMidiCC(1, 0, -1);
 }
 
 void SeqWidget::midiLearnCancel()

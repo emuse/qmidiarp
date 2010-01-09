@@ -69,7 +69,7 @@ class SeqDriver : public QWidget {
 
    signals:
         void midiEvent(snd_seq_event_t *ev);
-        void controlEvent(int ccnumber, int value);
+        void controlEvent(int ccnumber, int channel, int value);
         void nextStep(snd_seq_tick_time_t tick);
 
    public slots:

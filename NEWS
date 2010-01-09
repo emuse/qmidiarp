@@ -11,7 +11,7 @@ New Features
   o Pianoroll-type display of arp patterns and cursor line
   o Envelope function for chord arpeggios with high polyphony
   o Footswitch controller for holding notes in arpeggio buffer
-  o MIDI-controllable muting of module outputs
+  o MIDI-learnable control of mute state and LFO/Seq sliders
   o MIDI realtime clock slave synchronization
   o Event log entries are color-coded, optional MIDI Clock event display
   o Re-designed graphical user interface:  all modules and dialogs

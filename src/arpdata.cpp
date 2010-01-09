@@ -12,8 +12,8 @@
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
-    connect(seqDriver, SIGNAL(controlEvent(int, int)), 
-            this, SLOT(handleController(int, int)));
+    connect(seqDriver, SIGNAL(controlEvent(int, int, int)), 
+            this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
 }
 
@@ -303,7 +303,7 @@ int ArpData::getAlsaClientId()
     return seqDriver->getAlsaClientId();
 }
 
-void ArpData::handleController(int ccnumber, int value)
+void ArpData::handleController(int ccnumber, int channel, int value)
 {
     bool m;
     int min, max, sval;
@@ -315,7 +315,8 @@ void ArpData::handleController(int ccnumber, int value)
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
 
-                if (ccnumber == cclist.at(l2).ccnumber) {
+                if ((ccnumber == cclist.at(l2).ccnumber) &&
+                    (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
                         case 0: if (value == max) {
                                     m = arpWidget(l1)->muteOut->isChecked();
@@ -335,7 +336,8 @@ void ArpData::handleController(int ccnumber, int value)
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
-                if (ccnumber == cclist.at(l2).ccnumber) {
+                if ((ccnumber == cclist.at(l2).ccnumber) &&
+                    (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
                         case 0: if (value == max) {
                                     m = lfoWidget(l1)->muteOut->isChecked();
@@ -369,7 +371,8 @@ void ArpData::handleController(int ccnumber, int value)
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
-                if (ccnumber == cclist.at(l2).ccnumber) {
+                if ((ccnumber == cclist.at(l2).ccnumber) &&
+                    (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
                         case 0: if (value == max) {
                                     m = seqWidget(l1)->muteOut->isChecked();
@@ -389,7 +392,6 @@ void ArpData::handleController(int ccnumber, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->notelength->setValue(sval);
-                                // send 2*value until range handling is implemented
                                 return;
                         break;
                         default:
@@ -403,15 +405,15 @@ void ArpData::handleController(int ccnumber, int value)
         int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
             arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-                    ccnumber, min, 127);
+                    ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
             lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-                    ccnumber, min, 127);
+                    ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
             seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
-                    ccnumber, min, 127);
+                    ccnumber, channel, min, 127);
         }
         
         midiLearnFlag = false;

@@ -78,7 +78,7 @@ class ArpData : public QWidget  {
     void runQueue(bool);
     void setModified(bool);
     void updatePatternPresets(const QString& n, const QString& p, int index);
-    void handleController(int ccnumber, int value);
+    void handleController(int ccnumber, int channel, int value);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
 };
                               

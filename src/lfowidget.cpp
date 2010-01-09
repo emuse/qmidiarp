@@ -313,6 +313,7 @@ void LfoWidget::writeLfo(QTextStream& arpText)
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         arpText << ccList.at(l1).ID << ' '
                 << ccList.at(l1).ccnumber << ' '
+                << ccList.at(l1).channel << ' '
                 << ccList.at(l1).min << ' '
                 << ccList.at(l1).max << endl;
     }
@@ -374,10 +375,12 @@ void LfoWidget::readLfo(QTextStream& arpText)
             qs2 = qs.section(' ', 1, 1);
             int ccnumber = qs2.toInt();
             qs2 = qs.section(' ', 2, 2);
-            int min = qs2.toInt();
+            int channel = qs2.toInt();
             qs2 = qs.section(' ', 3, 3);
+            int min = qs2.toInt();
+            qs2 = qs.section(' ', 4, 4);
             int max = qs2.toInt();
-            appendMidiCC(ctrlID, ccnumber, min, max);
+            appendMidiCC(ctrlID, ccnumber, channel, min, max);
             qs = arpText.readLine();
         }
     qs = arpText.readLine();
@@ -613,27 +616,27 @@ void LfoWidget::moduleRename()
     }
 }
 
-void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
+void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
     int l1 = 0;
-    
     switch (ctrlID) {
         case 0: midiCC.name = "MuteToggle";
         break;
-        case 1: midiCC.name = "Amplitude";
+        case 1: midiCC.name = "Velocity";
         break;
-        case 2: midiCC.name = "Offset";
+        case 2: midiCC.name = "NoteLength";
         break;
         default: midiCC.name = "Unknown";
     }
     midiCC.ID = ctrlID;
     midiCC.ccnumber = ccnumber;
+    midiCC.channel = channel;
     midiCC.min = min;
     midiCC.max = max;
     
-   while ( (l1 < ccList.count()) && 
-        ((ctrlID != ccList.at(l1).ID) ||
+    while ( (l1 < ccList.count()) && 
+        ((ctrlID != ccList.at(l1).ID) || 
         (ccnumber != ccList.at(l1).ccnumber)) ) l1++;
     
     if (ccList.count() == l1) {
@@ -645,16 +648,18 @@ void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int min, int max)
         qWarning("MIDI Controller %d already attributed to %s"
                 , ccnumber, qPrintable(midiCC.name));
     }
+        
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
 }
 
-
-void LfoWidget::removeMidiCC(int ctrlID, int ccnumber)
+void LfoWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
 {
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         if (ccList.at(l1).ID == ctrlID) {
-            if ((ccList.at(l1).ccnumber == ccnumber) || (0 > ccnumber)) {
+            if (((ccList.at(l1).ccnumber == ccnumber)
+                    && (ccList.at(l1).channel == channel)) 
+                    || (0 > ccnumber)) {
                 ccList.remove(l1);
                 l1--;
                 qWarning("controller removed");
@@ -673,7 +678,7 @@ void LfoWidget::midiLearnMute()
 
 void LfoWidget::midiForgetMute()
 {
-    removeMidiCC(0, -1);
+    removeMidiCC(0, 0, -1);
 }
 
 void LfoWidget::midiLearnOffs()
@@ -685,7 +690,7 @@ void LfoWidget::midiLearnOffs()
 
 void LfoWidget::midiForgetOffs()
 {
-    removeMidiCC(2, -1);
+    removeMidiCC(2, 0, -1);
 }
 
 void LfoWidget::midiLearnAmp()
@@ -697,7 +702,7 @@ void LfoWidget::midiLearnAmp()
 
 void LfoWidget::midiForgetAmp()
 {
-    removeMidiCC(1, -1);
+    removeMidiCC(1, 0, -1);
 }
 
 void LfoWidget::midiLearnCancel()

@@ -33,9 +33,9 @@ MidiCCTable::MidiCCTable(ArpData *p_arpData, QWidget *parent) : QDialog(parent)
     
     midiCCTable->clear();
     midiCCTable->setRowCount(arpData->moduleWindowCount()*10);
-    midiCCTable->setColumnCount(6);
-    midiCCTable->setColumnHidden(4, true);
+    midiCCTable->setColumnCount(7);
     midiCCTable->setColumnHidden(5, true);
+    midiCCTable->setColumnHidden(6, true);
     connect(midiCCTable, SIGNAL(itemChanged(QTableWidgetItem*)),
                     this, SLOT(itemChanged(QTableWidgetItem*)));    
     
@@ -118,12 +118,16 @@ void MidiCCTable::getCurrentControls()
     midiCCTable->setColumnWidth(1, 30);
     
     midiCCTable->setHorizontalHeaderItem(2,
-            new QTableWidgetItem(tr("min")));
+            new QTableWidgetItem(tr("Ch")));
     midiCCTable->setColumnWidth(2, 30);
     
     midiCCTable->setHorizontalHeaderItem(3,
-            new QTableWidgetItem(tr("max")));
+            new QTableWidgetItem(tr("min")));
     midiCCTable->setColumnWidth(3, 30);
+    
+    midiCCTable->setHorizontalHeaderItem(4,
+            new QTableWidgetItem(tr("max")));
+    midiCCTable->setColumnWidth(4, 30);
     
     midiCCTable->setRowCount(nrows);
 }
@@ -137,7 +141,7 @@ void MidiCCTable::accept()
 void MidiCCTable::apply()
 {
     QVector<MidiCC> ccList;
-    int ccnumber, min, max, ctrlID, moduleID;
+    int ccnumber, channel, min, max, ctrlID, moduleID;
     int l1;
     QChar moduleType;
     
@@ -150,24 +154,25 @@ void MidiCCTable::apply()
             
     for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
         ccnumber = midiCCTable->item(l1, 1)->text().toInt();
-        min = midiCCTable->item(l1, 2)->text().toInt();
-        max = midiCCTable->item(l1, 3)->text().toInt();
-        ctrlID = midiCCTable->item(l1, 4)->text().toInt();
-        moduleID = midiCCTable->item(l1, 5)->text().toInt();
+        channel = midiCCTable->item(l1, 2)->text().toInt() - 1;
+        min = midiCCTable->item(l1, 3)->text().toInt();
+        max = midiCCTable->item(l1, 4)->text().toInt();
+        ctrlID = midiCCTable->item(l1, 5)->text().toInt();
+        moduleID = midiCCTable->item(l1, 6)->text().toInt();
         moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
         
         switch (moduleType.toLatin1()) {
             case 'A': 
                     arpData->arpWidget(moduleID)
-                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'L': 
                     arpData->lfoWidget(moduleID)
-                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'S': 
                     arpData->seqWidget(moduleID)
-                    ->appendMidiCC(ctrlID, ccnumber, min, max);
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
         }
     }
@@ -195,11 +200,15 @@ void MidiCCTable::itemChanged(QTableWidgetItem *item)
                 if (test > 127) item->setText("127");
                 if (test < 1) item->setText("0");
         break;
-        case 2: // min
-                if (!midiCCTable->item(row, 4)->text().toInt()) {
+        case 2: // CC Channel
+                if (test > 16) item->setText("16");
+                if (test < 2) item->setText("1");
+        break;
+        case 3: // min
+                if (!midiCCTable->item(row, 5)->text().toInt()) {
                     if (test > 127) item->setText("127");
                     if (test < 1) item->setText("0");
-                    midiCCTable->item(row, 3)->setText(item->text());
+                    midiCCTable->item(row, 4)->setText(item->text());
                 }
                 else {
                     comp = midiCCTable->item(row, 3)->text().toInt();
@@ -207,14 +216,14 @@ void MidiCCTable::itemChanged(QTableWidgetItem *item)
                     if (test < 1) item->setText("0");
                 }
         break;
-        case 3: // max
-                if (!midiCCTable->item(row, 4)->text().toInt()) {
+        case 4: // max
+                if (!midiCCTable->item(row, 5)->text().toInt()) {
                     if (test > 127) item->setText("127");
                     if (test < 1) item->setText("0");
-                    midiCCTable->item(row, 2)->setText(item->text());
+                    midiCCTable->item(row, 3)->setText(item->text());
                 }
                 else {
-                    comp = midiCCTable->item(row, 2)->text().toInt();
+                    comp = midiCCTable->item(row, 3)->text().toInt();
                     if (test > 127) item->setText("127");
                     if (test < comp) item->setText(QString::number(comp));
                 }
@@ -232,13 +241,15 @@ void MidiCCTable::fillControlRow(int row, MidiCC midiCC, int moduleID)
     midiCCTable->setItem(row, 0, nameItem);
     midiCCTable->setItem(row, 1, 
             new QTableWidgetItem(QString::number(midiCC.ccnumber)));
-    midiCCTable->setItem(row, 2,
-            new QTableWidgetItem(QString::number(midiCC.min)));
+    midiCCTable->setItem(row, 2, 
+            new QTableWidgetItem(QString::number(midiCC.channel + 1)));
     midiCCTable->setItem(row, 3,
-            new QTableWidgetItem(QString::number(midiCC.max)));
+            new QTableWidgetItem(QString::number(midiCC.min)));
     midiCCTable->setItem(row, 4,
-            new QTableWidgetItem(QString::number(midiCC.ID)));
+            new QTableWidgetItem(QString::number(midiCC.max)));
     midiCCTable->setItem(row, 5,
+            new QTableWidgetItem(QString::number(midiCC.ID)));
+    midiCCTable->setItem(row, 6,
             new QTableWidgetItem(QString::number(moduleID)));
     
     midiCCTable->setRowHeight(row, 20);

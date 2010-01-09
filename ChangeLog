@@ -1,3 +1,7 @@
+2010-01-09 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.*, arp/lfo/seqwidget.*, midicctable.cpp: MIDI Channel 
+	added to controller filter
+	
 2010-01-08 Guido Scholz <guido.scholz@bayernline.de>
 	* mainwindow.*: Handler for SIGINT added to handle unsaved or
 	changed files more carefully at program termination. Handler for

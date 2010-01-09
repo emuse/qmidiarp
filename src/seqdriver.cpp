@@ -321,7 +321,8 @@ void SeqDriver::procEvents(int)
                 }
                 else {
                     if (midi_controllable) {
-                        emit controlEvent(ccnumber, evIn->data.control.value);
+                        emit controlEvent(ccnumber, evIn->data.control.channel,
+                                            evIn->data.control.value);
                         unmatched = false;
                     }
                 }

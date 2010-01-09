@@ -42,6 +42,7 @@ struct MidiCC {
         int min;
         int max;
         int ccnumber;
+        int channel;
         int ID;
     };    
 #define MIDICC_H
@@ -109,8 +110,8 @@ class LfoWidget : public QWidget
     void copyToCustom();
     void moduleDelete();
     void moduleRename();
-    void appendMidiCC(int ctrlID, int min, int max, int ccnumber);
-    void removeMidiCC(int ctrlID, int ccnumber);
+    void appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max);
+    void removeMidiCC(int ctrlID, int ccnumber, int channel);
     void midiLearnMute();
     void midiForgetMute();
     void midiLearnOffs();
