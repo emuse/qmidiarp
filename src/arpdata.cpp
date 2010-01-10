@@ -318,10 +318,20 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 if ((ccnumber == cclist.at(l2).ccnumber) &&
                     (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
-                        case 0: if (value == max) {
-                                    m = arpWidget(l1)->muteOut->isChecked();
-                                    arpWidget(l1)->muteOut->setChecked(!m);
-                                    return;
+                        case 0: if (min == max) {
+                                    if (value == max) {
+                                        m = arpWidget(l1)->muteOut->isChecked();
+                                        arpWidget(l1)->muteOut->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        arpWidget(l1)->muteOut->setChecked(false);
+                                    }
+                                    if (value == min) {
+                                        arpWidget(l1)->muteOut->setChecked(true);
+                                    }
                                 }
                         break;
                         default:
@@ -339,10 +349,20 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 if ((ccnumber == cclist.at(l2).ccnumber) &&
                     (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
-                        case 0: if (value == max) {
-                                    m = lfoWidget(l1)->muteOut->isChecked();
-                                    lfoWidget(l1)->muteOut->setChecked(!m);
-                                    return;
+                        case 0: if (min == max) {
+                                    if (value == max) {
+                                        m = lfoWidget(l1)->muteOut->isChecked();
+                                        lfoWidget(l1)->muteOut->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        lfoWidget(l1)->muteOut->setChecked(false);
+                                    }
+                                    if (value == min) {
+                                        lfoWidget(l1)->muteOut->setChecked(true);
+                                    }
                                 }
                         break;
                         
@@ -374,13 +394,23 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 if ((ccnumber == cclist.at(l2).ccnumber) &&
                     (channel == cclist.at(l2).channel)) {
                     switch (cclist.at(l2).ID) {
-                        case 0: if (value == max) {
-                                    m = seqWidget(l1)->muteOut->isChecked();
-                                    seqWidget(l1)->muteOut->setChecked(!m);
-                                    return;
+                        case 0: if (min == max) {
+                                    if (value == max) {
+                                        m = seqWidget(l1)->muteOut->isChecked();
+                                        seqWidget(l1)->muteOut->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        seqWidget(l1)->muteOut->setChecked(false);
+                                    }
+                                    if (value == min) {
+                                        seqWidget(l1)->muteOut->setChecked(true);
+                                    }
                                 }
                         break;
-                        
+
                         case 1: 
                                 sval = min + ((double)value * (max - min)
                                         / 127);

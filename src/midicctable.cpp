@@ -205,28 +205,14 @@ void MidiCCTable::itemChanged(QTableWidgetItem *item)
                 if (test < 2) item->setText("1");
         break;
         case 3: // min
-                if (!midiCCTable->item(row, 5)->text().toInt()) {
-                    if (test > 127) item->setText("127");
-                    if (test < 1) item->setText("0");
-                    midiCCTable->item(row, 4)->setText(item->text());
-                }
-                else {
                     comp = midiCCTable->item(row, 3)->text().toInt();
                     if (test > comp) item->setText(QString::number(comp));
                     if (test < 1) item->setText("0");
-                }
         break;
         case 4: // max
-                if (!midiCCTable->item(row, 5)->text().toInt()) {
-                    if (test > 127) item->setText("127");
-                    if (test < 1) item->setText("0");
-                    midiCCTable->item(row, 3)->setText(item->text());
-                }
-                else {
                     comp = midiCCTable->item(row, 3)->text().toInt();
                     if (test > 127) item->setText("127");
                     if (test < comp) item->setText(QString::number(comp));
-                }
         break;
         default: 
         break;

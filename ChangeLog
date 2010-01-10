@@ -1,3 +1,8 @@
+2010-01-10 Frank Kober <goemusic@yahoo.fr>
+	* arpdata.cpp, midicctable.cpp: mute MIDI controller behaviour
+	extended: if min=max (default), a control value=127 toggles state.
+	if min!=max, control value=min mutes, control value=max unmutes
+	
 2010-01-09 Frank Kober <goemusic@yahoo.fr>
 	* seqdriver.*, arp/lfo/seqwidget.*, midicctable.cpp: MIDI Channel 
 	added to controller filter
