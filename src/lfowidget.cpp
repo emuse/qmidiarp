@@ -623,9 +623,9 @@ void LfoWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
     switch (ctrlID) {
         case 0: midiCC.name = "MuteToggle";
         break;
-        case 1: midiCC.name = "Velocity";
+        case 1: midiCC.name = "Amplitude";
         break;
-        case 2: midiCC.name = "NoteLength";
+        case 2: midiCC.name = "Offset";
         break;
         default: midiCC.name = "Unknown";
     }

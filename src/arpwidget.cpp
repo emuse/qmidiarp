@@ -630,10 +630,6 @@ void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
     switch (ctrlID) {
         case 0: midiCC.name = "MuteToggle";
         break;
-        case 1: midiCC.name = "Velocity";
-        break;
-        case 2: midiCC.name = "NoteLength";
-        break;
         default: midiCC.name = "Unknown";
     }
     midiCC.ID = ctrlID;
