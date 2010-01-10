@@ -369,15 +369,10 @@ events that do not match any module's input filter are forwarded (
 events). It also
 allows to set whether incoming controller events are recognized for
 .B muting 
-the modules separately. If this option is set, a 
-.B mute MIDI controller number 
-can be specified. This controller number will
-be used to mute the first module occurence in the tab row. The next 
-higher controller number will toggle the mute state of the second module 
-in row, etc. As an example, if the mute controller number is set to 30, 
-a value of 127 received on CC#30 will toggle the mute state of the first 
-module, CC#31 set to 127 will mute/unmute the second module in line. 
-The 
+the modules separately. If this option is set, QMidiArp will recognize
+MIDI control events that can be attributed to different parameters (see
+.B MIDI Control
+). The 
 .B Settings 
 dialog also allows to set the tick resolution of the
 .B incoming MIDI clock. 
@@ -387,7 +382,60 @@ all new created modules will show with small GUI elements to be more
 economic in space when distributed as separate windows over the desktop.
 .PP
 All settings in this dialog are stored along with the module data in the
-.qma file.
+qma session file.
+
+.SS MIDI control
+QMidiArp supports MIDI control events if the 
+.B Modules controllable by MIDI CC
+option is checked in the
+.B Settings
+dialog. MIDI control is available for Seq modules (Muting, Velocity, 
+Note Length), LFO modules (Muting, Amplitude, Offset) and Arp modules
+(Muting only).
+.PP
+.B MIDI Learn
+.PP
+Controllers can be attributed by right-clicking on the sliders or
+mute checkbox in each module and selecting 
+.B MIDI Learn.
+QMidiArp will then wait for MIDI control events, 
+and moving a MIDI controller connected to QMidiArp's input will 
+attribute this controller to the control item. It is 
+possible to add several MIDI controllers to one item. If 
+.B MIDI Forget
+is selected, all controllers for that item are removed. If 
+.B Cancel MIDI learning
+is selected, the learn process is stopped.
+.PP
+Note that by default, mute controllers are interpreted as toggles, i.e.
+the mute state is toggled on reception of a value of 127 from the 
+attributed controller.
+.PP
+.B Control Editor
+.PP
+The
+.B Control Editor
+is accessible from the 
+.I View 
+menu. Controls can be edited by MIDI control number, channel, and the
+minimum and maximum values that are sent to the control item. Mute 
+controllers have a special behaviour. If minimum and maximum are 
+.I equal,
+the controller acts as toggler upon reception of the adjusted value.
+If minimum is 
+.I different
+from maximum, the corresponding module will be muted upon reception of 
+minimum and unmuted upon reception of maximum as values.
+.PP
+If
+.B Remove
+is pressed, the currently selected line will be removed, pressing
+.B Revert
+reloads the current controller settings. Pressing 
+.B Cancel 
+quits the control editor without applying changes, and only if 
+.B OK
+is pressed, the edited control list becomes active.
 
 .SS "Event Log"
 The
