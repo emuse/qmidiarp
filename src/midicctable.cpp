@@ -205,7 +205,7 @@ void MidiCCTable::itemChanged(QTableWidgetItem *item)
                 if (test < 2) item->setText("1");
         break;
         case 3: // min
-                    comp = midiCCTable->item(row, 3)->text().toInt();
+                    comp = midiCCTable->item(row, 4)->text().toInt();
                     if (test > comp) item->setText(QString::number(comp));
                     if (test < 1) item->setText("0");
         break;
