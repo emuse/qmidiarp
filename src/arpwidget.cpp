@@ -640,7 +640,8 @@ void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
     
     while ( (l1 < ccList.count()) && 
         ((ctrlID != ccList.at(l1).ID) || 
-        (ccnumber != ccList.at(l1).ccnumber)) ) l1++;
+        (ccnumber != ccList.at(l1).ccnumber) ||
+        (channel != ccList.at(l1).channel)) ) l1++;
     
     if (ccList.count() == l1) {
         ccList.append(midiCC);
