@@ -1,6 +1,7 @@
 #ifndef LOGWIDGET_H
 #define LOGWIDGET_H
 
+#include <QBoxLayout>
 #include <QString>
 #include <QLabel>
 #include <QSlider>

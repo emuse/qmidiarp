@@ -1,14 +1,11 @@
-#include <QString>
-#include <QLabel>
-#include <QSlider> 
-#include <QSpinBox> 
 #include <QBoxLayout>
+#include <QLabel>
 
 #include "slider.h"
 
 
 Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
-        int value, Qt::Orientation orientation, QString label,
+        int value, Qt::Orientation orientation, const QString& label,
         QWidget * parent): QWidget(parent)
 {
     slider = new QSlider(orientation, parent);

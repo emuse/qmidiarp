@@ -2,11 +2,10 @@
 #define SLIDER_H
 
 #include <QString>
-#include <QLabel>
-#include <QWidget>
 #include <QSlider>
 #include <QSpinBox> 
-#include <QBoxLayout>
+#include <QWidget>
+
 
 class Slider : public QWidget
 
@@ -19,7 +18,7 @@ class Slider : public QWidget
     
   public:
     Slider(int minValue, int maxValue, int pageStep, int tickStep, int value, 
-           Qt::Orientation orientation, QString label, QWidget * parent);
+           Qt::Orientation orientation, const QString& label, QWidget * parent);
     ~Slider();
     int value();
     
