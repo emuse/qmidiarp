@@ -966,7 +966,7 @@ bool MainWindow::saveFileAs()
 
     QString fn =  QFileDialog::getSaveFileName(this,
             tr("Save arpeggiator"), lastDir, tr("QMidiArp files") 
-            + " (*" + FILEEXT + "x" + ")");
+            + " (*" + FILEEXT + ")");
 
     if (!fn.isEmpty()) {
         if (!fn.endsWith(FILEEXT))
