@@ -533,6 +533,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
             }
         }
     }
+    modified = false;
 }
 
 void ArpWidget::readArpText(QTextStream& arpText)

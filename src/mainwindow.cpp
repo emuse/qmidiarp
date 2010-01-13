@@ -595,6 +595,7 @@ void MainWindow::openFile(const QString& fn)
         }
         else skipXmlElement(xml);
     }
+    arpData->setModified(false);
 }
 
 void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
