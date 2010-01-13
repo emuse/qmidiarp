@@ -338,7 +338,72 @@ void ArpWidget::updateChannelOut(int value)
     midiArp->channelOut = value - 1;
 }
 
-void ArpWidget::writeArp(QTextStream& arpText)
+void ArpWidget::writeArp(QXmlStreamWriter& xml)
+{
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+        xml.writeStartElement("pattern");
+            xml.writeTextElement("pattern", midiArp->pattern);        
+            xml.writeTextElement("repeatMode", QString::number(
+                midiArp->repeatPatternThroughChord));           
+        xml.writeEndElement();
+            
+        xml.writeStartElement("input");
+            xml.writeTextElement("channel", QString::number(
+                midiArp->chIn));
+            xml.writeTextElement("indexMin", QString::number(
+                midiArp->indexIn[0]));
+            xml.writeTextElement("indexMax", QString::number(
+                midiArp->indexIn[1]));
+            xml.writeTextElement("rangeMin", QString::number(
+                midiArp->rangeIn[0]));
+            xml.writeTextElement("rangeMax", QString::number(
+                midiArp->rangeIn[1]));
+        xml.writeEndElement();
+        
+        xml.writeStartElement("output");
+            xml.writeTextElement("port", QString::number(
+                midiArp->portOut));
+            xml.writeTextElement("channel", QString::number(
+                midiArp->channelOut));
+        xml.writeEndElement();
+    
+        xml.writeStartElement("random");
+            xml.writeTextElement("tick", QString::number(
+                midiArp->randomTickAmp));
+            xml.writeTextElement("velocity", QString::number(
+                midiArp->randomVelocityAmp));
+            xml.writeTextElement("length", QString::number(
+                midiArp->randomLengthAmp));
+        xml.writeEndElement();
+        
+        xml.writeStartElement("envelope");
+            xml.writeTextElement("attack", QString::number(
+                attackTime->value()));
+            xml.writeTextElement("release", QString::number(
+                releaseTime->value()));
+        xml.writeEndElement();
+           
+        xml.writeStartElement("midiControllers");
+        for (int l1 = 0; l1 < ccList.count(); l1++) {
+            xml.writeStartElement("MIDICC");
+            xml.writeAttribute("CtrlID", QString::number(ccList.at(l1).ID));
+                xml.writeTextElement("ccnumber", QString::number(
+                    ccList.at(l1).ccnumber));
+                xml.writeTextElement("channel", QString::number(
+                    ccList.at(l1).channel));
+                xml.writeTextElement("min", QString::number(
+                    ccList.at(l1).min));
+                xml.writeTextElement("max", QString::number(
+                    ccList.at(l1).max));
+            xml.writeEndElement();
+        }
+        xml.writeEndElement();
+        
+    xml.writeEndElement();
+}
+
+void ArpWidget::writeArpText(QTextStream& arpText)
 {
     arpText << midiArp->chIn << ' '
         << midiArp->repeatPatternThroughChord << '\n';
@@ -364,7 +429,113 @@ void ArpWidget::writeArp(QTextStream& arpText)
     modified = false;
 }                                      
 
-void ArpWidget::readArp(QTextStream& arpText)
+void ArpWidget::readArp(QXmlStreamReader& xml)
+{
+    int ctrlID, ccnumber, channel, min, max;
+    
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+            
+        if (xml.isStartElement() && (xml.name() == "pattern")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "pattern")
+                    patternText->setText(xml.readElementText());
+                else if (xml.name() == "repeatMode")
+                    repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
+            }
+        }
+
+        else if (xml.isStartElement() && (xml.name() == "input")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "channel")
+                    chIn->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "indexMin")
+                    indexIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "indexMax")
+                    indexIn[1]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMin")
+                    rangeIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMax")
+                    rangeIn[1]->setValue(xml.readElementText().toInt());
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "output")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "channel")
+                    channelOut->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "port")
+                    portOut->setValue(xml.readElementText().toInt() + 1);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "random")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "tick")
+                    randomTick->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "velocity")
+                    randomVelocity->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "length")
+                    randomLength->setValue(xml.readElementText().toInt());
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "envelope")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "attack")
+                    attackTime->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "release")
+                    releaseTime->setValue(xml.readElementText().toInt());
+             }
+        }
+        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "MIDICC")) {
+                    ctrlID = xml.attributes().value("CtrlID").toString().toInt();
+                    ccnumber = -1;
+                    channel = -1;
+                    min = -1;
+                    max = -1;
+                    while (!xml.atEnd()) {
+                        xml.readNext();
+                        if (xml.isEndElement())
+                            break;
+                        if (xml.name() == "ccnumber")
+                            ccnumber = xml.readElementText().toInt();
+                        else if (xml.name() == "channel")
+                            channel = xml.readElementText().toInt();
+                        else if (xml.name() == "min")
+                            min = xml.readElementText().toInt();
+                        else if (xml.name() == "max")
+                            max = xml.readElementText().toInt();
+                    }
+                    if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
+                        appendMidiCC(ctrlID, ccnumber, channel, min, max);
+                    else qWarning("Controller data incomplete");                  
+                }
+            }
+        }
+    }
+}
+
+void ArpWidget::readArpText(QTextStream& arpText)
 {
     QString qs, qs2;
     MidiCC midiCC;

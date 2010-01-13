@@ -304,7 +304,78 @@ MidiSeq *SeqWidget::getMidiSeq()
     return (midiSeq);
 }
 
-void SeqWidget::writeSeq(QTextStream& arpText)
+void SeqWidget::writeSeq(QXmlStreamWriter& xml)
+{
+    QByteArray tempArray;
+    int l1;
+    
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+        xml.writeStartElement("input");
+            xml.writeTextElement("enableNote", QString::number(
+                midiSeq->enableNoteIn));
+            xml.writeTextElement("enableVelocity", QString::number(
+                midiSeq->enableVelIn));
+            xml.writeTextElement("channel", QString::number(
+                midiSeq->chIn));
+        xml.writeEndElement();
+        
+        xml.writeStartElement("output");
+            xml.writeTextElement("port", QString::number(
+                midiSeq->portOut));
+            xml.writeTextElement("channel", QString::number(
+                midiSeq->channelOut));
+        xml.writeEndElement();
+    
+        xml.writeStartElement("seqParams");
+            xml.writeTextElement("resolution", QString::number(
+                resBox->currentIndex()));
+            xml.writeTextElement("size", QString::number(
+                sizeBox->currentIndex()));
+            xml.writeTextElement("velocity", QString::number(
+                midiSeq->vel));
+            xml.writeTextElement("noteLength", QString::number(
+                midiSeq->notelength));
+            xml.writeTextElement("transp", QString::number(
+                midiSeq->transp));
+        xml.writeEndElement();
+      
+        tempArray.clear();
+        l1 = 0;
+        while (l1 < midiSeq->muteMask.count()) {
+            tempArray.append(midiSeq->muteMask.at(l1));
+            l1++;
+        }
+        xml.writeStartElement("muteMask");
+            xml.writeTextElement("data", tempArray.toHex());
+        xml.writeEndElement();
+        
+        tempArray.clear();
+        l1 = 0;
+        while (l1 < midiSeq->muteMask.count()) {
+            tempArray.append(midiSeq->customWave.at(l1).value);
+            l1++;
+        }
+        xml.writeStartElement("sequence");
+            xml.writeTextElement("data", tempArray.toHex());
+        xml.writeEndElement();
+           
+        xml.writeStartElement("midiControllers");
+        for (int l1 = 0; l1 < ccList.count(); l1++) {
+            xml.writeStartElement("MIDICC");
+            xml.writeAttribute("CtrlID", QString::number(ccList.at(l1).ID));
+                xml.writeTextElement("ccnumber", QString::number(ccList.at(l1).ccnumber));
+                xml.writeTextElement("channel", QString::number(ccList.at(l1).channel));
+                xml.writeTextElement("min", QString::number(ccList.at(l1).min));
+                xml.writeTextElement("max", QString::number(ccList.at(l1).max));
+            xml.writeEndElement();
+        }
+        xml.writeEndElement();
+        
+    xml.writeEndElement();
+}
+
+void SeqWidget::writeSeqText(QTextStream& arpText)
 {
     int l1 = 0;
     arpText << midiSeq->enableNoteIn << ' ' 
@@ -346,7 +417,162 @@ void SeqWidget::writeSeq(QTextStream& arpText)
     modified = false;
 }                                      
 
-void SeqWidget::readSeq(QTextStream& arpText)
+void SeqWidget::readSeq(QXmlStreamReader& xml)
+{
+    int ctrlID, ccnumber, channel, min, max;
+    int wvtmp = 0;
+    SeqSample seqSample;
+    
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+            
+        else if (xml.isStartElement() && (xml.name() == "input")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "enableNote")
+                    enableNoteIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableVelocity")
+                    enableVelIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "channel")
+                    chIn->setValue(xml.readElementText().toInt() + 1);
+                else skipXmlElement(xml);
+            }
+        }
+
+        else if (xml.isStartElement() && (xml.name() == "output")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "channel")
+                    channelOut->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "port")
+                    portOut->setValue(xml.readElementText().toInt() + 1);
+                else skipXmlElement(xml);
+            }
+        }
+
+        else if (xml.isStartElement() && (xml.name() == "seqParams")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                else if (xml.name() == "resolution") {
+                    int tmp = xml.readElementText().toInt();
+                    resBox->setCurrentIndex(tmp);
+                    updateRes(tmp);
+                }
+                else if (xml.name() == "size")
+                    sizeBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "velocity")
+                    velocity->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "noteLength")
+                    notelength->setValue(xml.readElementText().toInt() / 2);
+                else if (xml.name() == "transp")
+                    transpose->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "muteMask")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "data")) {
+                    midiSeq->muteMask.clear();
+                    QByteArray tmpArray = 
+                            QByteArray::fromHex(xml.readElementText().toLatin1());
+                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                        midiSeq->muteMask.append(tmpArray.at(l1));
+                    }
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "sequence")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "data")) {
+                    midiSeq->customWave.clear();
+                    QByteArray tmpArray = 
+                            QByteArray::fromHex(xml.readElementText().toLatin1());
+                    int step = TICKS_PER_QUARTER / midiSeq->res;
+                    int lt = 0;
+                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                        seqSample.value = tmpArray.at(l1);
+                        seqSample.tick = lt;
+                        seqSample.muted = midiSeq->muteMask.at(l1);
+                        midiSeq->customWave.append(seqSample);
+                        lt+=step;
+                    }
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "MIDICC")) {
+                    ctrlID = xml.attributes().value("CtrlID").toString().toInt();
+                    ccnumber = -1;
+                    channel = -1;
+                    min = -1;
+                    max = -1;
+                    while (!xml.atEnd()) {
+                        xml.readNext();
+                        if (xml.isEndElement())
+                            break;
+                        if (xml.name() == "ccnumber")
+                            ccnumber = xml.readElementText().toInt();
+                        else if (xml.name() == "channel")
+                            channel = xml.readElementText().toInt();
+                        else if (xml.name() == "min")
+                            min = xml.readElementText().toInt();
+                        else if (xml.name() == "max")
+                            max = xml.readElementText().toInt();
+                        else skipXmlElement(xml);
+                    }
+                    
+                    if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
+                        appendMidiCC(ctrlID, ccnumber, channel, min, max);
+                    else qWarning("Controller data incomplete");                  
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else skipXmlElement(xml);
+    }
+    waveFormBox->setCurrentIndex(wvtmp);
+    updateWaveForm(wvtmp);
+    modified = false;
+}
+
+void SeqWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+    
+            if (xml.isEndElement())
+                break;
+    
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+ 
+void SeqWidget::readSeqText(QTextStream& arpText)
 {
     QString qs, qs2;
     int l1, lt, wvtmp;

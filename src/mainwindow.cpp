@@ -12,6 +12,9 @@
 #include <QSpinBox>
 #include <QTableWidget>
 #include <QTextStream>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+
 #include <cerrno>   // for errno
 #include <csignal>  // for sigaction()
 #include <cstring>  // for strerror()
@@ -36,7 +39,7 @@
 #include "pixmaps/filequit.xpm"
 
 
-static const char FILEEXT[] = ".qma";
+static const char FILEEXT[] = ".qmax";
 
 int MainWindow::sigpipe[2];
 
@@ -534,14 +537,169 @@ void MainWindow::chooseFile()
 {
     QString fn =  QFileDialog::getOpenFileName(this,
             tr("Open arpeggiator file"), lastDir,
-            tr("QMidiArp files")  + " (*" + FILEEXT + ")");
+            tr("QMidiArp XML files")  + " (*" + FILEEXT + ");;"
+            + tr("Old QMidiArp files") + " (*.qma)");
     if (fn.isEmpty())
         return;
-
-    openFile(fn);
+        
+    if (fn.endsWith(".qma"))
+        openTextFile(fn);
+        
+    else if (fn.endsWith(FILEEXT))
+        openFile(fn);
 }
 
 void MainWindow::openFile(const QString& fn)
+{
+
+    lastDir = fn.left(fn.lastIndexOf('/'));
+
+    QFile f(fn);
+    if (!f.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this, APP_NAME,
+                tr("Could not read from file '%1'.").arg(fn));
+        return;
+    }
+
+    clear();
+    filename = fn;
+    updateWindowTitle();
+
+    QXmlStreamReader xml(&f);
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement()) {
+            if (xml.isEndElement())
+                break;
+            
+            if (xml.name() != "session") {
+                xml.raiseError(tr("Not a QMidiArp xml file."));
+                QMessageBox::warning(this, APP_NAME,
+                    tr("This is not a valid xml file for ")+APP_NAME);
+                return;
+            }
+            while (!xml.atEnd()) {
+                xml.readNext();
+            
+                if (xml.isEndElement())
+                    break;
+                
+                if ((xml.isStartElement()) && (xml.name() == "global")) 
+                    readFilePartGlobal(xml);
+                else if (xml.isStartElement() && (xml.name() == "modules"))
+                    readFilePartModules(xml);
+                else if (xml.isStartElement() && (xml.name() == "GUI"))
+                    readFilePartGUI(xml);
+                else skipXmlElement(xml);
+            }
+        }
+        else skipXmlElement(xml);
+    }
+}
+
+void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
+{    
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement()) {
+            break;
+        }
+        if (xml.name() == "tempo") {
+            tempoSpin->setValue(xml.readElementText().toInt());
+        }
+        if (xml.isStartElement() && (xml.name() == "settings")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "midiControlEnabled")
+                    passWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "midiClockEnabled")
+                        midiClockAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "midiClockRate")
+                    passWidget->mtpbSpin->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "forwardUnmatched")
+                    passWidget->setForward(xml.readElementText().toInt());
+                else if (xml.name() == "forwardPort")
+                    passWidget->setPortUnmatched(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "groove")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "tick")
+                    grooveWidget->grooveTick->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "velocity")
+                    grooveWidget->grooveVelocity->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "length")
+                    grooveWidget->grooveLength->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+        else skipXmlElement(xml);
+    }
+}
+
+void MainWindow::readFilePartModules(QXmlStreamReader& xml)
+{
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+        if (xml.isStartElement() && (xml.name() == "Arp")) {
+            addArp("Arp:" + xml.attributes().value("name").toString());
+            arpData->arpWidget(arpData->midiArpCount() - 1)
+                    ->readArp(xml);
+        }   
+        else if (xml.isStartElement() && (xml.name() == "LFO")) {
+            addLfo("LFO:" + xml.attributes().value("name").toString());
+            arpData->lfoWidget(arpData->midiLfoCount() - 1)
+                    ->readLfo(xml);
+        }   
+        else if (xml.isStartElement() && (xml.name() == "Seq")) {
+            addSeq("Seq:" + xml.attributes().value("name").toString());
+            arpData->seqWidget(arpData->midiSeqCount() - 1)
+                    ->readSeq(xml);
+        }
+        else skipXmlElement(xml);
+    }
+}
+
+void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
+{
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+        if (xml.name() == "windowState") {
+            restoreState(QByteArray::fromHex(
+            xml.readElementText().toLatin1()));
+        }
+        else skipXmlElement(xml);
+    }
+}
+
+void MainWindow::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+    
+            if (xml.isEndElement())
+                break;
+    
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+
+void MainWindow::openTextFile(const QString& fn)
 {
     QString line, qs, qs2;
     bool midiclocktmp = false;
@@ -558,7 +716,6 @@ void MainWindow::openFile(const QString& fn)
 
     clear();
     filename = fn;
-    updateWindowTitle();
 
     QTextStream loadText(&f);
     qs = loadText.readLine();
@@ -614,20 +771,20 @@ void MainWindow::openFile(const QString& fn)
         switch (c) {
             case 1:
                 addSeq(qs);
-                arpData->seqWidget(arpData->midiSeqCount() - 1)->readSeq(loadText);
+                arpData->seqWidget(arpData->midiSeqCount() - 1)->readSeqText(loadText);
             break;
             case 2:
                 addLfo(qs);
-                arpData->lfoWidget(arpData->midiLfoCount() - 1)->readLfo(loadText);
+                arpData->lfoWidget(arpData->midiLfoCount() - 1)->readLfoText(loadText);
             break;
             case 3:
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
+                arpData->arpWidget(arpData->midiArpCount() - 1)->readArpText(loadText);
             break;
             default:
                 qs = "Arp: " + qs;
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readArp(loadText);
+                arpData->arpWidget(arpData->midiArpCount() - 1)->readArpText(loadText);
             break;
         }
     }
@@ -637,9 +794,15 @@ void MainWindow::openFile(const QString& fn)
         QByteArray array = QByteArray::fromHex(qs.toLatin1());
         restoreState(array);
     }
-
-    arpData->setModified(false);
+    
     midiClockAction->setChecked(midiclocktmp);
+    
+    filename.append("x");
+    QMessageBox::warning(this, APP_NAME,
+            tr("The QMidiArp text file was imported. If you save this file, \
+it will be saved using the newer xml format under the name\n '%1'.").arg(filename));
+    
+    updateWindowTitle();
 }
 
 void MainWindow::fileSave()
@@ -651,6 +814,90 @@ void MainWindow::fileSave()
 }
 
 bool MainWindow::saveFile()
+{    
+    int l1;
+    int ns = 0;
+    int nl = 0;
+    int na = 0;
+
+    QFile f(filename);
+    QString nameTest;
+    
+    if (!f.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, APP_NAME,
+                tr("Could not write to file '%1'.").arg(filename));
+        return false;
+    }
+    QXmlStreamWriter xml(&f);
+    xml.setAutoFormatting(true);
+    xml.writeStartDocument();
+    xml.writeDTD("<!DOCTYPE qmidiarpSession>");
+    xml.writeStartElement("session");
+    xml.writeAttribute("version", PACKAGE_VERSION);
+    
+    xml.writeStartElement("global");
+    
+        xml.writeTextElement("tempo", QString::number(tempoSpin->value()));
+        
+        xml.writeStartElement("settings");    
+            xml.writeTextElement("midiControlEnabled", 
+                QString::number((int)passWidget->cbuttonCheck->isChecked()));
+            xml.writeTextElement("midiClockEnabled", 
+                QString::number((int)arpData->seqDriver->use_midiclock));
+            xml.writeTextElement("midiClockRate", 
+                QString::number(arpData->seqDriver->midiclock_tpb));
+            xml.writeTextElement("forwardUnmatched", 
+                QString::number((int)arpData->seqDriver->forwardUnmatched));
+            xml.writeTextElement("forwardPort", 
+                QString::number(arpData->seqDriver->portUnmatched));
+        xml.writeEndElement();
+        
+        xml.writeStartElement("groove");
+            xml.writeTextElement("tick", 
+                QString::number(arpData->seqDriver->grooveTick));
+            xml.writeTextElement("velocity", 
+                QString::number(arpData->seqDriver->grooveVelocity));
+            xml.writeTextElement("length", 
+                QString::number(arpData->seqDriver->grooveLength));
+        xml.writeEndElement();
+        
+    xml.writeEndElement();
+   
+    xml.writeStartElement("modules");
+  
+    for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
+        
+        nameTest = arpData->moduleWindow(l1)->objectName();
+        
+        if (nameTest.startsWith('S')) {
+            arpData->seqWidget(ns)->writeSeq(xml);
+            ns++;
+        } 
+        if (nameTest.startsWith('L')) {
+            arpData->lfoWidget(nl)->writeLfo(xml);
+            nl++;
+        }
+        if (nameTest.startsWith('A')) {
+            arpData->arpWidget(na)->writeArp(xml);
+            na++;
+        }
+    }
+    
+    xml.writeEndElement();
+    
+    xml.writeStartElement("GUI");    
+        xml.writeTextElement("windowState", saveState().toHex());
+    xml.writeEndElement();
+    
+    xml.writeEndElement();
+    xml.writeEndDocument();
+    
+
+    arpData->setModified(false);
+    return true;
+}
+
+bool MainWindow::saveTextFile()
 {
     int l1;
     int ns = 0;
@@ -688,17 +935,17 @@ bool MainWindow::saveFile()
         
         if (nameTest.startsWith('S')) {
             saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
-            arpData->seqWidget(ns)->writeSeq(saveText);
+            arpData->seqWidget(ns)->writeSeqText(saveText);
             ns++;
         } 
         if (nameTest.startsWith('L')) {
             saveText << qPrintable(arpData->lfoWidget(nl)->name) << '\n';
-            arpData->lfoWidget(nl)->writeLfo(saveText);
+            arpData->lfoWidget(nl)->writeLfoText(saveText);
             nl++;
         }
         if (nameTest.startsWith('A')) {
             saveText << qPrintable(arpData->arpWidget(na)->name) << '\n';
-            arpData->arpWidget(na)->writeArp(saveText);
+            arpData->arpWidget(na)->writeArpText(saveText);
             na++;
         }
     }
@@ -719,7 +966,7 @@ bool MainWindow::saveFileAs()
 
     QString fn =  QFileDialog::getSaveFileName(this,
             tr("Save arpeggiator"), lastDir, tr("QMidiArp files") 
-            + " (*" + FILEEXT + ")");
+            + " (*" + FILEEXT + "x" + ")");
 
     if (!fn.isEmpty()) {
         if (!fn.endsWith(FILEEXT))

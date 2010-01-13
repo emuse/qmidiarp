@@ -298,7 +298,77 @@ MidiLfo *LfoWidget::getMidiLfo()
     return (midiLfo);
 }
 
-void LfoWidget::writeLfo(QTextStream& arpText)
+void LfoWidget::writeLfo(QXmlStreamWriter& xml)
+{
+    QByteArray tempArray;
+    int l1;
+    
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+        xml.writeStartElement("output");
+            xml.writeTextElement("port", QString::number(
+                midiLfo->portOut));
+            xml.writeTextElement("channel", QString::number(
+                midiLfo->channelOut));
+            xml.writeTextElement("ccnumber", QString::number(
+                midiLfo->ccnumber));
+        xml.writeEndElement();
+    
+        xml.writeStartElement("waveParams");
+            xml.writeTextElement("waveform", QString::number(
+                waveFormBox->currentIndex()));
+            xml.writeTextElement("frequency", QString::number(
+                freqBox->currentIndex()));
+            xml.writeTextElement("resolution", QString::number(
+                resBox->currentIndex()));
+            xml.writeTextElement("size", QString::number(
+                sizeBox->currentIndex()));
+            xml.writeTextElement("amplitude", QString::number(
+                midiLfo->amp));
+            xml.writeTextElement("offset", QString::number(
+                midiLfo->offs));
+        xml.writeEndElement();
+      
+        tempArray.clear();
+        l1 = 0;
+        while (l1 < midiLfo->muteMask.count()) {
+            tempArray.append(midiLfo->muteMask.at(l1));
+            l1++;
+        }
+        xml.writeStartElement("muteMask");
+            xml.writeTextElement("data", tempArray.toHex());
+        xml.writeEndElement();
+        
+        tempArray.clear();
+        l1 = 0;
+        while (l1 < midiLfo->muteMask.count()) {
+            tempArray.append(midiLfo->customWave.at(l1).value);
+            l1++;
+        }
+        xml.writeStartElement("customWave");
+            xml.writeTextElement("data", tempArray.toHex());
+        xml.writeEndElement();
+           
+        xml.writeStartElement("midiControllers");
+        for (int l1 = 0; l1 < ccList.count(); l1++) {
+            xml.writeStartElement("MIDICC");
+            xml.writeAttribute("CtrlID", QString::number(ccList.at(l1).ID));
+                xml.writeTextElement("ccnumber", QString::number(
+                    ccList.at(l1).ccnumber));
+                xml.writeTextElement("channel", QString::number(
+                    ccList.at(l1).channel));
+                xml.writeTextElement("min", QString::number(
+                    ccList.at(l1).min));
+                xml.writeTextElement("max", QString::number(
+                    ccList.at(l1).max));
+            xml.writeEndElement();
+        }
+        xml.writeEndElement();
+        
+    xml.writeEndElement();
+}
+
+void LfoWidget::writeLfoText(QTextStream& arpText)
 {
     int l1 = 0;
     arpText << midiLfo->channelOut << ' ' 
@@ -336,9 +406,152 @@ void LfoWidget::writeLfo(QTextStream& arpText)
     }
     arpText << "EOW\n"; // End Of Wave
     modified = false;
-}                                      
+}
+                                  
+void LfoWidget::readLfo(QXmlStreamReader& xml)
+{
+    int ctrlID, ccnumber, channel, min, max;
+    int wvtmp = 0;
+    LfoSample lfoSample;
+    
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+            
+        if (xml.isStartElement() && (xml.name() == "output")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "channel")
+                    channelOut->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "port")
+                    portOut->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "ccnumber")
+                    ccnumberBox->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
 
-void LfoWidget::readLfo(QTextStream& arpText)
+        else if (xml.isStartElement() && (xml.name() == "waveParams")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "waveform")
+                    wvtmp = xml.readElementText().toInt();
+                else if (xml.name() == "frequency")
+                    freqBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "resolution") {
+                    int tmp = xml.readElementText().toInt();
+                    resBox->setCurrentIndex(tmp);
+                    updateRes(tmp);
+                }
+                else if (xml.name() == "size")
+                    sizeBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "amplitude")
+                    amplitude->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "offset")
+                    offset->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "muteMask")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "data")) {
+                    midiLfo->muteMask.clear();
+                    QByteArray tmpArray = 
+                            QByteArray::fromHex(xml.readElementText().toLatin1());
+                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                        midiLfo->muteMask.append(tmpArray.at(l1));
+                    }
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "customWave")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "data")) {
+                    midiLfo->customWave.clear();
+                    QByteArray tmpArray = 
+                            QByteArray::fromHex(xml.readElementText().toLatin1());
+                    int step = TICKS_PER_QUARTER / midiLfo->res;
+                    int lt = 0;
+                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                        lfoSample.value = tmpArray.at(l1);
+                        lfoSample.tick = lt;
+                        lfoSample.muted = midiLfo->muteMask.at(l1);
+                        midiLfo->customWave.append(lfoSample);
+                        lt+=step;
+                    }
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.isStartElement() && (xml.name() == "MIDICC")) {
+                    ctrlID = xml.attributes().value("CtrlID").toString().toInt();
+                    ccnumber = -1;
+                    channel = -1;
+                    min = -1;
+                    max = -1;
+                    while (!xml.atEnd()) {
+                        xml.readNext();
+                        if (xml.isEndElement())
+                            break;
+                        if (xml.name() == "ccnumber")
+                            ccnumber = xml.readElementText().toInt();
+                        else if (xml.name() == "channel")
+                            channel = xml.readElementText().toInt();
+                        else if (xml.name() == "min")
+                            min = xml.readElementText().toInt();
+                        else if (xml.name() == "max")
+                            max = xml.readElementText().toInt();
+                        else skipXmlElement(xml);
+                    }
+                    if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
+                        appendMidiCC(ctrlID, ccnumber, channel, min, max);
+                    else qWarning("Controller data incomplete");                 
+                }
+                else skipXmlElement(xml);
+            }
+        }
+        else skipXmlElement(xml);
+    }
+    waveFormBox->setCurrentIndex(wvtmp);
+    updateWaveForm(wvtmp);
+    modified = false;
+}
+
+void LfoWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+    
+            if (xml.isEndElement())
+                break;
+    
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+ 
+void LfoWidget::readLfoText(QTextStream& arpText)
 {
     QString qs, qs2;
     int l1, lt, wvtmp;

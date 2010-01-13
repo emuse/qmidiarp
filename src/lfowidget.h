@@ -29,6 +29,8 @@
 #include <QString>
 #include <QTextStream>
 #include <QToolButton>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 #include "midilfo.h"
 #include "slider.h"
@@ -77,8 +79,11 @@ class LfoWidget : public QWidget
     ~LfoWidget();
     MidiLfo *getMidiLfo();
     
-    void readLfo(QTextStream& arpText);
-    void writeLfo(QTextStream& arpText);
+    void readLfo(QXmlStreamReader& xml);
+    void readLfoText(QTextStream& arpText);
+    void writeLfo(QXmlStreamWriter& xml);
+    void writeLfoText(QTextStream& arpText);
+    void skipXmlElement(QXmlStreamReader& xml);
     void setChannelOut(int value);
     void setPortOut(int value);
     void loadWaveForms();

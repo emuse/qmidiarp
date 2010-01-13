@@ -42,6 +42,7 @@ class MainWindow : public QMainWindow
     void chooseFile();
     bool isSave();
     void updateWindowTitle();
+    bool saveTextFile();
     bool saveFile();
     bool saveFileAs();
     bool isModified();
@@ -49,6 +50,11 @@ class MainWindow : public QMainWindow
     void addArp(const QString&);
     void addLfo(const QString&);
     void addSeq(const QString&);
+
+    void readFilePartGlobal(QXmlStreamReader& xml);
+    void readFilePartModules(QXmlStreamReader& xml);
+    void readFilePartGUI(QXmlStreamReader& xml);
+
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
@@ -72,6 +78,8 @@ class MainWindow : public QMainWindow
     QAction *fileQuitAction;
     QAction *midiClockAction;
     void openFile(const QString&);
+    void skipXmlElement(QXmlStreamReader& xml);
+    void openTextFile(const QString&);
 
   signals:  
     void newTempo(int);

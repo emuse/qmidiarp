@@ -29,6 +29,8 @@
 #include <QCheckBox>
 #include <QAction>
 #include <QToolButton>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 #include "midiseq.h"
 #include "slider.h"
@@ -78,8 +80,11 @@ class SeqWidget : public QWidget
     ~SeqWidget();
     MidiSeq *getMidiSeq();
     
-    void readSeq(QTextStream& arpText);
-    void writeSeq(QTextStream& arpText);
+    void readSeq(QXmlStreamReader& xml);
+    void skipXmlElement(QXmlStreamReader& xml);
+    void readSeqText(QTextStream& arpText);
+    void writeSeq(QXmlStreamWriter& xml);
+    void writeSeqText(QTextStream& arpText);
     void setChIn(int value);
     void setEnableNoteIn(bool on);
     void setEnableVelIn(bool on);

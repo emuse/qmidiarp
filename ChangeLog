@@ -1,3 +1,9 @@
+2010-01-13 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.*, arpwidget.*, lfowidget.*, seqwidget.*: Session file
+	format changed to XML, file extension changed to .qmax, old text
+	files can be imported by selecting .qma files in fileOpen dialog 
+	filter.
+	
 2010-01-10 Frank Kober <goemusic@yahoo.fr>
 	* arpdata.cpp, midicctable.cpp: mute MIDI controller behaviour
 	extended: if min=max (default), a control value=127 toggles state.

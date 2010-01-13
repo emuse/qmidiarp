@@ -9,6 +9,9 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+
 #include "midiarp.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -59,8 +62,10 @@ class ArpWidget : public QWidget
     ~ArpWidget();
     MidiArp *getMidiArp();
     
-    void readArp(QTextStream& arpText);
-    void writeArp(QTextStream& arpText);
+    void readArp(QXmlStreamReader& xml);
+    void readArpText(QTextStream& arpText);
+    void writeArp(QXmlStreamWriter& xml);
+    void writeArpText(QTextStream& arpText);
     void setChIn(int value);
     void setIndexIn(int index, int value);
     void setChannelOut(int value);
