@@ -254,7 +254,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidg
     randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
             tr("&Length"), randomBox);
     connect(randomLength, SIGNAL(valueChanged(int)), midiArp,
-            SLOT(updateRandomVelocityAmp(int))); 
+            SLOT(updateRandomLengthAmp(int))); 
              
     randomBoxLayout->addWidget(randomTick);
     randomBoxLayout->addWidget(randomVelocity);
