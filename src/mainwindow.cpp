@@ -1071,6 +1071,7 @@ void MainWindow::midiClockToggle(bool on)
     addLfoAction->setDisabled(on);
     addSeqAction->setDisabled(on);
     fileOpenAction->setDisabled(on);
+    fileRecentlyOpenedFiles->setDisabled(on);
 }
 
 bool MainWindow::checkRcFile()
@@ -1206,7 +1207,7 @@ void MainWindow::setupRecentFilesMenu()
     fileRecentlyOpenedFiles->clear();
 
     if (recentFiles.count() > 0) {
-        fileRecentlyOpenedFiles->setEnabled(true);
+        if (!midiClockAction->isChecked()) fileRecentlyOpenedFiles->setEnabled(true);
         QStringList::Iterator it = recentFiles.begin();
         for (; it != recentFiles.end(); ++it) {
             fileRecentlyOpenedFiles->addAction(*it);
