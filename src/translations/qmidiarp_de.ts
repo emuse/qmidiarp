@@ -618,92 +618,97 @@ Mausrad: Verschieben des Offsets</translation>
         <translation>Strg+G</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="202"/>
+        <location filename="../mainwindow.cpp" line="195"/>
+        <source>&amp;Recently opened files</source>
+        <translation>&amp;Zuletzt geöffnete Dateien</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="209"/>
         <source>&amp;MIDI Controllers...</source>
         <translation>&amp;MIDI-Steuerungen...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="215"/>
+        <location filename="../mainwindow.cpp" line="222"/>
         <source>&amp;File Toolbar</source>
         <translation>&amp;Dateien Werkzeugleiste</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="223"/>
+        <location filename="../mainwindow.cpp" line="230"/>
         <source>&amp;Control Toolbar</source>
         <translation>&amp;Steuerungsleiste</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="294"/>
-        <location filename="../mainwindow.cpp" line="307"/>
-        <location filename="../mainwindow.cpp" line="320"/>
+        <location filename="../mainwindow.cpp" line="301"/>
+        <location filename="../mainwindow.cpp" line="314"/>
+        <location filename="../mainwindow.cpp" line="327"/>
         <source>%1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="306"/>
+        <location filename="../mainwindow.cpp" line="313"/>
         <source>Add MIDI LFO</source>
         <translation>MIDI LFO hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="319"/>
+        <location filename="../mainwindow.cpp" line="326"/>
         <source>Add Step Sequencer</source>
         <translation>Sequenzer hinzufügen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="540"/>
+        <location filename="../mainwindow.cpp" line="547"/>
         <source>QMidiArp XML files</source>
         <translation>QMidiArp XML Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="541"/>
+        <location filename="../mainwindow.cpp" line="548"/>
         <source>Old QMidiArp files</source>
         <translation>Alte QMidiArp Textdateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="560"/>
-        <location filename="../mainwindow.cpp" line="714"/>
+        <location filename="../mainwindow.cpp" line="567"/>
+        <location filename="../mainwindow.cpp" line="723"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Konnte die Datei &apos;%1&apos; nicht lesen.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="578"/>
+        <location filename="../mainwindow.cpp" line="585"/>
         <source>This is not a valid xml file for </source>
         <translation>Dies ist keine gültige xml Datei für </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="803"/>
+        <location filename="../mainwindow.cpp" line="812"/>
         <source>The QMidiArp text file was imported. If you save this file, it will be saved using the newer xml format under the name
  &apos;%1&apos;.</source>
         <translation>Die QMidiArp Textdatei wurde importiert. Beim nächsten Speichern wird diese im neueren xml Format gespeichert unter dem Namen
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="829"/>
-        <location filename="../mainwindow.cpp" line="915"/>
+        <location filename="../mainwindow.cpp" line="838"/>
+        <location filename="../mainwindow.cpp" line="924"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="993"/>
+        <location filename="../mainwindow.cpp" line="1002"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="995"/>
+        <location filename="../mainwindow.cpp" line="1004"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="999"/>
+        <location filename="../mainwindow.cpp" line="1008"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1114"/>
+        <location filename="../mainwindow.cpp" line="1123"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
@@ -739,22 +744,22 @@ Die Änderungen speichern?</translation>
         <translation>Strg+P</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="212"/>
+        <location filename="../mainwindow.cpp" line="219"/>
         <source>&amp;About Qt...</source>
         <translation>&amp;Über Qt...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="279"/>
+        <location filename="../mainwindow.cpp" line="286"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="284"/>
+        <location filename="../mainwindow.cpp" line="291"/>
         <source>About Qt</source>
         <translation>Über Qt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="293"/>
+        <location filename="../mainwindow.cpp" line="300"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>MIDI-Arpeggiator hinzufügen</translation>
     </message>
@@ -768,27 +773,27 @@ Die Änderungen speichern?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="128"/>
-        <location filename="../mainwindow.cpp" line="539"/>
+        <location filename="../mainwindow.cpp" line="546"/>
         <source>Open arpeggiator file</source>
         <translation>Arpeggiator-Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="576"/>
+        <location filename="../mainwindow.cpp" line="583"/>
         <source>Not a QMidiArp xml file.</source>
         <translation>Keine QMidiArp xml Datei.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="971"/>
+        <location filename="../mainwindow.cpp" line="980"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="971"/>
+        <location filename="../mainwindow.cpp" line="980"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1155"/>
+        <location filename="../mainwindow.cpp" line="1173"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>
@@ -850,7 +855,7 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="210"/>
+        <location filename="../mainwindow.cpp" line="217"/>
         <source>&amp;About %1...</source>
         <translation>&amp;Über %1...</translation>
     </message>

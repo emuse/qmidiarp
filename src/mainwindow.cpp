@@ -191,10 +191,17 @@ MainWindow::MainWindow(int p_portCount)
 
     fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileOpenAction);
+
+    fileRecentlyOpenedFiles = fileMenu->addMenu(tr("&Recently opened files"));
+    
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
     fileMenu->addAction(fileQuitAction);    
+    connect(fileMenu, SIGNAL(aboutToShow()), this,
+        SLOT(setupRecentFilesMenu()));
+    connect(fileRecentlyOpenedFiles, SIGNAL(triggered(QAction*)), this,
+        SLOT(recentFileActivated(QAction*)));
 
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
@@ -595,7 +602,9 @@ void MainWindow::openFile(const QString& fn)
         }
         else skipXmlElement(xml);
     }
-    arpData->setModified(false);
+
+    addRecentlyOpenedFile(filename, recentFiles);
+    arpData->setModified(false);    
 }
 
 void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
@@ -1140,6 +1149,15 @@ void MainWindow::readRcFile()
         qs = loadText.readLine();
         lastDir = qs;
     }
+    
+    qs = loadText.readLine();
+    if (qs.startsWith("[Recent")) {
+    
+        while (!loadText.atEnd()) {
+                qs = loadText.readLine();
+                recentFiles << qs;
+        }
+    }
 }
 
 void MainWindow::writeRcFile()
@@ -1171,7 +1189,64 @@ void MainWindow::writeRcFile()
 
     writeText << "[Last Dir]" << endl;
     writeText << lastDir << endl;
+    
+    writeText << "[Recent Files]" << endl;
+    
+    // save recently opened files (all recent files code taken from AMS)
+    if (recentFiles.count() > 0) {
+        QStringList::Iterator it = recentFiles.begin();
+        for (; it != recentFiles.end(); ++it) {
+            writeText << *it << endl;
+        }
+    }
 }
+
+void MainWindow::setupRecentFilesMenu()
+{
+    fileRecentlyOpenedFiles->clear();
+
+    if (recentFiles.count() > 0) {
+        fileRecentlyOpenedFiles->setEnabled(true);
+        QStringList::Iterator it = recentFiles.begin();
+        for (; it != recentFiles.end(); ++it) {
+            fileRecentlyOpenedFiles->addAction(*it);
+        }
+    } else {
+        fileRecentlyOpenedFiles->setEnabled(false);
+    }
+}
+
+void MainWindow::recentFileActivated(QAction *action)
+{
+    if (!action->text().isEmpty()) {
+        if (isSave())
+            openFile(action->text());
+    }
+}
+
+
+void MainWindow::addRecentlyOpenedFile(const QString &fn, QStringList &lst)
+{
+    QFileInfo fi(fn);
+    if (lst.contains(fi.absoluteFilePath()))
+        return;
+    if (lst.count() >= 6 )
+        lst.removeLast();
+
+    lst.prepend(fi.absoluteFilePath());
+}
+
+void MainWindow::appendRecentlyOpenedFile(const QString &fn, QStringList &lst)
+{
+    QFileInfo fi(fn);
+    if (lst.contains(fi.absoluteFilePath()))
+        return;
+    if (lst.count() >= 6 )
+        lst.removeFirst();
+
+    lst.append(fi.absoluteFilePath());
+}
+
 
 void MainWindow::updatePatternPresets(const QString& n, const QString& p,
         int index)
@@ -1277,4 +1352,3 @@ void MainWindow::signalAction(int fd)
             break;
     }
 }
-

@@ -37,6 +37,7 @@ class MainWindow : public QMainWindow
     ArpData *arpData;
     QString lastDir, filename;
     QStringList patternNames, patternPresets;
+    QStringList recentFiles;
     QDockWidget *logWindow, *grooveWindow, *passWindow;
     
     void chooseFile();
@@ -54,7 +55,8 @@ class MainWindow : public QMainWindow
     void readFilePartGlobal(QXmlStreamReader& xml);
     void readFilePartModules(QXmlStreamReader& xml);
     void readFilePartGUI(QXmlStreamReader& xml);
-
+	void addRecentlyOpenedFile(const QString &fn, QStringList &lst);
+	void appendRecentlyOpenedFile(const QString &fn, QStringList &lst);
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
@@ -77,6 +79,7 @@ class MainWindow : public QMainWindow
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
     QAction *midiClockAction;
+    QMenu* fileRecentlyOpenedFiles;
     void openFile(const QString&);
     void skipXmlElement(QXmlStreamReader& xml);
     void openTextFile(const QString&);
@@ -90,6 +93,8 @@ class MainWindow : public QMainWindow
     void fileOpen();
     void fileSave();
     void fileSaveAs();
+    void recentFileActivated(QAction*);
+    void setupRecentFilesMenu();
     void arpNew();
     void lfoNew();
     void seqNew();
