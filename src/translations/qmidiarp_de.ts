@@ -160,12 +160,12 @@
         <translation>Hüllkurve</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="771"/>
+        <location filename="../arpwidget.cpp" line="796"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="790"/>
+        <location filename="../arpwidget.cpp" line="815"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
@@ -174,27 +174,27 @@
         <translation type="obsolete">Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="677"/>
+        <location filename="../arpwidget.cpp" line="702"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="709"/>
+        <location filename="../arpwidget.cpp" line="734"/>
         <source>%1: Store pattern</source>
         <translation>%1: Muster speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="710"/>
+        <location filename="../arpwidget.cpp" line="735"/>
         <source>New pattern</source>
         <translation>Neues Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="710"/>
+        <location filename="../arpwidget.cpp" line="735"/>
         <source>Arp pattern</source>
         <translation>Arp-Muster</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="746"/>
+        <location filename="../arpwidget.cpp" line="771"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
@@ -679,31 +679,31 @@ Mausrad: Verschieben des Offsets</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="829"/>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Konnte in die Datei &apos;%1&apos; nicht schreiben.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="991"/>
+        <location filename="../mainwindow.cpp" line="993"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Die unbenannte Datei wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="993"/>
+        <location filename="../mainwindow.cpp" line="995"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Die Datei &apos;%1&apos; wurde verändert.
 Die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="997"/>
+        <location filename="../mainwindow.cpp" line="999"/>
         <source>Save changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1112"/>
+        <location filename="../mainwindow.cpp" line="1114"/>
         <source>Could not read from resource file</source>
         <translation>Konnte Ressourcendatei nicht einlesen</translation>
     </message>
@@ -778,17 +778,17 @@ Die Änderungen speichern?</translation>
         <translation>Keine QMidiArp xml Datei.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="969"/>
+        <location filename="../mainwindow.cpp" line="971"/>
         <source>Save arpeggiator</source>
         <translation>Arpeggiator Speichern</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="969"/>
+        <location filename="../mainwindow.cpp" line="971"/>
         <source>QMidiArp files</source>
         <translation>QMidiArp Dateien</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1153"/>
+        <location filename="../mainwindow.cpp" line="1155"/>
         <source>Could not write to resource file</source>
         <translation>Konnte Ressourcendatei nicht speichern</translation>
     </message>

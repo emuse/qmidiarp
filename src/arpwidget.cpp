@@ -447,6 +447,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                     patternText->setText(xml.readElementText());
                 else if (xml.name() == "repeatMode")
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
+                else skipXmlElement(xml);
             }
         }
 
@@ -465,6 +466,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                     rangeIn[0]->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "rangeMax")
                     rangeIn[1]->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
             }
         }
         else if (xml.isStartElement() && (xml.name() == "output")) {
@@ -476,6 +478,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                     channelOut->setValue(xml.readElementText().toInt() + 1);
                 else if (xml.name() == "port")
                     portOut->setValue(xml.readElementText().toInt() + 1);
+                else skipXmlElement(xml);
             }
         }
         else if (xml.isStartElement() && (xml.name() == "random")) {
@@ -489,6 +492,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                     randomVelocity->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "length")
                     randomLength->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
             }
         }
         else if (xml.isStartElement() && (xml.name() == "envelope")) {
@@ -500,6 +504,7 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                     attackTime->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "release")
                     releaseTime->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
              }
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
@@ -525,15 +530,35 @@ void ArpWidget::readArp(QXmlStreamReader& xml)
                             min = xml.readElementText().toInt();
                         else if (xml.name() == "max")
                             max = xml.readElementText().toInt();
+                        else skipXmlElement(xml);
                     }
                     if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
                         appendMidiCC(ctrlID, ccnumber, channel, min, max);
                     else qWarning("Controller data incomplete");                  
                 }
+                else skipXmlElement(xml);
+            }
+        }
+        else skipXmlElement(xml);
+    }
+    modified = false;
+}
+
+void ArpWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+    
+            if (xml.isEndElement())
+                break;
+    
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
             }
         }
     }
-    modified = false;
 }
 
 void ArpWidget::readArpText(QTextStream& arpText)

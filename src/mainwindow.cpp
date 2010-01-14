@@ -622,7 +622,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
                 else if (xml.name() == "forwardPort")
-                    passWidget->setPortUnmatched(xml.readElementText().toInt());
+                    passWidget->setPortUnmatched(xml.readElementText().toInt() + 1);
                 else skipXmlElement(xml);
             }
         }
@@ -835,6 +835,8 @@ bool MainWindow::saveFile()
     xml.writeDTD("<!DOCTYPE qmidiarpSession>");
     xml.writeStartElement("session");
     xml.writeAttribute("version", PACKAGE_VERSION);
+    xml.writeAttribute("name", filename.mid(filename.lastIndexOf('/') + 1,
+                    filename.count() - filename.lastIndexOf('/') - 6));
     
     xml.writeStartElement("global");
     

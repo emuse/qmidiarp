@@ -1,3 +1,7 @@
+2010-01-14 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp: Session name added to XML file
+	* arpwidget.*: missing reading-skips of unknown xml elements added
+
 2010-01-13 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.*, arpwidget.*, lfowidget.*, seqwidget.*: Session file
 	format changed to XML, file extension changed to .qmax, old text

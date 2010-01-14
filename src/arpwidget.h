@@ -66,6 +66,7 @@ class ArpWidget : public QWidget
     void readArpText(QTextStream& arpText);
     void writeArp(QXmlStreamWriter& xml);
     void writeArpText(QTextStream& arpText);
+    void skipXmlElement(QXmlStreamReader& xml);
     void setChIn(int value);
     void setIndexIn(int index, int value);
     void setChannelOut(int value);
