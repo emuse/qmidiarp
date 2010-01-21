@@ -47,16 +47,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
         runQueueIfArp = true;
         initArpQueue();
         use_jacksync = false;
-        
-        if (use_jacksync) {
-            if (jackSync->isRunning()) {
-                jpos = jackSync->get_pos();
-                tempo = jpos.beats_per_minute;
-            }
-        }
-        else 
-            tempo = 100;
-        
+        tempo = 100;
         internal_tempo = 100;
         midiTick = 0;
         use_midiclock = false;
