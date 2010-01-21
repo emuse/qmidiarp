@@ -32,6 +32,7 @@
 #include "pixmaps/groovetog.xpm"
 #include "pixmaps/play.xpm"
 #include "pixmaps/midiclock.xpm"
+#include "pixmaps/jacktr.xpm"
 #include "pixmaps/fileopen.xpm"
 #include "pixmaps/filenew.xpm"
 #include "pixmaps/filesave.xpm"
@@ -85,7 +86,6 @@ MainWindow::MainWindow(int p_portCount)
 
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));                 
-
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -146,6 +146,9 @@ MainWindow::MainWindow(int p_portCount)
 
     runAction = new QAction(QIcon(play_xpm), tr("&Run"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
+    runAction->setCheckable(true);
+    runAction->setChecked(false);
+    runAction->setDisabled(true);
 
     tempoSpin = new QSpinBox(this);
     tempoSpin->setRange(10, 400);
@@ -156,15 +159,24 @@ MainWindow::MainWindow(int p_portCount)
 
     midiClockAction = new QAction(QIcon(midiclock_xpm), 
             tr("&Use incoming MIDI Clock"), this);
-    connect(midiClockAction, SIGNAL(toggled(bool)), this,
-            SLOT(midiClockToggle(bool)));
-
     midiClockAction->setCheckable(true);
     midiClockAction->setChecked(false);
     midiClockAction->setDisabled(true);
-    runAction->setCheckable(true);
-    runAction->setChecked(false);
-    runAction->setDisabled(true);
+    connect(midiClockAction, SIGNAL(toggled(bool)), this,
+            SLOT(midiClockToggle(bool)));
+
+
+    jackSyncAction = new QAction(QIcon(jacktr_xpm), 
+            tr("&Connect to Jack Transport"), this);
+    jackSyncAction->setCheckable(true);
+    jackSyncAction->setChecked(false);
+    jackSyncAction->setDisabled(true);
+    connect(jackSyncAction, SIGNAL(toggled(bool)), this,
+            SLOT(jackSyncToggle(bool)));
+    connect(arpData->seqDriver, SIGNAL(jackShutdown(bool)), 
+            jackSyncAction, SLOT(setChecked(bool)));
+
+    
     updateRunQueue(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
@@ -238,6 +250,7 @@ MainWindow::MainWindow(int p_portCount)
     controlToolBar->addAction(runAction);
     controlToolBar->addWidget(tempoSpin);
     controlToolBar->addAction(midiClockAction);
+    controlToolBar->addAction(jackSyncAction);
     controlToolBar->setObjectName("controlToolBar");
     controlToolBar->setMaximumHeight(30);
 
@@ -626,6 +639,8 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     passWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "midiClockEnabled")
                         midiClockAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "jackSyncEnabled")
+                        jackSyncAction->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "midiClockRate")
                     passWidget->mtpbSpin->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "forwardUnmatched")
@@ -856,6 +871,8 @@ bool MainWindow::saveFile()
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled", 
                 QString::number((int)arpData->seqDriver->use_midiclock));
+            xml.writeTextElement("jackSyncEnabled", 
+                QString::number((int)arpData->seqDriver->use_jacksync));
             xml.writeTextElement("midiClockRate", 
                 QString::number(arpData->seqDriver->midiclock_tpb));
             xml.writeTextElement("forwardUnmatched", 
@@ -1063,8 +1080,20 @@ void MainWindow::resetQueue()
 
 void MainWindow::midiClockToggle(bool on)
 {
-    runAction->setChecked(on);
+    if (on) jackSyncAction->setChecked(false);
     arpData->seqDriver->setUseMidiClock(on);
+    setGUIforExtSync(on);
+}
+
+void MainWindow::jackSyncToggle(bool on)
+{
+    if (on) midiClockAction->setChecked(false);
+    arpData->seqDriver->setUseJackTransport(on);
+    setGUIforExtSync(on);
+}
+
+void MainWindow::setGUIforExtSync(bool on)
+{
     runAction->setDisabled(on);
     tempoSpin->setDisabled(on);
     addArpAction->setDisabled(on);
@@ -1072,7 +1101,7 @@ void MainWindow::midiClockToggle(bool on)
     addSeqAction->setDisabled(on);
     fileOpenAction->setDisabled(on);
     fileRecentlyOpenedFiles->setDisabled(on);
-}
+}   
 
 bool MainWindow::checkRcFile()
 {
@@ -1271,6 +1300,8 @@ void MainWindow::checkIfLastModule()
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
+        jackSyncAction->setDisabled(true);
+        jackSyncAction->setChecked(false);
     }
 }
 
@@ -1278,7 +1309,9 @@ void MainWindow::checkIfFirstModule()
 {
     if (arpData->moduleWindowCount() == 1) {
         midiClockAction->setEnabled(true);
-        runAction->setEnabled(true);
+        jackSyncAction->setEnabled(true);
+        runAction->setEnabled(!(midiClockAction->isChecked() 
+                                || jackSyncAction->isChecked()));
     }
 }
 

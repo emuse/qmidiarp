@@ -37,16 +37,27 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
             exit(1);
         }
         snd_seq_set_client_pool_output(seq_handle, SEQPOOL);                                     
-        tempo = 100;
+
+     
         grooveTick = 0;
-        firstArpTick = 0;
         grooveVelocity = 0;
         grooveLength = 0;
         runArp = false;
         startQueue = false;
         runQueueIfArp = true;
         initArpQueue();
-        setQueueTempo(100);
+        use_jacksync = false;
+        
+        if (use_jacksync) {
+            if (jackSync->isRunning()) {
+                jpos = jackSync->get_pos();
+                tempo = jpos.beats_per_minute;
+            }
+        }
+        else 
+            tempo = 100;
+        
+        internal_tempo = 100;
         midiTick = 0;
         use_midiclock = false;
         midiclock_tpb = 96;
@@ -60,6 +71,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 }
 
 SeqDriver::~SeqDriver(){
+    jackSync->deactivateJack();
 }
 
 void SeqDriver::registerPorts(int num)
@@ -128,11 +140,28 @@ void SeqDriver::procEvents(int)
 
         if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue || fallback)) 
         {
+            
             fallback = false;
+            
             real_time = evIn->time.time;
+            
             if (use_midiclock) {
                 tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
                 calcMidiRatio();
+            }
+            else if (use_jacksync) {
+                if (jackSync->isRunning()) {
+                    
+                    if (!jackSync->get_state()) 
+                        setQueueStatus(false);
+    
+                    jpos = jackSync->get_pos();
+                    
+                    tick = (double)jpos.frame * TICKS_PER_QUARTER 
+                            / jpos.frame_rate * jpos.beats_per_minute / 60
+                            - jack_offset_tick;
+                    calcMidiRatio();
+                }
             }
             else {
                 m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
@@ -143,8 +172,11 @@ void SeqDriver::procEvents(int)
 //                            printf("nextLfoTick %d",nextLfoTick);
 //                            printf("nextSeqTick %d\n",nextSeqTick);
 //                            printf("midiTick %d   ",midiTick);
-//                            printf("m_ratio %f\n",m_ratio);
-            emit nextStep((tick-firstArpTick));
+//                            printf("m_ratio %f  ",m_ratio);
+//                            printf("Jack Beat %d\n", jpos.beat);
+//                            printf("Jack Frame %d  ", (int)jpos.frame);
+//                            printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
+            emit nextStep(tick);
             startQueue = false;
             foundEcho = false;
 
@@ -397,6 +429,7 @@ void SeqDriver::initArpQueue()
 void SeqDriver::setQueueTempo(int bpm)
 {
     tempo = bpm;
+    internal_tempo = bpm;
     m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
 }
 
@@ -438,14 +471,29 @@ void SeqDriver::setQueueStatus(bool run)
         nextLfoTick = 0;
         nextSeqTick = 0;
         nextEchoTick = 0;
+        jack_offset_tick = 0;
+       
+        if (use_midiclock) {
+            midiTick = 0;
+        } 
+        else if (use_jacksync) {
+            if (jackSync->isRunning()) {
+            
+                jpos = jackSync->get_pos();
+                tempo = jpos.beats_per_minute;
+                jack_offset_tick = (double)jpos.frame * TICKS_PER_QUARTER 
+                        / jpos.frame_rate * jpos.beats_per_minute / 60;
+            }
+        }
+        else
+            tempo = internal_tempo;
+            
+        m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+        tick = 0;        
         snd_seq_start_queue(seq_handle, queue_id, NULL);
         snd_seq_drain_output(seq_handle);
         real_time = get_time();
-        if (use_midiclock) {
-            midiTick = 0;
-            tick = 0;
-        } else
-            tick = deltaToTick(real_time);
+        
         snd_seq_ev_clear(&evOut);
         evOut.type = SND_SEQ_EVENT_NOTEOFF;
         evOut.data.note.note = 0;
@@ -456,10 +504,11 @@ void SeqDriver::setQueueStatus(bool run)
 
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->initArpTick(tick);
-            firstArpTick=(int)tick;
         }
+        qWarning("Alsa Queue started");
 
-    } else {
+    }
+    else {
         runArp = false;
         //    snd_seq_drop_output(seq_handle);
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
@@ -475,7 +524,8 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_remove_events_free(remove_ev);
 
         snd_seq_stop_queue(seq_handle, queue_id, NULL);
-    }  
+        qWarning("Alsa Queue stopped");
+    }
 }
 
 void SeqDriver::setGrooveTick(int val)
@@ -524,6 +574,32 @@ void SeqDriver::sendGroove()
     }
 }
 
+void SeqDriver::setUseJackTransport(bool on)
+{
+    if (on) {
+        jackSync = new JackSync();
+        jackSync->setParent(this);
+        jackSync->initJack();
+        jackSync->activateJack();
+        connect(jackSync, SIGNAL(j_tr_state(bool)), 
+                this, SLOT(runQueue(bool)));
+        connect(jackSync, SIGNAL(j_shutdown()), 
+                this, SLOT(jackShutdown()));
+        use_jacksync = true;
+    }
+    else {
+        jackSync->deactivateJack();
+        delete jackSync;
+        use_jacksync = false;
+    }
+}               
+
+void SeqDriver::jackShutdown()
+{
+    setQueueStatus(false);
+    emit jackShutdown(false);
+}
+
 void SeqDriver::setUseMidiClock(bool on)
 {
     runQueue(false);
@@ -561,9 +637,26 @@ int SeqDriver::deltaToTick(snd_seq_real_time_t curtime)
     return (int)(alsatick +.5);
 }
 
+snd_seq_real_time_t SeqDriver::addAlsaTimes(snd_seq_real_time_t time1
+        , snd_seq_real_time_t time2)
+{
+    snd_seq_real_time_t addtime;
+    addtime.tv_nsec = time1.tv_nsec / 2 + time2.tv_nsec / 2;
+    if (addtime.tv_nsec >= 500000000L) {
+        addtime.tv_nsec -= 500000000L;
+        addtime.tv_sec+= delta.tv_sec + 1;
+    }
+    else
+        addtime.tv_sec+= addtime.tv_sec;
+        
+    addtime.tv_nsec = addtime.tv_nsec + addtime.tv_nsec;
+    return addtime;
+}
+
 void SeqDriver::calcMidiRatio()
 {
     double old_m_ratio = m_ratio;
+    
     if (tick) {
         m_ratio = ((double)real_time.tv_sec * 1e9 
                 + (double)real_time.tv_nsec)/tick;
@@ -577,7 +670,7 @@ void SeqDriver::calcMidiRatio()
 
 int SeqDriver::getAlsaClientId()
 {
-        return clientid;
+    return clientid;
 }
 
 void SeqDriver::setMidiControllable(bool on)

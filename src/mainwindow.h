@@ -55,8 +55,8 @@ class MainWindow : public QMainWindow
     void readFilePartGlobal(QXmlStreamReader& xml);
     void readFilePartModules(QXmlStreamReader& xml);
     void readFilePartGUI(QXmlStreamReader& xml);
-	void addRecentlyOpenedFile(const QString &fn, QStringList &lst);
-	void appendRecentlyOpenedFile(const QString &fn, QStringList &lst);
+    void addRecentlyOpenedFile(const QString &fn, QStringList &lst);
+    void appendRecentlyOpenedFile(const QString &fn, QStringList &lst);
     bool checkRcFile();
     void writeRcFile();
     void readRcFile();
@@ -78,7 +78,7 @@ class MainWindow : public QMainWindow
     QAction *addLfoAction, *addSeqAction;
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
-    QAction *midiClockAction;
+    QAction *midiClockAction, *jackSyncAction;
     QMenu* fileRecentlyOpenedFiles;
     void openFile(const QString&);
     void skipXmlElement(QXmlStreamReader& xml);
@@ -107,6 +107,8 @@ class MainWindow : public QMainWindow
     void updateTempo(int tempo);
     void updateRunQueue(bool on);
     void midiClockToggle(bool on);
+    void jackSyncToggle(bool on);
+    void setGUIforExtSync(bool on);
     void resetQueue();
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void showMidiCCDialog();

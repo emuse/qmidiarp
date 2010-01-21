@@ -22,6 +22,8 @@ AC_CHECK_LIB([QtGui], [main], ,
              [AC_MSG_ERROR(QtGui is required)])
 AC_CHECK_LIB([asound], [snd_pcm_open], ,
              [AC_MSG_ERROR(ALSA library (asound) is required)])
+AC_CHECK_LIB([jack], [jack_client_open], ,
+             [AC_MSG_ERROR(JACK library (jack) is required)])
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
 PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")

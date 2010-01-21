@@ -19,6 +19,7 @@ nodist_qmidiarp_SOURCES = \
 	midiseq_moc.cpp \
 	midicctable_moc.cpp \
 	passwidget_moc.cpp \
+	jacksync_moc.cpp \
 	seqdriver_moc.cpp \
 	slider_moc.cpp
 	
@@ -39,6 +40,7 @@ qmidiarp_SOURCES = \
 	midiseq.cpp midiseq.h \
 	midicctable.cpp midicctable.h \
 	passwidget.cpp passwidget.h \
+	jacksync.cpp jacksync.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
 

@@ -1,489 +1,506 @@
+2010-01-20 Frank Kober <goemusic@yahoo.fr>
+    * seqdriver.*, mainwindow.*: Jack transport sync capability
+    integrated as a user choice. Jack sync object is created/destroyed
+    as a child of seqdriver by toggling jackSync toolbar button. 
+    Alsa queue is started at 0 on reception of jack transport start
+    regardless the current jack transport position. Jack transport
+    position is used as calibrator for alsa event scheduling. On 
+    reception of jack shutdown/connect fail, an event is emitted 
+    toggling back the jack transport button, which stops the queue and
+    switches back to internal clock. 
+    * jacksync.cpp, jacksync.h: jackSync class added providing jack
+    transport data and emitting signals on transport start and jack
+    shutdown. 
+    * jacktr.xpm: icon added.
+    * configure.ac, src/Makefile.am, src/pixmaps/Makefile.am: jack 
+    dependency added, new files added to package.
+    
 2010-01-14 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: Session name added to XML file, recent files menu
-	added with code from AMS
-	* arpwidget.*: missing reading-skips of unknown xml elements added
+    * mainwindow.cpp: Session name added to XML file, recent files menu
+    added with code from AMS
+    * arpwidget.*: missing reading-skips of unknown xml elements added
 
 2010-01-13 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*, arpwidget.*, lfowidget.*, seqwidget.*: Session file
-	format changed to XML, file extension changed to .qmax, old text
-	files can be imported by selecting .qma files in fileOpen dialog 
-	filter.
-	
+    * mainwindow.*, arpwidget.*, lfowidget.*, seqwidget.*: Session file
+    format changed to XML, file extension changed to .qmax, old text
+    files can be imported by selecting .qma files in fileOpen dialog 
+    filter.
+    
 2010-01-10 Frank Kober <goemusic@yahoo.fr>
-	* arpdata.cpp, midicctable.cpp: mute MIDI controller behaviour
-	extended: if min=max (default), a control value=127 toggles state.
-	if min!=max, control value=min mutes, control value=max unmutes
-	
+    * arpdata.cpp, midicctable.cpp: mute MIDI controller behaviour
+    extended: if min=max (default), a control value=127 toggles state.
+    if min!=max, control value=min mutes, control value=max unmutes
+    
 2010-01-09 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.*, arp/lfo/seqwidget.*, midicctable.cpp: MIDI Channel 
-	added to controller filter
-	
+    * seqdriver.*, arp/lfo/seqwidget.*, midicctable.cpp: MIDI Channel 
+    added to controller filter
+    
 2010-01-08 Guido Scholz <guido.scholz@bayernline.de>
-	* mainwindow.*: Handler for SIGINT added to handle unsaved or
-	changed files more carefully at program termination. Handler for
-	SIGUSR1 added to provide support for LADISH level 1.
+    * mainwindow.*: Handler for SIGINT added to handle unsaved or
+    changed files more carefully at program termination. Handler for
+    SIGUSR1 added to provide support for LADISH level 1.
 
 2010-01-08 Frank Kober <goemusic@yahoo.fr>
-	* arp/lfo/seqwidget.cpp: modified flags upon midi controller
-	attribution change added, check for double-attributed controllers
-	added
-	* arpdata.cpp, midicctable.cpp: min/max settings adapted for toggler
-	controls
-	* midicctable.cpp: revert and remove row functions added
-	
+    * arp/lfo/seqwidget.cpp: modified flags upon midi controller
+    attribution change added, check for double-attributed controllers
+    added
+    * arpdata.cpp, midicctable.cpp: min/max settings adapted for toggler
+    controls
+    * midicctable.cpp: revert and remove row functions added
+    
 2010-01-07 Frank Kober <goemusic@yahoo.fr>
-	* seqwidget.cpp: note length slider maximum set to 127
-	* midicctable.*: items made editable, "OK" button replaces current
-	controllers by table content, "Cancel" quits without applying changes
-	* arpdata.cpp: min and max controller settings made active
+    * seqwidget.cpp: note length slider maximum set to 127
+    * midicctable.*: items made editable, "OK" button replaces current
+    controllers by table content, "Cancel" quits without applying changes
+    * arpdata.cpp: min and max controller settings made active
 
 2010-01-04 Frank Kober <goemusic@yahoo.fr>
-	* lfo*.*: custom wave made controllable by offset slider (and MIDI)
+    * lfo*.*: custom wave made controllable by offset slider (and MIDI)
 
 2009-12-31 Frank Kober <goemusic@yahoo.fr>
-	* MIDI control handling modified: controllers can be attributed to
-	mute checkbox and various sliders by context menu and MIDI 
-	learn/forget. 
-	Each module holds a control/controller item list, incoming 
-	controllers are	handled in arpdata.cpp
-	* midicctable.*: control editor implementation started
+    * MIDI control handling modified: controllers can be attributed to
+    mute checkbox and various sliders by context menu and MIDI 
+    learn/forget. 
+    Each module holds a control/controller item list, incoming 
+    controllers are handled in arpdata.cpp
+    * midicctable.*: control editor implementation started
 
 2009-12-23 Frank Kober <goemusic@yahoo.fr>
-	* *lfo*.cpp: implement mouse wheel on lfoscreen to change offset of
-	LFO waveform. This is of interest mainly for the custom drawn wave
+    * *lfo*.cpp: implement mouse wheel on lfoscreen to change offset of
+    LFO waveform. This is of interest mainly for the custom drawn wave
 
 2009-12-06 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: GUI settings stored through saveState() Qt function
-	applying to *.qma files and .qmidiarprc file as a Hex-encoded part.
-	* passwidget.cpp: compact style for modules is now default 
+    * mainwindow.cpp: GUI settings stored through saveState() Qt function
+    applying to *.qma files and .qmidiarprc file as a Hex-encoded part.
+    * passwidget.cpp: compact style for modules is now default 
 
 2009-12-04 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.*, arpdata.*, *widget.*: all modules MIDI-mutable,
-	mute MIDI controller depends on position in tabbed dock (order of
-	module creation) instead of position in midiArpList
-	* passwidget.*, mainwindow.*, main.h, *widget.*: "compact style" can
-	be checked in passwidget acting on font size, grid spacing and
-	element heights for all modules, to allow for placing several
-	modules next to each other on desktop. compactStyle property
-	added to rc-file items.
-	* man/*/qmidiarp.1: updated
-	* NEWS: updated
+    * seqdriver.*, arpdata.*, *widget.*: all modules MIDI-mutable,
+    mute MIDI controller depends on position in tabbed dock (order of
+    module creation) instead of position in midiArpList
+    * passwidget.*, mainwindow.*, main.h, *widget.*: "compact style" can
+    be checked in passwidget acting on font size, grid spacing and
+    element heights for all modules, to allow for placing several
+    modules next to each other on desktop. compactStyle property
+    added to rc-file items.
+    * man/*/qmidiarp.1: updated
+    * NEWS: updated
 
 2009-11-29 Frank Kober <goemusic@yahoo.fr>
-	* midi*.*, *widget.*, mainwindow.*: goodbye tabWidget, hello 
-	dockWidget, all modules are floatable, by default tabified
-	Dock Windows now
-	* lfowidget.*: small pixmaps for waveform combobox included
-	* pixmaps/lfow*.xpm: pixmaps for waveform combobox added
+    * midi*.*, *widget.*, mainwindow.*: goodbye tabWidget, hello 
+    dockWidget, all modules are floatable, by default tabified
+    Dock Windows now
+    * lfowidget.*: small pixmaps for waveform combobox included
+    * pixmaps/lfow*.xpm: pixmaps for waveform combobox added
 
 2009-11-23 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.cpp, midiseq.cpp: small computation optimization
-	* midiarp.cpp: debug printf removed
-	* seqwidget.cpp: keyboard shortcuts cleaned up
-	* man/de/qmidiarp.1: German translation of manpage added
-	provided by Robert Dietrich
-	* man/*/qmidiarp.1: improvements/corrections
+    * midilfo.cpp, midiseq.cpp: small computation optimization
+    * midiarp.cpp: debug printf removed
+    * seqwidget.cpp: keyboard shortcuts cleaned up
+    * man/de/qmidiarp.1: German translation of manpage added
+    provided by Robert Dietrich
+    * man/*/qmidiarp.1: improvements/corrections
 
 2009-11-22 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: use seqdriver->runArp instead of 
-	runQueue->isChecked() for resetting queue, group action disabling in
-	functions
-	* arpscreen.*: obsolete variables removed
-	* man/*/qmidiarp.1: man pages updated
+    * mainwindow.cpp: use seqdriver->runArp instead of 
+    runQueue->isChecked() for resetting queue, group action disabling in
+    functions
+    * arpscreen.*: obsolete variables removed
+    * man/*/qmidiarp.1: man pages updated
 
 2009-11-15 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.cpp: compute MIDI clock slave timing on every received
-	clock event and stabilized a bit against MIDI clock tempo changes
+    * seqdriver.cpp: compute MIDI clock slave timing on every received
+    clock event and stabilized a bit against MIDI clock tempo changes
 
 2009-11-13 Frank Kober <goemusic@yahoo.fr>
-	* midiseq.*, seqwidget.*, seqscreen.*: step Sequencer module added.
-	Current features: adjustable resolution, length and global velocity,
-	note length, transpose. Velocity and transpose can optionally be 
-	obtained from input notes played on keyboard. Notes can be drawn and
-	muted by left/right mouse click.
-	* src/pixmaps/seqadd.xpm, src/pixmaps/seqwavcp.xpm: seq icons added
-	* mainwindow.*, seqdriver.*, arpdata.*, Makefile.am, configure.ac: 
-	incorporate stepsequencer handling
+    * midiseq.*, seqwidget.*, seqscreen.*: step Sequencer module added.
+    Current features: adjustable resolution, length and global velocity,
+    note length, transpose. Velocity and transpose can optionally be 
+    obtained from input notes played on keyboard. Notes can be drawn and
+    muted by left/right mouse click.
+    * src/pixmaps/seqadd.xpm, src/pixmaps/seqwavcp.xpm: seq icons added
+    * mainwindow.*, seqdriver.*, arpdata.*, Makefile.am, configure.ac: 
+    incorporate stepsequencer handling
 
 2009-11-09 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*: fixed: startup with GUI settings defined in
-	MainWindow constructor, also when .qmidiarprc is being created the 
-	first time
+    * mainwindow.*: fixed: startup with GUI settings defined in
+    MainWindow constructor, also when .qmidiarprc is being created the 
+    first time
 
 2009-11-08 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: some icons added, View items added to toolbar
-	* eventlog.xpm, groovetog.xpm, settings.xpm, pixmaps/Makefile.am: 
-	some icons added
-	* filesave.xpm, filesaveas.xpm: icons polished
+    * mainwindow.cpp: some icons added, View items added to toolbar
+    * eventlog.xpm, groovetog.xpm, settings.xpm, pixmaps/Makefile.am: 
+    some icons added
+    * filesave.xpm, filesaveas.xpm: icons polished
 
 2009-11-07 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: MIDI clock resolution and toggle added to saved 
-	items
-	* translations/*.ts: minor fixes
-	* man/fr/qmidiarp.1, Makefile.am, configure.ac: French manpage added
-	* man/qmidiarp.1: slight editing
+    * mainwindow.cpp: MIDI clock resolution and toggle added to saved 
+    items
+    * translations/*.ts: minor fixes
+    * man/fr/qmidiarp.1, Makefile.am, configure.ac: French manpage added
+    * man/qmidiarp.1: slight editing
 
 2009-11-06 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: fixed double employed Ctrl-L keysequence
-	* lfowidget.cpp: fixed keyboard tab focus sequence
-	* man/qmidiarp.1: streamlined
+    * mainwindow.cpp: fixed double employed Ctrl-L keysequence
+    * lfowidget.cpp: fixed keyboard tab focus sequence
+    * man/qmidiarp.1: streamlined
 
 2009-11-05 Frank Kober <goemusic@yahoo.fr>
-	* NEWS, README: updated
-	* mainwindow.cpp: fixed disabling of removePattern action for all arps
+    * NEWS, README: updated
+    * mainwindow.cpp: fixed disabling of removePattern action for all arps
 
 2009-11-04 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*, arpdata.*, arpwidget.*: arp preset pattern handling
-	changed. If the preset list is modified in one arp, all arps get
-	updated. GUI settings stored to .qmidiarprc file along with arp 
-	patterns. rc file is written on exit of the application and when
-	the arp preset list is modified.
-	* lfowidget.cpp: abort reading LFO waveform data when none was saved 
+    * mainwindow.*, arpdata.*, arpwidget.*: arp preset pattern handling
+    changed. If the preset list is modified in one arp, all arps get
+    updated. GUI settings stored to .qmidiarprc file along with arp 
+    patterns. rc file is written on exit of the application and when
+    the arp preset list is modified.
+    * lfowidget.cpp: abort reading LFO waveform data when none was saved 
 
 2009-11-02 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: tempoSpin box disabled when queue running atm
+    * mainwindow.cpp: tempoSpin box disabled when queue running atm
 
 2009-11-01 Frank Kober <goemusic@yahoo.fr>
-	* arpwidget.*: obsolete headers removed
-	* man/qmidiarp.1: manpage updated
+    * arpwidget.*: obsolete headers removed
+    * man/qmidiarp.1: manpage updated
 
 2009-10-31 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.cpp, lfowidget.*, lfowavcp.xpm: toolbutton to copy 
-	current wave to custom wave added
+    * midilfo.cpp, lfowidget.*, lfowavcp.xpm: toolbutton to copy 
+    current wave to custom wave added
 
 2009-10-30 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.cpp, lfowidget.cpp: custom waveform and mute pattern now 
-	saved to qma file as clear text, custom waveform initialized in
-	LFO constructor and survives changes of waveform type
+    * midilfo.cpp, lfowidget.cpp: custom waveform and mute pattern now 
+    saved to qma file as clear text, custom waveform initialized in
+    LFO constructor and survives changes of waveform type
 
 2009-10-28 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.cpp: fixed quantization issue with drawn waveforms
-	* lfowidget.cpp: deactivate freq amp and offset for custom waveform
-	* midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: remove 
-	"lfo..."-particle from variable names where appropriate
+    * midilfo.cpp: fixed quantization issue with drawn waveforms
+    * lfowidget.cpp: deactivate freq amp and offset for custom waveform
+    * midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: remove 
+    "lfo..."-particle from variable names where appropriate
  
 2009-10-27 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: 
-	custom mouse-drawable LFO waveform added, muting of single waveform
-	points added. If custom waveform is selected, the waveform can be
-	drawn with the left mouse button. For all waveforms, the right mouse
-	button activates/deactivates event generation for the point under 
-	the mouse cursor
-	* slider.cpp: restore possibility to use Qt:Vertical for sliders
-	TODO: store custom waveform somehow, deactivate freq, amp and offset 
-	for custom waveform
+    * midilfo.*, lfoscreen.*, lfowidget.*, seqdriver.cpp: 
+    custom mouse-drawable LFO waveform added, muting of single waveform
+    points added. If custom waveform is selected, the waveform can be
+    drawn with the left mouse button. For all waveforms, the right mouse
+    button activates/deactivates event generation for the point under 
+    the mouse cursor
+    * slider.cpp: restore possibility to use Qt:Vertical for sliders
+    TODO: store custom waveform somehow, deactivate freq, amp and offset 
+    for custom waveform
 
 2009-10-25 Frank Kober <goemusic@yahoo.fr>
-	* package: first draft of manpage added
+    * package: first draft of manpage added
 
 2009-10-11 Frank Kober <goemusic@yahoo.fr>
-	* obsolete C-headers removed or updated
-	* lfowidget.cpp: amplitude slider fixedWidth removed
+    * obsolete C-headers removed or updated
+    * lfowidget.cpp: amplitude slider fixedWidth removed
 
 2009-10-11 Guido Scholz <guido.scholz@bayernline.de>
-	* mainwindow.*: Obsolete aboutWidget removed.
-	* mainwindow.cpp: Sequence of "View" and "Module" menus changed,
-	to meet common standards.
-	* mainwindow.cpp, arpdata.*, seqdriver.*: Show ALSA client id in
-	window title
-	* translations/*.ts: Obsolete messages removed
-	* arpwidget.cpp: Widget placement by standard layout margins.
-	Focus follows tab fixed.
-	* groovewidget.cpp: Widget placement by standard layout margins.
-	* lfowidget.*: Obsolete header files removed, missing keyboard
-	shortcuts added, layout improved
-	* slider.*: Layout improved, label member variable removed.
+    * mainwindow.*: Obsolete aboutWidget removed.
+    * mainwindow.cpp: Sequence of "View" and "Module" menus changed,
+    to meet common standards.
+    * mainwindow.cpp, arpdata.*, seqdriver.*: Show ALSA client id in
+    window title
+    * translations/*.ts: Obsolete messages removed
+    * arpwidget.cpp: Widget placement by standard layout margins.
+    Focus follows tab fixed.
+    * groovewidget.cpp: Widget placement by standard layout margins.
+    * lfowidget.*: Obsolete header files removed, missing keyboard
+    shortcuts added, layout improved
+    * slider.*: Layout improved, label member variable removed.
 
 2009-10-10 Frank Kober <goemusic@yahoo.fr>
-	* passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
-	changed to "forward to" to be more intuitive
-	* seqdriver.*, midiarp.*: footswitch now properly channel-filtered 
-	and handled in midiarp
-	* seqdriver.*: more cleanups regarding midi clock
-	* mainwindow.cpp: show file menu by default
+    * passwidget.*, mainwindow.cpp, seqdriver.cpp: "discard" logic 
+    changed to "forward to" to be more intuitive
+    * seqdriver.*, midiarp.*: footswitch now properly channel-filtered 
+    and handled in midiarp
+    * seqdriver.*: more cleanups regarding midi clock
+    * mainwindow.cpp: show file menu by default
 
 2009-10-07 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: fixed: do not call delete in moduleDelete()
-	* midilfo.cpp, lfowidget.cpp: offset slider and function enabled
+    * mainwindow.cpp: fixed: do not call delete in moduleDelete()
+    * midilfo.cpp, lfowidget.cpp: offset slider and function enabled
 
 2009-09-28 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.*: switched from ALSA tick to ALSA realtime event
-	scheduling to allow for smoother MIDI clock slave operation. 
-	Internal handling continues to be in ticks. On-the-fly tempo changes 
-	while running including those of the incoming MIDI clock are still 
-	troublesome, starting midi clock speed is guessed from local 
-	tempo value
-	* mainwindow.cpp: fixed unmatched port value update when file
-	loaded, stop Queue before clear(), add View menu, add tooltips,
-	fix double employed Ctrl-N key sequence
-	* logwidget.cpp: disable logging by default
+    * seqdriver.*: switched from ALSA tick to ALSA realtime event
+    scheduling to allow for smoother MIDI clock slave operation. 
+    Internal handling continues to be in ticks. On-the-fly tempo changes 
+    while running including those of the incoming MIDI clock are still 
+    troublesome, starting midi clock speed is guessed from local 
+    tempo value
+    * mainwindow.cpp: fixed unmatched port value update when file
+    loaded, stop Queue before clear(), add View menu, add tooltips,
+    fix double employed Ctrl-N key sequence
+    * logwidget.cpp: disable logging by default
 
 2009-09-26 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*, lfowidget.*, arpwidget.*, seqdriver.*, arpdata.*: 
-	new load/save/saveAs logic adapted from Guido's implementation in 
-	qmidiroute started
-	* seqdriver.cpp: some optimization for LFO data queueing
-	* midiarp.cpp: fixed: repeatPatternMode "down" didn't work with chords
-	in pattern, a bug from original version I think (spotted by Robert 
-	Dietrich)
-	* midilfo.cpp: fixed uninitialized isMuted state
+    * mainwindow.*, lfowidget.*, arpwidget.*, seqdriver.*, arpdata.*: 
+    new load/save/saveAs logic adapted from Guido's implementation in 
+    qmidiroute started
+    * seqdriver.cpp: some optimization for LFO data queueing
+    * midiarp.cpp: fixed: repeatPatternMode "down" didn't work with chords
+    in pattern, a bug from original version I think (spotted by Robert 
+    Dietrich)
+    * midilfo.cpp: fixed uninitialized isMuted state
 
 2009-09-25 Frank Kober <goemusic@yahoo.fr>
-	* lfoscreen.cpp: max number of divisor separators limited to 64
-	* seqdriver.cpp: mute state of midilfo now handled, muting gets active 
-	only after a completed LFO cycle
+    * lfoscreen.cpp: max number of divisor separators limited to 64
+    * seqdriver.cpp: mute state of midilfo now handled, muting gets active 
+    only after a completed LFO cycle
 
 2009-09-24 Frank Kober <goemusic@yahoo.fr>
-	* midilfo.cpp: fixed triangle waveform in terms of length
-	* lfoscreen.*: new class for waveform display added
-	* lfowidget.*: lfoscreen added and updated on every parameter change
-	* seqdriver.cpp: fixed missing initial echo request when no 
-	LFO present
+    * midilfo.cpp: fixed triangle waveform in terms of length
+    * lfoscreen.*: new class for waveform display added
+    * lfowidget.*: lfoscreen added and updated on every parameter change
+    * seqdriver.cpp: fixed missing initial echo request when no 
+    LFO present
 
 2009-09-23 Frank Kober <goemusic@yahoo.fr>
-	* src/*:MIDI LFO added as new feature. GUI-wise LFOs coexist with
-	Arps in 
-	tabwidget. They are handeled in parallel through arpdata.cpp and are
-	using the same queue as the arps. Each LFO outputs MIDI controller 
-	data in adjustable resolution, waveform, amplitude, table length.
-	* midilfo.*, lfowidget.*, lfoadd.xpm: added
-	* arprename.xpm, arpremove.xpm: changed since they are used for arps
-	and LFOs.
-	* arpdata.*: add midiLfoList in parallel to midiArpList
-	* seqdriver.* : LFO data requesting and queueing added
-	* mainwindow.* : LFO handling added, load/save routines adapted
-	* TODO *: 
-	Widgets in the tabwidget are currently recognized by their name
-	to distinguish between LFO and Arp. A better solution would be nice.
-	LFO Amp offset slider has no function yet
-	LFO mute has no function yet
-	LFO GUI needs improvement
-	implement Guido's file change monitoring/Load/Save/SaveAs
+    * src/*:MIDI LFO added as new feature. GUI-wise LFOs coexist with
+    Arps in 
+    tabwidget. They are handeled in parallel through arpdata.cpp and are
+    using the same queue as the arps. Each LFO outputs MIDI controller 
+    data in adjustable resolution, waveform, amplitude, table length.
+    * midilfo.*, lfowidget.*, lfoadd.xpm: added
+    * arprename.xpm, arpremove.xpm: changed since they are used for arps
+    and LFOs.
+    * arpdata.*: add midiLfoList in parallel to midiArpList
+    * seqdriver.* : LFO data requesting and queueing added
+    * mainwindow.* : LFO handling added, load/save routines adapted
+    * TODO *: 
+    Widgets in the tabwidget are currently recognized by their name
+    to distinguish between LFO and Arp. A better solution would be nice.
+    LFO Amp offset slider has no function yet
+    LFO mute has no function yet
+    LFO GUI needs improvement
+    implement Guido's file change monitoring/Load/Save/SaveAs
 
 2009-09-22 Guido Scholz <guido.scholz@bayernline.de>
-	* main.cpp: Command line help streamlined.
+    * main.cpp: Command line help streamlined.
 
 2009-09-20 Frank Kober <goemusic@yahoo.fr>
-	* arpscreen.cpp: more optimizations avoiding double precision
-	calculations
-	* arpwidget.cpp: LineEdit used replacing PlainTextEdit, pattern edit
-	toolbuttons disabled instead of hidden
+    * arpscreen.cpp: more optimizations avoiding double precision
+    calculations
+    * arpwidget.cpp: LineEdit used replacing PlainTextEdit, pattern edit
+    toolbuttons disabled instead of hidden
 
 2009-09-19 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: Layout improved, using more QDockWidgets
-	* arpwidget.cpp: QGridLayout used where appropriate
-	* slider.*: tickStep parameter added, ticks added
+    * mainwindow.cpp: Layout improved, using more QDockWidgets
+    * arpwidget.cpp: QGridLayout used where appropriate
+    * slider.*: tickStep parameter added, ticks added
 
 2009-09-18 Frank Kober <goemusic@yahoo.fr>
-	* arpwidget.cpp, midiarp.cpp: don't pass arpScreen to midiarp, 
-	maximum height of arpScreen increased, groove values passed
-	to arpscreen (not handled yet), queueTempo awareness added
-	to midiarp for atk/rel display in seconds
-	* arpscreen.cpp: math header removed, replace rectangles by lines to
-	optimize, only one call to height() and width()
-	* seqdriver.cpp: ALSA error number included in message, dependency 
-	on C headers removed, midiarp gets queueTempo on every loop
-	* mainwindow.cpp: PACKAGE replaced by APP_NAME on all occurences 
+    * arpwidget.cpp, midiarp.cpp: don't pass arpScreen to midiarp, 
+    maximum height of arpScreen increased, groove values passed
+    to arpscreen (not handled yet), queueTempo awareness added
+    to midiarp for atk/rel display in seconds
+    * arpscreen.cpp: math header removed, replace rectangles by lines to
+    optimize, only one call to height() and width()
+    * seqdriver.cpp: ALSA error number included in message, dependency 
+    on C headers removed, midiarp gets queueTempo on every loop
+    * mainwindow.cpp: PACKAGE replaced by APP_NAME on all occurences 
 
 2009-09-17 Frank Kober <goemusic@yahoo.fr>
-	* main.cpp: fixed start options, --help message extended, dependency
-	on stdio.h removed
+    * main.cpp: fixed start options, --help message extended, dependency
+    on stdio.h removed
 
 2009-09-16 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*, main.*: load filename without -f option, store About
-	message in const char, AboutQt added, renamed load(QString) to
-	fileOpen(QString), display filename in window title
-	* configure.ac: APP_NAME added
+    * mainwindow.*, main.*: load filename without -f option, store About
+    message in const char, AboutQt added, renamed load(QString) to
+    fileOpen(QString), display filename in window title
+    * configure.ac: APP_NAME added
 
 2009-09-15 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.*, passwidget.*: moved midi clock toggler into main
-	toolbar, disable arp menu functions and file load when midi clock
-	enabled
-	* midiclock.xpm: icon added
+    * mainwindow.*, passwidget.*: moved midi clock toggler into main
+    toolbar, disable arp menu functions and file load when midi clock
+    enabled
+    * midiclock.xpm: icon added
 
 2009-09-14 Frank Kober <goemusic@yahoo.fr>
-	* midiarp.cpp: removeNote(*ev..) removes only one of potentially
-	multiple occurences of notes at a time, note buffer cleared on queue 
-	stop (both changes from original behaviour), rework note buffer to 
-	correctly account for double strokes/releases also when received
-	at same time (sequencers!), remove released vel=0 notes earlier to
-	avoid temporary silences
-	* mainwindow.cpp, arpwidget.cpp: envelope params added to disk-saved 
-	items
-	* mainwindow.cpp: unnecessary newTempo signal removed
-	* arpwidget.cpp: display attack/release in seconds (not yet real)
+    * midiarp.cpp: removeNote(*ev..) removes only one of potentially
+    multiple occurences of notes at a time, note buffer cleared on queue 
+    stop (both changes from original behaviour), rework note buffer to 
+    correctly account for double strokes/releases also when received
+    at same time (sequencers!), remove released vel=0 notes earlier to
+    avoid temporary silences
+    * mainwindow.cpp, arpwidget.cpp: envelope params added to disk-saved 
+    items
+    * mainwindow.cpp: unnecessary newTempo signal removed
+    * arpwidget.cpp: display attack/release in seconds (not yet real)
 
 2009-09-13 Frank Kober <goemusic@yahoo.fr>
-	* midiarp.cpp: fixed attack function buffer getting corrupted by 
-	removed notes.
-	* seqdriver.cpp: changed ALSA client names in analogy to QMidiRoute,
-	FootSwitch now applies to all arps in list
-	TODO: handle FootSwitch to be channel-filtered as all note events
-	* mainwindow.cpp: tempo added to disk-saved items keeping 
-	compatibility with files saved with older versions
+    * midiarp.cpp: fixed attack function buffer getting corrupted by 
+    removed notes.
+    * seqdriver.cpp: changed ALSA client names in analogy to QMidiRoute,
+    FootSwitch now applies to all arps in list
+    TODO: handle FootSwitch to be channel-filtered as all note events
+    * mainwindow.cpp: tempo added to disk-saved items keeping 
+    compatibility with files saved with older versions
 
 2009-09-12 Frank Kober <goemusic@yahoo.fr>
-	* arpdata.cpp: fixed memory leak due to non-deleted QList item
-	introduced by incomplete Qt4 port (gscholz)
-	* mainwindow.cpp: make passWidget and logWidget dockable, hidden by
-	default, floatable windows, adapt tab index conditions
-	* midiarp.cpp: fixed from original: additional note was produced when 
-	control items were present at end of pattern text.
+    * arpdata.cpp: fixed memory leak due to non-deleted QList item
+    introduced by incomplete Qt4 port (gscholz)
+    * mainwindow.cpp: make passWidget and logWidget dockable, hidden by
+    default, floatable windows, adapt tab index conditions
+    * midiarp.cpp: fixed from original: additional note was produced when 
+    control items were present at end of pattern text.
 
 2009-09-09 Frank Kober <goemusic@yahoo.fr>
-	* midiarp.*, seqdriver.*, arpwidget.*:
-	Simple envelope implementation started. When attack slider is
-	set > 0, the velocity is ramped up from zero with alsa tick as
-	timescale. When release is > 0, velocities of released notes are 
-	ramped down until velocity=0 and then removed from buffer.
-	Tick and release mark information is stored with note in buffer.
+    * midiarp.*, seqdriver.*, arpwidget.*:
+    Simple envelope implementation started. When attack slider is
+    set > 0, the velocity is ramped up from zero with alsa tick as
+    timescale. When release is > 0, velocities of released notes are 
+    ramped down until velocity=0 and then removed from buffer.
+    Tick and release mark information is stored with note in buffer.
 
 2009-09-06 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp, midiarp.cpp, seqdriver.cpp, passwidget.cpp: 
-	MIDI controller for muting arps implemented. The controller for the
-	first arp can be configured in the settings tab, the other arps in 
-	row are the following CC numbers. When the corresponding CC with
-	value 127 is received, the arp mute state is toggled.
-	* qmidiarp_*.ts: translations updated, obsoletes left atm
+    * mainwindow.cpp, midiarp.cpp, seqdriver.cpp, passwidget.cpp: 
+    MIDI controller for muting arps implemented. The controller for the
+    first arp can be configured in the settings tab, the other arps in 
+    row are the following CC numbers. When the corresponding CC with
+    value 127 is received, the arp mute state is toggled.
+    * qmidiarp_*.ts: translations updated, obsoletes left atm
 
 2009-09-03 Frank Kober <goemusic@yahoo.fr>
-	* mainwindow.cpp: new Arp pulldown menu, keyboard shortcuts added
-	* qmidiarp_*.ts: translations updated, obsoletes left atm
+    * mainwindow.cpp: new Arp pulldown menu, keyboard shortcuts added
+    * qmidiarp_*.ts: translations updated, obsoletes left atm
 
 2009-08-29 Frank Kober <goemusic@yahoo.fr>
-	* gui.* removed
-	* mainwindow.cpp, mainwindow.h: created, containing MainWindow
-	class, all Gui elements moved to MainWindow
+    * gui.* removed
+    * mainwindow.cpp, mainwindow.h: created, containing MainWindow
+    class, all Gui elements moved to MainWindow
 
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
-	* midiarp.cpp: Queue start with empty pattern fixed 
+    * midiarp.cpp: Queue start with empty pattern fixed 
 
 2009-08-25 Frank Kober <goemusic@yahoo.fr>
-	* gui.cpp, main.h: automatic filename extension added
-	* gui.*, main.cpp: save and save As support added
-	* gui.cpp: qt4 port error in removeArp(int index) hopefully fixed 
-	(affecting load() when one of the three settings tabs was active)
-	* gui.cpp, main.cpp: buttonBox toolbar gets attached to top widget
-	* seqdriver.cpp: fixed FootSwitch event that still got copied to unmatched
-	* passwidget.cpp: port numbers really starting at 1 now
-	* known issue: Queue start when pattern empty but arp present
+    * gui.cpp, main.h: automatic filename extension added
+    * gui.*, main.cpp: save and save As support added
+    * gui.cpp: qt4 port error in removeArp(int index) hopefully fixed 
+    (affecting load() when one of the three settings tabs was active)
+    * gui.cpp, main.cpp: buttonBox toolbar gets attached to top widget
+    * seqdriver.cpp: fixed FootSwitch event that still got copied to unmatched
+    * passwidget.cpp: port numbers really starting at 1 now
+    * known issue: Queue start when pattern empty but arp present
 
 2009-08-23 Frank Kober <goemusic@yahoo.fr>
-	* qmidiarp_fr.ts: French translation updated
-	* slider.*, groovewidget.*, arpwidget.h: Sliders improved (idea: gscholz)
-	* arpwidget.cpp: random box again visible, toggle button removed
-	* qmidiarp2.xpm: adjusted image position in pixmap
-	* arpwidget.cpp: in/out boxes Layout improved
-	* arpwidget.cpp, seqdriver.cpp: Channel and Port numbers
-	starting from 1 instead of 0
+    * qmidiarp_fr.ts: French translation updated
+    * slider.*, groovewidget.*, arpwidget.h: Sliders improved (idea: gscholz)
+    * arpwidget.cpp: random box again visible, toggle button removed
+    * qmidiarp2.xpm: adjusted image position in pixmap
+    * arpwidget.cpp: in/out boxes Layout improved
+    * arpwidget.cpp, seqdriver.cpp: Channel and Port numbers
+    starting from 1 instead of 0
 
 2009-08-22 Guido Scholz <guido.scholz@bayernline.de>
-	* arpdata.cpp arpscreen.* gui.* midiarp.* seqdriver.*: Some
-	cleanups, improved string parameter handling
-	* arpwidget.cpp: Adjust size of Input/Output boxes
+    * arpdata.cpp arpscreen.* gui.* midiarp.* seqdriver.*: Some
+    cleanups, improved string parameter handling
+    * arpwidget.cpp: Adjust size of Input/Output boxes
 
 2009-08-16 Frank Kober <goemusic@yahoo.fr>
-	* qmidiarp_fr.ts: French translation added
+    * qmidiarp_fr.ts: French translation added
 
 2009-08-16 Guido Scholz <guido.scholz@bayernline.de>
-	* arpwidget.cpp: Keyboard shortcuts added for some widgets,
-	fixed layout bug, texts made translatable
-	* arpscreen.cpp: Obsolete pen.setColor() calls removed, unused C
-	header files removed.
-	* groovewidget.cpp, logwidget.cpp, passwidget.cpp: Keyboard
-	shortcuts added, layout improved, label text made translatable
-	* main.cpp: Support for Qt library message translation added
-	* configure.ac, main.cpp, src/translations/*.ts: Support for
-	application message translation added, German translation added
+    * arpwidget.cpp: Keyboard shortcuts added for some widgets,
+    fixed layout bug, texts made translatable
+    * arpscreen.cpp: Obsolete pen.setColor() calls removed, unused C
+    header files removed.
+    * groovewidget.cpp, logwidget.cpp, passwidget.cpp: Keyboard
+    shortcuts added, layout improved, label text made translatable
+    * main.cpp: Support for Qt library message translation added
+    * configure.ac, main.cpp, src/translations/*.ts: Support for
+    application message translation added, German translation added
 
 2009-08-15 Frank Kober <goemusic@yahoo.fr>
-	* arpscreen.cpp: fixed fall through in switch and unfinished "."
-	interpretation, removed resizeEvent(), set font at beginning of
-	the drawEvent routine
-	* gui.cpp, seqdriver.cpp: fixed queue start issue when no arp is
-	present, the queue is now off on program startup and has to be
-	enabled manually after addArp or load
-	* passwidget.cpp: fixed yet another logic problem with enabling
-	MIDI clock
-	* seqdriver.cpp: take into account MIDI clock for ArpScreen
-	follower line
+    * arpscreen.cpp: fixed fall through in switch and unfinished "."
+    interpretation, removed resizeEvent(), set font at beginning of
+    the drawEvent routine
+    * gui.cpp, seqdriver.cpp: fixed queue start issue when no arp is
+    present, the queue is now off on program startup and has to be
+    enabled manually after addArp or load
+    * passwidget.cpp: fixed yet another logic problem with enabling
+    MIDI clock
+    * seqdriver.cpp: take into account MIDI clock for ArpScreen
+    follower line
 
 2009-08-13 Guido Scholz <guido.scholz@bayernline.de>
-	* package: cleanups, use .qmidiarprc instead of .qmarc
+    * package: cleanups, use .qmidiarprc instead of .qmarc
 
 2009-08-13 Frank Kober <goemusic@yahoo.fr>
-	* package: use xpm icons instead, which are part of sources now and
-	EXTRA_DIST
+    * package: use xpm icons instead, which are part of sources now and
+    EXTRA_DIST
 
 2009-08-08 Frank Kober <goemusic@yahoo.fr>
-	* package: optimized layout, removed unnecessary QWidgets (gscholz)
-	* package: icons are now installed properly in 
-	PREFIX/share/qmidiarp/pixmaps by using 
-	a gcc ... -D option as defined in icons/Makefile.am
-	* 
-	* arpwidget.cpp, gui.cpp: pattern preset structure is now saved 
-	in a .qmarc file created in the user's home if non-existent.
-	* arpwidget.cpp: added 'removePattern' Toolbutton
-	* arpwidget.cpp, midiarp.cpp: the mute button is now working by 
-	setting all note velocities = 0 when checked
-	* gui.h, main.cpp: use PACKAGE for version reporting
+    * package: optimized layout, removed unnecessary QWidgets (gscholz)
+    * package: icons are now installed properly in 
+    PREFIX/share/qmidiarp/pixmaps by using 
+    a gcc ... -D option as defined in icons/Makefile.am
+    * 
+    * arpwidget.cpp, gui.cpp: pattern preset structure is now saved 
+    in a .qmarc file created in the user's home if non-existent.
+    * arpwidget.cpp: added 'removePattern' Toolbutton
+    * arpwidget.cpp, midiarp.cpp: the mute button is now working by 
+    setting all note velocities = 0 when checked
+    * gui.h, main.cpp: use PACKAGE for version reporting
 
 2009-08-02 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.cpp, arpscreen.cpp: a follower line now indicates the 
-	queue position in the arpscreen pattern. The position is derived 
-	from the current tick and the pattern length and unaware of the actual 
-	output notes. Therefore the queue is restarted at every pattern change.
-	* arpwidget.cpp: a pattern preset structure is now in place in form 
-	of a combobox. Pattern presets can be edited and stored to memory 
-	(no diskwrite yet), pattern text is now hidden by default and 
-	appears upon click of the new 'edit pattern' button
-	* arpwidget.cpp: further GUI refactoring: 
-	qtoolbuttons/actions replace the qpushbuttons, added icons,
-	created a toolbar holding the main buttons and tempo spinner,
-	todo: install icons in PREFIX/share/qmidiarp,
-	added a mute checkbox (non-functional yet),
-	random settings are now hidden by default and appear upon press 
-	of a toolbutton, inserted various stretches to eliminate fixed width 
-	labels, shamefully added arpscreen to the pattern groupbox
+    * seqdriver.cpp, arpscreen.cpp: a follower line now indicates the 
+    queue position in the arpscreen pattern. The position is derived 
+    from the current tick and the pattern length and unaware of the actual 
+    output notes. Therefore the queue is restarted at every pattern change.
+    * arpwidget.cpp: a pattern preset structure is now in place in form 
+    of a combobox. Pattern presets can be edited and stored to memory 
+    (no diskwrite yet), pattern text is now hidden by default and 
+    appears upon click of the new 'edit pattern' button
+    * arpwidget.cpp: further GUI refactoring: 
+    qtoolbuttons/actions replace the qpushbuttons, added icons,
+    created a toolbar holding the main buttons and tempo spinner,
+    todo: install icons in PREFIX/share/qmidiarp,
+    added a mute checkbox (non-functional yet),
+    random settings are now hidden by default and appear upon press 
+    of a toolbutton, inserted various stretches to eliminate fixed width 
+    labels, shamefully added arpscreen to the pattern groupbox
 
 2009-07-15 Frank Kober <goemusic@yahoo.fr>
-	* seqdriver.cpp: added support for damper footswitch to hold and buffer 
-	incoming notes
-	* seqdriver.cpp: queue start is now back working
-	* gui.cpp: queue start button is grayed when midi clock use checked
+    * seqdriver.cpp: added support for damper footswitch to hold and buffer 
+    incoming notes
+    * seqdriver.cpp: queue start is now back working
+    * gui.cpp: queue start button is grayed when midi clock use checked
 
 2009-07-12 Frank Kober <goemusic@yahoo.fr>
-	* package: added autotools build environment, moved sources to the
-	src subdirectory, updated COPYING file and added two sentences to
-	the README, updated INSTALL file
-	Remaining issues: 
-	   Tempo needs to be the same as that of the midi clock master
-	   Queue is not automatically started
-	   Queue start button should be grayed when receiving MIDI clock start
+    * package: added autotools build environment, moved sources to the
+    src subdirectory, updated COPYING file and added two sentences to
+    the README, updated INSTALL file
+    Remaining issues: 
+       Tempo needs to be the same as that of the midi clock master
+       Queue is not automatically started
+       Queue start button should be grayed when receiving MIDI clock start
 
 2009-02-07 Frank Kober <goemusic@yahoo.fr>
-	* package: added a graphical representation of the pattern text
-	that is updated on every text change, included port counter in out
-	port names and renamed in port to "QMidiARP in", initial MIDI
-	real time clock start and stop support:
-	  When MIDI clock is being checked, the queue is stopped and
-	  started upon reception MIDI_START
-	Known issue: the queue is not started automatically. You need to
-	un/recheck 'start queue'
-	MIDI ticks per beat and MIDI Clock Mode can be selected from the
-	passWidget
-	Added a switchable filter for MIDI Clock events to the logWidget.
-	The logtext is now color
-	minor UI tweaks:
-	Tempo Spinner and Queue Start Button now in the top row of the
-	GUI, visible all the time
-	Fixed maximum size of the groove and pass widgets 
+    * package: added a graphical representation of the pattern text
+    that is updated on every text change, included port counter in out
+    port names and renamed in port to "QMidiARP in", initial MIDI
+    real time clock start and stop support:
+      When MIDI clock is being checked, the queue is stopped and
+      started upon reception MIDI_START
+    Known issue: the queue is not started automatically. You need to
+    un/recheck 'start queue'
+    MIDI ticks per beat and MIDI Clock Mode can be selected from the
+    passWidget
+    Added a switchable filter for MIDI Clock events to the logWidget.
+    The logtext is now color
+    minor UI tweaks:
+    Tempo Spinner and Queue Start Button now in the top row of the
+    GUI, visible all the time
+    Fixed maximum size of the groove and pass widgets 
 
 2009-06-25 Frank Kober <goemusic@yahoo.fr>
-	* package: corrected disable/enable behaviour of rename button,
-	addArp and renameArp do now respect 'cancel' in name dialog
-	corrected: renaming of all tabs including the three 'system' tabs
-	was permitted
+    * package: corrected disable/enable behaviour of rename button,
+    addArp and renameArp do now respect 'cancel' in name dialog
+    corrected: renaming of all tabs including the three 'system' tabs
+    was permitted
 
 2009-06-24 Frank Kober <goemusic@yahoo.fr>
-	* package: ported from Qt3 to Qt4 library
+    * package: ported from Qt3 to Qt4 library
