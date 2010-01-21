@@ -593,7 +593,7 @@ Molette pour changer l&apos;offset</translation>
     <message>
         <location filename="../mainwindow.cpp" line="170"/>
         <source>&amp;Connect to Jack Transport</source>
-        <translation type="unfinished"></translation>
+        <translation>Connecter à &amp;Jack Transport</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="185"/>

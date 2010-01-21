@@ -638,7 +638,7 @@ snd_seq_real_time_t SeqDriver::addAlsaTimes(snd_seq_real_time_t time1
         addtime.tv_sec+= delta.tv_sec + 1;
     }
     else
-        addtime.tv_sec+= addtime.tv_sec;
+        addtime.tv_sec+= delta.tv_sec;
         
     addtime.tv_nsec = addtime.tv_nsec + addtime.tv_nsec;
     return addtime;

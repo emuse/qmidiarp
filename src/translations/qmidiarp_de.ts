@@ -603,7 +603,7 @@ Mausrad: Verschieben des Offsets</translation>
     <message>
         <location filename="../mainwindow.cpp" line="170"/>
         <source>&amp;Connect to Jack Transport</source>
-        <translation type="unfinished"></translation>
+        <translation>Mit &amp;Jack Transport verbinden</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="185"/>
