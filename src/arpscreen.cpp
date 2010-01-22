@@ -243,7 +243,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //follower_tick position x1
     if (nsteps > 0) 
     {
-        x1 = (((int)(follower_tick / TICKS_PER_QUARTER / minTempo))
+        x1 = (((int)((follower_tick + 10) / TICKS_PER_QUARTER / minTempo))
                 % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
     } else
         x1 = 0;
