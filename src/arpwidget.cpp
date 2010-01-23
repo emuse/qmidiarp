@@ -692,7 +692,9 @@ void ArpWidget::selectPatternPreset(int val)
 
 void ArpWidget::loadPatternPresets()
 {
-    QString qs, qs2;
+    QString qs;
+    QStringList value;
+    
     QDir qmahome = QDir(QDir::homePath());
     QString qmarcpath = qmahome.filePath(QMARCNAME);
     QFile f(qmarcpath);
@@ -708,10 +710,14 @@ void ArpWidget::loadPatternPresets()
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        if (qs.startsWith('[')) break;
-        qs2 = loadText.readLine();
-        patternNames << qs;
-        patternPresets << qs2;
+        if (qs.startsWith('#')) {
+            value.clear();
+            value = qs.split('%');
+            if ((value.at(0) == "#Pattern") && (value.count() > 2)) {
+                patternNames << value.at(1);
+                patternPresets << value.at(2);
+            }
+        }
     }
 }
 

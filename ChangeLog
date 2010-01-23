@@ -1,3 +1,8 @@
+2010-01-23 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.cpp, arpwidget.cpp: Tags added to resource file items
+	for more flexibility. Old resource file will be without effect and
+	then overwritten.
+	
 2010-01-20 Frank Kober <goemusic@yahoo.fr>
 	* seqdriver.*, mainwindow.*: Jack transport sync capability
 	integrated as a user choice. Jack sync object is created/destroyed

@@ -1143,7 +1143,9 @@ bool MainWindow::checkRcFile()
 
 void MainWindow::readRcFile()
 {
-    QString qs, qs2;
+    QString qs;
+    QStringList value;
+    
     QDir qmahome = QDir(QDir::homePath());
     QString qmarcpath = qmahome.filePath(QMARCNAME);
     QFile f(qmarcpath);
@@ -1159,33 +1161,26 @@ void MainWindow::readRcFile()
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        if (qs.startsWith('[')) break;
-        qs2 = loadText.readLine();
-        patternNames << qs;
-        patternPresets << qs2;
-    }
-    if (qs.startsWith("[GUI")) {
-        qs = loadText.readLine();
-        passWidget->compactStyleCheck->setChecked(qs.section(' ', 0, 0).toInt());
-        logWidget->enableLog->setChecked(qs.section(' ', 1, 1).toInt());
-        logWidget->logMidiClock->setChecked(qs.section(' ', 2, 2).toInt());
-
-        qs = loadText.readLine();
-        QByteArray array = QByteArray::fromHex(qs.toUtf8());
-        restoreState(array);
-        qs = loadText.readLine();
-    }        
-    if (qs.startsWith("[Last")) {
-        qs = loadText.readLine();
-        lastDir = qs;
-    }
-    
-    qs = loadText.readLine();
-    if (qs.startsWith("[Recent")) {
-    
-        while (!loadText.atEnd()) {
-                qs = loadText.readLine();
-                recentFiles << qs;
+        
+        if (qs.startsWith('#')) {
+            value.clear();
+            value = qs.split('%');
+            if ((value.at(0) == "#Pattern") && (value.count() > 2)) {
+                patternNames << value.at(1);
+                patternPresets << value.at(2);
+            }
+            else if ((value.at(0) == "#CompactStyle"))
+                passWidget->compactStyleCheck->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#EnableLog"))
+                logWidget->enableLog->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#LogMidiClock"))
+                logWidget->logMidiClock->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#GUIState"))
+                restoreState(QByteArray::fromHex(value.at(1).toUtf8()));
+            else if ((value.at(0) == "#LastDir"))
+                lastDir = value.at(1);
+            else if ((value.at(0) == "#RecentFile"))
+                recentFiles << value.at(1);
         }
     }
 }
@@ -1204,28 +1199,31 @@ void MainWindow::writeRcFile()
         return;
     }
     QTextStream writeText(&f);
-
+    
     for (l1 = 0; l1 < patternNames.count(); l1++) 
     {
-        writeText << qPrintable(patternNames.at(l1)) << endl;
+        writeText << "#Pattern%";
+        writeText << qPrintable(patternNames.at(l1)) << "%";
         writeText << qPrintable(patternPresets.at(l1)) << endl;
     }
-    writeText << "[GUI settings]" << endl;
     
-    writeText << passWidget->compactStyle << ' '
-            << logWidget->enableLog->isChecked() << ' '
-            << logWidget->logMidiClock->isChecked() << ' ' << endl;
+    writeText << "#CompactStyle%";
+    writeText << passWidget->compactStyle << endl;
+    writeText << "#EnableLog%";
+    writeText << logWidget->enableLog->isChecked() << endl;
+    writeText << "#LogMidiClock%";
+    writeText << logWidget->logMidiClock->isChecked() << endl;
+    writeText << "#GUIState%";
     writeText << saveState().toHex() << endl;
 
-    writeText << "[Last Dir]" << endl;
+    writeText << "#LastDir%";
     writeText << lastDir << endl;
-    
-    writeText << "[Recent Files]" << endl;
     
     // save recently opened files (all recent files code taken from AMS)
     if (recentFiles.count() > 0) {
         QStringList::Iterator it = recentFiles.begin();
         for (; it != recentFiles.end(); ++it) {
+            writeText << "#RecentFile%";
             writeText << *it << endl;
         }
     }
@@ -1253,7 +1251,6 @@ void MainWindow::recentFileActivated(QAction *action)
             openFile(action->text());
     }
 }
-
 
 void MainWindow::addRecentlyOpenedFile(const QString &fn, QStringList &lst)
 {

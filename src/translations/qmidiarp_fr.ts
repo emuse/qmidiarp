@@ -114,27 +114,27 @@ d h durée de note augm/dim
         <translation type="obsolete">Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="702"/>
+        <location filename="../arpwidget.cpp" line="704"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="734"/>
+        <location filename="../arpwidget.cpp" line="740"/>
         <source>%1: Store pattern</source>
         <translation>%1: Mémoriser le motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="735"/>
+        <location filename="../arpwidget.cpp" line="741"/>
         <source>New pattern</source>
         <translation>Nouveau motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="735"/>
+        <location filename="../arpwidget.cpp" line="741"/>
         <source>Arp pattern</source>
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="771"/>
+        <location filename="../arpwidget.cpp" line="777"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
@@ -209,12 +209,12 @@ d h durée de note augm/dim
         <translation>Descend</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="796"/>
+        <location filename="../arpwidget.cpp" line="802"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="815"/>
+        <location filename="../arpwidget.cpp" line="821"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -703,7 +703,7 @@ Enregistrer les modifications?</translation>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1153"/>
+        <location filename="../mainwindow.cpp" line="1155"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
@@ -788,7 +788,7 @@ Enregistrer les modifications?</translation>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1203"/>
+        <location filename="../mainwindow.cpp" line="1198"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
