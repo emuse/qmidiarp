@@ -397,42 +397,42 @@ Molette pour changer l&apos;offset</translation>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="642"/>
+        <location filename="../lfowidget.cpp" line="649"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="642"/>
+        <location filename="../lfowidget.cpp" line="649"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="642"/>
+        <location filename="../lfowidget.cpp" line="649"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="643"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Saw down</source>
         <translation>Scie descendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="643"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="643"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="805"/>
+        <location filename="../lfowidget.cpp" line="812"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="824"/>
+        <location filename="../lfowidget.cpp" line="831"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -986,12 +986,12 @@ Enregistrer les modifications?</translation>
         <translation>Véloc&amp;ité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="822"/>
+        <location filename="../seqwidget.cpp" line="826"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="841"/>
+        <location filename="../seqwidget.cpp" line="845"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -1144,7 +1144,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Créneau</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="667"/>
+        <location filename="../seqwidget.cpp" line="671"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>

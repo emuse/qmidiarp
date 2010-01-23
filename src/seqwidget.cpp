@@ -420,6 +420,7 @@ void SeqWidget::writeSeqText(QTextStream& arpText)
 void SeqWidget::readSeq(QXmlStreamReader& xml)
 {
     int ctrlID, ccnumber, channel, min, max;
+    int tmp;
     int wvtmp = 0;
     SeqSample seqSample;
     
@@ -462,12 +463,15 @@ void SeqWidget::readSeq(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 else if (xml.name() == "resolution") {
-                    int tmp = xml.readElementText().toInt();
+                    tmp = xml.readElementText().toInt();
                     resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
-                else if (xml.name() == "size")
-                    sizeBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "size") {
+                    tmp = xml.readElementText().toInt();
+                    sizeBox->setCurrentIndex(tmp);
+                    updateSize(tmp);
+				}
                 else if (xml.name() == "velocity")
                     velocity->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "noteLength")

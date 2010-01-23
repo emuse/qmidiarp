@@ -411,6 +411,7 @@ void LfoWidget::writeLfoText(QTextStream& arpText)
 void LfoWidget::readLfo(QXmlStreamReader& xml)
 {
     int ctrlID, ccnumber, channel, min, max;
+    int tmp;
     int wvtmp = 0;
     LfoSample lfoSample;
     
@@ -441,15 +442,21 @@ void LfoWidget::readLfo(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "waveform")
                     wvtmp = xml.readElementText().toInt();
-                else if (xml.name() == "frequency")
-                    freqBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "frequency") {
+					tmp = xml.readElementText().toInt();
+                    freqBox->setCurrentIndex(tmp);
+                    updateFreq(tmp);
+				}
                 else if (xml.name() == "resolution") {
-                    int tmp = xml.readElementText().toInt();
+                    tmp = xml.readElementText().toInt();
                     resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
-                else if (xml.name() == "size")
-                    sizeBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "size") {
+					tmp = xml.readElementText().toInt();
+                    sizeBox->setCurrentIndex(tmp);
+                    updateSize(tmp);
+				}
                 else if (xml.name() == "amplitude")
                     amplitude->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "offset")

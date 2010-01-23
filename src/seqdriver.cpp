@@ -62,7 +62,9 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 }
 
 SeqDriver::~SeqDriver(){
-    jackSync->deactivateJack();
+	
+    if (use_jacksync) setUseJackTransport(false);
+
 }
 
 void SeqDriver::registerPorts(int num)
