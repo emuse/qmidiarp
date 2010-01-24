@@ -70,10 +70,11 @@ int JackSync::activateJack()
 int JackSync::deactivateJack() 
 {
     if (jackRunning) {
-        jackRunning = false;
         if (jack_deactivate(jack_handle)) {
             qWarning("cannot deactivate client");
         }
+        jackRunning = false;
+        qWarning("jack client deactivated");
     }
     return(0);
 }

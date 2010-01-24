@@ -595,9 +595,11 @@ void SeqDriver::setUseJackTransport(bool on)
         use_jacksync = true;
     }
     else {
-        if (jackSync->isRunning()) jackSync->deactivateJack();
-        delete jackSync;
-        use_jacksync = false;
+        if (use_jacksync) {
+            jackSync->deactivateJack();
+            delete jackSync;
+            use_jacksync = false;
+        }
     }
 }               
 

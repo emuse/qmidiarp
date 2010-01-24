@@ -524,6 +524,8 @@ void MainWindow::removeSeq(int index)
 void MainWindow::clear()
 {
     updateRunQueue(false);
+    jackSyncToggle(false);
+    
     while (arpData->midiArpCount()) {
         removeArp(arpData->midiArpCount() - 1);
     }
