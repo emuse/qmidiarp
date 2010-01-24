@@ -43,7 +43,6 @@ int JackSync::initJack()
 {
     if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
         qCritical("jack server not running?");
-        emit j_shutdown();
         return 1;
     }
 
@@ -58,14 +57,13 @@ int JackSync::initJack()
  
 int JackSync::activateJack() 
 {
-    jackRunning = true;
     if (jack_activate(jack_handle)) {
         qWarning("cannot activate client");
         jackRunning = false;
-        emit j_shutdown();
         return(1);
     }
-
+    
+    jackRunning = true;
     return(0);
 }
 

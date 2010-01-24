@@ -1088,8 +1088,8 @@ void MainWindow::midiClockToggle(bool on)
 void MainWindow::jackSyncToggle(bool on)
 {
     if (on) midiClockAction->setChecked(false);
-    arpData->seqDriver->setUseJackTransport(on);
     setGUIforExtSync(on);
+    arpData->seqDriver->setUseJackTransport(on);
 }
 
 void MainWindow::setGUIforExtSync(bool on)
