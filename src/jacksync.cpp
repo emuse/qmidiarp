@@ -63,6 +63,7 @@ int JackSync::activateJack()
         qWarning("cannot activate client");
         jackRunning = false;
         emit j_shutdown();
+        return(1);
     }
 
     return(0);

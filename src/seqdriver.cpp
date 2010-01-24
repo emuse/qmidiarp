@@ -62,7 +62,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 }
 
 SeqDriver::~SeqDriver(){
-	
+    
     if (use_jacksync) setUseJackTransport(false);
 
 }
@@ -572,12 +572,14 @@ void SeqDriver::setUseJackTransport(bool on)
     if (on) {
         jackSync = new JackSync();
         jackSync->setParent(this);
-        jackSync->initJack();
-        jackSync->activateJack();
         connect(jackSync, SIGNAL(j_tr_state(bool)), 
                 this, SLOT(runQueue(bool)));
         connect(jackSync, SIGNAL(j_shutdown()), 
                 this, SLOT(jackShutdown()));
+                
+        if (jackSync->initJack()) return;
+        if (jackSync->activateJack()) return;
+        
         use_jacksync = true;
     }
     else {
