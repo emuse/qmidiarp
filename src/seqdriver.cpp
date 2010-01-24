@@ -161,8 +161,8 @@ void SeqDriver::procEvents(int)
                 tick = deltaToTick(evIn->time.time);
             }
 
-//                            printf("       tick %d     ",tick);
-//                            printf("nextLfoTick %d",nextLfoTick);
+                            printf("       tick %d     ",tick);
+                            printf("nextLfoTick %d\n",nextLfoTick);
 //                            printf("nextSeqTick %d\n",nextSeqTick);
 //                            printf("midiTick %d   ",midiTick);
 //                            printf("m_ratio %f  ",m_ratio);
@@ -174,10 +174,11 @@ void SeqDriver::procEvents(int)
             foundEcho = false;
 
             //LFO data request and queueing
-            if (((int)tick >= nextLfoTick) && (midiLfoList->count())) {
+            //add 4 ticks to startoff condition to cope with initial sync imperfections
+            if (((int)(tick + 4) >= nextLfoTick) && (midiLfoList->count())) {
                 l2 = 0;
                 for (l1 = 0; l1 < midiLfoList->count(); l1++) {
-                    if ((int)tick >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
+                    if ((int)(tick + 4) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
                         midiLfoList->at(l1)->getData(&lfoData);
                         lfoccnumber = midiLfoList->at(l1)->ccnumber;
                         lfochannel = midiLfoList->at(l1)->channelOut;
@@ -221,10 +222,11 @@ void SeqDriver::procEvents(int)
             }
             
             //Seq notes data request and queueing
-            if (((int)tick >= nextSeqTick) && (midiSeqList->count())) {
+            //add 4 ticks to startoff condition to cope with initial sync imperfections
+            if (((int)(tick + 4) >= nextSeqTick) && (midiSeqList->count())) {
                 l2 = 0;
                 for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-                    if ((int)tick >= (lastSeqTick[l1] + seqPacketSize[l1])) {
+                    if ((int)(tick + 4) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
                         midiSeqList->at(l1)->getData(&seqData);
                         seqlength = midiSeqList->at(l1)->notelength;
                         seqtransp = midiSeqList->at(l1)->transp; 
