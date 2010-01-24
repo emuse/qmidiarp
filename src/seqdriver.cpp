@@ -161,8 +161,8 @@ void SeqDriver::procEvents(int)
                 tick = deltaToTick(evIn->time.time);
             }
 
-                            printf("       tick %d     ",tick);
-                            printf("nextLfoTick %d\n",nextLfoTick);
+//                            printf("       tick %d     ",tick);
+//                            printf("nextLfoTick %d\n",nextLfoTick);
 //                            printf("nextSeqTick %d\n",nextSeqTick);
 //                            printf("midiTick %d   ",midiTick);
 //                            printf("m_ratio %f  ",m_ratio);
