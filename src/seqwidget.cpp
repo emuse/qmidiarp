@@ -471,7 +471,7 @@ void SeqWidget::readSeq(QXmlStreamReader& xml)
                     tmp = xml.readElementText().toInt();
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
-				}
+                }
                 else if (xml.name() == "velocity")
                     velocity->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "noteLength")
@@ -893,8 +893,8 @@ void SeqWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         if (ccList.at(l1).ID == ctrlID) {
             if (((ccList.at(l1).ccnumber == ccnumber)
-                    && (ccList.at(l1).channel == channel)) 
-                    || (0 > ccnumber)) {
+                    && (ccList.at(l1).channel == channel))
+                    || (0 > channel)) {
                 ccList.remove(l1);
                 l1--;
                 qWarning("controller removed");

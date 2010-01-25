@@ -866,7 +866,7 @@ void ArpWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
         if (ccList.at(l1).ID == ctrlID) {
             if (((ccList.at(l1).ccnumber == ccnumber)
                     && (ccList.at(l1).channel == channel)) 
-                    || (0 > ccnumber)) {
+                    || (0 > channel)) {
                 ccList.remove(l1);
                 l1--;
                 qWarning("controller removed");

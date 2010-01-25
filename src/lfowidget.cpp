@@ -443,20 +443,20 @@ void LfoWidget::readLfo(QXmlStreamReader& xml)
                 if (xml.name() == "waveform")
                     wvtmp = xml.readElementText().toInt();
                 else if (xml.name() == "frequency") {
-					tmp = xml.readElementText().toInt();
+                    tmp = xml.readElementText().toInt();
                     freqBox->setCurrentIndex(tmp);
                     updateFreq(tmp);
-				}
+                }
                 else if (xml.name() == "resolution") {
                     tmp = xml.readElementText().toInt();
                     resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
                 else if (xml.name() == "size") {
-					tmp = xml.readElementText().toInt();
+                    tmp = xml.readElementText().toInt();
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
-				}
+                }
                 else if (xml.name() == "amplitude")
                     amplitude->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "offset")
@@ -880,7 +880,7 @@ void LfoWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
         if (ccList.at(l1).ID == ctrlID) {
             if (((ccList.at(l1).ccnumber == ccnumber)
                     && (ccList.at(l1).channel == channel)) 
-                    || (0 > ccnumber)) {
+                    || (0 > channel)) {
                 ccList.remove(l1);
                 l1--;
                 qWarning("controller removed");
