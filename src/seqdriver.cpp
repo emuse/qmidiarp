@@ -213,12 +213,12 @@ void SeqDriver::procEvents(int)
                 nextEchoTick = nextLfoTick;
 
                 // next echo request for LFO
-/*                snd_seq_ev_clear(evIn);
+                snd_seq_ev_clear(evIn);
                 evIn->type = SND_SEQ_EVENT_ECHO;
                 snd_seq_ev_schedule_real(evIn, queue_id,  0,
                         tickToDelta(nextLfoTick));
                 snd_seq_ev_set_dest(evIn, clientid, portid_in);
-                snd_seq_event_output_direct(seq_handle, evIn); */
+                snd_seq_event_output_direct(seq_handle, evIn);
             }
             
             //Seq notes data request and queueing
@@ -263,14 +263,14 @@ void SeqDriver::procEvents(int)
                 nextEchoTick = nextSeqTick;
 
                 // next echo request for Seq
-/*            if ((((int)nextSeqTick != nextLfoTick) || (!nextLfoTick))) {
+            if ((((int)nextSeqTick != nextLfoTick) || (!nextLfoTick))) {
                     snd_seq_ev_clear(evIn);
                     evIn->type = SND_SEQ_EVENT_ECHO;
                     snd_seq_ev_schedule_real(evIn, queue_id,  0,
                             tickToDelta(nextSeqTick));
                     snd_seq_ev_set_dest(evIn, clientid, portid_in);
                     snd_seq_event_output_direct(seq_handle, evIn);
-                } */
+                }
             }
             
             //Arp Note queueing
@@ -302,7 +302,7 @@ void SeqDriver::procEvents(int)
                 } 
 
                 //set Echo tick for next request
-/*                midiArpList->at(l1)->getNextNote(&noteTick, note,
+                midiArpList->at(l1)->getNextNote(&noteTick, note,
                         velocity, &length, &isNew);
                 if (isNew) 
                 {
@@ -317,13 +317,13 @@ void SeqDriver::procEvents(int)
                             nextEchoTick = noteTick;
                         }
                     }
-                } */
+                }
             }
 //            experimental: produce echoes every 128th note for timing calc.
 //                          this does enable robust tempo changes but increases
 //                          cpu load.
 //                          does it increase jitter as well?
-            nextEchoTick = tick + 12;
+//            nextEchoTick = tick + 12;
             if ((((int)nextEchoTick != nextLfoTick) || (!nextLfoTick)) &&
              (((int)nextEchoTick != nextSeqTick) || (!nextSeqTick))) {
                 snd_seq_ev_clear(evIn);
