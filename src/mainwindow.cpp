@@ -1373,7 +1373,7 @@ void MainWindow::signalAction(int fd)
     
     switch (message) {
         case SIGUSR1:
-            saveFile();
+            fileSave();
             break;
 
         case SIGINT:
