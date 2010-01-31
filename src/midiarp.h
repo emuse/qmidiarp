@@ -1,33 +1,36 @@
 #ifndef MIDIARP_H
 #define MIDIARP_H
 
+#include <QMutex>
 #include <QObject>
 #include <QString>
+#include <QThread>
 #include <QVector>
 #include <alsa/asoundlib.h>
 #include <main.h>
 
 
-class MidiArp : public QObject  {
+class MidiArp : public QThread  {
     
   Q_OBJECT
     
   private:
-    void updateNotes(snd_seq_tick_time_t currentTick);  
-    void getNote(snd_seq_tick_time_t *tick, int note[], int velocity[],
+    void updateNotes(int currentTick);  
+    void getNote(int *tick, int note[], int velocity[],
             int *length);
     bool advancePatternIndex();
-    snd_seq_tick_time_t nextNoteTick;
+    int nextNoteTick;
     int nextNote[MAXCHORD], nextVelocity[MAXCHORD];
     int nextLength;
-    snd_seq_tick_time_t currentNoteTick;
+    int currentNoteTick, currentTick;
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
     int currentLength;
     bool newCurrent, newNext, chordMode;
-    snd_seq_tick_time_t arpTick, lastArpTick;
+    int arpTick, lastArpTick;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
     double queueTempo;
     QVector<int> sustainBufferList;
+    QMutex mutex;
     
   private:
     void initLoop();  
@@ -51,23 +54,23 @@ class MidiArp : public QObject  {
     double attack_time, release_time; 
     int randomTickAmp, randomVelocityAmp, randomLengthAmp;
     QString pattern;
+    QVector<int> returnNote, returnVelocity;
+    int returnTick, returnIsNew, returnLength;
            
   public:
     MidiArp();
     ~MidiArp();
     bool isArp(snd_seq_event_t *evIn);   // Check if evIn is in the input range of the arp
-    void addNote(snd_seq_event_t *evIn, int tick); // Add input Note for Arpeggio
-    void removeNote(snd_seq_event_t *evIn, int tick, int keep_rel); // Remove input Note from Arpeggio
+    void addNote(int note, int velocity, int tick); // Add input Note for Arpeggio
+    void removeNote(int note, int tick, int keep_rel); // Remove input Note from Arpeggio
     void removeNote(int *noteptr, int tick, int keep_rel); // Remove input Note from Arpeggio
-    void getCurrentNote(snd_seq_tick_time_t currentTick,
-            snd_seq_tick_time_t *tick, int note[], int velocity[],
-            int *length, bool *isNew);
-    void getNextNote(snd_seq_tick_time_t *tick, int note[], int velocity[],
-            int *length, bool *isNew);
-    void initArpTick(snd_seq_tick_time_t currentTick);
+    void getCurrentNote(int askedTick);
+    void getNextNote(int askedTick);
+    void initArpTick(int currentTick);
     void newRandomValues();
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
+    void run();
     
   public slots:  
     void updatePattern(const QString&);

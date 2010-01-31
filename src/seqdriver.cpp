@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <QString>
-#include <QSocketNotifier>
 #include <alsa/asoundlib.h>
 
 #include "seqdriver.h"
@@ -10,7 +9,7 @@
 SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList, 
         QList<MidiLfo *> *p_midiLfoList, QList<MidiSeq *> *p_midiSeqList,
         QWidget *parent)
-    : QWidget(parent), modified(false)
+    : QThread(parent), modified(false)
 {
     int err;
 
@@ -21,6 +20,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     forwardUnmatched = false;
     portUnmatched = 0;
     midi_controllable = true;
+    threadAbort = false;
 
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0) {
@@ -64,6 +64,9 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 SeqDriver::~SeqDriver(){
     
     if (use_jacksync) setUseJackTransport(false);
+    
+    threadAbort = true;
+    wait();
 
 }
 
@@ -84,329 +87,337 @@ void SeqDriver::registerPorts(int num)
             exit(1);
         }
     }                                    
-    initSeqNotifier();
+    start(Priority(6));
 }
-
-void SeqDriver::initSeqNotifier()
-{
-    int alsaEventFd = 0;
-
-    struct pollfd pfd[1];
-    snd_seq_poll_descriptors(seq_handle, pfd, 1, POLLIN);
-    alsaEventFd = pfd[0].fd;
-    seqNotifier = new QSocketNotifier(alsaEventFd, QSocketNotifier::Read);
-    QObject::connect(seqNotifier, SIGNAL(activated(int)),
-            this, SLOT(procEvents(int)));
-}
-
 
 int SeqDriver::getPortCount()
 {
     return(portCount);
 }
 
-void SeqDriver::procEvents(int)
+void SeqDriver::run()
 {
     int l1, l2;
-    int note[MAXCHORD], velocity[MAXCHORD];
+    QVector<int> note, velocity;
     int length, ccnumber;
     int lfoccnumber, lfochannel, lfoport;
     int seqlength, seqchannel, seqport, seqtransp, seqvel;
     snd_seq_event_t *evIn, evOut;
-    snd_seq_tick_time_t noteTick;
+    int noteTick;
     bool unmatched, foundEcho, isNew;
     bool fallback = false;
-
-    do {
-        snd_seq_event_input(seq_handle, &evIn);
-
-        if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
-            midiTick += 4;
-            tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
-            if (((int)tick > nextLfoTick) && (midiLfoList->count())) {
-                fallback = true; 
-            }
-            if (((int)tick > nextSeqTick) && (midiSeqList->count())) {
-                fallback = true; 
-            }
-        }
-
-        if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue || fallback)) 
-        {
-            
-            fallback = false;
-            
-            real_time = evIn->time.time;
-            
-            if (use_midiclock) {
-                tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
-                calcMidiRatio();
-            }
-            else if (use_jacksync) {
-                if (jackSync->isRunning()) {
-                    
-                    if (!jackSync->get_state()) 
-                        setQueueStatus(false);
+    int pollR = 0;
+    note.clear();
+    velocity.clear();
     
-                    jpos = jackSync->get_pos();
-                    
-                    tick = (double)jpos.frame * TICKS_PER_QUARTER 
-                            / jpos.frame_rate * jpos.beats_per_minute / 60
-                            - jack_offset_tick;
+    int nfds;
+    struct pollfd *pfds;
+
+    nfds = snd_seq_poll_descriptors_count(seq_handle, POLLIN);
+    pfds = (struct pollfd *) alloca(nfds * sizeof(struct pollfd));
+    snd_seq_poll_descriptors(seq_handle, pfds, nfds, POLLIN);
+
+    while ((poll >= 0) && (!threadAbort)) {
+                
+        pollR = poll(pfds, nfds, 200);
+        while (pollR > 0) {
+    
+            snd_seq_event_input(seq_handle, &evIn);
+    
+            if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
+                midiTick += 4;
+                tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
+                if (((int)tick > nextLfoTick) && (midiLfoList->count())) {
+                    fallback = true; 
+                }
+                if (((int)tick > nextSeqTick) && (midiSeqList->count())) {
+                    fallback = true; 
+                }
+            }
+    
+            if (runArp && ((evIn->type == SND_SEQ_EVENT_ECHO) || startQueue || fallback)) 
+            {
+                
+                fallback = false;
+                
+                real_time = evIn->time.time;
+                
+                if (use_midiclock) {
+                    tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
                     calcMidiRatio();
                 }
-            }
-            else {
-                m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
-                tick = deltaToTick(evIn->time.time);
-            }
-
-//                            printf("       tick %d     ",tick);
-//                            printf("nextLfoTick %d\n",nextLfoTick);
-//                            printf("nextSeqTick %d\n",nextSeqTick);
-//                            printf("midiTick %d   ",midiTick);
-//                            printf("m_ratio %f  ",m_ratio);
-//                            printf("Jack Beat %d\n", jpos.beat);
-//                            printf("Jack Frame %d  ", (int)jpos.frame);
-//                            printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
-            emit nextStep(tick);
-            startQueue = false;
-            foundEcho = false;
-
-            //LFO data request and queueing
-            //add 4 ticks to startoff condition to cope with initial sync imperfections
-            if (((int)(tick + 4) >= nextLfoTick) && (midiLfoList->count())) {
-                l2 = 0;
-                for (l1 = 0; l1 < midiLfoList->count(); l1++) {
-                    if ((int)(tick + 4) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
-                        midiLfoList->at(l1)->getData(&lfoData);
-                        lfoccnumber = midiLfoList->at(l1)->ccnumber;
-                        lfochannel = midiLfoList->at(l1)->channelOut;
-                        lfoport = midiLfoList->at(l1)->portOut;
-                        if (!midiLfoList->at(l1)->isMuted) {
-                            l2 = 0;
-                            while (lfoData.at(l2).value > -1) {
-                                if (!lfoData.at(l2).muted) {
-                                    snd_seq_ev_clear(&evOut);
-                                    snd_seq_ev_set_controller(&evOut, 0, 
-                                            lfoccnumber,
-                                            lfoData.at(l2).value);
-                                    evOut.data.control.channel = lfochannel;
-                                    snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                            tickToDelta(lfoData.at(l2).tick + nextLfoTick));
-                                    snd_seq_ev_set_subs(&evOut);  
-                                    snd_seq_ev_set_source(&evOut,
-                                            portid_out[lfoport]);
-                                    snd_seq_event_output_direct(seq_handle, &evOut);
-                                }
-                                l2++;
-                            }
-                        }
-                        lastLfoTick[l1] += lfoPacketSize[l1];
-                        lfoPacketSize[l1] = lfoData.last().tick;
-                        if (!l1) lfoMinPacketSize = lfoPacketSize[l1]; 
-                        else if (lfoPacketSize[l1] < lfoMinPacketSize) 
-                            lfoMinPacketSize = lfoPacketSize[l1];
+                else if (use_jacksync) {
+                    if (jackSync->isRunning()) {
+                        
+                        if (!jackSync->get_state()) 
+                            setQueueStatus(false);
+        
+                        jpos = jackSync->get_pos();
+                        if (jpos.beats_per_minute > 0) 
+                            tempo = jpos.beats_per_minute;
+                            
+                        tick = (double)jpos.frame * TICKS_PER_QUARTER 
+                                / jpos.frame_rate * tempo / 60
+                                - jack_offset_tick;
+                        calcMidiRatio();
                     }
                 }
-                nextLfoTick += lfoMinPacketSize;
-                nextEchoTick = nextLfoTick;
-
-                // next echo request for LFO
-                snd_seq_ev_clear(evIn);
-                evIn->type = SND_SEQ_EVENT_ECHO;
-                snd_seq_ev_schedule_real(evIn, queue_id,  0,
-                        tickToDelta(nextLfoTick));
-                snd_seq_ev_set_dest(evIn, clientid, portid_in);
-                snd_seq_event_output_direct(seq_handle, evIn);
-            }
-            
-            //Seq notes data request and queueing
-            //add 4 ticks to startoff condition to cope with initial sync imperfections
-            if (((int)(tick + 4) >= nextSeqTick) && (midiSeqList->count())) {
-                l2 = 0;
-                for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-                    if ((int)(tick + 4) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
-                        midiSeqList->at(l1)->getData(&seqData);
-                        seqlength = midiSeqList->at(l1)->notelength;
-                        seqtransp = midiSeqList->at(l1)->transp; 
-                        seqvel = midiSeqList->at(l1)->vel; 
-                        seqchannel = midiSeqList->at(l1)->channelOut;
-                        seqport = midiSeqList->at(l1)->portOut;
-                        if (!midiSeqList->at(l1)->isMuted) {
-                            l2 = 0;
-                            while (seqData.at(l2).value > -1) {
-                                if (!seqData.at(l2).muted) {
-                                    snd_seq_ev_clear(&evOut);
-                                    snd_seq_ev_set_note(&evOut, 0, 
-                                            seqData.at(l2).value+seqtransp,
-                                            seqvel, seqlength);
-                                    evOut.data.control.channel = seqchannel;
-                                    snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                            tickToDelta(seqData.at(l2).tick + nextSeqTick));
-                                    snd_seq_ev_set_subs(&evOut);  
-                                    snd_seq_ev_set_source(&evOut,
-                                            portid_out[seqport]);
-                                    snd_seq_event_output_direct(seq_handle, &evOut);
-                                }
-                                l2++;
-                            }
-                        }
-                        lastSeqTick[l1] += seqPacketSize[l1];
-                        seqPacketSize[l1] = seqData.last().tick;
-                        if (!l1) seqMinPacketSize = seqPacketSize[l1]; 
-                        else if (seqPacketSize[l1] < seqMinPacketSize) 
-                            seqMinPacketSize = seqPacketSize[l1];
-                    }
+                else {
+                    m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+                    tick = deltaToTick(evIn->time.time);
                 }
-                nextSeqTick += seqMinPacketSize;
-                nextEchoTick = nextSeqTick;
-
-                // next echo request for Seq
-            if ((((int)nextSeqTick != nextLfoTick) || (!nextLfoTick))) {
+                if (tick < 0) {
+                    //this happens from time to time with seq24!, needs real fix
+                    setQueueStatus(false);
+                    break;
+                }
+                                //~ printf("       tick %d     ",tick);
+                                //~ printf("nextLfoTick %d  ",nextLfoTick);
+                                //~ printf("nextSeqTick %d  ",nextSeqTick);
+                                //~ printf("nextEchoTick %d  ",nextEchoTick);
+                                //~ printf("midiTick %d   ",midiTick);
+                                //~ printf("m_ratio %f  ",m_ratio);
+                                //~ printf("Jack Beat %d\n", jpos.beat);
+                                //~ printf("Jack Frame %d \n ", (int)jpos.frame);
+                                //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
+                emit nextStep(tick);
+                startQueue = false;
+                foundEcho = false;
+    
+                //LFO data request and queueing
+                //add 4 ticks to startoff condition to cope with initial sync imperfections
+                if (((int)(tick + 4) >= nextLfoTick) && (midiLfoList->count())) {
+                    l2 = 0;
+                    for (l1 = 0; l1 < midiLfoList->count(); l1++) {
+                        if ((int)(tick + 4) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
+                            midiLfoList->at(l1)->getData(&lfoData);
+                            lfoccnumber = midiLfoList->at(l1)->ccnumber;
+                            lfochannel = midiLfoList->at(l1)->channelOut;
+                            lfoport = midiLfoList->at(l1)->portOut;
+                            if (!midiLfoList->at(l1)->isMuted) {
+                                l2 = 0;
+                                while (lfoData.at(l2).value > -1) {
+                                    if (!lfoData.at(l2).muted) {
+                                        snd_seq_ev_clear(&evOut);
+                                        snd_seq_ev_set_controller(&evOut, 0, 
+                                                lfoccnumber,
+                                                lfoData.at(l2).value);
+                                        evOut.data.control.channel = lfochannel;
+                                        snd_seq_ev_schedule_real(&evOut, queue_id, 0,
+                                                tickToDelta(lfoData.at(l2).tick + nextLfoTick));
+                                        snd_seq_ev_set_subs(&evOut);  
+                                        snd_seq_ev_set_source(&evOut,
+                                                portid_out[lfoport]);
+                                        snd_seq_event_output_direct(seq_handle, &evOut);
+                                    }
+                                    l2++;
+                                }
+                            }
+                            lastLfoTick[l1] += lfoPacketSize[l1];
+                            lfoPacketSize[l1] = lfoData.last().tick;
+                            if (!l1) lfoMinPacketSize = lfoPacketSize[l1]; 
+                            else if (lfoPacketSize[l1] < lfoMinPacketSize) 
+                                lfoMinPacketSize = lfoPacketSize[l1];
+                        }
+                    }
+                    nextLfoTick += lfoMinPacketSize;
+                    nextEchoTick = nextLfoTick;
+    
+                    // next echo request for LFO
                     snd_seq_ev_clear(evIn);
                     evIn->type = SND_SEQ_EVENT_ECHO;
                     snd_seq_ev_schedule_real(evIn, queue_id,  0,
-                            tickToDelta(nextSeqTick));
+                            tickToDelta(nextLfoTick));
                     snd_seq_ev_set_dest(evIn, clientid, portid_in);
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
-            }
-            
-            //Arp Note queueing
-            for (l1 = 0; l1 < midiArpList->count(); l1++) 
-            {
-                midiArpList->at(l1)->newRandomValues();
-                midiArpList->at(l1)->updateQueueTempo(tempo);
-                midiArpList->at(l1)->getCurrentNote(tick, &noteTick,
-                        note, velocity, &length, &isNew);
-
-                if (isNew && velocity[0]) 
-                {
+                
+                //Seq notes data request and queueing
+                //add 4 ticks to startoff condition to cope with initial sync imperfections
+                if (((int)(tick + 4) >= nextSeqTick) && (midiSeqList->count())) {
                     l2 = 0;
-                    while(note[l2] >= 0) 
-                    {
-                        snd_seq_ev_clear(&evOut);
-                        snd_seq_ev_set_note(&evOut, 0, note[l2],
-                                velocity[l2], (int)length*4);
-                        evOut.data.control.channel = 
-                            midiArpList->at(l1)->channelOut;
-                        snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                tickToDelta(noteTick));
-                        snd_seq_ev_set_subs(&evOut);  
-                        snd_seq_ev_set_source(&evOut,
-                                portid_out[midiArpList->at(l1)->portOut]);
-                        snd_seq_event_output_direct(seq_handle, &evOut);
-                        l2++;
-                    } 
-                } 
-
-                //set Echo tick for next request
-                midiArpList->at(l1)->getNextNote(&noteTick, note,
-                        velocity, &length, &isNew);
-                if (isNew) 
+                    for (l1 = 0; l1 < midiSeqList->count(); l1++) {
+                        if ((int)(tick + 4) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
+                            midiSeqList->at(l1)->getData(&seqData);
+                            seqlength = midiSeqList->at(l1)->notelength;
+                            seqtransp = midiSeqList->at(l1)->transp; 
+                            seqvel = midiSeqList->at(l1)->vel; 
+                            seqchannel = midiSeqList->at(l1)->channelOut;
+                            seqport = midiSeqList->at(l1)->portOut;
+                            if (!midiSeqList->at(l1)->isMuted) {
+                                l2 = 0;
+                                while (seqData.at(l2).value > -1) {
+                                    if (!seqData.at(l2).muted) {
+                                        snd_seq_ev_clear(&evOut);
+                                        snd_seq_ev_set_note(&evOut, 0, 
+                                                seqData.at(l2).value+seqtransp,
+                                                seqvel, seqlength);
+                                        evOut.data.control.channel = seqchannel;
+                                        snd_seq_ev_schedule_real(&evOut, queue_id, 0,
+                                                tickToDelta(seqData.at(l2).tick + nextSeqTick));
+                                        snd_seq_ev_set_subs(&evOut);  
+                                        snd_seq_ev_set_source(&evOut,
+                                                portid_out[seqport]);
+                                        snd_seq_event_output_direct(seq_handle, &evOut);
+                                    }
+                                    l2++;
+                                }
+                            }
+                            lastSeqTick[l1] += seqPacketSize[l1];
+                            seqPacketSize[l1] = seqData.last().tick;
+                            if (!l1) seqMinPacketSize = seqPacketSize[l1]; 
+                            else if (seqPacketSize[l1] < seqMinPacketSize) 
+                                seqMinPacketSize = seqPacketSize[l1];
+                        }
+                    }
+                    nextSeqTick += seqMinPacketSize;
+                    nextEchoTick = nextSeqTick;
+    
+                    // next echo request for Seq
+                    if ((((int)nextSeqTick != nextLfoTick) || (!nextLfoTick))) {
+                        snd_seq_ev_clear(evIn);
+                        evIn->type = SND_SEQ_EVENT_ECHO;
+                        snd_seq_ev_schedule_real(evIn, queue_id,  0,
+                                tickToDelta(nextSeqTick));
+                        snd_seq_ev_set_dest(evIn, clientid, portid_in);
+                        snd_seq_event_output_direct(seq_handle, evIn);
+                    }
+                }
+                
+                //Arp Note queueing
+                for (l1 = 0; l1 < midiArpList->count(); l1++) 
                 {
-                    if (!foundEcho) 
-                    {
-                        foundEcho = true;
-                        nextEchoTick = noteTick;
-                    } else 
-                    {
-                        if (noteTick < nextEchoTick) 
+                    midiArpList->at(l1)->newRandomValues();
+                    midiArpList->at(l1)->updateQueueTempo(tempo);
+                    midiArpList->at(l1)->getCurrentNote(tick);
+                    note = midiArpList->at(l1)->returnNote;
+                    velocity = midiArpList->at(l1)->returnVelocity;
+                    noteTick = midiArpList->at(l1)->returnTick;
+                    length = midiArpList->at(l1)->returnLength;
+                    isNew = midiArpList->at(l1)->returnIsNew;
+                    if (!velocity.isEmpty()) {
+                        if (isNew && velocity.at(0)) 
                         {
+                            l2 = 0;
+                            while(note.at(l2) >= 0) 
+                            {
+                                snd_seq_ev_clear(&evOut);
+                                snd_seq_ev_set_note(&evOut, 0, note.at(l2),
+                                        velocity.at(l2), (int)length*4);
+                                evOut.data.control.channel = 
+                                    midiArpList->at(l1)->channelOut;
+                                snd_seq_ev_schedule_real(&evOut, queue_id, 0,
+                                        tickToDelta(noteTick));
+                                snd_seq_ev_set_subs(&evOut);  
+                                snd_seq_ev_set_source(&evOut,
+                                        portid_out[midiArpList->at(l1)->portOut]);
+                                snd_seq_event_output_direct(seq_handle, &evOut);
+                                l2++;
+        
+                            } 
+                        }
+                    }
+    
+                    //set Echo tick for next request
+                    midiArpList->at(l1)->getNextNote(noteTick);
+                    if (midiArpList->at(l1)->returnIsNew) {
+                        if (!foundEcho) 
+                        {
+                            foundEcho = true;
                             nextEchoTick = noteTick;
+                        } else 
+                        {
+                            if (noteTick < nextEchoTick+4) 
+                            {
+                                nextEchoTick = noteTick;
+                            }
                         }
                     }
                 }
-            }
-//            experimental: produce echoes every 128th note for timing calc.
-//                          this does enable robust tempo changes but increases
-//                          cpu load.
-//                          does it increase jitter as well?
-//            nextEchoTick = tick + 12;
-            if ((((int)nextEchoTick != nextLfoTick) || (!nextLfoTick)) &&
-             (((int)nextEchoTick != nextSeqTick) || (!nextSeqTick))) {
-                snd_seq_ev_clear(evIn);
-                evIn->type = SND_SEQ_EVENT_ECHO;
-                snd_seq_ev_schedule_real(evIn, queue_id,  0, 
-                        tickToDelta(nextEchoTick));
-                snd_seq_ev_set_dest(evIn, clientid, portid_in);
-                snd_seq_event_output_direct(seq_handle, evIn);
-            }
-
-        } else 
-        {
-            emit midiEvent(evIn);
-            unmatched = true;
-
-            if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
-                ccnumber = (int)evIn->data.control.param;
-                if (ccnumber == 64) {
-                    //Sustain Footswitch has changed
-                    for (l1 = 0; l1 < midiArpList->count(); l1++) {
-                        if (midiArpList->at(l1)->isArp(evIn)) {
-                            midiArpList->at(l1)->setSustain(
-                                    (evIn->data.control.value == 127), tick);
+    
+                if ((((int)nextEchoTick != nextLfoTick) || (!nextLfoTick)) &&
+                 (((int)nextEchoTick != nextSeqTick) || (!nextSeqTick))) {
+                    snd_seq_ev_clear(evIn);
+                    evIn->type = SND_SEQ_EVENT_ECHO;
+                    snd_seq_ev_schedule_real(evIn, queue_id,  0, 
+                            tickToDelta(nextEchoTick));
+                    snd_seq_ev_set_dest(evIn, clientid, portid_in);
+                    snd_seq_event_output_direct(seq_handle, evIn);
+                }
+    
+            } else 
+            {
+                emit midiEvent(evIn);
+                unmatched = true;
+    
+                if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
+                    ccnumber = (int)evIn->data.control.param;
+                    if (ccnumber == 64) {
+                        //Sustain Footswitch has changed
+                        for (l1 = 0; l1 < midiArpList->count(); l1++) {
+                            if (midiArpList->at(l1)->isArp(evIn)) {
+                                midiArpList->at(l1)->setSustain(
+                                        (evIn->data.control.value == 127), tick);
+                                unmatched = false;
+                            }
+                        }
+                    }
+                    else {
+                        if (midi_controllable) {
+                            emit controlEvent(ccnumber, evIn->data.control.channel,
+                                                evIn->data.control.value);
                             unmatched = false;
                         }
                     }
                 }
-                else {
-                    if (midi_controllable) {
-                        emit controlEvent(ccnumber, evIn->data.control.channel,
-                                            evIn->data.control.value);
-                        unmatched = false;
-                    }
-                }
-            }
-
-            if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                    || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
-                for (l1 = 0; l1 < midiArpList->count(); l1++) {
-                    if (midiArpList->at(l1)->isArp(evIn)) {
-                        unmatched = false;
-                        if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                && (evIn->data.note.velocity > 0)) {
-                            midiArpList->at(l1)->addNote(evIn, tick);
-                        } else {
-                            midiArpList->at(l1)->removeNote(evIn, tick, 1);
+    
+                if ((evIn->type == SND_SEQ_EVENT_NOTEON)
+                        || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
+                    for (l1 = 0; l1 < midiArpList->count(); l1++) {
+                        if (midiArpList->at(l1)->isArp(evIn)) {
+                            unmatched = false;
+                            if ((evIn->type == SND_SEQ_EVENT_NOTEON)
+                                    && (evIn->data.note.velocity > 0)) {
+                                midiArpList->at(l1)->addNote(evIn->data.note.note, evIn->data.note.velocity, tick);
+                            } else {
+                                midiArpList->at(l1)->removeNote(evIn->data.note.note, tick, 1);
+                            }
                         }
                     }
-                }
-                
-                for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-                    if (midiSeqList->at(l1)->isSeq(evIn)) {
-                        unmatched = false;
-                        if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                && (evIn->data.note.velocity > 0)) {
-                            midiSeqList->at(l1)->updateTranspose(evIn->data.note.note - 60);
-                        if (midiSeqList->at(l1)->enableVelIn) {
-                            midiSeqList->at(l1)->updateVelocity(evIn->data.note.velocity);
+                    
+                    for (l1 = 0; l1 < midiSeqList->count(); l1++) {
+                        if (midiSeqList->at(l1)->isSeq(evIn)) {
+                            unmatched = false;
+                            if ((evIn->type == SND_SEQ_EVENT_NOTEON)
+                                    && (evIn->data.note.velocity > 0)) {
+                                midiSeqList->at(l1)->updateTranspose(evIn->data.note.note - 60);
+                            if (midiSeqList->at(l1)->enableVelIn) {
+                                midiSeqList->at(l1)->updateVelocity(evIn->data.note.velocity);
+                            }
+                            } 
                         }
-                        } 
+                    }
+                    
+                }
+                if (use_midiclock){
+                    if (evIn->type == SND_SEQ_EVENT_START) {
+                        setQueueStatus(true);
+                    }
+                    if (evIn->type == SND_SEQ_EVENT_STOP) {
+                        setQueueStatus(false);
                     }
                 }
-                
-            }
-            if (use_midiclock){
-                if (evIn->type == SND_SEQ_EVENT_START) {
-                    setQueueStatus(true);
-                }
-                if (evIn->type == SND_SEQ_EVENT_STOP) {
-                    setQueueStatus(false);
+    
+                if (forwardUnmatched && unmatched) {
+                    snd_seq_ev_set_subs(evIn);  
+                    snd_seq_ev_set_direct(evIn);
+                    snd_seq_ev_set_source(evIn, portid_out[portUnmatched]);
+                    snd_seq_event_output_direct(seq_handle, evIn);
                 }
             }
-
-            if (forwardUnmatched && unmatched) {
-                snd_seq_ev_set_subs(evIn);  
-                snd_seq_ev_set_direct(evIn);
-                snd_seq_ev_set_source(evIn, portid_out[portUnmatched]);
-                snd_seq_event_output_direct(seq_handle, evIn);
-            }
-        }  
-
-    } while (snd_seq_event_input_pending(seq_handle, 0) > 0);  
-
+            pollR = snd_seq_event_input_pending(seq_handle, 0);
+        }
+    }
 }
 
 void SeqDriver::setForwardUnmatched(bool on)
@@ -460,6 +471,9 @@ void SeqDriver::setQueueStatus(bool run)
     if (run) {
         runArp = true;
         startQueue = true;
+        snd_seq_start_queue(seq_handle, queue_id, NULL);
+        snd_seq_drain_output(seq_handle);   
+        snd_seq_ev_clear(&evOut);
         for (l1 = 0; l1 < 20; l1++) {
             lastLfoTick[l1] = 0;
             lfoPacketSize[l1] = 0;
@@ -472,33 +486,36 @@ void SeqDriver::setQueueStatus(bool run)
         nextSeqTick = 0;
         nextEchoTick = 0;
         jack_offset_tick = 0;
-       
+          
         if (use_midiclock) {
             midiTick = 0;
-        } 
+        }
         else if (use_jacksync) {
             if (jackSync->isRunning()) {
-            
                 jpos = jackSync->get_pos();
-                tempo = jpos.beats_per_minute;
+                // qtractor for instance doesn't set tempo atm...
+                if (jpos.beats_per_minute > 0) 
+                    tempo = jpos.beats_per_minute;
+                else
+                    tempo = internal_tempo;
                 jack_offset_tick = (double)jpos.frame * TICKS_PER_QUARTER 
-                        / jpos.frame_rate * jpos.beats_per_minute / 60;
+                        / jpos.frame_rate * tempo / 60;
+                m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
             }
         }
-        else
+        else {
             tempo = internal_tempo;
+            m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+        }
+
             
-        m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
         tick = 0;        
-        snd_seq_start_queue(seq_handle, queue_id, NULL);
-        snd_seq_drain_output(seq_handle);
-        real_time = get_time();
-        
-        snd_seq_ev_clear(&evOut);
+
+ 
         evOut.type = SND_SEQ_EVENT_NOTEOFF;
         evOut.data.note.note = 0;
         evOut.data.note.velocity = 0;
-        snd_seq_ev_schedule_real(&evOut, queue_id,  0, &real_time);
+        snd_seq_ev_schedule_real(&evOut, queue_id,  0, tickToDelta(0));
         snd_seq_ev_set_dest(&evOut, clientid, portid_in);
         snd_seq_event_output_direct(seq_handle, &evOut);
 
@@ -611,6 +628,7 @@ void SeqDriver::jackShutdown()
 
 void SeqDriver::setUseMidiClock(bool on)
 {
+    m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
     runQueue(false);
     use_midiclock = on;
 }
@@ -646,31 +664,15 @@ int SeqDriver::deltaToTick(snd_seq_real_time_t curtime)
     return (int)(alsatick +.5);
 }
 
-snd_seq_real_time_t SeqDriver::addAlsaTimes(snd_seq_real_time_t time1
-        , snd_seq_real_time_t time2)
-{
-    snd_seq_real_time_t addtime;
-    addtime.tv_nsec = time1.tv_nsec / 2 + time2.tv_nsec / 2;
-    if (addtime.tv_nsec >= 500000000L) {
-        addtime.tv_nsec -= 500000000L;
-        addtime.tv_sec+= delta.tv_sec + 1;
-    }
-    else
-        addtime.tv_sec+= addtime.tv_sec;
-        
-    addtime.tv_nsec = addtime.tv_nsec + addtime.tv_nsec;
-    return addtime;
-}
-
 void SeqDriver::calcMidiRatio()
 {
     double old_m_ratio = m_ratio;
     
-    if (tick) {
+    if (tick > 0) {
         m_ratio = ((double)real_time.tv_sec * 1e9 
                 + (double)real_time.tv_nsec)/tick;
-        m_ratio += old_m_ratio;
-        m_ratio /= 2;
+//        m_ratio += old_m_ratio;
+//        m_ratio /= 2;
     }
     if ((m_ratio == 0) || (m_ratio > 60e9 / tempo)) {
         m_ratio = old_m_ratio;

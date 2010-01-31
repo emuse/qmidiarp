@@ -1,9 +1,12 @@
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
 
+#include <QMetaType>
 #include <QWidget>
 #include <QSocketNotifier>
+#include <QThread>
 #include <alsa/asoundlib.h>
+
 
 #include "jacksync.h"
 #include "midiarp.h"
@@ -11,10 +14,17 @@
 #include "midiseq.h"
 #include "main.h"
 
-class SeqDriver : public QWidget {
+
+    Q_DECLARE_METATYPE(snd_seq_tick_time_t);
+    
+  //  qRegisterMetaType<snd_seq_tick_time_t>();
+
+class SeqDriver : public QThread {
 
     Q_OBJECT
-
+    
+    
+    
     private:
         int portCount;
         QList<MidiArp *> *midiArpList; 
@@ -31,7 +41,8 @@ class SeqDriver : public QWidget {
         bool startQueue;
         bool modified;
         bool midi_controllable;
-        snd_seq_tick_time_t tick, nextEchoTick, jack_offset_tick;
+        bool threadAbort;
+        int tick, nextEchoTick, jack_offset_tick;
         int lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
         int tempo, internal_tempo;
@@ -40,8 +51,6 @@ class SeqDriver : public QWidget {
 
         void initSeqNotifier();
         const snd_seq_real_time_t *tickToDelta(int tick);
-        snd_seq_real_time_t addAlsaTimes(snd_seq_real_time_t time1
-                        , snd_seq_real_time_t time2);
         int deltaToTick (snd_seq_real_time_t curtime);
         void calcMidiRatio();
 
@@ -72,16 +81,16 @@ class SeqDriver : public QWidget {
         bool isModified();
         void setModified(bool);
         int getAlsaClientId();
+        void run();
 
    signals:
         void midiEvent(snd_seq_event_t *ev);
         void controlEvent(int ccnumber, int channel, int value);
-        void nextStep(snd_seq_tick_time_t tick);
+        void nextStep(int tick);
         void jackShutdown(bool); //boolean is passed to main toolbar 
                                 //jackSync button
 
    public slots:
-        void procEvents(int fd);
         void setForwardUnmatched(bool on);
         void setPortUnmatched(int id);
         void setQueueTempo(int bpm);

@@ -51,7 +51,7 @@ MainWindow::MainWindow(int p_portCount)
 
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
-            
+                
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
     logWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -85,7 +85,7 @@ MainWindow::MainWindow(int p_portCount)
             arpData->seqDriver, SLOT(setMidiControllable(bool)));
 
     connect(this, SIGNAL(runQueue(bool)), 
-            arpData->seqDriver, SLOT(runQueue(bool)));                 
+            arpData->seqDriver, SLOT(runQueue(bool)));                                
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -267,6 +267,7 @@ MainWindow::MainWindow(int p_portCount)
     QWidget *centWidget = new QWidget(this);
     setCentralWidget(centWidget);
     updateWindowTitle();
+    seqEventLocked = false;
 
     if (checkRcFile())
         readRcFile();
@@ -352,8 +353,8 @@ void MainWindow::addArp(const QString& name)
             arpData->getPortCount(), passWidget->compactStyle, this);
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
-    connect(arpData->seqDriver, SIGNAL(nextStep(snd_seq_tick_time_t)),
-            arpWidget->arpScreen, SLOT(updateArpScreen(snd_seq_tick_time_t)));
+    connect(arpData->seqDriver, SIGNAL(nextStep(int)),
+            arpWidget->arpScreen, SLOT(updateArpScreen(int)));
     connect(arpWidget, SIGNAL(patternChanged()), 
             this, SLOT(resetQueue()));
     connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
@@ -373,7 +374,7 @@ void MainWindow::addArp(const QString& name)
             arpWidget->arpScreen, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
             arpWidget->arpScreen, SLOT(setGrooveLength(int)));
-
+            
     widgetID = arpData->arpWidgetCount();
     arpWidget->name = name;
     arpWidget->ID = widgetID;

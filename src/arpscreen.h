@@ -29,7 +29,7 @@ class ArpScreen : public QWidget
 
   protected:
     virtual void paintEvent(QPaintEvent *);
-    virtual void resizeEvent(QResizeEvent *);
+//    virtual void resizeEvent(QResizeEvent *);
     double follower_tick;
    
   public:
@@ -40,7 +40,7 @@ class ArpScreen : public QWidget
    
   public slots: 
     void updateArpScreen(const QString&);
-    void updateArpScreen(snd_seq_tick_time_t tick);
+    void updateArpScreen(int tick);
     void setGrooveTick(int tick);
     void setGrooveVelocity(int vel);
     void setGrooveLength(int length);

@@ -1,3 +1,9 @@
+2010-01-31 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.*, jacksync.*, midiarp.*: First attempt to run the MIDI
+	and arpeggio engine in threads. QSocketNotifier replaced by poll for
+	MIDI processing thread. Some timing cleanups for jack transport
+	sync.
+
 2010-01-23 Frank Kober <goemusic@yahoo.fr>
 	* mainwindow.cpp, arpwidget.cpp: Tags added to resource file items
 	for more flexibility. Old resource file will be without effect and

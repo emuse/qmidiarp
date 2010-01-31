@@ -1,11 +1,11 @@
 #ifndef JACKSYNC_H
 #define JACKSYNC_H
 
-#include <QWidget>
+#include <QThread>
 #include <jack/jack.h>
 #include <jack/transport.h>
 
-class JackSync : public QObject
+class JackSync : public QThread
 {
     Q_OBJECT
 
@@ -30,6 +30,7 @@ class JackSync : public QObject
     void j_shutdown();
 
   public:
+    void run();
     bool isRunning() { return jackRunning; }
     int initJack();
     int activateJack();

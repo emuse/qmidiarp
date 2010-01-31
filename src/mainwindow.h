@@ -47,6 +47,7 @@ class MainWindow : public QMainWindow
     bool saveFile();
     bool saveFileAs();
     bool isModified();
+    bool seqEventLocked;
 
     void addArp(const QString&);
     void addLfo(const QString&);

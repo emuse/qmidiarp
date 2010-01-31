@@ -374,7 +374,7 @@ void ArpScreen::updateArpScreen(const QString& pattern)
     update();
 }
 
-void ArpScreen::updateArpScreen(snd_seq_tick_time_t tick)
+void ArpScreen::updateArpScreen(int tick)
 {
     follower_tick = (double)tick;
     update();
@@ -390,15 +390,11 @@ void ArpScreen::setGrooveVelocity(int vel)
     grooveVelocity = vel;
     update();
 }
+
 void ArpScreen::setGrooveLength(int length)
 {
     grooveLength = length;
     update();
-}
-
-void ArpScreen::resizeEvent(QResizeEvent *)
-{
-
 }
 
 QSize ArpScreen::sizeHint() const

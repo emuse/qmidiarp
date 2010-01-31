@@ -140,7 +140,6 @@ void MidiCCTable::accept()
 
 void MidiCCTable::apply()
 {
-    QVector<MidiCC> ccList;
     int ccnumber, channel, min, max, ctrlID, moduleID;
     int l1;
     QChar moduleType;

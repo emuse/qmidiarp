@@ -55,6 +55,7 @@ MidiArp::MidiArp()
 }
 
 MidiArp::~MidiArp(){
+    wait();
 }
 
 bool MidiArp::isArp(snd_seq_event_t *evIn) {
@@ -80,16 +81,17 @@ bool MidiArp::isArp(snd_seq_event_t *evIn) {
     return(true);
 }
 
-void MidiArp::addNote(snd_seq_event_t *evIn, int tick)
+void MidiArp::addNote(int note, int velocity, int tick)
 {
-    int bufPtr, newBufPtr, l1, l2, l3, note;
+    mutex.lock();
+    int bufPtr, newBufPtr, l1, l2, l3;
 
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
-    note = evIn->data.note.note;
+    //note = evIn->data.note.note;
     if (!noteCount || (note > notes[bufPtr][0][noteCount - 1])) {
         notes[bufPtr][0][noteCount] = note;
-        notes[bufPtr][1][noteCount] = evIn->data.note.velocity;
+        notes[bufPtr][1][noteCount] = velocity;
         notes[bufPtr][2][noteCount] = tick;
         notes[bufPtr][3][noteCount] = 0;
         noteCount++;
@@ -105,7 +107,7 @@ void MidiArp::addNote(snd_seq_event_t *evIn, int tick)
             }  
         }
         notes[bufPtr][0][l1] = note;
-        notes[bufPtr][1][l1] = evIn->data.note.velocity;
+        notes[bufPtr][1][l1] = velocity;
         notes[bufPtr][2][l1] = tick;
         notes[bufPtr][3][l1] = 0;
         noteCount++;
@@ -118,6 +120,7 @@ void MidiArp::addNote(snd_seq_event_t *evIn, int tick)
             notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
         }  
     }
+    mutex.unlock();
 }
 
 void MidiArp::muteArp(bool on)
@@ -125,18 +128,18 @@ void MidiArp::muteArp(bool on)
     isMuted = on;
 }
 
-void MidiArp::removeNote(snd_seq_event_t *evIn, int tick, int keep_rel)
+void MidiArp::removeNote(int note, int tick, int keep_rel)
 {
-    int bufPtr, newBufPtr, l1, l2, l3, note;
+    int bufPtr, newBufPtr, l1, l2, l3;
 
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
-    note = evIn->data.note.note;
+    //note = evIn->data.note.note;
     if (!noteCount) {
         return;
     }
     if (sustain) {
-        sustainBufferList.append((int)evIn->data.note.note);
+        sustainBufferList.append(note);
         return;
     }
 
@@ -236,7 +239,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
     }
 }
 
-void MidiArp::getNote(snd_seq_tick_time_t *tick, int note[],
+void MidiArp::getNote(int *tick, int note[],
         int velocity[], int *length)
 { 
     QChar c;
@@ -418,49 +421,58 @@ void MidiArp::initLoop()
     octave = 0; 
 }
 
-void MidiArp::getNextNote(snd_seq_tick_time_t *tick, int note[], 
-            int velocity[], int *length, bool *isNew)
+void MidiArp::getNextNote(int askedTick)
 { 
     int l1 = 0;
+    returnNote.clear();
+    returnVelocity.clear();
 
-    *tick = nextNoteTick;
+    askedTick = nextNoteTick;
     while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
-        note[l1] = nextNote[l1];
-        velocity[l1] = nextVelocity[l1];
+        returnNote.append(nextNote[l1]);
+        returnVelocity.append(nextVelocity[l1]);
         l1++;
     }  
-    note[l1] = -1; // mark end of chord
-    *length = nextLength;
-    *isNew = newNext;
+    returnNote.append(-1); // mark end of chord
+    returnLength = nextLength;
+    returnIsNew = newNext;
     newNext = false;
 }
 
-void MidiArp::getCurrentNote(snd_seq_tick_time_t currentTick,
-        snd_seq_tick_time_t *tick, int note[], int velocity[],
-        int *length, bool *isNew)
+void MidiArp::getCurrentNote(int askedTick)
 {
-    int l1 = 0;
-
-    updateNotes(currentTick);
-    *tick = currentNoteTick;
-
-    while ((currentNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
-        note[l1] = currentNote[l1];
-        velocity[l1] = currentVelocity[l1];
-        l1++;
-    }  
-    note[l1] = -1; // mark end of chord
-    *length = currentLength;
-    *isNew = newCurrent;
-    newCurrent = false;
-
+    currentTick = askedTick;
+    start(Priority(6));
+    wait();
 }
 
-void MidiArp::updateNotes(snd_seq_tick_time_t currentTick)
+void MidiArp::run()
 {
     int l1 = 0;
+    mutex.lock();
+    updateNotes(currentTick);
+    returnTick = currentNoteTick;
+    returnNote.clear();
+    returnVelocity.clear();
+    
+    while ((currentNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
+        returnNote.append(currentNote[l1]);
+        returnVelocity.append(currentVelocity[l1]);
+        l1++;
+    }  
+    returnNote.append(-1); // mark end of chord
+    returnLength = currentLength;
+    returnIsNew = newCurrent;
+    newCurrent = false;
+    mutex.unlock();
+}
 
-    if (currentTick >= currentNoteTick) {
+void MidiArp::updateNotes(int currentTick)
+{
+    int l1 = 0;
+    
+    //allow 4 ticks of tolerance for echo tick for external sync
+    if ((currentTick + 4) >= currentNoteTick) {
         currentNoteTick = nextNoteTick;
         while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
             currentNote[l1] = nextNote[l1];
@@ -475,8 +487,9 @@ void MidiArp::updateNotes(snd_seq_tick_time_t currentTick)
     } 
 }
 
-void MidiArp::initArpTick(snd_seq_tick_time_t currentTick)
+void MidiArp::initArpTick(int currentTick)
 {
+    mutex.lock();
     arpTick = currentTick;
     lastArpTick = arpTick;
     currentVelocity[0] = 0;
@@ -485,10 +498,12 @@ void MidiArp::initArpTick(snd_seq_tick_time_t currentTick)
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;
+    mutex.unlock();
 }
 
 void MidiArp::updatePattern(const QString& p_pattern)
 {
+    mutex.lock();
     int l1;
     QChar c;
 
@@ -514,6 +529,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
         }
     }  
     noteOfs = 0;
+    mutex.unlock();
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange)
@@ -533,12 +549,14 @@ int MidiArp::clip(int value, int min, int max, bool *outOfRange)
 
 void MidiArp::newRandomValues()
 {
+    mutex.lock();
     randomTick = (double)randomTickAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomVelocity = (double)randomVelocityAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomLength = (double)randomLengthAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
+    mutex.unlock();
 }
 
 void MidiArp::updateRandomTickAmp(int val)
@@ -592,7 +610,9 @@ void MidiArp::setSustain(bool on, int sustick)
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {
+    mutex.lock();
     grooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
+    mutex.unlock();
 }
