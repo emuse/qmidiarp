@@ -215,7 +215,6 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
                 }  
                 for (l2 = l1; l2 < noteCount - 1; l2++) {
                     old_attackfn[l2] = old_attackfn[l2 + 1];
-                    old_attackfn[l2] = old_attackfn[l2 + 1];
                 } 
                 noteCount--;
             }
