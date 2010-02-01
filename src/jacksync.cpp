@@ -22,7 +22,7 @@
 #include "config.h"
 
 
-JackSync::JackSync() : QThread()
+JackSync::JackSync() 
 {
     transportState = JackTransportStopped;
     j_frame_time = 0;
@@ -37,7 +37,6 @@ JackSync::~JackSync()
         jack_client_close(jack_handle);
         jack_handle = 0; 
     }
-    wait();
 }
 
 int JackSync::initJack()
@@ -132,16 +131,10 @@ int JackSync::jack_sync(jack_transport_state_t state)
 
 jack_position_t JackSync::get_pos()
 {
-    start();
-    wait();
-    return(current_pos);
-}
-
-void JackSync::run()
-{
     jack_transport_state_t state = jack_transport_query(jack_handle, &current_pos);
     if (transportState != state)
         transportState = state;
+    return(current_pos);
 }
 
 jack_transport_state_t JackSync::get_state()

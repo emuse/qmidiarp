@@ -157,7 +157,7 @@ void SeqDriver::run()
                             tempo = jpos.beats_per_minute;
                             
                         tick = (double)jpos.frame * TICKS_PER_QUARTER 
-                                / jpos.frame_rate * tempo / 60
+                                / jpos.frame_rate * tempo / 60.
                                 - jack_offset_tick;
                         calcMidiRatio();
                     }
@@ -166,12 +166,10 @@ void SeqDriver::run()
                     m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
                     tick = deltaToTick(evIn->time.time);
                 }
-                if (tick < 0) {
-                    //this happens from time to time with seq24!, needs real fix
-                    setQueueStatus(false);
-                    break;
-                }
-                                //~ printf("       tick %d     ",tick);
+                
+                if (tick < 0) break;
+                
+                                //~ printf("       tick %d\n     ",tick);
                                 //~ printf("nextLfoTick %d  ",nextLfoTick);
                                 //~ printf("nextSeqTick %d  ",nextSeqTick);
                                 //~ printf("nextEchoTick %d  ",nextEchoTick);
@@ -185,11 +183,11 @@ void SeqDriver::run()
                 foundEcho = false;
     
                 //LFO data request and queueing
-                //add 4 ticks to startoff condition to cope with initial sync imperfections
-                if (((int)(tick + 4) >= nextLfoTick) && (midiLfoList->count())) {
+                //add 8 ticks to startoff condition to cope with initial sync imperfections
+                if (((int)(tick + 8) >= nextLfoTick) && (midiLfoList->count())) {
                     l2 = 0;
                     for (l1 = 0; l1 < midiLfoList->count(); l1++) {
-                        if ((int)(tick + 4) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
+                        if ((int)(tick + 8) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
                             midiLfoList->at(l1)->getData(&lfoData);
                             lfoccnumber = midiLfoList->at(l1)->ccnumber;
                             lfochannel = midiLfoList->at(l1)->channelOut;
@@ -233,11 +231,11 @@ void SeqDriver::run()
                 }
                 
                 //Seq notes data request and queueing
-                //add 4 ticks to startoff condition to cope with initial sync imperfections
-                if (((int)(tick + 4) >= nextSeqTick) && (midiSeqList->count())) {
+                //add 8 ticks to startoff condition to cope with initial sync imperfections
+                if (((int)(tick + 8) >= nextSeqTick) && (midiSeqList->count())) {
                     l2 = 0;
                     for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-                        if ((int)(tick + 4) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
+                        if ((int)(tick + 8) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
                             midiSeqList->at(l1)->getData(&seqData);
                             seqlength = midiSeqList->at(l1)->notelength;
                             seqtransp = midiSeqList->at(l1)->transp; 
@@ -469,6 +467,9 @@ void SeqDriver::setQueueStatus(bool run)
     snd_seq_event_t evOut;
 
     if (run) {
+        for (l1 = 0; l1 < midiArpList->count(); l1++) {
+            midiArpList->at(l1)->foldReleaseTicks(tick);
+        }
         runArp = true;
         startQueue = true;
         snd_seq_start_queue(seq_handle, queue_id, NULL);
@@ -508,10 +509,8 @@ void SeqDriver::setQueueStatus(bool run)
             m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
         }
 
-            
-        tick = 0;        
-
- 
+        tick = 0;
+        
         evOut.type = SND_SEQ_EVENT_NOTEOFF;
         evOut.data.note.note = 0;
         evOut.data.note.velocity = 0;
@@ -522,6 +521,7 @@ void SeqDriver::setQueueStatus(bool run)
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->initArpTick(tick);
         }
+        
         qWarning("Alsa Queue started");
 
     }
@@ -541,6 +541,7 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_remove_events_free(remove_ev);
 
         snd_seq_stop_queue(seq_handle, queue_id, NULL);
+        tick = 0;
         qWarning("Alsa Queue stopped");
     }
 }
@@ -661,7 +662,7 @@ int SeqDriver::deltaToTick(snd_seq_real_time_t curtime)
     double alsatick;
     alsatick = (double)curtime.tv_sec * 1e9 / m_ratio
         + (double)curtime.tv_nsec / m_ratio;
-    return (int)(alsatick +.5);
+    return (int)(alsatick + .5);
 }
 
 void SeqDriver::calcMidiRatio()
@@ -671,8 +672,6 @@ void SeqDriver::calcMidiRatio()
     if (tick > 0) {
         m_ratio = ((double)real_time.tv_sec * 1e9 
                 + (double)real_time.tv_nsec)/tick;
-//        m_ratio += old_m_ratio;
-//        m_ratio /= 2;
     }
     if ((m_ratio == 0) || (m_ratio > 60e9 / tempo)) {
         m_ratio = old_m_ratio;

@@ -215,6 +215,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
                 }  
                 for (l2 = l1; l2 < noteCount - 1; l2++) {
                     old_attackfn[l2] = old_attackfn[l2 + 1];
+                    old_attackfn[l2] = old_attackfn[l2 + 1];
                 } 
                 noteCount--;
             }
@@ -471,8 +472,8 @@ void MidiArp::updateNotes(int currentTick)
 {
     int l1 = 0;
     
-    //allow 4 ticks of tolerance for echo tick for external sync
-    if ((currentTick + 4) >= currentNoteTick) {
+    //allow 8 ticks of tolerance for echo tick for external sync
+    if ((currentTick + 8) >= currentNoteTick) {
         currentNoteTick = nextNoteTick;
         while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
             currentNote[l1] = nextNote[l1];
@@ -485,6 +486,28 @@ void MidiArp::updateNotes(int currentTick)
         getNote(&nextNoteTick, nextNote, nextVelocity, &nextLength);
         newNext = true;
     } 
+}
+
+void MidiArp::foldReleaseTicks(int currentTick)
+{
+    int bufPtr, newBufPtr, l2, l3;
+    
+    mutex.lock();
+    bufPtr = (noteBufPtr) ? 0 : 1;
+    
+    for (l2 = 0; l2 < noteCount; l2++) {
+            notes[bufPtr][2][l2] -= currentTick;
+    }
+    
+    newBufPtr = noteBufPtr;
+    noteBufPtr = bufPtr;
+    
+    for (l3 = 0; l3 < 4; l3++) {
+        for (l2 = 0; l2 < noteCount; l2++) {
+            notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
+        }  
+    }
+    mutex.unlock();
 }
 
 void MidiArp::initArpTick(int currentTick)

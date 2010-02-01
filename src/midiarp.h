@@ -67,6 +67,7 @@ class MidiArp : public QThread  {
     void getCurrentNote(int askedTick);
     void getNextNote(int askedTick);
     void initArpTick(int currentTick);
+    void foldReleaseTicks(int currentTick);
     void newRandomValues();
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
