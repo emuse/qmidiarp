@@ -1,3 +1,10 @@
+2010-02-02 Frank Kober <goemusic@yahoo.fr>
+	* midiarp.cpp, arpscreen.*, mainwindow.cpp, arpwidget.cpp: Arp
+	pattern changes again possible without restarting sequencer queue,
+	fixed double-performed pattern change.
+	* seqdriver.cpp: fixed initial tick not always been set to zero on 
+	queue stop. 
+	
 2010-02-01 Frank Kober <goemusic@yahoo.fr>
 	* seqdriver.cpp, midiarp.cpp: 4 more ticks added as tolerance for 
 	external sync to avoid getting off the hook by small clock 

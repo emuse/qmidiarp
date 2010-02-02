@@ -23,15 +23,14 @@ class ArpScreen : public QWidget
 
   private:
     int grooveTick, grooveVelocity, grooveLength;
-    //QTimer *timer;
     QString pattern;
     QString a_pattern;
-
+    double follower_tick;
+    int offset_tick, last_tick, pattern_updated;
+    
   protected:
     virtual void paintEvent(QPaintEvent *);
-//    virtual void resizeEvent(QResizeEvent *);
-    double follower_tick;
-   
+    
   public:
     ArpScreen(QWidget* parent=0);
     ~ArpScreen();

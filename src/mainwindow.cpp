@@ -355,8 +355,6 @@ void MainWindow::addArp(const QString& name)
     // seems to have no effect on layout spacing/margin
     connect(arpData->seqDriver, SIGNAL(nextStep(int)),
             arpWidget->arpScreen, SLOT(updateArpScreen(int)));
-    connect(arpWidget, SIGNAL(patternChanged()), 
-            this, SLOT(resetQueue()));
     connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)), 
             this, SLOT(updatePatternPresets(const QString&, const

@@ -669,9 +669,8 @@ void ArpWidget::updateText(const QString& newtext)
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    midiArp->updatePattern(newtext);
     arpScreen->updateArpScreen(newtext);
-    emit(patternChanged());
+    midiArp->updatePattern(newtext);
     modified = true;
 }
 
@@ -680,10 +679,7 @@ void ArpWidget::selectPatternPreset(int val)
     if (val) {
         patternText->setText(patternPresets.at(val));
         patternPresetBox->setCurrentIndex(val);
-        midiArp->updatePattern(patternText->text());
-        arpScreen->updateArpScreen(patternText->text());
         textStoreAction->setEnabled(false);
-        emit(patternChanged());
         textRemoveAction->setEnabled(true);
     } else
         textRemoveAction->setEnabled(false);

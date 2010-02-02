@@ -78,7 +78,6 @@ class ArpWidget : public QWidget
     QVector<MidiCC> ccList;
       
   signals:
-    void patternChanged();
     void presetsChanged(const QString&, const QString&, int); 
                     //int 0 for pattern to append
                     //or index>0 for pattern to remove

@@ -38,7 +38,10 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     a_pattern=" ";
-    follower_tick=0;
+    follower_tick = 0;
+    offset_tick = 0;
+    last_tick = 0;
+    pattern_updated = 0;
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
@@ -371,12 +374,22 @@ void ArpScreen::paintEvent(QPaintEvent*)
 void ArpScreen::updateArpScreen(const QString& pattern)
 {
     a_pattern = pattern;
+    pattern_updated = 4;
     update();
 }
 
 void ArpScreen::updateArpScreen(int tick)
 {
-    follower_tick = (double)tick;
+    if (!tick) offset_tick = 0;
+
+    if (pattern_updated == 1) 
+        offset_tick = last_tick;
+        
+    if (pattern_updated)
+        pattern_updated--;
+
+    follower_tick = (double)(tick - offset_tick);
+    last_tick = tick;
     update();
 }
 

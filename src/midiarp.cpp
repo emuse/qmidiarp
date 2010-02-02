@@ -549,7 +549,8 @@ void MidiArp::updatePattern(const QString& p_pattern)
         if (c.isDigit() && (c.digitValue() > patternMaxIndex)) {
             patternMaxIndex = c.digitValue();
         }
-    }  
+    }
+    patternIndex = 0;
     noteOfs = 0;
     mutex.unlock();
 }

@@ -413,6 +413,7 @@ void SeqDriver::run()
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
             }
+            if (!runArp) tick = 0; //some events still come in after queue stop 
             pollR = snd_seq_event_input_pending(seq_handle, 0);
         }
     }
@@ -541,7 +542,9 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_remove_events_free(remove_ev);
 
         snd_seq_stop_queue(seq_handle, queue_id, NULL);
+
         tick = 0;
+
         qWarning("Alsa Queue stopped");
     }
 }
