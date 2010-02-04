@@ -994,12 +994,12 @@ Die Änderungen speichern?</translation>
         <location filename="../seqwidget.cpp" line="181"/>
         <location filename="../seqwidget.cpp" line="182"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aufnahme</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="183"/>
         <source>Record step by step</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingehende Noten Schritt für Schritt aufnehmen</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="200"/>

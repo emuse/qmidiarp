@@ -969,12 +969,12 @@ Enregistrer les modifications?</translation>
         <location filename="../seqwidget.cpp" line="181"/>
         <location filename="../seqwidget.cpp" line="182"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Enregistrer</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="183"/>
         <source>Record step by step</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer pas à pas les notes de l&apos;entrée</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="200"/>
