@@ -51,6 +51,7 @@ class MidiSeq : public QObject  {
     bool hold, isMuted;
     int vel, transp, notelength;
     int size, res, waveFormIndex;
+    int currentRecStep;
     QVector<SeqSample> customWave;
     QVector<bool> muteMask;
                
@@ -64,12 +65,14 @@ class MidiSeq : public QObject  {
     void updateVelocity(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
+    void recordNote(int note);
     void muteSeq(bool); //set mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double);
     void toggleMutePoint(double);
     void resizeAll();
     void copyToCustom();
+    void setRecordedNote(int note);
 };
                               
 #endif

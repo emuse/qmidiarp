@@ -34,6 +34,7 @@
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/seqwavcp.xpm"
+#include "pixmaps/seqrecord.xpm"
 #include "config.h"
 
 
@@ -177,6 +178,15 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
     
+    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
+    QAction *recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
+    recordAction->setToolTip(tr("Record step by step"));
+    recordAction->setCheckable(true);
+    QToolButton *recordButton = new QToolButton(seqBox);
+    recordButton->setDefaultAction(recordAction);
+    recordButtonLabel->setBuddy(recordButton);
+    connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
+
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);
     resBox = new QComboBox(seqBox);
@@ -273,11 +283,13 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     QGridLayout *paramBoxLayout = new QGridLayout;
     paramBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
     paramBoxLayout->addWidget(waveFormBox, 0, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 1, 0);
-    paramBoxLayout->addWidget(resBox, 1, 1);
-    paramBoxLayout->addWidget(sizeBoxLabel, 2, 0);
-    paramBoxLayout->addWidget(sizeBox, 2, 1);
-    paramBoxLayout->setRowStretch(3, 1);
+    paramBoxLayout->addWidget(recordButtonLabel, 1, 0);
+    paramBoxLayout->addWidget(recordButton, 1, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 2, 0);
+    paramBoxLayout->addWidget(resBox, 2, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 3, 0);
+    paramBoxLayout->addWidget(sizeBox, 3, 1);
+    paramBoxLayout->setRowStretch(4, 1);
     
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(seqScreen, 0, 0, 1, 2);
@@ -290,6 +302,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     seqWidgetLayout->addLayout(inOutBoxLayout, 0);
 
     setLayout(seqWidgetLayout);
+    recordMode = false;
     updateVelocity(64);
     updateWaveForm(0);
     ccList.clear();
@@ -747,11 +760,20 @@ void SeqWidget::updateWaveForm(int val)
     modified = true;
 }
 
+void SeqWidget::setRecord(bool on)
+{
+    recordMode = on;
+    seqScreen->setRecord(on);
+    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
+    seqScreen->updateScreen(seqData);
+}
+
 void SeqWidget::updateRes(int val)
 {
     midiSeq->res = seqResValues[val];
     midiSeq->resizeAll();
     midiSeq->getData(&seqData);
+    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
     seqScreen->updateScreen(seqData);
     modified = true;
 }
@@ -761,6 +783,7 @@ void SeqWidget::updateSize(int val)
     midiSeq->size = val + 1;
     midiSeq->resizeAll();
     midiSeq->getData(&seqData);
+    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
     seqScreen->updateScreen(seqData);
     modified = true;
 }
@@ -777,6 +800,20 @@ void SeqWidget::updateTranspose(int val)
     modified = true;
 }
 
+void SeqWidget::processNote(int note, int vel)
+{
+    if (!recordMode) {
+        if (enableNoteIn->isChecked()) transpose->setValue(note - 60);
+        if (enableVelIn->isChecked()) velocity->setValue(vel);
+    }
+    else {
+        midiSeq->recordNote(note);
+        midiSeq->getData(&seqData);
+        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
+        seqScreen->updateScreen(seqData);
+    }
+}
+
 void SeqWidget::copyToCustom()
 {
     midiSeq->copyToCustom();
@@ -790,6 +827,7 @@ void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
     if (buttons == 1) {
         midiSeq->setCustomWavePoint(mouseX, mouseY);
         midiSeq->getData(&seqData);
+        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
         seqScreen->updateScreen(seqData);
         modified = true;
         }
@@ -805,6 +843,7 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
     } else {
         midiSeq->setCustomWavePoint(mouseX, mouseY);
         midiSeq->getData(&seqData);
+        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
         seqScreen->updateScreen(seqData);
         modified = true;
     }

@@ -388,14 +388,11 @@ void SeqDriver::run()
                             unmatched = false;
                             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                                     && (evIn->data.note.velocity > 0)) {
-                                midiSeqList->at(l1)->updateTranspose(evIn->data.note.note - 60);
-                            if (midiSeqList->at(l1)->enableVelIn) {
-                                midiSeqList->at(l1)->updateVelocity(evIn->data.note.velocity);
-                            }
+                                emit noteEvent(evIn->data.note.note, 
+                                        evIn->data.note.velocity);
                             } 
                         }
                     }
-                    
                 }
                 if (use_midiclock){
                     if (evIn->type == SND_SEQ_EVENT_START) {

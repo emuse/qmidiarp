@@ -64,6 +64,7 @@ class SeqWidget : public QWidget
     MidiSeq *midiSeq;
     QVector<SeqSample> seqData;
     bool modified;
+    bool recordMode;
 
   public:
     QString name;
@@ -108,6 +109,8 @@ class SeqWidget : public QWidget
     void updateChannelOut(int value);
     void updatePortOut(int value);
     void updateWaveForm(int);
+    void setRecord(bool on);
+    void processNote(int note, int velocity);
     void updateRes(int);
     void updateSize(int);
     void updateNoteLength(int val);

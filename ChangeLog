@@ -1,3 +1,11 @@
+2010-02-04 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.*, midiseq.*, seqwidget.*, seqscreen.*, mainwindow.cpp:
+	Step-by-step recording for sequencer module added. Recording starts
+	at the last modified note when record mode is enabled. Note-on
+	events need to be enabled for the module to record.
+	* pixmaps/seqrecord.xpm: record icon added.
+	* pixmaps/Makefile.am: record icon added to package.
+	
 2010-02-02 Frank Kober <goemusic@yahoo.fr>
 	* midiarp.cpp, arpscreen.*, mainwindow.cpp, arpwidget.cpp: Arp
 	pattern changes again possible without restarting sequencer queue,

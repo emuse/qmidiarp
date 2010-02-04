@@ -25,6 +25,8 @@ class SeqScreen : public QWidget
     QVector<SeqSample> p_seqData, seqData;
     int mouseX, mouseY;
     int w, h;
+    bool recordMode;
+    int currentRecStep;
     
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -43,6 +45,8 @@ class SeqScreen : public QWidget
     void updateScreen(QVector<SeqSample> seqData);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void setRecord(bool on);
+    void setCurrentRecStep(int currentRecStep);
 };
   
 #endif

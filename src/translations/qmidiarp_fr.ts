@@ -650,60 +650,60 @@ Molette pour changer l&apos;offset</translation>
         <translation>Ajouter un séquenceur</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="561"/>
+        <location filename="../mainwindow.cpp" line="563"/>
         <source>QMidiArp XML files</source>
         <translation>Fichiers QMidiArp XML</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="562"/>
+        <location filename="../mainwindow.cpp" line="564"/>
         <source>Old QMidiArp files</source>
         <translation>Vieux fichiers texte QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="581"/>
-        <location filename="../mainwindow.cpp" line="739"/>
+        <location filename="../mainwindow.cpp" line="583"/>
+        <location filename="../mainwindow.cpp" line="741"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="599"/>
+        <location filename="../mainwindow.cpp" line="601"/>
         <source>This is not a valid xml file for </source>
         <translation>Ceci n&apos;est pas un fichier xml valide pour </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="828"/>
+        <location filename="../mainwindow.cpp" line="830"/>
         <source>The QMidiArp text file was imported. If you save this file, it will be saved using the newer xml format under the name
  &apos;%1&apos;.</source>
         <translation>Le fichier texte QMidiArp a été importé. A la prochaine sauvegarde, il sera écrit au format xml actuel sous le nom
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="854"/>
-        <location filename="../mainwindow.cpp" line="942"/>
+        <location filename="../mainwindow.cpp" line="856"/>
+        <location filename="../mainwindow.cpp" line="944"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1020"/>
+        <location filename="../mainwindow.cpp" line="1022"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1022"/>
+        <location filename="../mainwindow.cpp" line="1024"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1026"/>
+        <location filename="../mainwindow.cpp" line="1028"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1156"/>
+        <location filename="../mainwindow.cpp" line="1158"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
@@ -768,27 +768,27 @@ Enregistrer les modifications?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="128"/>
-        <location filename="../mainwindow.cpp" line="560"/>
+        <location filename="../mainwindow.cpp" line="562"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="597"/>
+        <location filename="../mainwindow.cpp" line="599"/>
         <source>Not a QMidiArp xml file.</source>
         <translation>Pas un fichier xml QMidiArp.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="998"/>
+        <location filename="../mainwindow.cpp" line="1000"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="998"/>
+        <location filename="../mainwindow.cpp" line="1000"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1199"/>
+        <location filename="../mainwindow.cpp" line="1201"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
@@ -917,81 +917,92 @@ Enregistrer les modifications?</translation>
 <context>
     <name>SeqWidget</name>
     <message>
-        <location filename="../seqwidget.cpp" line="69"/>
+        <location filename="../seqwidget.cpp" line="70"/>
         <source>Transpose the sequence following incoming notes</source>
         <translation>Transposer la séquence suivant les notes entrants</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="100"/>
+        <location filename="../seqwidget.cpp" line="101"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="102"/>
+        <location filename="../seqwidget.cpp" line="103"/>
         <source>&amp;Mute</source>
         <translation>M&amp;uet</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="111"/>
-        <location filename="../seqwidget.cpp" line="227"/>
-        <location filename="../seqwidget.cpp" line="244"/>
+        <location filename="../seqwidget.cpp" line="112"/>
+        <location filename="../seqwidget.cpp" line="237"/>
+        <location filename="../seqwidget.cpp" line="254"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Apprendre du MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="105"/>
+        <location filename="../seqwidget.cpp" line="106"/>
         <source>Cancel MIDI &amp;Learning</source>
         <translation>&amp;Annuler l&apos;apprentissage</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="114"/>
-        <location filename="../seqwidget.cpp" line="230"/>
-        <location filename="../seqwidget.cpp" line="247"/>
+        <location filename="../seqwidget.cpp" line="115"/>
+        <location filename="../seqwidget.cpp" line="240"/>
+        <location filename="../seqwidget.cpp" line="257"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Oublier les contrôleurs MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="158"/>
+        <location filename="../seqwidget.cpp" line="159"/>
         <source>Sequence</source>
         <translation>Séquence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="169"/>
+        <location filename="../seqwidget.cpp" line="170"/>
         <source>&amp;Sequence</source>
         <translation>&amp;Séquence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="175"/>
+        <location filename="../seqwidget.cpp" line="176"/>
         <source>Preset Number</source>
         <translation>Index Preset</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="190"/>
+        <location filename="../seqwidget.cpp" line="181"/>
+        <location filename="../seqwidget.cpp" line="182"/>
+        <source>Re&amp;cord</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="183"/>
+        <source>Record step by step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="200"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Résolution (notes/beat): Nombre de notes produites à chaque quart de mesure</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="202"/>
+        <location filename="../seqwidget.cpp" line="212"/>
         <source>Length of Sequence in beats</source>
         <translation>Durée de la séquence en quarts de mesure</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="209"/>
+        <location filename="../seqwidget.cpp" line="219"/>
         <source>C&amp;opy to new wave</source>
         <translation>C&amp;opier dans la forme d&apos;onde libre</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="223"/>
+        <location filename="../seqwidget.cpp" line="233"/>
         <source>Veloc&amp;ity</source>
         <translation>Véloc&amp;ité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="826"/>
+        <location filename="../seqwidget.cpp" line="865"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="845"/>
+        <location filename="../seqwidget.cpp" line="884"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -1004,52 +1015,52 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Vélo&amp;cité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="240"/>
+        <location filename="../seqwidget.cpp" line="250"/>
         <source>N&amp;ote Length</source>
         <translation>Du&amp;rée des Notes</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="71"/>
+        <location filename="../seqwidget.cpp" line="72"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="46"/>
+        <location filename="../seqwidget.cpp" line="47"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Renommer...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="47"/>
+        <location filename="../seqwidget.cpp" line="48"/>
         <source>Rename this Sequencer</source>
         <translation>Renommer ce séquenceur</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="52"/>
+        <location filename="../seqwidget.cpp" line="53"/>
         <source>&amp;Delete...</source>
         <translation>&amp;Supprimer...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="53"/>
+        <location filename="../seqwidget.cpp" line="54"/>
         <source>Delete this Sequencer</source>
         <translation>Supprimer ce séquenceur</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="63"/>
+        <location filename="../seqwidget.cpp" line="64"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="65"/>
+        <location filename="../seqwidget.cpp" line="66"/>
         <source>&amp;Note</source>
         <translation>&amp;Note</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="75"/>
+        <location filename="../seqwidget.cpp" line="76"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>La vélocité de la séquence suit celle des notes à l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="80"/>
+        <location filename="../seqwidget.cpp" line="81"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
@@ -1058,7 +1069,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">&amp;Durée des notes</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="257"/>
+        <location filename="../seqwidget.cpp" line="267"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Transposer</translation>
     </message>
@@ -1071,12 +1082,12 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="123"/>
+        <location filename="../seqwidget.cpp" line="124"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="130"/>
+        <location filename="../seqwidget.cpp" line="131"/>
         <source>C&amp;hannel</source>
         <translation>Cana&amp;l</translation>
     </message>
@@ -1085,7 +1096,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Forme</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="162"/>
+        <location filename="../seqwidget.cpp" line="163"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
@@ -1106,7 +1117,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="180"/>
+        <location filename="../seqwidget.cpp" line="190"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
@@ -1115,7 +1126,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="195"/>
+        <location filename="../seqwidget.cpp" line="205"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
@@ -1144,7 +1155,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">Créneau</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="671"/>
+        <location filename="../seqwidget.cpp" line="684"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>

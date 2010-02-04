@@ -39,6 +39,8 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
     mouseY = 0;
+    recordMode = false;
+    currentRecStep = false;
 }
 
 SeqScreen::~SeqScreen()
@@ -81,6 +83,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(20, 20, 160));
     p.drawRect(0, 0, w - 1, h - 1);
+    
 
     //Grid 
     if (p_seqData.isEmpty()) return;
@@ -90,6 +93,14 @@ void SeqScreen::paintEvent(QPaintEvent*)
     npoints = beatRes * nsteps;
     xscale = (w - 2 * SEQSCREEN_HMARGIN) / nsteps;
     yscale = h - 2 * SEQSCREEN_VMARGIN;
+
+    //Draw current record step
+    if (recordMode)
+    p.fillRect(currentRecStep * xscale * nsteps / npoints + SEQSCREEN_HMARGIN
+                , SEQSCREEN_VMARGIN
+                , xscale * nsteps / npoints
+                , h - 2*SEQSCREEN_VMARGIN, QColor(5, 40, 100));
+
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
@@ -232,4 +243,14 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
                             (w - 2 * SEQSCREEN_HMARGIN), 
                 1. - ((double)mouseY - SEQSCREEN_VMARGIN) / 
                 (h - 2 * SEQSCREEN_VMARGIN), event->buttons());
+}
+
+void SeqScreen::setRecord(bool on)
+{
+    recordMode = on;
+}
+
+void SeqScreen::setCurrentRecStep(int recStep)
+{
+    currentRecStep = recStep;
 }

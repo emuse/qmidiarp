@@ -441,8 +441,10 @@ void MainWindow::addSeq(const QString& name)
     connect(seqWidget, SIGNAL(seqRemove(int)), this, SLOT(removeSeq(int)));
     connect(seqWidget, SIGNAL(dockRename(const QString&, int)), 
             this, SLOT(renameDock(const QString&, int)));
-    connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)), 
+    connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
+    connect(arpData->seqDriver, SIGNAL(noteEvent(int, int)),
+            seqWidget, SLOT(processNote(int, int)));
             
     widgetID = arpData->seqWidgetCount();
     seqWidget->name = name;

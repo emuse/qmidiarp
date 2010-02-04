@@ -28,6 +28,7 @@ MidiSeq::MidiSeq()
 {
     enableNoteIn = true;
     enableVelIn = true;
+    currentRecStep = 0;
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
@@ -78,6 +79,9 @@ bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
     if ((evIn->type == SND_SEQ_EVENT_NOTEON) 
             || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
         if (!(enableNoteIn)) {
+            return(false);
+        }
+        if ((evIn->data.note.note < 36) || (evIn->data.note.note >= 84)) {
             return(false);
         }
     }
@@ -139,6 +143,13 @@ void MidiSeq::updateTranspose(int val)
     transp = val;
 }
 
+void MidiSeq::recordNote(int val)
+{
+        setRecordedNote(val);
+        currentRecStep++;
+        currentRecStep %= (res * size);
+}
+
 void MidiSeq::updateQueueTempo(int val)
 {
     queueTempo = (double)val;
@@ -146,13 +157,18 @@ void MidiSeq::updateQueueTempo(int val)
 
 void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 {
+    currentRecStep = mouseX * res * size;
+    setRecordedNote(mouseY * 48 + 36);
+}
+
+void MidiSeq::setRecordedNote(int note)
+{
     SeqSample seqSample;
-    int loc = mouseX * res * size;
-    
-    seqSample = customWave.at(loc);
-    seqSample.value = mouseY * 48 + 36;
-    seqSample.tick = loc * TICKS_PER_QUARTER / res;
-    customWave.replace(loc, seqSample);
+        
+    seqSample = customWave.at(currentRecStep);
+    seqSample.value = note;
+    seqSample.tick = currentRecStep * TICKS_PER_QUARTER / res;
+    customWave.replace(currentRecStep, seqSample);
 }
 
 void MidiSeq::resizeAll()
@@ -173,6 +189,7 @@ void MidiSeq::resizeAll()
         customWave.replace(l1, seqSample);
         lt+=step;
     }
+    currentRecStep %= (res * size);
 }
 
 void MidiSeq::copyToCustom()
@@ -199,4 +216,3 @@ void MidiSeq::toggleMutePoint(double mouseX)
     seqSample.muted = !m;
     customWave.replace(loc, seqSample);
 }
-
