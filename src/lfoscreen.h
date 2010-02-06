@@ -42,7 +42,7 @@ class LfoScreen : public QWidget
     void lfoWheel(int);
     
   public slots: 
-    void updateScreen(QVector<LfoSample> lfoData);
+    void updateScreen(const QVector<LfoSample>& lfoData);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);

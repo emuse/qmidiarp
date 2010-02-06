@@ -105,7 +105,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(180, 100, 100));      
         }
         x = l1 * xscale;
-        p.drawLine(LFOSCREEN_HMARGIN + x, LFOSCREEN_VMARGIN,
+            p.drawLine(LFOSCREEN_HMARGIN + x, LFOSCREEN_VMARGIN,
                 LFOSCREEN_HMARGIN + x, h-LFOSCREEN_VMARGIN);
 
         if (l1 < nsteps) {
@@ -166,7 +166,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 }
 
 
-void LfoScreen::updateScreen(QVector<LfoSample> lfoData)
+void LfoScreen::updateScreen(const QVector<LfoSample>& lfoData)
 {
     p_lfoData = lfoData;
     update();

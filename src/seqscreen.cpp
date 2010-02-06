@@ -199,7 +199,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
 }
 
 
-void SeqScreen::updateScreen(QVector<SeqSample> seqData)
+void SeqScreen::updateScreen(const QVector<SeqSample>& seqData)
 {
     p_seqData = seqData;
     update();

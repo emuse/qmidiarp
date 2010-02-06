@@ -24,11 +24,11 @@ qmidiarp \- MIDI arpeggiator and LFO
 
 .SH DESCRIPTION
 QMidiArp
-is an advanced MIDI arpeggiator, step sequencer and LFO for the ALSA 
-sequencer. It can 
+is an advanced MIDI arpeggiator, programmable step sequencer and LFO for 
+the ALSA sequencer. It can 
 hold any number of arpeggiator or LFO modules running in parallel. The 
 arpeggiator modules produce sequences depending on the notes sent to
-their input port, which is typically connected to a keyboard or a 
+their input port, which is typically connected to a keyboard or another 
 sequencer. The step sequencer modules allow to create simple linear, 
 monophonic and globally transposable sequences similar to the first 
 analog sequencers. The MIDI LFOs independently
@@ -38,7 +38,9 @@ available, and the output port and channel can be set independently.
 Since the modules use a common sequencer queue, they are automatically 
 in sync with each other. QMidiArp works with an internal tick resolution
 of 192 ticks per beat. The queue can be synchronized to an incoming MIDI 
-realtime clock.
+realtime clock or as a JACK transport client. Most of the relevant
+control elements are accessible via MIDI controller through a MIDI-learn
+infrastructure.
 QMidiArp
 also has a log tool displaying the history of incoming MIDI events in 
 colors depending on their type.
@@ -55,12 +57,14 @@ tab with the chosen module in the main area. The modules can be renamed
 or removed using the corresponding buttons or menu functions. Modules
 can be detached from the main window to control and view them in
 parallel. They can be brought back to the main window again by clicking
-on the icon on the left side of each module title bar. The entire
+on the icon on the left side of each module title bar. They can also be
+aligned side-by-side within the same window if the main window is
+stretched sufficiently before reinserting a module. The entire
 setup containing all arps, sequences and LFOs in the tab bar along with 
 the parameters set in the 
 .B Settings 
 window can be saved to or loaded from
-a QMidiArp text file (.qma). The 
+a QMidiArp XML file (.qmax). The 
 .B tempo 
 of the queue can be set in beats per minute and
 affects all modules. The queue is started and stopped by 
@@ -89,11 +93,29 @@ QMidiArp's own clock start and stop functions as well as adding or
 loading new setups are disabled. They are enabled again by 
 unchecking the MIDI clock button. 
 
+.SS "JACK Transport Client Operation"
+When the 
+.B Jack Transport Connect 
+button is pressed, QMidiArp will try to connect to a running Jack server 
+and then function
+as a Jack Transport client, i.e. set its tempo and remain synchronized 
+to a running Jack Transport master. Note that QMidiArp will restart
+its queue from zero whenever Jack transport is starting regardless of 
+Jack Transport's position. This also applies in case of a looping Jack
+Transport queue. The Jack button will be released automatically
+if QMidiArp gets disconnected from Jack by a possible Jack shutdown or
+if Jack is not available at connection time. 
+.PP
+Note: MIDI Clock and Jack Transport button states will be saved with the 
+QMidiArp session file, and get active or inactive when a new session
+file is loaded. 
+
 .SS "Arpeggiator Modules"
 QMidiArp's arpeggiators only work in continuous mode. This means that
 the outgoing notes are not directly triggered by the notes played on the
 keyboard. They are produced in continuous patterns, in synchronization
-with a continuously running sequencer.
+with a continuously running sequencer. QMidiArp's arpeggiator modules 
+were inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
 .PP
 .B Input and Output panels
 .PP
@@ -325,6 +347,14 @@ can be adjusted between 1 and 8 beats, and the time
 .B resolution 
 can be set to values between 1 and 16 per beat. A resolution of 4 means 
 that 4 notes are output every beat, i.e. sixteenth notes. 
+The sequence can also be programmed using the 
+.B Record
+function. When the 
+.B Record 
+button is pressed, notes received on the input port will be recorded
+step-by-step starting from the last modified note. Programming can be 
+done on the fly also when the sequencer queue is running. 
+
 .PP
 .B Controlling the sequence globally
 .PP
@@ -382,7 +412,7 @@ all new created modules will show with small GUI elements to be more
 economic in space when distributed as separate windows over the desktop.
 .PP
 All settings in this dialog are stored along with the module data in the
-qma session file.
+qmax session file.
 
 .SS MIDI control
 QMidiArp supports MIDI control events if the 
@@ -450,9 +480,14 @@ There are currently three demo arpeggios.
 The demo.qma arpeggio was intended to be used with the following sound 
 types: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
 but you can get interesting results if you use other instrument settings.
-
-QMidiArp's arpeggiator modules were inspired by the MAP1 hardware 
-arpeggiator by Rudi Linhard.
+.PP
+The demo_seqlfo.qmax setup shows the use of the new sequencer and LFO
+modules playing in parallel. The sequencer outputs should be routed
+to percussive synthesizer sounds. The LFO data is intended to act on 
+filter cutoff, which has the standard controller CC#74. ZynAddSubFX by
+Paul Nasca reacts on these filter cutoff controllers. The "Bass 1"
+and "Plucked 3" presets from this synthesizer work well with this demo 
+file.
 
 .SH OPTIONS
 .TP
@@ -467,13 +502,17 @@ Print possible command-line options and exit.
 Print version information and exit.
 .TP
 .B file
-Name of a valid QMidiArp (.qma) file to be loaded on start.
+Name of a valid QMidiArp (.qmax) XML file to be loaded on start.
 .SH FILES
+.I *.qmax
+.RS
+QMidiArp XML files containing session data in XML text format.
+.RE
 .I *.qma
 .RS
-QMidiArp files containing arp and LFO parameters in plain text format.
+Old QMidiArp files in plain text format.
 .SH EXAMPLES
-An example QMidiArp file can be found in 
+Example QMidiArp files can be found in 
 .I /usr/share/qmidiarp
 or in
 .I /usr/local/share/qmidiarp

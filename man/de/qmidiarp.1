@@ -37,10 +37,11 @@ Ausgabeport bzw. Ausgabekanal kann frei eingestellt werden.
 Da die Module auf einer gemeinsamen Sequenzerschiene arbeiten, sind sie
 automatisch zueinander synchron. QMidiArp arbeitet mit einer 
 internen Zeitauflösung von 192 ticks per beat. 
-Die Queue kann mit einer externen MIDI-Echtzeituhr synchronisiert werden.
+Die Queue kann mit einer externen MIDI-Echtzeituhr oder mit JACK Transport
+synchronisiert werden.
 QMidiArp verfügt ebenso über ein Protokoll-Werkzeug, welches eingehende 
 MIDI Ereignisse abhängig von ihrem Typ in verschiedenen Farben darstellt.
-QMidiArp basiert auf dem Qt4 Toolkit.
+QMidiArp benutzt den Qt4 Toolkit.
 
 .SS "Allgemeine Funktion"
 Ein neuer Arpeggiator, Sequenzer oder LFO wird erzeugt durch Klicken auf
@@ -55,11 +56,13 @@ Menüfunktionen umbenannt oder gelöscht werden. Die Module können vom
 Hauptfenster gelöst und parallel dargestellt und gesteuert werden. Hierzu
 klickt man auf das Symbol rechts oben in der Titelleiste jedes Moduls.
 Durch erneutes klicken dieses Symbols werden die Module wieder in die
-Reiterleiste eingefügt.
+Reiterleiste eingefügt. Die Module können auch nebeneinander im Hauptfenster
+angeordnet werden, wenn man das Hauptfenster vor dem Einfügen eines 
+Moduls genügend vergrößert.
 Alle Einstellungen (d.h. alle Module, deren Parameter sowie
 alle sonstigen Änderungen, die unter
 .B Ansicht-->Einstellungen
-getätigt wurden) können in einer QMidiArp-Textdatei (.qma) gespeichert 
+getätigt wurden) können in einer QMidiArp-XML-Datei (.qmax) gespeichert 
 und von dort wieder geladen werden. Das 
 .B Tempo 
 kann in beats pro Minute (BPM) eingestellt werden und
@@ -91,6 +94,22 @@ von QMidiArp mit dem der externen Quelle übereinstimmt. Das externe
 Tempo wird jedoch bei laufendem Sequenzer gemessen, sodaß ab dem 
 zweiten Start die Synchronisation funktioniert, auch wenn das 
 ursprüngliche Tempo nicht übereinstimmt.
+
+.SS "JACK Transport Client-Betrieb"
+Wird das 
+.B Jack Transport Connect 
+Icon angeklickt, so versucht QMidiArp eine Verbindung mit einem laufenden
+JACK server. Wenn diese gelingt, agiert QMidiArp als Jack Transport Client,
+d.h. das Tempo und die Synchronisierung wird von einem JACK Transport
+Master bereitgestellt. Hierbei startet QMidiArp seinen eigenen Sequenzer
+neu bei jedem Jack Transport Start, unabhängig von der anfänglichen 
+Transportposition. Dies gilt ebenfalls bei einer Schleife des JACK
+Transportbandes. Der Jack Betrieb wird automatisch deaktiviert, wenn kein
+Jack server gefunden werden kann.  
+.PP
+Bemerkung: Die Zustände der MIDI Clock and Jack Transport Modi werden 
+beim Abspeichern in der QMidiArp Session Datei mit abgespeichert und 
+beim Öffnen dieser wiederhergestellt. 
 
 .SS "Arpeggiatormodule"
 .B Eingangs- and Ausgangsfelder
@@ -237,6 +256,9 @@ in ihrer Zeit, Länge und ihrem Anschlag. Dies kann benutzt werden, um
 Swing-Rythmen und Akzente zu erzeugen, oder um den Akzent auf eine 
 bestimmte Stelle jedes Taktes zu setzen. Die Groove-Einstellungen gelten 
 für alle Arpeggios in der Reiterleiste.
+.PP
+Die Arpeggiator-Module von QMidiArp wurden inspiriert durch den MAP1 
+Hardware-Arpeggiator von Rudi Linhard.
 
 .SS "LFO-Module"
 Parallel zu den Arpeggiatoren kann QMidiArp auch MIDI-Steuerdaten in Form
@@ -333,6 +355,16 @@ zeitliche
 wird zwischen 1 und 16 Noten pro Vierteltakt eingestellt.
 Eine Auflösung von 4 bedeutet daher, daß der Sequenzer Sechzehntel-Noten
 spielt.
+Eine Sequenz kann ebenfalls direkt über eine Tastatur eingegeben werden
+mit Hilfe der 
+.B Aufnahme
+Funktion. Durch Anklicken des
+.B Aufnahme
+Knopfes werden auf einer angeschlossenen Tastatur gespielte Noten Schritt
+für Schritt aufgenommen, beginnend mit der zuletzt geänderten Note in 
+der Sequenz. Hierzu muß der Noteneingang des Moduls aktiviert sein. Die
+Programmierung kann auch bei laufendem Sequenzer geschehen. 
+
 .PP
 .B Regler für alle Noten
 .PP
@@ -378,17 +410,8 @@ diejenigen Signale weitergeleitet werden, die von keinem der Module
 verarbeitet werden (
 .B unpassende
 Signale). Hier wird auch bestimmt, ob empfangene MIDI Steuersignale 
-(Control events) benutzt werden, um Module
-.B Stumm
-zu schalten. Wenn diese Funktion angekreuzt ist, kann eine  
-.B Stummschaltungs-Controller ID
-festgelegt werden. Diese Controller ID wird dann benutzt, um das erste
-Modul in der Reiterliste stummzuschalten. Die nächst-höhere 
-MIDI-Controller-ID schaltet das zweite Modul in der Reihe stumm, 
-und so fort. Ein Beispiel: Wenn die Stummschaltungs-Controller ID auf
-30 steht, und ein Steuersignal CC#30 mit dem Wert 127 empfangen wird, 
-wird das erste Modul in der Reiterleiste stumm/lautgeschaltet. Das 
-Signal CC#31 betrifft das zweite Modul in der Leiste. 
+(Control events) benutzt werden, um die Module zu steuern (siehe 
+B.MIDI-Steuerung). 
 Die
 .B Einstellungen
 erlauben auch die Bestimmung der Auflösung der empfangenen 
@@ -402,7 +425,68 @@ zu ermöglichen.
 .PP
 Die 
 .B Einstellungen 
-werden zusammen mit den Moduldaten in der .qma-Datei gespeichert.
+werden zusammen mit den Moduldaten in der .qmax-Datei gespeichert.
+
+.SS MIDI-Steuerung
+MIDI-Steuersignale werden in QMidiArp verarbeitet, wenn die Option
+.B Module steuerbar über MIDI Controller
+im
+.B Einstellungen
+Fenster aktiviert ist. Für die folgenden Parameter ist eine MIDI-Steuerung
+möglich. Seq-Module: Stummschaltung, Anschlag und Notenlänge. LFO-Module: 
+Stummschaltung, Amplitude und Offset. Arp-Module: Stummschaltung. 
+.PP
+.B Lernen von MIDI
+.PP
+Die Steuerungen werden durch Rechtsklick auf ein entsprechendes 
+Steuerelement zugeordnet. Durch Auswählen von 
+.B Lernen von MIDI
+wartet QMidiArp auf ein MIDI-Steuerungssignal, was zum Beispiel von einem
+angeschlossenen Controller gesendet wird. Das erste eingehende 
+Steuerungssignal wird dann dem entsprechenden Element zugeordnet. Es
+können auch mehrere MIDI-Steuerungen einem einzelnen Element zugeordnet
+werden. 
+Wird 
+.B MIDI-Steuerungen vergessen
+ausgewählt, so werden alle Zuordnungen entfernt. Durch Auswahl von 
+.B MIDI Lernen abbrechen
+wird der Lernprozeß beendet.
+.PP
+Anmerkung: Stummschaltungs-Steuerungen werden zunächst als "Toggles"
+interpretiert, d.h. bei jedem eingehenden Controller-Wert von 127 wird
+der Stummschaltungsknopf umgeschaltet. Dies kann im
+.B Steuerungseditor
+nachfolgend geändert werden. 
+
+.PP
+.B Steuerungs-Editor
+.PP
+Dieses Fenster wird durch Auswahl von 
+.B MIDI-Steuerungen
+im 
+.I Ansicht
+Menu geöffnet. Jede zugeordnete Steuerung kann in der dargestellten
+Tabelle geändert oder entfernt werden. Die Stummschaltungs-Funktion
+hat hierbei eine Besonderheit. Wenn die min und max Werte 
+.I identisch
+sind, so wird die Stummschaltung 
+.I umgeschaltet, 
+wenn der eingestellte Wert von dem zugeordneten Controller übermittelt 
+wird. Sind min und max voneinander 
+.I verschieden,
+so wird das entsprechende Modul beim Eingehen des min-Wertes
+stummgeschaltet und bei Eingehen des max-Wertes lautgeschaltet. 
+.PP
+Bei klicken auf
+.B Entfernen
+wird die ausgewählte Zeile aus der Tabelle entfernt.
+.B Wiederherstellen
+lädt die momentane Steuerungsbelegung neu.
+.B Cancel 
+verläßt den Steuerungseditor und verwirft die Änderungen, und nur durch 
+klicken auf
+.B OK
+werden die Änderungen wirksam.
 
 .SS "Protokoll"
 Das Protokoll-Fenster zeichnet empfangene MIDI-Daten mit Zeitinformation
@@ -421,9 +505,13 @@ Das Arpeggio demo.qma ist ursprünglich für die folgende Klang-Auswahl
 gedacht: Ch 1: Marimba, Ch 2: Celesta, Ch 3: Acoustic Bass, 
 aber man kann interessante Ergebnisse auch mit einer anderen Instrument-
 Belegung erhalten.
-
-Die Arpeggiator-Module von QMidiArp wurden inspiriert durch den MAP1 
-Hardware-Arpeggiator von Rudi Linhard.
+.PP
+Das demo_seqlfo.qmax Beispiel zeigt die parallele Benutzung der neuen 
+Sequenzer- und LFO-Module. Die Ausgänge sollten an perkussive Synthesizer
+Sounds geschickt werden. Die LFOs sind für eine Filterfrequenz-Steuerung
+vorgesehen, die über den MIDI-Standard-Controller #CC74 geschieht.
+Paul Nasca's ZynAddSubFX verarbeitet diese Standard-Controller, und man
+erhält gute Ergebnisse mit den Preset-Sounds "Bass 1" und "Plucked 3".
 
 .SH OPTIONEN
 .TP
@@ -439,12 +527,16 @@ Programm.
 Gibt die Programmversion aus und beendet das Programm.
 .TP
 .B Datei
-Name einer QMidiArp-Datei (.qma) zum Öffnen beim Start des Programms.
+Name einer QMidiArp-Datei (.qmax) zu Öffnen beim Start des Programms.
 .SH DATEIEN
+.I *.qmax
+.RS
+QMidiArp-XML-Dateien, enthalten Daten aller Module sowie Einstellungen 
+im XML-Textformat.
+.RE
 .I *.qma
 .RS
-QMidiArp-Dateien, enthalten Daten aller Module sowie Einstellungen in
-einem reinen Textformat.
+Ehemalige QMidiArp-Dateien in einem reinen Textformat.
 .SH BEISPIELE
 Eine Beispieldatei kann in einem der folgenden Verzeichnisse gefunden
 werden:

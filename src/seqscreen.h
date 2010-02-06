@@ -42,7 +42,7 @@ class SeqScreen : public QWidget
     void seqMouseMoved(double, double, int);
     
   public slots: 
-    void updateScreen(QVector<SeqSample> seqData);
+    void updateScreen(const QVector<SeqSample>& seqData);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void setRecord(bool on);

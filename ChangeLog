@@ -1,3 +1,6 @@
+2010-02-06 Frank Kober <goemusic@yahoo.fr>
+	* man/*/qmidiarp.1: manpages updated.
+	
 2010-02-04 Frank Kober <goemusic@yahoo.fr>
 	* seqdriver.*, midiseq.*, seqwidget.*, seqscreen.*, mainwindow.cpp:
 	Step-by-step recording for sequencer module added. Recording starts
