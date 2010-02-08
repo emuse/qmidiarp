@@ -198,20 +198,15 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     LfoSample lfoSample;
     int loc = mouseX * res * size;
     
-    if ((!newpt) && (loc != lastMouseLoc)) {
-        do {
-            lfoSample = customWave.at(lastMouseLoc);
-            lfoSample.value = mouseY * 128;
-            customWave.replace(lastMouseLoc, lfoSample);
-            if (loc > lastMouseLoc) lastMouseLoc++; else lastMouseLoc--;
-        } while (lastMouseLoc != loc);
-    }
-    else {
-        lfoSample = customWave.at(loc);
+    if (newpt) lastMouseLoc = loc;
+    
+    do {
+        lfoSample = customWave.at(lastMouseLoc);
         lfoSample.value = mouseY * 128;
-        customWave.replace(loc, lfoSample);
-		lastMouseLoc = loc;
-    }
+        customWave.replace(lastMouseLoc, lfoSample);
+        if (loc > lastMouseLoc) lastMouseLoc++; 
+        if (loc < lastMouseLoc) lastMouseLoc--;
+    } while (lastMouseLoc != loc);
 }
 
 void MidiLfo::resizeAll()
