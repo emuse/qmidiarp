@@ -761,7 +761,7 @@ void LfoWidget::newCustomOffset()
 void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if ((buttons == 1) && (waveFormBox->currentIndex() == 5)) {
-        midiLfo->setCustomWavePoint(mouseX, mouseY);
+        midiLfo->setCustomWavePoint(mouseX, mouseY, false);
         midiLfo->getData(&lfoData);
         lfoScreen->updateScreen(lfoData);
         newCustomOffset();
@@ -779,7 +779,7 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
     } 
     else {
         if (waveFormBox->currentIndex() == 5) {
-            midiLfo->setCustomWavePoint(mouseX, mouseY);
+            midiLfo->setCustomWavePoint(mouseX, mouseY, true);
             midiLfo->getData(&lfoData);
             lfoScreen->updateScreen(lfoData);
             newCustomOffset();

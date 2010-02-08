@@ -1,3 +1,8 @@
+2010-02-08 Frank Kober <goemusic@yahoo.fr>
+	* midilfo.*, lfowidget.cpp: Drawing improved to avoid skipping
+	points for custom waveforms with higher resolution than mouse 
+	resolution (reported by David Adler)
+	
 2010-02-06 Frank Kober <goemusic@yahoo.fr>
 	* man/*/qmidiarp.1: manpages updated.
 	

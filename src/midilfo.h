@@ -40,6 +40,7 @@ class MidiLfo : public QObject  {
 
   private:
     double queueTempo;
+    int lastMouseLoc;
     int clip(int value, int min, int max, bool *outOfRange);
      
   public:
@@ -65,7 +66,7 @@ class MidiLfo : public QObject  {
     void updateQueueTempo(int);
     void muteLfo(bool); //set mute
     void updateWaveForm(int val);
-    void setCustomWavePoint(double, double);
+    void setCustomWavePoint(double, double, bool);
     void toggleMutePoint(double);
     void resizeAll();
     void copyToCustom();

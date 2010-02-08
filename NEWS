@@ -20,13 +20,14 @@ New Features
   o New .qmidiarprc file containing GUI settings, user arp patterns and 
     last file path
   o Save and SaveAs functions with modification monitoring, all relevant
-    session parameters stored in .qma session file, file extension
+    session parameters stored in .qmax session file, file extension
     auto-completion
   o XML storage format for session files
   o Manual pages in English, French and German
   o Handler for SIGINT added to handle unsaved or changed files more
     carefully at program termination.
   o Handler for SIGUSR1 added to provide support for LADISH level 1.
+  o Separate threads for ALSA Sequencer Queue handler and arpeggio engine
 
 
 General Changes
