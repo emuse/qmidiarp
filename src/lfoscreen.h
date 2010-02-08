@@ -26,6 +26,7 @@ class LfoScreen : public QWidget
     QVector<LfoSample> p_lfoData, lfoData;
     int mouseX, mouseY, mouseW;
     int w, h;
+    int clip(int value, int min, int max, bool *outOfRange);
     
   protected:
     virtual void paintEvent(QPaintEvent *);

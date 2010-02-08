@@ -187,10 +187,11 @@ void LfoScreen::mouseMoveEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < LFOSCREEN_HMARGIN)|| (mouseX >= w - LFOSCREEN_HMARGIN))
-        return;
-    if ((mouseY <= LFOSCREEN_VMARGIN)|| (mouseY > h - LFOSCREEN_VMARGIN))
-        return;        
+    bool cl = false;
+    
+    mouseX = clip(mouseX, LFOSCREEN_HMARGIN, w - LFOSCREEN_HMARGIN - 1, &cl);
+    mouseY = clip(mouseY, LFOSCREEN_VMARGIN + 1, h - LFOSCREEN_VMARGIN, &cl);
+
     emit lfoMouseMoved(((double)mouseX - LFOSCREEN_HMARGIN) / 
                             (w - 2 * LFOSCREEN_HMARGIN), 
                 1. - ((double)mouseY - LFOSCREEN_VMARGIN) / 
@@ -201,10 +202,11 @@ void LfoScreen::mousePressEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < LFOSCREEN_HMARGIN)|| (mouseX >= w - LFOSCREEN_HMARGIN))
-        return;
-    if ((mouseY <= LFOSCREEN_VMARGIN)|| (mouseY > h - LFOSCREEN_VMARGIN))
-        return;
+    bool cl = false;
+    
+    mouseX = clip(mouseX, LFOSCREEN_HMARGIN, w - LFOSCREEN_HMARGIN - 1, &cl);
+    mouseY = clip(mouseY, LFOSCREEN_VMARGIN + 1, h - LFOSCREEN_VMARGIN, &cl);
+
     emit lfoMousePressed(((double)mouseX - LFOSCREEN_HMARGIN) / 
                             (w - 2 * LFOSCREEN_HMARGIN), 
                 1. - ((double)mouseY - LFOSCREEN_VMARGIN) / 
@@ -216,4 +218,19 @@ void LfoScreen::wheelEvent(QWheelEvent *event)
     mouseW = event->delta();
     emit lfoWheel(mouseW / 120);
     event->accept();
+}
+
+int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
+{
+    int tmp = value;
+
+    *outOfRange = false;
+    if (tmp > max) {
+        tmp = max;
+        *outOfRange = true;
+    } else if (tmp < min) {
+        tmp = min;
+        *outOfRange = true;
+    }  
+    return(tmp);
 }
