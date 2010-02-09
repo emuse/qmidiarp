@@ -188,7 +188,7 @@ void SeqDriver::run()
                     l2 = 0;
                     for (l1 = 0; l1 < midiLfoList->count(); l1++) {
                         if ((int)(tick + 8) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
-                            midiLfoList->at(l1)->getData(&lfoData);
+                            midiLfoList->at(l1)->getNextFrame(&lfoData);
                             lfoccnumber = midiLfoList->at(l1)->ccnumber;
                             lfochannel = midiLfoList->at(l1)->channelOut;
                             lfoport = midiLfoList->at(l1)->portOut;
@@ -467,6 +467,9 @@ void SeqDriver::setQueueStatus(bool run)
     if (run) {
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->foldReleaseTicks(tick);
+        }
+        for (l1 = 0; l1 < midiLfoList->count(); l1++) {
+            midiLfoList->at(l1)->resetFramePtr();
         }
         runArp = true;
         startQueue = true;

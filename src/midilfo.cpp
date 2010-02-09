@@ -52,6 +52,7 @@ MidiLfo::MidiLfo()
     }
     muteMask.fill(false, size * res);
     lastMouseLoc = 0;
+    frameptr = 0;
 }
 
 MidiLfo::~MidiLfo(){
@@ -62,8 +63,42 @@ void MidiLfo::muteLfo(bool on)
     isMuted = on;
 }
 
+void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
+{
+    //this function is called by seqdriver and returns a frame of
+    //maximum LFO_FRAMESIZE points
+    
+    QVector<LfoSample> lfoFrame;
+    LfoSample lfoSample;
+    int step = TICKS_PER_QUARTER / res;
+    int npoints = size * res;
+    int lt, l1;
+    
+    lfoFrame.clear();
+    lt = 0;
+    l1 = 0;
+    
+    while ((l1 < LFO_FRAMESIZE) && (l1 < npoints)) {
+        lfoSample = lfoData.at((l1 + frameptr) % npoints);
+        lfoSample.tick = lt;
+        lfoFrame.append(lfoSample);
+        lt+=step;
+        l1++;
+    }
+    lfoSample.value = -1;
+    lfoSample.tick = lt;
+    lfoFrame.append(lfoSample);    
+   
+    frameptr += l1;
+    frameptr %= npoints;
+    
+    *p_lfoData = lfoFrame;
+}
+
 void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
 { 
+    //this function returns the full LFO wave
+    
     LfoSample lfoSample;
     int l1 = 0;
     int lt = 0;
@@ -74,7 +109,6 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
     int npoints = size * res;
     //res: number of events per beat
     //size: size of waveform in beats
-    QVector<LfoSample> lfoData;
     
     lfoData.clear();
     
@@ -280,3 +314,7 @@ void MidiLfo::toggleMutePoint(double mouseX)
     }
 }
 
+void MidiLfo::resetFramePtr()
+{
+    frameptr = 0;
+}

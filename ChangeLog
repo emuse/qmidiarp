@@ -1,3 +1,8 @@
+2010-02-09 Frank Kober <goemusic@yahoo.fr>
+	* midilfo.*, seqdriver.cpp, main.h: frame size for each LFO data
+	queueing at a time limited to 256 points to fix playout of
+	high resolution and length LFO waveforms.
+    
 2010-02-08 Frank Kober <goemusic@yahoo.fr>
 	* midilfo.*, lfowidget.cpp: Drawing improved to avoid skipping
 	points for custom waveforms with higher resolution than mouse 

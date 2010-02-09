@@ -41,7 +41,9 @@ class MidiLfo : public QObject  {
   private:
     double queueTempo;
     int lastMouseLoc;
+    int frameptr;
     int clip(int value, int min, int max, bool *outOfRange);
+    QVector<LfoSample> lfoData;
      
   public:
     int portOut;    // Output port (ALSA Sequencer)
@@ -57,6 +59,7 @@ class MidiLfo : public QObject  {
     MidiLfo();
     ~MidiLfo();
     void getData(QVector<LfoSample> *lfoData);  
+    void getNextFrame(QVector<LfoSample> *p_lfoData);
     
   public slots:  
     void updateFrequency(int);
@@ -70,6 +73,7 @@ class MidiLfo : public QObject  {
     void toggleMutePoint(double);
     void resizeAll();
     void copyToCustom();
+    void resetFramePtr();
 };
                               
 #endif
