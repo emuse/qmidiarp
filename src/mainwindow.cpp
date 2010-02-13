@@ -65,27 +65,8 @@ MainWindow::MainWindow(int p_portCount)
     connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
 
-    passWidget = new PassWidget(p_portCount, this);
-    passWindow = new QDockWidget(tr("Settings"), this);
-    passWindow->setFeatures(QDockWidget::DockWidgetClosable
-            | QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    passWindow->setWidget(passWidget);
-    passWindow->setObjectName("passWidget");
-    passWindow->setVisible(false);
-    passWindow->setFloating(true);
-    passWindow->setGeometry(10, 10, 400, 200);
-    addDockWidget(Qt::BottomDockWidgetArea, passWindow);
-
-    connect(passWidget, SIGNAL(forwardToggled(bool)), 
-            arpData->seqDriver, SLOT(setForwardUnmatched(bool)));
-    connect(passWidget, SIGNAL(newMIDItpb(int)), 
-            arpData->seqDriver, SLOT(updateMIDItpb(int)));
-    connect(passWidget, SIGNAL(newPortUnmatched(int)), 
-            arpData->seqDriver, SLOT(setPortUnmatched(int)));
-    connect(passWidget, SIGNAL(midiControlToggle(bool)), 
-            arpData->seqDriver, SLOT(setMidiControllable(bool)));
-
+    passWidget = new PassWidget(arpData, p_portCount, this);
+   
     connect(this, SIGNAL(runQueue(bool)), 
             arpData->seqDriver, SLOT(runQueue(bool)));                                
     grooveWidget = new GrooveWidget(this);
@@ -191,11 +172,11 @@ MainWindow::MainWindow(int p_portCount)
     viewGrooveAction->setText(tr("&Groove Settings"));
     viewGrooveAction->setShortcut(QKeySequence(tr("Ctrl+G", "View|Groove")));
 
-    QAction* viewSettingsAction = passWindow->toggleViewAction();
+    QAction* viewSettingsAction = new QAction(tr("&Settings"), this); 
     viewSettingsAction->setIcon(QIcon(settings_xpm));
-    viewSettingsAction->setText(tr("&Settings"));
     viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P",
                     "View|Settings")));
+    connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *fileMenu = new QMenu(tr("&File"), this); 
@@ -378,7 +359,6 @@ void MainWindow::addArp(const QString& name)
     widgetID = arpData->arpWidgetCount();
     arpWidget->name = name;
     arpWidget->ID = widgetID;
-    if (passWidget->compactStyle) arpWidget->setStyleSheet(COMPACT_STYLE);
     
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
@@ -389,6 +369,7 @@ void MainWindow::addArp(const QString& name)
     moduleWindow->setWidget(arpWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
     
     count = arpData->moduleWindowCount();
     arpWidget->parentDockID = count;
@@ -415,7 +396,6 @@ void MainWindow::addLfo(const QString& name)
     widgetID = arpData->lfoWidgetCount();
     lfoWidget->name = name;
     lfoWidget->ID = widgetID;
-    if (passWidget->compactStyle) lfoWidget->setStyleSheet(COMPACT_STYLE);
 
     arpData->addLfoWidget(lfoWidget);
 
@@ -425,6 +405,7 @@ void MainWindow::addLfo(const QString& name)
     moduleWindow->setWidget(lfoWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
     
     count = arpData->moduleWindowCount();
     lfoWidget->parentDockID = count;
@@ -451,7 +432,6 @@ void MainWindow::addSeq(const QString& name)
     widgetID = arpData->seqWidgetCount();
     seqWidget->name = name;
     seqWidget->ID = widgetID;
-    if (passWidget->compactStyle) seqWidget->setStyleSheet(COMPACT_STYLE);
     
     arpData->addSeqWidget(seqWidget);
     
@@ -461,7 +441,8 @@ void MainWindow::addSeq(const QString& name)
     moduleWindow->setWidget(seqWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    
+    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
+
     count = arpData->moduleWindowCount();
     seqWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);

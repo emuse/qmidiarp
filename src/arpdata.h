@@ -80,6 +80,7 @@ class ArpData : public QWidget  {
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void handleController(int ccnumber, int channel, int value);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
+    void setCompactStyle(bool on);
 };
                               
 #endif

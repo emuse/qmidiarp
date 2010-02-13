@@ -7,6 +7,7 @@
 
 #include "seqdriver.h"
 #include "arpdata.h"
+#include "arpdata.h"
 
 
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
@@ -461,5 +462,18 @@ void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
         midiLearnWindowID = moduleWindowID;
         midiLearnModuleID = moduleID;
         midiLearnID = controlID;
+    }
+}
+
+void ArpData::setCompactStyle(bool on)
+{
+    int l1;
+    if (on) {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindowList.at(l1)->setStyleSheet(COMPACT_STYLE);
+    }
+    else {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindowList.at(l1)->setStyleSheet("");
     }
 }

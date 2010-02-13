@@ -1,10 +1,16 @@
 #include <QBoxLayout>
+#include <QDialogButtonBox>
 #include <QLabel>
 
+#include "mainwindow.h"
 #include "passwidget.h"
 
-PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
+PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
+            : QDialog(parent)
 {
+    arpData = p_arpData;
+    
+    QWidget *passWidgetBox = new QWidget(this);
     forwardCheck = new QCheckBox(this);
     forwardCheck->setText(tr("&Forward unmatched events to port"));
     forwardCheck->setChecked(false);
@@ -18,13 +24,6 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updatePortUnmatched(int)));
             
-    compactStyleCheck = new QCheckBox(this);
-    compactStyleCheck->setText(tr("&Compact module layout style"));
-    QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
-            SLOT(updateCompactStyle(bool)));
-    compactStyleCheck->setChecked(true);
-    compactStyle = true;
-    
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
     portBoxLayout->addWidget(forwardCheck);
     portBoxLayout->addStretch(1);
@@ -51,14 +50,31 @@ PassWidget::PassWidget(int p_portcount, QWidget *parent) : QWidget(parent)
     mtpbBoxLayout->addStretch(1);
     mtpbBoxLayout->addWidget(mtpbSpin);
 
+    compactStyleCheck = new QCheckBox(this);
+    compactStyleCheck->setText(tr("&Compact module layout style"));
+    QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateCompactStyle(bool)));
+    compactStyle = false;
+        
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));    
+
     QVBoxLayout *passWidgetLayout = new QVBoxLayout;
     passWidgetLayout->addLayout(portBoxLayout);
     passWidgetLayout->addWidget(cbuttonCheck);
     passWidgetLayout->addLayout(mtpbBoxLayout);
     passWidgetLayout->addWidget(compactStyleCheck);
+    passWidgetLayout->addWidget(buttonBox);
     passWidgetLayout->addStretch();
 
-    setLayout(passWidgetLayout);
+    passWidgetBox->setLayout(passWidgetLayout);
+    
+    setModal(true);
+    setMinimumWidth(400);
+    setMinimumHeight(150);
+    setWindowTitle(tr("Settings - ") + APP_NAME);
 }
 
 PassWidget::~PassWidget()
@@ -67,13 +83,13 @@ PassWidget::~PassWidget()
 
 void PassWidget::updateForward(bool on)
 {
-    emit forwardToggled(on);
+    arpData->seqDriver->setForwardUnmatched(on);
     portUnmatchedSpin->setDisabled(!on);
 }
 
 void PassWidget::updatePortUnmatched(int id)
 {
-    emit newPortUnmatched(id - 1);
+    arpData->seqDriver->setPortUnmatched(id - 1);
 }
 
 void PassWidget::setForward(bool on)
@@ -88,17 +104,18 @@ void PassWidget::setPortUnmatched(int id)
 
 void PassWidget::updateMIDItpb_pw(int MIDItpb)
 {
-    emit newMIDItpb(MIDItpb);
+    arpData->seqDriver->updateMIDItpb(MIDItpb);
 }
 
 void PassWidget::updateControlSetting(bool on)
 {
-    emit midiControlToggle(on);
+    arpData->seqDriver->setMidiControllable(on);
 }
 
 void PassWidget::updateCompactStyle(bool on)
 {
     compactStyle = on;
+    arpData->setCompactStyle(on);
 }
 
 

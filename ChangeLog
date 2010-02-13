@@ -1,4 +1,8 @@
 2010-02-13 Frank Kober <goemusic@yahoo.fr>
+	* mainwindow.*, passwidget.*: passWidget (Settings) is now a dialog
+	window, compact style no longer default, compact style applies 
+	immediately when checkbox toggled, but applies to widget
+	spacings only for modules added after change.
 	* seqdriver.h, lfowidget.cpp: cleanups
 	* mainwindow.*, midicctable.cpp: fixed memory leak when opening
 	midi control editor

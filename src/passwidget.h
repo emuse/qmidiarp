@@ -2,19 +2,23 @@
 #define PASSWIDGET_H
 
 #include <QCheckBox>
+#include <QDialog>
 #include <QSpinBox>
 
-class PassWidget : public QWidget
+#include "arpdata.h"
+
+class PassWidget : public QDialog
 
 {
   Q_OBJECT
 
   private:
+    ArpData *arpData;
     QCheckBox *forwardCheck;
     QSpinBox *portUnmatchedSpin;
           
   public:
-    PassWidget(int p_portcount, QWidget* parent=0);
+    PassWidget(ArpData* arpData, int p_portcount, QWidget* parent=0);
     ~PassWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);
@@ -23,11 +27,7 @@ class PassWidget : public QWidget
     bool compactStyle;
     
   signals:
-    void forwardToggled(bool);  
-    void newPortUnmatched(int);
-    void midiControlToggle(bool);
     void compactLayoutToggle(bool);
-    void newMIDItpb(int);
         
   public slots:
     void updateForward(bool on);
