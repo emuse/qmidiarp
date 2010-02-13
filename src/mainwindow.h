@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow
     GrooveWidget *grooveWidget;
     LogWidget *logWidget;
     ArpData *arpData;
+    MidiCCTable *midiCCTable;
     QString lastDir, filename;
     QStringList patternNames, patternPresets;
     QStringList recentFiles;

@@ -56,8 +56,6 @@ MidiCCTable::MidiCCTable(ArpData *p_arpData, QWidget *parent) : QDialog(parent)
     setModal(true);
     resize(250, 200);
     setWindowTitle(tr("MIDI Controllers - ") + APP_NAME);
-    getCurrentControls();
-    show();
 }
 
 MidiCCTable::~MidiCCTable()

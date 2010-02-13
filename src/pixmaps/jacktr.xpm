@@ -1,6 +1,6 @@
 /* XPM */
 static const char * jacktr_xpm[] = {
-"22 22 143 2",
+"22 22 142 2",
 "   c None",
 ".  c #2A1F18",
 "+  c #271D18",
@@ -143,7 +143,9 @@ static const char * jacktr_xpm[] = {
 "i. c #2B1F1B",
 "j. c #1B100C",
 "k. c #1C110D",
-"l. c #000000",
+"                                            ",
+"                                            ",
+"                                            ",
 "                                            ",
 "                                            ",
 "  . . . . . + @ # $         % &             ",
@@ -158,11 +160,8 @@ static const char * jacktr_xpm[] = {
 "  8.8.8.8.9.0.a.b.c.      d.}.e.f.          ",
 "  g.g.g.g.h.$ i.j.          k.              ",
 "                                            ",
-"    l.      l.l.        l.l.l.l.  l.    l.l.",
-"    l.    l.l.l.l.    l.l.    l.  l.  l.l.  ",
-"    l.    l.l.l.l.    l.          l.l.l.    ",
-"    l.    l.l.l.l.    l.          l.l.l.    ",
-"    l.  l.l.l.l.l.l.  l.l.    l.  l.  l.l.  ",
-"    l.  l.l.    l.l.    l.l.l.l.  l.    l.l.",
-"    l.                                      ",
-"  l.l.                                      "};
+"                                            ",
+"                                            ",
+"                                            ",
+"                                            ",
+"                                            "};

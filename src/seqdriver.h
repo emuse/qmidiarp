@@ -1,12 +1,9 @@
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
 
-#include <QMetaType>
 #include <QWidget>
-#include <QSocketNotifier>
 #include <QThread>
 #include <alsa/asoundlib.h>
-
 
 #include "jacksync.h"
 #include "midiarp.h"
@@ -15,22 +12,15 @@
 #include "main.h"
 
 
-    Q_DECLARE_METATYPE(snd_seq_tick_time_t);
-    
-  //  qRegisterMetaType<snd_seq_tick_time_t>();
-
 class SeqDriver : public QThread {
 
     Q_OBJECT
-    
-    
     
     private:
         int portCount;
         QList<MidiArp *> *midiArpList; 
         QList<MidiLfo *> *midiLfoList; 
         QList<MidiSeq *> *midiSeqList; 
-        QSocketNotifier *seqNotifier;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];

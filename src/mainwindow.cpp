@@ -52,6 +52,8 @@ MainWindow::MainWindow(int p_portCount)
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
                 
+    midiCCTable = new MidiCCTable(arpData, this);
+    
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
     logWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -1317,7 +1319,8 @@ void MainWindow::checkIfFirstModule()
 
 void MainWindow::showMidiCCDialog()
 {
-    new MidiCCTable(arpData, this);
+    midiCCTable->revert();
+    midiCCTable->show();
 }
 
 /* Handler for system signals (SIGUSR1, SIGINT...)

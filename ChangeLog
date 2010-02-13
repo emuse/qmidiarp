@@ -1,3 +1,9 @@
+2010-02-13 Frank Kober <goemusic@yahoo.fr>
+	* seqdriver.h, lfowidget.cpp: cleanups
+	* mainwindow.*, midicctable.cpp: fixed memory leak when opening
+	midi control editor
+	* pixmaps/jacktr.xpm: icon polished
+	
 2010-02-09 Frank Kober <goemusic@yahoo.fr>
 	* midilfo.*, seqdriver.cpp, main.h: frame size for each LFO data
 	queueing at a time limited to 256 points to fix playout of

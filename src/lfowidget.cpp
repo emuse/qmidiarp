@@ -703,11 +703,6 @@ void LfoWidget::updateFreq(int val)
 
 void LfoWidget::updateRes(int val)
 {
-/*    if ((lfoResValues[val] * midiLfo->size) > LFO_POOL) {
-        while ((lfoResValues[val] * midiLfo->size) > LFO_POOL) val--;
-        resBox->setCurrentIndex(val);
-        return;
-    }*/
     midiLfo->res = lfoResValues[val];
     midiLfo->resizeAll();
     midiLfo->getData(&lfoData);
@@ -717,11 +712,6 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-/*    if (((val + 1) * midiLfo->res) > LFO_POOL) {
-        while (((val + 1) * midiLfo->res) > LFO_POOL) val--;
-        sizeBox->setCurrentIndex(val);
-        return;
-    } */
     midiLfo->size = val + 1;
     midiLfo->resizeAll();
     midiLfo->getData(&lfoData);
