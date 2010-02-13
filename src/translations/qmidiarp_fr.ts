@@ -885,22 +885,22 @@ Enregistrer les modifications?</translation>
 <context>
     <name>PassWidget</name>
     <message>
-        <location filename="../passwidget.cpp" line="15"/>
+        <location filename="../passwidget.cpp" line="14"/>
         <source>&amp;Forward unmatched events to port</source>
         <translation>&amp;Acheminer les évênements non-traités au port</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="54"/>
+        <location filename="../passwidget.cpp" line="53"/>
         <source>&amp;Compact module layout style</source>
         <translation>Style &amp;compact d&apos;affichage des modules</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="33"/>
+        <location filename="../passwidget.cpp" line="32"/>
         <source>&amp;Modules controllable by MIDI controller</source>
         <translation>&amp;Modules contrôlables par MIDI</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="77"/>
+        <location filename="../passwidget.cpp" line="75"/>
         <source>Settings - </source>
         <translation>Paramètres - </translation>
     </message>
@@ -913,7 +913,7 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">&amp;Rendre les arpèges muet par CC MIDI commençant par CC#</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="38"/>
+        <location filename="../passwidget.cpp" line="37"/>
         <source>Incoming MIDI &amp;Clock rate (tpb)</source>
         <translation>Cadence MIDI &amp;Clock entrant (tbp)</translation>
     </message>

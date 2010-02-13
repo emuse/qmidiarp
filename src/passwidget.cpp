@@ -10,7 +10,6 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
 {
     arpData = p_arpData;
     
-    QWidget *passWidgetBox = new QWidget(this);
     forwardCheck = new QCheckBox(this);
     forwardCheck->setText(tr("&Forward unmatched events to port"));
     forwardCheck->setChecked(false);
@@ -69,8 +68,7 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     passWidgetLayout->addWidget(buttonBox);
     passWidgetLayout->addStretch();
 
-    passWidgetBox->setLayout(passWidgetLayout);
-    
+    setLayout(passWidgetLayout);
     setModal(true);
     setMinimumWidth(400);
     setMinimumHeight(150);
