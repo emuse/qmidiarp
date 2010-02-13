@@ -627,8 +627,6 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                         midiClockAction->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "jackSyncEnabled")
                         jackSyncAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "midiClockRate")
-                    passWidget->mtpbSpin->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
                 else if (xml.name() == "forwardPort")
@@ -748,8 +746,6 @@ void MainWindow::openTextFile(const QString& fn)
         qs = loadText.readLine();
         qs2 = qs.section(' ', 0, 0);
         midiclocktmp = qs2.toInt();
-        qs2 = qs.section(' ', 1, 1);
-        passWidget->mtpbSpin->setValue(qs2.toInt());
         qs = loadText.readLine();
     }
     qs2 = qs.section(' ', 0, 0);
@@ -859,8 +855,6 @@ bool MainWindow::saveFile()
                 QString::number((int)arpData->seqDriver->use_midiclock));
             xml.writeTextElement("jackSyncEnabled", 
                 QString::number((int)arpData->seqDriver->use_jacksync));
-            xml.writeTextElement("midiClockRate", 
-                QString::number(arpData->seqDriver->midiclock_tpb));
             xml.writeTextElement("forwardUnmatched", 
                 QString::number((int)arpData->seqDriver->forwardUnmatched));
             xml.writeTextElement("forwardPort", 
@@ -935,8 +929,7 @@ bool MainWindow::saveTextFile()
     saveText << "MIDI Control\n";
     saveText << (int)passWidget->cbuttonCheck->isChecked() << '\n';
     saveText << "MIDI Clock\n";
-    saveText << (int)arpData->seqDriver->use_midiclock << ' ';
-    saveText << (int)arpData->seqDriver->midiclock_tpb << '\n';
+    saveText << (int)arpData->seqDriver->use_midiclock << '\n';
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
     

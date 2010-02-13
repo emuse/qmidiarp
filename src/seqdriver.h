@@ -54,7 +54,6 @@ class SeqDriver : public QThread {
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
-        int midiclock_tpb;
         int grooveTick, grooveVelocity, grooveLength;
         bool use_midiclock, use_jacksync;
 
@@ -91,7 +90,6 @@ class SeqDriver : public QThread {
         void setGrooveLength(int);
         void sendGroove();
         void setUseMidiClock(bool on);
-        void updateMIDItpb(int midiTpb);
         void setMidiControllable(bool on);
         void setUseJackTransport(bool on);
         void jackShutdown();

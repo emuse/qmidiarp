@@ -1,4 +1,6 @@
 2010-02-13 Frank Kober <goemusic@yahoo.fr>
+	* passwidget.*, mainwindow.cpp, seqdriver.*: false midiclock tpqn 
+	editing removed since it has a clear standard definition.
 	* mainwindow.*, passwidget.*: passWidget (Settings) is now a dialog
 	window, compact style no longer default, compact style applies 
 	immediately when checkbox toggled, but applies to widget

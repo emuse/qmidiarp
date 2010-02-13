@@ -33,22 +33,7 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     cbuttonCheck->setChecked(true);
     QObject::connect(cbuttonCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateControlSetting(bool)));
-    
-    QLabel *mtpbLabel = new QLabel(tr("Incoming MIDI &Clock rate (tpb)"), this);
-    mtpbSpin = new QSpinBox(this);
-    mtpbLabel->setBuddy(mtpbSpin);
-    QObject::connect(mtpbSpin, SIGNAL(valueChanged(int)), this,
-            SLOT(updateMIDItpb_pw(int)));
-    mtpbSpin->setRange(24,384);
-    mtpbSpin->setValue(96);
-    mtpbSpin->setSingleStep(24);
-    mtpbSpin->setKeyboardTracking(false);
-    
-    QHBoxLayout *mtpbBoxLayout = new QHBoxLayout;
-    mtpbBoxLayout->addWidget(mtpbLabel);
-    mtpbBoxLayout->addStretch(1);
-    mtpbBoxLayout->addWidget(mtpbSpin);
-
+        
     compactStyleCheck = new QCheckBox(this);
     compactStyleCheck->setText(tr("&Compact module layout style"));
     QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
@@ -63,7 +48,6 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     QVBoxLayout *passWidgetLayout = new QVBoxLayout;
     passWidgetLayout->addLayout(portBoxLayout);
     passWidgetLayout->addWidget(cbuttonCheck);
-    passWidgetLayout->addLayout(mtpbBoxLayout);
     passWidgetLayout->addWidget(compactStyleCheck);
     passWidgetLayout->addWidget(buttonBox);
     passWidgetLayout->addStretch();
@@ -98,11 +82,6 @@ void PassWidget::setForward(bool on)
 void PassWidget::setPortUnmatched(int id)
 {
     portUnmatchedSpin->setValue(id);
-}
-
-void PassWidget::updateMIDItpb_pw(int MIDItpb)
-{
-    arpData->seqDriver->updateMIDItpb(MIDItpb);
 }
 
 void PassWidget::updateControlSetting(bool on)

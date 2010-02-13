@@ -23,7 +23,6 @@ class PassWidget : public QDialog
     void setForward(bool on);
     void setPortUnmatched(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck;
-    QSpinBox *mtpbSpin;
     bool compactStyle;
     
   signals:
@@ -32,7 +31,6 @@ class PassWidget : public QDialog
   public slots:
     void updateForward(bool on);
     void updatePortUnmatched(int);
-    void updateMIDItpb_pw(int);
     void updateControlSetting(bool);   
     void updateCompactStyle(bool);   
 };

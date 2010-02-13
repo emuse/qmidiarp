@@ -51,7 +51,6 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
         internal_tempo = 100;
         midiTick = 0;
         use_midiclock = false;
-        midiclock_tpb = 96;
         m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
         int l1 = 0;
         for (l1 = 0; l1 < 20; l1++) lastLfoTick[l1] = 0;
@@ -125,8 +124,8 @@ void SeqDriver::run()
             snd_seq_event_input(seq_handle, &evIn);
     
             if (use_midiclock && (evIn->type == SND_SEQ_EVENT_CLOCK)) {
-                midiTick += 4;
-                tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
+                midiTick++;
+                tick = midiTick*TICKS_PER_QUARTER/MIDICLK_TPQ;
                 if (((int)tick > nextLfoTick) && (midiLfoList->count())) {
                     fallback = true; 
                 }
@@ -143,7 +142,7 @@ void SeqDriver::run()
                 real_time = evIn->time.time;
                 
                 if (use_midiclock) {
-                    tick = midiTick*TICKS_PER_QUARTER/midiclock_tpb;
+                    tick = midiTick*TICKS_PER_QUARTER/MIDICLK_TPQ;
                     calcMidiRatio();
                 }
                 else if (use_jacksync) {
@@ -635,11 +634,6 @@ void SeqDriver::setUseMidiClock(bool on)
     m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
     runQueue(false);
     use_midiclock = on;
-}
-
-void SeqDriver::updateMIDItpb(int midiTpb)
-{
-    midiclock_tpb = midiTpb;
 }
 
 void SeqDriver::setModified(bool m)

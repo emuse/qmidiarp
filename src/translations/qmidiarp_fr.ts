@@ -660,7 +660,7 @@ Molette pour changer l&apos;offset</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="566"/>
-        <location filename="../mainwindow.cpp" line="724"/>
+        <location filename="../mainwindow.cpp" line="722"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
@@ -670,39 +670,39 @@ Molette pour changer l&apos;offset</translation>
         <translation>Ceci n&apos;est pas un fichier xml valide pour </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="813"/>
+        <location filename="../mainwindow.cpp" line="809"/>
         <source>The QMidiArp text file was imported. If you save this file, it will be saved using the newer xml format under the name
  &apos;%1&apos;.</source>
         <translation>Le fichier texte QMidiArp a été importé. A la prochaine sauvegarde, il sera écrit au format xml actuel sous le nom
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="839"/>
-        <location filename="../mainwindow.cpp" line="927"/>
+        <location filename="../mainwindow.cpp" line="835"/>
+        <location filename="../mainwindow.cpp" line="921"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1005"/>
+        <location filename="../mainwindow.cpp" line="998"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1007"/>
+        <location filename="../mainwindow.cpp" line="1000"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1011"/>
+        <location filename="../mainwindow.cpp" line="1004"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1141"/>
+        <location filename="../mainwindow.cpp" line="1134"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
@@ -777,17 +777,17 @@ Enregistrer les modifications?</translation>
         <translation>Pas un fichier xml QMidiArp.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="983"/>
+        <location filename="../mainwindow.cpp" line="976"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="983"/>
+        <location filename="../mainwindow.cpp" line="976"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1184"/>
+        <location filename="../mainwindow.cpp" line="1177"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
@@ -890,7 +890,7 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Acheminer les évênements non-traités au port</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="53"/>
+        <location filename="../passwidget.cpp" line="38"/>
         <source>&amp;Compact module layout style</source>
         <translation>Style &amp;compact d&apos;affichage des modules</translation>
     </message>
@@ -900,7 +900,7 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Modules contrôlables par MIDI</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="75"/>
+        <location filename="../passwidget.cpp" line="59"/>
         <source>Settings - </source>
         <translation>Paramètres - </translation>
     </message>
@@ -913,9 +913,8 @@ Enregistrer les modifications?</translation>
         <translation type="obsolete">&amp;Rendre les arpèges muet par CC MIDI commençant par CC#</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="37"/>
         <source>Incoming MIDI &amp;Clock rate (tpb)</source>
-        <translation>Cadence MIDI &amp;Clock entrant (tbp)</translation>
+        <translation type="obsolete">Cadence MIDI &amp;Clock entrant (tbp)</translation>
     </message>
 </context>
 <context>

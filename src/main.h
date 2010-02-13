@@ -6,6 +6,7 @@
 #define LFO_FRAMESIZE 256
 #define MAXNOTES 128
 #define TICKS_PER_QUARTER 192
+#define MIDICLK_TPQ 24
 #define MAXCHORD  33
 #define QMARCNAME ".qmidiarprc"
 #define COMPACT_STYLE "QLabel { font: 7pt; } \
