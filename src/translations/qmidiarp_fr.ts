@@ -900,7 +900,7 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Modules contrôlables par MIDI</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="59"/>
+        <location filename="../passwidget.cpp" line="57"/>
         <source>Settings - </source>
         <translation>Paramètres - </translation>
     </message>

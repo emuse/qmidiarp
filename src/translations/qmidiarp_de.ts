@@ -925,7 +925,7 @@ Die Änderungen speichern?</translation>
         <translation>&amp;Module sind MIDI-steuerbar</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="59"/>
+        <location filename="../passwidget.cpp" line="57"/>
         <source>Settings - </source>
         <translation>Einstellungen - </translation>
     </message>

@@ -77,9 +77,7 @@ QMidiArp
 attendra la réception d'un évênement "MIDI Clock Start" d'une source
 externe connectée à son entrée MIDI. Une fois cet évênement reçu, 
 la queue est démarrée en utilisant les évênements d'horologe MIDI comme
-source. La résolution temporelle de l'horologe externe peut être ajustée
-dans la fenêtre
-.B Paramètres.
+source.
 La synchronisation fonctionne au mieux si le tempo de la source externe
 correspond à peu près à celui de QMidiArp. La queue s'arrêtera
 sur réception d'un évênement MIDI Clock Stop. Pendant le fonctionnement
@@ -383,11 +381,7 @@ La fenêtre "Paramètres" permet de configurer vers quel port ALSA les
 évênements passant par le filtre d'entrée d'aucun arpégiateur sont
 acheminés. Si ces évênements devront être ignorés, la case correspondante
 doit être décochée. Dans cette fenêtre on spécifie également si QMidiArp
-est contrôlable par des contrôleurs MIDI. La fenêtre
-.B Paramètres
-permet également de définir la résolution de l'horologe MIDI externe
-utilisée pour la synchronisation. Sa valeur par défaut est de 96
-ticks par quart de temps (tpb). En cochant la case
+est contrôlable par des contrôleurs MIDI. En cochant la case
 .B Style compact d'affichage des modules
 tous les nouveaux modules créés auront une apparence économique en place
 pour la distribution sur le bureau de l'ordinateur. 

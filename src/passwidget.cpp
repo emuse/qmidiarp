@@ -54,8 +54,6 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
 
     setLayout(passWidgetLayout);
     setModal(true);
-    setMinimumWidth(400);
-    setMinimumHeight(150);
     setWindowTitle(tr("Settings - ") + APP_NAME);
 }
 

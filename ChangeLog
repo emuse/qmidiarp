@@ -1,3 +1,7 @@
+2010-02-14  Frank Kober  <goemusic@yahoo.fr>
+	* passwidget.cpp, midicctable.cpp: Layout improved
+	* man/*/qmidiarp.1: Midiclock description updated
+
 2010-02-13 Frank Kober <goemusic@yahoo.fr>
 	* passwidget.*, mainwindow.cpp, seqdriver.*: false midiclock tpqn 
 	editing removed since it has a clear standard definition.

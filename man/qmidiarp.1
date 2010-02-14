@@ -80,9 +80,7 @@ and QMidiArp
 will wait for an incoming "MIDI Clock Start" event from an external 
 source connected to QMidiArp's MIDI input. Once this event is received,
 the queue is started using MIDI realtime clock events as clock
-source. The time resolution of the incoming clock can be set in the 
-.B Settings
-dialog. QMidiArp will best remain in sync with the incoming 
+source. QMidiArp will best remain in sync with the incoming 
 MIDI clock if its internal tempo value (see above) approximately 
 corresponds to that of the incoming clock. The MIDI clock tempo is,
 however, measured while the queue is running. Therefore, if the tempos of 
@@ -402,11 +400,7 @@ muting and controlling
 the modules separately. If this option is set, QMidiArp will recognize
 MIDI control events that can be attributed to different parameters (see
 .B MIDI Control
-). The 
-.B Settings 
-dialog also allows to set the tick resolution of the
-.B incoming MIDI clock. 
-The default is 96 ticks per beat. By checking the 
+). By checking the 
 .B compact module style
 all new created modules will show with small GUI elements to be more 
 economic in space when distributed as separate windows over the desktop.
