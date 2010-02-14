@@ -67,6 +67,8 @@ void MidiCCTable::getCurrentControls()
     QVector<MidiCC> ccList;
     int l1, l2;
     int nrows = 0;
+
+    midiCCTable->clear();
     
     for (l1 = 0; l1 < arpData->arpWidgetCount(); l1++) {
         ccList = arpData->arpWidget(l1)->ccList;
@@ -182,6 +184,7 @@ void MidiCCTable::reject()
 
 void MidiCCTable::closeEvent(QCloseEvent *e)
 {
+    midiCCTable->clear();
     e->accept();
 }
 
@@ -240,7 +243,6 @@ void MidiCCTable::fillControlRow(int row, MidiCC midiCC, int moduleID)
 
 void MidiCCTable::revert()
 {
-    midiCCTable->clear();
     midiCCTable->setRowCount(arpData->moduleWindowCount()*10);
     getCurrentControls();
 }

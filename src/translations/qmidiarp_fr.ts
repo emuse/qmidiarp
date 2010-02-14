@@ -857,27 +857,27 @@ Enregistrer les modifications?</translation>
         <translation>Contrôles MIDI - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="111"/>
+        <location filename="../midicctable.cpp" line="113"/>
         <source>Control</source>
         <translation>Contrôle</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="115"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="119"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>Ch</source>
         <translation>Can</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="123"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>min</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="127"/>
+        <location filename="../midicctable.cpp" line="129"/>
         <source>max</source>
         <translation></translation>
     </message>
