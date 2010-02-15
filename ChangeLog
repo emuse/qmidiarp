@@ -1,5 +1,8 @@
+2010-02-15  Frank Kober  <goemusic@yahoo.fr>
+	* midilfo.*: hi-res drawing interpolation slightly improved
+
 2010-02-14  Frank Kober  <goemusic@yahoo.fr>
-	* lfoWidget.*, midiLfo.*, seqWidget.*, midiSeq.*: muting ranges 
+	* lfowidget.*, midilfo.*, seqwidget.*, midiseq.*: muting ranges 
 	by holding right mouse button now possible.
 	* passwidget.cpp, midicctable.cpp: Layout improved
 	* man/*/qmidiarp.1: Midiclock description updated

@@ -40,7 +40,7 @@ class MidiLfo : public QObject  {
 
   private:
     double queueTempo;
-    int lastMouseLoc;
+    int lastMouseLoc, lastMouseY;
     int frameptr;
     int clip(int value, int min, int max, bool *outOfRange);
     QVector<LfoSample> lfoData;

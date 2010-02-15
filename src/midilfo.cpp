@@ -52,6 +52,7 @@ MidiLfo::MidiLfo()
     }
     muteMask.fill(false, size * res);
     lastMouseLoc = 0;
+    lastMouseY = 0;
     frameptr = 0;
 }
 
@@ -231,15 +232,27 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
 {
     LfoSample lfoSample;
     int loc = mouseX * (res * size);
+    int Y = mouseY * 128;
     
-    if (newpt) lastMouseLoc = loc;
+    if (newpt) {
+        lastMouseLoc = loc;
+        lastMouseY = Y;
+    }
+    
+    if (loc == lastMouseLoc) lastMouseY = Y;
     
     do {
+        if (loc > lastMouseLoc) {
+            lastMouseY += (double)(lastMouseY - Y) / (lastMouseLoc - loc) + .5;
+            lastMouseLoc++;
+        } 
+        if (loc < lastMouseLoc) {
+            lastMouseY -= (double)(lastMouseY - Y) / (lastMouseLoc - loc) - .5;
+            lastMouseLoc--;
+        }
         lfoSample = customWave.at(lastMouseLoc);
-        lfoSample.value = mouseY * 128;
+        lfoSample.value = lastMouseY;
         customWave.replace(lastMouseLoc, lfoSample);
-        if (loc > lastMouseLoc) lastMouseLoc++; 
-        if (loc < lastMouseLoc) lastMouseLoc--;
     } while (lastMouseLoc != loc);
 }
 
@@ -322,12 +335,12 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
     int loc = mouseX * (res * size);
     
     do {
-	    if (waveFormIndex == 5) {
-	        lfoSample = customWave.at(lastMouseLoc);
-	        lfoSample.muted = on;
-	        customWave.replace(lastMouseLoc, lfoSample);
-		}
-		muteMask.replace(lastMouseLoc, on);
+        if (waveFormIndex == 5) {
+            lfoSample = customWave.at(lastMouseLoc);
+            lfoSample.muted = on;
+            customWave.replace(lastMouseLoc, lfoSample);
+        }
+        muteMask.replace(lastMouseLoc, on);
         if (loc > lastMouseLoc) lastMouseLoc++; 
         if (loc < lastMouseLoc) lastMouseLoc--;
     } while (lastMouseLoc != loc);
