@@ -402,42 +402,42 @@ Mausrad: Verschieben des Offsets</translation>
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="649"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="649"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="649"/>
+        <location filename="../lfowidget.cpp" line="650"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="650"/>
+        <location filename="../lfowidget.cpp" line="651"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="650"/>
+        <location filename="../lfowidget.cpp" line="651"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="650"/>
+        <location filename="../lfowidget.cpp" line="651"/>
         <source>Custom</source>
         <translation>Frei</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="812"/>
+        <location filename="../lfowidget.cpp" line="811"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="831"/>
+        <location filename="../lfowidget.cpp" line="830"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
@@ -1025,12 +1025,12 @@ Die Änderungen speichern?</translation>
         <translation>An&amp;schlag</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="865"/>
+        <location filename="../seqwidget.cpp" line="866"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="884"/>
+        <location filename="../seqwidget.cpp" line="885"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
@@ -1191,7 +1191,7 @@ Die Änderungen speichern?</translation>
         <translation type="obsolete">Rechteck</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="684"/>
+        <location filename="../seqwidget.cpp" line="685"/>
         <source>Custom</source>
         <translation>Frei</translation>
     </message>

@@ -60,6 +60,7 @@ class MidiLfo : public QObject  {
     ~MidiLfo();
     void getData(QVector<LfoSample> *lfoData);  
     void getNextFrame(QVector<LfoSample> *p_lfoData);
+    bool toggleMutePoint(double);
     
   public slots:  
     void updateFrequency(int);
@@ -70,7 +71,7 @@ class MidiLfo : public QObject  {
     void muteLfo(bool); //set mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double, bool);
-    void toggleMutePoint(double);
+    void setMutePoint(double, bool);
     void resizeAll();
     void copyToCustom();
     void resetFramePtr();

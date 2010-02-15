@@ -63,7 +63,7 @@ class SeqWidget : public QWidget
  
     MidiSeq *midiSeq;
     QVector<SeqSample> seqData;
-    bool modified;
+    bool modified, lastMute;
     bool recordMode;
 
   public:

@@ -40,6 +40,7 @@ class MidiSeq : public QObject  {
 
   private:
     double queueTempo;
+    int lastMouseLoc;
     int clip(int value, int min, int max, bool *outOfRange);
      
   public:
@@ -60,6 +61,7 @@ class MidiSeq : public QObject  {
     ~MidiSeq();
     bool isSeq(snd_seq_event_t *evIn);
     void getData(QVector<SeqSample> *seqData);  
+    bool toggleMutePoint(double);
     
   public slots:  
     void updateVelocity(int);
@@ -69,7 +71,7 @@ class MidiSeq : public QObject  {
     void muteSeq(bool); //set mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double);
-    void toggleMutePoint(double);
+    void setMutePoint(double, bool);
     void resizeAll();
     void copyToCustom();
     void setRecordedNote(int note);

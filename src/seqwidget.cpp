@@ -306,6 +306,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     updateVelocity(64);
     updateWaveForm(0);
     ccList.clear();
+    lastMute = false;
 }
 
 SeqWidget::~SeqWidget()
@@ -824,29 +825,29 @@ void SeqWidget::copyToCustom()
 
 void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
-    if (buttons == 1) {
+    if (buttons == 2) {
+        midiSeq->setMutePoint(mouseX, lastMute);
+    } 
+    else {
         midiSeq->setCustomWavePoint(mouseX, mouseY);
-        midiSeq->getData(&seqData);
         seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-        seqScreen->updateScreen(seqData);
-        modified = true;
-        }
+    }
+    midiSeq->getData(&seqData);
+    seqScreen->updateScreen(seqData);
+    modified = true;
 }
 
 void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
-        midiSeq->toggleMutePoint(mouseX);
-        midiSeq->getData(&seqData);
-        seqScreen->updateScreen(seqData);
-        modified = true;
+        lastMute = midiSeq->toggleMutePoint(mouseX);
     } else {
         midiSeq->setCustomWavePoint(mouseX, mouseY);
-        midiSeq->getData(&seqData);
         seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-        seqScreen->updateScreen(seqData);
-        modified = true;
     }
+    midiSeq->getData(&seqData);
+    seqScreen->updateScreen(seqData);
+    modified = true;
 }
 
 bool SeqWidget::isModified()

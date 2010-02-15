@@ -287,6 +287,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidg
     updateAmp(64);
     
     ccList.clear();
+    lastMute = false;
 }
 
 LfoWidget::~LfoWidget()
@@ -760,32 +761,30 @@ void LfoWidget::newCustomOffset()
 
 void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
-    if ((buttons == 1) && (waveFormBox->currentIndex() == 5)) {
+    if (buttons == 2) {
+        midiLfo->setMutePoint(mouseX, lastMute);
+    } 
+    else if (waveFormBox->currentIndex() == 5) {
         midiLfo->setCustomWavePoint(mouseX, mouseY, false);
-        midiLfo->getData(&lfoData);
-        lfoScreen->updateScreen(lfoData);
         newCustomOffset();
-        modified = true;
     }
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
-        midiLfo->toggleMutePoint(mouseX);
-        midiLfo->getData(&lfoData);
-        lfoScreen->updateScreen(lfoData);
-        modified = true;
+        lastMute = midiLfo->toggleMutePoint(mouseX);
     } 
-    else {
-        if (waveFormBox->currentIndex() == 5) {
-            midiLfo->setCustomWavePoint(mouseX, mouseY, true);
-            midiLfo->getData(&lfoData);
-            lfoScreen->updateScreen(lfoData);
-            newCustomOffset();
-            modified = true;
-        }
+    else if (waveFormBox->currentIndex() == 5) {
+        midiLfo->setCustomWavePoint(mouseX, mouseY, true);
+        newCustomOffset();
     }
+    midiLfo->getData(&lfoData);
+    lfoScreen->updateScreen(lfoData);
+    modified = true;
 }
 
 void LfoWidget::mouseWheel(int step)

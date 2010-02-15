@@ -64,7 +64,7 @@ class LfoWidget : public QWidget
  
     MidiLfo *midiLfo;
     QVector<LfoSample> lfoData;
-    bool modified;
+    bool modified, lastMute;
     
   public:
     QString name;

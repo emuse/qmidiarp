@@ -204,15 +204,27 @@ void MidiSeq::copyToCustom()
     customWave = seqData;
 }
 
-void MidiSeq::toggleMutePoint(double mouseX)
+bool MidiSeq::toggleMutePoint(double mouseX)
 {
     SeqSample seqSample;
     bool m;
-    int loc = mouseX * res * size;
+    int loc = mouseX * (res * size);
     
     m = muteMask.at(loc);
     muteMask.replace(loc, !m);
     seqSample = customWave.at(loc);
     seqSample.muted = !m;
     customWave.replace(loc, seqSample);
+    return(!m);
+}
+
+void MidiSeq::setMutePoint(double mouseX, bool on)
+{
+    SeqSample seqSample;
+    int loc = mouseX * (res * size);
+    
+    seqSample = customWave.at(loc);
+    seqSample.muted = on;
+    customWave.replace(loc, seqSample);
+    muteMask.replace(loc, on);
 }

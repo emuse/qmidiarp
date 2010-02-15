@@ -230,7 +230,7 @@ void MidiLfo::updateQueueTempo(int val)
 void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
 {
     LfoSample lfoSample;
-    int loc = mouseX * res * size;
+    int loc = mouseX * (res * size);
     
     if (newpt) lastMouseLoc = loc;
     
@@ -299,11 +299,11 @@ void MidiLfo::updateCustomWaveOffset(int cwoffs)
     cwmin = cwoffs;
 }
 
-void MidiLfo::toggleMutePoint(double mouseX)
+bool MidiLfo::toggleMutePoint(double mouseX)
 {
     LfoSample lfoSample;
     bool m;
-    int loc = mouseX * res * size;
+    int loc = mouseX * (res * size);
     
     m = muteMask.at(loc);
     muteMask.replace(loc, !m);
@@ -312,6 +312,25 @@ void MidiLfo::toggleMutePoint(double mouseX)
         lfoSample.muted = !m;
         customWave.replace(loc, lfoSample);
     }
+    lastMouseLoc = loc;
+    return(!m);
+}
+
+void MidiLfo::setMutePoint(double mouseX, bool on)
+{
+    LfoSample lfoSample;
+    int loc = mouseX * (res * size);
+    
+    do {
+	    if (waveFormIndex == 5) {
+	        lfoSample = customWave.at(lastMouseLoc);
+	        lfoSample.muted = on;
+	        customWave.replace(lastMouseLoc, lfoSample);
+		}
+		muteMask.replace(lastMouseLoc, on);
+        if (loc > lastMouseLoc) lastMouseLoc++; 
+        if (loc < lastMouseLoc) lastMouseLoc--;
+    } while (lastMouseLoc != loc);
 }
 
 void MidiLfo::resetFramePtr()
