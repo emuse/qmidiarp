@@ -1,3 +1,6 @@
+2010-02-16  Frank Kober  <goemusic@yahoo.fr>
+	* midilfo.cpp: fixed data storage inconsistency
+
 2010-02-15  Frank Kober  <goemusic@yahoo.fr>
 	* midilfo.*: hi-res drawing interpolation slightly improved
 

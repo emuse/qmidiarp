@@ -51,6 +51,7 @@ MidiLfo::MidiLfo()
             lt+=step;
     }
     muteMask.fill(false, size * res);
+    lfoData.clear();
     lastMouseLoc = 0;
     lastMouseY = 0;
     frameptr = 0;
@@ -278,11 +279,8 @@ void MidiLfo::resizeAll()
 
 void MidiLfo::copyToCustom()
 {
-    QVector<LfoSample> lfoData;
     int m;
     
-    lfoData.clear();
-    getData(&lfoData);
     m = lfoData.count();
     lfoData.remove(m - 1);
     customWave = lfoData;
@@ -304,9 +302,8 @@ void MidiLfo::updateCustomWaveOffset(int cwoffs)
     if (cl) return;
     
     for (l1 = 0; l1 < count; l1++) {
-        lfoSample.value = customWave.at(l1).value + cwoffs - cwmin;
-        lfoSample.tick = customWave.at(l1).tick;
-        lfoSample.muted = customWave.at(l1).muted;
+        lfoSample = customWave.at(l1);
+        lfoSample.value += cwoffs - cwmin;
         customWave.replace(l1, lfoSample);
     }
     cwmin = cwoffs;
