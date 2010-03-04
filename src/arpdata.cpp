@@ -24,9 +24,6 @@ ArpData::~ArpData(){
 void ArpData::addMidiArp(MidiArp *midiArp)
 {
     midiArpList.append(midiArp);
-    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
-        seqDriver->setQueueStatus(true);
-    }
 }
 
 void ArpData::addArpWidget(ArpWidget *arpWidget)
@@ -85,9 +82,6 @@ ArpWidget *ArpData::arpWidget(int index)
 void ArpData::addMidiLfo(MidiLfo *midiLfo)
 {
     midiLfoList.append(midiLfo);
-    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
-        seqDriver->setQueueStatus(true);
-    }
 }
 
 void ArpData::addLfoWidget(LfoWidget *lfoWidget)
@@ -138,9 +132,6 @@ LfoWidget *ArpData::lfoWidget(int index)
 void ArpData::addMidiSeq(MidiSeq *midiSeq)
 {
     midiSeqList.append(midiSeq);
-    if (seqDriver->runQueueIfArp && !seqDriver->use_midiclock) {
-        seqDriver->setQueueStatus(true);
-    }
 }
 
 void ArpData::addSeqWidget(SeqWidget *seqWidget)
