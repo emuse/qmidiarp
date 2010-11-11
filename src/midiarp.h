@@ -26,7 +26,7 @@ class MidiArp : public QThread  {
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
     int currentLength;
     bool newCurrent, newNext, chordMode;
-    int arpTick, lastArpTick;
+    int arpTick;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
     double queueTempo;
     QVector<int> sustainBufferList;
@@ -66,6 +66,7 @@ class MidiArp : public QThread  {
     void removeNote(int *noteptr, int tick, int keep_rel); // Remove input Note from Arpeggio
     void getCurrentNote(int askedTick);
     void getNextNote(int askedTick);
+    int getNextNoteTick();
     void initArpTick(int currentTick);
     void foldReleaseTicks(int currentTick);
     void newRandomValues();

@@ -374,7 +374,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 void ArpScreen::updateArpScreen(const QString& pattern)
 {
     a_pattern = pattern;
-    pattern_updated = 4;
+    pattern_updated = 2;
     update();
 }
 

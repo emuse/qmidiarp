@@ -34,7 +34,6 @@ MidiArp::MidiArp()
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;
-    lastArpTick = 0;
     chordMode = false;
     randomTick = 0;
     randomVelocity = 0;
@@ -247,8 +246,6 @@ void MidiArp::getNote(int *tick, int note[],
     bool gotCC, outOfRange, pause;
     double attackfn, releasefn;
     
-    *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0,
-            1000, &outOfRange);
 
     chordIndex = 0;
     tmpIndex[0] = 0;
@@ -257,7 +254,6 @@ void MidiArp::getNote(int *tick, int note[],
     pause = false;
 
     if (!patternIndex) initLoop();
-
     do {  
         if (patternLen) 
             c = (pattern.at(patternIndex)); 
@@ -372,10 +368,11 @@ void MidiArp::getNote(int *tick, int note[],
     *length = clip(len * tempo * (double)TICKS_PER_QUARTER
             * (1.0 + 0.005 * (double)(randomLength + grooveTmp)), 2,
             1000000,  &outOfRange);
-    lastArpTick = arpTick;
     grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick;
     arpTick += tempo * (double)TICKS_PER_QUARTER
         * (1.0 + 0.005 * (double)grooveTmp);
+    *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0,
+            1000, &outOfRange);
 
     if (!(patternLen && noteCount) || pause || isMuted) {
         velocity[0] = 0;
@@ -427,7 +424,7 @@ void MidiArp::getNextNote(int askedTick)
     returnNote.clear();
     returnVelocity.clear();
 
-    askedTick = nextNoteTick;
+    nextNoteTick = askedTick;
     while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
         returnNote.append(nextNote[l1]);
         returnVelocity.append(nextVelocity[l1]);
@@ -437,6 +434,11 @@ void MidiArp::getNextNote(int askedTick)
     returnLength = nextLength;
     returnIsNew = newNext;
     newNext = false;
+}
+
+int MidiArp::getNextNoteTick()
+{
+    return(nextNoteTick);
 }
 
 void MidiArp::getCurrentNote(int askedTick)
@@ -474,6 +476,7 @@ void MidiArp::updateNotes(int currentTick)
     //allow 8 ticks of tolerance for echo tick for external sync
     if ((currentTick + 8) >= currentNoteTick) {
         currentNoteTick = nextNoteTick;
+        getNote(&nextNoteTick, nextNote, nextVelocity, &nextLength);
         while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) { 
             currentNote[l1] = nextNote[l1];
             currentVelocity[l1] = nextVelocity[l1];
@@ -482,7 +485,6 @@ void MidiArp::updateNotes(int currentTick)
         currentNote[l1] = -1; // mark end of chord
         currentLength = nextLength;
         newCurrent = true;
-        getNote(&nextNoteTick, nextNote, nextVelocity, &nextLength);
         newNext = true;
     } 
 }
@@ -513,7 +515,6 @@ void MidiArp::initArpTick(int currentTick)
 {
     mutex.lock();
     arpTick = currentTick;
-    lastArpTick = arpTick;
     currentVelocity[0] = 0;
     currentNoteTick = 0;
     nextNoteTick  = 0;

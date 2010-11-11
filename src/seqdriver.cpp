@@ -32,7 +32,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
                         SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
                         SND_SEQ_PORT_TYPE_APPLICATION);
         if (portid_in < 0) {
-            qWarning("Error creating sequencer port(%s).",
+            qWarning("Error creating sequencer port (%s).",
                     snd_strerror(portid_in));
             exit(1);
         }
@@ -49,12 +49,14 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
         use_jacksync = false;
         tempo = 100;
         internal_tempo = 100;
+        schedDelayTicks = 8;
         midiTick = 0;
         use_midiclock = false;
         m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
         int l1 = 0;
         for (l1 = 0; l1 < 20; l1++) lastLfoTick[l1] = 0;
         for (l1 = 0; l1 < 20; l1++) lastSeqTick[l1] = 0;
+        for (l1 = 0; l1 < 20; l1++) nextNoteTick[l1] = 0;
         nextLfoTick = 0;
         nextSeqTick = 0;
         nextEchoTick = 0;
@@ -98,11 +100,11 @@ void SeqDriver::run()
 {
     int l1, l2;
     QVector<int> note, velocity;
+    int noteTick = 0;
     int length, ccnumber;
     int lfoccnumber, lfochannel, lfoport;
     int seqlength, seqchannel, seqport, seqtransp, seqvel;
     snd_seq_event_t *evIn, evOut;
-    int noteTick;
     bool unmatched, foundEcho, isNew;
     bool fallback = false;
     int pollR = 0;
@@ -166,17 +168,17 @@ void SeqDriver::run()
                     tick = deltaToTick(evIn->time.time);
                 }
                 
-                if (tick < 0) break;
                 
-                                //~ printf("       tick %d\n     ",tick);
+                                printf("       tick %d     \n",tick);
                                 //~ printf("nextLfoTick %d  ",nextLfoTick);
                                 //~ printf("nextSeqTick %d  ",nextSeqTick);
-                                //~ printf("nextEchoTick %d  ",nextEchoTick);
+                                //~ printf("nextEchoTick %d  \n",nextEchoTick);
                                 //~ printf("midiTick %d   ",midiTick);
                                 //~ printf("m_ratio %f  ",m_ratio);
                                 //~ printf("Jack Beat %d\n", jpos.beat);
                                 //~ printf("Jack Frame %d \n ", (int)jpos.frame);
                                 //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
+                if (tick < 0) break;
                 emit nextStep(tick);
                 startQueue = false;
                 foundEcho = false;
@@ -212,13 +214,13 @@ void SeqDriver::run()
                             }
                             lastLfoTick[l1] += lfoPacketSize[l1];
                             lfoPacketSize[l1] = lfoData.last().tick;
-                            if (!l1) lfoMinPacketSize = lfoPacketSize[l1]; 
+                            if (!l1) 
+                                lfoMinPacketSize = lfoPacketSize[l1]; 
                             else if (lfoPacketSize[l1] < lfoMinPacketSize) 
                                 lfoMinPacketSize = lfoPacketSize[l1];
                         }
                     }
                     nextLfoTick += lfoMinPacketSize;
-                    nextEchoTick = nextLfoTick;
     
                     // next echo request for LFO
                     snd_seq_ev_clear(evIn);
@@ -262,13 +264,13 @@ void SeqDriver::run()
                             }
                             lastSeqTick[l1] += seqPacketSize[l1];
                             seqPacketSize[l1] = seqData.last().tick;
-                            if (!l1) seqMinPacketSize = seqPacketSize[l1]; 
+                            if (!l1) 
+                                seqMinPacketSize = seqPacketSize[l1]; 
                             else if (seqPacketSize[l1] < seqMinPacketSize) 
                                 seqMinPacketSize = seqPacketSize[l1];
                         }
                     }
                     nextSeqTick += seqMinPacketSize;
-                    nextEchoTick = nextSeqTick;
     
                     // next echo request for Seq
                     if ((((int)nextSeqTick != nextLfoTick) || (!nextLfoTick))) {
@@ -282,56 +284,47 @@ void SeqDriver::run()
                 }
                 
                 //Arp Note queueing
-                for (l1 = 0; l1 < midiArpList->count(); l1++) 
-                {
-                    midiArpList->at(l1)->newRandomValues();
-                    midiArpList->at(l1)->updateQueueTempo(tempo);
-                    midiArpList->at(l1)->getCurrentNote(tick);
-                    note = midiArpList->at(l1)->returnNote;
-                    velocity = midiArpList->at(l1)->returnVelocity;
-                    noteTick = midiArpList->at(l1)->returnTick;
-                    length = midiArpList->at(l1)->returnLength;
-                    isNew = midiArpList->at(l1)->returnIsNew;
-                    if (!velocity.isEmpty()) {
-                        if (isNew && velocity.at(0)) 
-                        {
-                            l2 = 0;
-                            while(note.at(l2) >= 0) 
-                            {
-                                snd_seq_ev_clear(&evOut);
-                                snd_seq_ev_set_note(&evOut, 0, note.at(l2),
-                                        velocity.at(l2), (int)length*4);
-                                evOut.data.control.channel = 
-                                    midiArpList->at(l1)->channelOut;
-                                snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                        tickToDelta(noteTick));
-                                snd_seq_ev_set_subs(&evOut);  
-                                snd_seq_ev_set_source(&evOut,
-                                        portid_out[midiArpList->at(l1)->portOut]);
-                                snd_seq_event_output_direct(seq_handle, &evOut);
-                                l2++;
-        
-                            } 
-                        }
-                    }
-    
-                    //set Echo tick for next request
-                    midiArpList->at(l1)->getNextNote(noteTick);
-                    if (midiArpList->at(l1)->returnIsNew) {
-                        if (!foundEcho) 
-                        {
-                            foundEcho = true;
-                            nextEchoTick = noteTick;
-                        } else 
-                        {
-                            if (noteTick < nextEchoTick+4) 
-                            {
-                                nextEchoTick = noteTick;
+                if (tick >= nextEchoTick) {
+                    for (l1 = 0; l1 < midiArpList->count(); l1++) {
+                        if (tick + schedDelayTicks >= nextNoteTick[l1]) {
+                            midiArpList->at(l1)->newRandomValues();
+                            midiArpList->at(l1)->updateQueueTempo(tempo);
+                            midiArpList->at(l1)->getCurrentNote(tick);
+                            note = midiArpList->at(l1)->returnNote;
+                            nextNoteTick[l1] = midiArpList->at(l1)->getNextNoteTick();
+                            velocity = midiArpList->at(l1)->returnVelocity;
+                            noteTick = midiArpList->at(l1)->returnTick;
+                            length = midiArpList->at(l1)->returnLength;
+                            isNew = midiArpList->at(l1)->returnIsNew;
+                            if (!velocity.isEmpty()) {
+                                if (isNew && velocity.at(0)) {
+                                    l2 = 0;
+                                    while(note.at(l2) >= 0) {
+                                        snd_seq_ev_clear(&evOut);
+                                        snd_seq_ev_set_note(&evOut, 0, note.at(l2),
+                                                velocity.at(l2), (int)length*4);
+                                        evOut.data.control.channel = 
+                                            midiArpList->at(l1)->channelOut;
+                                        snd_seq_ev_schedule_real(&evOut, queue_id, 0,
+                                                tickToDelta(noteTick));
+                                        snd_seq_ev_set_subs(&evOut);  
+                                        snd_seq_ev_set_source(&evOut,
+                                                portid_out[midiArpList->at(l1)->portOut]);
+                                        snd_seq_event_output_direct(seq_handle, &evOut);
+                                        l2++;
+                
+                                    } 
+                                }
                             }
                         }
+                        if (!l1) 
+                            nextEchoTick = nextNoteTick[l1] - schedDelayTicks; 
+                        else if (nextNoteTick[l1] < nextEchoTick + schedDelayTicks) 
+                            nextEchoTick = nextNoteTick[l1] - schedDelayTicks;
                     }
                 }
-    
+                //next echo request for Arp
+                if (0 > nextEchoTick) nextEchoTick = 0;
                 if ((((int)nextEchoTick != nextLfoTick) || (!nextLfoTick)) &&
                  (((int)nextEchoTick != nextSeqTick) || (!nextSeqTick))) {
                     snd_seq_ev_clear(evIn);
@@ -341,9 +334,8 @@ void SeqDriver::run()
                     snd_seq_ev_set_dest(evIn, clientid, portid_in);
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
-    
-            } else 
-            {
+            }
+            else {
                 emit midiEvent(evIn);
                 unmatched = true;
     
@@ -375,7 +367,8 @@ void SeqDriver::run()
                             unmatched = false;
                             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                                     && (evIn->data.note.velocity > 0)) {
-                                midiArpList->at(l1)->addNote(evIn->data.note.note, evIn->data.note.velocity, tick);
+                                midiArpList->at(l1)->addNote(evIn->data.note.note, 
+                                                evIn->data.note.velocity, tick);
                             } else {
                                 midiArpList->at(l1)->removeNote(evIn->data.note.note, tick, 1);
                             }
@@ -476,10 +469,9 @@ void SeqDriver::setQueueStatus(bool run)
         snd_seq_drain_output(seq_handle);   
         snd_seq_ev_clear(&evOut);
         for (l1 = 0; l1 < 20; l1++) {
+            nextNoteTick[l1] = 0;
             lastLfoTick[l1] = 0;
             lfoPacketSize[l1] = 0;
-        }
-        for (l1 = 0; l1 < 20; l1++) {
             lastSeqTick[l1] = 0;
             seqPacketSize[l1] = 0;
         }
@@ -510,14 +502,13 @@ void SeqDriver::setQueueStatus(bool run)
         }
 
         tick = 0;
-        
         evOut.type = SND_SEQ_EVENT_NOTEOFF;
         evOut.data.note.note = 0;
         evOut.data.note.velocity = 0;
         snd_seq_ev_schedule_real(&evOut, queue_id,  0, tickToDelta(0));
         snd_seq_ev_set_dest(&evOut, clientid, portid_in);
         snd_seq_event_output_direct(seq_handle, &evOut);
-
+        
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->initArpTick(tick);
         }
@@ -603,6 +594,7 @@ void SeqDriver::setUseJackTransport(bool on)
                 this, SLOT(runQueue(bool)));
         connect(jackSync, SIGNAL(j_shutdown()), 
                 this, SLOT(jackShutdown()));
+        use_jacksync = true;
                 
         if (jackSync->initJack()) {
             emit jackShutdown(false);
@@ -612,7 +604,6 @@ void SeqDriver::setUseJackTransport(bool on)
             emit jackShutdown(false);
             return;
         }
-        use_jacksync = true;
     }
     else {
         if (use_jacksync) {

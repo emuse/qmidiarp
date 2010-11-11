@@ -32,9 +32,10 @@ class SeqDriver : public QThread {
         bool modified;
         bool midi_controllable;
         bool threadAbort;
-        int tick, nextEchoTick, jack_offset_tick;
+        int tick, nextEchoTick, jack_offset_tick, schedDelayTicks;
         int lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
+        int nextNoteTick[20];
         int tempo, internal_tempo;
         QVector<LfoSample> lfoData;
         QVector<SeqSample> seqData;
