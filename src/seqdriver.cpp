@@ -169,7 +169,7 @@ void SeqDriver::run()
                 }
                 
                 
-                                printf("       tick %d     \n",tick);
+                                //~ printf("       tick %d     \n",tick);
                                 //~ printf("nextLfoTick %d  ",nextLfoTick);
                                 //~ printf("nextSeqTick %d  ",nextSeqTick);
                                 //~ printf("nextEchoTick %d  \n",nextEchoTick);
