@@ -1,3 +1,18 @@
+2010-11-11  Frank Kober  <goemusic@yahoo.fr>
+	* midilfo.*, mainwindow.cpp, arpdata.*: alsalib headers removed
+	* seqdriver.*, midiarp.*, arpscreen.cpp: fixed keyboard input latency.
+	midiarp reacted very slowly to input note events. It basically took 
+	two arpeggio steps to hear changes played on the keyboard affecting 
+	the arpeggio:
+	  o Output notes were scheduled very early into the alsa queue, i.e. 
+	    upon the last output note (1 step of latency)
+	  o The scheduled notes took into account the note buffer state at 
+	    the step before (1 step of latency).
+	Both delays are now squeezed. 1) Notes are scheduled only 8 alsa ticks
+	before they go out. 2) The note buffer state is taken into account
+	at the time they are scheduled. The arp is now playable live without 
+	hicks.
+
 2010-02-16  Frank Kober  <goemusic@yahoo.fr>
 	* midilfo.cpp: fixed data storage inconsistency
 
