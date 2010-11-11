@@ -20,7 +20,6 @@
  */
 
 #include <cmath>
-#include <alsa/asoundlib.h>
 #include "midilfo.h"
 
 

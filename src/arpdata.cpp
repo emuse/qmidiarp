@@ -3,7 +3,6 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
-#include <alsa/asoundlib.h>
 
 #include "seqdriver.h"
 #include "arpdata.h"

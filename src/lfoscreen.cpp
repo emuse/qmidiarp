@@ -28,8 +28,6 @@
 #include <QSizePolicy>
 #include <QSize>
 
-#include <alsa/asoundlib.h>
-
 #include "lfoscreen.h"
 #include "arpdata.h"
 

@@ -25,7 +25,7 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-#include <alsa/asoundlib.h>
+
 #include <main.h>
 
     struct LfoSample {

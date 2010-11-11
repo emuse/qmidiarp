@@ -10,8 +10,6 @@
 #include <QString>
 #include <QToolBar>
 
-#include <alsa/asoundlib.h>
-
 #include "logwidget.h"
 #include "arpdata.h"
 #include "midicctable.h"

@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QDockWidget>
 #include <QList>
-#include <alsa/asoundlib.h>
 #include "seqdriver.h"
 #include "midiarp.h"
 #include "arpwidget.h"
