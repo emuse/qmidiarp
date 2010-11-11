@@ -186,6 +186,18 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidg
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
+            
+    patternPresetBox->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    QAction *presetSwitchLearnAction = new QAction(tr("MIDI &Learn"), this);
+    patternPresetBox->addAction(presetSwitchLearnAction);
+    connect(presetSwitchLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnPresetSwitch()));
+    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    cancelMidiLearnAction->setEnabled(false);
+    patternPresetBox->addAction(cancelMidiLearnAction);
+    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    QAction *presetSwitchForgetAction = new QAction(tr("MIDI &Forget"), this);
+    patternPresetBox->addAction(presetSwitchForgetAction);
+    connect(presetSwitchForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetPresetSwitch()));
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames; 
@@ -676,14 +688,16 @@ void ArpWidget::updateText(const QString& newtext)
 
 void ArpWidget::selectPatternPreset(int val)
 {
-    if (val) {
-        patternText->setText(patternPresets.at(val));
-        patternPresetBox->setCurrentIndex(val);
-        textStoreAction->setEnabled(false);
-        textRemoveAction->setEnabled(true);
-    } else
-        textRemoveAction->setEnabled(false);
-    modified = true;
+    if (val < patternPresets.count()) {
+        if (val) {
+            patternText->setText(patternPresets.at(val));
+            patternPresetBox->setCurrentIndex(val);
+            textStoreAction->setEnabled(false);
+            textRemoveAction->setEnabled(true);
+        } else
+            textRemoveAction->setEnabled(false);
+        modified = true;
+    }
 }
 
 void ArpWidget::loadPatternPresets()
@@ -829,6 +843,8 @@ void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
     switch (ctrlID) {
         case 0: midiCC.name = "MuteToggle";
         break;
+        case 1: midiCC.name = "PresetSwitch";
+        break;
         default: midiCC.name = "Unknown";
     }
     midiCC.ID = ctrlID;
@@ -882,6 +898,18 @@ void ArpWidget::midiLearnMute()
 void ArpWidget::midiForgetMute()
 {
     removeMidiCC(0, 0, -1);
+}
+
+void ArpWidget::midiLearnPresetSwitch()
+{
+    emit setMidiLearn(parentDockID, ID, 1);
+    cancelMidiLearnAction->setEnabled(true);
+    qWarning("Requesting Midi Learn for PresetSwitch");
+}
+
+void ArpWidget::midiForgetPresetSwitch()
+{
+    removeMidiCC(1, 0, -1);
 }
 
 void ArpWidget::midiLearnCancel()

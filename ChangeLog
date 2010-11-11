@@ -12,6 +12,7 @@
 	before they go out. 2) The note buffer state is taken into account
 	at the time they are scheduled. The arp is now playable live without 
 	hicks.
+	* arpwidget.*, arpdata.cpp: presetSelection added to MIDI controllables
 
 2010-02-16  Frank Kober  <goemusic@yahoo.fr>
 	* midilfo.cpp: fixed data storage inconsistency

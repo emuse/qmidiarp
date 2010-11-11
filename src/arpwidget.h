@@ -104,6 +104,8 @@ class ArpWidget : public QWidget
     void removeMidiCC(int ctrlID, int ccnumber, int channel);
     void midiLearnMute();
     void midiForgetMute();
+    void midiLearnPresetSwitch();
+    void midiForgetPresetSwitch();
     void midiLearnCancel();
 };
   

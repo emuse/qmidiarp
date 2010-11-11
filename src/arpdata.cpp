@@ -315,6 +315,12 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(!m);
                                         return;
                                     }
+                        case 1: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                arpWidget(l1)->selectPatternPreset(sval);
+                                return;
+                        break;
                                 }
                                 else {
                                     if (value == max) {

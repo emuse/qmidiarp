@@ -53,7 +53,7 @@
         <translation type="obsolete">Arpège dans l&apos;accord</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="215"/>
+        <location filename="../arpwidget.cpp" line="227"/>
         <source>0..9  note played on keyboard, ascending order
 ( ) chord mode on/off
   + -  octave up/down
@@ -70,42 +70,42 @@ d h durée de note augm/dim
  p pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="272"/>
+        <location filename="../arpwidget.cpp" line="284"/>
         <source>&amp;Attack (s)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="276"/>
+        <location filename="../arpwidget.cpp" line="288"/>
         <source>&amp;Release (s)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="241"/>
+        <location filename="../arpwidget.cpp" line="253"/>
         <source>Random</source>
         <translation>Randomisation</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="194"/>
+        <location filename="../arpwidget.cpp" line="206"/>
         <source>Repeat mode</source>
         <translation>Mode de répétition</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="245"/>
+        <location filename="../arpwidget.cpp" line="257"/>
         <source>&amp;Shift</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="250"/>
+        <location filename="../arpwidget.cpp" line="262"/>
         <source>Vel&amp;ocity</source>
         <translation>Vél&amp;ocité</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="255"/>
+        <location filename="../arpwidget.cpp" line="267"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="269"/>
+        <location filename="../arpwidget.cpp" line="281"/>
         <source>Envelope</source>
         <translation>Enveloppe</translation>
     </message>
@@ -114,27 +114,27 @@ d h durée de note augm/dim
         <translation type="obsolete">Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="700"/>
+        <location filename="../arpwidget.cpp" line="714"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="736"/>
+        <location filename="../arpwidget.cpp" line="750"/>
         <source>%1: Store pattern</source>
         <translation>%1: Mémoriser le motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="737"/>
+        <location filename="../arpwidget.cpp" line="751"/>
         <source>New pattern</source>
         <translation>Nouveau motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="737"/>
+        <location filename="../arpwidget.cpp" line="751"/>
         <source>Arp pattern</source>
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="773"/>
+        <location filename="../arpwidget.cpp" line="787"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
@@ -175,16 +175,19 @@ d h durée de note augm/dim
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="107"/>
+        <location filename="../arpwidget.cpp" line="191"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Apprendre du MIDI</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="110"/>
+        <location filename="../arpwidget.cpp" line="194"/>
         <source>Cancel MIDI &amp;Learning</source>
         <translation>&amp;Annuler l&apos;apprentissage</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="114"/>
+        <location filename="../arpwidget.cpp" line="198"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Oublier les contrôleurs MIDI</translation>
     </message>
@@ -194,27 +197,27 @@ d h durée de note augm/dim
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="192"/>
+        <location filename="../arpwidget.cpp" line="204"/>
         <source>Static</source>
         <translation>Statique</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="192"/>
+        <location filename="../arpwidget.cpp" line="204"/>
         <source>Up</source>
         <translation>Monte</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="192"/>
+        <location filename="../arpwidget.cpp" line="204"/>
         <source>Down</source>
         <translation>Descend</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="798"/>
+        <location filename="../arpwidget.cpp" line="812"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="817"/>
+        <location filename="../arpwidget.cpp" line="831"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
