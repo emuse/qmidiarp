@@ -59,7 +59,7 @@ MidiLfo::MidiLfo()
 MidiLfo::~MidiLfo(){
 }
 
-void MidiLfo::muteLfo(bool on)
+void MidiLfo::setMuted(bool on)
 {
     isMuted = on;
 }

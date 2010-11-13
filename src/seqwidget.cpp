@@ -38,8 +38,8 @@
 #include "config.h"
 
 
-SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidget *parent):
-    QWidget(parent), midiSeq(p_midiSeq), modified(false)
+SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
+    QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -118,7 +118,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
 
     muteOut->addAction(cancelMidiLearnAction);
 
-    connect(muteOut, SIGNAL(toggled(bool)), midiSeq, SLOT(muteSeq(bool)));
+    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
@@ -158,13 +158,13 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"), this);
 
-    seqScreen = new SeqScreen(this); 
-    seqScreen->setToolTip(
+    screen = new SeqScreen(this); 
+    screen->setToolTip(
         tr("Right button to mute points, left button to draw custom wave"));
-    seqScreen->setMinimumHeight(SEQSCREEN_MINIMUM_HEIGHT);
-    connect(seqScreen, SIGNAL(seqMouseMoved(double, double, int)), this,
+    screen->setMinimumHeight(SEQSCREEN_MINIMUM_HEIGHT);
+    connect(screen, SIGNAL(seqMouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
-    connect(seqScreen, SIGNAL(seqMousePressed(double, double, int)), this,
+    connect(screen, SIGNAL(seqMousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
             
     QLabel *waveFormBoxLabel = new QLabel(tr("&Sequence"), seqBox);
@@ -292,16 +292,16 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidg
     paramBoxLayout->setRowStretch(4, 1);
     
     QGridLayout* seqBoxLayout = new QGridLayout;
-    seqBoxLayout->addWidget(seqScreen, 0, 0, 1, 2);
+    seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
     seqBoxLayout->addLayout(paramBoxLayout, 1, 0);
     seqBoxLayout->addLayout(sliderLayout, 1, 1);
     seqBox->setLayout(seqBoxLayout); 
     
-    QHBoxLayout *seqWidgetLayout = new QHBoxLayout;
-    seqWidgetLayout->addWidget(seqBox, 1);
-    seqWidgetLayout->addLayout(inOutBoxLayout, 0);
+    QHBoxLayout *widgetLayout = new QHBoxLayout;
+    widgetLayout->addWidget(seqBox, 1);
+    widgetLayout->addLayout(inOutBoxLayout, 0);
 
-    setLayout(seqWidgetLayout);
+    setLayout(widgetLayout);
     recordMode = false;
     updateVelocity(64);
     updateWaveForm(0);
@@ -313,12 +313,12 @@ SeqWidget::~SeqWidget()
 {
 }
 
-MidiSeq *SeqWidget::getMidiSeq()
+MidiSeq *SeqWidget::getMidiWorker()
 {
-    return (midiSeq);
+    return (midiWorker);
 }
 
-void SeqWidget::writeSeq(QXmlStreamWriter& xml)
+void SeqWidget::writeData(QXmlStreamWriter& xml)
 {
     QByteArray tempArray;
     int l1;
@@ -327,18 +327,18 @@ void SeqWidget::writeSeq(QXmlStreamWriter& xml)
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
         xml.writeStartElement("input");
             xml.writeTextElement("enableNote", QString::number(
-                midiSeq->enableNoteIn));
+                midiWorker->enableNoteIn));
             xml.writeTextElement("enableVelocity", QString::number(
-                midiSeq->enableVelIn));
+                midiWorker->enableVelIn));
             xml.writeTextElement("channel", QString::number(
-                midiSeq->chIn));
+                midiWorker->chIn));
         xml.writeEndElement();
         
         xml.writeStartElement("output");
             xml.writeTextElement("port", QString::number(
-                midiSeq->portOut));
+                midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
-                midiSeq->channelOut));
+                midiWorker->channelOut));
         xml.writeEndElement();
     
         xml.writeStartElement("seqParams");
@@ -347,17 +347,17 @@ void SeqWidget::writeSeq(QXmlStreamWriter& xml)
             xml.writeTextElement("size", QString::number(
                 sizeBox->currentIndex()));
             xml.writeTextElement("velocity", QString::number(
-                midiSeq->vel));
+                midiWorker->vel));
             xml.writeTextElement("noteLength", QString::number(
-                midiSeq->notelength));
+                midiWorker->notelength));
             xml.writeTextElement("transp", QString::number(
-                midiSeq->transp));
+                midiWorker->transp));
         xml.writeEndElement();
       
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiSeq->muteMask.count()) {
-            tempArray.append(midiSeq->muteMask.at(l1));
+        while (l1 < midiWorker->muteMask.count()) {
+            tempArray.append(midiWorker->muteMask.at(l1));
             l1++;
         }
         xml.writeStartElement("muteMask");
@@ -366,8 +366,8 @@ void SeqWidget::writeSeq(QXmlStreamWriter& xml)
         
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiSeq->muteMask.count()) {
-            tempArray.append(midiSeq->customWave.at(l1).value);
+        while (l1 < midiWorker->muteMask.count()) {
+            tempArray.append(midiWorker->customWave.at(l1).value);
             l1++;
         }
         xml.writeStartElement("sequence");
@@ -389,19 +389,19 @@ void SeqWidget::writeSeq(QXmlStreamWriter& xml)
     xml.writeEndElement();
 }
 
-void SeqWidget::writeSeqText(QTextStream& arpText)
+void SeqWidget::writeDataText(QTextStream& arpText)
 {
     int l1 = 0;
-    arpText << midiSeq->enableNoteIn << ' ' 
-        << midiSeq->enableVelIn << ' '
-        << midiSeq->chIn << '\n';
-    arpText << midiSeq->channelOut << ' ' 
-        << midiSeq->portOut << ' '
-        << midiSeq->notelength << '\n';
+    arpText << midiWorker->enableNoteIn << ' ' 
+        << midiWorker->enableVelIn << ' '
+        << midiWorker->chIn << '\n';
+    arpText << midiWorker->channelOut << ' ' 
+        << midiWorker->portOut << ' '
+        << midiWorker->notelength << '\n';
     arpText << resBox->currentIndex() << ' '
         << sizeBox->currentIndex() << ' '
-        << midiSeq->vel << ' '
-        << midiSeq->transp << '\n';
+        << midiWorker->vel << ' '
+        << midiWorker->transp << '\n';
     arpText << "MIDICC" << endl;
     for (int l1 = 0; l1 < ccList.count(); l1++) {
         arpText << ccList.at(l1).ID << ' '
@@ -414,16 +414,16 @@ void SeqWidget::writeSeqText(QTextStream& arpText)
 
     arpText << waveFormBox->currentIndex() << '\n';
     // Write Mute Mask
-    while (l1 < midiSeq->muteMask.count()) {
-        arpText << midiSeq->muteMask.at(l1) << ' ';
+    while (l1 < midiWorker->muteMask.count()) {
+        arpText << midiWorker->muteMask.at(l1) << ' ';
         l1++;
         if (!(l1 % 32)) arpText << "\n";
     }
     arpText << "EOM\n"; // End Of Mute
     // Write Custom Sequence
     l1 = 0;
-    while (l1 < midiSeq->customWave.count()) {
-        arpText << midiSeq->customWave.at(l1).value << ' ';
+    while (l1 < midiWorker->customWave.count()) {
+        arpText << midiWorker->customWave.at(l1).value << ' ';
         l1++;
         if (!(l1 % 16)) arpText << "\n";
     }
@@ -431,7 +431,7 @@ void SeqWidget::writeSeqText(QTextStream& arpText)
     modified = false;
 }                                      
 
-void SeqWidget::readSeq(QXmlStreamReader& xml)
+void SeqWidget::readData(QXmlStreamReader& xml)
 {
     int ctrlID, ccnumber, channel, min, max;
     int tmp;
@@ -501,11 +501,11 @@ void SeqWidget::readSeq(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
-                    midiSeq->muteMask.clear();
+                    midiWorker->muteMask.clear();
                     QByteArray tmpArray = 
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        midiSeq->muteMask.append(tmpArray.at(l1));
+                        midiWorker->muteMask.append(tmpArray.at(l1));
                     }
                 }
                 else skipXmlElement(xml);
@@ -517,16 +517,16 @@ void SeqWidget::readSeq(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
-                    midiSeq->customWave.clear();
+                    midiWorker->customWave.clear();
                     QByteArray tmpArray = 
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    int step = TICKS_PER_QUARTER / midiSeq->res;
+                    int step = TICKS_PER_QUARTER / midiWorker->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         seqSample.value = tmpArray.at(l1);
                         seqSample.tick = lt;
-                        seqSample.muted = midiSeq->muteMask.at(l1);
-                        midiSeq->customWave.append(seqSample);
+                        seqSample.muted = midiWorker->muteMask.at(l1);
+                        midiWorker->customWave.append(seqSample);
                         lt+=step;
                     }
                 }
@@ -590,7 +590,7 @@ void SeqWidget::skipXmlElement(QXmlStreamReader& xml)
     }
 }
  
-void SeqWidget::readSeqText(QTextStream& arpText)
+void SeqWidget::readDataText(QTextStream& arpText)
 {
     QString qs, qs2;
     int l1, lt, wvtmp;
@@ -645,15 +645,14 @@ void SeqWidget::readSeqText(QTextStream& arpText)
     wvtmp = qs.toInt();
     
     // Read Mute Mask
-    int step = TICKS_PER_QUARTER / midiSeq->res;
+    int step = TICKS_PER_QUARTER / midiWorker->res;
     qs = arpText.readLine();
     if (qs.isEmpty() || (qs == "EOP")) return;
     qs2 = qs.section(' ', 0, 0);
-    midiSeq->muteMask.clear();
+    midiWorker->muteMask.clear();
     l1 = 0;
     while (qs2 !="EOM") {
-        // TODO: the following line produces a pointer deref warning, why?
-        midiSeq->muteMask.append(qs2.toInt());
+        midiWorker->muteMask.append(qs2.toInt());
         l1++;
         if (!(l1%32)) qs = arpText.readLine();
         qs2 = qs.section(' ', l1%32, l1%32);
@@ -662,14 +661,14 @@ void SeqWidget::readSeqText(QTextStream& arpText)
     // Read Custom Waveform
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0);
-    midiSeq->customWave.clear();
+    midiWorker->customWave.clear();
     l1 = 0;
     lt = 0;
     while (qs2 !="EOS") {
         seqSample.value=qs2.toInt();
         seqSample.tick = lt;
-        seqSample.muted = midiSeq->muteMask.at(l1);
-        midiSeq->customWave.append(seqSample);
+        seqSample.muted = midiWorker->muteMask.at(l1);
+        midiWorker->customWave.append(seqSample);
         lt+=step;
         l1++;
         if (!(l1%16)) qs = arpText.readLine();
@@ -688,7 +687,6 @@ void SeqWidget::loadWaveForms()
 void SeqWidget::setEnableNoteIn(bool on)
 {
     enableNoteIn->setChecked(on);
-    enableVelIn->setEnabled(on);
     modified = true;
 }
 
@@ -702,6 +700,12 @@ void SeqWidget::setChIn(int value)
 {
     chIn->setValue(value);
     modified = true;
+}
+
+void SeqWidget::setMuted(bool on)
+{
+    midiWorker->setMuted(on);
+    screen->setMuted(on);
 }
 
 void SeqWidget::setPortOut(int value)
@@ -718,86 +722,85 @@ void SeqWidget::setChannelOut(int value)
 
 void SeqWidget::updateChIn(int value)
 {
-    midiSeq->chIn = value - 1;
+    midiWorker->chIn = value - 1;
     modified = true;
 }
 
 void SeqWidget::updateEnableNoteIn(bool on)
 {
-    midiSeq->enableNoteIn = on;
-    enableVelIn->setEnabled(on);
+    midiWorker->enableNoteIn = on;
     modified = true;
 }
 
 void SeqWidget::updateEnableVelIn(bool on)
 {
-    midiSeq->enableVelIn = on;
+    midiWorker->enableVelIn = on;
     modified = true;
 }
 
 void SeqWidget::updatePortOut(int value)
 {
-    midiSeq->portOut = value - 1;
+    midiWorker->portOut = value - 1;
     modified = true;
 }
 
 void SeqWidget::updateChannelOut(int value)
 {
-    midiSeq->channelOut = value - 1;
+    midiWorker->channelOut = value - 1;
     modified = true;
 }
 
 void SeqWidget::updateNoteLength(int val)
 {
-    midiSeq->notelength = val + val;
+    midiWorker->notelength = val + val;
     modified = true;
 }
 
 void SeqWidget::updateWaveForm(int val)
 {
-    midiSeq->updateWaveForm(val);
-    midiSeq->getData(&seqData);
-    seqScreen->updateScreen(seqData);
+    midiWorker->updateWaveForm(val);
+    midiWorker->getData(&seqData);
+    screen->updateScreen(seqData);
     modified = true;
 }
 
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
-    seqScreen->setRecord(on);
-    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-    seqScreen->updateScreen(seqData);
+    screen->setRecord(on);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    screen->updateScreen(seqData);
 }
 
 void SeqWidget::updateRes(int val)
 {
-    midiSeq->res = seqResValues[val];
-    midiSeq->resizeAll();
-    midiSeq->getData(&seqData);
-    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-    seqScreen->updateScreen(seqData);
+    midiWorker->res = seqResValues[val];
+    midiWorker->resizeAll();
+    midiWorker->getData(&seqData);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    screen->updateScreen(seqData);
     modified = true;
 }
 
 void SeqWidget::updateSize(int val)
 {
-    midiSeq->size = val + 1;
-    midiSeq->resizeAll();
-    midiSeq->getData(&seqData);
-    seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-    seqScreen->updateScreen(seqData);
+    midiWorker->size = val + 1;
+    midiWorker->resizeAll();
+    midiWorker->getData(&seqData);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    screen->updateScreen(seqData);
     modified = true;
 }
 
 void SeqWidget::updateVelocity(int val)
 {
-    midiSeq->vel = val;
+    midiWorker->vel = val;
     modified = true;
 }
 
 void SeqWidget::updateTranspose(int val)
 {
-    midiSeq->transp = val;
+    midiWorker->transp = val;
     modified = true;
 }
 
@@ -808,16 +811,16 @@ void SeqWidget::processNote(int note, int vel)
         if (enableVelIn->isChecked()) velocity->setValue(vel);
     }
     else {
-        midiSeq->recordNote(note);
-        midiSeq->getData(&seqData);
-        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
-        seqScreen->updateScreen(seqData);
+        midiWorker->recordNote(note);
+        midiWorker->getData(&seqData);
+        screen->setCurrentRecStep(midiWorker->currentRecStep);
+        screen->updateScreen(seqData);
     }
 }
 
 void SeqWidget::copyToCustom()
 {
-    midiSeq->copyToCustom();
+    midiWorker->copyToCustom();
     waveFormBox->setCurrentIndex(0);
     updateWaveForm(0);
     modified = true;
@@ -826,27 +829,27 @@ void SeqWidget::copyToCustom()
 void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
-        midiSeq->setMutePoint(mouseX, lastMute);
+        midiWorker->setMutePoint(mouseX, lastMute);
     } 
     else {
-        midiSeq->setCustomWavePoint(mouseX, mouseY);
-        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
+        midiWorker->setCustomWavePoint(mouseX, mouseY);
+        screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
-    midiSeq->getData(&seqData);
-    seqScreen->updateScreen(seqData);
+    midiWorker->getData(&seqData);
+    screen->updateScreen(seqData);
     modified = true;
 }
 
 void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
-        lastMute = midiSeq->toggleMutePoint(mouseX);
+        lastMute = midiWorker->toggleMutePoint(mouseX);
     } else {
-        midiSeq->setCustomWavePoint(mouseX, mouseY);
-        seqScreen->setCurrentRecStep(midiSeq->currentRecStep);
+        midiWorker->setCustomWavePoint(mouseX, mouseY);
+        screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
-    midiSeq->getData(&seqData);
-    seqScreen->updateScreen(seqData);
+    midiWorker->getData(&seqData);
+    screen->updateScreen(seqData);
     modified = true;
 }
 

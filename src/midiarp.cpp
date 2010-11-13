@@ -122,7 +122,7 @@ void MidiArp::addNote(int note, int velocity, int tick)
     mutex.unlock();
 }
 
-void MidiArp::muteArp(bool on)
+void MidiArp::setMuted(bool on)
 {
     isMuted = on;
 }

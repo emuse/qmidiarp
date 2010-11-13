@@ -6,7 +6,6 @@
 
 #include "seqdriver.h"
 #include "arpdata.h"
-#include "arpdata.h"
 
 
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
@@ -33,7 +32,7 @@ void ArpData::addArpWidget(ArpWidget *arpWidget)
 
 void ArpData::removeMidiArp(MidiArp *midiArp)
 {
-    if (seqDriver->runArp && (midiArpList.count() < 1)) {
+    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
         seqDriver->setQueueStatus(false);
     }
     int i = midiArpList.indexOf(midiArp);
@@ -43,7 +42,7 @@ void ArpData::removeMidiArp(MidiArp *midiArp)
 
 void ArpData::removeArpWidget(ArpWidget *arpWidget)
 {
-    removeMidiArp(arpWidget->getMidiArp());
+    removeMidiArp(arpWidget->getMidiWorker());
     arpWidgetList.removeOne(arpWidget);
     modified = true;
 }
@@ -91,7 +90,7 @@ void ArpData::addLfoWidget(LfoWidget *lfoWidget)
 
 void ArpData::removeMidiLfo(MidiLfo *midiLfo)
 {
-    if (seqDriver->runArp && (midiArpList.count() < 1)) {
+    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
         seqDriver->setQueueStatus(false);
     }
     int i = midiLfoList.indexOf(midiLfo);
@@ -101,7 +100,7 @@ void ArpData::removeMidiLfo(MidiLfo *midiLfo)
 
 void ArpData::removeLfoWidget(LfoWidget *lfoWidget)
 {
-    removeMidiLfo(lfoWidget->getMidiLfo());
+    removeMidiLfo(lfoWidget->getMidiWorker());
     lfoWidgetList.removeOne(lfoWidget);
     modified = true;
 }
@@ -141,7 +140,7 @@ void ArpData::addSeqWidget(SeqWidget *seqWidget)
 
 void ArpData::removeMidiSeq(MidiSeq *midiSeq)
 {
-    if (seqDriver->runArp && (midiSeqList.count() < 1)) {
+    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
         seqDriver->setQueueStatus(false);
     }
     int i = midiSeqList.indexOf(midiSeq);
@@ -151,7 +150,7 @@ void ArpData::removeMidiSeq(MidiSeq *midiSeq)
 
 void ArpData::removeSeqWidget(SeqWidget *seqWidget)
 {
-    removeMidiSeq(seqWidget->getMidiSeq());
+    removeMidiSeq(seqWidget->getMidiWorker());
     seqWidgetList.removeOne(seqWidget);
     modified = true;
 }
@@ -374,6 +373,20 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->offset->setValue(sval);
+                                return;
+                        break;
+                        case 3: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateWaveForm(sval);
+                                return;
+                        break;
+                        case 4: 
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->freqBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateFreq(sval);
                                 return;
                         break;
                         default:

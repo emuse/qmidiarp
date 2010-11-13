@@ -61,14 +61,14 @@ class SeqWidget : public QWidget
     QAction *cancelMidiLearnAction;
     QToolButton *copyToCustomButton;
  
-    MidiSeq *midiSeq;
+    MidiSeq *midiWorker;
     QVector<SeqSample> seqData;
     bool modified, lastMute;
     bool recordMode;
 
   public:
     QString name;
-    SeqScreen *seqScreen;
+    SeqScreen *screen;
     QStringList waveForms;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;               
@@ -77,15 +77,15 @@ class SeqWidget : public QWidget
     int ID, parentDockID;
     QVector<MidiCC> ccList;
         
-    SeqWidget(MidiSeq *p_midiSeq, int portCount, bool compactStyle, QWidget* parent=0);
+    SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
     ~SeqWidget();
-    MidiSeq *getMidiSeq();
+    MidiSeq *getMidiWorker();
     
-    void readSeq(QXmlStreamReader& xml);
+    void readData(QXmlStreamReader& xml);
     void skipXmlElement(QXmlStreamReader& xml);
-    void readSeqText(QTextStream& arpText);
-    void writeSeq(QXmlStreamWriter& xml);
-    void writeSeqText(QTextStream& arpText);
+    void readDataText(QTextStream& arpText);
+    void writeData(QXmlStreamWriter& xml);
+    void writeDataText(QTextStream& arpText);
     void setChIn(int value);
     void setEnableNoteIn(bool on);
     void setEnableVelIn(bool on);
@@ -107,6 +107,7 @@ class SeqWidget : public QWidget
     void updateEnableNoteIn(bool on);
     void updateEnableVelIn(bool on);
     void updateChannelOut(int value);
+    void setMuted(bool on);
     void updatePortOut(int value);
     void updateWaveForm(int);
     void setRecord(bool on);

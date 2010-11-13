@@ -127,7 +127,7 @@ MainWindow::MainWindow(int p_portCount)
     fileQuitAction->setToolTip(tr("Quit application"));
     connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-    runAction = new QAction(QIcon(play_xpm), tr("&Run"), this);
+    runAction = new QAction(QIcon(play_xpm), tr("&Run with internal clock"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
     runAction->setCheckable(true);
     runAction->setChecked(false);
@@ -137,6 +137,7 @@ MainWindow::MainWindow(int p_portCount)
     tempoSpin->setRange(10, 400);
     tempoSpin->setValue(100);
     tempoSpin->setKeyboardTracking(false);
+    tempoSpin->setToolTip(tr("Tempo of internal clock"));
     connect(tempoSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updateTempo(int)));
 
@@ -181,7 +182,7 @@ MainWindow::MainWindow(int p_portCount)
     QMenuBar *menuBar = new QMenuBar; 
     QMenu *fileMenu = new QMenu(tr("&File"), this); 
     QMenu *viewMenu = new QMenu(tr("&View"), this);
-    QMenu *arpMenu = new QMenu(tr("&Module"), this);
+    QMenu *arpMenu = new QMenu(tr("Mod&ule"), this);
     QMenu *helpMenu = new QMenu(tr("&Help"), this);
 
     fileMenu->addAction(fileNewAction);
@@ -230,8 +231,8 @@ MainWindow::MainWindow(int p_portCount)
     controlToolBar->addAction(addLfoAction);
     controlToolBar->addAction(addSeqAction);
     controlToolBar->addSeparator();
-    controlToolBar->addAction(runAction);
     controlToolBar->addWidget(tempoSpin);
+    controlToolBar->addAction(runAction);
     controlToolBar->addAction(midiClockAction);
     controlToolBar->addAction(jackSyncAction);
     controlToolBar->setObjectName("controlToolBar");
@@ -337,7 +338,7 @@ void MainWindow::addArp(const QString& name)
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
     connect(arpData->seqDriver, SIGNAL(nextStep(int)),
-            arpWidget->arpScreen, SLOT(updateArpScreen(int)));
+            arpWidget->screen, SLOT(updateScreen(int)));
     connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)), 
             this, SLOT(updatePatternPresets(const QString&, const
@@ -350,11 +351,11 @@ void MainWindow::addArp(const QString& name)
             arpData, SLOT(setMidiLearn(int, int, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
-            arpWidget->arpScreen, SLOT(setGrooveTick(int)));
+            arpWidget->screen, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
-            arpWidget->arpScreen, SLOT(setGrooveVelocity(int)));
+            arpWidget->screen, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
-            arpWidget->arpScreen, SLOT(setGrooveLength(int)));
+            arpWidget->screen, SLOT(setGrooveLength(int)));
             
     widgetID = arpData->arpWidgetCount();
     arpWidget->name = name;
@@ -465,7 +466,7 @@ void MainWindow::removeArp(int index)
     parentDockID = arpWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
     
-    arpData->removeMidiArp(arpWidget->getMidiArp());
+    arpData->removeMidiArp(arpWidget->getMidiWorker());
     arpData->removeArpWidget(arpWidget);
     delete arpWidget;
     arpData->removeModuleWindow(dockWidget);
@@ -481,7 +482,7 @@ void MainWindow::removeLfo(int index)
     parentDockID = lfoWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
     
-    arpData->removeMidiLfo(lfoWidget->getMidiLfo());
+    arpData->removeMidiLfo(lfoWidget->getMidiWorker());
     arpData->removeLfoWidget(lfoWidget);
     delete lfoWidget;
     arpData->removeModuleWindow(dockWidget);
@@ -497,7 +498,7 @@ void MainWindow::removeSeq(int index)
     parentDockID = seqWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
     
-    arpData->removeMidiSeq(seqWidget->getMidiSeq());
+    arpData->removeMidiSeq(seqWidget->getMidiWorker());
     arpData->removeSeqWidget(seqWidget);
     delete seqWidget;
     arpData->removeModuleWindow(dockWidget);
@@ -661,17 +662,17 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
         if (xml.isStartElement() && (xml.name() == "Arp")) {
             addArp("Arp:" + xml.attributes().value("name").toString());
             arpData->arpWidget(arpData->midiArpCount() - 1)
-                    ->readArp(xml);
+                    ->readData(xml);
         }   
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             addLfo("LFO:" + xml.attributes().value("name").toString());
             arpData->lfoWidget(arpData->midiLfoCount() - 1)
-                    ->readLfo(xml);
+                    ->readData(xml);
         }   
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             addSeq("Seq:" + xml.attributes().value("name").toString());
             arpData->seqWidget(arpData->midiSeqCount() - 1)
-                    ->readSeq(xml);
+                    ->readData(xml);
         }
         else skipXmlElement(xml);
     }
@@ -778,20 +779,20 @@ void MainWindow::openTextFile(const QString& fn)
         switch (c) {
             case 1:
                 addSeq(qs);
-                arpData->seqWidget(arpData->midiSeqCount() - 1)->readSeqText(loadText);
+                arpData->seqWidget(arpData->midiSeqCount() - 1)->readDataText(loadText);
             break;
             case 2:
                 addLfo(qs);
-                arpData->lfoWidget(arpData->midiLfoCount() - 1)->readLfoText(loadText);
+                arpData->lfoWidget(arpData->midiLfoCount() - 1)->readDataText(loadText);
             break;
             case 3:
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readArpText(loadText);
+                arpData->arpWidget(arpData->midiArpCount() - 1)->readDataText(loadText);
             break;
             default:
                 qs = "Arp: " + qs;
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readArpText(loadText);
+                arpData->arpWidget(arpData->midiArpCount() - 1)->readDataText(loadText);
             break;
         }
     }
@@ -879,15 +880,15 @@ bool MainWindow::saveFile()
         nameTest = arpData->moduleWindow(l1)->objectName();
         
         if (nameTest.startsWith('S')) {
-            arpData->seqWidget(ns)->writeSeq(xml);
+            arpData->seqWidget(ns)->writeData(xml);
             ns++;
         } 
         if (nameTest.startsWith('L')) {
-            arpData->lfoWidget(nl)->writeLfo(xml);
+            arpData->lfoWidget(nl)->writeData(xml);
             nl++;
         }
         if (nameTest.startsWith('A')) {
-            arpData->arpWidget(na)->writeArp(xml);
+            arpData->arpWidget(na)->writeData(xml);
             na++;
         }
     }
@@ -943,17 +944,17 @@ bool MainWindow::saveTextFile()
         
         if (nameTest.startsWith('S')) {
             saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
-            arpData->seqWidget(ns)->writeSeqText(saveText);
+            arpData->seqWidget(ns)->writeDataText(saveText);
             ns++;
         } 
         if (nameTest.startsWith('L')) {
             saveText << qPrintable(arpData->lfoWidget(nl)->name) << '\n';
-            arpData->lfoWidget(nl)->writeLfoText(saveText);
+            arpData->lfoWidget(nl)->writeDataText(saveText);
             nl++;
         }
         if (nameTest.startsWith('A')) {
             saveText << qPrintable(arpData->arpWidget(na)->name) << '\n';
-            arpData->arpWidget(na)->writeArpText(saveText);
+            arpData->arpWidget(na)->writeDataText(saveText);
             na++;
         }
     }

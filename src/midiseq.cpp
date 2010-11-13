@@ -58,7 +58,7 @@ MidiSeq::MidiSeq()
 MidiSeq::~MidiSeq(){
 }
 
-void MidiSeq::muteSeq(bool on)
+void MidiSeq::setMuted(bool on)
 {
     isMuted = on;
 }

@@ -27,7 +27,8 @@ class SeqScreen : public QWidget
     int w, h;
     bool recordMode;
     int currentRecStep;
-    
+    bool isMuted;
+
   protected:
     virtual void paintEvent(QPaintEvent *);
    
@@ -47,6 +48,7 @@ class SeqScreen : public QWidget
     void mousePressEvent(QMouseEvent* event);
     void setRecord(bool on);
     void setCurrentRecStep(int currentRecStep);
+    void setMuted(bool on);
 };
   
 #endif

@@ -82,7 +82,7 @@ class MidiArp : public QThread  {
     void updateAttackTime(int);
     void updateQueueTempo(int);
     void updateReleaseTime(int);
-    void muteArp(bool); //set mute
+    void setMuted(bool); //set mute
     void setSustain(bool, int); //set sustain
     void clearNoteBuffer();
 };

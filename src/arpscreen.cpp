@@ -45,6 +45,7 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
+    isMuted = false;
 }
 
 ArpScreen::~ArpScreen()
@@ -176,7 +177,11 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     
     //Green Filled Frame
-    p.fillRect(0, 0, w, h, QColor(10, 50, 10));
+    if (isMuted) 
+        p.fillRect(0, 0, w, h, QColor(70, 70, 70));
+    else
+        p.fillRect(0, 0, w, h, QColor(10, 50, 10));
+
     p.setViewport(0, 0, w, h);
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(20, 160, 20));
@@ -210,7 +215,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
             p.drawText(ofs + x, ARPSCREEN_VMARGIN, QString::number(l1+1));
 
             // Beat divisor separators
-            p.setPen(QColor(20, 80, 20));
+            p.setPen(QColor(40, 100, 40));
 
             for (l2 = 1; l2 < 1.0/minTempo; l2++) {
                 x1 = x + l2 * xscale * minTempo;
@@ -371,14 +376,14 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
 }
 
-void ArpScreen::updateArpScreen(const QString& pattern)
+void ArpScreen::updateScreen(const QString& pattern)
 {
     a_pattern = pattern;
     pattern_updated = 2;
     update();
 }
 
-void ArpScreen::updateArpScreen(int tick)
+void ArpScreen::updateScreen(int tick)
 {
     if (!tick) offset_tick = 0;
 
@@ -407,6 +412,12 @@ void ArpScreen::setGrooveVelocity(int vel)
 void ArpScreen::setGrooveLength(int length)
 {
     grooveLength = length;
+    update();
+}
+
+void ArpScreen::setMuted(bool on)
+{
+    isMuted = on;
     update();
 }
 

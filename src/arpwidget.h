@@ -44,7 +44,7 @@ class ArpWidget : public QWidget
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
     QAction *deleteAction, *renameAction;
     QAction *cancelMidiLearnAction;
-    MidiArp *midiArp;
+    MidiArp *midiWorker;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
@@ -53,19 +53,19 @@ class ArpWidget : public QWidget
   public:
     QString name;
     int ID, parentDockID;
-    ArpScreen *arpScreen;
+    ArpScreen *screen;
     QStringList patternPresets, patternNames;
     QCheckBox *muteOut;
 
   public:
-    ArpWidget(MidiArp *p_midiArp, int portCount, bool compactStyle, QWidget* parent=0);
+    ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
     ~ArpWidget();
-    MidiArp *getMidiArp();
+    MidiArp *getMidiWorker();
     
-    void readArp(QXmlStreamReader& xml);
-    void readArpText(QTextStream& arpText);
-    void writeArp(QXmlStreamWriter& xml);
-    void writeArpText(QTextStream& arpText);
+    void readData(QXmlStreamReader& xml);
+    void readDataText(QTextStream& arpText);
+    void writeData(QXmlStreamWriter& xml);
+    void writeDataText(QTextStream& arpText);
     void skipXmlElement(QXmlStreamReader& xml);
     void setChIn(int value);
     void setIndexIn(int index, int value);
@@ -90,6 +90,7 @@ class ArpWidget : public QWidget
     void updateIndexIn(int value);
     void updateRangeIn(int value);
     void updateChannelOut(int value);
+    void setMuted(bool on);
     void updatePortOut(int value);
     void updateText(const QString& newtext);
     void updateRepeatPattern(int);
@@ -98,6 +99,8 @@ class ArpWidget : public QWidget
     void openTextEditWindow(bool on);
     void storeCurrentPattern();
     void removeCurrentPattern();
+    void setRandomVisible(bool on);
+    void setEnvelopeVisible(bool on);
     void moduleDelete();
     void moduleRename();
     void appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max);

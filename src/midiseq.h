@@ -68,7 +68,7 @@ class MidiSeq : public QObject  {
     void updateTranspose(int);
     void updateQueueTempo(int);
     void recordNote(int note);
-    void muteSeq(bool); //set mute
+    void setMuted(bool); //set mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double);
     void setMutePoint(double, bool);

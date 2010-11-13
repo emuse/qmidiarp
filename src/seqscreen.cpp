@@ -41,6 +41,7 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     mouseY = 0;
     recordMode = false;
     currentRecStep = false;
+    isMuted = false;
 }
 
 SeqScreen::~SeqScreen()
@@ -77,8 +78,11 @@ void SeqScreen::paintEvent(QPaintEvent*)
     l2 = 0;
     QChar c;
 
-    //Green Filled Frame
-    p.fillRect(0, 0, w, h, QColor(10, 10, 50));
+    //Blue Filled Frame
+    if (isMuted) 
+        p.fillRect(0, 0, w, h, QColor(70, 70, 70));
+    else
+        p.fillRect(0, 0, w, h, QColor(10, 10, 50));
     p.setViewport(0, 0, w, h);
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(20, 20, 160));
@@ -202,6 +206,12 @@ void SeqScreen::paintEvent(QPaintEvent*)
 void SeqScreen::updateScreen(const QVector<SeqSample>& seqData)
 {
     p_seqData = seqData;
+    update();
+}
+
+void SeqScreen::setMuted(bool on)
+{
+    isMuted = on;
     update();
 }
 

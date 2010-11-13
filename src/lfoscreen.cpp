@@ -37,6 +37,7 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
     mouseY = 0;
+    isMuted = false;
 }
 
 LfoScreen::~LfoScreen()
@@ -73,8 +74,11 @@ void LfoScreen::paintEvent(QPaintEvent*)
     l2 = 0;
     QChar c;
 
-    //Green Filled Frame
-    p.fillRect(0, 0, w, h, QColor(50, 10, 10));
+    //Beryll Filled Frame
+    if (isMuted) 
+        p.fillRect(0, 0, w, h, QColor(70, 70, 70));
+    else
+        p.fillRect(0, 0, w, h, QColor(50, 10, 10));
     p.setViewport(0, 0, w, h);
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(160, 20, 20));
@@ -167,6 +171,12 @@ void LfoScreen::paintEvent(QPaintEvent*)
 void LfoScreen::updateScreen(const QVector<LfoSample>& lfoData)
 {
     p_lfoData = lfoData;
+    update();
+}
+
+void LfoScreen::setMuted(bool on)
+{
+    isMuted = on;
     update();
 }
 

@@ -56,33 +56,32 @@ class LfoWidget : public QWidget
 
     // Output channel / port (ALSA Sequencer)
     QSpinBox *channelOut, *portOut, *ccnumberBox;
-    QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
-    QAction *copyToCustomAction;
+    QComboBox *resBox, *sizeBox;
     QAction *deleteAction, *renameAction;
     QAction *cancelMidiLearnAction;
-    QToolButton *copyToCustomButton;
  
-    MidiLfo *midiLfo;
+    MidiLfo *midiWorker;
     QVector<LfoSample> lfoData;
     bool modified, lastMute;
     
   public:
     QString name;
-    LfoScreen *lfoScreen;
+    LfoScreen *screen;
     QStringList waveForms;
     QCheckBox *muteOut;
     Slider *frequency, *amplitude, *offset;
     int ID, parentDockID;
     QVector<MidiCC> ccList;
+    QComboBox *waveFormBox, *freqBox;
 
-    LfoWidget(MidiLfo *p_midiLfo, int portCount, bool compactStyle, QWidget* parent=0);
+    LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
     ~LfoWidget();
-    MidiLfo *getMidiLfo();
+    MidiLfo *getMidiWorker();
     
-    void readLfo(QXmlStreamReader& xml);
-    void readLfoText(QTextStream& arpText);
-    void writeLfo(QXmlStreamWriter& xml);
-    void writeLfoText(QTextStream& arpText);
+    void readData(QXmlStreamReader& xml);
+    void readDataText(QTextStream& arpText);
+    void writeData(QXmlStreamWriter& xml);
+    void writeDataText(QTextStream& arpText);
     void skipXmlElement(QXmlStreamReader& xml);
     void setChannelOut(int value);
     void setPortOut(int value);
@@ -101,6 +100,7 @@ class LfoWidget : public QWidget
         
   public slots:
     void updateChannelOut(int value);
+    void setMuted(bool on);
     void updatePortOut(int value);
     void updateWaveForm(int);
     void updateRes(int);
@@ -121,6 +121,10 @@ class LfoWidget : public QWidget
     void midiForgetMute();
     void midiLearnOffs();
     void midiForgetOffs();
+    void midiLearnWaveFormBox();
+    void midiForgetWaveFormBox();
+    void midiLearnFreqBox();
+    void midiForgetFreqBox();
     void midiLearnAmp();
     void midiForgetAmp();
     void midiLearnCancel();

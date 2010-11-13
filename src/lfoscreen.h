@@ -27,6 +27,7 @@ class LfoScreen : public QWidget
     int mouseX, mouseY, mouseW;
     int w, h;
     int clip(int value, int min, int max, bool *outOfRange);
+    bool isMuted;
     
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -47,6 +48,7 @@ class LfoScreen : public QWidget
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
+    void setMuted(bool on);
 };
   
 #endif

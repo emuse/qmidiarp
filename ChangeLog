@@ -1,3 +1,14 @@
+2010-11-13  Frank Kober  <goemusic@yahoo.fr>
+	* lfowidget.*: copyToCustom button removed, copying is done upon
+	first leftclick on lfoscreen. WaveFormBox and Frequency get MIDI 
+	learn.
+	* arpwidget.*: random and envelope boxes made checkable. Controls
+	hidden by default.
+	* mainwindow.cpp, arpwidget.cpp: keyboard shortcuts made unique
+	* seqwidget.cpp: note and velocity input made independent again
+	* *screen.*: gray background when muted
+	* *widget.*, midi*.*, mainwindow.cpp: some members renamed, consistency
+
 2010-11-11  Frank Kober  <goemusic@yahoo.fr>
 	* midilfo.*, mainwindow.cpp, arpdata.*: alsalib headers removed
 	* seqdriver.*, midiarp.*, arpscreen.cpp: fixed keyboard input latency.
