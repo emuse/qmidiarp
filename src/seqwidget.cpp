@@ -93,6 +93,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     inBoxLayout->addWidget(enableVelIn, 1, 1);
     inBoxLayout->addWidget(chInLabel, 2, 0);
     inBoxLayout->addWidget(chIn, 2, 1);
+    if (compactStyle) {
+        inBoxLayout->setSpacing(1);
+        inBoxLayout->setMargin(2);
+    }
 
     inBox->setLayout(inBoxLayout); 
 
@@ -146,6 +150,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     QVBoxLayout* outputLayout = new QVBoxLayout;
     outputLayout->addLayout(portBoxLayout);
+    if (compactStyle) {
+        outputLayout->setSpacing(1);
+        outputLayout->setMargin(2);
+    }
 
     portBox->setLayout(outputLayout);
 
@@ -276,8 +284,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     sliderLayout->addWidget(transpose, 3, 0);
     sliderLayout->setRowStretch(4, 1);
     if (compactStyle) {
-        sliderLayout->setSpacing(0);
-        sliderLayout->setMargin(1);
+        sliderLayout->setSpacing(1);
+        sliderLayout->setMargin(2);
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
@@ -295,6 +303,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
     seqBoxLayout->addLayout(paramBoxLayout, 1, 0);
     seqBoxLayout->addLayout(sliderLayout, 1, 1);
+    if (compactStyle) {
+	    seqBoxLayout->setMargin(2);
+	    seqBoxLayout->setSpacing(1);
+	}
     seqBox->setLayout(seqBoxLayout); 
     
     QHBoxLayout *widgetLayout = new QHBoxLayout;

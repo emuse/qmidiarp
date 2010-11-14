@@ -126,6 +126,10 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
 
     QVBoxLayout* outputLayout = new QVBoxLayout;
     outputLayout->addLayout(portBoxLayout);
+    if (compactStyle) {
+        outputLayout->setSpacing(1);
+        outputLayout->setMargin(2);
+    }
 
     portBox->setLayout(outputLayout);
 
@@ -259,8 +263,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     sliderLayout->addWidget(offset);
     sliderLayout->addStretch();
     if (compactStyle) {
-        sliderLayout->setSpacing(0);
-        sliderLayout->setMargin(1);
+        sliderLayout->setSpacing(1);
+        sliderLayout->setMargin(2);
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
@@ -275,14 +279,18 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     paramBoxLayout->setRowStretch(4, 1);
     
     if (compactStyle) {
-        paramBoxLayout->setSpacing(0);
-        paramBoxLayout->setMargin(1);
+        paramBoxLayout->setSpacing(1);
+        paramBoxLayout->setMargin(2);
     }
            
     QGridLayout* waveBoxLayout = new QGridLayout;
     waveBoxLayout->addWidget(screen, 0, 0, 1, 2);
     waveBoxLayout->addLayout(paramBoxLayout, 1, 0);
     waveBoxLayout->addLayout(sliderLayout, 1, 1);
+    if (compactStyle) {
+        waveBoxLayout->setSpacing(1);
+        waveBoxLayout->setMargin(2);
+    }
     waveBox->setLayout(waveBoxLayout);
     
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;

@@ -1,7 +1,5 @@
-#include <QLabel>
 #include <QBoxLayout>
 #include <QStringList>
-#include <QGroupBox>
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
@@ -48,10 +46,18 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
+    
+    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
+    chIn = new QSpinBox(inBox);
+    chIn->setRange(1, 16);
+    chIn->setKeyboardTracking(false);
+    chInLabel->setBuddy(chIn);
+    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
 
-    QLabel *indexInLabel = new QLabel(tr("&Note"), inBox);
-    indexIn[0] = new QSpinBox(inBox);
-    indexIn[1] = new QSpinBox(inBox);
+	inputFilterBox = new QGroupBox(tr("Note Filter"));
+    indexInLabel = new QLabel(tr("&Note"), inputFilterBox);
+    indexIn[0] = new QSpinBox(inputFilterBox);
+    indexIn[1] = new QSpinBox(inputFilterBox);
     indexInLabel->setBuddy(indexIn[0]);
     indexIn[0]->setRange(0, 127);
     indexIn[1]->setRange(0, 127);
@@ -63,9 +69,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     connect(indexIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateIndexIn(int)));
 
-    QLabel *rangeInLabel = new QLabel(tr("&Velocity"), inBox);
-    rangeIn[0] = new QSpinBox(inBox);
-    rangeIn[1] = new QSpinBox(inBox);
+    rangeInLabel = new QLabel(tr("&Velocity"), inputFilterBox);
+    rangeIn[0] = new QSpinBox(inputFilterBox);
+    rangeIn[1] = new QSpinBox(inputFilterBox);
     rangeInLabel->setBuddy(rangeIn[0]);
     rangeIn[0]->setRange(0, 127);
     rangeIn[1]->setRange(0, 127);
@@ -77,23 +83,31 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
 
-    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QSpinBox(inBox);
-    chIn->setRange(1, 16);
-    chIn->setKeyboardTracking(false);
-    chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
 
+    QGridLayout *inputFilterBoxLayout = new QGridLayout;
+    inputFilterBoxLayout->addWidget(indexInLabel, 0, 0);
+    inputFilterBoxLayout->addWidget(indexIn[0], 0, 1);
+    inputFilterBoxLayout->addWidget(indexIn[1], 0, 2);
+    inputFilterBoxLayout->addWidget(rangeInLabel, 1, 0);
+    inputFilterBoxLayout->addWidget(rangeIn[0], 1, 1);
+    inputFilterBoxLayout->addWidget(rangeIn[1], 1, 2);    
+    inputFilterBoxLayout->setMargin(2);
+    inputFilterBoxLayout->setSpacing(2);
+    inputFilterBox->setCheckable(true);
+    connect(inputFilterBox, SIGNAL(toggled(bool)), this, 
+            SLOT(setInputFilterVisible(bool)));
+    inputFilterBox->setChecked(false);
+    inputFilterBox->setFlat(true);
+    inputFilterBox->setLayout(inputFilterBoxLayout);
+    
     QGridLayout *inBoxLayout = new QGridLayout;
-
-    inBoxLayout->addWidget(indexInLabel, 0, 0);
-    inBoxLayout->addWidget(indexIn[0], 0, 1);
-    inBoxLayout->addWidget(indexIn[1], 0, 2);
-    inBoxLayout->addWidget(rangeInLabel, 1, 0);
-    inBoxLayout->addWidget(rangeIn[0], 1, 1);
-    inBoxLayout->addWidget(rangeIn[1], 1, 2);
-    inBoxLayout->addWidget(chInLabel, 2, 0);
-    inBoxLayout->addWidget(chIn, 2, 2);
+    inBoxLayout->addWidget(chInLabel, 0, 0);
+    inBoxLayout->addWidget(chIn, 0, 1);
+    inBoxLayout->addWidget(inputFilterBox, 1, 0, 1, 2);
+    if (compactStyle) {
+	    inBoxLayout->setMargin(2);
+	    inBoxLayout->setSpacing(1);
+	}
     inBox->setLayout(inBoxLayout); 
 
 
@@ -140,6 +154,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     portBoxLayout->addWidget(portOut, 1, 1);
     portBoxLayout->addWidget(channelLabel, 2, 0);
     portBoxLayout->addWidget(channelOut, 2, 1);
+    if (compactStyle) {
+	    portBoxLayout->setMargin(2);
+	    portBoxLayout->setSpacing(1);
+	}
     portBox->setLayout(portBoxLayout);
 
 
@@ -209,8 +227,10 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     repeatPatternThroughChord->setCurrentIndex(1);
 
     QHBoxLayout *patternPresetLayout = new QHBoxLayout;
-    patternPresetLayout->setMargin(1);
-    patternPresetLayout->setSpacing(1);
+    if (compactStyle) {
+	    patternPresetLayout->setMargin(2);
+	    patternPresetLayout->setSpacing(1);
+	}
     patternPresetLayout->addWidget(textStoreButton);    
     patternPresetLayout->addWidget(textEditButton);
     patternPresetLayout->addWidget(textRemoveButton);
@@ -238,34 +258,36 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     screen = new ArpScreen(patternBox); 
     screenBox->setMinimumHeight(80);
     screenBoxLayout->addWidget(screen);
-    screenBoxLayout->setMargin(1);
+    screenBoxLayout->setMargin(2);
     screenBoxLayout->setSpacing(1);
     screenBox->setLayout(screenBoxLayout);
 
     patternBoxLayout->addWidget(screenBox);
     patternBoxLayout->addLayout(patternPresetLayout);
     patternBoxLayout->addWidget(patternText);
-    patternBoxLayout->setMargin(1);
-    patternBoxLayout->setSpacing(1);
+    if (compactStyle) {
+	    patternBoxLayout->setMargin(2);
+	    patternBoxLayout->setSpacing(1);
+	}
     patternBox->setLayout(patternBoxLayout); 
 
     // group box for random settings
-    QGroupBox *randomBox = new QGroupBox(tr("Random"), this);
+    randomBox = new QGroupBox(tr("Random"), this);
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
 
     randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
             tr("&Shift"), randomBox);
-    connect(randomTick, SIGNAL(valueChanged(int)), midiWorker,
+    connect(randomTick, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomTickAmp(int)));
 
     randomVelocity = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
             tr("Vel&ocity"), randomBox);
-    connect(randomVelocity, SIGNAL(valueChanged(int)), midiWorker,
+    connect(randomVelocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomVelocityAmp(int)));
 
     randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
             tr("&Length"), randomBox);
-    connect(randomLength, SIGNAL(valueChanged(int)), midiWorker,
+    connect(randomLength, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomLengthAmp(int))); 
              
     randomBoxLayout->addWidget(randomTick);
@@ -273,8 +295,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     randomBoxLayout->addWidget(randomLength);
     randomBoxLayout->addStretch();
     if (compactStyle) {
-        randomBoxLayout->setSpacing(0);
-        randomBoxLayout->setMargin(1);
+        randomBoxLayout->setSpacing(1);
+        randomBoxLayout->setMargin(2);
     }
     randomBox->setCheckable(true);
     connect(randomBox, SIGNAL(toggled(bool)), this, 
@@ -283,23 +305,23 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     randomBox->setFlat(true);
     randomBox->setLayout(randomBoxLayout);
     
-    QGroupBox *envelopeBox = new QGroupBox(tr("Envelope"), this);
+    envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
     attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
             tr("&Attack (s)"), envelopeBox);
-    connect(attackTime, SIGNAL(valueChanged(int)), midiWorker,
+    connect(attackTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateAttackTime(int)));
     releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
             tr("&Release (s)"), envelopeBox);
-    connect(releaseTime, SIGNAL(valueChanged(int)), midiWorker,
+    connect(releaseTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateReleaseTime(int)));
               
     envelopeBoxLayout->addWidget(attackTime);
     envelopeBoxLayout->addWidget(releaseTime);
     envelopeBoxLayout->addStretch();
     if (compactStyle) {
-        envelopeBoxLayout->setSpacing(0);
-        envelopeBoxLayout->setMargin(1);
+        envelopeBoxLayout->setSpacing(1);
+        envelopeBoxLayout->setMargin(2);
     }
     envelopeBox->setCheckable(true);
     connect(envelopeBox, SIGNAL(toggled(bool)), this, 
@@ -339,6 +361,7 @@ void ArpWidget::updateIndexIn(int value)
     } else {
         midiWorker->indexIn[1] = value;
     }  
+	checkIfInputFilterSet();
 }
 
 void ArpWidget::updateRangeIn(int value)
@@ -348,6 +371,20 @@ void ArpWidget::updateRangeIn(int value)
     } else {
         midiWorker->rangeIn[1] = value;
     }  
+	checkIfInputFilterSet();
+}
+
+void ArpWidget::checkIfInputFilterSet()
+{
+	if (((indexIn[1]->value() - indexIn[0]->value()) < 127)
+			|| ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
+		inputFilterBox->setFlat(false);
+		inputFilterBox->setTitle(tr("Note Filter - ACTIVE"));
+	} 
+	else {
+		inputFilterBox->setFlat(true);
+		inputFilterBox->setTitle(tr("Note Filter"));
+	}
 }
 
 void ArpWidget::setMuted(bool on)
@@ -670,7 +707,7 @@ void ArpWidget::setChIn(int value)
 void ArpWidget::setIndexIn(int index, int value)
 {
     indexIn[index]->setValue(value); 
-    modified = true;
+	modified = true;
 }
 
 void ArpWidget::setRangeIn(int index, int value)
@@ -753,6 +790,66 @@ void ArpWidget::updateRepeatPattern(int val)
     modified = true;
 }
 
+void ArpWidget::updateRandomLengthAmp(int val)
+{
+    midiWorker->updateRandomLengthAmp(val);
+    checkIfRandomSet();
+    modified = true;
+}
+
+void ArpWidget::updateRandomTickAmp(int val)
+{
+    midiWorker->updateRandomTickAmp(val);
+    checkIfRandomSet();
+    modified = true;
+}
+
+void ArpWidget::updateRandomVelocityAmp(int val)
+{
+    midiWorker->updateRandomVelocityAmp(val);
+    checkIfRandomSet();
+    modified = true;
+}
+
+void ArpWidget::checkIfRandomSet()
+{
+	if (randomLength->value() || randomTick->value()
+				|| randomVelocity->value()) {
+		randomBox->setFlat(false);
+		randomBox->setTitle(tr("Random - ACTIVE"));
+	} 
+	else {
+		randomBox->setFlat(true);
+		randomBox->setTitle(tr("Random"));
+	}
+}
+
+void ArpWidget::updateAttackTime(int val)
+{
+    midiWorker->updateAttackTime(val);
+    checkIfEnvelopeSet();
+    modified = true;
+}
+
+void ArpWidget::updateReleaseTime(int val)
+{
+    midiWorker->updateReleaseTime(val);
+    checkIfEnvelopeSet();
+    modified = true;
+}
+
+void ArpWidget::checkIfEnvelopeSet()
+{
+	if (attackTime->value() || releaseTime->value()) {
+		envelopeBox->setFlat(false);
+		envelopeBox->setTitle(tr("Envelope - ACTIVE"));
+	} 
+	else {
+		envelopeBox->setFlat(true);
+		envelopeBox->setTitle(tr("Envelope"));
+	}
+}
+
 void ArpWidget::openTextEditWindow(bool on)
 {
     patternText->setHidden(!on);
@@ -810,6 +907,16 @@ void ArpWidget::removeCurrentPattern()
     }
         
     emit presetsChanged("", "", currentIndex);
+}
+
+void ArpWidget::setInputFilterVisible(bool on)
+{
+    rangeIn[0]->setVisible(on);
+    rangeIn[1]->setVisible(on);
+    rangeInLabel->setVisible(on);
+    indexIn[0]->setVisible(on);
+    indexIn[1]->setVisible(on);
+    indexInLabel->setVisible(on);
 }
 
 void ArpWidget::setRandomVisible(bool on)

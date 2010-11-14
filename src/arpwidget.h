@@ -6,7 +6,9 @@
 #include <QToolButton>
 #include <QAction>
 #include <QComboBox>
+#include <QGroupBox>
 #include <QSpinBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QXmlStreamReader>
@@ -37,9 +39,11 @@ class ArpWidget : public QWidget
     QSpinBox *chIn;                        // Channel of input events
     QSpinBox *indexIn[2];                  // Index input
     QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
+	QLabel *rangeInLabel, *indexInLabel;
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
+    QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
     QAction *deleteAction, *renameAction;
@@ -89,7 +93,15 @@ class ArpWidget : public QWidget
     void updateChIn(int value);
     void updateIndexIn(int value);
     void updateRangeIn(int value);
+    void checkIfInputFilterSet();
     void updateChannelOut(int value);
+    void updateRandomVelocityAmp(int value);
+    void updateRandomTickAmp(int value);
+    void updateRandomLengthAmp(int value);
+    void updateAttackTime(int value);
+    void updateReleaseTime(int value);
+    void checkIfRandomSet();
+    void checkIfEnvelopeSet();
     void setMuted(bool on);
     void updatePortOut(int value);
     void updateText(const QString& newtext);
@@ -101,6 +113,7 @@ class ArpWidget : public QWidget
     void removeCurrentPattern();
     void setRandomVisible(bool on);
     void setEnvelopeVisible(bool on);
+    void setInputFilterVisible(bool on);
     void moduleDelete();
     void moduleRename();
     void appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max);
