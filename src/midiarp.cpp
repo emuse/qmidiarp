@@ -50,7 +50,12 @@ MidiArp::MidiArp()
     release_time = 0.0;
     queueTempo = 100.0;
     sustain = false;
-    sustainBufferList.clear();
+    sustainBuffer.clear();
+    latch_mode = false;
+    latchBuffer.clear();
+    latchTimer = new QTimer(this);
+    latchTimer->setSingleShot(true);
+    connect(latchTimer, SIGNAL(timeout()), this, SLOT(purgeLatchBuffer()));
 }
 
 MidiArp::~MidiArp(){
@@ -85,6 +90,7 @@ void MidiArp::addNote(int note, int velocity, int tick)
     mutex.lock();
     int bufPtr, newBufPtr, l1, l2, l3;
 
+    if (noteCount == latchBuffer.count()) purgeLatchBuffer();
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
     //note = evIn->data.note.note;
@@ -127,7 +133,7 @@ void MidiArp::setMuted(bool on)
     isMuted = on;
 }
 
-void MidiArp::removeNote(int note, int tick, int keep_rel)
+void MidiArp::handleNoteOff(int note, int tick, int keep_rel)
 {
     int bufPtr, newBufPtr, l1, l2, l3;
 
@@ -138,7 +144,18 @@ void MidiArp::removeNote(int note, int tick, int keep_rel)
         return;
     }
     if (sustain) {
-        sustainBufferList.append(note);
+        sustainBuffer.append(note);
+        return;
+    }
+
+    if (latch_mode) {
+        latchBuffer.append(note);
+        if (latchBuffer.count() == noteCount) {
+            latchTimer->stop(); 
+        } 
+        else {
+            latchTimer->start(200);
+        }
         return;
     }
 
@@ -183,6 +200,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
     int bufPtr, newBufPtr, l1, l2, l3, note ;
     note = *noteptr;
     int tickmark = tick;
+    
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
     if (!noteCount) {
@@ -252,6 +270,8 @@ void MidiArp::getNote(int *tick, int note[],
     tmpIndex[1] = -1;
     gotCC = false;
     pause = false;
+    
+    emit nextStep(*tick);
 
     if (!patternIndex) initLoop();
     do {  
@@ -315,7 +335,7 @@ void MidiArp::getNote(int *tick, int note[],
                 }
             }
         }
-    } while (advancePatternIndex() && (gotCC || chordMode));
+    } while (advancePatternIndex(false) && (gotCC || chordMode));
       
     l1 = 0;
     
@@ -373,19 +393,19 @@ void MidiArp::getNote(int *tick, int note[],
         * (1.0 + 0.005 * (double)grooveTmp);
     *tick = arpTick + clip(tempo * 0.25 * (double)randomTick, 0,
             1000, &outOfRange);
-
+    
     if (!(patternLen && noteCount) || pause || isMuted) {
         velocity[0] = 0;
     }  
     grooveIndex++;
 }
 
-bool MidiArp::advancePatternIndex()
+bool MidiArp::advancePatternIndex(bool reset)
 {
     if (patternLen) {
         patternIndex++;
     }
-    if (patternIndex >= patternLen) {
+    if ((patternIndex >= patternLen) || reset) {
         patternIndex = 0;
         grooveIndex = 0;
         switch (repeatPatternThroughChord) {
@@ -521,6 +541,7 @@ void MidiArp::initArpTick(int currentTick)
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;
+    grooveIndex = 0;
     mutex.unlock();
 }
 
@@ -616,19 +637,40 @@ void MidiArp::updateQueueTempo(int val)
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
+    latchBuffer.clear();
 }
 
 void MidiArp::setSustain(bool on, int sustick)
 {
-    int l1 = 0;
     sustain = on;
     if (!sustain) {
-        for (l1 = 0; l1 < sustainBufferList.count(); l1++) {
-            int buf = sustainBufferList.at(l1);
-            removeNote(&buf, sustick, 1);
-        }  
-        sustainBufferList.clear();
+        purgeSustainBuffer(sustick);
+        if (latch_mode) purgeLatchBuffer();
     }
+}
+
+void MidiArp::purgeSustainBuffer(int sustick)
+{
+    for (int l1 = 0; l1 < sustainBuffer.count(); l1++) {
+        int buf = sustainBuffer.at(l1);
+        removeNote(&buf, sustick, 1);
+    }  
+    sustainBuffer.clear();
+}
+
+void MidiArp::setLatchMode(bool on)
+{
+    latch_mode = on;
+    if (!latch_mode) purgeLatchBuffer();
+}
+
+void MidiArp::purgeLatchBuffer()
+{
+    for (int l1 = 0; l1 < latchBuffer.count(); l1++) {
+        int buf = latchBuffer.at(l1);
+        removeNote(&buf, arpTick, 1);
+    }  
+    latchBuffer.clear();
 }
 
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

@@ -179,7 +179,6 @@ void SeqDriver::run()
                                 //~ printf("Jack Frame %d \n ", (int)jpos.frame);
                                 //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
                 if (tick < 0) break;
-                emit nextStep(tick);
                 startQueue = false;
                 foundEcho = false;
     
@@ -370,7 +369,7 @@ void SeqDriver::run()
                                 midiArpList->at(l1)->addNote(evIn->data.note.note, 
                                                 evIn->data.note.velocity, tick);
                             } else {
-                                midiArpList->at(l1)->removeNote(evIn->data.note.note, tick, 1);
+                                midiArpList->at(l1)->handleNoteOff(evIn->data.note.note, tick, 1);
                             }
                         }
                     }

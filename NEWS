@@ -10,8 +10,10 @@ New Features
     notes, sequence can be drawn on the fly
   o Pianoroll-type display of arp patterns and cursor line
   o Envelope function for chord arpeggios with high polyphony
-  o Footswitch controller for holding notes in arpeggio buffer
-  o MIDI-learnable control of mute state and LFO/Seq sliders
+  o Latch mode or Footswitch for holding notes in arpeggio buffer
+  o Input note delay strongly reduced making QMidiArp suitable for live
+    play
+  o MIDI-learnable control of many live-relevant functions
   o MIDI realtime clock slave synchronization
   o JACK transport client synchronization
   o Event log entries are color-coded, optional MIDI Clock event display

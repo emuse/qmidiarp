@@ -17,6 +17,7 @@
 #include "pixmaps/editmodeon.xpm"
 #include "pixmaps/patternremove.xpm"
 #include "pixmaps/patternstore.xpm"
+#include "pixmaps/latchmodeon.xpm"
 
 
 
@@ -54,7 +55,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     chInLabel->setBuddy(chIn);
     connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
 
-	inputFilterBox = new QGroupBox(tr("Note Filter"));
+    inputFilterBox = new QGroupBox(tr("Note Filter"));
     indexInLabel = new QLabel(tr("&Note"), inputFilterBox);
     indexIn[0] = new QSpinBox(inputFilterBox);
     indexIn[1] = new QSpinBox(inputFilterBox);
@@ -105,13 +106,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     inBoxLayout->addWidget(chIn, 0, 1);
     inBoxLayout->addWidget(inputFilterBox, 1, 0, 1, 2);
     if (compactStyle) {
-	    inBoxLayout->setMargin(2);
-	    inBoxLayout->setSpacing(1);
-	}
+        inBoxLayout->setMargin(2);
+        inBoxLayout->setSpacing(1);
+    }
     inBox->setLayout(inBoxLayout); 
 
 
-    // Output group box on left side
+    // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
@@ -155,9 +156,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     portBoxLayout->addWidget(channelLabel, 2, 0);
     portBoxLayout->addWidget(channelOut, 2, 1);
     if (compactStyle) {
-	    portBoxLayout->setMargin(2);
-	    portBoxLayout->setSpacing(1);
-	}
+        portBoxLayout->setMargin(2);
+        portBoxLayout->setSpacing(1);
+    }
     portBox->setLayout(portBoxLayout);
 
 
@@ -226,11 +227,19 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
 
+    latchModeButton = new QToolButton(this); 
+    latchModeAction = new QAction(QIcon(latchmodeon_xpm),
+            tr("&Latch Mode"), this);
+    connect(latchModeAction, SIGNAL(toggled(bool)), midiWorker,
+            SLOT(setLatchMode(bool)));
+    latchModeAction->setCheckable(true);
+    latchModeButton->setDefaultAction(latchModeAction);
+
     QHBoxLayout *patternPresetLayout = new QHBoxLayout;
     if (compactStyle) {
-	    patternPresetLayout->setMargin(2);
-	    patternPresetLayout->setSpacing(1);
-	}
+        patternPresetLayout->setMargin(2);
+        patternPresetLayout->setSpacing(1);
+    }
     patternPresetLayout->addWidget(textStoreButton);    
     patternPresetLayout->addWidget(textEditButton);
     patternPresetLayout->addWidget(textRemoveButton);
@@ -238,6 +247,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     patternPresetLayout->addWidget(patternPresetBox);
     patternPresetLayout->addStretch(2);
     patternPresetLayout->addWidget(repeatPatternThroughChord);  
+    patternPresetLayout->addWidget(latchModeButton);
 
     patternText = new QLineEdit(patternBox); 
     connect(patternText, SIGNAL(textChanged(const QString&)), this,
@@ -266,9 +276,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     patternBoxLayout->addLayout(patternPresetLayout);
     patternBoxLayout->addWidget(patternText);
     if (compactStyle) {
-	    patternBoxLayout->setMargin(2);
-	    patternBoxLayout->setSpacing(1);
-	}
+        patternBoxLayout->setMargin(2);
+        patternBoxLayout->setSpacing(1);
+    }
     patternBox->setLayout(patternBoxLayout); 
 
     // group box for random settings
@@ -361,7 +371,7 @@ void ArpWidget::updateIndexIn(int value)
     } else {
         midiWorker->indexIn[1] = value;
     }  
-	checkIfInputFilterSet();
+    checkIfInputFilterSet();
 }
 
 void ArpWidget::updateRangeIn(int value)
@@ -371,20 +381,20 @@ void ArpWidget::updateRangeIn(int value)
     } else {
         midiWorker->rangeIn[1] = value;
     }  
-	checkIfInputFilterSet();
+    checkIfInputFilterSet();
 }
 
 void ArpWidget::checkIfInputFilterSet()
 {
-	if (((indexIn[1]->value() - indexIn[0]->value()) < 127)
-			|| ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
-		inputFilterBox->setFlat(false);
-		inputFilterBox->setTitle(tr("Note Filter - ACTIVE"));
-	} 
-	else {
-		inputFilterBox->setFlat(true);
-		inputFilterBox->setTitle(tr("Note Filter"));
-	}
+    if (((indexIn[1]->value() - indexIn[0]->value()) < 127)
+            || ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
+        inputFilterBox->setFlat(false);
+        inputFilterBox->setTitle(tr("Note Filter - ACTIVE"));
+    } 
+    else {
+        inputFilterBox->setFlat(true);
+        inputFilterBox->setTitle(tr("Note Filter"));
+    }
 }
 
 void ArpWidget::setMuted(bool on)
@@ -410,7 +420,9 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);        
             xml.writeTextElement("repeatMode", QString::number(
-                midiWorker->repeatPatternThroughChord));           
+                latchModeAction->isChecked()));           
+            xml.writeTextElement("repeatMode", QString::number(
+                midiWorker->repeatPatternThroughChord));
         xml.writeEndElement();
             
         xml.writeStartElement("input");
@@ -512,6 +524,8 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     patternText->setText(xml.readElementText());
                 else if (xml.name() == "repeatMode")
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "latchMode")
+                    latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
@@ -707,7 +721,7 @@ void ArpWidget::setChIn(int value)
 void ArpWidget::setIndexIn(int index, int value)
 {
     indexIn[index]->setValue(value); 
-	modified = true;
+    modified = true;
 }
 
 void ArpWidget::setRangeIn(int index, int value)
@@ -813,15 +827,15 @@ void ArpWidget::updateRandomVelocityAmp(int val)
 
 void ArpWidget::checkIfRandomSet()
 {
-	if (randomLength->value() || randomTick->value()
-				|| randomVelocity->value()) {
-		randomBox->setFlat(false);
-		randomBox->setTitle(tr("Random - ACTIVE"));
-	} 
-	else {
-		randomBox->setFlat(true);
-		randomBox->setTitle(tr("Random"));
-	}
+    if (randomLength->value() || randomTick->value()
+                || randomVelocity->value()) {
+        randomBox->setFlat(false);
+        randomBox->setTitle(tr("Random - ACTIVE"));
+    } 
+    else {
+        randomBox->setFlat(true);
+        randomBox->setTitle(tr("Random"));
+    }
 }
 
 void ArpWidget::updateAttackTime(int val)
@@ -840,14 +854,14 @@ void ArpWidget::updateReleaseTime(int val)
 
 void ArpWidget::checkIfEnvelopeSet()
 {
-	if (attackTime->value() || releaseTime->value()) {
-		envelopeBox->setFlat(false);
-		envelopeBox->setTitle(tr("Envelope - ACTIVE"));
-	} 
-	else {
-		envelopeBox->setFlat(true);
-		envelopeBox->setTitle(tr("Envelope"));
-	}
+    if (attackTime->value() || releaseTime->value()) {
+        envelopeBox->setFlat(false);
+        envelopeBox->setTitle(tr("Envelope - ACTIVE"));
+    } 
+    else {
+        envelopeBox->setFlat(true);
+        envelopeBox->setTitle(tr("Envelope"));
+    }
 }
 
 void ArpWidget::openTextEditWindow(bool on)

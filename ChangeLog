@@ -1,3 +1,12 @@
+2010-11-27  Frank Kober  <goemusic@yahoo.fr>
+	* arpwidget.*, midiarp.*: new latch mode implemented. When latch button 
+	is checked, released notes are removed only after 200ms. If within
+	this period all notes are released, the note buffer is latched.
+	It gets unlatched when pressing the footswitch or unchecking the
+	latch button.
+	* arpscreen.cpp, seqdriver.*, mainwindow.cpp, midiarp.*: follower 
+	line now governed by midiarp.
+	
 2010-11-13  Frank Kober  <goemusic@yahoo.fr>
 	* lfowidget.*: copyToCustom button removed, copying is done upon
 	first leftclick on lfoscreen. WaveFormBox and Frequency get MIDI 

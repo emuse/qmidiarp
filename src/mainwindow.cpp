@@ -337,7 +337,7 @@ void MainWindow::addArp(const QString& name)
             arpData->getPortCount(), passWidget->compactStyle, this);
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
-    connect(arpData->seqDriver, SIGNAL(nextStep(int)),
+    connect(midiArp, SIGNAL(nextStep(int)),
             arpWidget->screen, SLOT(updateScreen(int)));
     connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)), 

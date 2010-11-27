@@ -39,13 +39,15 @@ class ArpWidget : public QWidget
     QSpinBox *chIn;                        // Channel of input events
     QSpinBox *indexIn[2];                  // Index input
     QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
-	QLabel *rangeInLabel, *indexInLabel;
+    QLabel *rangeInLabel, *indexInLabel;
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
     QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
+    QToolButton *latchModeButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
+    QAction *latchModeAction;
     QAction *deleteAction, *renameAction;
     QAction *cancelMidiLearnAction;
     MidiArp *midiWorker;

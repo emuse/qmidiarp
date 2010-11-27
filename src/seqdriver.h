@@ -77,7 +77,6 @@ class SeqDriver : public QThread {
         void midiEvent(snd_seq_event_t *ev);
         void controlEvent(int ccnumber, int channel, int value);
         void noteEvent(int note, int velocity);
-        void nextStep(int tick);
         void jackShutdown(bool); //boolean is passed to main toolbar 
                                 //jackSync button
 

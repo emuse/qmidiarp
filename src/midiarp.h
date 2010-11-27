@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QThread>
+#include <QTimer>
 #include <QVector>
 #include <alsa/asoundlib.h>
 #include <main.h>
@@ -15,33 +16,32 @@ class MidiArp : public QThread  {
   Q_OBJECT
     
   private:
-    void updateNotes(int currentTick);  
-    void getNote(int *tick, int note[], int velocity[],
-            int *length);
-    bool advancePatternIndex();
-    int nextNoteTick;
     int nextNote[MAXCHORD], nextVelocity[MAXCHORD];
-    int nextLength;
-    int currentNoteTick, currentTick;
+    int currentNoteTick, nextNoteTick, currentTick, arpTick;
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
-    int currentLength;
+    int currentLength, nextLength;
     bool newCurrent, newNext, chordMode;
-    int arpTick;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
+    int randomTick, randomVelocity, randomLength;
     double queueTempo;
-    QVector<int> sustainBufferList;
-    QMutex mutex;
-    
-  private:
-    void initLoop();  
-    int clip(int value, int min, int max, bool *outOfRange);
-    int sustain;
-    int randomVelocity, randomTick, randomLength;
+
+    QVector<int> sustainBuffer;
+    QVector<int> latchBuffer;
+    QTimer *latchTimer;
+
+    bool sustain, latch_mode;
     int octave, noteIndex[MAXCHORD], patternIndex;
     int notes[2][4][MAXNOTES]; // Buffer Index, Note/Velocity/On-offTick/releaseMark, Data Index
     double old_attackfn[MAXNOTES];
     int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
-    
+
+    QMutex mutex;
+    void initLoop();  
+    int clip(int value, int min, int max, bool *outOfRange);
+    void updateNotes(int currentTick);  
+    void getNote(int *tick, int note[], int velocity[], int *length);
+    bool advancePatternIndex(bool reset);
+   
   public:
     int chIn;       // Channel of input events
     int indexIn[2]; // Index input/output (for Controller events)
@@ -62,7 +62,7 @@ class MidiArp : public QThread  {
     ~MidiArp();
     bool isArp(snd_seq_event_t *evIn);   // Check if evIn is in the input range of the arp
     void addNote(int note, int velocity, int tick); // Add input Note for Arpeggio
-    void removeNote(int note, int tick, int keep_rel); // Remove input Note from Arpeggio
+    void handleNoteOff(int note, int tick, int keep_rel); // Remove input Note from Arpeggio
     void removeNote(int *noteptr, int tick, int keep_rel); // Remove input Note from Arpeggio
     void getCurrentNote(int askedTick);
     void getNextNote(int askedTick);
@@ -74,6 +74,9 @@ class MidiArp : public QThread  {
             int p_grooveLength);
     void run();
     
+  signals:
+    void nextStep(int patternIndex);
+
   public slots:  
     void updatePattern(const QString&);
     void updateRandomTickAmp(int);
@@ -84,6 +87,9 @@ class MidiArp : public QThread  {
     void updateReleaseTime(int);
     void setMuted(bool); //set mute
     void setSustain(bool, int); //set sustain
+    void setLatchMode(bool); //set latch mode
+    void purgeSustainBuffer(int sustick);
+    void purgeLatchBuffer();
     void clearNoteBuffer();
 };
                               
