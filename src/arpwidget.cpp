@@ -420,9 +420,9 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);        
             xml.writeTextElement("repeatMode", QString::number(
-                latchModeAction->isChecked()));           
-            xml.writeTextElement("repeatMode", QString::number(
                 midiWorker->repeatPatternThroughChord));
+            xml.writeTextElement("latchMode", QString::number(
+                latchModeAction->isChecked()));           
         xml.writeEndElement();
             
         xml.writeStartElement("input");
