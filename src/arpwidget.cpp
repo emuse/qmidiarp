@@ -245,9 +245,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     patternPresetLayout->addWidget(textRemoveButton);
 
     patternPresetLayout->addWidget(patternPresetBox);
-    patternPresetLayout->addStretch(2);
     patternPresetLayout->addWidget(repeatPatternThroughChord);  
     patternPresetLayout->addWidget(latchModeButton);
+    patternPresetLayout->addStretch(2);
 
     patternText = new QLineEdit(patternBox); 
     connect(patternText, SIGNAL(textChanged(const QString&)), this,

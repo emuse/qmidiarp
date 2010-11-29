@@ -16,11 +16,9 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     slider->setValue(value);
     if (orientation == Qt::Vertical) {
         slider->setMinimumHeight(150);
-        //slider->setMaximumWidth(20);
     }
     else {
         slider->setMinimumWidth(150);
-        //slider->setMaximumHeight(20);
     }
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSpinBox(int)));
 
@@ -28,17 +26,15 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     sliderSpin->setRange(minValue, maxValue);
     sliderSpin->setValue(value);
     sliderSpin->setKeyboardTracking(false);
-    //sliderSpin->setMaximumHeight(20);
     connect(sliderSpin, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
 
     QLabel* sliderLabel = new QLabel(this);
     sliderLabel->setText(label);
     sliderLabel->setBuddy(sliderSpin);
-
+    sliderLabel->setMinimumWidth(4*sliderLabel->fontMetrics().maxWidth());
     QBoxLayout *sliderLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
     sliderLayout->setMargin(0);
     sliderLayout->addWidget(sliderLabel);
-    sliderLayout->addStretch();
     sliderLayout->addWidget(slider);
     sliderLayout->addSpacing(2);
     sliderLayout->addWidget(sliderSpin);

@@ -272,11 +272,11 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     paramBoxLayout->addWidget(waveFormBox, 0, 1);
     paramBoxLayout->addWidget(freqBoxLabel, 1, 0);
     paramBoxLayout->addWidget(freqBox, 1, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 2, 0);
-    paramBoxLayout->addWidget(resBox, 2, 1);
-    paramBoxLayout->addWidget(sizeBoxLabel, 3, 0);
-    paramBoxLayout->addWidget(sizeBox, 3, 1);
-    paramBoxLayout->setRowStretch(4, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 0, 2);
+    paramBoxLayout->addWidget(resBox, 0, 3);
+    paramBoxLayout->addWidget(sizeBoxLabel, 1, 2);
+    paramBoxLayout->addWidget(sizeBox, 1, 3);
+    paramBoxLayout->setColumnStretch(4, 4);
     
     if (compactStyle) {
         paramBoxLayout->setSpacing(1);
@@ -284,9 +284,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     }
            
     QGridLayout* waveBoxLayout = new QGridLayout;
-    waveBoxLayout->addWidget(screen, 0, 0, 1, 2);
+    waveBoxLayout->addWidget(screen, 0, 0);
     waveBoxLayout->addLayout(paramBoxLayout, 1, 0);
-    waveBoxLayout->addLayout(sliderLayout, 1, 1);
+    waveBoxLayout->addLayout(sliderLayout, 2, 0);
     if (compactStyle) {
         waveBoxLayout->setSpacing(1);
         waveBoxLayout->setMargin(2);
@@ -707,7 +707,7 @@ void LfoWidget::updateCcnumber(int val)
 
 void LfoWidget::updateWaveForm(int val)
 {
-	if (val > 5) return;
+    if (val > 5) return;
     midiWorker->updateWaveForm(val);
     midiWorker->getData(&lfoData);
     screen->updateScreen(lfoData);
@@ -720,7 +720,7 @@ void LfoWidget::updateWaveForm(int val)
 
 void LfoWidget::updateFreq(int val)
 {
-	if (val > 10) return;
+    if (val > 10) return;
     midiWorker->freq = lfoFreqValues[val];
     midiWorker->getData(&lfoData);
     screen->updateScreen(lfoData);
