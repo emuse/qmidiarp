@@ -3,14 +3,15 @@ qmidiarp-0.?.0 (2010-??-??)
 New Features
   o Arpeggio pattern preset infrastructure
   o Synchronized MIDI LFO modules added
-  o LFOs have calculated and drawable waveforms, selectable frequency, 
+    LFOs have calculated and drawable waveforms, selectable frequency, 
     amplitude, offset, time resolution and length
   o Synchronized step sequencer modules added
-  o Step sequencer can be transposed and velocity-modulated by received
+    Step sequencer can be transposed and velocity-modulated by received
     notes, sequence can be drawn on the fly
   o Pianoroll-type display of arp patterns and cursor line
   o Envelope function for chord arpeggios with high polyphony
   o Latch mode or Footswitch for holding notes in arpeggio buffer
+  o Keyboard-triggered or -restarted arpeggiator mode
   o Input note delay strongly reduced making QMidiArp suitable for live
     play
   o MIDI-learnable control of many live-relevant functions
@@ -21,10 +22,8 @@ New Features
     are dockable floatable windows, main and file icon toolbars added
   o New .qmidiarprc file containing GUI settings, user arp patterns and 
     last file path
-  o Save and SaveAs functions with modification monitoring, all relevant
-    session parameters stored in .qmax session file, file extension
-    auto-completion
-  o XML storage format for session files
+  o Save and SaveAs functions with modification monitoring
+  O All relevant session parameters stored in new .qmax XML session file
   o Manual pages in English, French and German
   o Handler for SIGINT added to handle unsaved or changed files more
     carefully at program termination.
