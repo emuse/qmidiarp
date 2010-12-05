@@ -42,6 +42,7 @@ class ArpWidget : public QWidget
     QLabel *rangeInLabel, *indexInLabel;
     QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
+    QComboBox *triggerMode;
     QComboBox *patternPresetBox;
     QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
@@ -55,7 +56,7 @@ class ArpWidget : public QWidget
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
     bool modified;
-    
+
   public:
     QString name;
     int ID, parentDockID;
@@ -108,6 +109,7 @@ class ArpWidget : public QWidget
     void updatePortOut(int value);
     void updateText(const QString& newtext);
     void updateRepeatPattern(int);
+    void updateTriggerMode(int);
     void selectPatternPreset(int);
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void openTextEditWindow(bool on);

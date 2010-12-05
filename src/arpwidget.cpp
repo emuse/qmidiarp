@@ -223,9 +223,18 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
-    connect(repeatPatternThroughChord, SIGNAL(highlighted(int)), this,
+    connect(repeatPatternThroughChord, SIGNAL(activated(int)), this,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
+
+    triggerMode = new QComboBox(patternBox);
+    QStringList triggerModeNames; 
+    triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger");
+    triggerMode->insertItems(0, triggerModeNames);
+    triggerMode->setToolTip(tr("Trigger Mode"));
+    connect(triggerMode, SIGNAL(activated(int)), this,
+            SLOT(updateTriggerMode(int)));
+    triggerMode->setCurrentIndex(0);
 
     latchModeButton = new QToolButton(this); 
     latchModeAction = new QAction(QIcon(latchmodeon_xpm),
@@ -240,14 +249,22 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
         patternPresetLayout->setMargin(2);
         patternPresetLayout->setSpacing(1);
     }
-    patternPresetLayout->addWidget(textStoreButton);    
-    patternPresetLayout->addWidget(textEditButton);
-    patternPresetLayout->addWidget(textRemoveButton);
-
     patternPresetLayout->addWidget(patternPresetBox);
-    patternPresetLayout->addWidget(repeatPatternThroughChord);  
-    patternPresetLayout->addWidget(latchModeButton);
+    patternPresetLayout->addWidget(textEditButton);
+    patternPresetLayout->addWidget(textStoreButton);    
+    patternPresetLayout->addWidget(textRemoveButton);
     patternPresetLayout->addStretch(2);
+    
+    QHBoxLayout *modeLayout = new QHBoxLayout;
+    if (compactStyle) {
+        modeLayout->setMargin(2);
+        modeLayout->setSpacing(1);
+    }
+
+    modeLayout->addWidget(repeatPatternThroughChord);  
+    modeLayout->addWidget(triggerMode);  
+    modeLayout->addWidget(latchModeButton);
+    modeLayout->addStretch(2);
 
     patternText = new QLineEdit(patternBox); 
     connect(patternText, SIGNAL(textChanged(const QString&)), this,
@@ -275,6 +292,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     patternBoxLayout->addWidget(screenBox);
     patternBoxLayout->addLayout(patternPresetLayout);
     patternBoxLayout->addWidget(patternText);
+    patternBoxLayout->addLayout(modeLayout);
     if (compactStyle) {
         patternBoxLayout->setMargin(2);
         patternBoxLayout->setSpacing(1);
@@ -421,6 +439,8 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("pattern", midiWorker->pattern);        
             xml.writeTextElement("repeatMode", QString::number(
                 midiWorker->repeatPatternThroughChord));
+            xml.writeTextElement("triggerMode", QString::number(
+                triggerMode->currentIndex()));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));           
         xml.writeEndElement();
@@ -524,6 +544,8 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     patternText->setText(xml.readElementText());
                 else if (xml.name() == "repeatMode")
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "triggerMode")
+                    triggerMode->setCurrentIndex(xml.readElementText().toInt());
                 else if (xml.name() == "latchMode")
                     latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -801,6 +823,12 @@ void ArpWidget::loadPatternPresets()
 void ArpWidget::updateRepeatPattern(int val)
 {
     midiWorker->repeatPatternThroughChord = val;
+    modified = true;
+}
+
+void ArpWidget::updateTriggerMode(int val)
+{
+    midiWorker->updateTriggerMode(val);
     modified = true;
 }
 
