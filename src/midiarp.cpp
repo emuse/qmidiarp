@@ -403,7 +403,6 @@ void MidiArp::getNote(int *tick, int note[],
         velocity[0] = 0;
     }  
     grooveIndex++;
-    printf("GrooveIndex %d\n",grooveIndex);
     emit nextStep(grooveIndex);
 }
 
