@@ -38,10 +38,6 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     a_pattern=" ";
-    follower_tick = 0;
-    offset_tick = 0;
-    last_tick = 0;
-    pattern_updated = 0;
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
@@ -248,14 +244,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
     chordIndex = 0;
 
 
-    //follower_tick position x1
-    if (nsteps > 0) 
-    {
-        x1 = (((int)((follower_tick + 10) / TICKS_PER_QUARTER / minTempo))
-                % ((int)((nsteps - 1) / minTempo) + l2)) * xscale * minTempo;
-    } else
-        x1 = 0;
-
     for (l1 = 0; l1 < patternLen; l1++) 
     {
         c = a_pattern.at(l1);
@@ -346,7 +334,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                             / (patternMaxIndex + 1) / noctaves
                             + ARPSCREEN_VMARGIN - 3 + notestreak_thick;
                 xpos = ARPSCREEN_HMARGIN + x + notestreak_thick / 2;
-                if (x1 == x) 
+                if (grooveIndex == currentIndex) 
                 {
                     pen.setColor(QColor(140, 240, 140));
                     p.setPen(pen);
@@ -379,22 +367,12 @@ void ArpScreen::paintEvent(QPaintEvent*)
 void ArpScreen::updateScreen(const QString& pattern)
 {
     a_pattern = pattern;
-    pattern_updated = 2;
     update();
 }
 
-void ArpScreen::updateScreen(int tick)
+void ArpScreen::updateScreen(int p_index)
 {
-    if (!tick) offset_tick = 0;
-
-    if (pattern_updated == 1) 
-        offset_tick = last_tick;
-        
-    if (pattern_updated)
-        pattern_updated--;
-
-    follower_tick = (double)(tick - offset_tick);
-    last_tick = tick;
+    currentIndex = p_index;
     update();
 }
 

@@ -25,8 +25,7 @@ class ArpScreen : public QWidget
     int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
     QString a_pattern;
-    double follower_tick;
-    int offset_tick, last_tick, pattern_updated;
+    int pattern_updated, currentIndex;
     bool isMuted;
     
   protected:
@@ -40,7 +39,7 @@ class ArpScreen : public QWidget
    
   public slots: 
     void updateScreen(const QString&);
-    void updateScreen(int tick);
+    void updateScreen(int p_index);
     void setGrooveTick(int tick);
     void setGrooveVelocity(int vel);
     void setGrooveLength(int length);
