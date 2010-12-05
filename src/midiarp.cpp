@@ -19,6 +19,8 @@ MidiArp::MidiArp()
     noteBufPtr = 0;
     noteCount = 0;
     hold = false;
+    restartByKbd = false;
+    trigByKbd = false;
     tempo = 1.0;     // tempo relative to global queue tempo
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
@@ -90,7 +92,11 @@ void MidiArp::addNote(int note, int velocity, int tick)
     mutex.lock();
     int bufPtr, newBufPtr, l1, l2, l3;
 
-    if (noteCount == latchBuffer.count()) purgeLatchBuffer();
+    if (!getPressedNoteCount()) {
+        purgeLatchBuffer();
+        if (restartByKbd) advancePatternIndex(true);
+        if (trigByKbd) initArpTick(tick);
+    }
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
     //note = evIn->data.note.note;
@@ -271,7 +277,6 @@ void MidiArp::getNote(int *tick, int note[],
     gotCC = false;
     pause = false;
     
-    emit nextStep(*tick);
 
     if (!patternIndex) initLoop();
     do {  
@@ -398,6 +403,8 @@ void MidiArp::getNote(int *tick, int note[],
         velocity[0] = 0;
     }  
     grooveIndex++;
+    printf("GrooveIndex %d\n",grooveIndex);
+    emit nextStep(grooveIndex);
 }
 
 bool MidiArp::advancePatternIndex(bool reset)
@@ -407,7 +414,6 @@ bool MidiArp::advancePatternIndex(bool reset)
     }
     if ((patternIndex >= patternLen) || reset) {
         patternIndex = 0;
-        grooveIndex = 0;
         switch (repeatPatternThroughChord) {
             case 1:
                 noteOfs++;
@@ -436,6 +442,7 @@ void MidiArp::initLoop()
     len = 0.5;  
     vel = 0.8;  
     octave = 0; 
+    grooveIndex = 0;
 }
 
 void MidiArp::getNextNote(int askedTick)
@@ -459,6 +466,11 @@ void MidiArp::getNextNote(int askedTick)
 int MidiArp::getNextNoteTick()
 {
     return(nextNoteTick);
+}
+
+bool MidiArp::wantTrigByKbd()
+{
+    return(trigByKbd);
 }
 
 void MidiArp::getCurrentNote(int askedTick)
@@ -533,16 +545,14 @@ void MidiArp::foldReleaseTicks(int currentTick)
 
 void MidiArp::initArpTick(int currentTick)
 {
-    mutex.lock();
     arpTick = currentTick;
     currentVelocity[0] = 0;
-    currentNoteTick = 0;
-    nextNoteTick  = 0;
+    currentNoteTick = currentTick;
+    nextNoteTick  = currentTick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;
     grooveIndex = 0;
-    mutex.unlock();
 }
 
 void MidiArp::updatePattern(const QString& p_pattern)
@@ -573,6 +583,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
         }
     }
     patternIndex = 0;
+    grooveIndex = 0;
     noteOfs = 0;
     mutex.unlock();
 }
@@ -634,10 +645,37 @@ void MidiArp::updateQueueTempo(int val)
     queueTempo = (double)val;
 }
 
+void MidiArp::updateTriggerMode(int val)
+{
+    switch (val) {
+        case 0: 
+            trigByKbd = false;
+            restartByKbd = false;
+        break;
+        case 1: 
+            trigByKbd = false;
+            restartByKbd = true;
+        break;
+        case 2: 
+            trigByKbd = true;
+            restartByKbd = true;
+        break;
+        default:  
+            trigByKbd = false;
+            restartByKbd = false;
+    }
+}
+
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
     latchBuffer.clear();
+}
+
+int MidiArp::getPressedNoteCount()
+{
+    int c = noteCount - latchBuffer.count();
+    return(c);
 }
 
 void MidiArp::setSustain(bool on, int sustick)

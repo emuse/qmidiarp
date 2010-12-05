@@ -32,7 +32,9 @@ class SeqDriver : public QThread {
         bool modified;
         bool midi_controllable;
         bool threadAbort;
+        bool gotKbdTrig;
         int tick, nextEchoTick, jack_offset_tick, schedDelayTicks;
+        int lastKbdTick;
         int lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
         int nextNoteTick[20];
@@ -56,7 +58,7 @@ class SeqDriver : public QThread {
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
         int grooveTick, grooveVelocity, grooveLength;
-        bool use_midiclock, use_jacksync;
+        bool use_midiclock, use_jacksync, trigByKbd;
 
     public:
         SeqDriver(QList<MidiArp*> *p_midiArpList, 

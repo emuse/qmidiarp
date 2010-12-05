@@ -1,3 +1,15 @@
+2010-12-05  Frank Kober  <goemusic@yahoo.fr>
+	* arpscreen.*, midiarp.*: handling of follower position improved
+	* midiarp.*, seqdriver.*: trigger-by-note-on capability added. There
+	are now (finally) three trigger modes:
+		o No trigger: the original continuous mode
+		o Kbd restart: the pattern position is reset upon stakato note-on
+		o Kbd trigger: the arp is retriggered upon stakato note-on time.
+		  Absence of this mode has probably confused some users about
+		  the general function of the arpeggiator.
+	* arpwidget.*: combobox added for trigger mode choice.
+	* man/*: manpages updated
+	
 2010-11-27  Frank Kober  <goemusic@yahoo.fr>
 	* arpwidget.*, midiarp.*: new latch mode implemented. When latch button 
 	is checked, released notes are removed only after 200ms. If within

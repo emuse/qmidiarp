@@ -49,6 +49,7 @@ class MidiArp : public QThread  {
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     bool hold, isMuted;
+    bool restartByKbd, trigByKbd;
     int repeatPatternThroughChord;
     double tempo, len, vel;
     double attack_time, release_time; 
@@ -67,18 +68,21 @@ class MidiArp : public QThread  {
     void getCurrentNote(int askedTick);
     void getNextNote(int askedTick);
     int getNextNoteTick();
+    int getPressedNoteCount();
+    bool wantTrigByKbd();
     void initArpTick(int currentTick);
     void foldReleaseTicks(int currentTick);
     void newRandomValues();
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
     void run();
-    
+
   signals:
     void nextStep(int patternIndex);
 
   public slots:  
     void updatePattern(const QString&);
+    void updateTriggerMode(int val);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
