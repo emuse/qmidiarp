@@ -110,6 +110,12 @@ beim Abspeichern in der QMidiArp Session Datei mit abgespeichert und
 beim Öffnen dieser wiederhergestellt. 
 
 .SS "Arpeggiatormodule"
+QMidiArp's Arpeggiatormodule können komplexe Sequenzen produzieren, die von
+den auf dem Keyboard gespielten Noten abgeleitet werden. Die entstehende
+Sequenz hängt vom Arpeggio-Muster und von den Modulparametern ab. QMidiArp's
+Arpeggiatoren wurden inspiriert durch den MAP1 hardware Arpeggiator von 
+Rudi Linhard.
+.PP
 .B Eingangs- and Ausgangsfelder
 .PP
 Jeder Arpeggiator hat ein
@@ -172,6 +178,17 @@ mit einfachen Mustern wie "01" oder "0" ein komplettes Arpeggio leicht
 erzeugen. Wenn der Wiederholungsmodus "Statisch" gewählt ist, ist
 dieser klassische Arpeggio-Modus deaktiviert, und die gesendeten Noten
 bleiben konstant. 
+.PP
+.B "Triggermodus (Verhalten bei neuer Stakato-Note)"
+.PP
+QMidiArp's Arpeggiatoren besitzen drei Startmodi. Steht der Modus auf 
+"Durchspielen", so läuft die Sequenz synchron zur internen oder externen
+Uhr ununterbrochen weiter, unabhängig von dem Moment, in dem neue Tasten 
+gedrückt werden. Bei "Neustart" wird die Sequenzposition zum Start
+zurückgeschickt, wenn eine neue Taste stakato gespielt wird. Dies
+geschieht aber ohne das Timing des Sequenzers zu beeinflussen. Nur im
+Modus "Loslaufen" startet das Arpeggio mit dem Timing der gespielten
+stakato Note.
 .PP
 .B "Muster Bearbeiten"
 .PP
@@ -254,9 +271,6 @@ in ihrer Zeit, Länge und ihrem Anschlag. Dies kann benutzt werden, um
 Swing-Rythmen und Akzente zu erzeugen, oder um den Akzent auf eine 
 bestimmte Stelle jedes Taktes zu setzen. Die Groove-Einstellungen gelten 
 für alle Arpeggios in der Reiterleiste.
-.PP
-Die Arpeggiator-Module von QMidiArp wurden inspiriert durch den MAP1 
-Hardware-Arpeggiator von Rudi Linhard.
 
 .SS "LFO-Module"
 Parallel zu den Arpeggiatoren kann QMidiArp auch MIDI-Steuerdaten in Form

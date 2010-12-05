@@ -109,10 +109,8 @@ QMidiArp session file, and get active or inactive when a new session
 file is loaded. 
 
 .SS "Arpeggiator Modules"
-QMidiArp's arpeggiators only work in continuous mode. This means that
-the outgoing notes are not directly triggered by the notes played on the
-keyboard. They are produced in continuous patterns, in synchronization
-with a continuously running sequencer. QMidiArp's arpeggiator modules 
+QMidiArp's arpeggiators can produce complex patterns derived from the
+notes played on a MIDI keyboard. QMidiArp's arpeggiator modules 
 were inspired by the MAP1 hardware arpeggiator by Rudi Linhard.
 .PP
 .B Input and Output panels
@@ -149,12 +147,10 @@ window corresponds to the index of the notes in the pattern. Octave
 changes (see 
 .B Editing patterns
 ) are shown as additional horizontal lines. 
-The notes that are actually
-output depend on the input notes received by the
-arpeggiator. The received notes
-notes are attributed in ascending order to the notes defined in the 
-pattern. For example, a single streak on the bottom of the arp display 
-("simple" presets) means that at
+The notes that are eventually sent depend on the input notes received 
+by the arpeggiator. The received notes notes are attributed in ascending 
+order to the notes defined in the pattern. For example, a single streak 
+on the bottom of the arp display ("simple" presets) means that at
 the first pass through the pattern, the lowermost note played on the 
 keyboard is played.
 If a chord is played on the keyboard and only one note is
@@ -168,8 +164,8 @@ number of notes defined in the stack.
 .PP
 .B Repeat Mode
 .PP
-The defines the behavior of the arpeggio over several repetitions of 
-the pattern when the number of notes pressed on the keyboard is higher
+This setting defines the behavior of the arpeggio over several repetitions 
+of the pattern when the number of notes pressed on the keyboard is higher
 than the number of notes present in the pattern.
 When 
 .B Repeat Mode 
@@ -180,6 +176,17 @@ arpeggios. This way even simple patterns like "01" (or even "0") will
 generate a complete arpeggio.
 When "Static" is selected, this classical arpeggio mode will
 be disabled, and the output notes remain constant. 
+.PP
+.B "Trigger mode"
+.PP
+QMidiArp's arpeggiators can run in three modes. "No trigger" will cause
+the arp running continuously in synchronization with the internal or
+external clock source. Even when new notes are played, they will be
+output quantized to the running queue. "Kbd restart" will cause a reset
+of the playhead position upon the next note to be output, but the 
+output pattern stays quantized to the queue. When "Kbd trigger" is
+selected, each new note played in stakato will trigger the pattern
+with the timing of the played note.
 .PP
 .B "Editing Arp patterns"
 .PP
