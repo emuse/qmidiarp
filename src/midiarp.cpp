@@ -469,7 +469,8 @@ int MidiArp::getNextNoteTick()
 
 bool MidiArp::wantTrigByKbd()
 {
-    return(trigByKbd);
+	bool on = (getPressedNoteCount() && trigByKbd);
+    return(on);
 }
 
 void MidiArp::getCurrentNote(int askedTick)
