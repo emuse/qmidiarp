@@ -53,6 +53,7 @@ class SeqDriver : public QThread {
         int midiTick;
         double m_ratio;
         snd_seq_real_time_t delta, real_time, jack_offset;
+        snd_seq_real_time_t tmptime;
         
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
@@ -68,7 +69,7 @@ class SeqDriver : public QThread {
         void registerPorts(int num);
         int getPortCount();
         void initArpQueue();
-        snd_seq_real_time_t get_time();
+        void get_time();
         void setQueueStatus(bool run);
         bool isModified();
         void setModified(bool);

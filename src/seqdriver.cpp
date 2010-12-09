@@ -290,7 +290,7 @@ void SeqDriver::run()
                     for (l1 = 0; l1 < midiArpList->count(); l1++) {
                         if (((evIn->data.note.note == 0) && gotKbdTrig
                                 && midiArpList->at(l1)->wantTrigByKbd()) 
-                                || !gotKbdTrig) {
+                                || (!gotKbdTrig && (evIn->data.note.note == 0))) {
                             gotKbdTrig = false;
                             if (tick + schedDelayTicks >= nextNoteTick[l1]) {
                                 midiArpList->at(l1)->newRandomValues();
@@ -369,7 +369,8 @@ void SeqDriver::run()
     
                 if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                         || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
-                    tick = deltaToTick(get_time());
+                    get_time();
+                    tick = deltaToTick(tmptime);
                     for (l1 = 0; l1 < midiSeqList->count(); l1++) {
                         if (midiSeqList->at(l1)->isSeq(evIn)) {
                             unmatched = false;
@@ -390,8 +391,8 @@ void SeqDriver::run()
                                                 evIn->data.note.velocity, tick);
                                                 
                                 if (midiArpList->at(l1)->wantTrigByKbd()) {
-                                    nextEchoTick = tick + schedDelayTicks;
-                                    nextNoteTick[l1] = nextEchoTick;
+                                    nextEchoTick = tick;
+                                    nextNoteTick[l1] = nextEchoTick + schedDelayTicks;
                                     gotKbdTrig = true;
                                 }
                             } 
@@ -461,7 +462,7 @@ void SeqDriver::setQueueTempo(int bpm)
     m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
 }
 
-snd_seq_real_time_t SeqDriver::get_time()
+void SeqDriver::get_time()
 {
     snd_seq_queue_status_t *status;
 
@@ -470,8 +471,8 @@ snd_seq_real_time_t SeqDriver::get_time()
 
     const snd_seq_real_time_t* current_time = 
         snd_seq_queue_status_get_real_time(status);
+    tmptime = *current_time;
     snd_seq_queue_status_free(status);
-    return(*current_time);
 }
 
 void SeqDriver::runQueue(bool on)
