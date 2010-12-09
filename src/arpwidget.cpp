@@ -223,7 +223,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
-    connect(repeatPatternThroughChord, SIGNAL(activated(int)), this,
+    connect(repeatPatternThroughChord, SIGNAL(currentIndexChanged(int)), this,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
 
@@ -232,7 +232,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger");
     triggerMode->insertItems(0, triggerModeNames);
     triggerMode->setToolTip(tr("Trigger Mode"));
-    connect(triggerMode, SIGNAL(activated(int)), this,
+    connect(triggerMode, SIGNAL(currentIndexChanged(int)), this,
             SLOT(updateTriggerMode(int)));
     triggerMode->setCurrentIndex(0);
 
