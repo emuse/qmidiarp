@@ -1,3 +1,6 @@
+2011-01-04  Frank Kober  <goemusic@yahoo.fr>
+	* configure.ac: broken Qt lib checks disabled atm
+
 2010-12-09  Frank Kober  <goemusic@yahoo.fr>
 	* arpwidget.cpp: fixed combobox updates 'repeat mode and trig mode)
 	* seqdriver.*: fixed get_time() function that led to glitches in

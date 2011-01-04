@@ -15,11 +15,13 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
 
-# Checks for libraries.
-AC_CHECK_LIB([QtCore], qt_addObject, [],
-             [AC_MSG_ERROR(QtCore is required)])
-AC_CHECK_LIB([QtGui], _init, [],
-             [AC_MSG_ERROR(QtGui is required)])
+# Qt lib check is broken on some distros
+# AC_CHECK_LIB([QtCore], qt_addObject, [],
+#              [AC_MSG_ERROR(QtCore is required)])
+# AC_CHECK_LIB([QtGui], _init, [],
+#              [AC_MSG_ERROR(QtGui is required)])
+
+# Checks for libraries
 AC_CHECK_LIB([asound], [snd_pcm_open], ,
              [AC_MSG_ERROR(ALSA library (asound) is required)])
 AC_CHECK_LIB([jack], [jack_client_open], ,
