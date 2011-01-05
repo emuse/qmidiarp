@@ -1,7 +1,8 @@
 2011-01-04  Frank Kober  <goemusic@yahoo.fr>
 	* configure.ac: broken Qt lib checks disabled atm, changed version
 	number to 0.3.9
-	* man/*: update SUPPORT mailing address
+	* man/*: SUPPORT mailing address updated
+	* mainwindow.h: about message updated
 	
 2010-12-09  Frank Kober  <goemusic@yahoo.fr>
 	* arpwidget.cpp: fixed combobox updates 'repeat mode and trig mode)
