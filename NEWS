@@ -1,4 +1,4 @@
-qmidiarp-0.?.0 (2010-??-??)
+qmidiarp-0.3.9 (2011-01-05)
 
 New Features
   o Arpeggio pattern preset infrastructure
@@ -23,7 +23,7 @@ New Features
   o New .qmidiarprc file containing GUI settings, user arp patterns and 
     last file path
   o Save and SaveAs functions with modification monitoring
-  O All relevant session parameters stored in new .qmax XML session file
+  o All relevant session parameters stored in new .qmax XML session file
   o Manual pages in English, French and German
   o Handler for SIGINT added to handle unsaved or changed files more
     carefully at program termination.

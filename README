@@ -1,10 +1,10 @@
 QMidiArp by     Matthias Nagorni, (c)2004 by Novell,
-                Frank Kober, Guido Scholz (c)2009
+                Frank Kober, Guido Scholz (c)2009 - 2011
          published under GNU General Public License
          a copy of the License can be found in the COPYING file
 ---------------------------------------------------------------
 
-QMidiArp is an arpeggiator and MIDI LFO for ALSA.
+QMidiArp is an arpeggiator, sequencer and MIDI LFO for ALSA.
 For further information on general function please refer to the qmidiarp
 manual page.
 
@@ -19,9 +19,9 @@ qmidiarp uses autoconf/automake as build system. For short
 does the trick. Please refer to the INSTALL file for more information.
 
 
-CVS check out
+Git check out
 -------------
-If you start with a fresh CVS checkout, please first apply
+If you start with a fresh Git checkout, please first apply
 
   autoreconf -i
 
