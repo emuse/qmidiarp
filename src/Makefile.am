@@ -47,10 +47,12 @@ qmidiarp_SOURCES = \
 translationsdir = $(pkgdatadir)/translations
 translations = \
 	translations/qmidiarp_de.ts \
+	translations/qmidiarp_es.ts \
 	translations/qmidiarp_fr.ts
 
 translations_DATA = \
 	translations/qmidiarp_de.qm \
+	translations/qmidiarp_es.qm \
 	translations/qmidiarp_fr.qm
 
 
