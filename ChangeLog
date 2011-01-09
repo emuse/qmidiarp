@@ -1,6 +1,7 @@
 2011-01-08  Frank Kober  <goemusic@yahoo.fr>
 	* src/translations/qmidiarp_es.ts, src/Makefile.am: 
 	spanish translation added, provided by Pedro Lopez-Cabanillas
+	* groovewidget.cpp, slider.cpp: font-size-sensitive widths improved
 
 +++ Release 0.3.9 (2011-01-05) +++
 

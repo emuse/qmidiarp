@@ -35,7 +35,6 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     GrooveWidgetLayout->addWidget(grooveVelocity);
     GrooveWidgetLayout->addWidget(grooveLength);
     GrooveWidgetLayout->addStretch();
-    setMinimumWidth(300);
     setLayout(GrooveWidgetLayout);
 }
 

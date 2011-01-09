@@ -31,7 +31,7 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     QLabel* sliderLabel = new QLabel(this);
     sliderLabel->setText(label);
     sliderLabel->setBuddy(sliderSpin);
-    sliderLabel->setMinimumWidth(4*sliderLabel->fontMetrics().maxWidth());
+    sliderLabel->setMinimumWidth(5*sliderLabel->fontMetrics().maxWidth());
     QBoxLayout *sliderLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
     sliderLayout->setMargin(0);
     sliderLayout->addWidget(sliderLabel);
@@ -46,6 +46,7 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
         sliderLayout->setDirection(QBoxLayout::LeftToRight);
         sliderLayout->setAlignment(Qt::AlignTop);
     }
+    setMinimumWidth(155 + sliderLabel->width() + sliderLabel->fontMetrics().maxWidth() * 3);
     setLayout(sliderLayout);
 }
 
