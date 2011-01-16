@@ -172,9 +172,9 @@ void SeqDriver::run()
                 }
                 
                 
-                    //~ printf("       tick %d     \n",tick);
+                    //~ printf("       tick %d     ",tick);
                     //~ printf("nextLfoTick %d  ",nextLfoTick);
-                    //~ printf("nextSeqTick %d  ",nextSeqTick);
+                    //~ printf("nextSeqTick %d  \n",nextSeqTick);
                     //~ printf("nextEchoTick %d  \n",nextEchoTick);
                     //~ printf("midiTick %d   ",midiTick);
                     //~ printf("m_ratio %f  ",m_ratio);
@@ -239,7 +239,9 @@ void SeqDriver::run()
                     l2 = 0;
                     for (l1 = 0; l1 < midiSeqList->count(); l1++) {
                         if ((tick + 8) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
-                            midiSeqList->at(l1)->getData(&seqData);
+                            midiSeqList->at(l1)->getNextNote(&seqSample);
+                            lastSeqTick[l1]+=seqPacketSize[l1];
+                            seqPacketSize[l1] = TICKS_PER_QUARTER / midiSeqList->at(l1)->res;
                             seqlength = midiSeqList->at(l1)->notelength;
                             seqtransp = midiSeqList->at(l1)->transp; 
                             seqvel = midiSeqList->at(l1)->vel; 
@@ -247,25 +249,20 @@ void SeqDriver::run()
                             seqport = midiSeqList->at(l1)->portOut;
                             if (!midiSeqList->at(l1)->isMuted) {
                                 l2 = 0;
-                                while (seqData.at(l2).value > -1) {
-                                    if (!seqData.at(l2).muted) {
-                                        snd_seq_ev_clear(&evOut);
-                                        snd_seq_ev_set_note(&evOut, 0, 
-                                                seqData.at(l2).value+seqtransp,
-                                                seqvel, seqlength);
-                                        evOut.data.control.channel = seqchannel;
-                                        snd_seq_ev_schedule_real(&evOut, queue_id, 0,
-                                                tickToDelta(seqData.at(l2).tick + nextSeqTick));
-                                        snd_seq_ev_set_subs(&evOut);  
-                                        snd_seq_ev_set_source(&evOut,
-                                                portid_out[seqport]);
-                                        snd_seq_event_output_direct(seq_handle, &evOut);
-                                    }
-                                    l2++;
-                                }
+								if (!seqSample.muted) {
+									snd_seq_ev_clear(&evOut);
+									snd_seq_ev_set_note(&evOut, 0, 
+											seqSample.value+seqtransp,
+											seqvel, seqlength);
+									evOut.data.control.channel = seqchannel;
+									snd_seq_ev_schedule_real(&evOut, queue_id, 0,
+											tickToDelta(lastSeqTick[l1]));
+									snd_seq_ev_set_subs(&evOut);  
+									snd_seq_ev_set_source(&evOut,
+											portid_out[seqport]);
+									snd_seq_event_output_direct(seq_handle, &evOut);
+								}
                             }
-                            lastSeqTick[l1] += seqPacketSize[l1];
-                            seqPacketSize[l1] = seqData.last().tick;
                             if (!l1) 
                                 seqMinPacketSize = seqPacketSize[l1]; 
                             else if (seqPacketSize[l1] < seqMinPacketSize) 
@@ -493,6 +490,9 @@ void SeqDriver::setQueueStatus(bool run)
         for (l1 = 0; l1 < midiLfoList->count(); l1++) {
             midiLfoList->at(l1)->resetFramePtr();
         }
+        for (l1 = 0; l1 < midiSeqList->count(); l1++) {
+            midiSeqList->at(l1)->setCurrentIndex(0);
+        }
         runArp = true;
         startQueue = true;
         snd_seq_start_queue(seq_handle, queue_id, NULL);
@@ -506,7 +506,7 @@ void SeqDriver::setQueueStatus(bool run)
             seqPacketSize[l1] = 0;
         }
         nextLfoTick = 0;
-        nextSeqTick = 0;
+        nextSeqTick = - schedDelayTicks;
         nextEchoTick = 0;
         jack_offset_tick = 0;
           

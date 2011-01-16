@@ -40,7 +40,7 @@ class SeqDriver : public QThread {
         int nextNoteTick[20];
         int tempo, internal_tempo;
         QVector<LfoSample> lfoData;
-        QVector<SeqSample> seqData;
+        SeqSample seqSample;
 
         void initSeqNotifier();
         const snd_seq_real_time_t *tickToDelta(int tick);

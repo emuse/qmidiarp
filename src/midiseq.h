@@ -52,7 +52,7 @@ class MidiSeq : public QObject  {
     bool hold, isMuted;
     int vel, transp, notelength;
     int size, res, waveFormIndex;
-    int currentRecStep;
+    int currentRecStep, currentIndex;
     QVector<SeqSample> customWave;
     QVector<bool> muteMask;
                
@@ -61,6 +61,7 @@ class MidiSeq : public QObject  {
     ~MidiSeq();
     bool isSeq(snd_seq_event_t *evIn);
     void getData(QVector<SeqSample> *seqData);  
+    void getNextNote(SeqSample *p_seqSample);
     bool toggleMutePoint(double);
     
   public slots:  
@@ -75,6 +76,7 @@ class MidiSeq : public QObject  {
     void resizeAll();
     void copyToCustom();
     void setRecordedNote(int note);
+    void setCurrentIndex(int ix);
 };
                               
 #endif

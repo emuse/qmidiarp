@@ -39,6 +39,7 @@ MidiSeq::MidiSeq()
     portOut = 0;
     channelOut = 0;
     waveFormIndex = 0;
+    currentIndex = 0;
     isMuted = false;
     int lt = 0;
     int l1 = 0;
@@ -86,6 +87,15 @@ bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
         }
     }
     return(true);
+}
+
+void MidiSeq::getNextNote(SeqSample *p_seqSample)
+{
+	SeqSample seqSample;
+	seqSample = customWave.at(currentIndex);
+	currentIndex++;
+	currentIndex %= (size * res);
+	*p_seqSample = seqSample;
 }
 
 void MidiSeq::getData(QVector<SeqSample> *p_seqData)
@@ -227,4 +237,9 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
     seqSample.muted = on;
     customWave.replace(loc, seqSample);
     muteMask.replace(loc, on);
+}
+
+void MidiSeq::setCurrentIndex(int ix)
+{
+	currentIndex=ix;
 }
