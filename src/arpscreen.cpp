@@ -90,7 +90,6 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     patternLen = a_pattern.length();
     patternMaxIndex = 0;
-
     for (l1 = 0; l1 < patternLen; l1++) 
     {
         c = a_pattern.at(l1);
@@ -334,34 +333,23 @@ void ArpScreen::paintEvent(QPaintEvent*)
                             / (patternMaxIndex + 1) / noctaves
                             + ARPSCREEN_VMARGIN - 3 + notestreak_thick;
                 xpos = ARPSCREEN_HMARGIN + x + notestreak_thick / 2;
-                if (grooveIndex == currentIndex) 
-                {
-                    pen.setColor(QColor(140, 240, 140));
-                    p.setPen(pen);
-                    p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
-                            ARPSCREEN_HMARGIN + x, h);
-                    pen.setWidth(notestreak_thick);
-                    pen.setColor(QColor(80 + 60 * (vel - 0.8),
-                               250, 120 + 60 * (vel - 0.8)));
-                    p.setPen(pen);
+                pen.setWidth(notestreak_thick);
+                pen.setColor(QColor(80 + 60 * (vel - 0.8),
+                            160 + 40 * (vel - 0.8),
+                            80 + 60 * (vel - 0.8)));
+                p.setPen(pen);
+                p.drawLine(xpos, ypos,
+                        xpos + notelen - notestreak_thick / 2, ypos);
+                if (grooveIndex == currentIndex) {
+                    ypos = h - 2;
                     p.drawLine(xpos, ypos,
-                            xpos + notelen - notestreak_thick / 2, ypos);
-                } else 
-                {
-                    pen.setWidth(notestreak_thick);
-                    pen.setColor(QColor(80 + 60 * (vel - 0.8),
-                                160 + 40 * (vel - 0.8),
-                                80 + 60 * (vel - 0.8)));
-                    p.setPen(pen);
-                    p.drawLine(xpos, ypos,
-                            xpos + notelen - notestreak_thick / 2, ypos);
+                        xpos + notelen - notestreak_thick / 2, ypos);
                 }
                 pen.setWidth(1);
 
             }
         }
     }
-
 }
 
 void ArpScreen::updateScreen(const QString& pattern)

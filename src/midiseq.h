@@ -63,6 +63,9 @@ class MidiSeq : public QObject  {
     void getData(QVector<SeqSample> *seqData);  
     void getNextNote(SeqSample *p_seqSample);
     bool toggleMutePoint(double);
+
+  signals:
+    void nextStep(int currentIndex);
     
   public slots:  
     void updateVelocity(int);

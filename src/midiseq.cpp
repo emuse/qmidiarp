@@ -93,6 +93,7 @@ void MidiSeq::getNextNote(SeqSample *p_seqSample)
 {
 	SeqSample seqSample;
 	seqSample = customWave.at(currentIndex);
+    emit nextStep(currentIndex);
 	currentIndex++;
 	currentIndex %= (size * res);
 	*p_seqSample = seqSample;
