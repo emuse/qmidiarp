@@ -26,29 +26,32 @@ class LfoScreen : public QWidget
     QVector<LfoSample> p_lfoData, lfoData;
     int mouseX, mouseY, mouseW;
     int w, h;
+    int currentIndex;
     int clip(int value, int min, int max, bool *outOfRange);
     bool isMuted;
-    
+    bool onlyCursor;
+
   protected:
     virtual void paintEvent(QPaintEvent *);
-   
+
   public:
     LfoScreen(QWidget* parent=0);
     ~LfoScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
-    
+
   signals:
     void lfoMousePressed(double, double, int);
     void lfoMouseMoved(double, double, int);
     void lfoWheel(int);
-    
-  public slots: 
+
+  public slots:
     void updateScreen(const QVector<LfoSample>& lfoData);
+    void updateScreen(int p_index);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
     void setMuted(bool on);
 };
-  
+
 #endif

@@ -1,18 +1,18 @@
 /*
  *      midilfo.h
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -32,10 +32,10 @@
         int value;
         int tick;
         bool muted;
-    };    
+    };
 
 class MidiLfo : public QObject  {
-    
+
   Q_OBJECT
 
   private:
@@ -44,7 +44,7 @@ class MidiLfo : public QObject  {
     int frameptr;
     int clip(int value, int min, int max, bool *outOfRange);
     QVector<LfoSample> lfoData;
-     
+
   public:
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
@@ -54,15 +54,18 @@ class MidiLfo : public QObject  {
     int cwmin;
     QVector<LfoSample> customWave;
     QVector<bool> muteMask;
-           
+
   public:
     MidiLfo();
     ~MidiLfo();
-    void getData(QVector<LfoSample> *lfoData);  
+    void getData(QVector<LfoSample> *lfoData);
     void getNextFrame(QVector<LfoSample> *p_lfoData);
     bool toggleMutePoint(double);
-    
-  public slots:  
+
+  signals:
+    void nextStep(int frameptr);
+
+  public slots:
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
@@ -76,5 +79,5 @@ class MidiLfo : public QObject  {
     void copyToCustom();
     void resetFramePtr();
 };
-                              
+
 #endif

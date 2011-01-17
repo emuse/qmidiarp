@@ -51,9 +51,9 @@ MainWindow::MainWindow(int p_portCount)
 
     arpData = new ArpData(this);
     arpData->registerPorts(p_portCount);
-                
+
     midiCCTable = new MidiCCTable(arpData, this);
-    
+
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
     logWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -62,13 +62,13 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)), 
+    connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)),
             logWidget, SLOT(appendEvent(snd_seq_event_t *)));
 
     passWidget = new PassWidget(arpData, p_portCount, this);
-   
-    connect(this, SIGNAL(runQueue(bool)), 
-            arpData->seqDriver, SLOT(runQueue(bool)));                                
+
+    connect(this, SIGNAL(runQueue(bool)),
+            arpData->seqDriver, SLOT(runQueue(bool)));
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -78,11 +78,11 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
-    connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             arpData->seqDriver, SLOT(setGrooveTick(int)));
-    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
             arpData->seqDriver, SLOT(setGrooveVelocity(int)));
-    connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
             arpData->seqDriver, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
@@ -102,17 +102,17 @@ MainWindow::MainWindow(int p_portCount)
 
 
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
-    fileNewAction->setShortcut(QKeySequence(QKeySequence::New));    
+    fileNewAction->setShortcut(QKeySequence(QKeySequence::New));
     fileNewAction->setToolTip(tr("Create new arpeggiator file"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
 
     fileOpenAction = new QAction(QIcon(fileopen_xpm), tr("&Open..."), this);
-    fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));    
+    fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
     fileOpenAction->setToolTip(tr("Open arpeggiator file"));
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
 
     fileSaveAction = new QAction(QIcon(filesave_xpm), tr("&Save"), this);
-    fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));    
+    fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));
     fileSaveAction->setToolTip(tr("Save current arpeggiator file"));
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
 
@@ -123,7 +123,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
 
     fileQuitAction = new QAction(QIcon(filequit_xpm), tr("&Quit"), this);
-    fileQuitAction->setShortcut(QKeySequence(tr("Ctrl+Q", "File|Quit")));    
+    fileQuitAction->setShortcut(QKeySequence(tr("Ctrl+Q", "File|Quit")));
     fileQuitAction->setToolTip(tr("Quit application"));
     connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
@@ -141,7 +141,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(tempoSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updateTempo(int)));
 
-    midiClockAction = new QAction(QIcon(midiclock_xpm), 
+    midiClockAction = new QAction(QIcon(midiclock_xpm),
             tr("&Use incoming MIDI Clock"), this);
     midiClockAction->setCheckable(true);
     midiClockAction->setChecked(false);
@@ -150,17 +150,17 @@ MainWindow::MainWindow(int p_portCount)
             SLOT(midiClockToggle(bool)));
 
 
-    jackSyncAction = new QAction(QIcon(jacktr_xpm), 
+    jackSyncAction = new QAction(QIcon(jacktr_xpm),
             tr("&Connect to Jack Transport"), this);
     jackSyncAction->setCheckable(true);
     jackSyncAction->setChecked(false);
     jackSyncAction->setDisabled(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(arpData->seqDriver, SIGNAL(jackShutdown(bool)), 
+    connect(arpData->seqDriver, SIGNAL(jackShutdown(bool)),
             jackSyncAction, SLOT(setChecked(bool)));
 
-    
+
     updateRunQueue(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
@@ -173,14 +173,14 @@ MainWindow::MainWindow(int p_portCount)
     viewGrooveAction->setText(tr("&Groove Settings"));
     viewGrooveAction->setShortcut(QKeySequence(tr("Ctrl+G", "View|Groove")));
 
-    QAction* viewSettingsAction = new QAction(tr("&Settings"), this); 
+    QAction* viewSettingsAction = new QAction(tr("&Settings"), this);
     viewSettingsAction->setIcon(QIcon(settings_xpm));
     viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P",
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
-    QMenuBar *menuBar = new QMenuBar; 
-    QMenu *fileMenu = new QMenu(tr("&File"), this); 
+    QMenuBar *menuBar = new QMenuBar;
+    QMenu *fileMenu = new QMenu(tr("&File"), this);
     QMenu *viewMenu = new QMenu(tr("&View"), this);
     QMenu *arpMenu = new QMenu(tr("Mod&ule"), this);
     QMenu *helpMenu = new QMenu(tr("&Help"), this);
@@ -189,11 +189,11 @@ MainWindow::MainWindow(int p_portCount)
     fileMenu->addAction(fileOpenAction);
 
     fileRecentlyOpenedFiles = fileMenu->addMenu(tr("&Recently opened files"));
-    
+
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileSaveAsAction);
     fileMenu->addSeparator();
-    fileMenu->addAction(fileQuitAction);    
+    fileMenu->addAction(fileQuitAction);
     connect(fileMenu, SIGNAL(aboutToShow()), this,
         SLOT(setupRecentFilesMenu()));
     connect(fileRecentlyOpenedFiles, SIGNAL(triggered(QAction*)), this,
@@ -211,14 +211,14 @@ MainWindow::MainWindow(int p_portCount)
     arpMenu->addSeparator();
 
     helpMenu->addAction(tr("&About %1...").arg(APP_NAME), this,
-            SLOT(helpAbout())); 
+            SLOT(helpAbout()));
     helpMenu->addAction(tr("&About Qt..."), this,
             SLOT(helpAboutQt()));
 
     fileToolBar = new QToolBar(tr("&File Toolbar"), this);
-    fileToolBar->addAction(fileNewAction);    
-    fileToolBar->addAction(fileOpenAction);    
-    fileToolBar->addAction(fileSaveAction);    
+    fileToolBar->addAction(fileNewAction);
+    fileToolBar->addAction(fileOpenAction);
+    fileToolBar->addAction(fileSaveAction);
     fileToolBar->addAction(fileSaveAsAction);
     fileToolBar->setObjectName("fileToolBar");
     fileToolBar->setMaximumHeight(30);
@@ -255,10 +255,10 @@ MainWindow::MainWindow(int p_portCount)
 
     if (checkRcFile())
         readRcFile();
-    
+
     if (!installSignalHandlers())
         qWarning("%s", "Signal handlers not installed!");
-    
+
     show();
 }
 
@@ -332,7 +332,7 @@ void MainWindow::addArp(const QString& name)
 {
     int count, widgetID;
     MidiArp *midiArp = new MidiArp();
-    arpData->addMidiArp(midiArp);   
+    arpData->addMidiArp(midiArp);
     ArpWidget *arpWidget = new ArpWidget(midiArp,
             arpData->getPortCount(), passWidget->compactStyle, this);
     // passing compactStyle property was necessary because stylesheet
@@ -340,30 +340,30 @@ void MainWindow::addArp(const QString& name)
     connect(midiArp, SIGNAL(nextStep(int)),
             arpWidget->screen, SLOT(updateScreen(int)));
     connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
-                    QString&, int)), 
+                    QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
                     QString&, int)));
-    connect(arpWidget, SIGNAL(arpRemove(int)), 
+    connect(arpWidget, SIGNAL(arpRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(arpWidget, SIGNAL(dockRename(const QString&, int)), 
+    connect(arpWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(arpWidget, SIGNAL(setMidiLearn(int, int, int)), 
+    connect(arpWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
 
-    connect(grooveWidget, SIGNAL(newGrooveTick(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             arpWidget->screen, SLOT(setGrooveTick(int)));
-    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
             arpWidget->screen, SLOT(setGrooveVelocity(int)));
-    connect(grooveWidget, SIGNAL(newGrooveLength(int)), 
+    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
             arpWidget->screen, SLOT(setGrooveLength(int)));
-            
+
     widgetID = arpData->arpWidgetCount();
     arpWidget->name = name;
     arpWidget->ID = widgetID;
-    
+
     arpData->addArpWidget(arpWidget);
     arpData->seqDriver->sendGroove();
-    
+
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -371,7 +371,7 @@ void MainWindow::addArp(const QString& name)
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-    
+
     count = arpData->moduleWindowCount();
     arpWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
@@ -384,14 +384,16 @@ void MainWindow::addLfo(const QString& name)
 {
     int count, widgetID;
     MidiLfo *midiLfo = new MidiLfo();
-    arpData->addMidiLfo(midiLfo);   
+    arpData->addMidiLfo(midiLfo);
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
             arpData->getPortCount(), passWidget->compactStyle, this);
-    connect(lfoWidget, SIGNAL(lfoRemove(int)), 
+    connect(midiLfo, SIGNAL(nextStep(int)),
+            lfoWidget->screen, SLOT(updateScreen(int)));
+    connect(lfoWidget, SIGNAL(lfoRemove(int)),
             this, SLOT(removeLfo(int)));
-    connect(lfoWidget, SIGNAL(dockRename(const QString&, int)), 
+    connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(lfoWidget, SIGNAL(setMidiLearn(int, int, int)), 
+    connect(lfoWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = arpData->lfoWidgetCount();
@@ -407,7 +409,7 @@ void MainWindow::addLfo(const QString& name)
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-    
+
     count = arpData->moduleWindowCount();
     lfoWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
@@ -419,25 +421,25 @@ void MainWindow::addSeq(const QString& name)
 {
     int count, widgetID;
     MidiSeq *midiSeq = new MidiSeq();
-    arpData->addMidiSeq(midiSeq);   
+    arpData->addMidiSeq(midiSeq);
     SeqWidget *seqWidget = new SeqWidget(midiSeq,
             arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiSeq, SIGNAL(nextStep(int)),
             seqWidget->screen, SLOT(updateScreen(int)));
     connect(seqWidget, SIGNAL(seqRemove(int)), this, SLOT(removeSeq(int)));
-    connect(seqWidget, SIGNAL(dockRename(const QString&, int)), 
+    connect(seqWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
     connect(arpData->seqDriver, SIGNAL(noteEvent(int, int)),
             seqWidget, SLOT(processNote(int, int)));
-            
+
     widgetID = arpData->seqWidgetCount();
     seqWidget->name = name;
     seqWidget->ID = widgetID;
-    
+
     arpData->addSeqWidget(seqWidget);
-    
+
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -454,7 +456,7 @@ void MainWindow::addSeq(const QString& name)
     checkIfFirstModule();
 }
 
-void MainWindow::renameDock(const QString& name, int parentDockID) 
+void MainWindow::renameDock(const QString& name, int parentDockID)
 {
     arpData->moduleWindow(parentDockID)->setWindowTitle(name);
     arpData->setModified(true);
@@ -464,10 +466,10 @@ void MainWindow::removeArp(int index)
 {
     int parentDockID;
     ArpWidget *arpWidget = arpData->arpWidget(index);
-    
+
     parentDockID = arpWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
-    
+
     arpData->removeMidiArp(arpWidget->getMidiWorker());
     arpData->removeArpWidget(arpWidget);
     delete arpWidget;
@@ -480,10 +482,10 @@ void MainWindow::removeLfo(int index)
 {
     int parentDockID;
     LfoWidget *lfoWidget = arpData->lfoWidget(index);
-    
+
     parentDockID = lfoWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
-    
+
     arpData->removeMidiLfo(lfoWidget->getMidiWorker());
     arpData->removeLfoWidget(lfoWidget);
     delete lfoWidget;
@@ -496,10 +498,10 @@ void MainWindow::removeSeq(int index)
 {
     int parentDockID;
     SeqWidget *seqWidget = arpData->seqWidget(index);
-    
+
     parentDockID = seqWidget->parentDockID;
     QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
-    
+
     arpData->removeMidiSeq(seqWidget->getMidiWorker());
     arpData->removeSeqWidget(seqWidget);
     delete seqWidget;
@@ -512,7 +514,7 @@ void MainWindow::clear()
 {
     updateRunQueue(false);
     jackSyncToggle(false);
-    
+
     while (arpData->midiArpCount()) {
         removeArp(arpData->midiArpCount() - 1);
     }
@@ -520,7 +522,7 @@ void MainWindow::clear()
     while (arpData->midiLfoCount()) {
         removeLfo(arpData->midiLfoCount() - 1);
     }
-    
+
     while (arpData->midiSeqCount()) {
         removeSeq(arpData->midiSeqCount() - 1);
     }
@@ -550,10 +552,10 @@ void MainWindow::chooseFile()
             + tr("Old QMidiArp files") + " (*.qma)");
     if (fn.isEmpty())
         return;
-        
+
     if (fn.endsWith(".qma"))
         openTextFile(fn);
-        
+
     else if (fn.endsWith(FILEEXT))
         openFile(fn);
 }
@@ -580,7 +582,7 @@ void MainWindow::openFile(const QString& fn)
         if (xml.isStartElement()) {
             if (xml.isEndElement())
                 break;
-            
+
             if (xml.name() != "session") {
                 xml.raiseError(tr("Not a QMidiArp xml file."));
                 QMessageBox::warning(this, APP_NAME,
@@ -589,11 +591,11 @@ void MainWindow::openFile(const QString& fn)
             }
             while (!xml.atEnd()) {
                 xml.readNext();
-            
+
                 if (xml.isEndElement())
                     break;
-                
-                if ((xml.isStartElement()) && (xml.name() == "global")) 
+
+                if ((xml.isStartElement()) && (xml.name() == "global"))
                     readFilePartGlobal(xml);
                 else if (xml.isStartElement() && (xml.name() == "modules"))
                     readFilePartModules(xml);
@@ -606,11 +608,11 @@ void MainWindow::openFile(const QString& fn)
     }
 
     addRecentlyOpenedFile(filename, recentFiles);
-    arpData->setModified(false);    
+    arpData->setModified(false);
 }
 
 void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
-{    
+{
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement()) {
@@ -665,12 +667,12 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             addArp("Arp:" + xml.attributes().value("name").toString());
             arpData->arpWidget(arpData->midiArpCount() - 1)
                     ->readData(xml);
-        }   
+        }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             addLfo("LFO:" + xml.attributes().value("name").toString());
             arpData->lfoWidget(arpData->midiLfoCount() - 1)
                     ->readData(xml);
-        }   
+        }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             addSeq("Seq:" + xml.attributes().value("name").toString());
             arpData->seqWidget(arpData->midiSeqCount() - 1)
@@ -700,10 +702,10 @@ void MainWindow::skipXmlElement(QXmlStreamReader& xml)
         qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
         while (!xml.atEnd()) {
             xml.readNext();
-    
+
             if (xml.isEndElement())
                 break;
-    
+
             if (xml.isStartElement()) {
                 skipXmlElement(xml);
             }
@@ -766,7 +768,7 @@ void MainWindow::openTextFile(const QString& fn)
     qs2 = qs.section(' ', 2, 2);
     grooveWidget->grooveLength->setValue(qs2.toInt());
     //  arpData->seqDriver->setGrooveLength(qs2.toInt());
- 
+
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
         if (qs.startsWith("GUI"))
@@ -804,14 +806,14 @@ void MainWindow::openTextFile(const QString& fn)
         QByteArray array = QByteArray::fromHex(qs.toLatin1());
         restoreState(array);
     }
-    
+
     midiClockAction->setChecked(midiclocktmp);
-    
+
     filename.append("x");
     QMessageBox::warning(this, APP_NAME,
             tr("The QMidiArp text file was imported. If you save this file, \
 it will be saved using the newer xml format under the name\n '%1'.").arg(filename));
-    
+
     updateWindowTitle();
 }
 
@@ -824,7 +826,7 @@ void MainWindow::fileSave()
 }
 
 bool MainWindow::saveFile()
-{    
+{
     int l1;
     int ns = 0;
     int nl = 0;
@@ -832,7 +834,7 @@ bool MainWindow::saveFile()
 
     QFile f(filename);
     QString nameTest;
-    
+
     if (!f.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(this, APP_NAME,
                 tr("Could not write to file '%1'.").arg(filename));
@@ -846,45 +848,45 @@ bool MainWindow::saveFile()
     xml.writeAttribute("version", PACKAGE_VERSION);
     xml.writeAttribute("name", filename.mid(filename.lastIndexOf('/') + 1,
                     filename.count() - filename.lastIndexOf('/') - 6));
-    
+
     xml.writeStartElement("global");
-    
+
         xml.writeTextElement("tempo", QString::number(tempoSpin->value()));
-        
-        xml.writeStartElement("settings");    
-            xml.writeTextElement("midiControlEnabled", 
+
+        xml.writeStartElement("settings");
+            xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
-            xml.writeTextElement("midiClockEnabled", 
+            xml.writeTextElement("midiClockEnabled",
                 QString::number((int)arpData->seqDriver->use_midiclock));
-            xml.writeTextElement("jackSyncEnabled", 
+            xml.writeTextElement("jackSyncEnabled",
                 QString::number((int)arpData->seqDriver->use_jacksync));
-            xml.writeTextElement("forwardUnmatched", 
+            xml.writeTextElement("forwardUnmatched",
                 QString::number((int)arpData->seqDriver->forwardUnmatched));
-            xml.writeTextElement("forwardPort", 
+            xml.writeTextElement("forwardPort",
                 QString::number(arpData->seqDriver->portUnmatched));
         xml.writeEndElement();
-        
+
         xml.writeStartElement("groove");
-            xml.writeTextElement("tick", 
+            xml.writeTextElement("tick",
                 QString::number(arpData->seqDriver->grooveTick));
-            xml.writeTextElement("velocity", 
+            xml.writeTextElement("velocity",
                 QString::number(arpData->seqDriver->grooveVelocity));
-            xml.writeTextElement("length", 
+            xml.writeTextElement("length",
                 QString::number(arpData->seqDriver->grooveLength));
         xml.writeEndElement();
-        
+
     xml.writeEndElement();
-   
+
     xml.writeStartElement("modules");
-  
+
     for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
-        
+
         nameTest = arpData->moduleWindow(l1)->objectName();
-        
+
         if (nameTest.startsWith('S')) {
             arpData->seqWidget(ns)->writeData(xml);
             ns++;
-        } 
+        }
         if (nameTest.startsWith('L')) {
             arpData->lfoWidget(nl)->writeData(xml);
             nl++;
@@ -894,16 +896,16 @@ bool MainWindow::saveFile()
             na++;
         }
     }
-    
+
     xml.writeEndElement();
-    
-    xml.writeStartElement("GUI");    
+
+    xml.writeStartElement("GUI");
         xml.writeTextElement("windowState", saveState().toHex());
     xml.writeEndElement();
-    
+
     xml.writeEndElement();
     xml.writeEndDocument();
-    
+
 
     arpData->setModified(false);
     return true;
@@ -915,7 +917,7 @@ bool MainWindow::saveTextFile()
     int ns = 0;
     int nl = 0;
     int na = 0;
-    
+
     QString nameTest;
     QFile f(filename);
 
@@ -924,31 +926,31 @@ bool MainWindow::saveTextFile()
                 tr("Could not write to file '%1'.").arg(filename));
         return false;
     }
-    
-    
+
+
     QTextStream saveText(&f);
-    saveText << "Tempo\n";   
-    saveText << tempoSpin->value() << '\n';    
+    saveText << "Tempo\n";
+    saveText << tempoSpin->value() << '\n';
     saveText << "MIDI Control\n";
     saveText << (int)passWidget->cbuttonCheck->isChecked() << '\n';
     saveText << "MIDI Clock\n";
     saveText << (int)arpData->seqDriver->use_midiclock << '\n';
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
-    
+
     saveText << arpData->seqDriver->grooveTick;
     saveText << ' ' << arpData->seqDriver->grooveVelocity;
     saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
 
     for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
-        
+
         nameTest = arpData->moduleWindow(l1)->objectName();
-        
+
         if (nameTest.startsWith('S')) {
             saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
             arpData->seqWidget(ns)->writeDataText(saveText);
             ns++;
-        } 
+        }
         if (nameTest.startsWith('L')) {
             saveText << qPrintable(arpData->lfoWidget(nl)->name) << '\n';
             arpData->lfoWidget(nl)->writeDataText(saveText);
@@ -976,7 +978,7 @@ bool MainWindow::saveFileAs()
     bool result = false;
 
     QString fn =  QFileDialog::getSaveFileName(this,
-            tr("Save arpeggiator"), lastDir, tr("QMidiArp files") 
+            tr("Save arpeggiator"), lastDir, tr("QMidiArp files")
             + " (*" + FILEEXT + ")");
 
     if (!fn.isEmpty()) {
@@ -1034,7 +1036,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
     if (isSave()) {
         writeRcFile();
         e->accept();
-    } else 
+    } else
         e->ignore();
 }
 
@@ -1083,7 +1085,7 @@ void MainWindow::setGUIforExtSync(bool on)
     addSeqAction->setDisabled(on);
     fileOpenAction->setDisabled(on);
     fileRecentlyOpenedFiles->setDisabled(on);
-}   
+}
 
 bool MainWindow::checkRcFile()
 {
@@ -1093,15 +1095,15 @@ bool MainWindow::checkRcFile()
 
         patternNames
             <<  "                         "
-            <<  "Simple 4"   
-            <<  "Simple 8"   
-            <<  "Simple 16"  
-            <<  "Simple 32"  
-            <<  "Chord 8"    
-            <<  "Chord+Bass 16"   
-            <<  "Chord Oct 16 A"  
-            <<  "Chord Oct 16 B"  
-            <<  "Chord Oct 16 C"  
+            <<  "Simple 4"
+            <<  "Simple 8"
+            <<  "Simple 16"
+            <<  "Simple 32"
+            <<  "Chord 8"
+            <<  "Chord+Bass 16"
+            <<  "Chord Oct 16 A"
+            <<  "Chord Oct 16 B"
+            <<  "Chord Oct 16 C"
             <<  "Chords/Glissando 16";
 
         patternPresets
@@ -1116,7 +1118,7 @@ bool MainWindow::checkRcFile()
             << ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"
             << ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
             << "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342";
-            
+
         writeRcFile();
         retval = false;
     }
@@ -1127,7 +1129,7 @@ void MainWindow::readRcFile()
 {
     QString qs;
     QStringList value;
-    
+
     QDir qmahome = QDir(QDir::homePath());
     QString qmarcpath = qmahome.filePath(QMARCNAME);
     QFile f(qmarcpath);
@@ -1136,14 +1138,14 @@ void MainWindow::readRcFile()
         QMessageBox::warning(this, PACKAGE,
                 tr("Could not read from resource file"));
         return;
-    }   
+    }
     QTextStream loadText(&f);
     patternNames.clear();
     patternPresets.clear();
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
-        
+
         if (qs.startsWith('#')) {
             value.clear();
             value = qs.split('%');
@@ -1181,14 +1183,14 @@ void MainWindow::writeRcFile()
         return;
     }
     QTextStream writeText(&f);
-    
-    for (l1 = 0; l1 < patternNames.count(); l1++) 
+
+    for (l1 = 0; l1 < patternNames.count(); l1++)
     {
         writeText << "#Pattern%";
         writeText << qPrintable(patternNames.at(l1)) << "%";
         writeText << qPrintable(patternPresets.at(l1)) << endl;
     }
-    
+
     writeText << "#CompactStyle%";
     writeText << passWidget->compactStyle << endl;
     writeText << "#EnableLog%";
@@ -1200,7 +1202,7 @@ void MainWindow::writeRcFile()
 
     writeText << "#LastDir%";
     writeText << lastDir << endl;
-    
+
     // save recently opened files (all recent files code taken from AMS)
     if (recentFiles.count() > 0) {
         QStringList::Iterator it = recentFiles.begin();
@@ -1289,7 +1291,7 @@ void MainWindow::checkIfFirstModule()
     if (arpData->moduleWindowCount() == 1) {
         midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
-        runAction->setEnabled(!(midiClockAction->isChecked() 
+        runAction->setEnabled(!(midiClockAction->isChecked()
                                 || jackSyncAction->isChecked()));
     }
 }
@@ -1351,7 +1353,7 @@ void MainWindow::signalAction(int fd)
         qWarning("read() failed: %s", std::strerror(errno));
         return;
     }
-    
+
     switch (message) {
         case SIGUSR1:
             fileSave();

@@ -1,18 +1,18 @@
 /*
  *      midilfo.cpp
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -68,17 +68,17 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
 {
     //this function is called by seqdriver and returns a frame of
     //maximum LFO_FRAMESIZE points
-    
+
     QVector<LfoSample> lfoFrame;
     LfoSample lfoSample;
     int step = TICKS_PER_QUARTER / res;
     int npoints = size * res;
     int lt, l1;
-    
+
     lfoFrame.clear();
     lt = 0;
     l1 = 0;
-    
+
     while ((l1 < LFO_FRAMESIZE) && (l1 < npoints)) {
         lfoSample = lfoData.at((l1 + frameptr) % npoints);
         lfoSample.tick = lt;
@@ -88,18 +88,20 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
     }
     lfoSample.value = -1;
     lfoSample.tick = lt;
-    lfoFrame.append(lfoSample);    
-   
+    lfoFrame.append(lfoSample);
+    // TODO: limit update cursor frequency to 16ths
+    emit nextStep(frameptr);
+
     frameptr += l1;
     frameptr %= npoints;
-    
+
     *p_lfoData = lfoFrame;
 }
 
 void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
-{ 
+{
     //this function returns the full LFO wave
-    
+
     LfoSample lfoSample;
     int l1 = 0;
     int lt = 0;
@@ -110,13 +112,13 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
     int npoints = size * res;
     //res: number of events per beat
     //size: size of waveform in beats
-    
+
     lfoData.clear();
-    
+
     switch(waveFormIndex) {
         case 0: //sine
             for (l1 = 0; l1 < npoints; l1++) {
-                lfoSample.value = clip((-cos((double)(l1 * 6.28 / 
+                lfoSample.value = clip((-cos((double)(l1 * 6.28 /
                 res * freq / 4)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
@@ -127,7 +129,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
         case 1: //sawtooth up
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                lfoSample.value = clip(val * amp / res / 4 
+                lfoSample.value = clip(val * amp / res / 4
                 + offs, 0, 127, &cl);
                 lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
@@ -142,7 +144,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
             for (l1 = 0; l1 < npoints; l1++) {
                 tempval = val - res * 2;
                 if (tempval < 0 ) tempval = -tempval;
-                lfoSample.value = clip((res * 2 - tempval) * amp 
+                lfoSample.value = clip((res * 2 - tempval) * amp
                         / res / 2 + offs, 0, 127, &cl);
                 lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
@@ -155,7 +157,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
         case 3: //sawtooth down
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                lfoSample.value = clip((res * 4 - val) 
+                lfoSample.value = clip((res * 4 - val)
                         * amp / res / 4 + offs, 0, 127, &cl);
                 lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
@@ -167,7 +169,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
         break;
         case 4: //square
             for (l1 = 0; l1 < npoints; l1++) {
-                lfoSample.value = clip(amp * ((l1 * freq / 2 
+                lfoSample.value = clip(amp * ((l1 * freq / 2
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 lfoSample.tick = lt;
                 lfoSample.muted = muteMask.at(l1);
@@ -184,7 +186,7 @@ void MidiLfo::getData(QVector<LfoSample> *p_lfoData)
     }
     lfoSample.value = -1;
     lfoSample.tick = lt;
-    lfoData.append(lfoSample);    
+    lfoData.append(lfoSample);
     *p_lfoData = lfoData;
 }
 
@@ -199,7 +201,7 @@ int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
     } else if (tmp < min) {
         tmp = min;
         *outOfRange = true;
-    }  
+    }
     return(tmp);
 }
 
@@ -233,19 +235,19 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     LfoSample lfoSample;
     int loc = mouseX * (res * size);
     int Y = mouseY * 128;
-    
+
     if (newpt) {
         lastMouseLoc = loc;
         lastMouseY = Y;
     }
-    
+
     if (loc == lastMouseLoc) lastMouseY = Y;
-    
+
     do {
         if (loc > lastMouseLoc) {
             lastMouseY += (double)(lastMouseY - Y) / (lastMouseLoc - loc) + .5;
             lastMouseLoc++;
-        } 
+        }
         if (loc < lastMouseLoc) {
             lastMouseY -= (double)(lastMouseY - Y) / (lastMouseLoc - loc) - .5;
             lastMouseLoc--;
@@ -263,7 +265,8 @@ void MidiLfo::resizeAll()
     int os;
     int step = TICKS_PER_QUARTER / res;
     LfoSample lfoSample;
-    
+
+    frameptr%=(res * size);
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
@@ -279,7 +282,7 @@ void MidiLfo::resizeAll()
 void MidiLfo::copyToCustom()
 {
     int m;
-    
+
     m = lfoData.count();
     lfoData.remove(m - 1);
     customWave = lfoData;
@@ -291,15 +294,15 @@ void MidiLfo::updateCustomWaveOffset(int cwoffs)
     const int count = customWave.count();
     int l1 = 0;
     bool cl = false;
-    
+
     while ((!cl) && (l1 < count)) {
         lfoSample.value = clip(customWave.at(l1).value + cwoffs - cwmin,
                             0, 127, &cl);
         l1++;
         }
-        
+
     if (cl) return;
-    
+
     for (l1 = 0; l1 < count; l1++) {
         lfoSample = customWave.at(l1);
         lfoSample.value += cwoffs - cwmin;
@@ -313,7 +316,7 @@ bool MidiLfo::toggleMutePoint(double mouseX)
     LfoSample lfoSample;
     bool m;
     int loc = mouseX * (res * size);
-    
+
     m = muteMask.at(loc);
     muteMask.replace(loc, !m);
     if (waveFormIndex == 5) {
@@ -329,7 +332,7 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
 {
     LfoSample lfoSample;
     int loc = mouseX * (res * size);
-    
+
     do {
         if (waveFormIndex == 5) {
             lfoSample = customWave.at(lastMouseLoc);
@@ -337,7 +340,7 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
             customWave.replace(lastMouseLoc, lfoSample);
         }
         muteMask.replace(lastMouseLoc, on);
-        if (loc > lastMouseLoc) lastMouseLoc++; 
+        if (loc > lastMouseLoc) lastMouseLoc++;
         if (loc < lastMouseLoc) lastMouseLoc--;
     } while (lastMouseLoc != loc);
 }

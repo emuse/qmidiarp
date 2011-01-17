@@ -1,18 +1,18 @@
 /*
  *      midiseq.cpp
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -68,16 +68,16 @@ bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
 
     if ((evIn->type != SND_SEQ_EVENT_NOTEON)
             && (evIn->type != SND_SEQ_EVENT_NOTEOFF)
-            && (evIn->type != SND_SEQ_EVENT_CONTROLLER)) 
+            && (evIn->type != SND_SEQ_EVENT_CONTROLLER))
     {
         return(false);
     }
     if ((evIn->data.control.channel < chIn)
-            || (evIn->data.control.channel > chIn)) 
+            || (evIn->data.control.channel > chIn))
     {
         return(false);
     }
-    if ((evIn->type == SND_SEQ_EVENT_NOTEON) 
+    if ((evIn->type == SND_SEQ_EVENT_NOTEON)
             || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
         if (!(enableNoteIn)) {
             return(false);
@@ -91,16 +91,16 @@ bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
 
 void MidiSeq::getNextNote(SeqSample *p_seqSample)
 {
-	SeqSample seqSample;
-	seqSample = customWave.at(currentIndex);
+    SeqSample seqSample;
+    seqSample = customWave.at(currentIndex);
     emit nextStep(currentIndex);
-	currentIndex++;
-	currentIndex %= (size * res);
-	*p_seqSample = seqSample;
+    currentIndex++;
+    currentIndex %= (size * res);
+    *p_seqSample = seqSample;
 }
 
 void MidiSeq::getData(QVector<SeqSample> *p_seqData)
-{ 
+{
     SeqSample seqSample;
     int lt = 0;
     int step = TICKS_PER_QUARTER / res;
@@ -109,7 +109,7 @@ void MidiSeq::getData(QVector<SeqSample> *p_seqData)
     //size: size of waveform in beats
     QVector<SeqSample> seqData;
     seqData.clear();
-    
+
     switch(waveFormIndex) {
         case 0: //custom
             lt = step * customWave.count();
@@ -120,7 +120,7 @@ void MidiSeq::getData(QVector<SeqSample> *p_seqData)
     }
     seqSample.value = -1;
     seqSample.tick = lt;
-    seqData.append(seqSample);    
+    seqData.append(seqSample);
     *p_seqData = seqData;
 }
 
@@ -135,7 +135,7 @@ int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
     } else if (tmp < min) {
         tmp = min;
         *outOfRange = true;
-    }  
+    }
     return(tmp);
 }
 
@@ -175,7 +175,7 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 void MidiSeq::setRecordedNote(int note)
 {
     SeqSample seqSample;
-        
+
     seqSample = customWave.at(currentRecStep);
     seqSample.value = note;
     seqSample.tick = currentRecStep * TICKS_PER_QUARTER / res;
@@ -189,7 +189,7 @@ void MidiSeq::resizeAll()
     int os;
     int step = TICKS_PER_QUARTER / res;
     SeqSample seqSample;
-    
+
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
@@ -207,7 +207,7 @@ void MidiSeq::copyToCustom()
 {
     QVector<SeqSample> seqData;
     int m;
-    
+
     seqData.clear();
     getData(&seqData);
     m = seqData.count();
@@ -220,7 +220,7 @@ bool MidiSeq::toggleMutePoint(double mouseX)
     SeqSample seqSample;
     bool m;
     int loc = mouseX * (res * size);
-    
+
     m = muteMask.at(loc);
     muteMask.replace(loc, !m);
     seqSample = customWave.at(loc);
@@ -233,7 +233,7 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
 {
     SeqSample seqSample;
     int loc = mouseX * (res * size);
-    
+
     seqSample = customWave.at(loc);
     seqSample.muted = on;
     customWave.replace(loc, seqSample);
@@ -242,5 +242,5 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
 
 void MidiSeq::setCurrentIndex(int ix)
 {
-	currentIndex=ix;
+    currentIndex=ix;
 }
