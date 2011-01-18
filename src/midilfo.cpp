@@ -66,8 +66,9 @@ void MidiLfo::setMuted(bool on)
 
 void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
 {
-    //this function is called by seqdriver and returns a frame of
-    //maximum LFO_FRAMESIZE points
+    //this function is called by seqdriver and returns one sample
+    //if res <= LFO_FRAMELIMIT and a frame if res > LFO_FRAMELIMIT
+    //the FRAMELIMIT avoids excessive cursor updating
 
     QVector<LfoSample> lfoFrame;
     LfoSample lfoSample;
@@ -79,17 +80,17 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
     lt = 0;
     l1 = 0;
 
-    while ((l1 < LFO_FRAMESIZE) && (l1 < npoints)) {
+    do {
         lfoSample = lfoData.at((l1 + frameptr) % npoints);
         lfoSample.tick = lt;
         lfoFrame.append(lfoSample);
         lt+=step;
         l1++;
-    }
+    } while ((l1 < res/LFO_FRAMELIMIT) && (l1 < npoints));
+
     lfoSample.value = -1;
     lfoSample.tick = lt;
     lfoFrame.append(lfoSample);
-    // TODO: limit update cursor frequency to 16ths
     emit nextStep(frameptr);
 
     frameptr += l1;

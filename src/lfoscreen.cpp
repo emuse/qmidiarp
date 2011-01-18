@@ -169,19 +169,20 @@ void LfoScreen::paintEvent(QPaintEvent*)
         }
     }
     // Cursor
-    pen.setColor(QColor(180, 130, 50));
+    pen.setWidth(notestreak_thick * 2);
+    pen.setColor(QColor(200, 180, 70));
     p.setPen(pen);
     x = currentIndex * xscale * (int)nsteps / npoints;
-    xpos = LFOSCREEN_HMARGIN + x + notestreak_thick / 2;
+    xpos = LFOSCREEN_HMARGIN + x + notestreak_thick;
     p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - notestreak_thick / 2, h - 2);
+                    xpos + (xscale / beatRes) - notestreak_thick, h - 2);
 
     pen.setColor(QColor(50, 10, 10));
     p.setPen(pen);
     x = ((currentIndex - 1) % (int)nsteps) * xscale * nsteps / npoints;
-    xpos = LFOSCREEN_HMARGIN + x + notestreak_thick / 2;
+    xpos = LFOSCREEN_HMARGIN + x + notestreak_thick;
     p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - notestreak_thick / 2, h - 2);
+                    xpos + (xscale / beatRes) - notestreak_thick, h - 2);
 
     pen.setWidth(1);
 }

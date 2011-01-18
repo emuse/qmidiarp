@@ -204,19 +204,20 @@ void SeqScreen::paintEvent(QPaintEvent*)
                             SEQSCREEN_HMARGIN *2 / 3, ypos);
     }
     // Cursor
-    pen.setColor(QColor(50, 130, 180));
+    pen.setWidth(notestreak_thick * 2);
+    pen.setColor(QColor(50, 180, 220));
     p.setPen(pen);
-    x = currentIndex * xscale * nsteps / npoints;
-    xpos = SEQSCREEN_HMARGIN + x + notestreak_thick / 2;
+    x = currentIndex * xscale * (int)nsteps / npoints;
+    xpos = SEQSCREEN_HMARGIN + x + notestreak_thick;
     p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - notestreak_thick / 2, h - 2);
+                    xpos + (xscale / beatRes) - notestreak_thick, h - 2);
 
     pen.setColor(QColor(10, 10, 50));
     p.setPen(pen);
     x = ((currentIndex - 1) % (int)nsteps) * xscale * nsteps / npoints;
-    xpos = SEQSCREEN_HMARGIN + x + notestreak_thick / 2;
+    xpos = SEQSCREEN_HMARGIN + x + notestreak_thick;
     p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - notestreak_thick / 2, h - 2);
+                    xpos + (xscale / beatRes) - notestreak_thick, h - 2);
 }
 
 void SeqScreen::updateScreen(const QVector<SeqSample>& seqData)

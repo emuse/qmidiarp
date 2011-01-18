@@ -1,18 +1,18 @@
 /*
  *      arpscreen.cpp
- *      
+ *
  *      This file is part of QMidiArp.
- * 
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -63,7 +63,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double nsteps = 0.0;
     double tempo = 1.0;
     double curstep = 0.0;
-    int nlines = 0; 
+    int nlines = 0;
     int notelen;
     int ypos, xpos;
     int octYoffset;
@@ -90,7 +90,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     patternLen = a_pattern.length();
     patternMaxIndex = 0;
-    for (l1 = 0; l1 < patternLen; l1++) 
+    for (l1 = 0; l1 < patternLen; l1++)
     {
         c = a_pattern.at(l1);
 
@@ -126,7 +126,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
             case '.':
                 tempo = 1.0;
                 break;
-                
+
             case 'p':
                 if (!chordMode)
                     nsteps += tempo;
@@ -154,13 +154,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
             case '\\':
                 vel -= 0.2;
-                break; 
+                break;
 
             case 'd':
                 notelen *= 2;
                 break;
 
-            case 'h': 
+            case 'h':
                 notelen /= 2;
                 break;
 
@@ -170,9 +170,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     }
 
-    
+
     //Green Filled Frame
-    if (isMuted) 
+    if (isMuted)
         p.fillRect(0, 0, w, h, QColor(70, 70, 70));
     else
         p.fillRect(0, 0, w, h, QColor(10, 50, 10));
@@ -182,8 +182,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.setPen(QColor(20, 160, 20));
     p.drawRect(0, 0, w - 1, h - 1);
 
-    //Grid 
-    len = nsteps;  
+    //Grid
+    len = nsteps;
     xscale = (w - 2 * ARPSCREEN_HMARGIN) / len;
     yscale = h - 2 * ARPSCREEN_VMARGIN;
 
@@ -198,7 +198,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         if ((bool)(l1%beat)) {
             p.setPen(QColor(60, 180, 60));
         } else {
-            p.setPen(QColor(60, 180, 150));   
+            p.setPen(QColor(60, 180, 150));
         }
         x = l1 * xscale;
         p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
@@ -218,7 +218,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     p.drawLine(ARPSCREEN_HMARGIN + x1,
                             ARPSCREEN_VMARGIN, ARPSCREEN_HMARGIN + x1,
                             h - ARPSCREEN_VMARGIN);
-            } 
+            }
         }
     }
 
@@ -227,11 +227,11 @@ void ArpScreen::paintEvent(QPaintEvent*)
     noctaves = maxOctave - minOctave + 1;
     for (l1 = 0; l1 < noctaves + 1; l1++) {
         ypos = yscale * l1 / noctaves + ARPSCREEN_VMARGIN;
-        p.drawLine(ARPSCREEN_HMARGIN, ypos, w - ARPSCREEN_HMARGIN, ypos);        
-        p.drawText(ARPSCREEN_HMARGIN / 2 - 3, 
-                yscale * (l1 + 0.5) / noctaves + ARPSCREEN_VMARGIN + 4, 
+        p.drawLine(ARPSCREEN_HMARGIN, ypos, w - ARPSCREEN_HMARGIN, ypos);
+        p.drawText(ARPSCREEN_HMARGIN / 2 - 3,
+                yscale * (l1 + 0.5) / noctaves + ARPSCREEN_VMARGIN + 4,
                 QString::number(noctaves - l1 + minOctave - 1));
-    }    
+    }
 
     //Draw arpTicks
     curstep= 0.0;
@@ -243,23 +243,23 @@ void ArpScreen::paintEvent(QPaintEvent*)
     chordIndex = 0;
 
 
-    for (l1 = 0; l1 < patternLen; l1++) 
+    for (l1 = 0; l1 < patternLen; l1++)
     {
         c = a_pattern.at(l1);
         grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick ;
-        if (c.isDigit()) 
+        if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
-            if (!chordIndex) 
+            if (!chordIndex)
             {
                 if (chordMode) chordIndex++;
-                curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp); 
-                grooveIndex++; 
+                curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp);
+                grooveIndex++;
             }
         }
-        else 
+        else
         {
-            switch (c.toAscii()) 
+            switch (c.toAscii())
             {
                 case '(':
                     chordMode = true;
@@ -286,7 +286,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 case 'p':
                     if (!chordMode)
                         curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp);
-                        grooveIndex++; 
+                        grooveIndex++;
                    break;
 
                 case '+':
@@ -319,15 +319,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
                 default:
                     ;
-            }   
+            }
         }
 
-        if (c.isDigit()) 
+        if (c.isDigit())
         {
             octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
             x = (curstep - tempo) * xscale;
 //          notestreak_thick = h / (patternMaxIndex + 1) / noctaves / 2;
-            if (nlines > 0) 
+            if (nlines > 0)
             {
                 ypos = yscale - yscale * (nlines - 1 + octYoffset)
                             / (patternMaxIndex + 1) / noctaves
@@ -340,10 +340,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 p.setPen(pen);
                 p.drawLine(xpos, ypos,
                         xpos + notelen - notestreak_thick / 2, ypos);
+                // Cursor
                 if (grooveIndex == currentIndex) {
+                    pen.setWidth(notestreak_thick * 2);
+                    p.setPen(pen);
                     ypos = h - 2;
                     p.drawLine(xpos, ypos,
-                        xpos + notelen - notestreak_thick / 2, ypos);
+                        xpos + notelen - notestreak_thick, ypos);
                 }
                 pen.setWidth(1);
 
@@ -389,7 +392,7 @@ void ArpScreen::setMuted(bool on)
 
 QSize ArpScreen::sizeHint() const
 {
-    return QSize(ARPSCREEN_MINIMUM_WIDTH, ARPSCREEN_MINIMUM_HEIGHT); 
+    return QSize(ARPSCREEN_MINIMUM_WIDTH, ARPSCREEN_MINIMUM_HEIGHT);
 }
 
 QSizePolicy ArpScreen::sizePolicy() const

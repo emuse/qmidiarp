@@ -190,6 +190,7 @@ void MidiSeq::resizeAll()
     int step = TICKS_PER_QUARTER / res;
     SeqSample seqSample;
 
+    currentIndex%=(res * size);
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
