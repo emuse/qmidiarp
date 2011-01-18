@@ -1,3 +1,6 @@
+2011-01-18  Frank Kober  <goemusic@yahoo.fr>
+	* version changed to 0.4.0
+	
 2011-01-08  Frank Kober  <goemusic@yahoo.fr>
 	* src/translations/qmidiarp_es.ts, src/Makefile.am: 
 	spanish translation added, provided by Pedro Lopez-Cabanillas
