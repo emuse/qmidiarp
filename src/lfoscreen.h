@@ -28,6 +28,7 @@ class LfoScreen : public QWidget
     int w, h;
     int currentIndex;
     int clip(int value, int min, int max, bool *outOfRange);
+    bool recordMode;
     bool isMuted;
     bool onlyCursor;
 
@@ -50,6 +51,7 @@ class LfoScreen : public QWidget
     void updateScreen(int p_index);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void setRecord(bool on);
     void wheelEvent(QWheelEvent* event);
     void setMuted(bool on);
 };

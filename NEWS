@@ -1,9 +1,14 @@
+qmidiarp-0.4.0 (2011-MM-DD)
+New Features
+  o All modules now have a playhead cursor
+  o LFOs can record controller data by a new MIDI-learnable Record button.
+
 qmidiarp-0.3.9 (2011-01-05)
 
 New Features
   o Arpeggio pattern preset infrastructure
   o Synchronized MIDI LFO modules added
-    LFOs have calculated and drawable waveforms, selectable frequency, 
+    LFOs have calculated and drawable waveforms, selectable frequency,
     amplitude, offset, time resolution and length
   o Synchronized step sequencer modules added
     Step sequencer can be transposed and velocity-modulated by received
@@ -20,7 +25,7 @@ New Features
   o Event log entries are color-coded, optional MIDI Clock event display
   o Re-designed graphical user interface:  all modules and dialogs
     are dockable floatable windows, main and file icon toolbars added
-  o New .qmidiarprc file containing GUI settings, user arp patterns and 
+  o New .qmidiarprc file containing GUI settings, user arp patterns and
     last file path
   o Save and SaveAs functions with modification monitoring
   o All relevant session parameters stored in new .qmax XML session file

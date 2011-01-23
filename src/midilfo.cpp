@@ -31,11 +31,17 @@ MidiLfo::MidiLfo()
     freq = 4;
     size = 1;
     res = 16;
+    old_res = 0;
     ccnumber = 74;
     portOut = 0;
     channelOut = 0;
+    chIn = 0;
+    ccnumberIn = 74;
     waveFormIndex = 0;
     isMuted = false;
+    recordMode = false;
+    isRecording = false;
+    recValue = 0;
     int l1 = 0;
     int lt = 0;
     int step = TICKS_PER_QUARTER / res;
@@ -80,8 +86,23 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
     lt = 0;
     l1 = 0;
 
+    if (old_res) {
+        if ((frameptr)%(old_res/res)) {
+            qWarning("jump a step");
+            qWarning("frameptr %d", frameptr);
+            qWarning("res %d : old_res %d\n", res, old_res);
+            step = TICKS_PER_QUARTER/old_res;
+            npoints = size * old_res;
+        }
+        old_res = 0;
+    }
+
     do {
         lfoSample = lfoData.at((l1 + frameptr) % npoints);
+        if (isRecording) {
+            lfoSample.value = recValue;
+            customWave.replace((l1 + frameptr) % npoints, lfoSample);
+        }
         lfoSample.tick = lt;
         lfoFrame.append(lfoSample);
         lt+=step;
@@ -89,6 +110,7 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
     } while ((l1 < res/LFO_FRAMELIMIT) && (l1 < npoints));
 
     lfoSample.value = -1;
+
     lfoSample.tick = lt;
     lfoFrame.append(lfoSample);
     emit nextStep(frameptr);
@@ -226,6 +248,15 @@ void MidiLfo::updateOffset(int val)
     offs = val;
 }
 
+void MidiLfo::updateResolution(int val)
+{
+    if (val < res) {
+        old_res = res;
+    }
+    res = val;
+    resizeAll();
+}
+
 void MidiLfo::updateQueueTempo(int val)
 {
     queueTempo = (double)val;
@@ -349,4 +380,18 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
 void MidiLfo::resetFramePtr()
 {
     frameptr = 0;
+}
+
+void MidiLfo::record(int value)
+{
+    recValue = value;
+    isRecording = true;
+}
+
+bool MidiLfo::isLfo(int cctest, int chtest)
+{
+    if (!recordMode) return(false);
+    if (chtest != chIn) return(false);
+    if (cctest != ccnumberIn) return(false);
+    return(true);
 }

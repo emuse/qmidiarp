@@ -11,7 +11,7 @@
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
-    connect(seqDriver, SIGNAL(controlEvent(int, int, int)), 
+    connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
 }
@@ -244,14 +244,14 @@ bool ArpData::isModified()
             lfomodified = true;
             break;
         }
-        
+
     for (int l1 = 0; l1 < seqWidgetCount(); l1++)
         if (seqWidget(l1)->isModified()) {
             seqmodified = true;
             break;
         }
 
-    return modified || seqDriver->isModified() 
+    return modified || seqDriver->isModified()
                     || arpmodified || lfomodified || seqmodified;
 }
 
@@ -314,7 +314,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(!m);
                                         return;
                                     }
-                        case 1: 
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 arpWidget(l1)->selectPatternPreset(sval);
@@ -336,8 +336,11 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 }
             }
         }
-    
+
         for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
+            if (midiLfo(l1)->isLfo(ccnumber, channel)) {
+                lfoWidget(l1)->record(value);
+            }
             cclist = lfoWidget(l1)->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
@@ -361,41 +364,58 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
-                        
-                        case 1: 
+
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->amplitude->setValue(sval);
                                 return;
                         break;
-                        
-                        case 2: 
+
+                        case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->offset->setValue(sval);
                                 return;
                         break;
-                        case 3: 
+                        case 3:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateWaveForm(sval);
                                 return;
                         break;
-                        case 4: 
+                        case 4:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->freqBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateFreq(sval);
                                 return;
                         break;
+                        case 5: if (min == max) {
+                                    if (value == max) {
+                                        m = lfoWidget(l1)->recordAction->isChecked();
+                                        lfoWidget(l1)->recordAction->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        lfoWidget(l1)->recordAction->setChecked(true);
+                                    }
+                                    if (value == min) {
+                                        lfoWidget(l1)->recordAction->setChecked(false);
+                                    }
+                                }
+                        break;
+
                         default:
                         break;
                     }
                 }
             }
         }
-        
+
         for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
             cclist = seqWidget(l1)->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
@@ -421,14 +441,14 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 }
                         break;
 
-                        case 1: 
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->velocity->setValue(sval);
                                 return;
                         break;
-                        
-                        case 2: 
+
+                        case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->notelength->setValue(sval);
@@ -455,7 +475,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
             seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
-        
+
         midiLearnFlag = false;
     }
 }

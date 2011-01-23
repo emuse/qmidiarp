@@ -1,18 +1,18 @@
 /*
  *      seqwidget.h
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -45,7 +45,7 @@ struct MidiCC {
         int ccnumber;
         int channel;
         int ID;
-    };    
+    };
 #define MIDICC_H
 #endif
 
@@ -60,7 +60,7 @@ class SeqWidget : public QWidget
     QAction *deleteAction, *renameAction;
     QAction *cancelMidiLearnAction;
     QToolButton *copyToCustomButton;
- 
+
     MidiSeq *midiWorker;
     QVector<SeqSample> seqData;
     bool modified, lastMute;
@@ -71,16 +71,16 @@ class SeqWidget : public QWidget
     SeqScreen *screen;
     QStringList waveForms;
     QCheckBox *muteOut;
-    QCheckBox *enableNoteIn;               
-    QCheckBox *enableVelIn; 
+    QCheckBox *enableNoteIn;
+    QCheckBox *enableVelIn;
     Slider *velocity, *transpose, *notelength;
     int ID, parentDockID;
     QVector<MidiCC> ccList;
-        
+
     SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
     ~SeqWidget();
     MidiSeq *getMidiWorker();
-    
+
     void readData(QXmlStreamReader& xml);
     void skipXmlElement(QXmlStreamReader& xml);
     void readDataText(QTextStream& arpText);
@@ -94,14 +94,14 @@ class SeqWidget : public QWidget
     void loadWaveForms();
     bool isModified();
     void setModified(bool);
-  
+
   signals:
     void patternChanged();
     void seqRemove(int ID);
-    void dockRename(const QString& name, int parentDockID);  
+    void dockRename(const QString& name, int parentDockID);
     void setMidiLearn(int parentDockID, int ID, int controlID);
     void setMidiForget(int parentDockID, int ID);
-    
+
   public slots:
     void updateChIn(int value);
     void updateEnableNoteIn(bool on);
@@ -132,5 +132,5 @@ class SeqWidget : public QWidget
     void midiForgetNoteLen();
     void midiLearnCancel();
 };
-  
+
 #endif

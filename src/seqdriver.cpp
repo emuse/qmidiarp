@@ -357,6 +357,7 @@ void SeqDriver::run()
                     }
                     else {
                         if (midi_controllable) {
+                            //Go through MIDI control actions list (arpData)
                             emit controlEvent(ccnumber, evIn->data.control.channel,
                                                 evIn->data.control.value);
                             unmatched = false;
@@ -505,7 +506,7 @@ void SeqDriver::setQueueStatus(bool run)
             lastSeqTick[l1] = 0;
             seqPacketSize[l1] = 0;
         }
-        nextLfoTick = 0;
+        nextLfoTick = - schedDelayTicks;
         nextSeqTick = - schedDelayTicks;
         nextEchoTick = 0;
         jack_offset_tick = 0;
@@ -552,6 +553,7 @@ void SeqDriver::setQueueStatus(bool run)
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             midiArpList->at(l1)->clearNoteBuffer();
         }
+
         snd_seq_remove_events_t *remove_ev;
 
         snd_seq_remove_events_malloc(&remove_ev);

@@ -283,85 +283,103 @@
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="51"/>
+        <location filename="../lfowidget.cpp" line="52"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Renombrar...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="52"/>
+        <location filename="../lfowidget.cpp" line="53"/>
         <source>Rename this LFO</source>
         <translation>Renombrar este LFO</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="57"/>
+        <location filename="../lfowidget.cpp" line="58"/>
         <source>&amp;Delete...</source>
         <translation>&amp;Borrar...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="58"/>
+        <location filename="../lfowidget.cpp" line="59"/>
         <source>Delete this LFO</source>
         <translation>Borrar este LFO</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="68"/>
+        <location filename="../lfowidget.cpp" line="103"/>
         <source>Output</source>
         <translation>Salida</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="70"/>
+        <location filename="../lfowidget.cpp" line="105"/>
         <source>&amp;Mute</source>
         <translation>&amp;Silenciar</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="73"/>
+        <location filename="../lfowidget.cpp" line="108"/>
         <source>Cancel MIDI &amp;Learning</source>
         <translation>&amp;Cancelar aprendizaje MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="79"/>
-        <location filename="../lfowidget.cpp" line="166"/>
-        <location filename="../lfowidget.cpp" line="192"/>
-        <location filename="../lfowidget.cpp" line="232"/>
-        <location filename="../lfowidget.cpp" line="249"/>
+        <location filename="../lfowidget.cpp" line="114"/>
+        <location filename="../lfowidget.cpp" line="207"/>
+        <location filename="../lfowidget.cpp" line="233"/>
+        <location filename="../lfowidget.cpp" line="279"/>
+        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="310"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Aprendizaje MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="82"/>
-        <location filename="../lfowidget.cpp" line="169"/>
-        <location filename="../lfowidget.cpp" line="195"/>
-        <location filename="../lfowidget.cpp" line="235"/>
-        <location filename="../lfowidget.cpp" line="252"/>
+        <location filename="../lfowidget.cpp" line="117"/>
+        <location filename="../lfowidget.cpp" line="210"/>
+        <location filename="../lfowidget.cpp" line="236"/>
+        <location filename="../lfowidget.cpp" line="282"/>
+        <location filename="../lfowidget.cpp" line="296"/>
+        <location filename="../lfowidget.cpp" line="313"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Olvidar MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="92"/>
+        <location filename="../lfowidget.cpp" line="71"/>
+        <location filename="../lfowidget.cpp" line="127"/>
         <source>MIDI &amp;CC#</source>
         <translation>MIDI &amp;CC#</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="98"/>
+        <location filename="../lfowidget.cpp" line="69"/>
+        <source>Input</source>
+        <translation type="unfinished">Entrada</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="77"/>
+        <source>MIDI Controller number to record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="82"/>
+        <source>&amp;Channel</source>
+        <translation type="unfinished">&amp;Canal</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="133"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Número de controlador MIDI enviado a la salida</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="102"/>
+        <location filename="../lfowidget.cpp" line="137"/>
         <source>&amp;Port</source>
         <translation>&amp;Puerto</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="109"/>
+        <location filename="../lfowidget.cpp" line="144"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="137"/>
+        <location filename="../lfowidget.cpp" line="178"/>
         <source>Wave</source>
         <translation>Onda</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="141"/>
+        <location filename="../lfowidget.cpp" line="182"/>
         <source>Right button to mute points
 Left button to draw custom wave
 Wheel to change offset</source>
@@ -370,92 +388,103 @@ Botón izquierdo para dibujar onda personalizada
 Rueda para cambiar desplazamiento</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="149"/>
+        <location filename="../lfowidget.cpp" line="190"/>
         <source>&amp;Waveform</source>
         <translation>&amp;Forma de onda</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="160"/>
+        <location filename="../lfowidget.cpp" line="201"/>
         <source>Waveform Basis</source>
         <translation>Forma de onda base</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="175"/>
+        <location filename="../lfowidget.cpp" line="216"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Frecuencia</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="185"/>
+        <location filename="../lfowidget.cpp" line="226"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Frecuencia (ciclos/tiempo): Numero de ciclos de onda producidos en cada tiempo</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="201"/>
+        <location filename="../lfowidget.cpp" line="242"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Resolución</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="210"/>
+        <location filename="../lfowidget.cpp" line="251"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Resolución (eventos/tiempo): Número de eventos producidos por cada tiempo</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="215"/>
+        <location filename="../lfowidget.cpp" line="256"/>
         <source>&amp;Length</source>
         <translation>&amp;Longitud</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="222"/>
+        <location filename="../lfowidget.cpp" line="263"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longitud de la onda LFO en tiempos</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="228"/>
+        <location filename="../lfowidget.cpp" line="268"/>
+        <location filename="../lfowidget.cpp" line="269"/>
+        <source>Re&amp;cord</source>
+        <translation type="unfinished">&amp;Grabar</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="270"/>
+        <source>Record incoming controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="289"/>
         <source>&amp;Amplitude</source>
         <translation>&amp;Amplitud</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="245"/>
+        <location filename="../lfowidget.cpp" line="306"/>
         <source>&amp;Offset</source>
         <translation>&amp;Desplazamiento</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="668"/>
+        <location filename="../lfowidget.cpp" line="746"/>
         <source>Sine</source>
         <translation>Seno</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="668"/>
+        <location filename="../lfowidget.cpp" line="746"/>
         <source>Saw up</source>
         <translation>Sierra hacia arriba</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="668"/>
+        <location filename="../lfowidget.cpp" line="746"/>
         <source>Triangle</source>
         <translation>Triángulo</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="669"/>
+        <location filename="../lfowidget.cpp" line="747"/>
         <source>Saw down</source>
         <translation>Sierra hacia abajo</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="669"/>
+        <location filename="../lfowidget.cpp" line="747"/>
         <source>Square</source>
         <translation>Cuadrado</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="669"/>
+        <location filename="../lfowidget.cpp" line="747"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="842"/>
+        <location filename="../lfowidget.cpp" line="959"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>¿Eliminar &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="861"/>
+        <location filename="../lfowidget.cpp" line="978"/>
         <source>New Name</source>
         <translation>Nuevo nombre</translation>
     </message>

@@ -25,7 +25,7 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-
+#include <alsa/asoundlib.h>
 #include <main.h>
 
     struct LfoSample {
@@ -42,6 +42,7 @@ class MidiLfo : public QObject  {
     double queueTempo;
     int lastMouseLoc, lastMouseY;
     int frameptr;
+    int recValue;
     int clip(int value, int min, int max, bool *outOfRange);
     QVector<LfoSample> lfoData;
 
@@ -49,8 +50,11 @@ class MidiLfo : public QObject  {
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
     bool hold, isMuted;
+    bool recordMode, isRecording;
     int freq, amp, offs, ccnumber;
+    int chIn, ccnumberIn;
     int size, res, waveFormIndex;
+    int old_res;
     int cwmin;
     QVector<LfoSample> customWave;
     QVector<bool> muteMask;
@@ -61,6 +65,7 @@ class MidiLfo : public QObject  {
     void getData(QVector<LfoSample> *lfoData);
     void getNextFrame(QVector<LfoSample> *p_lfoData);
     bool toggleMutePoint(double);
+    bool isLfo(int cctest, int chtest);
 
   signals:
     void nextStep(int frameptr);
@@ -69,8 +74,10 @@ class MidiLfo : public QObject  {
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
+    void updateResolution(int);
     void updateCustomWaveOffset(int);
     void updateQueueTempo(int);
+    void record(int value);
     void setMuted(bool); //set mute
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double, bool);
