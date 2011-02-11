@@ -479,12 +479,12 @@ Rueda para cambiar desplazamiento</translation>
         <translation>Personalizado</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="959"/>
+        <location filename="../lfowidget.cpp" line="952"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>¿Eliminar &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="978"/>
+        <location filename="../lfowidget.cpp" line="971"/>
         <source>New Name</source>
         <translation>Nuevo nombre</translation>
     </message>
