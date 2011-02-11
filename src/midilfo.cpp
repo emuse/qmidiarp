@@ -73,30 +73,28 @@ void MidiLfo::setMuted(bool on)
 void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
 {
     //this function is called by seqdriver and returns one sample
-    //if res <= LFO_FRAMELIMIT and a frame if res > LFO_FRAMELIMIT
-    //the FRAMELIMIT avoids excessive cursor updating
+    //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
+    //The FRAMELIMIT avoids excessive cursor updating
 
     QVector<LfoSample> lfoFrame;
     LfoSample lfoSample;
     int step = TICKS_PER_QUARTER / res;
     int npoints = size * res;
     int lt, l1;
+    int framelimit;
 
     lfoFrame.clear();
     lt = 0;
     l1 = 0;
+    if (isRecording) framelimit = 64; else framelimit = LFO_FRAMELIMIT;
 
     if (old_res) {
         if ((frameptr)%(old_res/res)) {
-            qWarning("jump a step");
-            qWarning("frameptr %d", frameptr);
-            qWarning("res %d : old_res %d\n", res, old_res);
             step = TICKS_PER_QUARTER/old_res;
             npoints = size * old_res;
         }
         old_res = 0;
     }
-
     do {
         lfoSample = lfoData.at((l1 + frameptr) % npoints);
         if (isRecording) {
@@ -107,10 +105,9 @@ void MidiLfo::getNextFrame(QVector<LfoSample> *p_lfoData)
         lfoFrame.append(lfoSample);
         lt+=step;
         l1++;
-    } while ((l1 < res/LFO_FRAMELIMIT) && (l1 < npoints));
+    } while ((l1 < res/framelimit) && (l1 < npoints));
 
     lfoSample.value = -1;
-
     lfoSample.tick = lt;
     lfoFrame.append(lfoSample);
     emit nextStep(frameptr);
@@ -269,6 +266,7 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     int Y = mouseY * 128;
 
     if (newpt) {
+    // the mouse was just clicked so we can directly set the point
         lastMouseLoc = loc;
         lastMouseY = Y;
     }
@@ -276,6 +274,8 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     if (loc == lastMouseLoc) lastMouseY = Y;
 
     do {
+    //if the mouse was moved, we interpolate potentially missing points after
+    //the last mouse position
         if (loc > lastMouseLoc) {
             lastMouseY += (double)(lastMouseY - Y) / (lastMouseLoc - loc) + .5;
             lastMouseLoc++;
