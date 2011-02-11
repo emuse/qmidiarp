@@ -338,9 +338,6 @@ void ArpData::handleController(int ccnumber, int channel, int value)
         }
 
         for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
-            if (midiLfo(l1)->isLfo(ccnumber, channel)) {
-                lfoWidget(l1)->record(value);
-            }
             cclist = lfoWidget(l1)->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;

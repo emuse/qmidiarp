@@ -105,7 +105,7 @@ void SeqDriver::run()
     int l1, l2;
     QVector<int> note, velocity;
     int noteTick = 0;
-    int length, ccnumber;
+    int length, ccnumber, channel, value;
     int lfoccnumber, lfochannel, lfoport;
     int seqlength, seqchannel, seqport, seqtransp, seqvel;
     snd_seq_event_t *evIn, evOut;
@@ -345,26 +345,34 @@ void SeqDriver::run()
 
                 if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
                     ccnumber = (int)evIn->data.control.param;
+                    channel = (int)evIn->data.control.channel;
+                    value = (int)evIn->data.control.value;
                     if (ccnumber == 64) {
                         //Sustain Footswitch has changed
                         for (l1 = 0; l1 < midiArpList->count(); l1++) {
                             if (midiArpList->at(l1)->isArp(evIn)) {
                                 midiArpList->at(l1)->setSustain(
-                                        (evIn->data.control.value == 127), tick);
+                                        (value == 127), tick);
                                 unmatched = false;
                             }
                         }
                     }
                     else {
+                        //Does any LFO want to record this?
+                        for (l1 = 0; l1 < midiLfoList->count(); l1++) {
+                            if (midiLfoList->at(l1)->isLfo(ccnumber, channel)) {
+                                midiLfoList->at(l1)->record(value);
+                                unmatched = false;
+                            }
+                        }
+
                         if (midi_controllable) {
-                            //Go through MIDI control actions list (arpData)
-                            emit controlEvent(ccnumber, evIn->data.control.channel,
-                                                evIn->data.control.value);
+                        //Go through MIDI control actions list (arpData)
+                            emit controlEvent(ccnumber, channel, value);
                             unmatched = false;
                         }
                     }
                 }
-
                 if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                         || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
                     get_time();

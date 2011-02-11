@@ -111,7 +111,6 @@ class LfoWidget : public QWidget
     void updateWaveForm(int);
     void updateScreen(int val);
     void setRecord(bool on);
-    void record(int value);
     void updateRes(int);
     void updateSize(int);
     void updateCcnumber(int val);

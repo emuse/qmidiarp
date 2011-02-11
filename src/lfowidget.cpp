@@ -882,13 +882,6 @@ void LfoWidget::copyToCustom()
     modified = true;
 }
 
-void LfoWidget::record(int value)
-{
-    midiWorker->record(value);
-    midiWorker->getData(&lfoData);
-    screen->updateScreen(lfoData);
-}
-
 void LfoWidget::newCustomOffset()
 {
     int min = 127;
