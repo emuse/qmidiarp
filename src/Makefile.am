@@ -22,7 +22,7 @@ nodist_qmidiarp_SOURCES = \
 	jacksync_moc.cpp \
 	seqdriver_moc.cpp \
 	slider_moc.cpp
-	
+
 qmidiarp_SOURCES = \
 	arpdata.cpp arpdata.h \
 	arpscreen.cpp arpscreen.h \
@@ -46,11 +46,13 @@ qmidiarp_SOURCES = \
 
 translationsdir = $(pkgdatadir)/translations
 translations = \
+	translations/qmidiarp_cs.ts \
 	translations/qmidiarp_de.ts \
 	translations/qmidiarp_es.ts \
 	translations/qmidiarp_fr.ts
 
 translations_DATA = \
+	translations/qmidiarp_cs.qm \
 	translations/qmidiarp_de.qm \
 	translations/qmidiarp_es.qm \
 	translations/qmidiarp_fr.qm
