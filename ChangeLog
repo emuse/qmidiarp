@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 2011-01-23  Frank Kober  <goemusic@yahoo.fr>
 	* midilfo.*, lfowidget.*, lfoscreen.*, mainwindow.cpp : LFO can
 	now record controller data sent to its input. The record mode is set
@@ -14,10 +13,9 @@
 	been changed so that only 1 event is scheduled per alsa echo. The
 	LFO still uses increasing packet size for resolutions > 16 to avoid
 	excessive drawing cycles.
-=======
+	
 2011-01-18  Frank Kober  <goemusic@yahoo.fr>
 	* version changed to 0.4.0
->>>>>>> master
 	
 2011-01-08  Frank Kober  <goemusic@yahoo.fr>
 	* src/translations/qmidiarp_es.ts, src/Makefile.am: 
