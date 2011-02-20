@@ -1,18 +1,29 @@
-/*
- *      seqwidget.cpp
- *      
+/*!
+ * @file seqwidget.cpp
+ * @brief GUI class associated with and controlling a MidiSeq worker
+ *
+ * It controls the MidiSeq sequencer and
+ * is created alongwith each MidiSeq and embedded in a DockWidget on
+ * MainWindow level. It can read its parameter set from an XML stream
+ * by calling its readData member. It manages a SeqWidget::ccList
+ * for each
+ * instance for MIDI controllers attributed through the MIDILearn
+ * context menu. It instantiates a SeqScreen and interacts with it.
+ *
+ * @section LICENSE
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -41,6 +52,22 @@
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
+    // QSignalMappers allow identifying signal senders for MIDI learn/forget
+    learnSignalMapper = new QSignalMapper(this);
+    connect(learnSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(midiLearn(int)));
+
+    forgetSignalMapper = new QSignalMapper(this);
+    connect(forgetSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(midiForget(int)));
+
+    // we need the cancel MIDI Learn action only once for all
+    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    cancelMidiLearnAction->setEnabled(false);
+
+    midiCCNames << "MuteToggle" << "Velocity" << "NoteLength" << "unknown";
+
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
@@ -49,13 +76,13 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     QToolButton *renameButton = new QToolButton(this);
     renameButton->setDefaultAction(renameAction);
     connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-    
+
     deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
     deleteAction->setToolTip(tr("Delete this Sequencer"));
     QToolButton *deleteButton = new QToolButton(this);
     deleteButton->setDefaultAction(deleteAction);
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
-    
+
     manageBoxLayout->addStretch();
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
@@ -68,16 +95,16 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     connect(enableNoteIn, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteIn(bool)));
     enableNoteInLabel->setBuddy(enableNoteIn);
     enableNoteIn->setToolTip(tr("Transpose the sequence following incoming notes"));
-    
+
     QLabel *enableVelInLabel = new QLabel(tr("&Velocity"),inBox);
     enableVelIn = new QCheckBox(this);
     connect(enableVelIn, SIGNAL(toggled(bool)), this, SLOT(updateEnableVelIn(bool)));
     enableVelInLabel->setBuddy(enableVelIn);
     enableVelIn->setToolTip(tr("Set sequence velocity to that of incoming notes"));
-    
+
     enableNoteIn->setChecked(true);
     enableVelIn->setChecked(true);
-    
+
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QSpinBox(inBox);
     chIn->setRange(1, 16);
@@ -98,7 +125,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
         inBoxLayout->setMargin(2);
     }
 
-    inBox->setLayout(inBoxLayout); 
+    inBox->setLayout(inBoxLayout);
 
 
     // Output group box on right bottom
@@ -106,24 +133,22 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
-
-    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
-    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
-    cancelMidiLearnAction->setEnabled(false);
-
     muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    
+    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    muteLabel->setBuddy(muteOut);
+
     QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
     muteOut->addAction(muteLearnAction);
-    connect(muteLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnMute()));
+    connect(muteLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(muteLearnAction, 0);
+
     QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
     muteOut->addAction(muteForgetAction);
-    connect(muteForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetMute()));
+    connect(muteForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(muteForgetAction, 0);
 
     muteOut->addAction(cancelMidiLearnAction);
 
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteLabel->setBuddy(muteOut);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QSpinBox(portBox);
@@ -162,19 +187,19 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
-    
+
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"), this);
 
-    screen = new SeqScreen(this); 
+    screen = new SeqScreen(this);
     screen->setToolTip(
         tr("Right button to mute points, left button to draw custom wave"));
     screen->setMinimumHeight(SEQSCREEN_MINIMUM_HEIGHT);
-    connect(screen, SIGNAL(seqMouseMoved(double, double, int)), this,
+    connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
-    connect(screen, SIGNAL(seqMousePressed(double, double, int)), this,
+    connect(screen, SIGNAL(mousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
-            
+
     QLabel *waveFormBoxLabel = new QLabel(tr("&Sequence"), seqBox);
     waveFormBox = new QComboBox(seqBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
@@ -185,7 +210,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     waveFormBox->setMinimumContentsLength(8);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-    
+
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
     QAction *recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
     recordAction->setToolTip(tr("Record step by step"));
@@ -221,15 +246,15 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    
-    copyToCustomButton = new QToolButton(this); 
+
+    copyToCustomButton = new QToolButton(this);
     copyToCustomAction = new QAction( QIcon(seqwavcp_xpm),
             tr("C&opy to new wave"), this);
     connect(copyToCustomAction, SIGNAL(triggered()), this,
             SLOT(copyToCustom()));
     copyToCustomButton->setDefaultAction(copyToCustomAction);
-    
-//temporarily hide these elements until multiple patterns are implemented  
+
+    //temporarily hide these elements until multiple patterns are implemented
     copyToCustomAction->setEnabled(false);
     waveFormBox->setEnabled(false);
     copyToCustomButton->setVisible(false);
@@ -239,44 +264,48 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
-            
     velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    
-    QAction *velocityLearnAction = new QAction(tr("MIDI &Learn"), this);
-    velocity->addAction(velocityLearnAction);
-    connect(velocityLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnVel()));
-    QAction *velocityForgetAction = new QAction(tr("MIDI &Forget"), this);
-    velocity->addAction(velocityForgetAction);
-    connect(velocityForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetVel()));
-    
-    velocity->addAction(cancelMidiLearnAction);
-
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
-            
+
+
+    QAction *velocityLearnAction = new QAction(tr("MIDI &Learn"), this);
+    velocity->addAction(velocityLearnAction);
+    connect(velocityLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(velocityLearnAction, 1);
+
+    QAction *velocityForgetAction = new QAction(tr("MIDI &Forget"), this);
+    velocity->addAction(velocityForgetAction);
+    connect(velocityForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(velocityForgetAction, 1);
+
+    velocity->addAction(cancelMidiLearnAction);
+
+
     notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
-
     notelength->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    
-    QAction *notelengthLearnAction = new QAction(tr("MIDI &Learn"), this);
-    notelength->addAction(notelengthLearnAction);
-    connect(notelengthLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnNoteLen()));
-    QAction *notelengthForgetAction = new QAction(tr("MIDI &Forget"), this);
-    notelength->addAction(notelengthForgetAction);
-    connect(notelengthForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetNoteLen()));
-    
-    notelength->addAction(cancelMidiLearnAction);
-    
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
-            
+
+    QAction *noteLengthLearnAction = new QAction(tr("MIDI &Learn"), this);
+    notelength->addAction(noteLengthLearnAction);
+    connect(noteLengthLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(noteLengthLearnAction, 2);
+
+    QAction *noteLengthForgetAction = new QAction(tr("MIDI &Forget"), this);
+    notelength->addAction(noteLengthForgetAction);
+    connect(noteLengthForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(noteLengthForgetAction, 2);
+
+    notelength->addAction(cancelMidiLearnAction);
+
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
 
-    
+
     QGridLayout* sliderLayout = new QGridLayout;
     sliderLayout->addWidget(copyToCustomButton, 0 , 0);
     sliderLayout->addWidget(velocity, 1, 0);
@@ -298,17 +327,17 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     paramBoxLayout->addWidget(sizeBoxLabel, 3, 0);
     paramBoxLayout->addWidget(sizeBox, 3, 1);
     paramBoxLayout->setRowStretch(4, 1);
-    
+
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
     seqBoxLayout->addLayout(paramBoxLayout, 1, 0);
     seqBoxLayout->addLayout(sliderLayout, 1, 1);
     if (compactStyle) {
-	    seqBoxLayout->setMargin(2);
-	    seqBoxLayout->setSpacing(1);
-	}
-    seqBox->setLayout(seqBoxLayout); 
-    
+        seqBoxLayout->setMargin(2);
+        seqBoxLayout->setSpacing(1);
+    }
+    seqBox->setLayout(seqBoxLayout);
+
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addLayout(inOutBoxLayout, 0);
@@ -334,7 +363,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 {
     QByteArray tempArray;
     int l1;
-    
+
     xml.writeStartElement(name.left(3));
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
         xml.writeStartElement("input");
@@ -345,14 +374,14 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
         xml.writeEndElement();
-        
+
         xml.writeStartElement("output");
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->channelOut));
         xml.writeEndElement();
-    
+
         xml.writeStartElement("seqParams");
             xml.writeTextElement("resolution", QString::number(
                 resBox->currentIndex()));
@@ -365,7 +394,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("transp", QString::number(
                 midiWorker->transp));
         xml.writeEndElement();
-      
+
         tempArray.clear();
         l1 = 0;
         while (l1 < midiWorker->muteMask.count()) {
@@ -375,7 +404,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("muteMask");
             xml.writeTextElement("data", tempArray.toHex());
         xml.writeEndElement();
-        
+
         tempArray.clear();
         l1 = 0;
         while (l1 < midiWorker->muteMask.count()) {
@@ -385,7 +414,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("sequence");
             xml.writeTextElement("data", tempArray.toHex());
         xml.writeEndElement();
-           
+
         xml.writeStartElement("midiControllers");
         for (int l1 = 0; l1 < ccList.count(); l1++) {
             xml.writeStartElement("MIDICC");
@@ -397,17 +426,17 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeEndElement();
         }
         xml.writeEndElement();
-        
+
     xml.writeEndElement();
 }
 
 void SeqWidget::writeDataText(QTextStream& arpText)
 {
     int l1 = 0;
-    arpText << midiWorker->enableNoteIn << ' ' 
+    arpText << midiWorker->enableNoteIn << ' '
         << midiWorker->enableVelIn << ' '
         << midiWorker->chIn << '\n';
-    arpText << midiWorker->channelOut << ' ' 
+    arpText << midiWorker->channelOut << ' '
         << midiWorker->portOut << ' '
         << midiWorker->notelength << '\n';
     arpText << resBox->currentIndex() << ' '
@@ -441,20 +470,20 @@ void SeqWidget::writeDataText(QTextStream& arpText)
     }
     arpText << "EOS\n"; // End Of Wave
     modified = false;
-}                                      
+}
 
 void SeqWidget::readData(QXmlStreamReader& xml)
 {
-    int ctrlID, ccnumber, channel, min, max;
+    int controlID, ccnumber, channel, min, max;
     int tmp;
     int wvtmp = 0;
-    SeqSample seqSample;
-    
+    Sample sample;
+
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())
             break;
-            
+
         else if (xml.isStartElement() && (xml.name() == "input")) {
             while (!xml.atEnd()) {
                 xml.readNext();
@@ -514,7 +543,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
                     midiWorker->muteMask.clear();
-                    QByteArray tmpArray = 
+                    QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         midiWorker->muteMask.append(tmpArray.at(l1));
@@ -530,15 +559,15 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
                     midiWorker->customWave.clear();
-                    QByteArray tmpArray = 
+                    QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TICKS_PER_QUARTER / midiWorker->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        seqSample.value = tmpArray.at(l1);
-                        seqSample.tick = lt;
-                        seqSample.muted = midiWorker->muteMask.at(l1);
-                        midiWorker->customWave.append(seqSample);
+                        sample.value = tmpArray.at(l1);
+                        sample.tick = lt;
+                        sample.muted = midiWorker->muteMask.at(l1);
+                        midiWorker->customWave.append(sample);
                         lt+=step;
                     }
                 }
@@ -551,7 +580,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "MIDICC")) {
-                    ctrlID = xml.attributes().value("CtrlID").toString().toInt();
+                    controlID = xml.attributes().value("CtrlID").toString().toInt();
                     ccnumber = -1;
                     channel = -1;
                     min = -1;
@@ -570,10 +599,10 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                             max = xml.readElementText().toInt();
                         else skipXmlElement(xml);
                     }
-                    
+
                     if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
-                        appendMidiCC(ctrlID, ccnumber, channel, min, max);
-                    else qWarning("Controller data incomplete");                  
+                        appendMidiCC(controlID, ccnumber, channel, min, max);
+                    else qWarning("Controller data incomplete");
                 }
                 else skipXmlElement(xml);
             }
@@ -591,47 +620,47 @@ void SeqWidget::skipXmlElement(QXmlStreamReader& xml)
         qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
         while (!xml.atEnd()) {
             xml.readNext();
-    
+
             if (xml.isEndElement())
                 break;
-    
+
             if (xml.isStartElement()) {
                 skipXmlElement(xml);
             }
         }
     }
 }
- 
+
 void SeqWidget::readDataText(QTextStream& arpText)
 {
     QString qs, qs2;
     int l1, lt, wvtmp;
-    SeqSample seqSample;
-    
+    Sample sample;
+
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     enableNoteIn->setChecked(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     enableVelIn->setChecked(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2); 
+    qs2 = qs.section(' ', 2, 2);
     chIn->setValue(qs2.toInt() + 1);
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     channelOut->setValue(qs2.toInt() + 1);
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     portOut->setValue(qs2.toInt() + 1);
-    qs2 = qs.section(' ', 2, 2); 
+    qs2 = qs.section(' ', 2, 2);
     notelength->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     resBox->setCurrentIndex(qs2.toInt());
     updateRes(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     sizeBox->setCurrentIndex(qs2.toInt());
     updateSize(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2); 
+    qs2 = qs.section(' ', 2, 2);
     velocity->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 3, 3); 
+    qs2 = qs.section(' ', 3, 3);
     transpose->setValue(qs2.toInt());
     qs = arpText.readLine();
     if (qs == "MIDICC")
@@ -639,7 +668,7 @@ void SeqWidget::readDataText(QTextStream& arpText)
         qs = arpText.readLine();
         while (qs != "EOCC") {
             qs2 = qs.section(' ', 0, 0);
-            int ctrlID = qs2.toInt();
+            int controlID = qs2.toInt();
             qs2 = qs.section(' ', 1, 1);
             int ccnumber = qs2.toInt();
             qs2 = qs.section(' ', 2, 2);
@@ -648,14 +677,14 @@ void SeqWidget::readDataText(QTextStream& arpText)
             int min = qs2.toInt();
             qs2 = qs.section(' ', 4, 4);
             int max = qs2.toInt();
-            appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            appendMidiCC(controlID, ccnumber, channel, min, max);
             qs = arpText.readLine();
         }
     qs = arpText.readLine();
     }
 
     wvtmp = qs.toInt();
-    
+
     // Read Mute Mask
     int step = TICKS_PER_QUARTER / midiWorker->res;
     qs = arpText.readLine();
@@ -669,7 +698,7 @@ void SeqWidget::readDataText(QTextStream& arpText)
         if (!(l1%32)) qs = arpText.readLine();
         qs2 = qs.section(' ', l1%32, l1%32);
     }
-    
+
     // Read Custom Waveform
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0);
@@ -677,10 +706,10 @@ void SeqWidget::readDataText(QTextStream& arpText)
     l1 = 0;
     lt = 0;
     while (qs2 !="EOS") {
-        seqSample.value=qs2.toInt();
-        seqSample.tick = lt;
-        seqSample.muted = midiWorker->muteMask.at(l1);
-        midiWorker->customWave.append(seqSample);
+        sample.value=qs2.toInt();
+        sample.tick = lt;
+        sample.muted = midiWorker->muteMask.at(l1);
+        midiWorker->customWave.append(sample);
         lt+=step;
         l1++;
         if (!(l1%16)) qs = arpText.readLine();
@@ -689,7 +718,7 @@ void SeqWidget::readDataText(QTextStream& arpText)
     waveFormBox->setCurrentIndex(wvtmp);
     updateWaveForm(wvtmp);
     modified = false;
-}                                      
+}
 
 void SeqWidget::loadWaveForms()
 {
@@ -714,24 +743,6 @@ void SeqWidget::setChIn(int value)
     modified = true;
 }
 
-void SeqWidget::setMuted(bool on)
-{
-    midiWorker->setMuted(on);
-    screen->setMuted(on);
-}
-
-void SeqWidget::setPortOut(int value)
-{
-    portOut->setValue(value);
-    modified = true;
-}
-
-void SeqWidget::setChannelOut(int value)
-{
-    channelOut->setValue(value);
-    modified = true;
-}
-
 void SeqWidget::updateChIn(int value)
 {
     midiWorker->chIn = value - 1;
@@ -750,18 +761,6 @@ void SeqWidget::updateEnableVelIn(bool on)
     modified = true;
 }
 
-void SeqWidget::updatePortOut(int value)
-{
-    midiWorker->portOut = value - 1;
-    modified = true;
-}
-
-void SeqWidget::updateChannelOut(int value)
-{
-    midiWorker->channelOut = value - 1;
-    modified = true;
-}
-
 void SeqWidget::updateNoteLength(int val)
 {
     midiWorker->notelength = val + val;
@@ -771,8 +770,8 @@ void SeqWidget::updateNoteLength(int val)
 void SeqWidget::updateWaveForm(int val)
 {
     midiWorker->updateWaveForm(val);
-    midiWorker->getData(&seqData);
-    screen->updateScreen(seqData);
+    midiWorker->getData(&data);
+    screen->updateScreen(data);
     modified = true;
 }
 
@@ -781,16 +780,16 @@ void SeqWidget::setRecord(bool on)
     recordMode = on;
     screen->setRecord(on);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(seqData);
+    screen->updateScreen(data);
 }
 
 void SeqWidget::updateRes(int val)
 {
     midiWorker->res = seqResValues[val];
     midiWorker->resizeAll();
-    midiWorker->getData(&seqData);
+    midiWorker->getData(&data);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(seqData);
+    screen->updateScreen(data);
     modified = true;
 }
 
@@ -798,9 +797,9 @@ void SeqWidget::updateSize(int val)
 {
     midiWorker->size = val + 1;
     midiWorker->resizeAll();
-    midiWorker->getData(&seqData);
+    midiWorker->getData(&data);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(seqData);
+    screen->updateScreen(data);
     modified = true;
 }
 
@@ -824,9 +823,9 @@ void SeqWidget::processNote(int note, int vel)
     }
     else {
         midiWorker->recordNote(note);
-        midiWorker->getData(&seqData);
+        midiWorker->getData(&data);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
-        screen->updateScreen(seqData);
+        screen->updateScreen(data);
     }
 }
 
@@ -842,13 +841,13 @@ void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
         midiWorker->setMutePoint(mouseX, lastMute);
-    } 
+    }
     else {
         midiWorker->setCustomWavePoint(mouseX, mouseY);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
-    midiWorker->getData(&seqData);
-    screen->updateScreen(seqData);
+    midiWorker->getData(&data);
+    screen->updateScreen(data);
     modified = true;
 }
 
@@ -860,8 +859,38 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
         midiWorker->setCustomWavePoint(mouseX, mouseY);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
-    midiWorker->getData(&seqData);
-    screen->updateScreen(seqData);
+    midiWorker->getData(&data);
+    screen->updateScreen(data);
+    modified = true;
+}
+
+void SeqWidget::setMuted(bool on)
+{
+    midiWorker->setMuted(on);
+    screen->setMuted(on);
+}
+
+void SeqWidget::setPortOut(int value)
+{
+    portOut->setValue(value);
+    modified = true;
+}
+
+void SeqWidget::setChannelOut(int value)
+{
+    channelOut->setValue(value);
+    modified = true;
+}
+
+void SeqWidget::updatePortOut(int value)
+{
+    midiWorker->portOut = value - 1;
+    modified = true;
+}
+
+void SeqWidget::updateChannelOut(int value)
+{
+    midiWorker->channelOut = value - 1;
     modified = true;
 }
 
@@ -886,49 +915,41 @@ void SeqWidget::moduleDelete()
             == QMessageBox::No) {
         return;
     }
-    emit seqRemove(ID);
+    emit moduleRemove(ID);
 }
 
 void SeqWidget::moduleRename()
 {
     QString newname, oldname;
     bool ok;
-    
+
     oldname = name;
 
     newname = QInputDialog::getText(this, APP_NAME,
                 tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
-                
+
     if (ok && !newname.isEmpty()) {
         name = "Seq:" + newname;
         emit dockRename(name, parentDockID);
     }
 }
 
-void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max)
+void SeqWidget::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
     int l1 = 0;
-    switch (ctrlID) {
-        case 0: midiCC.name = "MuteToggle";
-        break;
-        case 1: midiCC.name = "Velocity";
-        break;
-        case 2: midiCC.name = "NoteLength";
-        break;
-        default: midiCC.name = "Unknown";
-    }
-    midiCC.ID = ctrlID;
+    midiCC.name = midiCCNames.at(controlID);
+    midiCC.ID = controlID;
     midiCC.ccnumber = ccnumber;
     midiCC.channel = channel;
     midiCC.min = min;
     midiCC.max = max;
-    
-    while ( (l1 < ccList.count()) && 
-        ((ctrlID != ccList.at(l1).ID) || 
+
+    while ( (l1 < ccList.count()) &&
+        ((controlID != ccList.at(l1).ID) ||
         (ccnumber != ccList.at(l1).ccnumber) ||
         (channel != ccList.at(l1).channel)) ) l1++;
-    
+
     if (ccList.count() == l1) {
         ccList.append(midiCC);
         qWarning("MIDI Controller %d appended for %s"
@@ -938,15 +959,15 @@ void SeqWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
         qWarning("MIDI Controller %d already attributed to %s"
                 , ccnumber, qPrintable(midiCC.name));
     }
-        
+
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
 }
 
-void SeqWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
+void SeqWidget::removeMidiCC(int controlID, int ccnumber, int channel)
 {
     for (int l1 = 0; l1 < ccList.count(); l1++) {
-        if (ccList.at(l1).ID == ctrlID) {
+        if (ccList.at(l1).ID == controlID) {
             if (((ccList.at(l1).ccnumber == ccnumber)
                     && (ccList.at(l1).channel == channel))
                     || (0 > channel)) {
@@ -959,40 +980,16 @@ void SeqWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
     modified = true;
 }
 
-void SeqWidget::midiLearnMute()
+void SeqWidget::midiLearn(int controlID)
 {
-    emit setMidiLearn(parentDockID, ID, 0);
-    qWarning("Requesting Midi Learn for MuteToggle");
+    emit setMidiLearn(parentDockID, ID, controlID);
+    qWarning("Requesting Midi Learn for %s", qPrintable(midiCCNames.at(controlID)));
     cancelMidiLearnAction->setEnabled(true);
 }
 
-void SeqWidget::midiForgetMute()
+void SeqWidget::midiForget(int controlID)
 {
-    removeMidiCC(0, 0, -1);
-}
-
-void SeqWidget::midiLearnNoteLen()
-{
-    emit setMidiLearn(parentDockID, ID, 2);
-    qWarning("Requesting Midi Learn for NoteLength");
-    cancelMidiLearnAction->setEnabled(true);
-}
-
-void SeqWidget::midiForgetNoteLen()
-{
-    removeMidiCC(2, 0, -1);
-}
-
-void SeqWidget::midiLearnVel()
-{
-    emit setMidiLearn(parentDockID, ID, 1);
-    qWarning("Requesting Midi Learn for Velocity");
-    cancelMidiLearnAction->setEnabled(true);
-}
-
-void SeqWidget::midiForgetVel()
-{
-    removeMidiCC(1, 0, -1);
+    removeMidiCC(controlID, 0, -1);
 }
 
 void SeqWidget::midiLearnCancel()

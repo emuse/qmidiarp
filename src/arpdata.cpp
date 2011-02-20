@@ -1,3 +1,35 @@
+/**
+ * @file arpdata.cpp
+ * @brief Managing class for created module components in lists. Instantiates SeqDriver.
+ *
+ * For each module component and type there is a QList (for example MidiArp
+ * and ArpWidget). In parallel there is
+ * a common list for all modules containing their DockWidgets.
+ * ArpData also instantiates the SeqDriver MIDI backend and handles MIDI
+ * controller events through signaling by seqDriver. Controllers are
+ * dispatched to the modules as requiered by their MIDI Learn
+ * MidiCCList.
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ *
+ */
+
 #include <QString>
 #include <QFile>
 #include <QFileDialog>
@@ -11,7 +43,7 @@
 ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
 {
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
-    connect(seqDriver, SIGNAL(controlEvent(int, int, int)), 
+    connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
 }
@@ -244,14 +276,14 @@ bool ArpData::isModified()
             lfomodified = true;
             break;
         }
-        
+
     for (int l1 = 0; l1 < seqWidgetCount(); l1++)
         if (seqWidget(l1)->isModified()) {
             seqmodified = true;
             break;
         }
 
-    return modified || seqDriver->isModified() 
+    return modified || seqDriver->isModified()
                     || arpmodified || lfomodified || seqmodified;
 }
 
@@ -314,7 +346,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(!m);
                                         return;
                                     }
-                        case 1: 
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 arpWidget(l1)->selectPatternPreset(sval);
@@ -336,7 +368,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 }
             }
         }
-    
+
         for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
             cclist = lfoWidget(l1)->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
@@ -361,28 +393,28 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
-                        
-                        case 1: 
+
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->amplitude->setValue(sval);
                                 return;
                         break;
-                        
-                        case 2: 
+
+                        case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->offset->setValue(sval);
                                 return;
                         break;
-                        case 3: 
+                        case 3:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateWaveForm(sval);
                                 return;
                         break;
-                        case 4: 
+                        case 4:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->freqBox->setCurrentIndex(sval);
@@ -395,7 +427,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                 }
             }
         }
-        
+
         for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
             cclist = seqWidget(l1)->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
@@ -421,14 +453,14 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 }
                         break;
 
-                        case 1: 
+                        case 1:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->velocity->setValue(sval);
                                 return;
                         break;
-                        
-                        case 2: 
+
+                        case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->notelength->setValue(sval);
@@ -455,7 +487,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
             seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
-        
+
         midiLearnFlag = false;
     }
 }

@@ -1,18 +1,18 @@
 /*
  *      midiseq.h
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -28,21 +28,28 @@
 #include <alsa/asoundlib.h>
 #include <main.h>
 
-    struct SeqSample {
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+/*! @brief Structure holding elements of a MIDI note or controller representing
+ * one point of a waveform
+ */
+    struct Sample {
         int value;
         int tick;
         bool muted;
-    };    
+    };
+#endif
 
 class MidiSeq : public QObject  {
-    
+
   Q_OBJECT
 
   private:
     double queueTempo;
     int lastMouseLoc;
     int clip(int value, int min, int max, bool *outOfRange);
-     
+
   public:
     int chIn;       // Channel of input events
     bool enableNoteIn; // Index input/output (for Controller events)
@@ -53,17 +60,17 @@ class MidiSeq : public QObject  {
     int vel, transp, notelength;
     int size, res, waveFormIndex;
     int currentRecStep;
-    QVector<SeqSample> customWave;
+    QVector<Sample> customWave;
     QVector<bool> muteMask;
-               
+
   public:
     MidiSeq();
     ~MidiSeq();
     bool isSeq(snd_seq_event_t *evIn);
-    void getData(QVector<SeqSample> *seqData);  
+    void getData(QVector<Sample> *data);
     bool toggleMutePoint(double);
-    
-  public slots:  
+
+  public slots:
     void updateVelocity(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
@@ -76,5 +83,5 @@ class MidiSeq : public QObject  {
     void copyToCustom();
     void setRecordedNote(int note);
 };
-                              
+
 #endif

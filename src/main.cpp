@@ -1,4 +1,34 @@
-#include <getopt.h>  
+/**  @file main.cpp
+ *   @brief Main program file. Instantiates the Application MainWindow.
+ *
+ *      Handles commandline arguments and options before MainWindow
+ *      construction.
+ *   @mainpage A MIDI Arpeggiator, LFO and Step Sequencer for ALSA
+ *   @section Description
+ *      This attempts to give an overview of the architecture of this
+ *      software.
+ *
+ *   @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ *
+ */
+#include <getopt.h>
 #include <QApplication>
 #include <QFileInfo>
 #include <QString>
@@ -18,10 +48,10 @@ static struct option options[] = {
     {0, 0, 0, 0}
 };
 
-int main(int argc, char *argv[])  
+int main(int argc, char *argv[])
 {
     int getopt_return;
-    int option_index; 
+    int option_index;
     int portCount = 2;
     QTextStream out(stdout);
 
@@ -48,7 +78,7 @@ int main(int argc, char *argv[])
 
             case 'p':
                 portCount = atoi(optarg);
-                if (portCount > MAX_PORTS) 
+                if (portCount > MAX_PORTS)
                     portCount = MAX_PORTS;
                 else if (portCount < 1)
                     portCount = 2;
@@ -66,7 +96,7 @@ int main(int argc, char *argv[])
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
         app.installTranslator(&qtTr);
 
-    // translator for qmidiarp messages       
+    // translator for qmidiarp messages
     QTranslator qmidiarpTr;
 
     if (qmidiarpTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))

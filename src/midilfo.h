@@ -1,18 +1,18 @@
 /*
  *      midilfo.h
- *      
+ *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -28,14 +28,21 @@
 
 #include <main.h>
 
-    struct LfoSample {
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+/*! @brief Structure holding elements of a MIDI note or controller representing
+ * one point of a waveform
+ */
+    struct Sample {
         int value;
         int tick;
         bool muted;
-    };    
+    };
+#endif
 
 class MidiLfo : public QObject  {
-    
+
   Q_OBJECT
 
   private:
@@ -43,8 +50,8 @@ class MidiLfo : public QObject  {
     int lastMouseLoc, lastMouseY;
     int frameptr;
     int clip(int value, int min, int max, bool *outOfRange);
-    QVector<LfoSample> lfoData;
-     
+    QVector<Sample> data;
+
   public:
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
@@ -52,17 +59,17 @@ class MidiLfo : public QObject  {
     int freq, amp, offs, ccnumber;
     int size, res, waveFormIndex;
     int cwmin;
-    QVector<LfoSample> customWave;
+    QVector<Sample> customWave;
     QVector<bool> muteMask;
-           
+
   public:
     MidiLfo();
     ~MidiLfo();
-    void getData(QVector<LfoSample> *lfoData);  
-    void getNextFrame(QVector<LfoSample> *p_lfoData);
+    void getData(QVector<Sample> *data);
+    void getNextFrame(QVector<Sample> *p_data);
     bool toggleMutePoint(double);
-    
-  public slots:  
+
+  public slots:
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
@@ -76,5 +83,5 @@ class MidiLfo : public QObject  {
     void copyToCustom();
     void resetFramePtr();
 };
-                              
+
 #endif
