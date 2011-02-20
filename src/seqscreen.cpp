@@ -81,9 +81,9 @@ void SeqScreen::paintEvent(QPaintEvent*)
     QChar c;
 
     //Grid setup
-    if (p_seqData.isEmpty()) return;
-    nsteps = p_seqData.at(p_seqData.count() - 1).tick / TICKS_PER_QUARTER;
-    beatRes = (p_seqData.count() - 1) / nsteps;
+    if (p_data.isEmpty()) return;
+    nsteps = p_data.at(p_data.count() - 1).tick / TICKS_PER_QUARTER;
+    beatRes = (p_data.count() - 1) / nsteps;
     beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     npoints = beatRes * nsteps;
     xscale = (w - 2 * SEQSCREEN_HMARGIN) / nsteps;
@@ -106,7 +106,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
                     , SEQSCREEN_VMARGIN
                     , xscale * nsteps / npoints
                     , h - 2*SEQSCREEN_VMARGIN, QColor(5, 40, 100));
-
 
         //Beat separators
         for (l1 = 0; l1 < nsteps + 1; l1++) {
@@ -143,6 +142,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
                 }
             }
         }
+    }
 
         //Horizontal separators and numbers
         noctaves = maxOctave - minOctave;
@@ -150,10 +150,10 @@ void SeqScreen::paintEvent(QPaintEvent*)
         for (l1 = 0; l1 <= noctaves * 12; l1++) {
             l3 = l1%12;
 
-            if (!l3)
-                p.setPen(QColor(20, 60, 180));
-            else
-                p.setPen(QColor(10, 20, 100));
+        if (!l3)
+            p.setPen(QColor(20, 60, 180));
+        else
+            p.setPen(QColor(10, 20, 100));
 
             ypos = yscale * l1 / noctaves / 12 + SEQSCREEN_VMARGIN;
             p.drawLine(0, ypos, w - SEQSCREEN_HMARGIN, ypos);
@@ -172,20 +172,20 @@ void SeqScreen::paintEvent(QPaintEvent*)
     */
         }
 
-        //Draw function
+    //Draw function
 
-        octave = 0;
+    octave = 0;
 
-        pen.setWidth(notestreak_thick);
-        p.setPen(pen);
-        for (l1 = 0; l1 < npoints; l1++) {
+    pen.setWidth(notestreak_thick);
+    p.setPen(pen);
+    for (l1 = 0; l1 < npoints; l1++) {
 
             octYoffset = 0;
             x = l1 * xscale * nsteps / npoints;
-            ypos = yscale - yscale * (p_seqData.at(l1).value - 36) / noctaves / 12
+            ypos = yscale - yscale * (p_data.at(l1).value - 36) / noctaves / 12
                             + SEQSCREEN_VMARGIN - notestreak_thick / 2;
             xpos = SEQSCREEN_HMARGIN + x + notestreak_thick / 2;
-            if (p_seqData.at(l1).muted) {
+            if (p_data.at(l1).muted) {
                 pen.setColor(QColor(5, 40, 100));
                 p.setPen(pen);
             }
@@ -202,7 +202,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
         p.setPen(pen);
         p.drawLine(SEQSCREEN_HMARGIN / 2, ypos,
                             SEQSCREEN_HMARGIN *2 / 3, ypos);
-    }
     // Cursor
     pen.setWidth(notestreak_thick * 2);
     pen.setColor(QColor(50, 180, 220));
@@ -220,9 +219,9 @@ void SeqScreen::paintEvent(QPaintEvent*)
                     xpos + (xscale / beatRes) - notestreak_thick, h - 2);
 }
 
-void SeqScreen::updateScreen(const QVector<SeqSample>& seqData)
+void SeqScreen::updateScreen(const QVector<Sample>& data)
 {
-    p_seqData = seqData;
+    p_data = data;
     update();
 }
 
@@ -259,7 +258,7 @@ void SeqScreen::mouseMoveEvent(QMouseEvent *event)
         return;
     if ((mouseY <= SEQSCREEN_VMARGIN)|| (mouseY > h - SEQSCREEN_VMARGIN))
         return;
-    emit seqMouseMoved(((double)mouseX - SEQSCREEN_HMARGIN) /
+    emit mouseMoved(((double)mouseX - SEQSCREEN_HMARGIN) /
                             (w - 2 * SEQSCREEN_HMARGIN),
                 1. - ((double)mouseY - SEQSCREEN_VMARGIN) /
                 (h - 2 * SEQSCREEN_VMARGIN), event->buttons());
@@ -274,7 +273,7 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
         return;
     if ((mouseY <= SEQSCREEN_VMARGIN)|| (mouseY > h - SEQSCREEN_VMARGIN))
         return;
-    emit seqMousePressed(((double)mouseX - SEQSCREEN_HMARGIN) /
+    emit mousePressed(((double)mouseX - SEQSCREEN_HMARGIN) /
                             (w - 2 * SEQSCREEN_HMARGIN),
                 1. - ((double)mouseY - SEQSCREEN_VMARGIN) /
                 (h - 2 * SEQSCREEN_VMARGIN), event->buttons());

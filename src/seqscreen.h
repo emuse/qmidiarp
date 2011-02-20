@@ -22,7 +22,7 @@ class SeqScreen : public QWidget
 
   private:
     //QTimer *timer;
-    QVector<SeqSample> p_seqData, seqData;
+    QVector<Sample> p_data, data;
     int mouseX, mouseY;
     int w, h;
     bool recordMode;
@@ -33,19 +33,19 @@ class SeqScreen : public QWidget
 
   protected:
     virtual void paintEvent(QPaintEvent *);
-   
+
   public:
     SeqScreen(QWidget* parent=0);
     ~SeqScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
-    
+
   signals:
-    void seqMousePressed(double, double, int);
-    void seqMouseMoved(double, double, int);
-    
-  public slots: 
-    void updateScreen(const QVector<SeqSample>& seqData);
+    void mousePressed(double, double, int);
+    void mouseMoved(double, double, int);
+
+  public slots:
+    void updateScreen(const QVector<Sample>& data);
     void updateScreen(int currentIndex);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
@@ -53,5 +53,5 @@ class SeqScreen : public QWidget
     void setCurrentRecStep(int currentRecStep);
     void setMuted(bool on);
 };
-  
+
 #endif

@@ -1,3 +1,35 @@
+/*!
+ * @file mainwindow.cpp
+ * @brief Top-level UI class. Instantiates ArpData
+ *
+ *      The MainWindow class is main the ui that holds
+ *      functions to manage global
+ *      QMidiArp parameters and modules and to load and save parameters to
+ *      disk. The constructor sets up all main window elements including
+ *      toolbars and menus. It instantiates the LogWidget, PassWidget,
+ *      MidiCCTable and their DockWidget windows. It also instantiates the
+ *      ArpData widget holding the lists of modules.
+ *
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ *
+ */
 #include <QBoxLayout>
 #include <QDir>
 #include <QFile>
@@ -251,7 +283,6 @@ MainWindow::MainWindow(int p_portCount)
     QWidget *centWidget = new QWidget(this);
     setCentralWidget(centWidget);
     updateWindowTitle();
-    seqEventLocked = false;
 
     if (checkRcFile())
         readRcFile();
@@ -343,7 +374,7 @@ void MainWindow::addArp(const QString& name)
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
                     QString&, int)));
-    connect(arpWidget, SIGNAL(arpRemove(int)),
+    connect(arpWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
     connect(arpWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
@@ -389,7 +420,7 @@ void MainWindow::addLfo(const QString& name)
             arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiLfo, SIGNAL(nextStep(int)),
             lfoWidget, SLOT(updateScreen(int)));
-    connect(lfoWidget, SIGNAL(lfoRemove(int)),
+    connect(lfoWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
@@ -426,7 +457,7 @@ void MainWindow::addSeq(const QString& name)
             arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiSeq, SIGNAL(nextStep(int)),
             seqWidget->screen, SLOT(updateScreen(int)));
-    connect(seqWidget, SIGNAL(seqRemove(int)), this, SLOT(removeSeq(int)));
+    connect(seqWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(seqWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)),
@@ -1258,7 +1289,6 @@ void MainWindow::appendRecentlyOpenedFile(const QString &fn, QStringList &lst)
     lst.append(fi.absoluteFilePath());
 }
 
-
 void MainWindow::updatePatternPresets(const QString& n, const QString& p,
         int index)
 {
@@ -1302,9 +1332,6 @@ void MainWindow::showMidiCCDialog()
     midiCCTable->show();
 }
 
-/* Handler for system signals (SIGUSR1, SIGINT...)
- * Write a message to the pipe and leave as soon as possible
- */
 void MainWindow::handleSignal(int sig)
 {
     if (write(sigpipe[1], &sig, sizeof(sig)) == -1) {
@@ -1344,7 +1371,6 @@ bool MainWindow::installSignalHandlers()
     return true;
 }
 
-/* Slot to give response to the incoming pipe message */
 void MainWindow::signalAction(int fd)
 {
     int message;

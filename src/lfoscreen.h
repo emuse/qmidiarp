@@ -23,7 +23,7 @@ class LfoScreen : public QWidget
 
   private:
     //QTimer *timer;
-    QVector<LfoSample> p_lfoData, lfoData;
+    QVector<Sample> p_data, data;
     int mouseX, mouseY, mouseW;
     int w, h;
     int currentIndex;
@@ -42,12 +42,12 @@ class LfoScreen : public QWidget
     virtual QSizePolicy sizePolicy() const;
 
   signals:
-    void lfoMousePressed(double, double, int);
-    void lfoMouseMoved(double, double, int);
-    void lfoWheel(int);
+    void mousePressed(double, double, int);
+    void mouseMoved(double, double, int);
+    void mouseWheel(int);
 
   public slots:
-    void updateScreen(const QVector<LfoSample>& lfoData);
+    void updateScreen(const QVector<Sample>& data);
     void updateScreen(int p_index);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);

@@ -44,13 +44,13 @@ MidiSeq::MidiSeq()
     int lt = 0;
     int l1 = 0;
     int step = TICKS_PER_QUARTER / res;
-    SeqSample seqSample;
-    seqSample.value = 60;
+    Sample sample;
+    sample.value = 60;
     customWave.clear();
     for (l1 = 0; l1 < size * res; l1++) {
-            seqSample.tick = lt;
-            seqSample.muted = false;
-            customWave.append(seqSample);
+            sample.tick = lt;
+            sample.muted = false;
+            customWave.append(sample);
             lt+=step;
     }
     muteMask.fill(false, size * res);
@@ -89,39 +89,39 @@ bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
     return(true);
 }
 
-void MidiSeq::getNextNote(SeqSample *p_seqSample)
+void MidiSeq::getNextNote(Sample *p_sample)
 {
-    SeqSample seqSample;
-    seqSample = customWave.at(currentIndex);
+    Sample sample;
+    sample = customWave.at(currentIndex);
     emit nextStep(currentIndex);
     currentIndex++;
     currentIndex %= (size * res);
-    *p_seqSample = seqSample;
+    *p_sample = sample;
 }
 
-void MidiSeq::getData(QVector<SeqSample> *p_seqData)
+void MidiSeq::getData(QVector<Sample> *p_data)
 {
-    SeqSample seqSample;
+    Sample sample;
     int lt = 0;
     int step = TICKS_PER_QUARTER / res;
 
     //res: number of events per beat
     //size: size of waveform in beats
-    QVector<SeqSample> seqData;
-    seqData.clear();
+    QVector<Sample> data;
+    data.clear();
 
     switch(waveFormIndex) {
         case 0: //custom
             lt = step * customWave.count();
-            seqData = customWave;
+            data = customWave;
         break;
         default:
         break;
     }
-    seqSample.value = -1;
-    seqSample.tick = lt;
-    seqData.append(seqSample);
-    *p_seqData = seqData;
+    sample.value = -1;
+    sample.tick = lt;
+    data.append(sample);
+    *p_data = data;
 }
 
 int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
@@ -174,12 +174,12 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 
 void MidiSeq::setRecordedNote(int note)
 {
-    SeqSample seqSample;
+    Sample sample;
 
-    seqSample = customWave.at(currentRecStep);
-    seqSample.value = note;
-    seqSample.tick = currentRecStep * TICKS_PER_QUARTER / res;
-    customWave.replace(currentRecStep, seqSample);
+    sample = customWave.at(currentRecStep);
+    sample.value = note;
+    sample.tick = currentRecStep * TICKS_PER_QUARTER / res;
+    customWave.replace(currentRecStep, sample);
 }
 
 void MidiSeq::resizeAll()
@@ -188,17 +188,17 @@ void MidiSeq::resizeAll()
     int l1 = 0;
     int os;
     int step = TICKS_PER_QUARTER / res;
-    SeqSample seqSample;
+    Sample sample;
 
     currentIndex%=(res * size);
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
     for (l1 = 0; l1 < customWave.count(); l1++) {
-        seqSample = customWave.at(l1 % os);
-        seqSample.tick = lt;
-        seqSample.muted = muteMask.at(l1);
-        customWave.replace(l1, seqSample);
+        sample = customWave.at(l1 % os);
+        sample.tick = lt;
+        sample.muted = muteMask.at(l1);
+        customWave.replace(l1, sample);
         lt+=step;
     }
     currentRecStep %= (res * size);
@@ -206,38 +206,38 @@ void MidiSeq::resizeAll()
 
 void MidiSeq::copyToCustom()
 {
-    QVector<SeqSample> seqData;
+    QVector<Sample> data;
     int m;
 
-    seqData.clear();
-    getData(&seqData);
-    m = seqData.count();
-    seqData.remove(m - 1);
-    customWave = seqData;
+    data.clear();
+    getData(&data);
+    m = data.count();
+    data.remove(m - 1);
+    customWave = data;
 }
 
 bool MidiSeq::toggleMutePoint(double mouseX)
 {
-    SeqSample seqSample;
+    Sample sample;
     bool m;
     int loc = mouseX * (res * size);
 
     m = muteMask.at(loc);
     muteMask.replace(loc, !m);
-    seqSample = customWave.at(loc);
-    seqSample.muted = !m;
-    customWave.replace(loc, seqSample);
+    sample = customWave.at(loc);
+    sample.muted = !m;
+    customWave.replace(loc, sample);
     return(!m);
 }
 
 void MidiSeq::setMutePoint(double mouseX, bool on)
 {
-    SeqSample seqSample;
+    Sample sample;
     int loc = mouseX * (res * size);
 
-    seqSample = customWave.at(loc);
-    seqSample.muted = on;
-    customWave.replace(loc, seqSample);
+    sample = customWave.at(loc);
+    sample.muted = on;
+    customWave.replace(loc, sample);
     muteMask.replace(loc, on);
 }
 

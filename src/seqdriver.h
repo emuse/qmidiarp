@@ -15,12 +15,12 @@
 class SeqDriver : public QThread {
 
     Q_OBJECT
-    
+
     private:
         int portCount;
-        QList<MidiArp *> *midiArpList; 
-        QList<MidiLfo *> *midiLfoList; 
-        QList<MidiSeq *> *midiSeqList; 
+        QList<MidiArp *> *midiArpList;
+        QList<MidiLfo *> *midiLfoList;
+        QList<MidiSeq *> *midiSeqList;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
@@ -39,8 +39,8 @@ class SeqDriver : public QThread {
         int lastSeqTick[20], nextSeqTick;
         int nextNoteTick[20];
         int tempo, internal_tempo;
-        QVector<LfoSample> lfoData;
-        SeqSample seqSample;
+        QVector<Sample> lfoData;
+        Sample seqSample;
 
         void initSeqNotifier();
         const snd_seq_real_time_t *tickToDelta(int tick);
@@ -54,7 +54,7 @@ class SeqDriver : public QThread {
         double m_ratio;
         snd_seq_real_time_t delta, real_time, jack_offset;
         snd_seq_real_time_t tmptime;
-        
+
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
@@ -62,7 +62,7 @@ class SeqDriver : public QThread {
         bool use_midiclock, use_jacksync, trigByKbd;
 
     public:
-        SeqDriver(QList<MidiArp*> *p_midiArpList, 
+        SeqDriver(QList<MidiArp*> *p_midiArpList,
                 QList<MidiLfo *> *p_midiLfoList,
                 QList<MidiSeq *> *p_midiSeqList, QWidget* parent=0);
         ~SeqDriver();
@@ -80,7 +80,7 @@ class SeqDriver : public QThread {
         void midiEvent(snd_seq_event_t *ev);
         void controlEvent(int ccnumber, int channel, int value);
         void noteEvent(int note, int velocity);
-        void jackShutdown(bool); //boolean is passed to main toolbar 
+        void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
 
    public slots:

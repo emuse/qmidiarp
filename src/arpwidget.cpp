@@ -1,3 +1,35 @@
+/*!
+ * @file arpwidget.cpp
+ * @brief GUI class associated with and controlling a MidiArp worker
+ *
+ * It controls the MidiArp arpeggiator and
+ * is created alongwith each MidiArp and embedded in a DockWidget on
+ * MainWindow level. It can read its parameter set from an XML stream
+ * by calling its readData member. It manages a ArpWidget::ccList
+ * for each
+ * instance for MIDI controllers attributed through the MIDILearn
+ * context menu. It instantiates a ArpScreen and interacts with it.
+ *
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ */
+
 #include <QBoxLayout>
 #include <QStringList>
 #include <QFile>
@@ -23,8 +55,23 @@
 
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QWidget *parent)
 : QWidget(parent), midiWorker(p_midiWorker), modified(false)
-{    
-    QGridLayout *widgetLayout = new QGridLayout;
+{
+    // QSignalMappers allow identifying signal senders for MIDI learn/forget
+    learnSignalMapper = new QSignalMapper(this);
+    connect(learnSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(midiLearn(int)));
+
+    forgetSignalMapper = new QSignalMapper(this);
+    connect(forgetSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(midiForget(int)));
+
+    // we need the cancel MIDI Learn action only once for all
+    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
+    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    cancelMidiLearnAction->setEnabled(false);
+
+    midiCCNames << "MuteToggle" << "PresetSwitch" << "unknown";
+
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -34,20 +81,20 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     QToolButton *renameButton = new QToolButton(this);
     renameButton->setDefaultAction(renameAction);
     connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-    
+
     deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
     deleteAction->setToolTip(tr("Delete this Arp"));
     QToolButton *deleteButton = new QToolButton(this);
     deleteButton->setDefaultAction(deleteAction);
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
-    
+
     manageBoxLayout->addStretch();
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
-    
+
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
-    
+
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QSpinBox(inBox);
     chIn->setRange(1, 16);
@@ -91,16 +138,16 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     inputFilterBoxLayout->addWidget(indexIn[1], 0, 2);
     inputFilterBoxLayout->addWidget(rangeInLabel, 1, 0);
     inputFilterBoxLayout->addWidget(rangeIn[0], 1, 1);
-    inputFilterBoxLayout->addWidget(rangeIn[1], 1, 2);    
+    inputFilterBoxLayout->addWidget(rangeIn[1], 1, 2);
     inputFilterBoxLayout->setMargin(2);
     inputFilterBoxLayout->setSpacing(2);
     inputFilterBox->setCheckable(true);
-    connect(inputFilterBox, SIGNAL(toggled(bool)), this, 
+    connect(inputFilterBox, SIGNAL(toggled(bool)), this,
             SLOT(setInputFilterVisible(bool)));
     inputFilterBox->setChecked(false);
     inputFilterBox->setFlat(true);
     inputFilterBox->setLayout(inputFilterBoxLayout);
-    
+
     QGridLayout *inBoxLayout = new QGridLayout;
     inBoxLayout->addWidget(chInLabel, 0, 0);
     inBoxLayout->addWidget(chIn, 0, 1);
@@ -109,7 +156,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
         inBoxLayout->setMargin(2);
         inBoxLayout->setSpacing(1);
     }
-    inBox->setLayout(inBoxLayout); 
+    inBox->setLayout(inBoxLayout);
 
 
     // Output group box on right side
@@ -117,21 +164,21 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
-
     muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
-    muteOut->addAction(muteLearnAction);
-    connect(muteLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnMute()));
-    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
-    cancelMidiLearnAction->setEnabled(false);
-    muteOut->addAction(cancelMidiLearnAction);
-    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
-    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
-    muteOut->addAction(muteForgetAction);
-    connect(muteForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetMute()));
-
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
+
+    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
+    muteOut->addAction(muteLearnAction);
+    connect(muteLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(muteLearnAction, 0);
+
+    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
+    muteOut->addAction(muteForgetAction);
+    connect(muteForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(muteForgetAction, 0);
+
+    muteOut->addAction(cancelMidiLearnAction);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QSpinBox(portBox);
@@ -173,7 +220,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
 
-    textEditButton = new QToolButton(this); 
+    textEditButton = new QToolButton(this);
     textEditAction = new QAction(QIcon(editmodeon_xpm),
             tr("&Edit Pattern"), this);
     connect(textEditAction, SIGNAL(toggled(bool)), this,
@@ -181,7 +228,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     textEditAction->setCheckable(true);
     textEditButton->setDefaultAction(textEditAction);
 
-    textRemoveButton = new QToolButton(this);   
+    textRemoveButton = new QToolButton(this);
     textRemoveAction = new QAction(QIcon(patternremove_xpm),
             tr("&Remove Pattern"), this);
     connect(textRemoveAction, SIGNAL(triggered()), this,
@@ -205,21 +252,22 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
-            
     patternPresetBox->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+
     QAction *presetSwitchLearnAction = new QAction(tr("MIDI &Learn"), this);
     patternPresetBox->addAction(presetSwitchLearnAction);
-    connect(presetSwitchLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnPresetSwitch()));
-    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
-    cancelMidiLearnAction->setEnabled(false);
-    patternPresetBox->addAction(cancelMidiLearnAction);
-    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
+    connect(presetSwitchLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(presetSwitchLearnAction, 1);
+
     QAction *presetSwitchForgetAction = new QAction(tr("MIDI &Forget"), this);
     patternPresetBox->addAction(presetSwitchForgetAction);
-    connect(presetSwitchForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetPresetSwitch()));
+    connect(presetSwitchForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(presetSwitchForgetAction, 1);
+
+    patternPresetBox->addAction(cancelMidiLearnAction);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
-    QStringList repeatPatternNames; 
+    QStringList repeatPatternNames;
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
@@ -228,7 +276,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     repeatPatternThroughChord->setCurrentIndex(1);
 
     triggerMode = new QComboBox(patternBox);
-    QStringList triggerModeNames; 
+    QStringList triggerModeNames;
     triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger");
     triggerMode->insertItems(0, triggerModeNames);
     triggerMode->setToolTip(tr("Trigger Mode"));
@@ -236,7 +284,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
             SLOT(updateTriggerMode(int)));
     triggerMode->setCurrentIndex(0);
 
-    latchModeButton = new QToolButton(this); 
+    latchModeButton = new QToolButton(this);
     latchModeAction = new QAction(QIcon(latchmodeon_xpm),
             tr("&Latch Mode"), this);
     connect(latchModeAction, SIGNAL(toggled(bool)), midiWorker,
@@ -251,22 +299,22 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     }
     patternPresetLayout->addWidget(patternPresetBox);
     patternPresetLayout->addWidget(textEditButton);
-    patternPresetLayout->addWidget(textStoreButton);    
+    patternPresetLayout->addWidget(textStoreButton);
     patternPresetLayout->addWidget(textRemoveButton);
     patternPresetLayout->addStretch(2);
-    
+
     QHBoxLayout *modeLayout = new QHBoxLayout;
     if (compactStyle) {
         modeLayout->setMargin(2);
         modeLayout->setSpacing(1);
     }
 
-    modeLayout->addWidget(repeatPatternThroughChord);  
-    modeLayout->addWidget(triggerMode);  
+    modeLayout->addWidget(repeatPatternThroughChord);
+    modeLayout->addWidget(triggerMode);
     modeLayout->addWidget(latchModeButton);
     modeLayout->addStretch(2);
 
-    patternText = new QLineEdit(patternBox); 
+    patternText = new QLineEdit(patternBox);
     connect(patternText, SIGNAL(textChanged(const QString&)), this,
             SLOT(updateText(const QString&)));
     patternText->setHidden(true);
@@ -282,7 +330,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
 
     QWidget *screenBox = new QWidget(patternBox);
     QHBoxLayout *screenBoxLayout = new QHBoxLayout;
-    screen = new ArpScreen(patternBox); 
+    screen = new ArpScreen(patternBox);
     screenBox->setMinimumHeight(80);
     screenBoxLayout->addWidget(screen);
     screenBoxLayout->setMargin(2);
@@ -297,7 +345,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
         patternBoxLayout->setMargin(2);
         patternBoxLayout->setSpacing(1);
     }
-    patternBox->setLayout(patternBoxLayout); 
+    patternBox->setLayout(patternBoxLayout);
 
     // group box for random settings
     randomBox = new QGroupBox(tr("Random"), this);
@@ -316,8 +364,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
             tr("&Length"), randomBox);
     connect(randomLength, SIGNAL(valueChanged(int)), this,
-            SLOT(updateRandomLengthAmp(int))); 
-             
+            SLOT(updateRandomLengthAmp(int)));
+
     randomBoxLayout->addWidget(randomTick);
     randomBoxLayout->addWidget(randomVelocity);
     randomBoxLayout->addWidget(randomLength);
@@ -327,12 +375,12 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
         randomBoxLayout->setMargin(2);
     }
     randomBox->setCheckable(true);
-    connect(randomBox, SIGNAL(toggled(bool)), this, 
+    connect(randomBox, SIGNAL(toggled(bool)), this,
             SLOT(setRandomVisible(bool)));
     randomBox->setChecked(false);
     randomBox->setFlat(true);
     randomBox->setLayout(randomBoxLayout);
-    
+
     envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
     attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
@@ -343,7 +391,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
             tr("&Release (s)"), envelopeBox);
     connect(releaseTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateReleaseTime(int)));
-              
+
     envelopeBoxLayout->addWidget(attackTime);
     envelopeBoxLayout->addWidget(releaseTime);
     envelopeBoxLayout->addStretch();
@@ -352,12 +400,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
         envelopeBoxLayout->setMargin(2);
     }
     envelopeBox->setCheckable(true);
-    connect(envelopeBox, SIGNAL(toggled(bool)), this, 
+    connect(envelopeBox, SIGNAL(toggled(bool)), this,
             SLOT(setEnvelopeVisible(bool)));
     envelopeBox->setChecked(false);
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
-    
+
+    QGridLayout *widgetLayout = new QGridLayout;
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);
     widgetLayout->addWidget(envelopeBox, 2, 0);
@@ -385,20 +434,20 @@ void ArpWidget::updateChIn(int value)
 void ArpWidget::updateIndexIn(int value)
 {
     if (indexIn[0] == sender()) {
-        midiWorker->indexIn[0] = value; 
+        midiWorker->indexIn[0] = value;
     } else {
         midiWorker->indexIn[1] = value;
-    }  
+    }
     checkIfInputFilterSet();
 }
 
 void ArpWidget::updateRangeIn(int value)
-{ 
+{
     if (rangeIn[0] == sender()) {
-        midiWorker->rangeIn[0] = value; 
+        midiWorker->rangeIn[0] = value;
     } else {
         midiWorker->rangeIn[1] = value;
-    }  
+    }
     checkIfInputFilterSet();
 }
 
@@ -408,27 +457,11 @@ void ArpWidget::checkIfInputFilterSet()
             || ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
         inputFilterBox->setFlat(false);
         inputFilterBox->setTitle(tr("Note Filter - ACTIVE"));
-    } 
+    }
     else {
         inputFilterBox->setFlat(true);
         inputFilterBox->setTitle(tr("Note Filter"));
     }
-}
-
-void ArpWidget::setMuted(bool on)
-{
-    midiWorker->setMuted(on);
-    screen->setMuted(on);
-}
-
-void ArpWidget::updatePortOut(int value)
-{
-    midiWorker->portOut = value - 1;
-}
-
-void ArpWidget::updateChannelOut(int value)
-{
-    midiWorker->channelOut = value - 1;
 }
 
 void ArpWidget::writeData(QXmlStreamWriter& xml)
@@ -436,15 +469,15 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
     xml.writeStartElement(name.left(3));
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
         xml.writeStartElement("pattern");
-            xml.writeTextElement("pattern", midiWorker->pattern);        
+            xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
                 midiWorker->repeatPatternThroughChord));
             xml.writeTextElement("triggerMode", QString::number(
                 triggerMode->currentIndex()));
             xml.writeTextElement("latchMode", QString::number(
-                latchModeAction->isChecked()));           
+                latchModeAction->isChecked()));
         xml.writeEndElement();
-            
+
         xml.writeStartElement("input");
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
@@ -457,14 +490,14 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("rangeMax", QString::number(
                 midiWorker->rangeIn[1]));
         xml.writeEndElement();
-        
+
         xml.writeStartElement("output");
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->channelOut));
         xml.writeEndElement();
-    
+
         xml.writeStartElement("random");
             xml.writeTextElement("tick", QString::number(
                 midiWorker->randomTickAmp));
@@ -473,14 +506,14 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("length", QString::number(
                 midiWorker->randomLengthAmp));
         xml.writeEndElement();
-        
+
         xml.writeStartElement("envelope");
             xml.writeTextElement("attack", QString::number(
                 attackTime->value()));
             xml.writeTextElement("release", QString::number(
                 releaseTime->value()));
         xml.writeEndElement();
-           
+
         xml.writeStartElement("midiControllers");
         for (int l1 = 0; l1 < ccList.count(); l1++) {
             xml.writeStartElement("MIDICC");
@@ -496,7 +529,7 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeEndElement();
         }
         xml.writeEndElement();
-        
+
     xml.writeEndElement();
 }
 
@@ -524,17 +557,17 @@ void ArpWidget::writeDataText(QTextStream& arpText)
     arpText << midiWorker->pattern << '\n';
     arpText << "EOP\n"; // End Of Pattern
     modified = false;
-}                                      
+}
 
 void ArpWidget::readData(QXmlStreamReader& xml)
 {
-    int ctrlID, ccnumber, channel, min, max;
-    
+    int controlID, ccnumber, channel, min, max;
+
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())
             break;
-            
+
         if (xml.isStartElement() && (xml.name() == "pattern")) {
             while (!xml.atEnd()) {
                 xml.readNext();
@@ -614,7 +647,7 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "MIDICC")) {
-                    ctrlID = xml.attributes().value("CtrlID").toString().toInt();
+                    controlID = xml.attributes().value("CtrlID").toString().toInt();
                     ccnumber = -1;
                     channel = -1;
                     min = -1;
@@ -634,8 +667,8 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                         else skipXmlElement(xml);
                     }
                     if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
-                        appendMidiCC(ctrlID, ccnumber, channel, min, max);
-                    else qWarning("Controller data incomplete");                  
+                        appendMidiCC(controlID, ccnumber, channel, min, max);
+                    else qWarning("Controller data incomplete");
                 }
                 else skipXmlElement(xml);
             }
@@ -651,10 +684,10 @@ void ArpWidget::skipXmlElement(QXmlStreamReader& xml)
         qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
         while (!xml.atEnd()) {
             xml.readNext();
-    
+
             if (xml.isEndElement())
                 break;
-    
+
             if (xml.isStartElement()) {
                 skipXmlElement(xml);
             }
@@ -667,31 +700,31 @@ void ArpWidget::readDataText(QTextStream& arpText)
     QString qs, qs2;
     MidiCC midiCC;
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     chIn->setValue(qs2.toInt() + 1);
     qs2 = qs.section(' ', 1, 1);
     repeatPatternThroughChord->setCurrentIndex(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     indexIn[0]->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     indexIn[1]->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     rangeIn[0]->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     rangeIn[1]->setValue(qs2.toInt());
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     channelOut->setValue(qs2.toInt() + 1);
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     portOut->setValue(qs2.toInt() + 1);
     qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0); 
+    qs2 = qs.section(' ', 0, 0);
     randomTick->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1); 
+    qs2 = qs.section(' ', 1, 1);
     randomVelocity->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2); 
+    qs2 = qs.section(' ', 2, 2);
     randomLength->setValue(qs2.toInt());
     qs = arpText.readLine();
     if (qs == "MIDICC")
@@ -699,7 +732,7 @@ void ArpWidget::readDataText(QTextStream& arpText)
         qs = arpText.readLine();
         while (qs != "EOCC") {
             qs2 = qs.section(' ', 0, 0);
-            int ctrlID = qs2.toInt();
+            int controlID = qs2.toInt();
             qs2 = qs.section(' ', 1, 1);
             int ccnumber = qs2.toInt();
             qs2 = qs.section(' ', 2, 2);
@@ -708,7 +741,7 @@ void ArpWidget::readDataText(QTextStream& arpText)
             int min = qs2.toInt();
             qs2 = qs.section(' ', 4, 4);
             int max = qs2.toInt();
-            appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            appendMidiCC(controlID, ccnumber, channel, min, max);
             qs = arpText.readLine();
         }
     qs = arpText.readLine();
@@ -730,9 +763,9 @@ void ArpWidget::readDataText(QTextStream& arpText)
         }
         qs += '\n' + qs2;
     }
-    patternText->setText(qs);                    
+    patternText->setText(qs);
     modified = false;
-}                                      
+}
 
 void ArpWidget::setChIn(int value)
 {
@@ -742,7 +775,7 @@ void ArpWidget::setChIn(int value)
 
 void ArpWidget::setIndexIn(int index, int value)
 {
-    indexIn[index]->setValue(value); 
+    indexIn[index]->setValue(value);
     modified = true;
 }
 
@@ -752,21 +785,8 @@ void ArpWidget::setRangeIn(int index, int value)
     modified = true;
 }
 
-void ArpWidget::setPortOut(int value)
-{
-    portOut->setValue(value);
-    modified = true;
-}
-
-void ArpWidget::setChannelOut(int value)
-{
-
-    channelOut->setValue(value);
-    modified = true;
-}
-
 void ArpWidget::updateText(const QString& newtext)
-{ 
+{
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
@@ -793,7 +813,7 @@ void ArpWidget::loadPatternPresets()
 {
     QString qs;
     QStringList value;
-    
+
     QDir qmahome = QDir(QDir::homePath());
     QString qmarcpath = qmahome.filePath(QMARCNAME);
     QFile f(qmarcpath);
@@ -802,7 +822,7 @@ void ArpWidget::loadPatternPresets()
         QMessageBox::warning(this, PACKAGE,
                 tr("Could not read from resource file"));
         return;
-    }   
+    }
     QTextStream loadText(&f);
     patternNames.clear();
     patternPresets.clear();
@@ -859,7 +879,7 @@ void ArpWidget::checkIfRandomSet()
                 || randomVelocity->value()) {
         randomBox->setFlat(false);
         randomBox->setTitle(tr("Random - ACTIVE"));
-    } 
+    }
     else {
         randomBox->setFlat(true);
         randomBox->setTitle(tr("Random"));
@@ -885,7 +905,7 @@ void ArpWidget::checkIfEnvelopeSet()
     if (attackTime->value() || releaseTime->value()) {
         envelopeBox->setFlat(false);
         envelopeBox->setTitle(tr("Envelope - ACTIVE"));
-    } 
+    }
     else {
         envelopeBox->setFlat(true);
         envelopeBox->setTitle(tr("Envelope"));
@@ -906,7 +926,7 @@ void ArpWidget::storeCurrentPattern()
             tr("New pattern"), QLineEdit::Normal, tr("Arp pattern"), &ok);
 
     if (ok && !qs.isEmpty()) {
-        
+
         emit presetsChanged(qs, patternText->text(), 0);
         patternPresetBox->setCurrentIndex(patternNames.count() - 1);
         textRemoveAction->setEnabled(true);
@@ -937,7 +957,7 @@ void ArpWidget::removeCurrentPattern()
     int currentIndex = patternPresetBox->currentIndex();
     if (currentIndex < 1) {
         return;
-    } 
+    }
 
     qs = tr("Remove \"%1\"?").arg(patternPresetBox->currentText());
 
@@ -947,7 +967,7 @@ void ArpWidget::removeCurrentPattern()
             == QMessageBox::No) {
         return;
     }
-        
+
     emit presetsChanged("", "", currentIndex);
 }
 
@@ -974,6 +994,36 @@ void ArpWidget::setEnvelopeVisible(bool on)
     releaseTime->setVisible(on);
 }
 
+void ArpWidget::setMuted(bool on)
+{
+    midiWorker->setMuted(on);
+    screen->setMuted(on);
+}
+
+void ArpWidget::setPortOut(int value)
+{
+    portOut->setValue(value);
+    modified = true;
+}
+
+void ArpWidget::setChannelOut(int value)
+{
+    channelOut->setValue(value);
+    modified = true;
+}
+
+void ArpWidget::updatePortOut(int value)
+{
+    midiWorker->portOut = value - 1;
+    modified = true;
+}
+
+void ArpWidget::updateChannelOut(int value)
+{
+    midiWorker->channelOut = value - 1;
+    modified = true;
+}
+
 bool ArpWidget::isModified()
 {
     return modified;
@@ -995,47 +1045,41 @@ void ArpWidget::moduleDelete()
             == QMessageBox::No) {
         return;
     }
-    emit arpRemove(ID);
+    emit moduleRemove(ID);
 }
 
 void ArpWidget::moduleRename()
 {
     QString newname, oldname;
     bool ok;
-    
+
     oldname = name;
 
     newname = QInputDialog::getText(this, APP_NAME,
                 tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
-                
+
     if (ok && !newname.isEmpty()) {
         name = "Arp:" + newname;
         emit dockRename(name, parentDockID);
     }
 }
 
-void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int max)
+void ArpWidget::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
     int l1 = 0;
-    switch (ctrlID) {
-        case 0: midiCC.name = "MuteToggle";
-        break;
-        case 1: midiCC.name = "PresetSwitch";
-        break;
-        default: midiCC.name = "Unknown";
-    }
-    midiCC.ID = ctrlID;
+    midiCC.name = midiCCNames.at(controlID);
+    midiCC.ID = controlID;
     midiCC.ccnumber = ccnumber;
     midiCC.channel = channel;
     midiCC.min = min;
     midiCC.max = max;
-    
-    while ( (l1 < ccList.count()) && 
-        ((ctrlID != ccList.at(l1).ID) || 
+
+    while ( (l1 < ccList.count()) &&
+        ((controlID != ccList.at(l1).ID) ||
         (ccnumber != ccList.at(l1).ccnumber) ||
         (channel != ccList.at(l1).channel)) ) l1++;
-    
+
     if (ccList.count() == l1) {
         ccList.append(midiCC);
         qWarning("MIDI Controller %d appended for %s"
@@ -1045,17 +1089,17 @@ void ArpWidget::appendMidiCC(int ctrlID, int ccnumber, int channel, int min, int
         qWarning("MIDI Controller %d already attributed to %s"
                 , ccnumber, qPrintable(midiCC.name));
     }
-        
+
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
 }
 
-void ArpWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
+void ArpWidget::removeMidiCC(int controlID, int ccnumber, int channel)
 {
     for (int l1 = 0; l1 < ccList.count(); l1++) {
-        if (ccList.at(l1).ID == ctrlID) {
+        if (ccList.at(l1).ID == controlID) {
             if (((ccList.at(l1).ccnumber == ccnumber)
-                    && (ccList.at(l1).channel == channel)) 
+                    && (ccList.at(l1).channel == channel))
                     || (0 > channel)) {
                 ccList.remove(l1);
                 l1--;
@@ -1066,33 +1110,21 @@ void ArpWidget::removeMidiCC(int ctrlID, int ccnumber, int channel)
     modified = true;
 }
 
-void ArpWidget::midiLearnMute()
+void ArpWidget::midiLearn(int controlID)
 {
-    emit setMidiLearn(parentDockID, ID, 0);
+    emit setMidiLearn(parentDockID, ID, controlID);
+    qWarning("Requesting Midi Learn for %s", qPrintable(midiCCNames.at(controlID)));
     cancelMidiLearnAction->setEnabled(true);
-    qWarning("Requesting Midi Learn for MuteToggle");
 }
 
-void ArpWidget::midiForgetMute()
+void ArpWidget::midiForget(int controlID)
 {
-    removeMidiCC(0, 0, -1);
-}
-
-void ArpWidget::midiLearnPresetSwitch()
-{
-    emit setMidiLearn(parentDockID, ID, 1);
-    cancelMidiLearnAction->setEnabled(true);
-    qWarning("Requesting Midi Learn for PresetSwitch");
-}
-
-void ArpWidget::midiForgetPresetSwitch()
-{
-    removeMidiCC(1, 0, -1);
+    removeMidiCC(controlID, 0, -1);
 }
 
 void ArpWidget::midiLearnCancel()
 {
     emit setMidiLearn(parentDockID, ID, -1);
-    cancelMidiLearnAction->setEnabled(false);
     qWarning("Cancelling Midi Learn request");
+    cancelMidiLearnAction->setEnabled(false);
 }

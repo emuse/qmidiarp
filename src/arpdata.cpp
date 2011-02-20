@@ -1,3 +1,35 @@
+/**
+ * @file arpdata.cpp
+ * @brief Managing class for created module components in lists. Instantiates SeqDriver.
+ *
+ * For each module component and type there is a QList (for example MidiArp
+ * and ArpWidget). In parallel there is
+ * a common list for all modules containing their DockWidgets.
+ * ArpData also instantiates the SeqDriver MIDI backend and handles MIDI
+ * controller events through signaling by seqDriver. Controllers are
+ * dispatched to the modules as requiered by their MIDI Learn
+ * MidiCCList.
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ *
+ */
+
 #include <QString>
 #include <QFile>
 #include <QFileDialog>

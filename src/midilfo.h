@@ -28,11 +28,18 @@
 #include <alsa/asoundlib.h>
 #include <main.h>
 
-    struct LfoSample {
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+/*! @brief Structure holding elements of a MIDI note or controller representing
+ * one point of a waveform
+ */
+    struct Sample {
         int value;
         int tick;
         bool muted;
     };
+#endif
 
 class MidiLfo : public QObject  {
 
@@ -44,7 +51,7 @@ class MidiLfo : public QObject  {
     int frameptr;
     int recValue;
     int clip(int value, int min, int max, bool *outOfRange);
-    QVector<LfoSample> lfoData;
+    QVector<Sample> data;
 
   public:
     int portOut;    // Output port (ALSA Sequencer)
@@ -56,14 +63,14 @@ class MidiLfo : public QObject  {
     int size, res, waveFormIndex;
     int old_res;
     int cwmin;
-    QVector<LfoSample> customWave;
+    QVector<Sample> customWave;
     QVector<bool> muteMask;
 
   public:
     MidiLfo();
     ~MidiLfo();
-    void getData(QVector<LfoSample> *lfoData);
-    void getNextFrame(QVector<LfoSample> *p_lfoData);
+    void getData(QVector<Sample> *data);
+    void getNextFrame(QVector<Sample> *p_data);
     bool toggleMutePoint(double);
     bool isLfo(int cctest, int chtest);
 
