@@ -8,6 +8,17 @@ AC_CONFIG_HEADERS(src/config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_DEFINE(APP_NAME, "QMidiArp", [application name])
 
+# Initialize doxygen
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN($PACKAGE_NAME, Doxyfile)
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -94,4 +105,5 @@ AC_CHECK_FUNCS([strdup])
 AC_CONFIG_FILES([Makefile] [examples/Makefile] [src/Makefile])
 AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
 AC_CONFIG_FILES([man/de/Makefile])
+AC_CONFIG_FILES([dox/Makefile])
 AC_OUTPUT
