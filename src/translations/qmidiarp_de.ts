@@ -385,9 +385,9 @@
         <location filename="../lfowidget.cpp" line="140"/>
         <location filename="../lfowidget.cpp" line="233"/>
         <location filename="../lfowidget.cpp" line="263"/>
-        <location filename="../lfowidget.cpp" line="312"/>
-        <location filename="../lfowidget.cpp" line="328"/>
-        <location filename="../lfowidget.cpp" line="347"/>
+        <location filename="../lfowidget.cpp" line="311"/>
+        <location filename="../lfowidget.cpp" line="330"/>
+        <location filename="../lfowidget.cpp" line="349"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Lerne von MIDI</translation>
     </message>
@@ -400,9 +400,9 @@
         <location filename="../lfowidget.cpp" line="145"/>
         <location filename="../lfowidget.cpp" line="238"/>
         <location filename="../lfowidget.cpp" line="268"/>
-        <location filename="../lfowidget.cpp" line="315"/>
-        <location filename="../lfowidget.cpp" line="333"/>
-        <location filename="../lfowidget.cpp" line="352"/>
+        <location filename="../lfowidget.cpp" line="316"/>
+        <location filename="../lfowidget.cpp" line="335"/>
+        <location filename="../lfowidget.cpp" line="354"/>
         <source>MIDI &amp;Forget</source>
         <translation>MIDI-Steuerungen &amp;vergessen</translation>
     </message>
@@ -495,52 +495,52 @@ Mausrad: Verschieben des Offsets</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="322"/>
+        <location filename="../lfowidget.cpp" line="324"/>
         <source>&amp;Amplitude</source>
         <translation>Am&amp;plitude</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="342"/>
+        <location filename="../lfowidget.cpp" line="344"/>
         <source>&amp;Offset</source>
         <translation>&amp;Offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="783"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="783"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Saw up</source>
         <translation>Sägezahn auf</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="783"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Triangle</source>
         <translation>Dreieck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="784"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Saw down</source>
         <translation>Sägezahn ab</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="784"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Square</source>
         <translation>Rechteck</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="784"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Custom</source>
         <translation>Frei</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="980"/>
+        <location filename="../lfowidget.cpp" line="992"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="999"/>
+        <location filename="../lfowidget.cpp" line="1011"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
