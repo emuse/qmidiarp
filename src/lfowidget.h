@@ -255,6 +255,8 @@ class LfoWidget : public QWidget
     void updateChIn(int value);
     void updateCcnumberIn(int value);
     void updateScreen(int value);
+    void setRecord(bool on);
+
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
 * of this module.

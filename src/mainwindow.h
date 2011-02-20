@@ -404,7 +404,7 @@ class MainWindow : public QMainWindow
 * with the passed name
 *
 * @param name New name attribute of the DockWidget
-* @param parentDockID The widget ID of the DockWidget to rename
+* @param index The widget ID of the DockWidget to rename
 */
     void renameDock(const QString& name, int index);
 /*!
@@ -438,7 +438,7 @@ class MainWindow : public QMainWindow
     void helpAboutQt();
 /*! @brief Slot for tempo spinBox changes.
 * This function forwards a new tempo value to SeqDriver.
-* @param p_tempo The new tempo to be set
+* @param tempo The new tempo to be set
 *
 */
     void updateTempo(int tempo);

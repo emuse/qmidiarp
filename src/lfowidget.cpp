@@ -72,7 +72,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     cancelMidiLearnAction->setEnabled(false);
 
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
-                << "unknown";
+                << "RecordToggle" << "unknown";
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -306,15 +306,17 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-
     recordButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
 
     QAction *recordLearnAction = new QAction(tr("MIDI &Learn"), this);
     recordButton->addAction(recordLearnAction);
-    connect(recordLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnRecord()));
+    connect(recordLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(recordLearnAction, 5);
+
     QAction *recordForgetAction = new QAction(tr("MIDI &Forget"), this);
     recordButton->addAction(recordForgetAction);
-    connect(recordForgetAction, SIGNAL(triggered()), this, SLOT(midiForgetRecord()));
+    connect(recordForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(recordForgetAction, 5);
 
     recordButton->addAction(cancelMidiLearnAction);
 
@@ -938,6 +940,16 @@ void LfoWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(on);
+}
+
+void LfoWidget::setRecord(bool on)
+{
+    if (!on) {
+        midiWorker->isRecording = false;
+        newCustomOffset();
+    }
+    midiWorker->recordMode = on;
+    screen->setRecord(on);
 }
 
 void LfoWidget::setPortOut(int value)
