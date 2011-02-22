@@ -120,7 +120,7 @@ class ArpData : public QWidget  {
   public slots:
     void runQueue(bool);
 /**
- * This function is used to set the modified flag, which is queried before
+ * @brief This function is used to set the modified flag, which is queried before
  * loading a new session file or quitting qmidiarp.
  *
  * @param m Set to True if parameter modifications are present
