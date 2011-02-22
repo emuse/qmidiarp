@@ -61,7 +61,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int l1, l2;
     int beat = 4;
     double nsteps = 0.0;
-    double tempo = 1.0;
+    double stepWidth = 1.0;
     double curstep = 0.0;
     int nlines = 0;
     int notelen;
@@ -90,13 +90,14 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     patternLen = a_pattern.length();
     patternMaxIndex = 0;
+
     for (l1 = 0; l1 < patternLen; l1++)
     {
         c = a_pattern.at(l1);
 
         if (c.isDigit()) {
             if (!chordIndex) {
-                nsteps += tempo;
+                nsteps += stepWidth;
                 if (chordMode) chordIndex++;
             }
             if (c.digitValue() > patternMaxIndex)
@@ -114,22 +115,22 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 break;
 
             case '>':
-                tempo /= 2.0;
-                if (tempo < minTempo)
+                stepWidth /= 2.0;
+                if (stepWidth < minTempo)
                     minTempo /= 2.0;
                 break;
 
             case '<':
-                tempo *= 2.0;
+                stepWidth *= 2.0;
                 break;
 
             case '.':
-                tempo = 1.0;
+                stepWidth = 1.0;
                 break;
 
             case 'p':
                 if (!chordMode)
-                    nsteps += tempo;
+                    nsteps += stepWidth;
                 break;
 
             case '+':
@@ -236,7 +237,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //Draw arpTicks
     curstep= 0.0;
     notelen = xscale/8;
-    tempo = 1.0;
+    stepWidth = 1.0;
     vel = 0.8;
     octave = 0;
     chordMode = false;
@@ -253,7 +254,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
             if (!chordIndex)
             {
                 if (chordMode) chordIndex++;
-                curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp);
+                curstep += stepWidth; // * (1.0 + 0.01 * (double)grooveTmp);
                 grooveIndex++;
             }
         }
@@ -272,20 +273,20 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case '>':
-                    tempo /= 2.0;
+                    stepWidth /= 2.0;
                     break;
 
                 case '<':
-                    tempo *= 2.0;
+                    stepWidth *= 2.0;
                     break;
 
                 case '.':
-                    tempo = 1.0;
+                    stepWidth = 1.0;
                     break;
 
                 case 'p':
                     if (!chordMode)
-                        curstep += tempo; // * (1.0 + 0.01 * (double)grooveTmp);
+                        curstep += stepWidth; // * (1.0 + 0.01 * (double)grooveTmp);
                         grooveIndex++;
                    break;
 
@@ -325,7 +326,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         if (c.isDigit())
         {
             octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
-            x = (curstep - tempo) * xscale;
+            x = (curstep - stepWidth) * xscale;
 //          notestreak_thick = h / (patternMaxIndex + 1) / noctaves / 2;
             if (nlines > 0)
             {

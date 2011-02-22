@@ -172,9 +172,9 @@ void SeqDriver::run()
                 }
 
 
-                    //~ printf("       tick %d     ",tick);
+                    //~ printf("       tick %d     \n",tick);
                     //~ printf("nextLfoTick %d  ",nextLfoTick);
-                    //~ printf("nextSeqTick %d  \n",nextSeqTick);
+                    //~ printf("nextSeqTick %d  ",nextSeqTick);
                     //~ printf("nextEchoTick %d  \n",nextEchoTick);
                     //~ printf("midiTick %d   ",midiTick);
                     //~ printf("m_ratio %f  ",m_ratio);
@@ -263,6 +263,7 @@ void SeqDriver::run()
                                     snd_seq_event_output_direct(seq_handle, &evOut);
                                 }
                             }
+                      
                             if (!l1)
                                 seqMinPacketSize = seqPacketSize[l1];
                             else if (seqPacketSize[l1] < seqMinPacketSize)
@@ -292,7 +293,7 @@ void SeqDriver::run()
                             if (tick + schedDelayTicks >= nextNoteTick[l1]) {
                                 midiArpList->at(l1)->newRandomValues();
                                 midiArpList->at(l1)->updateQueueTempo(tempo);
-                                midiArpList->at(l1)->getCurrentNote(tick);
+                                midiArpList->at(l1)->prepareCurrentNote(tick);
                                 note = midiArpList->at(l1)->returnNote;
                                 nextNoteTick[l1] = midiArpList->at(l1)->getNextNoteTick();
                                 velocity = midiArpList->at(l1)->returnVelocity;
@@ -373,6 +374,7 @@ void SeqDriver::run()
                         }
                     }
                 }
+
                 if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                         || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
                     get_time();
@@ -393,7 +395,7 @@ void SeqDriver::run()
                             if ((evIn->type == SND_SEQ_EVENT_NOTEON)
                                     && (evIn->data.note.velocity > 0)) {
 
-                                midiArpList->at(l1)->addNote(evIn->data.note.note,
+                                midiArpList->at(l1)->handleNoteOn(evIn->data.note.note,
                                                 evIn->data.note.velocity, tick);
 
                                 if (midiArpList->at(l1)->wantTrigByKbd()) {
