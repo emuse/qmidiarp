@@ -83,7 +83,10 @@ class MidiArp : public QThread  {
   Q_OBJECT
 
   private:
-    int nextNote[MAXCHORD], nextVelocity[MAXCHORD];
+    int nextNote[MAXCHORD]; /*!< Holds the note values to be output next
+                                @see MidiArp::updateNotes */
+    int nextVelocity[MAXCHORD]; /*!< Holds the associated velocities to be output next
+                                    @see MidiArp::updateNotes, MidiArp::nextNote */
     int currentNoteTick, nextNoteTick, currentTick, arpTick;
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
     int currentLength, nextLength;
@@ -93,17 +96,18 @@ class MidiArp : public QThread  {
     double queueTempo;
     double stepWidth, len, vel;
 
-    QVector<int> sustainBuffer;
-    QVector<int> latchBuffer;
-    QTimer *latchTimer;
+    QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
+    QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
+    QTimer *latchTimer;         /*!< Is started when a note is released and causes MidiArp::purgeLatchBuffer after
+                                    a delay of 200ms except when another released note is detected before. */
 
     bool sustain, latch_mode;
     int octave, noteIndex[MAXCHORD], patternIndex;
- /*! @brief The input note buffer array of the Arpeggiator.
+ /*! @brief The input note buffer array of the Arpeggiator, which has
+  * two array copies.
   *
-  * It has two
-  * array copies (first index 0:1) for avoiding access conflicts while
-  * modifying its data.
+  * @par The first index (0:1) selects the copy to be modified
+  * avoiding access conflicts while modifying its data.
   * @par The second index selects the columns corresponding to
   * - 0: Note value
   * - 1: Note velocity
@@ -115,8 +119,19 @@ class MidiArp : public QThread  {
   * @par The third index is the note index in the buffer.
   * */
     int notes[2][4][MAXNOTES];
+
+ /*! @brief The storage copy of dynamic attack values.
+  *
+  * These values are to be multiplied with the
+  * velocity at each new arpeggiator step. Its index corresponds
+  * to that of the third MidiArp::notes buffer index.
+  * */
     double old_attackfn[MAXNOTES];
-    int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
+    int noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
+    int noteCount;      /*!< The number of notes in the MidiArp::notes buffer */
+    int patternLen;     /*!< Length of the arp text pattern */
+    int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
+    int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
 
     QMutex mutex;
 
@@ -146,6 +161,7 @@ class MidiArp : public QThread  {
 /**
  * @brief This function updates the current note arrays with new values
  * obtained from MidiArp::getNote
+ *
  * It is called by MidiArp::run and calls MidiArp::getNote if the given
  * timing is ahead of the last timing information. It then transfers the
  * MidiArp::nextNote and MidiArp::nextVelocity arrays into
@@ -160,31 +176,111 @@ class MidiArp : public QThread  {
  *
  * It analyzes the MidiArp::pattern text and MidiArp::notes input buffer
  * to yield arrays of notes that have to be output at the given timing.
+ * Only in case of an arpeggio step involving chords, these arrays have
+ * sizes > 1.
+ * @param tick The timing of the requested arpeggio step
+ * @param note The array of notes to be filled
+ * @param velocity The associated array of velocites to be filled
+ * @param length The note length for this arpeggio step
  */
     void getNote(int *tick, int note[], int velocity[], int *length);
+/**
+ * @brief This function is currently not in use.
+ *
+ * It transfers the content of the MidiArp::nextNote array to
+ * MidiArp::returnNote, MidiArp::returnVelocity and MidiArp::returnTick.
+ *
+ * @param askedTick The timing value in ticks, for which the next note
+ * information is queried.
+ */
     void prepareNextNote(int askedTick);
+/**
+ * @brief This function returns the number of notes present at the ALSA
+ * input port.
+ *
+ * This is the number of notes currently pressed on the keyboard. Note
+ * that the input MidiArp::notes buffer size can be different from this
+ * number, since it can contain notes in release state or in the
+ * MidiArp::latchBuffer.
+ *
+ * @return Number of notes present at the ALSA input port.
+ */
     int getPressedNoteCount();
-    void removeNote(int *noteptr, int tick, int keep_rel); // Remove input Note from Arpeggio
+/**
+ * @brief This function returns the number of notes present at the ALSA
+ * input port.
+ *
+ * This is the number of notes currently pressed on the keyboard. Note
+ * that the input MidiArp::notes buffer size can be different from this
+ * number, since it can contain notes in release state or in the
+ * MidiArp::latchBuffer.
+ *
+ * @return Number of notes present at the ALSA input port.
+ */
+    void removeNote(int *noteptr, int tick, int keep_rel);
+/**
+ * @brief This function calculates the index of the next arpeggio
+ * step and revolves it if necessary.
+ *
+ * The next step depends on the MidiArp::repeatPatternThrough chord mode.
+ * The pattern index can be simply reset to zero if the reset flag is
+ * set to True.
+ * @param reset Set to True in order to set the pattern index to zero
+ * @return True if the pattern index is now zero
+ */
     bool advancePatternIndex(bool reset);
+/**
+ * @brief This function removes a note inside the MidiArp::notes input
+ * note buffer.
+ *
+ * The note  at the given index is deleted from the buffer with the
+ * given bufPtr index (0 or 1), and notes at higher positions in the
+ * buffer are moved in position.
+ * @param index
+ */
     void deleteNoteAt(int index, int bufPtr);
+/**
+ * @brief This function sets the released flag (value 1) for the note
+ * at the given index
+ *
+ * This operation is done for the buffer with given bufPtr index (0 or 1).
+ * A released flag set will cause getNote to diminish the velocity of
+ * this note at each arpeggio step, and to remove it when the velocity
+ * reaches zero.
+ *
+ * @param note Note value to be tagged as released
+ * @param tick The time in internal ticks at which the note was released
+ * @param bufPtr The index of the MidiArp::notes buffer currently in use
+ */
     void tagAsReleased(int note, int tick, int bufPtr);
+/**
+ * @brief This function performs a copy within MidiArp::notes from the
+ * currently active index to the inactive index
+ */
     void copyNoteBuffer();
 
   public:
-    int chIn;       // Channel of input events
-    int indexIn[2]; // Index input/output (for Controller events)
-    int rangeIn[2]; // Parameter that is mapped, [0] low, [1] high boundary
-    int portOut;    // Output port (ALSA Sequencer)
-    int channelOut;
-    bool isMuted;
-    bool restartByKbd, trigByKbd;
-    int repeatPatternThroughChord;
-    double attack_time, release_time;
-    int randomTickAmp, randomVelocityAmp, randomLengthAmp;
-    QString pattern;
-    QVector<int> returnNote, returnVelocity;
-    int returnTick, returnIsNew, returnLength;
+    int chIn;       /*!< Input channel state set by ArpWidget */
+    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by ArpWidget */
+    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by ArpWidget */
+    int portOut;    /*!< Output port, set by ArpWidget */
+    int channelOut; /*!< Output channel, set by ArpWidget */
+    bool isMuted;   /*!< Mute state set by ArpWidget */
+    bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
+    bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
+    int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
+    double attack_time;/*!< Attack time in seconds, set by ArpWidget */
+    double release_time;/*!< Release time in seconds, set by ArpWidget */
+    int randomTickAmp; /*!< Amplitude of timing randomization, set by ArpWidget */
+    int randomVelocityAmp; /*!< Amplitude of velocity randomization, set by ArpWidget */
+    int randomLengthAmp; /*!< Amplitude of length randomization, set by ArpWidget */
+    QString pattern; /*!< Holds the the arpeggio pattern text */
 
+    QVector<int> returnNote; /*!< Holds the notes of the currently active arpeggio step */
+    QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */
+    int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
+    int returnLength; /*!< Holds the note length of the currently active arpeggio step */
+    int returnIsNew;
   public:
     MidiArp();
     ~MidiArp();
@@ -317,10 +413,12 @@ class MidiArp : public QThread  {
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
 /**
- * @brief This is the thread main function. It
- * calls MidiArp::updateNotes() and copies
- * the newly calculated MidiArp::currentNote and MidiArp::currentVelocity
- * parameter arrays into the return members, which can then be accessed
+ * @brief This is the thread main function, which calls
+ * MidiArp::updateNotes().
+ *
+ * It then copies the newly calculated MidiArp::currentNote
+ * and MidiArp::currentVelocity arrays into the return
+ * members, which can then be accessed
  * by the SeqDriver::run thread.
  */
     void run();
@@ -344,8 +442,17 @@ class MidiArp : public QThread  {
     void updateQueueTempo(int);
     void updateReleaseTime(int);
     void setMuted(bool); //set mute
-    void setSustain(bool, int); //set sustain
-    void setLatchMode(bool); //set latch mode
+ /*! @brief set by SeqDriver when MidiCC is received.
+  *
+  * Will cause notes remaining in MidiArp::sustainBuffer until new
+  * set to false.
+  * @param sustain Set to True to cause hold mode
+  * @param tick Time in internal ticks at which the controller was received */
+    void setSustain(bool sustain, int tick);
+ /*! @brief Slot for ArpWidget::latchModeAction.
+  * Will cause notes remaining in MidiArp::latchBuffer until new
+  * stakato note received */
+    void setLatchMode(bool);
     void purgeSustainBuffer(int sustick);
     void purgeLatchBuffer();
     void clearNoteBuffer();
