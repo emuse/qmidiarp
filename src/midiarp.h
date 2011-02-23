@@ -119,9 +119,48 @@ class MidiArp : public QThread  {
     int noteBufPtr, noteCount, patternLen, patternMaxIndex, noteOfs;
 
     QMutex mutex;
+
+
+/**
+ * @brief This function resets all attributes the pattern
+ * accumulates during run.
+ *
+ * It is called when the currentIndex revolves to restart the loop with
+ * default velocity, step width, octave and length.
+ *
+ * @param evIn ALSA event to check
+ * @return True if evIn is in the input range of the arp
+ */
     void initLoop();
+/**
+ * @brief This function allows forcing an integer value within the
+ * specified range (clip).
+ *
+ * @param value The value to be checked
+ * @param min The minimum allowed return value
+ * @param max The maximum allowed return value
+ * @param outOfRange Is set to True if value was outside min|max range
+ * @return The value clipped within the range
+ */
     int clip(int value, int min, int max, bool *outOfRange);
+/**
+ * @brief This function updates the current note arrays with new values
+ * obtained from MidiArp::getNote
+ * It is called by MidiArp::run and calls MidiArp::getNote if the given
+ * timing is ahead of the last timing information. It then transfers the
+ * MidiArp::nextNote and MidiArp::nextVelocity arrays into
+ * MidiArp::currentNote and MidiArp::currentVelocity.
+ *
+ * @param currentTick The current timing information in internal ticks
+ */
     void updateNotes(int currentTick);
+/**
+ * @brief This is MidiArp's main note processor producing output notes
+ * from input notes.
+ *
+ * It analyzes the MidiArp::pattern text and MidiArp::notes input buffer
+ * to yield arrays of notes that have to be output at the given timing.
+ */
     void getNote(int *tick, int note[], int velocity[], int *length);
     void prepareNextNote(int askedTick);
     int getPressedNoteCount();
@@ -205,32 +244,94 @@ class MidiArp : public QThread  {
  */
     void handleNoteOff(int note, int tick, int keep_rel);
 /**
- * @brief This function does the actions related to a note release detected
- * on the ALSA input port.
+ * @brief This function represents the external interface to the
+ * core of the arpeggiator engine.
  *
- * It is called by SeqDriver when a NOTE_OFF event is received. The function
- * will go through checks regarding MidiArp::latchMode and MidiArp::sustain
- * and add the note to the respective MidiArp::latchBuffer and/or
- * MidiArp::sustainBuffer if required. If not, the note is either tagged
- * as released (provided MidiArp::release_time is set) or removed from
- * the buffer. The latter depends on the keep_rel argument.
+ * It is called by SeqDriver when a previously scheduled SND_SEQ_ECHO
+ * event is received on the ALSA port.
+ * It starts the MidiArp::run thread. In the thread, MidiArp::getNote
+ * is called, which does the note processing depending on the
+ * MidiArp::pattern and
+ * leading to new data in MidiArp::returnNote, MidiArp::returnVelocity,
+ * MidiArp::returnLength. SeqDriver then accesses this data directly
+ * and outputs it to the ALSA queue.
  *
- * @param note The note value of the received note
- * @param tick The time the note was released in internal ticks
- * @param keep_rel Set this flag to 1 if the note is to be kept in the buffer
- * along with the release tick and tagged as a released note. 0 otherwise for
- * definite removal from the buffer.
+ * @param askedTick the timing of the note(s) to be output
+ *
  */
     void prepareCurrentNote(int askedTick);
+/**
+ * @brief This function returns the timing of the next note to be
+ * calculated and played out in internal ticks.
+ *
+ * It is called by SeqDriver immediately after accessing the current note
+ * data. This next note timing information is used to
+ * schedule a so called echo event which will trigger the next call to
+ * prepareCurrentNote followed by an output of note data to the ALSA
+ * queue.
+ *
+ * @return The timing of the next coming note in internal ticks.
+ */
     int getNextNoteTick();
+/**
+ * @brief This function resets the pattern index and sets the current
+ * timing of the arpeggio to currentTick.
+ *
+ * It is called by SeqDriver when the ALSA queue is started, or when
+ * a stakato note is received while MidiArp::restartByKbd is set.
+ *
+ * @param currentTick The timing in internal ticks, relative to which
+ * the following arpeggio notes are calculated.
+ */
     void initArpTick(int currentTick);
+/**
+ * @brief This function ensures continuity of the release function
+ * when the currentTick position jumps into
+ * the past.
+ *
+ * It should be called whenever the transport position is looping. At
+ * this time, this is the case when JACK Transport is looping.
+
+ * @param currentTick The current time position in internal ticks.
+ */
     void foldReleaseTicks(int currentTick);
+/**
+ * @brief This function seeds new random values for the three parameters
+ * concerned, timing (tick), velocity and length.
+ *
+ * This function is
+ * called by MidiArp::getNote at every new note. It uses the
+ * MidiArp::randomTickAmp, MidiArp::randomVelocityAmp and
+ * MidiArp::randomLengthAmp settings coming from ArpWidget.
+ * The values are then used by MidiArp::getNote.
+ */
     void newRandomValues();
+/**
+ * @brief This function copies the new values transferred from the
+ * GrooveWidget into variables used by MidiArp::getNote.
+ *
+ * @param p_grooveTick Groove amount for timing displacements
+ * @param p_grooveVelocity Groove amount for velocity variations
+ * @param p_grooveLength Groove amount for note length variations
+ */
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
+/**
+ * @brief This is the thread main function. It
+ * calls MidiArp::updateNotes() and copies
+ * the newly calculated MidiArp::currentNote and MidiArp::currentVelocity
+ * parameter arrays into the return members, which can then be accessed
+ * by the SeqDriver::run thread.
+ */
     void run();
 
   signals:
+/**
+ * @brief Emitted to ArpScreen::update at every arpeggio step.
+ *
+ * It causes update of the cursor position and pattern display.
+ * @param patternIndex The current index position in the MidiArp::pattern.
+ */
     void nextStep(int patternIndex);
 
   public slots:
