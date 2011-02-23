@@ -146,7 +146,8 @@ void MidiArp::handleNoteOn(int note, int velocity, int tick)
     // modify buffer that is not accessed by arpeggio output
     bufPtr = (noteBufPtr) ? 0 : 1;
 
-    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1])) index = noteCount;
+    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
+        index = noteCount;
     else {
         index = 0;
         while (note > notes[bufPtr][0][index]) index++;
@@ -550,7 +551,7 @@ void MidiArp::updateNotes(int currentTick)
 
 void MidiArp::foldReleaseTicks(int currentTick)
 {
-    int bufPtr, newBufPtr, l2, l3;
+    int bufPtr, l2;
 
     mutex.lock();
     bufPtr = (noteBufPtr) ? 0 : 1;
@@ -559,14 +560,7 @@ void MidiArp::foldReleaseTicks(int currentTick)
             notes[bufPtr][2][l2] -= currentTick;
     }
 
-    newBufPtr = noteBufPtr;
-    noteBufPtr = bufPtr;
-
-    for (l3 = 0; l3 < 4; l3++) {
-        for (l2 = 0; l2 < noteCount; l2++) {
-            notes[newBufPtr][l3][l2] = notes[bufPtr][l3][l2];
-        }
-    }
+    copyNoteBuffer();
     mutex.unlock();
 }
 
