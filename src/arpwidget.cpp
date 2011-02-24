@@ -287,7 +287,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     latchModeButton = new QToolButton(this);
     latchModeAction = new QAction(QIcon(latchmodeon_xpm),
             tr("&Latch Mode"), this);
-    connect(latchModeAction, SIGNAL(toggled(bool)), midiWorker,
+    connect(latchModeAction, SIGNAL(toggled(bool)), this,
             SLOT(setLatchMode(bool)));
     latchModeAction->setCheckable(true);
     latchModeButton->setDefaultAction(latchModeAction);
@@ -998,6 +998,12 @@ void ArpWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(on);
+}
+
+void ArpWidget::setLatchMode(bool on)
+{
+    midiWorker->setLatchMode(on);
+    modified = true;
 }
 
 void ArpWidget::setPortOut(int value)
