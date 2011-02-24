@@ -264,6 +264,11 @@ class ArpWidget : public QWidget
     void updateIndexIn(int value);
     void updateRangeIn(int value);
 
+ /*! @brief Slot for ArpWidget::latchModeAction.
+  * Will cause notes remaining in MidiArp::latchBuffer until new
+  * stakato note received */
+    void setLatchMode(bool);
+
     //these slots are common to all modules
 /*!
  *  @brief Slot for the ArpWidget::channelOut spinbox setting the output

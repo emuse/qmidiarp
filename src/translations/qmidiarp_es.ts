@@ -251,12 +251,12 @@
         <translation>¿Borrar &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="1040"/>
+        <location filename="../arpwidget.cpp" line="1046"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>¿Eliminar &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="1059"/>
+        <location filename="../arpwidget.cpp" line="1065"/>
         <source>New Name</source>
         <translation>Nuevo nombre</translation>
     </message>

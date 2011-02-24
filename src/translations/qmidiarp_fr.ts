@@ -275,12 +275,12 @@ d h durée de note augm/dim
         <translation>Filtre - AKTIF</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="1040"/>
+        <location filename="../arpwidget.cpp" line="1046"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="1059"/>
+        <location filename="../arpwidget.cpp" line="1065"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>

@@ -281,18 +281,33 @@ class MidiArp : public QThread  {
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
     int returnIsNew;
+
   public:
     MidiArp();
     ~MidiArp();
+    void updatePattern(const QString&);
+    void updateTriggerMode(int val);
+    void updateRandomTickAmp(int);
+    void updateRandomVelocityAmp(int);
+    void updateRandomLengthAmp(int);
+    void updateAttackTime(int);
+    void updateQueueTempo(int);
+    void updateReleaseTime(int);
+/*! @brief This function sets MidiArp::isMuted, which is checked by
+ * SeqDriver and which suppresses data output globally if set to True.
+ *
+ * @param on Set to True to suppress data output to ALSA
+ */
+    void setMuted(bool);
 /**
  * @brief This function checks whether an ALSA event is eligible for this
- * arp module.
+ * module.
  *
  * Its response depends on the input filter settings, i.e. note range,
  * velocity range and channel.
  *
  * @param evIn ALSA event to check
- * @return True if evIn is in the input range of the arp
+ * @return True if evIn is in the input range of the module
  */
     bool isArp(snd_seq_event_t *evIn);
 /**
@@ -412,6 +427,27 @@ class MidiArp : public QThread  {
  */
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
+ /*! @brief Set by SeqDriver when MidiCC #64 is received.
+  *
+  * Will cause notes remaining in MidiArp::sustainBuffer until
+  * set to false.
+  * @param sustain Set to True to cause hold mode
+  * @param tick Time in internal ticks at which the controller was received */
+    void setSustain(bool sustain, int tick);
+ /*! @brief Will cause notes remaining in MidiArp::latchBuffer until new
+  * stakato note received
+  *
+  * This function is called by ArpWidget::setLatchMode
+  */
+    void setLatchMode(bool);
+ /*! @brief Calls MidiArp::removeNote for all notes in MidiArp::sustainBuffer
+  * and then clears sustainBuffer.
+  *
+  * This function is called by MidiArp::setSustain
+  * @param sustick Time in internal ticks at which the controller was received */
+    void purgeSustainBuffer(int sustick);
+ /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
+    void clearNoteBuffer();
 /**
  * @brief This is the thread main function, which calls
  * MidiArp::updateNotes().
@@ -433,29 +469,12 @@ class MidiArp : public QThread  {
     void nextStep(int patternIndex);
 
   public slots:
-    void updatePattern(const QString&);
-    void updateTriggerMode(int val);
-    void updateRandomTickAmp(int);
-    void updateRandomVelocityAmp(int);
-    void updateRandomLengthAmp(int);
-    void updateAttackTime(int);
-    void updateQueueTempo(int);
-    void updateReleaseTime(int);
-    void setMuted(bool); //set mute
- /*! @brief set by SeqDriver when MidiCC is received.
+ /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for
+  * all notes in MidiArp::latchBuffer and then clears latchBuffer.
   *
-  * Will cause notes remaining in MidiArp::sustainBuffer until new
-  * set to false.
-  * @param sustain Set to True to cause hold mode
-  * @param tick Time in internal ticks at which the controller was received */
-    void setSustain(bool sustain, int tick);
- /*! @brief Slot for ArpWidget::latchModeAction.
-  * Will cause notes remaining in MidiArp::latchBuffer until new
-  * stakato note received */
-    void setLatchMode(bool);
-    void purgeSustainBuffer(int sustick);
+  * @param sustick Time in internal ticks at which the controller was received */
     void purgeLatchBuffer();
-    void clearNoteBuffer();
+
 };
 
 #endif

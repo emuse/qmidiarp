@@ -1,5 +1,21 @@
-/*
- *      midiseq.cpp
+/*!
+ * @file midiseq.cpp
+ * @brief MIDI worker class for the Seq Module. Implements a monophonic
+ * step sequencer as a QObject.
+ *
+ * The parameters of MidiSeq are controlled by the SeqWidget class.
+ * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
+ * the MidiSeq::getNextNote member as a function of the position of
+ * the ALSA queue. MidiSeq will return a note from its internal
+ * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
+ * MidiSeq::getData function at each modification done via
+ * the SeqWidget. It is modified by drawing a sequence of notes on the
+ * SeqWidget display or by recording incoming notes step by step. In all
+ * cases the sequence has resolution, velocity, note length and
+ * size attributes and single points can be tagged as muted, which will
+ * avoid data output at the corresponding position.
+ *
+ * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -17,8 +33,8 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
-
 #include <cmath>
 #include <alsa/asoundlib.h>
 #include "midiseq.h"

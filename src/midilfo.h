@@ -1,5 +1,22 @@
-/*
- *      midilfo.h
+/*!
+ * @file midilfo.h
+ * @brief MIDI worker class for the LFO Module. Implements a sequencer
+ * for controller data as a QObject.
+ *
+ * The parameters of MidiLfo are controlled by the LfoWidget class.
+ * A pointer to MidiLfo is passed to the SeqDriver thread, which calls
+ * the MidiLfo::getNextFrame member as a function of the position of
+ * the ALSA queue. MidiLfo will return an array of controller values
+ * representing a frame of its internal MidiLfo::data buffer. This frame
+ * has size 1 except for resolution higher than 16th notes.
+ * The MidiLfo::data buffer is populated by the MidiLfo::getData function
+ * at each modification done via the LfoWidget. It can consist of
+ * a classic waveform calculation or a hand-drawn waveform. In all cases
+ * the waveform has resolution, offset and size attributes and single
+ * points can be tagged as muted, which will avoid data output at the
+ * corresponding position.
+ *
+ * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -17,6 +34,7 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
 #ifndef MIDILFO_H
@@ -41,6 +59,22 @@
     };
 #endif
 
+/*! @brief MIDI worker class for the LFO Module. Implements a sequencer
+ * for controller data as a QObject.
+ *
+ * The parameters of MidiLfo are controlled by the LfoWidget class.
+ * A pointer to MidiLfo is passed to the SeqDriver thread, which calls
+ * the MidiLfo::getNextFrame member as a function of the position of
+ * the ALSA queue. MidiLfo will return an array of controller values
+ * representing a frame of its internal MidiLfo::data buffer. This frame
+ * has size 1 except for resolution higher than 16th notes.
+ * The MidiLfo::data buffer is populated by the MidiLfo::getData function
+ * at each modification done via the LfoWidget. It can consist of
+ * a classic waveform calculation or a hand-drawn waveform. In all cases
+ * the waveform has resolution, offset and size attributes and single
+ * points can be tagged as muted, which will avoid data output at the
+ * corresponding position.
+ */
 class MidiLfo : public QObject  {
 
   Q_OBJECT
@@ -56,7 +90,7 @@ class MidiLfo : public QObject  {
   public:
     int portOut;    // Output port (ALSA Sequencer)
     int channelOut;
-    bool hold, isMuted;
+    bool isMuted;
     bool recordMode, isRecording;
     int freq, amp, offs, ccnumber;
     int chIn, ccnumberIn;
@@ -69,15 +103,7 @@ class MidiLfo : public QObject  {
   public:
     MidiLfo();
     ~MidiLfo();
-    void getData(QVector<Sample> *data);
-    void getNextFrame(QVector<Sample> *p_data);
-    bool toggleMutePoint(double);
-    bool isLfo(int cctest, int chtest);
 
-  signals:
-    void nextStep(int frameptr);
-
-  public slots:
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
@@ -85,13 +111,79 @@ class MidiLfo : public QObject  {
     void updateCustomWaveOffset(int);
     void updateQueueTempo(int);
     void record(int value);
-    void setMuted(bool); //set mute
+/*! @brief This function sets MidiLfo::isMuted, which is checked by
+ * SeqDriver and which suppresses data output globally if set to True.
+ *
+ * @param on Set to True to suppress data output to ALSA
+ */
+    void setMuted(bool on);
     void updateWaveForm(int val);
     void setCustomWavePoint(double, double, bool);
-    void setMutePoint(double, bool);
+/*! @brief This function sets the mute state of one point of the
+ * MidiLfo::muteMask array to the given state.
+ *
+ * The member is called when the right mouse button is clicked on the
+ * LfoScreen.
+ * If calculated waveforms are active, only the MidiLfo::muteMask is
+ * changed. If a custom waveform is active, the Sample.mute status
+ * at the given position is changed as well.
+ *
+ * @param mouseX Normalized Horizontal location of the mouse on the
+ * LfoScreen (0.0 ... 1.0)
+ * @param muted mute state to set for the given position
+ *
+ * @see MidiLfo::toggleMutePoint()
+ */
+    void setMutePoint(double mouseX, bool muted);
     void resizeAll();
     void copyToCustom();
     void resetFramePtr();
+/**
+ * @brief This function checks whether an ALSA event is eligible for this
+ * module.
+ *
+ * Its response depends on the input filter settings, i.e. note,
+ * velocity and channel.
+ *
+ * @param cctest MIDI controller of the event to check
+ * @param chtest MIDI channel of the event to check
+ * @return True if evIn is in the input range of the module
+ */
+    bool isLfo(int cctest, int chtest);
+/*! @brief This function is the main calculator for the data contained
+ * in a waveform.
+ *
+ * It is called upon every change of parameters in LfoWidget or upon
+ * input by mouse clicks on the LfoScreen. It fills the
+ * MidiLfo::data buffer with Sample points, which it either calculates
+ * or which it copies from the MidiLfo::customWave data.
+ *
+ * @param data reference to an array the waveform is copied to
+ */
+    void getData(QVector<Sample> *data);
+/*! @brief This function transfers a frame of Sample data points taken from
+ * the currently active waveform MidiLfo::data.
+ *
+ * @param data reference to an array the frame is copied to
+ */
+    void getNextFrame(QVector<Sample> *p_data);
+/*! @brief This function toggles the mute state of one point of the
+ * MidiLfo::muteMask array.
+ *
+ * The member is called when the right mouse button is clicked on the
+ * LfoScreen.
+ * If calculated waveforms are active, only the MidiLfo::muteMask is
+ * changed. If a custom waveform is active, the Sample.mute status
+ * at the given position is changed as well.
+ *
+ * @param mouseX Normalized Horizontal location of the mouse on the
+ * LfoScreen (0.0 ... 1.0)
+ * @see MidiLfo::setMutePoint
+ */
+    bool toggleMutePoint(double mouseX);
+
+  signals:
+    void nextStep(int frameptr);
 };
 
 #endif
