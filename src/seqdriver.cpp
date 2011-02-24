@@ -1,3 +1,50 @@
+/*!
+ * @file seqdriver.cpp
+ * @brief ALSA sequencer backend QThread class. Also creates JackSync
+ *
+ * SeqDriver is created by ArpData at the moment of program start. Its
+ * constructor registers ALSA seq input port and the requested number of
+ * output ports. I also creates a JackSync instance whose ports are only
+ * created when the SeqDriver::setUseJackTransport member is called.
+ * Pointers to the MIDI workers MidiLfo, MidiSeq are passed to SeqDriver
+ * as arguments.
+ * The SeqDriver::run() thread is the ALSA sequencer "callback" process
+ * handling all incoming and outgoing sequencer events.
+ * When the SeqDriver::setQueueStatus() member is called with True argument,
+ * a so called "echo event" is scheduled with zero time. Echo events go back
+ * to the callback process and allow output and reception of sequencer
+ * events depending on the ALSA queue timing. Depending on the event types,
+ * the MIDI worker interfaces are called in series and return their
+ * data to be output to the queue. After the data output, a new echo
+ * event is requested for the next MIDI event to be output, which will
+ * again call the SeqDriver::run() thread, and so on.
+ * In order to provide accurate synchronization with external sources
+ * such as Jack Transport or an incoming ALSA MIDI clock,
+ * SeqDriver works with snd_seq_real_time timing information when it
+ * communicates with the ALSA queue. Internally, the real time information
+ * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
+ * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
+ *
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
+ *
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ *      MA 02110-1301, USA.
+ *
+ */
 #include <cstdio>
 #include <QString>
 #include <alsa/asoundlib.h>

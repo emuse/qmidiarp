@@ -80,30 +80,49 @@ class MidiLfo : public QObject  {
   Q_OBJECT
 
   private:
-    double queueTempo;
-    int lastMouseLoc, lastMouseY;
-    int frameptr;
+    double queueTempo;  /*!< current tempo of the ALSA queue, not in use here */
+    int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
+    int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
+    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int recValue;
+/**
+ * @brief This function allows forcing an integer value within the
+ * specified range (clip).
+ *
+ * @param value The value to be checked
+ * @param min The minimum allowed return value
+ * @param max The maximum allowed return value
+ * @param outOfRange Is set to True if value was outside min|max range
+ * @return The value clipped within the range
+ */
     int clip(int value, int min, int max, bool *outOfRange);
     QVector<Sample> data;
 
   public:
-    int portOut;    // Output port (ALSA Sequencer)
-    int channelOut;
-    bool isMuted;
+    int portOut;    /*!< ALSA output port number */
+    int channelOut; /*!< ALSA output channel */
     bool recordMode, isRecording;
-    int freq, amp, offs, ccnumber;
-    int chIn, ccnumberIn;
-    int size, res, waveFormIndex;
     int old_res;
-    int cwmin;
-    QVector<Sample> customWave;
-    QVector<bool> muteMask;
+    int ccnumber;   /*!< MIDI Controller CC number to output */
+    bool isMuted;   /*!< Global mute state */
+    int freq, amp, offs, ccnumberIn, chIn;
+    int size;       /*!< Size of the waveform in quarter notes */
+    int res;        /*!< Resolution of the waveform in ticks per quarter note */
+    int waveFormIndex;          /*!< Index of the waveform to produce
+                                    @par 0: Sine
+                                    @par 1: Sawtooth Up
+                                    @par 2: Triangle
+                                    @par 3: Sawtooth Down
+                                    @par 4: Square
+                                    @par 5: Use Custom Wave */
+    int cwmin;                  /*!< The minimum of MidiArp::customWave */
+    QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
+    QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
 
   public:
     MidiLfo();
     ~MidiLfo();
-
+    void updateWaveForm(int val);
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
@@ -117,7 +136,6 @@ class MidiLfo : public QObject  {
  * @param on Set to True to suppress data output to ALSA
  */
     void setMuted(bool on);
-    void updateWaveForm(int val);
     void setCustomWavePoint(double, double, bool);
 /*! @brief This function sets the mute state of one point of the
  * MidiLfo::muteMask array to the given state.
