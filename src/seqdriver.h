@@ -114,9 +114,10 @@ class SeqDriver : public QThread {
         bool use_midiclock, use_jacksync, trigByKbd;
 
     public:
-/*!@param p_midiArpList List of pointers to each MidiArp worker
- * @param p_midiLfoList List of pointers to each MidiLfo worker
- * @param p_midiSeqList List of pointers to each MidiSeq worker
+/*! @param p_midiArpList List of pointers to each MidiArp worker
+ *  @param p_midiLfoList List of pointers to each MidiLfo worker
+ *  @param p_midiSeqList List of pointers to each MidiSeq worker
+ *  @param parent QWidget ID of the parent Widget
  */
         SeqDriver(QList<MidiArp*> *p_midiArpList,
                 QList<MidiLfo *> *p_midiLfoList,

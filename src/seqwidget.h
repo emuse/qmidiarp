@@ -311,7 +311,7 @@ class SeqWidget : public QWidget
 * new sequence (waveform).
 *
 * @param note Note value (0 ... 127) of the received note event.
-* @param vel Velocity value (0 ... 127) of the received note event.
+* @param velocity Velocity value (0 ... 127) of the received note event.
 *
 */
     void processNote(int note, int velocity);
@@ -427,7 +427,7 @@ class SeqWidget : public QWidget
 * @param controlID The ID of the control GUI element (found
 * in SeqWidget::midiCCNames)
 */
-    void midiLearn(int contolID);
+    void midiLearn(int controlID);
 /*!
 * @brief Slot for SeqWidget::triggered signal created by a
 * MIDI-Learn context menu Forget action.

@@ -142,10 +142,7 @@ class MidiArp : public QThread  {
  *
  * It is called when the currentIndex revolves to restart the loop with
  * default velocity, step width, octave and length.
- *
- * @param evIn ALSA event to check
- * @return True if evIn is in the input range of the arp
- */
+*/
     void initLoop();
 /**
  * @brief This function allows forcing an integer value within the
@@ -236,7 +233,8 @@ class MidiArp : public QThread  {
  * The note  at the given index is deleted from the buffer with the
  * given bufPtr index (0 or 1), and notes at higher positions in the
  * buffer are moved in position.
- * @param index
+ * @param index Index of the note to delete from the buffer
+ * @param bufPtr Buffer copy to work with
  */
     void deleteNoteAt(int index, int bufPtr);
 /**
@@ -471,8 +469,7 @@ class MidiArp : public QThread  {
   public slots:
  /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
-  *
-  * @param sustick Time in internal ticks at which the controller was received */
+  */
     void purgeLatchBuffer();
 
 };

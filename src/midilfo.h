@@ -83,7 +83,7 @@ class MidiLfo : public QObject  {
     double queueTempo;  /*!< current tempo of the ALSA queue, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
-    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
+    int frameptr;       /*!< position of the currently output frame in the MidiLfo::data waveform */
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -96,6 +96,13 @@ class MidiLfo : public QObject  {
  */
     int clip(int value, int min, int max, bool *outOfRange);
     QVector<Sample> data;
+/*! @brief This function recalculates the MidiLfo::customWave as a function
+ * of a new offset value.
+ *
+ * It is called by MidiLfo::updateOffset() in case a custom wave is active.
+ * @param cwoffs New offset value
+ */
+    void updateCustomWaveOffset(int cwoffs);
 
   public:
     int portOut;    /*!< ALSA output port number */
@@ -112,7 +119,7 @@ class MidiLfo : public QObject  {
                                     @par 3: Sawtooth Down
                                     @par 4: Square
                                     @par 5: Use Custom Wave */
-    int cwmin;                  /*!< The minimum of MidiArp::customWave */
+    int cwmin;                  /*!< The minimum of MidiLfo::customWave */
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
 
@@ -124,13 +131,32 @@ class MidiLfo : public QObject  {
     void updateAmplitude(int);
     void updateOffset(int);
     void updateQueueTempo(int);
+
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.
  *
  * @param on Set to True to suppress data output to ALSA
  */
     void setMuted(bool on);
-    void setCustomWavePoint(double, double, bool);
+/*! @brief This function sets the (controller) value of one point of the
+ * MidiLfo::customWave array. It is used for handling drawing functionality.
+ *
+ * The member is called by LfoWidget::mouseMoved or LfoWidget::mousePressed.
+ * The normalized mouse coordinates are scaled to the waveform size and
+ * resolution and to the controller range (0 ... 127). The function
+ * interpolates potentially missing waveform points between two events
+ * if the mouse buttons were not released.
+ *
+ * @param mouseX Normalized horizontal location of the mouse on the
+ * LfoScreen (0.0 ... 1.0)
+ * @param mouseY Normalized verical location of the mouse on the
+ * LfoScreen (0.0 ... 1.0)
+ * @param newpt Set to true if the mouse button was newly clicked before
+ * the move
+ *
+ * @see MidiLfo::toggleMutePoint(), MidiLfo::setMutePoint()
+ */
+    void setCustomWavePoint(double mouseX, double mouseY, bool newpt);
 /*! @brief This function sets the mute state of one point of the
  * MidiLfo::muteMask array to the given state.
  *
@@ -147,10 +173,26 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::toggleMutePoint()
  */
     void setMutePoint(double mouseX, bool muted);
+/*! @brief This function recalculates the MidiLfo::customWave as a
+ * function of the current MidiLfo::res and MidiLfo::size values.
+ *
+ * It is called upon every change of MidiLfo::size and MidiLfo::res. It
+ * repeats the current MidiLfo::customWave periodically if the new values
+ * lead to a bigger size data array.
+ */
     void resizeAll();
+/*! @brief This function copies the current MidiLfo::data array into
+ * MidiLfo::customWave.
+ *
+ * It is called when a waveform modification by the user is attempted
+ * while in calculated waveform mode. (MidiLfo::waveFormIndex 1 ... 4).
+ */
     void copyToCustom();
+/*! @brief This function resets the MidiLfo::frameptr to zero.
+ *
+ * It is called when the ALSA queue starts.
+ */
     void resetFramePtr();
-    void updateCustomWaveOffset(int);
 /*! @brief This function is the main calculator for the data contained
  * in a waveform.
  *
@@ -159,13 +201,13 @@ class MidiLfo : public QObject  {
  * MidiLfo::data buffer with Sample points, which it either calculates
  * or which it copies from the MidiLfo::customWave data.
  *
- * @param data reference to an array the waveform is copied to
+ * @param *data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
 /*! @brief This function transfers a frame of Sample data points taken from
  * the currently active waveform MidiLfo::data.
  *
- * @param data reference to an array the frame is copied to
+ * @param *p_data reference to an array the frame is copied to
  */
     void getNextFrame(QVector<Sample> *p_data);
 /*! @brief This function toggles the mute state of one point of the

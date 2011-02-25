@@ -237,6 +237,7 @@ void MidiLfo::updateAmplitude(int val)
 
 void MidiLfo::updateOffset(int val)
 {
+    if (waveFormIndex == 5) updateCustomWaveOffset(val);
     offs = val;
 }
 

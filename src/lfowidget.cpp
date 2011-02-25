@@ -761,10 +761,7 @@ void LfoWidget::updateAmp(int val)
 
 void LfoWidget::updateOffs(int val)
 {
-    if (waveFormBox->currentIndex() == 5) {
-        midiWorker->updateCustomWaveOffset(val);
-    }
-    midiWorker->offs = val;
+    midiWorker->updateOffset(val);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
