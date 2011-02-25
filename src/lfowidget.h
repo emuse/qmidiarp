@@ -311,9 +311,7 @@ class LfoWidget : public QWidget
 * @brief Slot for the LfoWidget::offset slider. Sets the offset
 * of the waveform for this LFO.
 *
-* It calls MidiLfo::updateCustomWaveOffset in case of a custom wave since
-* this needs special handling. In case of a calculated wave, MidiLfo::offs
-* is set directly. This function updates the LfoScreen of this module.
+* This function updates the LfoScreen of this module.
 * @param val Offset (0 ... 127) of the waveform.
 *
 */

@@ -109,10 +109,11 @@ class MidiSeq : public QObject  {
   public:
     MidiSeq();
     ~MidiSeq();
-
+    void updateWaveForm(int val);
     void updateVelocity(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
+
     void recordNote(int note);
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.
@@ -120,8 +121,22 @@ class MidiSeq : public QObject  {
  * @param on Set to True to suppress data output to ALSA
  */
     void setMuted(bool);
-    void updateWaveForm(int val);
-    void setCustomWavePoint(double, double);
+/*! @brief This function sets the (controller) value of one point of the
+ * MidiSeq::customWave array. It is used for handling drawing functionality.
+ *
+ * The member is called by SeqWidget::mouseMoved or SeqWidget::mousePressed.
+ * The normalized mouse coordinates are scaled to the waveform size and
+ * resolution and to the controller range (0 ... 127). The function
+ * interpolates potentially missing waveform points between two events
+ * if the mouse buttons were not released.
+ *
+ * @param mouseX Normalized horizontal location of the mouse on the
+ * SeqScreen (0.0 ... 1.0)
+ * @param mouseY Normalized verical location of the mouse on the
+ * SeqScreen (0.0 ... 1.0)
+ * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint()
+ */
+    void setCustomWavePoint(double mouseX, double mouseY);
 /*! @brief This function sets the mute state of one point of the
  * MidiSeq::muteMask array to the given state.
  *
@@ -131,14 +146,24 @@ class MidiSeq : public QObject  {
  * changed. If a custom waveform is active, the Sample.mute status
  * at the given position is changed as well.
  *
- * @param mouseX Normalized Horizontal location of the mouse on the
+ * @param mouseX Normalized horizontal location of the mouse on the
  * SeqScreen (0.0 ... 1.0)
  * @param muted mute state to set for the given position
  *
  * @see MidiSeq::toggleMutePoint()
  */
-    void setMutePoint(double, bool);
+    void setMutePoint(double mouseX, bool muted);
+/*! @brief This function recalculates the MidiSeq::customWave as a
+ * function of the current MidiSeq::res and MidiSeq::size values.
+ *
+ * It is called upon every change of MidiSeq::size and MidiSeq::res. It
+ * repeats the current MidiSeq::customWave periodically if the new values
+ * lead to a bigger size data array.
+ */
     void resizeAll();
+/*! @brief Currently not in use. This function will copy the current
+ * MidiSeq::data array into MidiSeq::customWave.
+ */
     void copyToCustom();
     void setRecordedNote(int note);
 
