@@ -506,12 +506,12 @@ Kolečko myši: změna posunu</translation>
         <translation>Vlastní</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="878"/>
+        <location filename="../lfowidget.cpp" line="875"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="897"/>
+        <location filename="../lfowidget.cpp" line="894"/>
         <source>New Name</source>
         <translation>Nový název</translation>
     </message>

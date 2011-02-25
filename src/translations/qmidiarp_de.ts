@@ -506,12 +506,12 @@ Mausrad: Verschieben des Offsets</translation>
         <translation>Frei</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="878"/>
+        <location filename="../lfowidget.cpp" line="875"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="897"/>
+        <location filename="../lfowidget.cpp" line="894"/>
         <source>New Name</source>
         <translation>Neuer Name</translation>
     </message>
