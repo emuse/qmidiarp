@@ -51,7 +51,7 @@ class JackSync : public QObject
     int deactivateJack();
      
     void setJackRunning(bool on);
-    jack_transport_state_t get_state();
+    bool is_stoped();
     jack_position_t get_pos();
 };
 

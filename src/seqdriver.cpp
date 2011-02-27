@@ -180,7 +180,7 @@ void SeqDriver::run()
                 else if (use_jacksync) {
                     if (jackSync->isRunning()) {
 
-                        if (!jackSync->get_state())
+                        if (jackSync->is_stoped())
                             setQueueStatus(false);
 
                         jpos = jackSync->get_pos();
