@@ -8,6 +8,7 @@
 #include <QString>
 #include <QTimer>
 #include <QWidget>
+
 #include "midiseq.h"
 
 #define SEQSCREEN_MINIMUM_WIDTH   180

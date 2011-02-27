@@ -9,7 +9,7 @@
 #include <QGroupBox>
 #include <QDateTime>
 
-#include "arpdata.h"
+#include "midievent.h"
 #include "logwidget.h"
 
 
