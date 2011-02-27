@@ -40,17 +40,20 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0) {
         qWarning("Error opening ALSA sequencer (%s).", snd_strerror(err));
-        exit(1);  }
-        snd_seq_set_client_name(seq_handle, PACKAGE);
-        clientid = snd_seq_client_id(seq_handle);
-        portid_in = snd_seq_create_simple_port(seq_handle, "in",
-                        SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
-                        SND_SEQ_PORT_TYPE_APPLICATION);
-        if (portid_in < 0) {
-            qWarning("Error creating sequencer port (%s).",
-                    snd_strerror(portid_in));
-            exit(1);
-        }
+        exit(1);
+    }
+
+    snd_seq_set_client_name(seq_handle, PACKAGE);
+    clientid = snd_seq_client_id(seq_handle);
+    portid_in = snd_seq_create_simple_port(seq_handle, "in",
+                    SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
+                    SND_SEQ_PORT_TYPE_APPLICATION);
+    if (portid_in < 0) {
+        qWarning("Error creating sequencer port (%s).",
+                snd_strerror(portid_in));
+        exit(1);
+    }
+
     snd_seq_set_client_pool_output(seq_handle, SEQPOOL);
 
     initArpQueue();
