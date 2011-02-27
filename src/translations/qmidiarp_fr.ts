@@ -518,42 +518,42 @@ Molette pour changer l&apos;offset</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../logwidget.cpp" line="27"/>
+        <location filename="../logwidget.cpp" line="26"/>
         <source>&amp;Enable Log</source>
         <translation>&amp;Activer le journal</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="33"/>
+        <location filename="../logwidget.cpp" line="32"/>
         <source>Log &amp;MIDI Clock</source>
         <translation>Rapporter l&apos;horologe &amp;MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="38"/>
+        <location filename="../logwidget.cpp" line="37"/>
         <source>&amp;Clear</source>
         <translation>&amp;Vider</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="91"/>
+        <location filename="../logwidget.cpp" line="90"/>
         <source>MIDI Clock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="96"/>
+        <location filename="../logwidget.cpp" line="95"/>
         <source>MIDI Start (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="100"/>
+        <location filename="../logwidget.cpp" line="99"/>
         <source>MIDI Continue (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="104"/>
+        <location filename="../logwidget.cpp" line="103"/>
         <source>MIDI Stop (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="108"/>
+        <location filename="../logwidget.cpp" line="107"/>
         <source>Unknown event type</source>
         <translation>Evênement inconnu</translation>
     </message>
