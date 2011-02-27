@@ -665,7 +665,7 @@ void SeqDriver::setUseJackTransport(bool on)
                 this, SLOT(jackShutdown()));
         use_jacksync = true;
 
-        if (jackSync->initJack()) {
+        if (jackSync->initJack(portCount)) {
             emit jackShutdown(false);
             return;
         }

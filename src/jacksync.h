@@ -1,3 +1,7 @@
+/*!
+ * @file jacksync.h
+ * @brief Header for the JackSync class
+ */
 #ifndef JACKSYNC_H
 #define JACKSYNC_H
 
@@ -5,6 +9,11 @@
 #include <jack/jack.h>
 #include <jack/transport.h>
 
+#include "main.h"
+
+/*!
+ * @brief JACK backend class
+ */
 class JackSync : public QObject
 {
     Q_OBJECT
@@ -14,6 +23,12 @@ class JackSync : public QObject
                             jack_position_t *pos, void *arg);
     static void jack_shutdown(void *arg);
     int jack_sync(jack_transport_state_t state);
+    void update_ports();
+
+    jack_port_t * in_port;
+    int out_port_count;
+    jack_port_t * out_ports[MAX_PORTS];
+
     bool jackRunning;
     int transportState;
     double j_frame_time;
@@ -31,7 +46,7 @@ class JackSync : public QObject
 
   public:
     bool isRunning() { return jackRunning; }
-    int initJack();
+    int initJack(int out_port_count);
     int activateJack();
     int deactivateJack();
      

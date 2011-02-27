@@ -20,12 +20,13 @@
 
 #include "jacksync.h"
 #include "config.h"
-
+#include <stdio.h>
 
 JackSync::JackSync() 
 {
     transportState = JackTransportStopped;
     j_frame_time = 0;
+    out_port_count = 0;
  }
 
 JackSync::~JackSync()
@@ -39,8 +40,10 @@ JackSync::~JackSync()
     }
 }
 
-int JackSync::initJack()
+int JackSync::initJack(int out_port_count)
 {
+    char buf[16];
+
     if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
         qCritical("jack server not running?");
         return 1;
@@ -52,6 +55,25 @@ int JackSync::initJack()
 
     qWarning("jack sync callback registered");
     
+    // register JACK MIDI input port
+    if ((in_port = jack_port_register(jack_handle, "in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0)) == 0) {
+        qCritical("Failed to register JACK MIDI input port.");
+        return 1;
+    }
+
+    // register JACK MIDI output ports
+    while (out_port_count-- > 0)
+    {
+      snprintf(buf, sizeof(buf), "out %d", JackSync::out_port_count + 1);
+      if ((out_ports[JackSync::out_port_count] = jack_port_register(jack_handle, buf, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0)) == 0)
+      {
+        qCritical("Failed to register JACK MIDI output port.");
+        return 1;
+      }
+
+      JackSync::out_port_count++;
+    }
+
     return(0);
 }
  
