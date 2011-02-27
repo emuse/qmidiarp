@@ -36,7 +36,6 @@
  *
  */
 #include <cmath>
-#include <alsa/asoundlib.h>
 #include "midiseq.h"
 
 
@@ -79,27 +78,15 @@ void MidiSeq::setMuted(bool on)
     isMuted = on;
 }
 
-bool MidiSeq::isSeq(snd_seq_event_t *evIn) {
+bool MidiSeq::wantEvent(MidiEvent inEv) {
 
-    if ((evIn->type != SND_SEQ_EVENT_NOTEON)
-            && (evIn->type != SND_SEQ_EVENT_NOTEOFF)
-            && (evIn->type != SND_SEQ_EVENT_CONTROLLER))
-    {
-        return(false);
-    }
-    if ((evIn->data.control.channel < chIn)
-            || (evIn->data.control.channel > chIn))
-    {
-        return(false);
-    }
-    if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-            || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
-        if (!(enableNoteIn)) {
-            return(false);
-        }
-        if ((evIn->data.note.note < 36) || (evIn->data.note.note >= 84)) {
-            return(false);
-        }
+    if ((inEv.type != EV_NOTEON) && (inEv.type != EV_CONTROLLER)) return(false);
+
+    if (inEv.channel != chIn) return(false);
+
+    if ((inEv.type == EV_NOTEON) && (inEv.value > 0)) {
+        if (!(enableNoteIn)) return(false);
+        if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
     }
     return(true);
 }

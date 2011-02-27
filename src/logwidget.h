@@ -11,8 +11,6 @@
 #include <QTextEdit>
 #include <QDateTime>
 
-#include <alsa/asoundlib.h>
-
 #include "arpdata.h"
 
 
@@ -33,13 +31,13 @@ class LogWidget : public QWidget
     ~LogWidget();
     QCheckBox *enableLog;
     QCheckBox *logMidiClock;
-     
+
   public slots:
     void logMidiToggle(bool on);
     void enableLogToggle(bool on);
-    void appendEvent(snd_seq_event_t *ev);
+    void appendEvent(int type, int data, int channel, int value);
     void appendText(const QString&);
     void clear();
 };
-  
+
 #endif

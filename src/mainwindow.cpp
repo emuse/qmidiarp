@@ -94,8 +94,8 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)),
-            logWidget, SLOT(appendEvent(snd_seq_event_t *)));
+    connect(arpData->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
+            logWidget, SLOT(appendEvent(int, int, int, int)));
 
     passWidget = new PassWidget(arpData, p_portCount, this);
 

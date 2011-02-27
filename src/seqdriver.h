@@ -38,7 +38,6 @@
 #include "midiseq.h"
 #include "main.h"
 
-
 /*! @brief ALSA sequencer backend QThread class. Also creates JackSync
  *
  * SeqDriver is created by ArpData at the moment of program start. Its
@@ -134,7 +133,7 @@ class SeqDriver : public QThread {
         void run();
 
    signals:
-        void midiEvent(snd_seq_event_t *ev);
+        void midiEvent(int type, int data, int channel, int value);
         void controlEvent(int ccnumber, int channel, int value);
         void noteEvent(int note, int velocity);
         void jackShutdown(bool); //boolean is passed to main toolbar

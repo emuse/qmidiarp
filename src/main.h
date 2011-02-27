@@ -24,6 +24,11 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "midievent.h"
+
+
+#define CT_FOOTSW 0x40
+
 #define MAX_PORTS 64
 #define SEQPOOL 2048
 #define LFO_FRAMESIZE 256

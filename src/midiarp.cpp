@@ -45,7 +45,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <QString>
-#include <alsa/asoundlib.h>
 #include "midiarp.h"
 
 
@@ -110,23 +109,13 @@ void MidiArp::setMuted(bool on)
     isMuted = on;
 }
 
-bool MidiArp::isArp(snd_seq_event_t *evIn) {
+bool MidiArp::wantEvent(MidiEvent event) {
 
-    if ((evIn->type != SND_SEQ_EVENT_NOTEON)
-            && (evIn->type != SND_SEQ_EVENT_NOTEOFF)
-            && (evIn->type != SND_SEQ_EVENT_CONTROLLER)) {
-        return(false);
-    }
-    if ((evIn->data.control.channel < chIn)
-            || (evIn->data.control.channel > chIn)) {
-        return(false);
-    }
-    if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-            || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
-        if (((evIn->data.note.note < indexIn[0])
-                    || (evIn->data.note.note > indexIn[1]))
-                || ((evIn->data.note.velocity < rangeIn[0])
-                    || (evIn->data.note.velocity > rangeIn[1]))) {
+    if (event.channel != chIn) return(false);
+    if ((event.type == EV_CONTROLLER) && (event.data != CT_FOOTSW)) return(false);
+    if (event.type == EV_NOTEON) {
+        if (((event.data < indexIn[0]) || (event.data > indexIn[1]))
+            || ((event.value < rangeIn[0]) || (event.value > rangeIn[1]))) {
             return(false);
         }
     }

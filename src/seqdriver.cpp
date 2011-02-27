@@ -152,7 +152,7 @@ void SeqDriver::run()
     int l1, l2;
     QVector<int> note, velocity;
     int noteTick = 0;
-    int length, ccnumber;
+    int length;
     int lfoccnumber, lfochannel, lfoport;
     int seqlength, seqchannel, seqport, seqtransp, seqvel;
     snd_seq_event_t *evIn, evOut;
@@ -390,52 +390,60 @@ void SeqDriver::run()
                 }
             }
             else {
-                emit midiEvent(evIn);
                 unmatched = true;
+                MidiEvent inEv;
+                inEv.type = evIn->type;
 
-                if (evIn->type == SND_SEQ_EVENT_CONTROLLER) {
-                    ccnumber = (int)evIn->data.control.param;
-                    if (ccnumber == 64) {
+                if (inEv.type == EV_CONTROLLER) {
+                    inEv.channel = evIn->data.control.channel;
+                    inEv.data = evIn->data.control.param;
+                    inEv.value = evIn->data.control.value;
+
+                    if (inEv.data == CT_FOOTSW) {
                         //Sustain Footswitch has changed
                         for (l1 = 0; l1 < midiArpList->count(); l1++) {
-                            if (midiArpList->at(l1)->isArp(evIn)) {
+                            if (midiArpList->at(l1)->wantEvent(inEv)) {
                                 midiArpList->at(l1)->setSustain(
-                                        (evIn->data.control.value == 127), tick);
+                                        (inEv.value == 127), tick);
                                 unmatched = false;
                             }
                         }
                     }
                     else {
                         if (midi_controllable) {
-                            emit controlEvent(ccnumber, evIn->data.control.channel,
-                                                evIn->data.control.value);
+                            emit controlEvent(inEv.data, inEv.channel, inEv.value);
                             unmatched = false;
                         }
                     }
                 }
 
-                if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                        || (evIn->type == SND_SEQ_EVENT_NOTEOFF)) {
+                if ((inEv.type == EV_NOTEON) || (inEv.type == EV_NOTEOFF)) {
                     get_time();
                     tick = deltaToTick(tmptime);
+
+                    if (inEv.type == EV_NOTEON) {
+                        inEv.value = evIn->data.note.velocity;
+                    }
+                    else inEv.value = 0;
+
+                    inEv.type = EV_NOTEON;
+                    inEv.channel = evIn->data.note.channel;
+                    inEv.data = evIn->data.note.note;
+
                     for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-                        if (midiSeqList->at(l1)->isSeq(evIn)) {
+                        if (midiSeqList->at(l1)->wantEvent(inEv)) {
                             unmatched = false;
-                            if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                    && (evIn->data.note.velocity > 0)) {
-                                emit noteEvent(evIn->data.note.note,
-                                        evIn->data.note.velocity);
+                            if (inEv.value > 0) {
+                                emit noteEvent(inEv.data, inEv.value);
                             }
                         }
                     }
                     for (l1 = 0; l1 < midiArpList->count(); l1++) {
-                        if (midiArpList->at(l1)->isArp(evIn)) {
+                        if (midiArpList->at(l1)->wantEvent(inEv)) {
                             unmatched = false;
-                            if ((evIn->type == SND_SEQ_EVENT_NOTEON)
-                                    && (evIn->data.note.velocity > 0)) {
-
-                                midiArpList->at(l1)->handleNoteOn(evIn->data.note.note,
-                                                evIn->data.note.velocity, tick);
+                            if (inEv.value > 0) {
+                                midiArpList->at(l1)->handleNoteOn(inEv.data,
+                                                inEv.value, tick);
 
                                 if (midiArpList->at(l1)->wantTrigByKbd()) {
                                     nextEchoTick = tick;
@@ -444,7 +452,7 @@ void SeqDriver::run()
                                 }
                             }
                             else {
-                                midiArpList->at(l1)->handleNoteOff(evIn->data.note.note, tick, 1);
+                                midiArpList->at(l1)->handleNoteOff(inEv.data, tick, 1);
                             }
                         }
                     }
@@ -463,6 +471,8 @@ void SeqDriver::run()
                         snd_seq_event_output_direct(seq_handle, evIn);
                     }
                 }
+                else inEv.value = evIn->data.control.value;
+
                 if (use_midiclock){
                     if (evIn->type == SND_SEQ_EVENT_START) {
                         setQueueStatus(true);
@@ -478,6 +488,8 @@ void SeqDriver::run()
                     snd_seq_ev_set_source(evIn, portid_out[portUnmatched]);
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
+
+                emit midiEvent(inEv.type, inEv.data, inEv.channel, inEv.value);
             }
             if (!runArp) tick = 0; //some events still come in after queue stop
             pollR = snd_seq_event_input_pending(seq_handle, 0);
