@@ -31,10 +31,6 @@
  */
 
 #include <QString>
-#include <QFile>
-#include <QFileDialog>
-#include <QTextStream>
-#include <QMessageBox>
 
 #include "seqdriver.h"
 #include "arpdata.h"

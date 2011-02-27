@@ -7,7 +7,8 @@
 #include <QTimer>
 #include <QSizePolicy>
 #include <QSize>
-#include <alsa/asoundlib.h>
+
+#include "midilfo.h"
 
 #define ARPSCREEN_MINIMUM_WIDTH   250
 #define ARPSCREEN_MINIMUM_HEIGHT  120
@@ -27,17 +28,17 @@ class ArpScreen : public QWidget
     QString a_pattern;
     int pattern_updated, currentIndex;
     bool isMuted;
-    
+
   protected:
     virtual void paintEvent(QPaintEvent *);
-    
+
   public:
     ArpScreen(QWidget* parent=0);
     ~ArpScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
-   
-  public slots: 
+
+  public slots:
     void updateScreen(const QString&);
     void updateScreen(int p_index);
     void setGrooveTick(int tick);
@@ -45,5 +46,5 @@ class ArpScreen : public QWidget
     void setGrooveLength(int length);
     void setMuted(bool on);
 };
-  
+
 #endif

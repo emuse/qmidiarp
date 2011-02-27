@@ -29,7 +29,6 @@
 #include <QSize>
 
 #include "lfoscreen.h"
-#include "arpdata.h"
 
 
 LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)

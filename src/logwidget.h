@@ -11,9 +11,6 @@
 #include <QTextEdit>
 #include <QDateTime>
 
-#include "arpdata.h"
-
-
 class LogWidget : public QWidget
 
 {
