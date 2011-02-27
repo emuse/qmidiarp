@@ -46,10 +46,59 @@
 #include <cstdio>
 #include <QString>
 #include "midiarp.h"
+#include "lockfree.h"
 
+// this class must be implemented in such way
+// so that its copy (= operator) is realtime safe
+class MidiArpData
+{
+public:
+    int foo;
+};
 
 MidiArp::MidiArp()
 {
+    // this simulates access from the two threads
+    // lock congestion is simulated by attempt to update
+    // when LockedData destructor is not called
+    {
+        LockFreeStore<MidiArpData> store; // store for the two instances of MidiArpData
+        const MidiArpData * rdata(store); // pointer to the read-only store, to be used from the seq/jack driver thread
+
+        // write to the writable store
+        {
+            LockedData<MidiArpData> ldata(store); // lock the writable store, destructor will unlock it
+            ldata->foo = 1;                       // write access the writable store (lock obtained)
+            qWarning("gui: %d", ldata->foo);      // read access to the writable store (lock obtained)
+        } // ldata gets out of the scope and its destructor is called. this results in unlock of the writable store
+
+        // attempt update the read-only store and report whether the update succeeded
+        // should succeed because the writable store is not locked
+        qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+        // print the data in the read-only store
+        qWarning("seq: %d", rdata->foo);
+
+        // write to the writable store
+        {
+            LockedData<MidiArpData> ldata(store);
+            ldata->foo = 2;
+            qWarning("gui: %d", ldata->foo);
+
+            // attempt update the read-only store and report whether the update succeeded
+            // should fail because the writable store is locked
+            qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+            qWarning("seq: %d (data locked by gui)", rdata->foo);
+        }
+
+        // print the data in the read-only store before the update
+        qWarning("seq: %d (before update)", rdata->foo);
+        // attempt update the read-only store and report whether the update succeeded
+        // should succeed because the writable store is not locked
+        qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+        // print the data in the read-only store after the update
+        qWarning("seq: %d (after update)", rdata->foo);
+    }
+
     for (int l1 = 0; l1 < 2; l1++) {
         rangeIn[l1] = (l1) ? 127 : 0;
         indexIn[l1] = (l1) ? 127 : 0;
