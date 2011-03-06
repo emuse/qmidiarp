@@ -28,8 +28,6 @@
 #include <QSize>
 #include <QSizePolicy>
 
-#include <alsa/asoundlib.h>
-
 #include "seqscreen.h"
 #include "arpdata.h"
 

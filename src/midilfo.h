@@ -204,11 +204,10 @@ class MidiLfo : public QObject  {
  * Its response depends on the input filter settings, i.e. note,
  * velocity and channel.
  *
- * @param cctest MIDI controller of the event to check
- * @param chtest MIDI channel of the event to check
- * @return True if evIn is in the input range of the module
+ * @param inEv MidiEvent to check
+ * @return True if inEv is in the input range of the module
  */
-    bool isLfo(int cctest, int chtest);
+    bool wantEvent(MidiEvent inEv);
 /*! @brief This function is the main calculator for the data contained
  * in a waveform.
  *

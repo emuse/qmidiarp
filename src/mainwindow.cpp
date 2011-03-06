@@ -94,13 +94,13 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(arpData->seqDriver, SIGNAL(midiEvent(snd_seq_event_t *)),
-            logWidget, SLOT(appendEvent(snd_seq_event_t *)));
+    connect(arpData->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
+            logWidget, SLOT(appendEvent(int, int, int, int)));
 
     passWidget = new PassWidget(arpData, p_portCount, this);
 
     connect(this, SIGNAL(runQueue(bool)),
-            arpData->seqDriver, SLOT(runQueue(bool)));
+            arpData->seqDriver, SLOT(setQueueStatus(bool)));
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -111,11 +111,11 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            arpData->seqDriver, SLOT(setGrooveTick(int)));
+            arpData, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            arpData->seqDriver, SLOT(setGrooveVelocity(int)));
+            arpData, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            arpData->seqDriver, SLOT(setGrooveLength(int)));
+            arpData, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -393,7 +393,7 @@ void MainWindow::addArp(const QString& name)
     arpWidget->ID = widgetID;
 
     arpData->addArpWidget(arpWidget);
-    arpData->seqDriver->sendGroove();
+    arpData->sendGroove();
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -1090,7 +1090,7 @@ void MainWindow::updateRunQueue(bool on)
 
 void MainWindow::resetQueue()
 {
-    arpData->seqDriver->runQueue(arpData->seqDriver->runArp);
+    arpData->seqDriver->setQueueStatus(arpData->seqDriver->runArp);
 }
 
 void MainWindow::midiClockToggle(bool on)

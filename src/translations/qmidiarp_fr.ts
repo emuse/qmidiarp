@@ -306,80 +306,98 @@ d h durée de note augm/dim
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="95"/>
+        <location filename="../lfowidget.cpp" line="131"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="97"/>
+        <location filename="../lfowidget.cpp" line="133"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="117"/>
+        <location filename="../lfowidget.cpp" line="99"/>
+        <location filename="../lfowidget.cpp" line="153"/>
         <source>MIDI &amp;CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="123"/>
+        <location filename="../lfowidget.cpp" line="159"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="134"/>
+        <location filename="../lfowidget.cpp" line="170"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="127"/>
+        <location filename="../lfowidget.cpp" line="163"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="78"/>
+        <location filename="../lfowidget.cpp" line="80"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Renommer...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="79"/>
+        <location filename="../lfowidget.cpp" line="81"/>
         <source>Rename this LFO</source>
         <translation>Renommer ce LFO</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="84"/>
+        <location filename="../lfowidget.cpp" line="86"/>
         <source>&amp;Delete...</source>
         <translation>&amp;Supprimer...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="85"/>
+        <location filename="../lfowidget.cpp" line="87"/>
         <source>Delete this LFO</source>
         <translation>Supprimer ce LFO</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="104"/>
-        <location filename="../lfowidget.cpp" line="191"/>
-        <location filename="../lfowidget.cpp" line="221"/>
-        <location filename="../lfowidget.cpp" line="266"/>
-        <location filename="../lfowidget.cpp" line="285"/>
+        <location filename="../lfowidget.cpp" line="97"/>
+        <source>Input</source>
+        <translation type="unfinished">Entrée</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="105"/>
+        <source>MIDI Controller number to record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="110"/>
+        <source>&amp;Channel</source>
+        <translation type="unfinished">&amp;Canal</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="140"/>
+        <location filename="../lfowidget.cpp" line="233"/>
+        <location filename="../lfowidget.cpp" line="263"/>
+        <location filename="../lfowidget.cpp" line="311"/>
+        <location filename="../lfowidget.cpp" line="330"/>
+        <location filename="../lfowidget.cpp" line="349"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Apprendre du MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="68"/>
+        <location filename="../lfowidget.cpp" line="70"/>
         <source>Cancel MIDI &amp;Learning</source>
         <translation>&amp;Annuler l&apos;apprentissage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="109"/>
-        <location filename="../lfowidget.cpp" line="196"/>
-        <location filename="../lfowidget.cpp" line="226"/>
-        <location filename="../lfowidget.cpp" line="271"/>
-        <location filename="../lfowidget.cpp" line="290"/>
+        <location filename="../lfowidget.cpp" line="145"/>
+        <location filename="../lfowidget.cpp" line="238"/>
+        <location filename="../lfowidget.cpp" line="268"/>
+        <location filename="../lfowidget.cpp" line="316"/>
+        <location filename="../lfowidget.cpp" line="335"/>
+        <location filename="../lfowidget.cpp" line="354"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Oublier les contrôleurs MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="162"/>
+        <location filename="../lfowidget.cpp" line="204"/>
         <source>Wave</source>
         <translation>Forme</translation>
     </message>
@@ -388,12 +406,12 @@ d h durée de note augm/dim
         <translation type="obsolete">Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="174"/>
+        <location filename="../lfowidget.cpp" line="216"/>
         <source>&amp;Waveform</source>
         <translation>Forme d&apos;&amp;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="185"/>
+        <location filename="../lfowidget.cpp" line="227"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
@@ -418,7 +436,7 @@ d h durée de note augm/dim
         <translation type="obsolete">&amp;Longueur (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="166"/>
+        <location filename="../lfowidget.cpp" line="208"/>
         <source>Right button to mute points
 Left button to draw custom wave
 Wheel to change offset</source>
@@ -427,32 +445,32 @@ Bouton gauche pour dessiner la forme d&apos;onde
 Molette pour changer l&apos;offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="204"/>
+        <location filename="../lfowidget.cpp" line="246"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Fréquence</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="214"/>
+        <location filename="../lfowidget.cpp" line="256"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="233"/>
+        <location filename="../lfowidget.cpp" line="275"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="242"/>
+        <location filename="../lfowidget.cpp" line="284"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="247"/>
+        <location filename="../lfowidget.cpp" line="289"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="254"/>
+        <location filename="../lfowidget.cpp" line="296"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
     </message>
@@ -461,52 +479,63 @@ Molette pour changer l&apos;offset</translation>
         <translation type="obsolete">&amp;Copier dans la forme d&apos;onde libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="260"/>
+        <location filename="../lfowidget.cpp" line="301"/>
+        <location filename="../lfowidget.cpp" line="302"/>
+        <source>Re&amp;cord</source>
+        <translation type="unfinished">&amp;Enregistrer</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="303"/>
+        <source>Record incoming controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="324"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="280"/>
+        <location filename="../lfowidget.cpp" line="344"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="704"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="704"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="704"/>
+        <location filename="../lfowidget.cpp" line="785"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="705"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Saw down</source>
         <translation>Scie descendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="705"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="705"/>
+        <location filename="../lfowidget.cpp" line="786"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="875"/>
+        <location filename="../lfowidget.cpp" line="989"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="894"/>
+        <location filename="../lfowidget.cpp" line="1008"/>
         <source>New Name</source>
         <translation>Nouveau nom</translation>
     </message>
@@ -518,42 +547,42 @@ Molette pour changer l&apos;offset</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../logwidget.cpp" line="27"/>
+        <location filename="../logwidget.cpp" line="26"/>
         <source>&amp;Enable Log</source>
         <translation>&amp;Activer le journal</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="33"/>
+        <location filename="../logwidget.cpp" line="32"/>
         <source>Log &amp;MIDI Clock</source>
         <translation>Rapporter l&apos;horologe &amp;MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="38"/>
+        <location filename="../logwidget.cpp" line="37"/>
         <source>&amp;Clear</source>
         <translation>&amp;Vider</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="91"/>
+        <location filename="../logwidget.cpp" line="90"/>
         <source>MIDI Clock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="96"/>
+        <location filename="../logwidget.cpp" line="95"/>
         <source>MIDI Start (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="100"/>
+        <location filename="../logwidget.cpp" line="99"/>
         <source>MIDI Continue (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="104"/>
+        <location filename="../logwidget.cpp" line="103"/>
         <source>MIDI Stop (Transport)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="108"/>
+        <location filename="../logwidget.cpp" line="107"/>
         <source>Unknown event type</source>
         <translation>Evênement inconnu</translation>
     </message>
@@ -732,60 +761,60 @@ Molette pour changer l&apos;offset</translation>
         <translation>Ajouter un séquenceur</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="578"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>QMidiArp XML files</source>
         <translation>Fichiers QMidiArp XML</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="579"/>
+        <location filename="../mainwindow.cpp" line="583"/>
         <source>Old QMidiArp files</source>
         <translation>Vieux fichiers texte QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="598"/>
-        <location filename="../mainwindow.cpp" line="754"/>
+        <location filename="../mainwindow.cpp" line="602"/>
+        <location filename="../mainwindow.cpp" line="758"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="616"/>
+        <location filename="../mainwindow.cpp" line="620"/>
         <source>This is not a valid xml file for </source>
         <translation>Ceci n&apos;est pas un fichier xml valide pour </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="841"/>
+        <location filename="../mainwindow.cpp" line="845"/>
         <source>The QMidiArp text file was imported. If you save this file, it will be saved using the newer xml format under the name
  &apos;%1&apos;.</source>
         <translation>Le fichier texte QMidiArp a été importé. A la prochaine sauvegarde, il sera écrit au format xml actuel sous le nom
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="867"/>
-        <location filename="../mainwindow.cpp" line="953"/>
+        <location filename="../mainwindow.cpp" line="871"/>
+        <location filename="../mainwindow.cpp" line="957"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1030"/>
+        <location filename="../mainwindow.cpp" line="1034"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1032"/>
+        <location filename="../mainwindow.cpp" line="1036"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1036"/>
+        <location filename="../mainwindow.cpp" line="1040"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1166"/>
+        <location filename="../mainwindow.cpp" line="1170"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
@@ -849,27 +878,27 @@ Enregistrer les modifications?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="143"/>
-        <location filename="../mainwindow.cpp" line="577"/>
+        <location filename="../mainwindow.cpp" line="581"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="614"/>
+        <location filename="../mainwindow.cpp" line="618"/>
         <source>Not a QMidiArp xml file.</source>
         <translation>Pas un fichier xml QMidiArp.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1008"/>
+        <location filename="../mainwindow.cpp" line="1012"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1008"/>
+        <location filename="../mainwindow.cpp" line="1012"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1209"/>
+        <location filename="../mainwindow.cpp" line="1213"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>

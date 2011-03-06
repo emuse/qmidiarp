@@ -9,6 +9,7 @@
 #include <QSizePolicy>
 #include <QSize>
 #include <QWheelEvent>
+
 #include "midilfo.h"
 
 #define LFOSCREEN_MINIMUM_WIDTH   250

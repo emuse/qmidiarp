@@ -1,29 +1,6 @@
 /*!
  * @file seqdriver.h
- * @brief ALSA sequencer backend QThread class. Also creates JackSync
- *
- * SeqDriver is created by ArpData at the moment of program start. Its
- * constructor registers ALSA seq input port and the requested number of
- * output ports. I also creates a JackSync instance whose ports are only
- * created when the SeqDriver::setUseJackTransport member is called.
- * Pointers to the MIDI workers MidiLfo, MidiSeq are passed to SeqDriver
- * as arguments.
- * The SeqDriver::run() thread is the ALSA sequencer "callback" process
- * handling all incoming and outgoing sequencer events.
- * When the SeqDriver::setQueueStatus() member is called with True argument,
- * a so called "echo event" is scheduled with zero time. Echo events go back
- * to the callback process and allow output and reception of sequencer
- * events depending on the ALSA queue timing. Depending on the event types,
- * the MIDI worker interfaces are called in series and return their
- * data to be output to the queue. After the data output, a new echo
- * event is requested for the next MIDI event to be output, which will
- * again call the SeqDriver::run() thread, and so on.
- * In order to provide accurate synchronization with external sources
- * such as Jack Transport or an incoming ALSA MIDI clock,
- * SeqDriver works with snd_seq_real_time timing information when it
- * communicates with the ALSA queue. Internally, the real time information
- * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
- * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
+ * @brief Header for the SeqDriver class
  */
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
@@ -37,7 +14,6 @@
 #include "midilfo.h"
 #include "midiseq.h"
 #include "main.h"
-
 
 /*! @brief ALSA sequencer backend QThread class. Also creates JackSync
  *
@@ -94,17 +70,18 @@ class SeqDriver : public QThread {
         QVector<Sample> lfoData;
         Sample seqSample;
 
-        void initSeqNotifier();
-        const snd_seq_real_time_t *tickToDelta(int tick);
-        int deltaToTick (snd_seq_real_time_t curtime);
-        void calcMidiRatio();
+        double tickToDelta(int tick);
+        int deltaToTick (double curtime);
+        double aTimeToDelta(snd_seq_real_time_t* atime);
+        const snd_seq_real_time_t* deltaToATime(double curtime);
+        void calcClockRatio();
 
         JackSync *jackSync;
         jack_position_t jpos;
 
         int midiTick;
         double m_ratio;
-        snd_seq_real_time_t delta, real_time, jack_offset;
+        snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
     public:
@@ -125,16 +102,14 @@ class SeqDriver : public QThread {
         ~SeqDriver();
         void registerPorts(int num);
         int getPortCount();
-        void initArpQueue();
         void get_time();
-        void setQueueStatus(bool run);
         bool isModified();
         void setModified(bool);
         int getAlsaClientId();
         void run();
 
    signals:
-        void midiEvent(snd_seq_event_t *ev);
+        void midiEvent(int type, int data, int channel, int value);
         void controlEvent(int ccnumber, int channel, int value);
         void noteEvent(int note, int velocity);
         void jackShutdown(bool); //boolean is passed to main toolbar
@@ -143,12 +118,8 @@ class SeqDriver : public QThread {
    public slots:
         void setForwardUnmatched(bool on);
         void setPortUnmatched(int id);
+        void setQueueStatus(bool run);
         void setQueueTempo(int bpm);
-        void runQueue(bool);
-        void setGrooveTick(int);
-        void setGrooveVelocity(int);
-        void setGrooveLength(int);
-        void sendGroove();
         void setUseMidiClock(bool on);
         void setMidiControllable(bool on);
         void setUseJackTransport(bool on);

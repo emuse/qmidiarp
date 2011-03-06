@@ -51,9 +51,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QVector>
-#include <alsa/asoundlib.h>
 #include <main.h>
-
 
  /*!
  * @brief MIDI worker class for the Arpeggiator Module. Implements the
@@ -304,10 +302,10 @@ class MidiArp : public QThread  {
  * Its response depends on the input filter settings, i.e. note range,
  * velocity range and channel.
  *
- * @param evIn ALSA event to check
- * @return True if evIn is in the input range of the module
+ * @param inEv MidiEvent event to check
+ * @return True if inEv is in the input range of the module
  */
-    bool isArp(snd_seq_event_t *evIn);
+    bool wantEvent(MidiEvent event);
 /**
  * @brief This function checks whether this module is set to keyboard
  * trigger mode.

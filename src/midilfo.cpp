@@ -406,10 +406,10 @@ void MidiLfo::record(int value)
     isRecording = true;
 }
 
-bool MidiLfo::isLfo(int cctest, int chtest)
+bool MidiLfo::wantEvent(MidiEvent inEv)
 {
     if (!recordMode) return(false);
-    if (chtest != chIn) return(false);
-    if (cctest != ccnumberIn) return(false);
+    if (inEv.channel != chIn) return(false);
+    if (inEv.value != ccnumberIn) return(false);
     return(true);
 }

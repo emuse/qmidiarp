@@ -42,7 +42,6 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-#include <alsa/asoundlib.h>
 #include <main.h>
 
 #ifndef SAMPLE_H
@@ -174,10 +173,10 @@ class MidiSeq : public QObject  {
  * Its response depends on the input filter settings, i.e. note,
  * velocity and channel.
  *
- * @param evIn ALSA event to check
- * @return True if evIn is in the input range of the module
+ * @param inEv MidiEvent event to check
+ * @return True if inEv is in the input range of the module
  */
-    bool isSeq(snd_seq_event_t *evIn);
+    bool wantEvent(MidiEvent inEv);
 /*! @brief This function is called upon every change of parameters in
  * SeqWidget or upon input by mouse clicks on the SeqScreen.
  *

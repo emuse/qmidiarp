@@ -28,10 +28,7 @@
 #include <QSizePolicy>
 #include <QSize>
 
-#include <alsa/asoundlib.h>
-
 #include "arpscreen.h"
-#include "arpdata.h"
 
 
 ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
