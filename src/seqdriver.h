@@ -1,29 +1,6 @@
 /*!
  * @file seqdriver.h
- * @brief ALSA sequencer backend QThread class. Also creates JackSync
- *
- * SeqDriver is created by ArpData at the moment of program start. Its
- * constructor registers ALSA seq input port and the requested number of
- * output ports. I also creates a JackSync instance whose ports are only
- * created when the SeqDriver::setUseJackTransport member is called.
- * Pointers to the MIDI workers MidiLfo, MidiSeq are passed to SeqDriver
- * as arguments.
- * The SeqDriver::run() thread is the ALSA sequencer "callback" process
- * handling all incoming and outgoing sequencer events.
- * When the SeqDriver::setQueueStatus() member is called with True argument,
- * a so called "echo event" is scheduled with zero time. Echo events go back
- * to the callback process and allow output and reception of sequencer
- * events depending on the ALSA queue timing. Depending on the event types,
- * the MIDI worker interfaces are called in series and return their
- * data to be output to the queue. After the data output, a new echo
- * event is requested for the next MIDI event to be output, which will
- * again call the SeqDriver::run() thread, and so on.
- * In order to provide accurate synchronization with external sources
- * such as Jack Transport or an incoming ALSA MIDI clock,
- * SeqDriver works with snd_seq_real_time timing information when it
- * communicates with the ALSA queue. Internally, the real time information
- * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
- * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
+ * @brief Header for the SeqDriver class
  */
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
