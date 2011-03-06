@@ -53,6 +53,9 @@ public:
         m_tpm = ticks_per_minute;
     }
 
+    // duration is in ticks and is valid only for note on events
+    virtual void sendMidiEvent(struct MidiEvent midi_event_ptr, unsigned int duration, unsigned int outport) = 0;
+
 protected:
     DriverBase(
         void * callback_context,
