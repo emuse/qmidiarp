@@ -30,17 +30,17 @@
 class DriverBase
 {
 public:
-    virtual void reset_tick(unsigned int tick = 0)
+    virtual void resetTick(unsigned int tick = 0)
     {
         m_current_tick = tick;
     }
 
-    virtual unsigned int get_current_tick() const
+    virtual unsigned int getCurrentTick() const
     {
         return m_current_tick;
     }
 
-    virtual void set_next_tick(unsigned int next_tick)
+    virtual void setNextTick(unsigned int next_tick)
     {
         if (next_tick > m_current_tick)
         {
@@ -48,7 +48,7 @@ public:
         }
     }
 
-    virtual void set_tpm(uint64_t ticks_per_minute)
+    virtual void setTpm(uint64_t ticks_per_minute)
     {
         m_tpm = ticks_per_minute;
     }
@@ -63,24 +63,24 @@ protected:
     {
     }
 
-    uint64_t tick_to_backend_offset(unsigned int tick)
+    uint64_t tickToBackendOffset(unsigned int tick)
     {
         return (uint64_t)tick * m_backend_rate / m_tpm;
     }
 
-    unsigned int backend_offset_to_tick(uint64_t backend_offset)
+    unsigned int backendOffsetToTick(uint64_t backend_offset)
     {
         return backend_offset * m_tpm / m_backend_rate;
     }
 
-    uint64_t get_current_tick_backed_offset()
+    uint64_t getCurrentTickBackedOffset()
     {
-        return tick_to_backend_offset(m_current_tick);
+        return tickToBackendOffset(m_current_tick);
     }
 
-    uint64_t get_next_tick_backed_offset()
+    uint64_t getNextTickBackedOffset()
     {
-        return tick_to_backend_offset(m_next_tick);
+        return tickToBackendOffset(m_next_tick);
     }
 
     void (* m_tick_callback)();
