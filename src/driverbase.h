@@ -54,7 +54,7 @@ public:
     }
 
     // duration is in ticks and is valid only for note on events
-    virtual void sendMidiEvent(struct MidiEvent midi_event_ptr, unsigned int duration, unsigned int outport) = 0;
+    virtual void sendMidiEvent(struct MidiEvent midi_event_ptr, unsigned int outport, unsigned int duration = 0) = 0;
 
 protected:
     DriverBase(
