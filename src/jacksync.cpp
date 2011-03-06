@@ -21,6 +21,7 @@
 #include "jacksync.h"
 #include "config.h"
 #include <stdio.h>
+#include "driverbase.h"         // temp include to check driverbase.h for synthax errors
 
 JackSync::JackSync() 
 {
