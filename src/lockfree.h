@@ -67,7 +67,7 @@ public:
     /**
      * @brief Obtain a read-only pointer to the read-only part of the store
      */
-    operator const T * () { return &m_lockfree_data; };
+    operator const T * () { return &m_lockfree_data; }
 
     /**
      * @brief If possible, update the read-only part of the store from the
@@ -120,7 +120,7 @@ public:
     LockedData(LockFreeStore<T> &store) : m_store(store)
     {
         m_store.m_mutex.lock();
-    };
+    }
 
     /**
      * @brief Destructor.
@@ -137,7 +137,7 @@ public:
     /**
      * @brief Obtain a pointer to the writable part of the store
      */
-    T * operator->() { return &m_store.m_data; };
+    T * operator->() { return &m_store.m_data; }
 
 private:
     LockFreeStore<T> & m_store;
