@@ -93,17 +93,18 @@ class SeqDriver : public QThread {
         QVector<Sample> lfoData;
         QVector<Sample> seqData;
 
-        void initSeqNotifier();
-        const snd_seq_real_time_t *tickToDelta(int tick);
-        int deltaToTick (snd_seq_real_time_t curtime);
-        void calcMidiRatio();
+        double tickToDelta(int tick);
+        int deltaToTick (double curtime);
+        double aTimeToDelta(snd_seq_real_time_t* atime);
+        const snd_seq_real_time_t* deltaToATime(double curtime);
+        void calcClockRatio();
 
         JackSync *jackSync;
         jack_position_t jpos;
 
         int midiTick;
         double m_ratio;
-        snd_seq_real_time_t delta, real_time, jack_offset;
+        snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
     public:
@@ -124,9 +125,7 @@ class SeqDriver : public QThread {
         ~SeqDriver();
         void registerPorts(int num);
         int getPortCount();
-        void initArpQueue();
         void get_time();
-        void setQueueStatus(bool run);
         bool isModified();
         void setModified(bool);
         int getAlsaClientId();
@@ -142,12 +141,8 @@ class SeqDriver : public QThread {
    public slots:
         void setForwardUnmatched(bool on);
         void setPortUnmatched(int id);
+        void setQueueStatus(bool run);
         void setQueueTempo(int bpm);
-        void runQueue(bool);
-        void setGrooveTick(int);
-        void setGrooveVelocity(int);
-        void setGrooveLength(int);
-        void sendGroove();
         void setUseMidiClock(bool on);
         void setMidiControllable(bool on);
         void setUseJackTransport(bool on);

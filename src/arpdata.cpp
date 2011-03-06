@@ -42,6 +42,9 @@ ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
     connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
+    grooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
 }
 
 ArpData::~ArpData(){
@@ -101,6 +104,36 @@ MidiArp *ArpData::midiArp(int index)
 ArpWidget *ArpData::arpWidget(int index)
 {
     return(arpWidgetList.at(index));
+}
+
+
+void ArpData::setGrooveTick(int val)
+{
+    grooveTick = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::setGrooveVelocity(int val)
+{
+    grooveVelocity = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::setGrooveLength(int val)
+{
+    grooveLength = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::sendGroove()
+{
+    for (int l1 = 0; l1 < midiArpList.count(); l1++) {
+        midiArpList.at(l1)->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+    }
 }
 
 //LFO handling
@@ -311,7 +344,6 @@ int ArpData::getPortCount()
 
 void ArpData::runQueue(bool on)
 {
-    seqDriver->runQueue(on);
     if (midiArpList.count() > 0)
         seqDriver->setQueueStatus(on);
 }
