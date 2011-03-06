@@ -80,7 +80,7 @@ class SeqDriver : public QThread {
         jack_position_t jpos;
 
         int midiTick;
-        double m_ratio;
+        double m_ratio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
