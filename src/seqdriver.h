@@ -61,11 +61,11 @@ class SeqDriver : public QThread {
         bool midi_controllable;
         bool threadAbort;
         bool gotKbdTrig;
-        int tick, nextEchoTick, jack_offset_tick, schedDelayTicks;
-        int lastKbdTick;
+        int tick, jack_offset_tick, schedDelayTicks;
+        int lastSchedTick;
         int lastLfoTick[20], nextLfoTick;
         int lastSeqTick[20], nextSeqTick;
-        int nextNoteTick[20];
+        int nextNoteTick[20], nextArpTick;
         int tempo, internal_tempo;
         QVector<Sample> lfoData;
         Sample seqSample;
@@ -76,18 +76,23 @@ class SeqDriver : public QThread {
         const snd_seq_real_time_t* deltaToATime(double curtime);
         void calcClockRatio();
 
+        void schedEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
+        bool requestEchoAt(int echoTick, int infotag = 1);
+        bool handleEvent(MidiEvent inEv);
+        void handleEcho(MidiEvent inEv);
+        void resetTicks();
+
         JackSync *jackSync;
         jack_position_t jpos;
 
         int midiTick;
-        double m_ratio;
+        double m_ratio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
-        int grooveTick, grooveVelocity, grooveLength;
         bool use_midiclock, use_jacksync, trigByKbd;
 
     public:
@@ -98,9 +103,8 @@ class SeqDriver : public QThread {
  */
         SeqDriver(QList<MidiArp*> *p_midiArpList,
                 QList<MidiLfo *> *p_midiLfoList,
-                QList<MidiSeq *> *p_midiSeqList, QWidget* parent=0);
+                QList<MidiSeq *> *p_midiSeqList, int p_portCount, QWidget* parent=0);
         ~SeqDriver();
-        void registerPorts(int num);
         int getPortCount();
         void get_time();
         bool isModified();

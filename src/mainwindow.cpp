@@ -81,8 +81,7 @@ MainWindow::MainWindow(int p_portCount)
     filename = "";
     lastDir = QDir::homePath();
 
-    arpData = new ArpData(this);
-    arpData->registerPorts(p_portCount);
+    arpData = new ArpData(p_portCount, this);
 
     midiCCTable = new MidiCCTable(arpData, this);
 
@@ -419,7 +418,7 @@ void MainWindow::addLfo(const QString& name)
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
             arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiLfo, SIGNAL(nextStep(int)),
-            lfoWidget, SLOT(updateScreen(int)));
+            lfoWidget->screen, SLOT(updateScreen(int)));
     connect(lfoWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
@@ -899,11 +898,11 @@ bool MainWindow::saveFile()
 
         xml.writeStartElement("groove");
             xml.writeTextElement("tick",
-                QString::number(arpData->seqDriver->grooveTick));
+                QString::number(arpData->grooveTick));
             xml.writeTextElement("velocity",
-                QString::number(arpData->seqDriver->grooveVelocity));
+                QString::number(arpData->grooveVelocity));
             xml.writeTextElement("length",
-                QString::number(arpData->seqDriver->grooveLength));
+                QString::number(arpData->grooveLength));
         xml.writeEndElement();
 
     xml.writeEndElement();
@@ -969,9 +968,9 @@ bool MainWindow::saveTextFile()
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
 
-    saveText << arpData->seqDriver->grooveTick;
-    saveText << ' ' << arpData->seqDriver->grooveVelocity;
-    saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
+    saveText << arpData->grooveTick;
+    saveText << ' ' << arpData->grooveVelocity;
+    saveText << ' ' << arpData->grooveLength << '\n';
 
     for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
 

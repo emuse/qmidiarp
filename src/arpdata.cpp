@@ -36,9 +36,10 @@
 #include "arpdata.h"
 
 
-ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
+ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
+    portCount = p_portCount;
+    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
     connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
@@ -331,12 +332,6 @@ void ArpData::setModified(bool m)
         seqWidget(l1)->setModified(m);
 }
 
-void ArpData::registerPorts(int num)
-{
-    portCount = num;
-    seqDriver->registerPorts(num);
-}
-
 int ArpData::getPortCount()
 {
     return(portCount);
@@ -449,23 +444,6 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 lfoWidget(l1)->updateFreq(sval);
                                 return;
                         break;
-                        case 5: if (min == max) {
-                                    if (value == max) {
-                                        m = lfoWidget(l1)->recordAction->isChecked();
-                                        lfoWidget(l1)->recordAction->setChecked(!m);
-                                        return;
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        lfoWidget(l1)->recordAction->setChecked(true);
-                                    }
-                                    if (value == min) {
-                                        lfoWidget(l1)->recordAction->setChecked(false);
-                                    }
-                                }
-                        break;
-
                         default:
                         break;
                     }
