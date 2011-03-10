@@ -72,14 +72,15 @@ class ArpData : public QWidget  {
     bool modified;
     int mute_ccnumber, midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midi_mutable, midiLearnFlag;
+
+  public:
     int grooveTick, grooveVelocity, grooveLength;
 
   public:
     SeqDriver *seqDriver;
 
-    ArpData(QWidget* parent=0);
+    ArpData(int p_portCount, QWidget* parent=0);
     ~ArpData();
-    void registerPorts(int num);
     int getPortCount();
     bool isModified();
 

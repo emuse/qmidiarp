@@ -36,9 +36,10 @@
 #include "arpdata.h"
 
 
-ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
+ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
+    portCount = p_portCount;
+    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
     connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
@@ -329,12 +330,6 @@ void ArpData::setModified(bool m)
 
     for (int l1 = 0; l1 < seqWidgetCount(); l1++)
         seqWidget(l1)->setModified(m);
-}
-
-void ArpData::registerPorts(int num)
-{
-    portCount = num;
-    seqDriver->registerPorts(num);
 }
 
 int ArpData::getPortCount()
