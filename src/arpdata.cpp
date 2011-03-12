@@ -444,6 +444,23 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 lfoWidget(l1)->updateFreq(sval);
                                 return;
                         break;
+                        case 5: if (min == max) {
+                                    if (value == max) {
+                                        m = lfoWidget(l1)->recordAction->isChecked();
+                                        lfoWidget(l1)->recordAction->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        lfoWidget(l1)->recordAction->setChecked(true);
+                                    }
+                                    if (value == min) {
+                                        lfoWidget(l1)->recordAction->setChecked(false);
+                                    }
+                                }
+                        break;
+
                         default:
                         break;
                     }

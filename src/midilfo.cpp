@@ -410,6 +410,6 @@ bool MidiLfo::wantEvent(MidiEvent inEv)
 {
     if (!recordMode) return(false);
     if (inEv.channel != chIn) return(false);
-    if (inEv.value != ccnumberIn) return(false);
+    if (inEv.data != ccnumberIn) return(false);
     return(true);
 }

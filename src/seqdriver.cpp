@@ -299,8 +299,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                 if (!midiSeqList->at(l1)->isMuted) {
                     if (!seqSample.muted) {
                         outEv.data = seqSample.value + seqtransp;
-                        schedEvent(outEv, seqSample.tick + nextSeqTick,
-                                outport, length);
+                        schedEvent(outEv, lastSeqTick[l1], outport, length);
                     }
                 }
                 if (!l1)
@@ -374,6 +373,13 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
             }
         }
         else {
+            //Does any LFO want to record this?
+            for (l1 = 0; l1 < midiLfoList->count(); l1++) {
+                if (midiLfoList->at(l1)->wantEvent(inEv)) {
+                    midiLfoList->at(l1)->record(inEv.value);
+                    unmatched = false;
+                }
+            }
             if (midi_controllable) {
                 emit controlEvent(inEv.data, inEv.channel, inEv.value);
                 unmatched = false;
@@ -436,6 +442,9 @@ void SeqDriver::resetTicks()
     }
     for (l1 = 0; l1 < midiLfoList->count(); l1++) {
         midiLfoList->at(l1)->resetFramePtr();
+    }
+    for (l1 = 0; l1 < midiSeqList->count(); l1++) {
+        midiSeqList->at(l1)->setCurrentIndex(0);
     }
     for (l1 = 0; l1 < 20; l1++) {
         nextNoteTick[l1] = 0;

@@ -418,7 +418,7 @@ void MainWindow::addLfo(const QString& name)
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
             arpData->getPortCount(), passWidget->compactStyle, this);
     connect(midiLfo, SIGNAL(nextStep(int)),
-            lfoWidget->screen, SLOT(updateScreen(int)));
+            lfoWidget, SLOT(updateScreen(int)));
     connect(lfoWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
