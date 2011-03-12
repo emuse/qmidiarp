@@ -109,11 +109,6 @@ SeqDriver::~SeqDriver(){
 
 }
 
-int SeqDriver::getPortCount()
-{
-    return(portCount);
-}
-
 void SeqDriver::run()
 {
     snd_seq_event_t *evIn;
