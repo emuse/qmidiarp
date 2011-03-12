@@ -30,7 +30,6 @@ class SeqScreen : public QWidget
     int currentRecStep;
     int currentIndex;
     bool isMuted;
-    bool onlyCursor;
 
   protected:
     virtual void paintEvent(QPaintEvent *);

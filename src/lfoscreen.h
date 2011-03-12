@@ -31,7 +31,6 @@ class LfoScreen : public QWidget
     int clip(int value, int min, int max, bool *outOfRange);
     bool recordMode;
     bool isMuted;
-    bool onlyCursor;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
