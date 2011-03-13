@@ -99,30 +99,41 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data)
     int npoints = size * res;
     int lt, l1;
     int framelimit;
+    int framesize;
+    int index;
 
     frame.clear();
-    lt = 0;
-    l1 = 0;
-    if (isRecording) framelimit = 64; else framelimit = LFO_FRAMELIMIT;
 
-    if (old_res) {
-        if ((frameptr)%(old_res/res)) {
-            step = TICKS_PER_QUARTER/old_res;
-            npoints = size * old_res;
-        }
-        old_res = 0;
-    }
+    if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
+    framesize = res / framelimit;
+    l1 = 0;
+    lt = 0;
+
     do {
-        sample = data.at((l1 + frameptr) % npoints);
+        index = (l1 + frameptr) % npoints;
+        sample = data.at(index);
         if (isRecording) {
-            sample.value = recValue;
-            customWave.replace((l1 + frameptr) % npoints, sample);
+            if (!framesize) {
+                sample.value = recValue;
+            }
+            else {
+            /** We do linear interpolation of points within frames if
+             * framesize is > 0 to get a smooth recording at high resolutions
+             * interpolation is linear between lastSampleValue and current recValue
+             * */
+                sample.value = lastSampleValue
+                            + (double)(recValue - lastSampleValue) / res * framelimit
+                            * ((double)l1 + .5);
+            }
+            customWave.replace(index, sample);
         }
         sample.tick = lt;
         frame.append(sample);
         lt+=step;
         l1++;
-    } while ((l1 < res/framelimit) && (l1 < npoints));
+    } while ((l1 < framesize) & (l1 < npoints));
+
+    lastSampleValue = recValue;
 
     sample.value = -1;
     sample.tick = lt;
@@ -265,10 +276,16 @@ void MidiLfo::updateOffset(int val)
 
 void MidiLfo::updateResolution(int val)
 {
-    if (val < res) {
-        old_res = res;
-    }
+    //~ if (val < res) {
+        //~ old_res = res;
+    //~ }
     res = val;
+    resizeAll();
+}
+
+void MidiLfo::updateSize(int val)
+{
+    size = val;
     resizeAll();
 }
 

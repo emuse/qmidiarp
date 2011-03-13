@@ -109,11 +109,6 @@ SeqDriver::~SeqDriver(){
 
 }
 
-int SeqDriver::getPortCount()
-{
-    return(portCount);
-}
-
 void SeqDriver::run()
 {
     snd_seq_event_t *evIn;
@@ -197,12 +192,13 @@ void SeqDriver::handleEcho(MidiEvent inEv)
 {
     int l1, l2;
     QVector<int> note, velocity;
-    int noteTick = 0;
+    int note_tick = 0;
     int length;
     int outport;
     int seqtransp;
-    bool foundEcho, isNew;
+    bool isNew;
     MidiEvent outEv;
+    int tmp_tick = 0;
 
     note.clear();
     velocity.clear();
@@ -244,7 +240,6 @@ void SeqDriver::handleEcho(MidiEvent inEv)
         //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
     if (tick < 0) return;
     startQueue = false;
-    foundEcho = false;
 
     //LFO data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
@@ -262,14 +257,17 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                     while (lfoData.at(l2).value > -1) {
                         if (!lfoData.at(l2).muted) {
                             outEv.value = lfoData.at(l2).value;
-                            schedEvent(outEv, lfoData.at(l2).tick + nextLfoTick,
-                                    outport);
+                            tmp_tick = lfoData.at(l2).tick + nextLfoTick;
+                            /** round-up to current resolution */
+                            tmp_tick/= lfoData.last().tick;
+                            tmp_tick*= lfoData.last().tick;
+                            schedEvent(outEv, tmp_tick, outport);
                         }
                         l2++;
                     }
                 }
-                lastLfoTick[l1] += lfoPacketSize[l1];
                 lfoPacketSize[l1] = lfoData.last().tick;
+                lastLfoTick[l1] = tmp_tick;
                 if (!l1)
                     lfoMinPacketSize = lfoPacketSize[l1];
                 else if (lfoPacketSize[l1] < lfoMinPacketSize)
@@ -293,6 +291,9 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                 midiSeqList->at(l1)->getNextNote(&seqSample);
                 lastSeqTick[l1]+=seqPacketSize[l1];
                 seqPacketSize[l1] = TICKS_PER_QUARTER / midiSeqList->at(l1)->res;
+                /** round-up to current resolution */
+                lastSeqTick[l1]/=seqPacketSize[l1];
+                lastSeqTick[l1]*=seqPacketSize[l1];
                 length = midiSeqList->at(l1)->notelength;
                 seqtransp = midiSeqList->at(l1)->transp;
                 outport = midiSeqList->at(l1)->portOut;
@@ -327,7 +328,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                     midiArpList->at(l1)->prepareCurrentNote(tick);
                     note = midiArpList->at(l1)->returnNote;
                     velocity = midiArpList->at(l1)->returnVelocity;
-                    noteTick = midiArpList->at(l1)->returnTick;
+                    note_tick = midiArpList->at(l1)->returnTick;
                     length = midiArpList->at(l1)->returnLength * 4;
                     outport = midiArpList->at(l1)->portOut;
                     isNew = midiArpList->at(l1)->returnIsNew;
@@ -337,7 +338,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                             while(note.at(l2) >= 0) {
                                 outEv.data = note.at(l2);
                                 outEv.value = velocity.at(l2);
-                                schedEvent(outEv, noteTick, outport, length);
+                                schedEvent(outEv, note_tick, outport, length);
                                 l2++;
                             }
                         }
