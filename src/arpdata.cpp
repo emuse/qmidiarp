@@ -506,6 +506,24 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 seqWidget(l1)->notelength->setValue(sval);
                                 return;
                         break;
+
+                        case 3: if (min == max) {
+                                    if (value == max) {
+                                        m = seqWidget(l1)->recordAction->isChecked();
+                                        seqWidget(l1)->recordAction->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        seqWidget(l1)->recordAction->setChecked(true);
+                                    }
+                                    if (value == min) {
+                                        seqWidget(l1)->recordAction->setChecked(false);
+                                    }
+                                }
+                        break;
+
                         default:
                         break;
                     }
