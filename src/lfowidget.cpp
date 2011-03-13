@@ -831,7 +831,7 @@ void LfoWidget::updateScreen(int val)
 void LfoWidget::updateFreq(int val)
 {
     if (val > 10) return;
-    midiWorker->freq = lfoFreqValues[val];
+    midiWorker->updateFrequency(lfoFreqValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -839,8 +839,7 @@ void LfoWidget::updateFreq(int val)
 
 void LfoWidget::updateRes(int val)
 {
-    midiWorker->res = lfoResValues[val];
-    midiWorker->resizeAll();
+    midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -848,8 +847,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-    midiWorker->size = val + 1;
-    midiWorker->resizeAll();
+    midiWorker->updateSize(val + 1);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -857,7 +855,7 @@ void LfoWidget::updateSize(int val)
 
 void LfoWidget::updateAmp(int val)
 {
-    midiWorker->amp = val;
+    midiWorker->updateAmplitude(val);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;

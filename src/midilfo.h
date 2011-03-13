@@ -85,6 +85,7 @@ class MidiLfo : public QObject  {
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int recValue;
+    int lastSampleValue;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -134,6 +135,7 @@ class MidiLfo : public QObject  {
     void updateAmplitude(int);
     void updateOffset(int);
     void updateResolution(int);
+    void updateSize(int);
     void updateQueueTempo(int);
     void record(int value);
 /*! @brief This function sets MidiLfo::isMuted, which is checked by

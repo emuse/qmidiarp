@@ -105,7 +105,6 @@ class SeqDriver : public QThread {
                 QList<MidiLfo *> *p_midiLfoList,
                 QList<MidiSeq *> *p_midiSeqList, int p_portCount, QWidget* parent=0);
         ~SeqDriver();
-        int getPortCount();
         void get_time();
         bool isModified();
         void setModified(bool);
