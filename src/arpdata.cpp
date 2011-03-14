@@ -36,12 +36,16 @@
 #include "arpdata.h"
 
 
-ArpData::ArpData(QWidget *parent) : QWidget(parent), modified(false)
+ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, this);
+    portCount = p_portCount;
+    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
     connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
             this, SLOT(handleController(int, int, int)));
     midiLearnFlag = false;
+    grooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
 }
 
 ArpData::~ArpData(){
@@ -101,6 +105,36 @@ MidiArp *ArpData::midiArp(int index)
 ArpWidget *ArpData::arpWidget(int index)
 {
     return(arpWidgetList.at(index));
+}
+
+
+void ArpData::setGrooveTick(int val)
+{
+    grooveTick = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::setGrooveVelocity(int val)
+{
+    grooveVelocity = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::setGrooveLength(int val)
+{
+    grooveLength = val;
+    sendGroove();
+    modified = true;
+}
+
+void ArpData::sendGroove()
+{
+    for (int l1 = 0; l1 < midiArpList.count(); l1++) {
+        midiArpList.at(l1)->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+    }
 }
 
 //LFO handling
@@ -298,12 +332,6 @@ void ArpData::setModified(bool m)
         seqWidget(l1)->setModified(m);
 }
 
-void ArpData::registerPorts(int num)
-{
-    portCount = num;
-    seqDriver->registerPorts(num);
-}
-
 int ArpData::getPortCount()
 {
     return(portCount);
@@ -311,7 +339,6 @@ int ArpData::getPortCount()
 
 void ArpData::runQueue(bool on)
 {
-    seqDriver->runQueue(on);
     if (midiArpList.count() > 0)
         seqDriver->setQueueStatus(on);
 }
@@ -417,6 +444,23 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 lfoWidget(l1)->updateFreq(sval);
                                 return;
                         break;
+                        case 5: if (min == max) {
+                                    if (value == max) {
+                                        m = lfoWidget(l1)->recordAction->isChecked();
+                                        lfoWidget(l1)->recordAction->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        lfoWidget(l1)->recordAction->setChecked(true);
+                                    }
+                                    if (value == min) {
+                                        lfoWidget(l1)->recordAction->setChecked(false);
+                                    }
+                                }
+                        break;
+
                         default:
                         break;
                     }
@@ -462,6 +506,24 @@ void ArpData::handleController(int ccnumber, int channel, int value)
                                 seqWidget(l1)->notelength->setValue(sval);
                                 return;
                         break;
+
+                        case 3: if (min == max) {
+                                    if (value == max) {
+                                        m = seqWidget(l1)->recordAction->isChecked();
+                                        seqWidget(l1)->recordAction->setChecked(!m);
+                                        return;
+                                    }
+                                }
+                                else {
+                                    if (value == max) {
+                                        seqWidget(l1)->recordAction->setChecked(true);
+                                    }
+                                    if (value == min) {
+                                        seqWidget(l1)->recordAction->setChecked(false);
+                                    }
+                                }
+                        break;
+
                         default:
                         break;
                     }

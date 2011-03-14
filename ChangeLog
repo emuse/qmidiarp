@@ -1,3 +1,19 @@
+2011-01-23  Frank Kober  <goemusic@yahoo.fr>
+	* midilfo.*, lfowidget.*, lfoscreen.*, mainwindow.cpp : LFO can
+	now record controller data sent to its input. The record mode is set
+	by a toolbutton equipped with MIDI Learn. Usage idea is to move a
+	controller while pressing an assigned record button on an external
+	controller to have a controller phrase looper.
+	At this time the maximum resolution of recording is limited to 16 but
+	will be extended.
+	
+2011-01-19  Frank Kober  <goemusic@yahoo.fr>
+	* midiarp/lfo/seq.*, *screen.*: mainwindow.cpp: playhead cursor
+	implemented for all modules. The former packet pre-scheduling has
+	been changed so that only 1 event is scheduled per alsa echo. The
+	LFO still uses increasing packet size for resolutions > 16 to avoid
+	excessive drawing cycles.
+	
 2011-01-18  Frank Kober  <goemusic@yahoo.fr>
 	* version changed to 0.4.0
 	

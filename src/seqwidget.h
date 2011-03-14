@@ -146,6 +146,7 @@ class SeqWidget : public QWidget
     QCheckBox *enableNoteIn;
     QCheckBox *enableVelIn;
     Slider *velocity, *transpose, *notelength;
+    QAction *recordAction;
 
     void setChIn(int value);
     void setEnableNoteIn(bool on);

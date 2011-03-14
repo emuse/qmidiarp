@@ -81,8 +81,7 @@ MainWindow::MainWindow(int p_portCount)
     filename = "";
     lastDir = QDir::homePath();
 
-    arpData = new ArpData(this);
-    arpData->registerPorts(p_portCount);
+    arpData = new ArpData(p_portCount, this);
 
     midiCCTable = new MidiCCTable(arpData, this);
 
@@ -100,7 +99,7 @@ MainWindow::MainWindow(int p_portCount)
     passWidget = new PassWidget(arpData, p_portCount, this);
 
     connect(this, SIGNAL(runQueue(bool)),
-            arpData->seqDriver, SLOT(runQueue(bool)));
+            arpData->seqDriver, SLOT(setQueueStatus(bool)));
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -111,11 +110,11 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            arpData->seqDriver, SLOT(setGrooveTick(int)));
+            arpData, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            arpData->seqDriver, SLOT(setGrooveVelocity(int)));
+            arpData, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            arpData->seqDriver, SLOT(setGrooveLength(int)));
+            arpData, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -393,7 +392,7 @@ void MainWindow::addArp(const QString& name)
     arpWidget->ID = widgetID;
 
     arpData->addArpWidget(arpWidget);
-    arpData->seqDriver->sendGroove();
+    arpData->sendGroove();
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -418,6 +417,8 @@ void MainWindow::addLfo(const QString& name)
     arpData->addMidiLfo(midiLfo);
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
             arpData->getPortCount(), passWidget->compactStyle, this);
+    connect(midiLfo, SIGNAL(nextStep(int)),
+            lfoWidget, SLOT(updateScreen(int)));
     connect(lfoWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
@@ -453,6 +454,8 @@ void MainWindow::addSeq(const QString& name)
     arpData->addMidiSeq(midiSeq);
     SeqWidget *seqWidget = new SeqWidget(midiSeq,
             arpData->getPortCount(), passWidget->compactStyle, this);
+    connect(midiSeq, SIGNAL(nextStep(int)),
+            seqWidget->screen, SLOT(updateScreen(int)));
     connect(seqWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(seqWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
@@ -895,11 +898,11 @@ bool MainWindow::saveFile()
 
         xml.writeStartElement("groove");
             xml.writeTextElement("tick",
-                QString::number(arpData->seqDriver->grooveTick));
+                QString::number(arpData->grooveTick));
             xml.writeTextElement("velocity",
-                QString::number(arpData->seqDriver->grooveVelocity));
+                QString::number(arpData->grooveVelocity));
             xml.writeTextElement("length",
-                QString::number(arpData->seqDriver->grooveLength));
+                QString::number(arpData->grooveLength));
         xml.writeEndElement();
 
     xml.writeEndElement();
@@ -965,9 +968,9 @@ bool MainWindow::saveTextFile()
     saveText << (int)arpData->seqDriver->forwardUnmatched;
     saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
 
-    saveText << arpData->seqDriver->grooveTick;
-    saveText << ' ' << arpData->seqDriver->grooveVelocity;
-    saveText << ' ' << arpData->seqDriver->grooveLength << '\n';
+    saveText << arpData->grooveTick;
+    saveText << ' ' << arpData->grooveVelocity;
+    saveText << ' ' << arpData->grooveLength << '\n';
 
     for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
 
@@ -1086,7 +1089,7 @@ void MainWindow::updateRunQueue(bool on)
 
 void MainWindow::resetQueue()
 {
-    arpData->seqDriver->runQueue(arpData->seqDriver->runArp);
+    arpData->seqDriver->setQueueStatus(arpData->seqDriver->runArp);
 }
 
 void MainWindow::midiClockToggle(bool on)

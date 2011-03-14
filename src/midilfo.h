@@ -43,7 +43,7 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-
+#include <alsa/asoundlib.h>
 #include <main.h>
 
 #ifndef SAMPLE_H
@@ -83,7 +83,9 @@ class MidiLfo : public QObject  {
     double queueTempo;  /*!< current tempo of the ALSA queue, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
-    int frameptr;       /*!< position of the currently output frame in the MidiLfo::data waveform */
+    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
+    int recValue;
+    int lastSampleValue;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -107,9 +109,11 @@ class MidiLfo : public QObject  {
   public:
     int portOut;    /*!< ALSA output port number */
     int channelOut; /*!< ALSA output channel */
+    bool recordMode, isRecording;
+    int old_res;
     int ccnumber;   /*!< MIDI Controller CC number to output */
     bool isMuted;   /*!< Global mute state */
-    int freq, amp, offs;
+    int freq, amp, offs, ccnumberIn, chIn;
     int size;       /*!< Size of the waveform in quarter notes */
     int res;        /*!< Resolution of the waveform in ticks per quarter note */
     int waveFormIndex;          /*!< Index of the waveform to produce
@@ -130,8 +134,10 @@ class MidiLfo : public QObject  {
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
+    void updateResolution(int);
+    void updateSize(int);
     void updateQueueTempo(int);
-
+    void record(int value);
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.
  *
@@ -193,6 +199,17 @@ class MidiLfo : public QObject  {
  * It is called when the ALSA queue starts.
  */
     void resetFramePtr();
+/**
+ * @brief This function checks whether an ALSA event is eligible for this
+ * module.
+ *
+ * Its response depends on the input filter settings, i.e. note,
+ * velocity and channel.
+ *
+ * @param inEv MidiEvent to check
+ * @return True if inEv is in the input range of the module
+ */
+    bool wantEvent(MidiEvent inEv);
 /*! @brief This function is the main calculator for the data contained
  * in a waveform.
  *
@@ -224,6 +241,9 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::setMutePoint
  */
     bool toggleMutePoint(double mouseX);
+
+  signals:
+    void nextStep(int frameptr);
 };
 
 #endif

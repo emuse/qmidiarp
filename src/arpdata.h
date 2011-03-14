@@ -74,11 +74,13 @@ class ArpData : public QWidget  {
     bool midi_mutable, midiLearnFlag;
 
   public:
+    int grooveTick, grooveVelocity, grooveLength;
+
+  public:
     SeqDriver *seqDriver;
 
-    ArpData(QWidget* parent=0);
+    ArpData(int p_portCount, QWidget* parent=0);
     ~ArpData();
-    void registerPorts(int num);
     int getPortCount();
     bool isModified();
 
@@ -130,6 +132,10 @@ class ArpData : public QWidget  {
     void handleController(int ccnumber, int channel, int value);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
     void setCompactStyle(bool on);
+    void setGrooveTick(int grooveTick);
+    void setGrooveVelocity(int grooveVelocity);
+    void setGrooveLength(int grooveLength);
+    void sendGroove();
 };
 
 #endif

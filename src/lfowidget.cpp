@@ -50,7 +50,9 @@
 #include "pixmaps/lfowtri.xpm"
 #include "pixmaps/lfowsquare.xpm"
 #include "pixmaps/lfowcustm.xpm"
+#include "pixmaps/seqrecord.xpm"
 #include "config.h"
+
 
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
@@ -70,7 +72,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     cancelMidiLearnAction->setEnabled(false);
 
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
-                << "unknown";
+                << "RecordToggle" << "unknown";
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -90,6 +92,40 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     manageBoxLayout->addStretch();
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
+
+    // Input group box on right top
+    QGroupBox *inBox = new QGroupBox(tr("Input"), this);
+
+    QLabel *ccnumberInLabel = new QLabel(tr("MIDI &CC#"), inBox);
+    ccnumberInBox = new QSpinBox(inBox);
+    ccnumberInLabel->setBuddy(ccnumberInBox);
+    ccnumberInBox->setRange(0, 127);
+    ccnumberInBox->setKeyboardTracking(false);
+    ccnumberInBox->setValue(74);
+    ccnumberInBox->setToolTip(tr("MIDI Controller number to record"));
+    connect(ccnumberInBox, SIGNAL(valueChanged(int)), this,
+            SLOT(updateCcnumberIn(int)));
+
+
+    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
+    chIn = new QSpinBox(inBox);
+    chIn->setRange(1, 16);
+    chIn->setKeyboardTracking(false);
+    chInLabel->setBuddy(chIn);
+    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
+
+    QGridLayout *inBoxLayout = new QGridLayout;
+
+    inBoxLayout->addWidget(ccnumberInLabel, 0, 0);
+    inBoxLayout->addWidget(ccnumberInBox, 0, 1);
+    inBoxLayout->addWidget(chInLabel, 2, 0);
+    inBoxLayout->addWidget(chIn, 2, 1);
+    if (compactStyle) {
+        inBoxLayout->setSpacing(1);
+        inBoxLayout->setMargin(2);
+    }
+
+    inBox->setLayout(inBoxLayout);
 
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
@@ -157,6 +193,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     }
 
     portBox->setLayout(outputLayout);
+
+    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
+    inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(inBox);
+    inOutBoxLayout->addWidget(portBox);
+    inOutBoxLayout->addStretch();
 
     // group box for wave setup
     QGroupBox *waveBox = new QGroupBox(tr("Wave"), this);
@@ -256,6 +298,28 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
 
+    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
+    recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
+    recordAction->setToolTip(tr("Record incoming controller"));
+    recordAction->setCheckable(true);
+    QToolButton *recordButton = new QToolButton(waveBox);
+    recordButton->setDefaultAction(recordAction);
+    recordButtonLabel->setBuddy(recordButton);
+    connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
+    recordButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+
+    QAction *recordLearnAction = new QAction(tr("MIDI &Learn"), this);
+    recordButton->addAction(recordLearnAction);
+    connect(recordLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(recordLearnAction, 5);
+
+    QAction *recordForgetAction = new QAction(tr("MIDI &Forget"), this);
+    recordButton->addAction(recordForgetAction);
+    connect(recordForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(recordForgetAction, 5);
+
+    recordButton->addAction(cancelMidiLearnAction);
+
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), waveBox);
 
@@ -304,15 +368,17 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
-    paramBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
-    paramBoxLayout->addWidget(waveFormBox, 0, 1);
-    paramBoxLayout->addWidget(freqBoxLabel, 1, 0);
-    paramBoxLayout->addWidget(freqBox, 1, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 0, 2);
-    paramBoxLayout->addWidget(resBox, 0, 3);
-    paramBoxLayout->addWidget(sizeBoxLabel, 1, 2);
-    paramBoxLayout->addWidget(sizeBox, 1, 3);
-    paramBoxLayout->setColumnStretch(4, 4);
+    paramBoxLayout->addWidget(recordButtonLabel, 0, 0);
+    paramBoxLayout->addWidget(recordButton, 0, 1);
+    paramBoxLayout->addWidget(waveFormBoxLabel, 0, 2);
+    paramBoxLayout->addWidget(waveFormBox, 0, 3);
+    paramBoxLayout->addWidget(freqBoxLabel, 1, 2);
+    paramBoxLayout->addWidget(freqBox, 1, 3);
+    paramBoxLayout->addWidget(resBoxLabel, 0, 4);
+    paramBoxLayout->addWidget(resBox, 0, 5);
+    paramBoxLayout->addWidget(sizeBoxLabel, 1, 4);
+    paramBoxLayout->addWidget(sizeBox, 1, 5);
+    paramBoxLayout->setColumnStretch(6, 6);
 
     if (compactStyle) {
         paramBoxLayout->setSpacing(1);
@@ -328,11 +394,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
         waveBoxLayout->setMargin(2);
     }
     waveBox->setLayout(waveBoxLayout);
-
-    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    inOutBoxLayout->addLayout(manageBoxLayout);
-    inOutBoxLayout->addWidget(portBox);
-    inOutBoxLayout->addStretch();
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
@@ -361,6 +422,13 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
     xml.writeStartElement(name.left(3));
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+        xml.writeStartElement("input");
+            xml.writeTextElement("channel", QString::number(
+                midiWorker->chIn));
+            xml.writeTextElement("ccnumber", QString::number(
+                midiWorker->ccnumberIn));
+        xml.writeEndElement();
+
         xml.writeStartElement("output");
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
@@ -475,6 +543,19 @@ void LfoWidget::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
+
+        if (xml.isStartElement() && (xml.name() == "input")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "channel")
+                    chIn->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "ccnumber")
+                    ccnumberInBox->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
 
         if (xml.isStartElement() && (xml.name() == "output")) {
             while (!xml.atEnd()) {
@@ -711,6 +792,18 @@ void LfoWidget::updateCcnumber(int val)
     modified = true;
 }
 
+void LfoWidget::updateChIn(int value)
+{
+    midiWorker->chIn = value - 1;
+    modified = true;
+}
+
+void LfoWidget::updateCcnumberIn(int val)
+{
+    midiWorker->ccnumberIn = val;
+    modified = true;
+}
+
 void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
@@ -724,10 +817,21 @@ void LfoWidget::updateWaveForm(int val)
     modified = true;
 }
 
+void LfoWidget::updateScreen(int val)
+{
+    if (midiWorker->isRecording) {
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+    }
+    else {
+        screen->updateScreen(val);
+    }
+}
+
 void LfoWidget::updateFreq(int val)
 {
     if (val > 10) return;
-    midiWorker->freq = lfoFreqValues[val];
+    midiWorker->updateFrequency(lfoFreqValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -735,8 +839,7 @@ void LfoWidget::updateFreq(int val)
 
 void LfoWidget::updateRes(int val)
 {
-    midiWorker->res = lfoResValues[val];
-    midiWorker->resizeAll();
+    midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -744,8 +847,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-    midiWorker->size = val + 1;
-    midiWorker->resizeAll();
+    midiWorker->updateSize(val + 1);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -753,7 +855,7 @@ void LfoWidget::updateSize(int val)
 
 void LfoWidget::updateAmp(int val)
 {
-    midiWorker->amp = val;
+    midiWorker->updateAmplitude(val);
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -833,6 +935,16 @@ void LfoWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(on);
+}
+
+void LfoWidget::setRecord(bool on)
+{
+    if (!on) {
+        midiWorker->isRecording = false;
+        newCustomOffset();
+    }
+    midiWorker->recordMode = on;
+    screen->setRecord(on);
 }
 
 void LfoWidget::setPortOut(int value)

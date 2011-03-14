@@ -54,6 +54,7 @@ MidiSeq::MidiSeq()
     portOut = 0;
     channelOut = 0;
     waveFormIndex = 0;
+    currentIndex = 0;
     isMuted = false;
     int lt = 0;
     int l1 = 0;
@@ -89,6 +90,16 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
         if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
     }
     return(true);
+}
+
+void MidiSeq::getNextNote(Sample *p_sample)
+{
+    Sample sample;
+    sample = customWave.at(currentIndex);
+    emit nextStep(currentIndex);
+    currentIndex++;
+    currentIndex %= (size * res);
+    *p_sample = sample;
 }
 
 void MidiSeq::getData(QVector<Sample> *p_data)
@@ -182,6 +193,7 @@ void MidiSeq::resizeAll()
     int step = TICKS_PER_QUARTER / res;
     Sample sample;
 
+    currentIndex%=(res * size);
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
@@ -230,4 +242,9 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
     sample.muted = on;
     customWave.replace(loc, sample);
     muteMask.replace(loc, on);
+}
+
+void MidiSeq::setCurrentIndex(int ix)
+{
+    currentIndex=ix;
 }
