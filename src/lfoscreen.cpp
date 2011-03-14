@@ -36,6 +36,7 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
     mouseY = 0;
+    currentIndex = 0;
     isMuted = false;
 }
 
@@ -73,6 +74,15 @@ void LfoScreen::paintEvent(QPaintEvent*)
     l2 = 0;
     QChar c;
 
+    //Grid
+    if (p_data.isEmpty()) return;
+    nsteps = p_data.at(p_data.count() - 1).tick / TICKS_PER_QUARTER;
+    beatRes = (p_data.count() - 1) / nsteps;
+    beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
+    npoints = beatRes * nsteps;
+    xscale = (w - 2 * LFOSCREEN_HMARGIN) / nsteps;
+    yscale = h - 2 * LFOSCREEN_VMARGIN;
+
     //Beryll Filled Frame
     if (isMuted)
         p.fillRect(0, 0, w, h, QColor(70, 70, 70));
@@ -82,15 +92,6 @@ void LfoScreen::paintEvent(QPaintEvent*)
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(160, 20, 20));
     p.drawRect(0, 0, w - 1, h - 1);
-
-    //Grid
-    if (p_data.isEmpty()) return;
-    nsteps = p_data.at(p_data.count() - 1).tick / TICKS_PER_QUARTER;
-    beatRes = (p_data.count() - 1) / nsteps;
-    beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
-    npoints = beatRes * nsteps;
-    xscale = (w - 2 * LFOSCREEN_HMARGIN) / nsteps;
-    yscale = h - 2 * LFOSCREEN_VMARGIN;
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
@@ -142,7 +143,6 @@ void LfoScreen::paintEvent(QPaintEvent*)
     //Draw function
 
     octave = 0;
-
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     for (l1 = 0; l1 < npoints; l1++) {
@@ -151,25 +151,38 @@ void LfoScreen::paintEvent(QPaintEvent*)
         x = l1 * xscale * nsteps / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCREEN_VMARGIN;
-        xpos = LFOSCREEN_HMARGIN + x + notestreak_thick / 2;
+        xpos = LFOSCREEN_HMARGIN + x + pen.width() / 2;
         if (p_data.at(l1).muted) {
             pen.setColor(QColor(100, 40, 5));
-            p.setPen(pen);
         }
         else {
             pen.setColor(QColor(180, 130, 50));
-            p.setPen(pen);
         }
+        p.setPen(pen);
         p.drawLine(xpos, ypos,
-                        xpos + (xscale / beatRes) - notestreak_thick / 2, ypos);
+                        xpos + (xscale / beatRes) - pen.width(), ypos);
     }
-    pen.setWidth(1);
+
+    // Cursor
+    pen.setWidth(notestreak_thick * 2);
+    pen.setColor(QColor(200, 180, 70));
+    p.setPen(pen);
+    x = currentIndex * xscale * (int)nsteps / npoints;
+    xpos = LFOSCREEN_HMARGIN + x + pen.width() / 2;
+    p.drawLine(xpos, h - 2,
+                    xpos + (xscale / beatRes) - pen.width(), h - 2);
 }
 
 
 void LfoScreen::updateScreen(const QVector<Sample>& data)
 {
     p_data = data;
+    update();
+}
+
+void LfoScreen::updateScreen(int p_index)
+{
+    currentIndex = p_index;
     update();
 }
 
@@ -239,4 +252,9 @@ int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
         *outOfRange = true;
     }
     return(tmp);
+}
+
+void LfoScreen::setRecord(bool on)
+{
+    recordMode = on;
 }

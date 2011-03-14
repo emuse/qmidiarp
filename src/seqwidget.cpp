@@ -66,7 +66,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
     cancelMidiLearnAction->setEnabled(false);
 
-    midiCCNames << "MuteToggle" << "Velocity" << "NoteLength" << "unknown";
+    midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
+                << "RecordToggle" << "unknown";
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -212,13 +213,26 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
             SLOT(updateWaveForm(int)));
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
-    QAction *recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
+    recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
     recordAction->setToolTip(tr("Record step by step"));
     recordAction->setCheckable(true);
     QToolButton *recordButton = new QToolButton(seqBox);
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
+    recordButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+
+    QAction *recordLearnAction = new QAction(tr("MIDI &Learn"), this);
+    recordButton->addAction(recordLearnAction);
+    connect(recordLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(recordLearnAction, 3);
+
+    QAction *recordForgetAction = new QAction(tr("MIDI &Forget"), this);
+    recordButton->addAction(recordForgetAction);
+    connect(recordForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(recordForgetAction, 3);
+
+    recordButton->addAction(cancelMidiLearnAction);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);

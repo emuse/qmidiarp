@@ -87,6 +87,7 @@ class LfoWidget : public QWidget
 {
     Q_OBJECT
 
+    QSpinBox *chIn, *ccnumberInBox;
     // Output channel / port (ALSA Sequencer)
     QSpinBox *channelOut, *portOut, *ccnumberBox;
     QComboBox *resBox, *sizeBox;
@@ -158,6 +159,7 @@ class LfoWidget : public QWidget
     QStringList waveForms;
     QCheckBox *muteOut;
     Slider *frequency, *amplitude, *offset;
+    QAction *recordAction;
     QComboBox *waveFormBox, *freqBox;
 
 /*!
@@ -250,6 +252,11 @@ class LfoWidget : public QWidget
 
 /* PUBLIC SLOTS */
   public slots:
+    void updateChIn(int value);
+    void updateCcnumberIn(int value);
+    void updateScreen(int value);
+    void setRecord(bool on);
+
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
 * of this module.

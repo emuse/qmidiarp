@@ -27,7 +27,9 @@ class LfoScreen : public QWidget
     QVector<Sample> p_data, data;
     int mouseX, mouseY, mouseW;
     int w, h;
+    int currentIndex;
     int clip(int value, int min, int max, bool *outOfRange);
+    bool recordMode;
     bool isMuted;
 
   protected:
@@ -46,8 +48,10 @@ class LfoScreen : public QWidget
 
   public slots:
     void updateScreen(const QVector<Sample>& data);
+    void updateScreen(int p_index);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void setRecord(bool on);
     void wheelEvent(QWheelEvent* event);
     void setMuted(bool on);
 };

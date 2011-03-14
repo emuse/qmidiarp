@@ -48,11 +48,17 @@ MidiLfo::MidiLfo()
     freq = 4;
     size = 1;
     res = 16;
+    old_res = 0;
     ccnumber = 74;
     portOut = 0;
     channelOut = 0;
+    chIn = 0;
+    ccnumberIn = 74;
     waveFormIndex = 0;
     isMuted = false;
+    recordMode = false;
+    isRecording = false;
+    recValue = 0;
     int l1 = 0;
     int lt = 0;
     int step = TICKS_PER_QUARTER / res;
@@ -83,29 +89,56 @@ void MidiLfo::setMuted(bool on)
 
 void MidiLfo::getNextFrame(QVector<Sample> *p_data)
 {
-    //this function is called by seqdriver and returns a frame of
-    //maximum LFO_FRAMESIZE points
+    //this function is called by seqdriver and returns one sample
+    //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
+    //The FRAMELIMIT avoids excessive cursor updating
 
     QVector<Sample> frame;
     Sample sample;
     int step = TICKS_PER_QUARTER / res;
     int npoints = size * res;
     int lt, l1;
+    int framelimit;
+    int framesize;
+    int index;
 
     frame.clear();
-    lt = 0;
-    l1 = 0;
 
-    while ((l1 < LFO_FRAMESIZE) && (l1 < npoints)) {
-        sample = data.at((l1 + frameptr) % npoints);
+    if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
+    framesize = res / framelimit;
+    l1 = 0;
+    lt = 0;
+
+    do {
+        index = (l1 + frameptr) % npoints;
+        sample = data.at(index);
+        if (isRecording) {
+            if (!framesize) {
+                sample.value = recValue;
+            }
+            else {
+            /** We do linear interpolation of points within frames if
+             * framesize is > 0 to get a smooth recording at high resolutions
+             * interpolation is linear between lastSampleValue and current recValue
+             * */
+                sample.value = lastSampleValue
+                            + (double)(recValue - lastSampleValue) / res * framelimit
+                            * ((double)l1 + .5);
+            }
+            customWave.replace(index, sample);
+        }
         sample.tick = lt;
         frame.append(sample);
         lt+=step;
         l1++;
-    }
+    } while ((l1 < framesize) & (l1 < npoints));
+
+    lastSampleValue = recValue;
+
     sample.value = -1;
     sample.tick = lt;
     frame.append(sample);
+    emit nextStep(frameptr);
 
     frameptr += l1;
     frameptr %= npoints;
@@ -241,6 +274,18 @@ void MidiLfo::updateOffset(int val)
     offs = val;
 }
 
+void MidiLfo::updateResolution(int val)
+{
+    res = val;
+    resizeAll();
+}
+
+void MidiLfo::updateSize(int val)
+{
+    size = val;
+    resizeAll();
+}
+
 void MidiLfo::updateQueueTempo(int val)
 {
     queueTempo = (double)val;
@@ -253,6 +298,7 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     int Y = mouseY * 128;
 
     if (newpt) {
+    // the mouse was just clicked so we can directly set the point
         lastMouseLoc = loc;
         lastMouseY = Y;
     }
@@ -260,6 +306,8 @@ void MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     if (loc == lastMouseLoc) lastMouseY = Y;
 
     do {
+    //if the mouse was moved, we interpolate potentially missing points after
+    //the last mouse position
         if (loc > lastMouseLoc) {
             lastMouseY += (double)(lastMouseY - Y) / (lastMouseLoc - loc) + .5;
             lastMouseLoc++;
@@ -282,6 +330,7 @@ void MidiLfo::resizeAll()
     int step = TICKS_PER_QUARTER / res;
     Sample sample;
 
+    frameptr%=(res * size);
     os = customWave.count();
     customWave.resize(size * res);
     muteMask.resize(size * res);
@@ -363,4 +412,18 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
 void MidiLfo::resetFramePtr()
 {
     frameptr = 0;
+}
+
+void MidiLfo::record(int value)
+{
+    recValue = value;
+    isRecording = true;
+}
+
+bool MidiLfo::wantEvent(MidiEvent inEv)
+{
+    if (!recordMode) return(false);
+    if (inEv.channel != chIn) return(false);
+    if (inEv.data != ccnumberIn) return(false);
+    return(true);
 }

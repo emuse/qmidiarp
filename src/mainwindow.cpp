@@ -417,6 +417,8 @@ void MainWindow::addLfo(const QString& name)
     arpData->addMidiLfo(midiLfo);
     LfoWidget *lfoWidget = new LfoWidget(midiLfo,
             arpData->getPortCount(), passWidget->compactStyle, this);
+    connect(midiLfo, SIGNAL(nextStep(int)),
+            lfoWidget, SLOT(updateScreen(int)));
     connect(lfoWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
@@ -452,6 +454,8 @@ void MainWindow::addSeq(const QString& name)
     arpData->addMidiSeq(midiSeq);
     SeqWidget *seqWidget = new SeqWidget(midiSeq,
             arpData->getPortCount(), passWidget->compactStyle, this);
+    connect(midiSeq, SIGNAL(nextStep(int)),
+            seqWidget->screen, SLOT(updateScreen(int)));
     connect(seqWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(seqWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));

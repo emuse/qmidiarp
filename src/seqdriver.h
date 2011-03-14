@@ -68,7 +68,7 @@ class SeqDriver : public QThread {
         int nextNoteTick[20], nextArpTick;
         int tempo, internal_tempo;
         QVector<Sample> lfoData;
-        QVector<Sample> seqData;
+        Sample seqSample;
 
         double tickToDelta(int tick);
         int deltaToTick (double curtime);

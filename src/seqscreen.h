@@ -28,6 +28,7 @@ class SeqScreen : public QWidget
     int w, h;
     bool recordMode;
     int currentRecStep;
+    int currentIndex;
     bool isMuted;
 
   protected:
@@ -45,6 +46,7 @@ class SeqScreen : public QWidget
 
   public slots:
     void updateScreen(const QVector<Sample>& data);
+    void updateScreen(int currentIndex);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void setRecord(bool on);

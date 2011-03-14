@@ -79,6 +79,7 @@ class MidiSeq : public QObject  {
   private:
     double queueTempo;
     int lastMouseLoc;
+    int currentIndex;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -186,6 +187,12 @@ class MidiSeq : public QObject  {
  * @param data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
+/*! @brief This function transfers one Sample of data taken from
+ * the currently active waveform MidiLfo::data at the index frameptr.
+ *
+ * @param p_sample reference to a Sample structure receiving the data point
+ */
+    void getNextNote(Sample *p_sample);
 /*! @brief This function toggles the mute state of one point of the
  * MidiSeq::muteMask array.
  *
@@ -198,6 +205,10 @@ class MidiSeq : public QObject  {
  * @see MidiSeq::setMutePoint
  */
     bool toggleMutePoint(double);
+    void setCurrentIndex(int ix);
+
+  signals:
+    void nextStep(int currentIndex);
 
 };
 
