@@ -1060,24 +1060,25 @@ Uložit změny?</translation>
 <context>
     <name>SeqWidget</name>
     <message>
-        <location filename="../seqwidget.cpp" line="97"/>
+        <location filename="../seqwidget.cpp" line="98"/>
         <source>Transpose the sequence following incoming notes</source>
         <translation>Převést sekvenci skrz příchozí noty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="132"/>
+        <location filename="../seqwidget.cpp" line="133"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="134"/>
+        <location filename="../seqwidget.cpp" line="135"/>
         <source>&amp;Mute</source>
         <translation>&amp;Ztlumit</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="140"/>
-        <location filename="../seqwidget.cpp" line="272"/>
-        <location filename="../seqwidget.cpp" line="291"/>
+        <location filename="../seqwidget.cpp" line="141"/>
+        <location filename="../seqwidget.cpp" line="225"/>
+        <location filename="../seqwidget.cpp" line="286"/>
+        <location filename="../seqwidget.cpp" line="305"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Učení se MIDI</translation>
     </message>
@@ -1087,65 +1088,66 @@ Uložit změny?</translation>
         <translation>Zrušit &amp;učení se MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="145"/>
-        <location filename="../seqwidget.cpp" line="277"/>
-        <location filename="../seqwidget.cpp" line="296"/>
+        <location filename="../seqwidget.cpp" line="146"/>
+        <location filename="../seqwidget.cpp" line="230"/>
+        <location filename="../seqwidget.cpp" line="291"/>
+        <location filename="../seqwidget.cpp" line="310"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Zapomenutí nastavení MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="192"/>
+        <location filename="../seqwidget.cpp" line="193"/>
         <source>Sequence</source>
         <translation>Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="203"/>
+        <location filename="../seqwidget.cpp" line="204"/>
         <source>&amp;Sequence</source>
         <translation>&amp;Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="209"/>
+        <location filename="../seqwidget.cpp" line="210"/>
         <source>Preset Number</source>
         <translation>Číslo přednastavení</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="214"/>
         <location filename="../seqwidget.cpp" line="215"/>
+        <location filename="../seqwidget.cpp" line="216"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Nahrát</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="216"/>
+        <location filename="../seqwidget.cpp" line="217"/>
         <source>Record step by step</source>
         <translation>Příchozí noty nahrávat krok za krokem</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="233"/>
+        <location filename="../seqwidget.cpp" line="247"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Rozlišení (not za dobu): Počet not zahraných za čtvrťový takt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="245"/>
+        <location filename="../seqwidget.cpp" line="259"/>
         <source>Length of Sequence in beats</source>
         <translation>Délka sekvence ve čtvrťových taktech</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="252"/>
+        <location filename="../seqwidget.cpp" line="266"/>
         <source>C&amp;opy to new wave</source>
         <translation>&amp;Kopírovat do nové vlny</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="266"/>
+        <location filename="../seqwidget.cpp" line="280"/>
         <source>Veloc&amp;ity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="910"/>
+        <location filename="../seqwidget.cpp" line="924"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="929"/>
+        <location filename="../seqwidget.cpp" line="943"/>
         <source>New Name</source>
         <translation>Nový název</translation>
     </message>
@@ -1158,52 +1160,52 @@ Uložit změny?</translation>
         <translation type="obsolete">An&amp;schlag</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="286"/>
+        <location filename="../seqwidget.cpp" line="300"/>
         <source>N&amp;ote Length</source>
         <translation>Délka n&amp;oty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="99"/>
+        <location filename="../seqwidget.cpp" line="100"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="74"/>
+        <location filename="../seqwidget.cpp" line="75"/>
         <source>&amp;Rename...</source>
         <translation>Pře&amp;jmenovat...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="75"/>
+        <location filename="../seqwidget.cpp" line="76"/>
         <source>Rename this Sequencer</source>
         <translation>Přejmenovat tento sekvencer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="80"/>
+        <location filename="../seqwidget.cpp" line="81"/>
         <source>&amp;Delete...</source>
         <translation>S&amp;mazat...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="81"/>
+        <location filename="../seqwidget.cpp" line="82"/>
         <source>Delete this Sequencer</source>
         <translation>Smazat tento sekvencer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="91"/>
+        <location filename="../seqwidget.cpp" line="92"/>
         <source>Input</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="93"/>
+        <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note</source>
         <translation>&amp;Nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="103"/>
+        <location filename="../seqwidget.cpp" line="104"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>Nastavit rychlost sekvence na rychlost příchozích not</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="108"/>
+        <location filename="../seqwidget.cpp" line="109"/>
         <source>&amp;Channel</source>
         <translation>&amp;Каnál</translation>
     </message>
@@ -1212,7 +1214,7 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Notenlänge</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="304"/>
+        <location filename="../seqwidget.cpp" line="318"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Převést</translation>
     </message>
@@ -1225,12 +1227,12 @@ Uložit změny?</translation>
         <translation type="obsolete">Nummer des gesendeten MIDI Controllers</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="153"/>
+        <location filename="../seqwidget.cpp" line="154"/>
         <source>&amp;Port</source>
         <translation>&amp;Přípojka</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="160"/>
+        <location filename="../seqwidget.cpp" line="161"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Kanál</translation>
     </message>
@@ -1239,7 +1241,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Welle</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="196"/>
+        <location filename="../seqwidget.cpp" line="197"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Pravé tlačítko myši: ztlumení jednotlivých bodů, levé tlačítko myši: kreslení tvaru vlny</translation>
     </message>
@@ -1260,7 +1262,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Frequenz (Zyklen pro beat): Anzahl der erzeugten Wellenzyklen pro Vierteltakt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="223"/>
+        <location filename="../seqwidget.cpp" line="237"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Rozlišení</translation>
     </message>
@@ -1269,7 +1271,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Auflösung (Signale/beat): Anzahl der pro Vierteltakt erzeugten MIDI Signale</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="238"/>
+        <location filename="../seqwidget.cpp" line="252"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
@@ -1306,7 +1308,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Rechteck</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="725"/>
+        <location filename="../seqwidget.cpp" line="739"/>
         <source>Custom</source>
         <translation>Vlastní</translation>
     </message>

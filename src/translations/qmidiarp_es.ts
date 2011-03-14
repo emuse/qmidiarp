@@ -929,62 +929,62 @@ Save changes?</source>
 <context>
     <name>SeqWidget</name>
     <message>
-        <location filename="../seqwidget.cpp" line="74"/>
+        <location filename="../seqwidget.cpp" line="75"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Renombrar...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="75"/>
+        <location filename="../seqwidget.cpp" line="76"/>
         <source>Rename this Sequencer</source>
         <translation>Renombrar este secuenciador</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="80"/>
+        <location filename="../seqwidget.cpp" line="81"/>
         <source>&amp;Delete...</source>
         <translation>&amp;Borrar...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="81"/>
+        <location filename="../seqwidget.cpp" line="82"/>
         <source>Delete this Sequencer</source>
         <translation>Borrar este secuenciador</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="91"/>
+        <location filename="../seqwidget.cpp" line="92"/>
         <source>Input</source>
         <translation>Entrada</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="93"/>
+        <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note</source>
         <translation>&amp;Nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="97"/>
+        <location filename="../seqwidget.cpp" line="98"/>
         <source>Transpose the sequence following incoming notes</source>
         <translation>Transportar la secuencia siguiendo las notas siguientes</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="99"/>
+        <location filename="../seqwidget.cpp" line="100"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Velocidad</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="103"/>
+        <location filename="../seqwidget.cpp" line="104"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>Establecer la velocidad de la secuencia igual a las notas recibidas</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="108"/>
+        <location filename="../seqwidget.cpp" line="109"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="132"/>
+        <location filename="../seqwidget.cpp" line="133"/>
         <source>Output</source>
         <translation>Salida</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="134"/>
+        <location filename="../seqwidget.cpp" line="135"/>
         <source>&amp;Mute</source>
         <translation>&amp;Silenciar</translation>
     </message>
@@ -994,112 +994,114 @@ Save changes?</source>
         <translation>&amp;Cancelar aprendizaje MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="140"/>
-        <location filename="../seqwidget.cpp" line="272"/>
-        <location filename="../seqwidget.cpp" line="291"/>
+        <location filename="../seqwidget.cpp" line="141"/>
+        <location filename="../seqwidget.cpp" line="225"/>
+        <location filename="../seqwidget.cpp" line="286"/>
+        <location filename="../seqwidget.cpp" line="305"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Aprendizaje MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="145"/>
-        <location filename="../seqwidget.cpp" line="277"/>
-        <location filename="../seqwidget.cpp" line="296"/>
+        <location filename="../seqwidget.cpp" line="146"/>
+        <location filename="../seqwidget.cpp" line="230"/>
+        <location filename="../seqwidget.cpp" line="291"/>
+        <location filename="../seqwidget.cpp" line="310"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Olvidar MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="153"/>
+        <location filename="../seqwidget.cpp" line="154"/>
         <source>&amp;Port</source>
         <translation>&amp;Puerto</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="160"/>
+        <location filename="../seqwidget.cpp" line="161"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="192"/>
+        <location filename="../seqwidget.cpp" line="193"/>
         <source>Sequence</source>
         <translation>Secuencia</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="196"/>
+        <location filename="../seqwidget.cpp" line="197"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Botón derecho para silenciar puntos, botón izquierdo para dibujar onda personalizada</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="203"/>
+        <location filename="../seqwidget.cpp" line="204"/>
         <source>&amp;Sequence</source>
         <translation>&amp;Secuencia</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="209"/>
+        <location filename="../seqwidget.cpp" line="210"/>
         <source>Preset Number</source>
         <translation>Número de patrón</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="214"/>
         <location filename="../seqwidget.cpp" line="215"/>
+        <location filename="../seqwidget.cpp" line="216"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Grabar</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="216"/>
+        <location filename="../seqwidget.cpp" line="217"/>
         <source>Record step by step</source>
         <translation>Grabar paso a paso</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="223"/>
+        <location filename="../seqwidget.cpp" line="237"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Resolución</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="233"/>
+        <location filename="../seqwidget.cpp" line="247"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Resolución (notas/tiempo): número de notas producidas por cada tiempo</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="238"/>
+        <location filename="../seqwidget.cpp" line="252"/>
         <source>&amp;Length</source>
         <translation>&amp;Longitud</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="245"/>
+        <location filename="../seqwidget.cpp" line="259"/>
         <source>Length of Sequence in beats</source>
         <translation>Longitud de la secuencia en tiempos</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="252"/>
+        <location filename="../seqwidget.cpp" line="266"/>
         <source>C&amp;opy to new wave</source>
         <translation>C&amp;opiar a nueva onda</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="266"/>
+        <location filename="../seqwidget.cpp" line="280"/>
         <source>Veloc&amp;ity</source>
         <translation>&amp;Velocidad</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="286"/>
+        <location filename="../seqwidget.cpp" line="300"/>
         <source>N&amp;ote Length</source>
         <translation>&amp;Longitud de nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="304"/>
+        <location filename="../seqwidget.cpp" line="318"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Transportar</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="725"/>
+        <location filename="../seqwidget.cpp" line="739"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="910"/>
+        <location filename="../seqwidget.cpp" line="924"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>¿Eliminar &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="929"/>
+        <location filename="../seqwidget.cpp" line="943"/>
         <source>New Name</source>
         <translation>Nuevo nombre</translation>
     </message>
