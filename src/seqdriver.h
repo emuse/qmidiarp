@@ -52,8 +52,8 @@ class SeqDriver : public QThread {
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
-        int lfoMinPacketSize, lfoPacketSize[20];
-        int seqMinPacketSize, seqPacketSize[20];
+        int lfoMinPacketSize;
+        int seqMinPacketSize;
         int portid_in;
         int queue_id;
         bool startQueue;
@@ -63,9 +63,9 @@ class SeqDriver : public QThread {
         bool gotKbdTrig;
         int tick, jack_offset_tick, schedDelayTicks;
         int lastSchedTick;
-        int lastLfoTick[20], nextLfoTick;
-        int lastSeqTick[20], nextSeqTick;
-        int nextNoteTick[20], nextArpTick;
+        int nextLfoTick[20], nextMinLfoTick;
+        int nextSeqTick[20], nextMinSeqTick;
+        int nextArpTick[20], nextMinArpTick;
         int tempo, internal_tempo;
         QVector<Sample> lfoData;
         Sample seqSample;
@@ -114,7 +114,6 @@ class SeqDriver : public QThread {
    signals:
         void midiEvent(int type, int data, int channel, int value);
         void controlEvent(int ccnumber, int channel, int value);
-        void noteEvent(int note, int velocity);
         void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
 

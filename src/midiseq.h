@@ -1,19 +1,6 @@
 /*!
  * @file midiseq.h
- * @brief MIDI worker class for the Seq Module. Implements a monophonic
- * step sequencer as a QObject.
- *
- * The parameters of MidiSeq are controlled by the SeqWidget class.
- * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
- * the MidiSeq::getNextNote member as a function of the position of
- * the ALSA queue. MidiSeq will return a note from its internal
- * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
- * MidiSeq::getData function at each modification done via
- * the SeqWidget. It is modified by drawing a sequence of notes on the
- * SeqWidget display or by recording incoming notes step by step. In all
- * cases the sequence has resolution, velocity, note length and
- * size attributes and single points can be tagged as muted, which will
- * avoid data output at the corresponding position.
+ * @brief Member definitions for the MidiSeq MIDI worker class.
  *
  * @section LICENSE
  *
@@ -80,6 +67,9 @@ class MidiSeq : public QObject  {
     double queueTempo;
     int lastMouseLoc;
     int currentIndex;
+    bool restartByKbd;
+    bool trigByKbd;
+    bool recordMode;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -120,6 +110,26 @@ class MidiSeq : public QObject  {
  * @param on Set to True to suppress data output to ALSA
  */
     void setMuted(bool);
+/**
+ * @brief This function checks whether this module is set to keyboard
+ * trigger mode.
+ *
+ * Its response depends on MidiSeq::restartByKbd and (TODO) whether there are notes
+ * pressed on the keyboard, i.e. whether the note was played stakato.
+ *
+ * @return True if the module accepts to be triggered
+ */
+    bool wantTrigByKbd();
+/**
+ * @brief This function does the actions related to a newly received note.
+ *
+ * It is called by SeqDriver when a new note is received on the ALSA input port.
+
+ * @param note The note value of the received note
+ * @param velocity The note velocity
+ * @param tick The time the note was received in internal ticks
+ */
+    void handleNoteOn(int note, int velocity, int tick);
 /*! @brief This function sets the (controller) value of one point of the
  * MidiSeq::customWave array. It is used for handling drawing functionality.
  *
@@ -164,6 +174,7 @@ class MidiSeq : public QObject  {
  * MidiSeq::data array into MidiSeq::customWave.
  */
     void copyToCustom();
+    void setRecordMode(int on);
     void setRecordedNote(int note);
 
 /**
@@ -209,6 +220,7 @@ class MidiSeq : public QObject  {
 
   signals:
     void nextStep(int currentIndex);
+    void noteEvent(int note, int velocity);
 
 };
 

@@ -1,20 +1,6 @@
 /*!
  * @file midilfo.cpp
- * @brief MIDI worker class for the LFO Module. Implements a sequencer
- * for controller data as a QObject.
- *
- * The parameters of MidiLfo are controlled by the LfoWidget class.
- * A pointer to MidiLfo is passed to the SeqDriver thread, which calls
- * the MidiLfo::getNextFrame member as a function of the position of
- * the ALSA queue. MidiLfo will return an array of controller values
- * representing a frame of its internal MidiLfo::data buffer. This frame
- * has size 1 except for resolution higher than 16th notes.
- * The MidiLfo::data buffer is populated by the MidiLfo::getData function
- * at each modification done via the LfoWidget. It can consist of
- * a classic waveform calculation or a hand-drawn waveform. In all cases
- * the waveform has resolution, offset and size attributes and single
- * points can be tagged as muted, which will avoid data output at the
- * corresponding position.
+ * @brief Implements the MidiLfo MIDI worker class for the LFO Module.
  *
  * @section LICENSE
  *

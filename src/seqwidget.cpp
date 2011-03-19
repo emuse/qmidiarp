@@ -1,14 +1,6 @@
 /*!
  * @file seqwidget.cpp
- * @brief GUI class associated with and controlling a MidiSeq worker
- *
- * It controls the MidiSeq sequencer and
- * is created alongwith each MidiSeq and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a SeqWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a SeqScreen and interacts with it.
+ * @brief Implements the SeqWidget GUI class.
  *
  * @section LICENSE
  *
@@ -279,7 +271,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
     velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    connect(velocity, SIGNAL(valueChanged(int)), this,
+    connect(velocity, SIGNAL(sliderMoved(int)), this,
             SLOT(updateVelocity(int)));
 
 
@@ -316,7 +308,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
-    connect(transpose, SIGNAL(valueChanged(int)), this,
+    connect(transpose, SIGNAL(sliderMoved(int)), this,
             SLOT(updateTranspose(int)));
 
 
@@ -541,12 +533,19 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
                 }
-                else if (xml.name() == "velocity")
-                    velocity->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "noteLength")
+                else if (xml.name() == "velocity") {
+                    tmp = xml.readElementText().toInt();
+                    velocity->setValue(tmp);
+                    updateVelocity(tmp);
+                }
+                else if (xml.name() == "noteLength") {
                     notelength->setValue(xml.readElementText().toInt() / 2);
-                else if (xml.name() == "transp")
-                    transpose->setValue(xml.readElementText().toInt());
+                }
+                else if (xml.name() == "transp") {
+                    tmp = xml.readElementText().toInt();
+                    transpose->setValue(tmp);
+                    updateVelocity(tmp);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -792,7 +791,8 @@ void SeqWidget::updateWaveForm(int val)
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
-    screen->setRecord(on);
+    midiWorker->setRecordMode(on);
+    screen->setRecordMode(on);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateScreen(data);
 }
@@ -836,7 +836,6 @@ void SeqWidget::processNote(int note, int vel)
         if (enableVelIn->isChecked()) velocity->setValue(vel);
     }
     else {
-        midiWorker->recordNote(note);
         midiWorker->getData(&data);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
         screen->updateScreen(data);

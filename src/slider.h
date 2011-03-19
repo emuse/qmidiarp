@@ -60,12 +60,15 @@ class Slider : public QWidget
 
   signals:
     void valueChanged(int);
+    void sliderMoved(int);
 
   public slots:
     void setValue(int);
 
   private slots:
     void updateSpinBox(int);
+    void fillSpinBox(int);
+    void emitAsMoved();
 };
 
 #endif

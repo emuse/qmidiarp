@@ -1,14 +1,6 @@
 /*!
  * @file mainwindow.cpp
- * @brief Top-level UI class. Instantiates ArpData
- *
- *      The MainWindow class is main the ui that holds
- *      functions to manage global
- *      QMidiArp parameters and modules and to load and save parameters to
- *      disk. The constructor sets up all main window elements including
- *      toolbars and menus. It instantiates the LogWidget, PassWidget,
- *      MidiCCTable and their DockWidget windows. It also instantiates the
- *      ArpData widget holding the lists of modules.
+ * @brief Implements the MainWindow top-level UI class.
  *
  * @section LICENSE
  *
@@ -361,49 +353,49 @@ void MainWindow::seqNew()
 void MainWindow::addArp(const QString& name)
 {
     int count, widgetID;
-    MidiArp *midiArp = new MidiArp();
-    arpData->addMidiArp(midiArp);
-    ArpWidget *arpWidget = new ArpWidget(midiArp,
+    MidiArp *midiWorker = new MidiArp();
+    arpData->addMidiArp(midiWorker);
+    ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             arpData->getPortCount(), passWidget->compactStyle, this);
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
-    connect(midiArp, SIGNAL(nextStep(int)),
-            arpWidget->screen, SLOT(updateScreen(int)));
-    connect(arpWidget, SIGNAL(presetsChanged(const QString&, const
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget->screen, SLOT(updateScreen(int)));
+    connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
                     QString&, int)));
-    connect(arpWidget, SIGNAL(moduleRemove(int)),
+    connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(arpWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(arpWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            arpWidget->screen, SLOT(setGrooveTick(int)));
+            moduleWidget->screen, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            arpWidget->screen, SLOT(setGrooveVelocity(int)));
+            moduleWidget->screen, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            arpWidget->screen, SLOT(setGrooveLength(int)));
+            moduleWidget->screen, SLOT(setGrooveLength(int)));
 
     widgetID = arpData->arpWidgetCount();
-    arpWidget->name = name;
-    arpWidget->ID = widgetID;
+    moduleWidget->name = name;
+    moduleWidget->ID = widgetID;
 
-    arpData->addArpWidget(arpWidget);
+    arpData->addArpWidget(moduleWidget);
     arpData->sendGroove();
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(arpWidget);
+    moduleWindow->setWidget(moduleWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
     count = arpData->moduleWindowCount();
-    arpWidget->parentDockID = count;
+    moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
     moduleWindow->show();
@@ -413,35 +405,35 @@ void MainWindow::addArp(const QString& name)
 void MainWindow::addLfo(const QString& name)
 {
     int count, widgetID;
-    MidiLfo *midiLfo = new MidiLfo();
-    arpData->addMidiLfo(midiLfo);
-    LfoWidget *lfoWidget = new LfoWidget(midiLfo,
+    MidiLfo *midiWorker = new MidiLfo();
+    arpData->addMidiLfo(midiWorker);
+    LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             arpData->getPortCount(), passWidget->compactStyle, this);
-    connect(midiLfo, SIGNAL(nextStep(int)),
-            lfoWidget, SLOT(updateScreen(int)));
-    connect(lfoWidget, SIGNAL(moduleRemove(int)),
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget, SLOT(updateScreen(int)));
+    connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
-    connect(lfoWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(lfoWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = arpData->lfoWidgetCount();
-    lfoWidget->name = name;
-    lfoWidget->ID = widgetID;
+    moduleWidget->name = name;
+    moduleWidget->ID = widgetID;
 
-    arpData->addLfoWidget(lfoWidget);
+    arpData->addLfoWidget(moduleWidget);
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(lfoWidget);
+    moduleWindow->setWidget(moduleWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
     count = arpData->moduleWindowCount();
-    lfoWidget->parentDockID = count;
+    moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
     checkIfFirstModule();
@@ -450,36 +442,36 @@ void MainWindow::addLfo(const QString& name)
 void MainWindow::addSeq(const QString& name)
 {
     int count, widgetID;
-    MidiSeq *midiSeq = new MidiSeq();
-    arpData->addMidiSeq(midiSeq);
-    SeqWidget *seqWidget = new SeqWidget(midiSeq,
+    MidiSeq *midiWorker = new MidiSeq();
+    arpData->addMidiSeq(midiWorker);
+    SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             arpData->getPortCount(), passWidget->compactStyle, this);
-    connect(midiSeq, SIGNAL(nextStep(int)),
-            seqWidget->screen, SLOT(updateScreen(int)));
-    connect(seqWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
-    connect(seqWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget->screen, SLOT(updateScreen(int)));
+    connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(seqWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
             arpData, SLOT(setMidiLearn(int, int, int)));
-    connect(arpData->seqDriver, SIGNAL(noteEvent(int, int)),
-            seqWidget, SLOT(processNote(int, int)));
+    connect(midiWorker, SIGNAL(noteEvent(int, int)),
+            moduleWidget, SLOT(processNote(int, int)));
 
     widgetID = arpData->seqWidgetCount();
-    seqWidget->name = name;
-    seqWidget->ID = widgetID;
+    moduleWidget->name = name;
+    moduleWidget->ID = widgetID;
 
-    arpData->addSeqWidget(seqWidget);
+    arpData->addSeqWidget(moduleWidget);
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(seqWidget);
+    moduleWindow->setWidget(moduleWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
     count = arpData->moduleWindowCount();
-    seqWidget->parentDockID = count;
+    moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
     arpData->addModuleWindow(moduleWindow);
 

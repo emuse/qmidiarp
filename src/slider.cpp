@@ -49,12 +49,14 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
         slider->setMinimumWidth(150);
     }
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSpinBox(int)));
+    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(fillSpinBox(int)));
 
     sliderSpin = new QSpinBox(this);
     sliderSpin->setRange(minValue, maxValue);
     sliderSpin->setValue(value);
     sliderSpin->setKeyboardTracking(false);
     connect(sliderSpin, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
+    connect(sliderSpin, SIGNAL(editingFinished()), this, SLOT(emitAsMoved()));
 
     QLabel* sliderLabel = new QLabel(this);
     sliderLabel->setText(label);
@@ -96,5 +98,16 @@ void Slider::updateSpinBox(int val)
 {
     emit(valueChanged(val));
     sliderSpin->setValue(val);
+}
+
+void Slider::fillSpinBox(int val)
+{
+    emit(sliderMoved(val));
+    sliderSpin->setValue(val);
+}
+
+void Slider::emitAsMoved()
+{
+    emit(sliderMoved(sliderSpin->value()));
 }
 

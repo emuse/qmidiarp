@@ -1,14 +1,6 @@
 /*!
  * @file arpwidget.h
- * @brief GUI class associated with and controlling a MidiArp worker
- *
- * It controls the MidiArp arpeggiator and
- * is created alongwith each MidiArp and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a ArpWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a ArpScreen and interacts with it.
+ * @brief Member definitions for the ArpWidget GUI class.
  *
  * @section LICENSE
  *

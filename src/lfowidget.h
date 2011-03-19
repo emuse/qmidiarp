@@ -1,14 +1,6 @@
 /*!
  * @file lfowidget.h
- * @brief GUI class associated with and controlling a MidiLfo worker
- *
- * It controls the MidiLfo LFO and
- * is created alongwith each MidiLfo and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a LfoWidget::MidiCCList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates an LfoScreen and interacts with it.
+ * @brief Member definitions for the LfoWidget GUI class.
  *
  * @section LICENSE
  *

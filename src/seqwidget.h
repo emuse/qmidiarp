@@ -1,14 +1,6 @@
 /*!
  * @file seqwidget.h
- * @brief GUI class associated with and controlling a MidiSeq worker
- *
- * It controls the MidiSeq sequencer and
- * is created alongwith each MidiSeq and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a SeqWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a SeqScreen and interacts with it.
+ * @brief Member definitions for the SeqWidget GUI class.
  *
  * @section LICENSE
  *

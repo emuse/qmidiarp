@@ -1,19 +1,6 @@
 /*!
  * @file midiseq.cpp
- * @brief MIDI worker class for the Seq Module. Implements a monophonic
- * step sequencer as a QObject.
- *
- * The parameters of MidiSeq are controlled by the SeqWidget class.
- * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
- * the MidiSeq::getNextNote member as a function of the position of
- * the ALSA queue. MidiSeq will return a note from its internal
- * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
- * MidiSeq::getData function at each modification done via
- * the SeqWidget. It is modified by drawing a sequence of notes on the
- * SeqWidget display or by recording incoming notes step by step. In all
- * cases the sequence has resolution, velocity, note length and
- * size attributes and single points can be tagged as muted, which will
- * avoid data output at the corresponding position.
+ * @brief Implements the MidiSeq MIDI worker class for the Seq Module.
  *
  * @section LICENSE
  *
@@ -43,6 +30,9 @@ MidiSeq::MidiSeq()
 {
     enableNoteIn = true;
     enableVelIn = true;
+    recordMode = false;
+    trigByKbd = false;
+    restartByKbd = false;
     currentRecStep = 0;
     chIn = 0;
     queueTempo = 100.0;
@@ -91,6 +81,24 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
     }
     return(true);
 }
+
+void MidiSeq::handleNoteOn(int note, int velocity, int tick)
+{
+    if (recordMode) recordNote(note);
+    else {
+        if (restartByKbd) setCurrentIndex(0);
+        if (enableNoteIn) updateTranspose(note - 60);
+        if (enableVelIn) updateVelocity(velocity);
+    }
+    emit noteEvent(note, velocity);
+}
+
+bool MidiSeq::wantTrigByKbd()
+{
+    bool on = (trigByKbd);
+    return(on);
+}
+
 
 void MidiSeq::getNextNote(Sample *p_sample)
 {
@@ -173,6 +181,11 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 {
     currentRecStep = mouseX * res * size;
     setRecordedNote(mouseY * 48 + 36);
+}
+
+void MidiSeq::setRecordMode(int on)
+{
+    recordMode = on;
 }
 
 void MidiSeq::setRecordedNote(int note)
