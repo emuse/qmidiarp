@@ -1065,20 +1065,20 @@ Uložit změny?</translation>
         <translation>Převést sekvenci skrz příchozí noty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="125"/>
+        <location filename="../seqwidget.cpp" line="161"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="127"/>
+        <location filename="../seqwidget.cpp" line="163"/>
         <source>&amp;Mute</source>
         <translation>&amp;Ztlumit</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="133"/>
-        <location filename="../seqwidget.cpp" line="217"/>
-        <location filename="../seqwidget.cpp" line="278"/>
-        <location filename="../seqwidget.cpp" line="297"/>
+        <location filename="../seqwidget.cpp" line="169"/>
+        <location filename="../seqwidget.cpp" line="253"/>
+        <location filename="../seqwidget.cpp" line="314"/>
+        <location filename="../seqwidget.cpp" line="333"/>
         <source>MIDI &amp;Learn</source>
         <translation>&amp;Učení se MIDI</translation>
     </message>
@@ -1088,66 +1088,106 @@ Uložit změny?</translation>
         <translation>Zrušit &amp;učení se MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="138"/>
-        <location filename="../seqwidget.cpp" line="222"/>
-        <location filename="../seqwidget.cpp" line="283"/>
-        <location filename="../seqwidget.cpp" line="302"/>
+        <location filename="../seqwidget.cpp" line="92"/>
+        <source>&amp;Note Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="96"/>
+        <source>Stop output when Note is released</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="104"/>
+        <source>&amp;Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="108"/>
+        <source>Restart sequence when a new note is received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="110"/>
+        <source>&amp;Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="114"/>
+        <source>Retrigger sequence when a new note is received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="116"/>
+        <source>&amp;Loop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="120"/>
+        <source>Play sequence as loop instead of a single run</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="174"/>
+        <location filename="../seqwidget.cpp" line="258"/>
+        <location filename="../seqwidget.cpp" line="319"/>
+        <location filename="../seqwidget.cpp" line="338"/>
         <source>MIDI &amp;Forget</source>
         <translation>&amp;Zapomenutí nastavení MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="185"/>
+        <location filename="../seqwidget.cpp" line="221"/>
         <source>Sequence</source>
         <translation>Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="196"/>
+        <location filename="../seqwidget.cpp" line="232"/>
         <source>&amp;Sequence</source>
         <translation>&amp;Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="202"/>
+        <location filename="../seqwidget.cpp" line="238"/>
         <source>Preset Number</source>
         <translation>Číslo přednastavení</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="207"/>
-        <location filename="../seqwidget.cpp" line="208"/>
+        <location filename="../seqwidget.cpp" line="243"/>
+        <location filename="../seqwidget.cpp" line="244"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Nahrát</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="209"/>
+        <location filename="../seqwidget.cpp" line="245"/>
         <source>Record step by step</source>
         <translation>Příchozí noty nahrávat krok za krokem</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="239"/>
+        <location filename="../seqwidget.cpp" line="275"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Rozlišení (not za dobu): Počet not zahraných za čtvrťový takt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="251"/>
+        <location filename="../seqwidget.cpp" line="287"/>
         <source>Length of Sequence in beats</source>
         <translation>Délka sekvence ve čtvrťových taktech</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="258"/>
+        <location filename="../seqwidget.cpp" line="294"/>
         <source>C&amp;opy to new wave</source>
         <translation>&amp;Kopírovat do nové vlny</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="272"/>
+        <location filename="../seqwidget.cpp" line="308"/>
         <source>Veloc&amp;ity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="923"/>
+        <location filename="../seqwidget.cpp" line="983"/>
         <source>Delete &quot;%1&quot;?</source>
         <translation>Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="942"/>
+        <location filename="../seqwidget.cpp" line="1002"/>
         <source>New Name</source>
         <translation>Nový název</translation>
     </message>
@@ -1160,12 +1200,12 @@ Uložit změny?</translation>
         <translation type="obsolete">An&amp;schlag</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="292"/>
+        <location filename="../seqwidget.cpp" line="328"/>
         <source>N&amp;ote Length</source>
         <translation>Délka n&amp;oty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="92"/>
+        <location filename="../seqwidget.cpp" line="98"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
@@ -1200,12 +1240,12 @@ Uložit změny?</translation>
         <translation>&amp;Nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="96"/>
+        <location filename="../seqwidget.cpp" line="102"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>Nastavit rychlost sekvence na rychlost příchozích not</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="101"/>
+        <location filename="../seqwidget.cpp" line="129"/>
         <source>&amp;Channel</source>
         <translation>&amp;Каnál</translation>
     </message>
@@ -1214,7 +1254,7 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Notenlänge</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="310"/>
+        <location filename="../seqwidget.cpp" line="346"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Převést</translation>
     </message>
@@ -1227,12 +1267,12 @@ Uložit změny?</translation>
         <translation type="obsolete">Nummer des gesendeten MIDI Controllers</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="146"/>
+        <location filename="../seqwidget.cpp" line="182"/>
         <source>&amp;Port</source>
         <translation>&amp;Přípojka</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="153"/>
+        <location filename="../seqwidget.cpp" line="189"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Kanál</translation>
     </message>
@@ -1241,7 +1281,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Welle</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="189"/>
+        <location filename="../seqwidget.cpp" line="225"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Pravé tlačítko myši: ztlumení jednotlivých bodů, levé tlačítko myši: kreslení tvaru vlny</translation>
     </message>
@@ -1262,7 +1302,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Frequenz (Zyklen pro beat): Anzahl der erzeugten Wellenzyklen pro Vierteltakt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="229"/>
+        <location filename="../seqwidget.cpp" line="265"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Rozlišení</translation>
     </message>
@@ -1271,7 +1311,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Auflösung (Signale/beat): Anzahl der pro Vierteltakt erzeugten MIDI Signale</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="244"/>
+        <location filename="../seqwidget.cpp" line="280"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
@@ -1308,7 +1348,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Rechteck</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="738"/>
+        <location filename="../seqwidget.cpp" line="774"/>
         <source>Custom</source>
         <translation>Vlastní</translation>
     </message>
