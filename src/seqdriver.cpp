@@ -95,7 +95,8 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 
     resetTicks();
 
-    gotKbdTrig = false;
+    gotArpKbdTrig = false;
+    gotSeqKbdTrig = false;
     threadAbort = false;
     start(Priority(6));
 }
@@ -264,7 +265,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                     }
                 }
                 nextLfoTick[l1] += frame_nticks;
-                /** round-up to current resolution */
+                /** round-up to current resolution (quantize) */
                 nextLfoTick[l1]/= frame_nticks;
                 nextLfoTick[l1]*= frame_nticks;
             }
@@ -280,9 +281,9 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinSeqTick) && (midiSeqList->count())) {
         for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-            if ((gotKbdTrig && (inEv.data == 2) && midiSeqList->at(l1)->wantTrigByKbd())
-                    || (!gotKbdTrig && (inEv.data == 0))) {
-                gotKbdTrig = false;
+            if ((gotSeqKbdTrig && (inEv.data == 2) && midiSeqList->at(l1)->wantTrigByKbd())
+                    || (!gotSeqKbdTrig && (inEv.data == 0))) {
+                gotSeqKbdTrig = false;
                 if ((tick + 8) >= nextSeqTick[l1]) {
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeqList->at(l1)->vel;
@@ -299,7 +300,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                         }
                     }
                     nextSeqTick[l1]+=frame_nticks;
-                    if (!midiSeqList->at(l1)->wantTrigByKbd()) {
+                    if (!midiSeqList->at(l1)->trigByKbd) {
                         /** round-up to current resolution (quantize) */
                         nextSeqTick[l1]/=frame_nticks;
                         nextSeqTick[l1]*=frame_nticks;
@@ -317,9 +318,9 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     //Arp Note queueing
     if ((tick + 8) >= nextMinArpTick) {
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
-            if ((gotKbdTrig && (inEv.data == 2) && midiArpList->at(l1)->wantTrigByKbd())
-                    || (!gotKbdTrig && (inEv.data == 0))) {
-                gotKbdTrig = false;
+            if ((gotArpKbdTrig && (inEv.data == 2) && midiArpList->at(l1)->wantTrigByKbd())
+                    || (!gotArpKbdTrig && (inEv.data == 0))) {
+                gotArpKbdTrig = false;
                 if (tick + schedDelayTicks >= nextArpTick[l1]) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArpList->at(l1)->channelOut;
@@ -394,25 +395,23 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
         for (l1 = 0; l1 < midiSeqList->count(); l1++) {
             if (midiSeqList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
-                if (inEv.value > 0) {
 
-                    get_time();
-                    tick = deltaToTick(aTimeToDelta(&tmptime));
-                    midiSeqList->at(l1)->handleNoteOn(inEv.data, inEv.value, tick);
+                get_time();
+                tick = deltaToTick(aTimeToDelta(&tmptime));
+                midiSeqList->at(l1)->handleNote(inEv.data, inEv.value, tick);
 
-                    if (midiSeqList->at(l1)->wantTrigByKbd()) {
-                        nextMinSeqTick = tick;
-                        nextSeqTick[l1] = nextMinSeqTick + schedDelayTicks;
-                        gotKbdTrig = true;
-                        requestEchoAt(nextMinSeqTick, 2);
-                    }
+                if (inEv.value && midiSeqList->at(l1)->wantTrigByKbd()) {
+                    nextMinSeqTick = tick;
+                    nextSeqTick[l1] = nextMinSeqTick + schedDelayTicks;
+                    gotSeqKbdTrig = true;
+                    requestEchoAt(nextMinSeqTick, 2);
                 }
             }
         }
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             if (midiArpList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
-                if (inEv.value > 0) {
+                if (inEv.value) {
 
                     get_time();
                     tick = deltaToTick(aTimeToDelta(&tmptime));
@@ -421,7 +420,7 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
                     if (midiArpList->at(l1)->wantTrigByKbd()) {
                         nextMinArpTick = tick;
                         nextArpTick[l1] = nextMinArpTick + schedDelayTicks;
-                        gotKbdTrig = true;
+                        gotArpKbdTrig = true;
                         requestEchoAt(nextMinArpTick, 2);
                     }
                 }

@@ -60,7 +60,8 @@ class SeqDriver : public QThread {
         bool modified;
         bool midi_controllable;
         bool threadAbort;
-        bool gotKbdTrig;
+        bool gotArpKbdTrig;
+        bool gotSeqKbdTrig;
         int tick, jack_offset_tick, schedDelayTicks;
         int lastSchedTick;
         int nextLfoTick[20], nextMinLfoTick;

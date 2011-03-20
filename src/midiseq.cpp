@@ -29,11 +29,16 @@
 MidiSeq::MidiSeq()
 {
     enableNoteIn = true;
+    enableNoteOff = false;
     enableVelIn = true;
     recordMode = false;
     trigByKbd = false;
     restartByKbd = false;
+    enableLoop = false;
     currentRecStep = 0;
+    seqFinished = false;
+    noteCount = 0;
+
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
@@ -75,27 +80,39 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
 
     if (inEv.channel != chIn) return(false);
 
-    if ((inEv.type == EV_NOTEON) && (inEv.value > 0)) {
-        if (!(enableNoteIn)) return(false);
+    if ((inEv.type == EV_NOTEON)) {
+        if (!enableNoteIn) return(false);
         if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
     }
     return(true);
 }
 
-void MidiSeq::handleNoteOn(int note, int velocity, int tick)
+void MidiSeq::handleNote(int note, int velocity, int tick)
 {
     if (recordMode) recordNote(note);
+
     else {
-        if (restartByKbd) setCurrentIndex(0);
-        if (enableNoteIn) updateTranspose(note - 60);
-        if (enableVelIn) updateVelocity(velocity);
+        if (velocity) {
+            /**This is a NOTE ON event*/
+            seqFinished = false;
+            updateTranspose(note - 60);
+            if (restartByKbd && !noteCount) currentIndex = 0;
+            if (enableVelIn) updateVelocity(velocity);
+            noteCount++;
+        }
+        else {
+            /**This is a NOTE OFF event*/
+            if (enableNoteOff && (noteCount == 1)) seqFinished = true;
+            if (noteCount) noteCount--;
+        }
     }
-    emit noteEvent(note, velocity);
+
+    if (velocity) emit noteEvent(note, velocity);
 }
 
 bool MidiSeq::wantTrigByKbd()
 {
-    bool on = (trigByKbd);
+    bool on = (trigByKbd && (noteCount == 1));
     return(on);
 }
 
@@ -107,6 +124,8 @@ void MidiSeq::getNextNote(Sample *p_sample)
     emit nextStep(currentIndex);
     currentIndex++;
     currentIndex %= (size * res);
+    if (!enableLoop && !currentIndex) seqFinished = true;
+    if (seqFinished) sample.muted = true;
     *p_sample = sample;
 }
 
@@ -260,4 +279,8 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
 void MidiSeq::setCurrentIndex(int ix)
 {
     currentIndex=ix;
+    if (!ix) {
+        seqFinished = false;
+        noteCount = 0;
+    }
 }

@@ -67,9 +67,9 @@ class MidiSeq : public QObject  {
     double queueTempo;
     int lastMouseLoc;
     int currentIndex;
-    bool restartByKbd;
-    bool trigByKbd;
+    int noteCount;
     bool recordMode;
+    bool seqFinished;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -83,10 +83,14 @@ class MidiSeq : public QObject  {
     int clip(int value, int min, int max, bool *outOfRange);
 
   public:
-    int chIn;       // Channel of input events
-    bool enableNoteIn; // Index input/output (for Controller events)
-    bool enableVelIn; // Parameter that is mapped, [0] low, [1] high boundary
-    int portOut;    // Output port (ALSA Sequencer)
+    int chIn;           /**< Channel of input events */
+    bool enableNoteIn;
+    bool enableNoteOff;
+    bool enableVelIn;
+    bool restartByKbd;
+    bool trigByKbd;
+    bool enableLoop;
+    int portOut;        /**< Output port index */
     int channelOut;
     bool isMuted;
     int vel, transp, notelength;
@@ -129,7 +133,7 @@ class MidiSeq : public QObject  {
  * @param velocity The note velocity
  * @param tick The time the note was received in internal ticks
  */
-    void handleNoteOn(int note, int velocity, int tick);
+    void handleNote(int note, int velocity, int tick);
 /*! @brief This function sets the (controller) value of one point of the
  * MidiSeq::customWave array. It is used for handling drawing functionality.
  *
