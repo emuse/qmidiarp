@@ -136,7 +136,11 @@ class SeqWidget : public QWidget
     QStringList waveForms;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;
+    QCheckBox *enableNoteOff;
     QCheckBox *enableVelIn;
+    QCheckBox *enableRestartByKbd;
+    QCheckBox *enableTrigByKbd;
+    QCheckBox *enableLoop;
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
 
@@ -279,6 +283,10 @@ class SeqWidget : public QWidget
     void updateChIn(int value);
     void updateEnableNoteIn(bool on);
     void updateEnableVelIn(bool on);
+    void updateEnableNoteOff(bool on);
+    void updateEnableRestartByKbd(bool on);
+    void updateEnableTrigByKbd(bool on);
+    void updateEnableLoop(bool on);
     void setRecord(bool on);
 /*!
 * @brief Slot currently not in use.
