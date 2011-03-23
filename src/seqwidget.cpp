@@ -411,8 +411,16 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("input");
             xml.writeTextElement("enableNote", QString::number(
                 midiWorker->enableNoteIn));
+            xml.writeTextElement("enableNote", QString::number(
+                midiWorker->enableNoteOff));
             xml.writeTextElement("enableVelocity", QString::number(
                 midiWorker->enableVelIn));
+            xml.writeTextElement("restartByKbd", QString::number(
+                midiWorker->restartByKbd));
+            xml.writeTextElement("trigByKbd", QString::number(
+                midiWorker->trigByKbd));
+            xml.writeTextElement("enableLoop", QString::number(
+                midiWorker->enableLoop));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
         xml.writeEndElement();
@@ -533,8 +541,16 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "enableNote")
                     enableNoteIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableNoteOff")
+                    enableNoteOff->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "enableVelocity")
                     enableVelIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "restartByKbd")
+                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigByKbd")
+                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableLoop")
+                    enableLoop->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel")
                     chIn->setValue(xml.readElementText().toInt() + 1);
                 else skipXmlElement(xml);
@@ -580,7 +596,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 else if (xml.name() == "transp") {
                     tmp = xml.readElementText().toInt();
                     transpose->setValue(tmp);
-                    updateVelocity(tmp);
+                    updateTranspose(tmp);
                 }
                 else skipXmlElement(xml);
             }
