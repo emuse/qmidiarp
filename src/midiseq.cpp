@@ -81,7 +81,6 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
     if (inEv.channel != chIn) return(false);
 
     if ((inEv.type == EV_NOTEON)) {
-        if (!enableNoteIn) return(false);
         if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
     }
     return(true);
@@ -94,10 +93,10 @@ void MidiSeq::handleNote(int note, int velocity, int tick)
     else {
         if (velocity) {
             /**This is a NOTE ON event*/
-            seqFinished = false;
-            updateTranspose(note - 60);
+            if (enableNoteIn) updateTranspose(note - 60);
             if (restartByKbd && !noteCount) currentIndex = 0;
             if (enableVelIn) updateVelocity(velocity);
+            seqFinished = false;
             noteCount++;
         }
         else {
