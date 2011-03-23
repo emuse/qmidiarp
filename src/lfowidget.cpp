@@ -484,46 +484,6 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
     xml.writeEndElement();
 }
 
-void LfoWidget::writeDataText(QTextStream& arpText)
-{
-    int l1 = 0;
-    arpText << midiWorker->channelOut << ' '
-        << midiWorker->portOut << ' '
-        << midiWorker->ccnumber << '\n';
-    arpText << freqBox->currentIndex() << ' '
-        << resBox->currentIndex() << ' '
-        << sizeBox->currentIndex() << ' '
-        << midiWorker->amp << ' '
-        << midiWorker->offs << '\n';
-    arpText << "MIDICC" << endl;
-    for (int l1 = 0; l1 < ccList.count(); l1++) {
-        arpText << ccList.at(l1).ID << ' '
-                << ccList.at(l1).ccnumber << ' '
-                << ccList.at(l1).channel << ' '
-                << ccList.at(l1).min << ' '
-                << ccList.at(l1).max << endl;
-    }
-    arpText << "EOCC" << endl;
-
-    arpText << waveFormBox->currentIndex() << '\n';
-    // Write Mute Mask
-    while (l1 < midiWorker->muteMask.count()) {
-        arpText << midiWorker->muteMask.at(l1) << ' ';
-        l1++;
-        if (!(l1 % 32)) arpText << "\n";
-    }
-    arpText << "EOM\n"; // End Of Mute
-    // Write Custom Waveform
-    l1 = 0;
-    while (l1 < midiWorker->customWave.count()) {
-        arpText << midiWorker->customWave.at(l1).value << ' ';
-        l1++;
-        if (!(l1 % 16)) arpText << "\n";
-    }
-    arpText << "EOW\n"; // End Of Wave
-    modified = false;
-}
-
 void LfoWidget::readData(QXmlStreamReader& xml)
 {
     int controlID, ccnumber, channel, min, max;

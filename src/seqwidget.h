@@ -183,14 +183,6 @@ class SeqWidget : public QWidget
 *
 * @param arpText QTextStream to write to
 */
-    void writeDataText(QTextStream& arpText);
-
-/*!
-* @brief Settor for the SeqWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
     void setChannelOut(int value);
 /*!
 * @brief Settor for the SeqWidget::portOut spinbox setting the output

@@ -933,63 +933,6 @@ bool MainWindow::saveFile()
     return true;
 }
 
-bool MainWindow::saveTextFile()
-{
-    int l1;
-    int ns = 0;
-    int nl = 0;
-    int na = 0;
-
-    QString nameTest;
-    QFile f(filename);
-
-    if (!f.open(QIODevice::WriteOnly)) {
-        QMessageBox::warning(this, APP_NAME,
-                tr("Could not write to file '%1'.").arg(filename));
-        return false;
-    }
-
-
-    QTextStream saveText(&f);
-    saveText << "Tempo\n";
-    saveText << tempoSpin->value() << '\n';
-    saveText << "MIDI Control\n";
-    saveText << (int)passWidget->cbuttonCheck->isChecked() << '\n';
-    saveText << "MIDI Clock\n";
-    saveText << (int)arpData->seqDriver->use_midiclock << '\n';
-    saveText << (int)arpData->seqDriver->forwardUnmatched;
-    saveText << ' ' << arpData->seqDriver->portUnmatched << '\n';
-
-    saveText << arpData->grooveTick;
-    saveText << ' ' << arpData->grooveVelocity;
-    saveText << ' ' << arpData->grooveLength << '\n';
-
-    for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
-
-        nameTest = arpData->moduleWindow(l1)->objectName();
-
-        if (nameTest.startsWith('S')) {
-            saveText << qPrintable(arpData->seqWidget(ns)->name) << '\n';
-            arpData->seqWidget(ns)->writeDataText(saveText);
-            ns++;
-        }
-        if (nameTest.startsWith('L')) {
-            saveText << qPrintable(arpData->lfoWidget(nl)->name) << '\n';
-            arpData->lfoWidget(nl)->writeDataText(saveText);
-            nl++;
-        }
-        if (nameTest.startsWith('A')) {
-            saveText << qPrintable(arpData->arpWidget(na)->name) << '\n';
-            arpData->arpWidget(na)->writeDataText(saveText);
-            na++;
-        }
-    }
-    saveText << "GUI Settings\n";
-    saveText << saveState().toHex();
-    arpData->setModified(false);
-    return true;
-}
-
 void MainWindow::fileSaveAs()
 {
     saveFileAs();

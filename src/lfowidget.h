@@ -183,15 +183,6 @@ class LfoWidget : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function is obsolete.
-* It writes to an old QMidiArp .qma text file passed as a stream
-* by MainWindow.
-*
-* @param arpText QTextStream to write to
-*/
-    void writeDataText(QTextStream& arpText);
-
-/*!
 * @brief Settor for the LfoWidget::channelOut spinbox setting the output
 * channel of this module.
 * @param value Number of the output channel to send data to

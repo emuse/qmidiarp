@@ -159,14 +159,6 @@ class ArpWidget : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function is obsolete.
-* It writes to an old QMidiArp .qma text file passed as a stream
-* by MainWindow.
-*
-* @param arpText QTextStream to write to
-*/
-    void writeDataText(QTextStream& arpText);
-/*!
 * @brief This function returns the MidiArp instance associated with this GUI
 * Widget.
 * @return MidiArp instance associated with this GUI

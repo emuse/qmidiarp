@@ -102,13 +102,6 @@ class MainWindow : public QMainWindow
     bool isSave();
     void updateWindowTitle();
 /*!
-* @brief This function is obsolete.
-* It opens and writes an old QMidiArp .qma text file with name
-* MainWindow::filename.
-* @return True if write was successful
-*/
-    bool saveTextFile();
-/*!
 * @brief This function opens a QMidiArp XML session file named
 * MainWindow::filename for write using QXmlStreamReader.
 *
