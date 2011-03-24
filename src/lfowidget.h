@@ -1,14 +1,6 @@
 /*!
  * @file lfowidget.h
- * @brief GUI class associated with and controlling a MidiLfo worker
- *
- * It controls the MidiLfo LFO and
- * is created alongwith each MidiLfo and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a LfoWidget::MidiCCList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates an LfoScreen and interacts with it.
+ * @brief Member definitions for the LfoWidget GUI class.
  *
  * @section LICENSE
  *
@@ -190,15 +182,6 @@ class LfoWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
-/*!
-* @brief This function is obsolete.
-* It writes to an old QMidiArp .qma text file passed as a stream
-* by MainWindow.
-*
-* @param arpText QTextStream to write to
-*/
-    void writeDataText(QTextStream& arpText);
-
 /*!
 * @brief Settor for the LfoWidget::channelOut spinbox setting the output
 * channel of this module.

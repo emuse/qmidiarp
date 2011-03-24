@@ -1,26 +1,6 @@
 /*!
  * @file midiarp.h
- * @brief MIDI worker class for the Arpeggiator Module. Implements the
- * functions providing note arpeggiation as a QThread.
- *
- * The parameters of MidiArp are controlled by the ArpWidget class.
- * A pointer to MidiArp is passed to the SeqDriver thread, which calls
- * the MidiArp::prepareCurrentNote member as a function of the position of
- * the ALSA queue. MidiArp will then call its
- * internal MidiArp::getNote function which produces an array of notes
- * stored in its internal output buffer. The notes in the array depend
- * on the active MidiArp::pattern, envelope, random and groove settings.
- * The note events consist of timing information
- * (tick and length), note values and velocity values. MidiArp::getNote
- * also advances the pattern index and emits the MidiArp::nextStep signal
- * to update the cursor position in the graphical ArpScreen display part
- * of ArpWidget. SeqDriver then
- * accesses this output buffer and sends it to the ALSA queue. SeqDriver
- * also calls MidiArp::handleNoteOn and MidiArp::handleNoteOff. These members
- * manage the arpeggiator input note buffer
- * also part of this class. Notes received on the ALSA input port will
- * therefore be added or removed from the buffer as SeqDriver transfers
- * them to this class.
+ * @brief Member definitions for the MidiArp MIDI worker class.
  *
  * @section LICENSE
  *

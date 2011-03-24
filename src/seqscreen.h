@@ -49,7 +49,7 @@ class SeqScreen : public QWidget
     void updateScreen(int currentIndex);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
-    void setRecord(bool on);
+    void setRecordMode(bool on);
     void setCurrentRecStep(int currentRecStep);
     void setMuted(bool on);
 };

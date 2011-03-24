@@ -1,14 +1,6 @@
 /*!
  * @file arpwidget.cpp
- * @brief GUI class associated with and controlling a MidiArp worker
- *
- * It controls the MidiArp arpeggiator and
- * is created alongwith each MidiArp and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a ArpWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a ArpScreen and interacts with it.
+ * @brief Implements the ArpWidget GUI class.
  *
  * @section LICENSE
  *
@@ -531,32 +523,6 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         xml.writeEndElement();
 
     xml.writeEndElement();
-}
-
-void ArpWidget::writeDataText(QTextStream& arpText)
-{
-    arpText << midiWorker->chIn << ' '
-        << midiWorker->repeatPatternThroughChord << '\n';
-    arpText << midiWorker->indexIn[0] << ' ' << midiWorker->indexIn[1] << '\n';
-    arpText << midiWorker->rangeIn[0] << ' ' << midiWorker->rangeIn[1] << '\n';
-    arpText << midiWorker->channelOut << ' ' << midiWorker->portOut << '\n';
-    arpText << midiWorker->randomTickAmp << ' '
-        << midiWorker->randomVelocityAmp << ' '
-        << midiWorker->randomLengthAmp << '\n';
-    arpText << "MIDICC" << endl;
-    for (int l1 = 0; l1 < ccList.count(); l1++) {
-        arpText << ccList.at(l1).ID << ' '
-                << ccList.at(l1).ccnumber << ' '
-                << ccList.at(l1).channel << ' '
-                << ccList.at(l1).min << ' '
-                << ccList.at(l1).max << endl;
-    }
-    arpText << "EOCC" << endl;
-    arpText << "Envelope" << '\n';
-    arpText << attackTime->value() << ' ' << releaseTime->value() << '\n';
-    arpText << midiWorker->pattern << '\n';
-    arpText << "EOP\n"; // End Of Pattern
-    modified = false;
 }
 
 void ArpWidget::readData(QXmlStreamReader& xml)

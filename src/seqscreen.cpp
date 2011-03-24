@@ -263,7 +263,7 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
                 (h - 2 * SEQSCREEN_VMARGIN), event->buttons());
 }
 
-void SeqScreen::setRecord(bool on)
+void SeqScreen::setRecordMode(bool on)
 {
     recordMode = on;
 }

@@ -1,14 +1,6 @@
 /*!
  * @file seqwidget.h
- * @brief GUI class associated with and controlling a MidiSeq worker
- *
- * It controls the MidiSeq sequencer and
- * is created alongwith each MidiSeq and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a SeqWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a SeqScreen and interacts with it.
+ * @brief Member definitions for the SeqWidget GUI class.
  *
  * @section LICENSE
  *
@@ -144,7 +136,11 @@ class SeqWidget : public QWidget
     QStringList waveForms;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;
+    QCheckBox *enableNoteOff;
     QCheckBox *enableVelIn;
+    QCheckBox *enableRestartByKbd;
+    QCheckBox *enableTrigByKbd;
+    QCheckBox *enableLoop;
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
 
@@ -186,14 +182,6 @@ class SeqWidget : public QWidget
 * by MainWindow.
 *
 * @param arpText QTextStream to write to
-*/
-    void writeDataText(QTextStream& arpText);
-
-/*!
-* @brief Settor for the SeqWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
 */
     void setChannelOut(int value);
 /*!
@@ -287,6 +275,10 @@ class SeqWidget : public QWidget
     void updateChIn(int value);
     void updateEnableNoteIn(bool on);
     void updateEnableVelIn(bool on);
+    void updateEnableNoteOff(bool on);
+    void updateEnableRestartByKbd(bool on);
+    void updateEnableTrigByKbd(bool on);
+    void updateEnableLoop(bool on);
     void setRecord(bool on);
 /*!
 * @brief Slot currently not in use.

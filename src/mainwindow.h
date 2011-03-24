@@ -1,14 +1,7 @@
 /*!
  * @file mainwindow.h
- * @brief Top-level UI class. Instantiates ArpData.
+ * @brief Member definitions for the MainWindow top-level UI class.
  *
- *      The MainWindow class is main the ui that holds
- *      functions to manage global
- *      QMidiArp parameters and modules and to load and save parameters to
- *      disk. The constructor sets up all main window elements including
- *      toolbars and menus. It instantiates the LogWidget, PassWidget,
- *      MidiCCTable and their DockWidget windows. It also instantiates the
- *      ArpData widget holding the lists of modules.
  * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
@@ -108,13 +101,6 @@ class MainWindow : public QMainWindow
  */
     bool isSave();
     void updateWindowTitle();
-/*!
-* @brief This function is obsolete.
-* It opens and writes an old QMidiArp .qma text file with name
-* MainWindow::filename.
-* @return True if write was successful
-*/
-    bool saveTextFile();
 /*!
 * @brief This function opens a QMidiArp XML session file named
 * MainWindow::filename for write using QXmlStreamReader.

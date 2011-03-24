@@ -1,19 +1,6 @@
 /*!
  * @file midiseq.cpp
- * @brief MIDI worker class for the Seq Module. Implements a monophonic
- * step sequencer as a QObject.
- *
- * The parameters of MidiSeq are controlled by the SeqWidget class.
- * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
- * the MidiSeq::getNextNote member as a function of the position of
- * the ALSA queue. MidiSeq will return a note from its internal
- * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
- * MidiSeq::getData function at each modification done via
- * the SeqWidget. It is modified by drawing a sequence of notes on the
- * SeqWidget display or by recording incoming notes step by step. In all
- * cases the sequence has resolution, velocity, note length and
- * size attributes and single points can be tagged as muted, which will
- * avoid data output at the corresponding position.
+ * @brief Implements the MidiSeq MIDI worker class for the Seq Module.
  *
  * @section LICENSE
  *
@@ -42,8 +29,16 @@
 MidiSeq::MidiSeq()
 {
     enableNoteIn = true;
+    enableNoteOff = false;
     enableVelIn = true;
+    recordMode = false;
+    trigByKbd = false;
+    restartByKbd = false;
+    enableLoop = false;
     currentRecStep = 0;
+    seqFinished = false;
+    noteCount = 0;
+
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
@@ -85,12 +80,41 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
 
     if (inEv.channel != chIn) return(false);
 
-    if ((inEv.type == EV_NOTEON) && (inEv.value > 0)) {
-        if (!(enableNoteIn)) return(false);
+    if ((inEv.type == EV_NOTEON)) {
         if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
     }
     return(true);
 }
+
+void MidiSeq::handleNote(int note, int velocity, int tick)
+{
+    if (recordMode) recordNote(note);
+
+    else {
+        if (velocity) {
+            /**This is a NOTE ON event*/
+            if (enableNoteIn) updateTranspose(note - 60);
+            if (restartByKbd && !noteCount) currentIndex = 0;
+            if (enableVelIn) updateVelocity(velocity);
+            seqFinished = false;
+            noteCount++;
+        }
+        else {
+            /**This is a NOTE OFF event*/
+            if (enableNoteOff && (noteCount == 1)) seqFinished = true;
+            if (noteCount) noteCount--;
+        }
+    }
+
+    if (velocity) emit noteEvent(note, velocity);
+}
+
+bool MidiSeq::wantTrigByKbd()
+{
+    bool on = (trigByKbd && (noteCount == 1));
+    return(on);
+}
+
 
 void MidiSeq::getNextNote(Sample *p_sample)
 {
@@ -99,6 +123,8 @@ void MidiSeq::getNextNote(Sample *p_sample)
     emit nextStep(currentIndex);
     currentIndex++;
     currentIndex %= (size * res);
+    if (!enableLoop && !currentIndex) seqFinished = true;
+    if (seqFinished) sample.muted = true;
     *p_sample = sample;
 }
 
@@ -175,6 +201,11 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
     setRecordedNote(mouseY * 48 + 36);
 }
 
+void MidiSeq::setRecordMode(int on)
+{
+    recordMode = on;
+}
+
 void MidiSeq::setRecordedNote(int note)
 {
     Sample sample;
@@ -247,4 +278,8 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
 void MidiSeq::setCurrentIndex(int ix)
 {
     currentIndex=ix;
+    if (!ix) {
+        seqFinished = false;
+        noteCount = 0;
+    }
 }

@@ -1,14 +1,6 @@
 /*!
  * @file seqwidget.cpp
- * @brief GUI class associated with and controlling a MidiSeq worker
- *
- * It controls the MidiSeq sequencer and
- * is created alongwith each MidiSeq and embedded in a DockWidget on
- * MainWindow level. It can read its parameter set from an XML stream
- * by calling its readData member. It manages a SeqWidget::ccList
- * for each
- * instance for MIDI controllers attributed through the MIDILearn
- * context menu. It instantiates a SeqScreen and interacts with it.
+ * @brief Implements the SeqWidget GUI class.
  *
  * @section LICENSE
  *
@@ -97,14 +89,42 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     enableNoteInLabel->setBuddy(enableNoteIn);
     enableNoteIn->setToolTip(tr("Transpose the sequence following incoming notes"));
 
+    QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"),inBox);
+    enableNoteOff = new QCheckBox(this);
+    connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteOff(bool)));
+    enableNoteOffLabel->setBuddy(enableNoteOff);
+    enableNoteOff->setToolTip(tr("Stop output when Note is released"));
+
     QLabel *enableVelInLabel = new QLabel(tr("&Velocity"),inBox);
     enableVelIn = new QCheckBox(this);
     connect(enableVelIn, SIGNAL(toggled(bool)), this, SLOT(updateEnableVelIn(bool)));
     enableVelInLabel->setBuddy(enableVelIn);
     enableVelIn->setToolTip(tr("Set sequence velocity to that of incoming notes"));
 
+    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
+    enableRestartByKbd = new QCheckBox(this);
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
+    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
+    enableRestartByKbd->setToolTip(tr("Restart sequence when a new note is received"));
+
+    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
+    enableTrigByKbd = new QCheckBox(this);
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
+    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
+    enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
+
+    QLabel *enableLoopLabel = new QLabel(tr("&Loop"),inBox);
+    enableLoop = new QCheckBox(this);
+    connect(enableLoop, SIGNAL(toggled(bool)), this, SLOT(updateEnableLoop(bool)));
+    enableLoopLabel->setBuddy(enableLoop);
+    enableLoop->setToolTip(tr("Play sequence as loop instead of a single run"));
+
     enableNoteIn->setChecked(true);
+    enableNoteOff->setChecked(false);
     enableVelIn->setChecked(true);
+    enableRestartByKbd->setChecked(false);
+    enableTrigByKbd->setChecked(false);
+    enableLoop->setChecked(true);
 
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QSpinBox(inBox);
@@ -117,10 +137,18 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     inBoxLayout->addWidget(enableNoteInLabel, 0, 0);
     inBoxLayout->addWidget(enableNoteIn, 0, 1);
-    inBoxLayout->addWidget(enableVelInLabel, 1, 0);
-    inBoxLayout->addWidget(enableVelIn, 1, 1);
-    inBoxLayout->addWidget(chInLabel, 2, 0);
-    inBoxLayout->addWidget(chIn, 2, 1);
+    inBoxLayout->addWidget(enableNoteOffLabel, 1, 0);
+    inBoxLayout->addWidget(enableNoteOff, 1, 1);
+    inBoxLayout->addWidget(enableVelInLabel, 2, 0);
+    inBoxLayout->addWidget(enableVelIn, 2, 1);
+    inBoxLayout->addWidget(enableRestartByKbdLabel, 3, 0);
+    inBoxLayout->addWidget(enableRestartByKbd, 3, 1);
+    inBoxLayout->addWidget(enableTrigByKbdLabel, 4, 0);
+    inBoxLayout->addWidget(enableTrigByKbd, 4, 1);
+    inBoxLayout->addWidget(enableLoopLabel, 5, 0);
+    inBoxLayout->addWidget(enableLoop, 5, 1);
+    inBoxLayout->addWidget(chInLabel, 6, 0);
+    inBoxLayout->addWidget(chIn, 6, 1);
     if (compactStyle) {
         inBoxLayout->setSpacing(1);
         inBoxLayout->setMargin(2);
@@ -279,7 +307,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
     velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    connect(velocity, SIGNAL(valueChanged(int)), this,
+    connect(velocity, SIGNAL(sliderMoved(int)), this,
             SLOT(updateVelocity(int)));
 
 
@@ -316,7 +344,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
-    connect(transpose, SIGNAL(valueChanged(int)), this,
+    connect(transpose, SIGNAL(sliderMoved(int)), this,
             SLOT(updateTranspose(int)));
 
 
@@ -383,8 +411,16 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("input");
             xml.writeTextElement("enableNote", QString::number(
                 midiWorker->enableNoteIn));
+            xml.writeTextElement("enableNote", QString::number(
+                midiWorker->enableNoteOff));
             xml.writeTextElement("enableVelocity", QString::number(
                 midiWorker->enableVelIn));
+            xml.writeTextElement("restartByKbd", QString::number(
+                midiWorker->restartByKbd));
+            xml.writeTextElement("trigByKbd", QString::number(
+                midiWorker->trigByKbd));
+            xml.writeTextElement("enableLoop", QString::number(
+                midiWorker->enableLoop));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
         xml.writeEndElement();
@@ -444,48 +480,6 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
     xml.writeEndElement();
 }
 
-void SeqWidget::writeDataText(QTextStream& arpText)
-{
-    int l1 = 0;
-    arpText << midiWorker->enableNoteIn << ' '
-        << midiWorker->enableVelIn << ' '
-        << midiWorker->chIn << '\n';
-    arpText << midiWorker->channelOut << ' '
-        << midiWorker->portOut << ' '
-        << midiWorker->notelength << '\n';
-    arpText << resBox->currentIndex() << ' '
-        << sizeBox->currentIndex() << ' '
-        << midiWorker->vel << ' '
-        << midiWorker->transp << '\n';
-    arpText << "MIDICC" << endl;
-    for (int l1 = 0; l1 < ccList.count(); l1++) {
-        arpText << ccList.at(l1).ID << ' '
-                << ccList.at(l1).ccnumber << ' '
-                << ccList.at(l1).channel << ' '
-                << ccList.at(l1).min << ' '
-                << ccList.at(l1).max << endl;
-    }
-    arpText << "EOCC" << endl;
-
-    arpText << waveFormBox->currentIndex() << '\n';
-    // Write Mute Mask
-    while (l1 < midiWorker->muteMask.count()) {
-        arpText << midiWorker->muteMask.at(l1) << ' ';
-        l1++;
-        if (!(l1 % 32)) arpText << "\n";
-    }
-    arpText << "EOM\n"; // End Of Mute
-    // Write Custom Sequence
-    l1 = 0;
-    while (l1 < midiWorker->customWave.count()) {
-        arpText << midiWorker->customWave.at(l1).value << ' ';
-        l1++;
-        if (!(l1 % 16)) arpText << "\n";
-    }
-    arpText << "EOS\n"; // End Of Wave
-    modified = false;
-}
-
 void SeqWidget::readData(QXmlStreamReader& xml)
 {
     int controlID, ccnumber, channel, min, max;
@@ -505,8 +499,16 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "enableNote")
                     enableNoteIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableNoteOff")
+                    enableNoteOff->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "enableVelocity")
                     enableVelIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "restartByKbd")
+                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigByKbd")
+                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableLoop")
+                    enableLoop->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel")
                     chIn->setValue(xml.readElementText().toInt() + 1);
                 else skipXmlElement(xml);
@@ -541,12 +543,19 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
                 }
-                else if (xml.name() == "velocity")
-                    velocity->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "noteLength")
+                else if (xml.name() == "velocity") {
+                    tmp = xml.readElementText().toInt();
+                    velocity->setValue(tmp);
+                    updateVelocity(tmp);
+                }
+                else if (xml.name() == "noteLength") {
                     notelength->setValue(xml.readElementText().toInt() / 2);
-                else if (xml.name() == "transp")
-                    transpose->setValue(xml.readElementText().toInt());
+                }
+                else if (xml.name() == "transp") {
+                    tmp = xml.readElementText().toInt();
+                    transpose->setValue(tmp);
+                    updateTranspose(tmp);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -769,9 +778,33 @@ void SeqWidget::updateEnableNoteIn(bool on)
     modified = true;
 }
 
+void SeqWidget::updateEnableNoteOff(bool on)
+{
+    midiWorker->enableNoteOff = on;
+    modified = true;
+}
+
 void SeqWidget::updateEnableVelIn(bool on)
 {
     midiWorker->enableVelIn = on;
+    modified = true;
+}
+
+void SeqWidget::updateEnableRestartByKbd(bool on)
+{
+    midiWorker->restartByKbd = on;
+    modified = true;
+}
+
+void SeqWidget::updateEnableTrigByKbd(bool on)
+{
+    midiWorker->trigByKbd = on;
+    modified = true;
+}
+
+void SeqWidget::updateEnableLoop(bool on)
+{
+    midiWorker->enableLoop = on;
     modified = true;
 }
 
@@ -792,7 +825,8 @@ void SeqWidget::updateWaveForm(int val)
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
-    screen->setRecord(on);
+    midiWorker->setRecordMode(on);
+    screen->setRecordMode(on);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateScreen(data);
 }
@@ -836,7 +870,6 @@ void SeqWidget::processNote(int note, int vel)
         if (enableVelIn->isChecked()) velocity->setValue(vel);
     }
     else {
-        midiWorker->recordNote(note);
         midiWorker->getData(&data);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
         screen->updateScreen(data);

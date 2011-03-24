@@ -95,7 +95,8 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
 
     resetTicks();
 
-    gotKbdTrig = false;
+    gotArpKbdTrig = false;
+    gotSeqKbdTrig = false;
     threadAbort = false;
     start(Priority(6));
 }
@@ -137,10 +138,10 @@ void SeqDriver::run()
             if ((inEv.type == EV_CLOCK)&& use_midiclock) {
                 midiTick++;
                 tick = midiTick*TICKS_PER_QUARTER/MIDICLK_TPQ;
-                if ((tick > nextLfoTick) && (midiLfoList->count())) {
+                if ((tick > nextMinLfoTick) && (midiLfoList->count())) {
                     fallback = true;
                 }
-                if ((tick > nextSeqTick) && (midiSeqList->count())) {
+                if ((tick > nextMinSeqTick) && (midiSeqList->count())) {
                     fallback = true;
                 }
             }
@@ -198,7 +199,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     int seqtransp;
     bool isNew;
     MidiEvent outEv;
-    int tmp_tick = 0;
+    int frame_nticks = 0;
 
     note.clear();
     velocity.clear();
@@ -230,9 +231,9 @@ void SeqDriver::handleEcho(MidiEvent inEv)
 
 
         //~ printf("       tick %d     ",tick);
-        //~ printf("nextLfoTick %d  ",nextLfoTick);
-        //~ printf("nextSeqTick %d  ",nextSeqTick);
-        //~ printf("nextArpTick %d  \n",nextArpTick);
+        //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
+        //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
+        //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
         //~ printf("midiTick %d   ",midiTick);
         //~ printf("m_ratio %f  ",m_ratio);
         //~ printf("Jack Beat %d\n", jpos.beat);
@@ -243,84 +244,84 @@ void SeqDriver::handleEcho(MidiEvent inEv)
 
     //LFO data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if (((tick + 8) >= nextLfoTick) && (midiLfoList->count())) {
-        l2 = 0;
+    if (((tick + 8) >= nextMinLfoTick) && (midiLfoList->count())) {
         for (l1 = 0; l1 < midiLfoList->count(); l1++) {
-            if ((tick + 8) >= (lastLfoTick[l1] + lfoPacketSize[l1])) {
+            if ((tick + 8) >= nextLfoTick[l1]) {
                 outEv.type = EV_CONTROLLER;
                 outEv.data = midiLfoList->at(l1)->ccnumber;
                 outEv.channel = midiLfoList->at(l1)->channelOut;
                 midiLfoList->at(l1)->getNextFrame(&lfoData);
+                frame_nticks = lfoData.last().tick;
                 outport = midiLfoList->at(l1)->portOut;
                 if (!midiLfoList->at(l1)->isMuted) {
                     l2 = 0;
                     while (lfoData.at(l2).value > -1) {
                         if (!lfoData.at(l2).muted) {
                             outEv.value = lfoData.at(l2).value;
-                            tmp_tick = lfoData.at(l2).tick + nextLfoTick;
-                            /** round-up to current resolution */
-                            tmp_tick/= lfoData.last().tick;
-                            tmp_tick*= lfoData.last().tick;
-                            schedEvent(outEv, tmp_tick, outport);
+                            schedEvent(outEv, nextLfoTick[l1] + lfoData.at(l2).tick
+                                , outport);
                         }
                         l2++;
                     }
                 }
-                lfoPacketSize[l1] = lfoData.last().tick;
-                lastLfoTick[l1] = tmp_tick;
-                if (!l1)
-                    lfoMinPacketSize = lfoPacketSize[l1];
-                else if (lfoPacketSize[l1] < lfoMinPacketSize)
-                    lfoMinPacketSize = lfoPacketSize[l1];
+                nextLfoTick[l1] += frame_nticks;
+                /** round-up to current resolution (quantize) */
+                nextLfoTick[l1]/= frame_nticks;
+                nextLfoTick[l1]*= frame_nticks;
             }
+            if (!l1)
+                nextMinLfoTick = nextLfoTick[l1];
+            else if (nextLfoTick[l1] < nextMinLfoTick)
+                nextMinLfoTick = nextLfoTick[l1];
         }
-
-        nextLfoTick += lfoMinPacketSize;
-        requestEchoAt(nextLfoTick);
+        requestEchoAt(nextMinLfoTick);
     }
 
     //Seq notes data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if (((tick + 8) >= nextSeqTick) && (midiSeqList->count())) {
-        l2 = 0;
+    if (((tick + 8) >= nextMinSeqTick) && (midiSeqList->count())) {
         for (l1 = 0; l1 < midiSeqList->count(); l1++) {
-            if ((tick + 8) >= (lastSeqTick[l1] + seqPacketSize[l1])) {
-                outEv.type = EV_NOTEON;
-                outEv.value = midiSeqList->at(l1)->vel;
-                outEv.channel = midiSeqList->at(l1)->channelOut;
-                midiSeqList->at(l1)->getNextNote(&seqSample);
-                lastSeqTick[l1]+=seqPacketSize[l1];
-                seqPacketSize[l1] = TICKS_PER_QUARTER / midiSeqList->at(l1)->res;
-                /** round-up to current resolution */
-                lastSeqTick[l1]/=seqPacketSize[l1];
-                lastSeqTick[l1]*=seqPacketSize[l1];
-                length = midiSeqList->at(l1)->notelength;
-                seqtransp = midiSeqList->at(l1)->transp;
-                outport = midiSeqList->at(l1)->portOut;
-                if (!midiSeqList->at(l1)->isMuted) {
-                    if (!seqSample.muted) {
-                        outEv.data = seqSample.value + seqtransp;
-                        schedEvent(outEv, lastSeqTick[l1], outport, length);
+            if ((gotSeqKbdTrig && (inEv.data == 2) && midiSeqList->at(l1)->wantTrigByKbd())
+                    || (!gotSeqKbdTrig && (inEv.data == 0))) {
+                gotSeqKbdTrig = false;
+                if ((tick + 8) >= nextSeqTick[l1]) {
+                    outEv.type = EV_NOTEON;
+                    outEv.value = midiSeqList->at(l1)->vel;
+                    outEv.channel = midiSeqList->at(l1)->channelOut;
+                    midiSeqList->at(l1)->getNextNote(&seqSample);
+                    frame_nticks = TICKS_PER_QUARTER / midiSeqList->at(l1)->res;
+                    length = midiSeqList->at(l1)->notelength;
+                    seqtransp = midiSeqList->at(l1)->transp;
+                    outport = midiSeqList->at(l1)->portOut;
+                    if (!midiSeqList->at(l1)->isMuted) {
+                        if (!seqSample.muted) {
+                            outEv.data = seqSample.value + seqtransp;
+                            schedEvent(outEv, nextSeqTick[l1], outport, length);
+                        }
+                    }
+                    nextSeqTick[l1]+=frame_nticks;
+                    if (!midiSeqList->at(l1)->trigByKbd) {
+                        /** round-up to current resolution (quantize) */
+                        nextSeqTick[l1]/=frame_nticks;
+                        nextSeqTick[l1]*=frame_nticks;
                     }
                 }
-                if (!l1)
-                    seqMinPacketSize = seqPacketSize[l1];
-                else if (seqPacketSize[l1] < seqMinPacketSize)
-                    seqMinPacketSize = seqPacketSize[l1];
             }
+            if (!l1)
+                nextMinSeqTick = nextSeqTick[l1];
+            else if (nextSeqTick[l1] < nextMinSeqTick)
+                nextMinSeqTick = nextSeqTick[l1];
         }
-
-        nextSeqTick += seqMinPacketSize;
-        requestEchoAt(nextSeqTick);
+        requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
-    if ((tick + 8) >= nextArpTick) {
+    if ((tick + 8) >= nextMinArpTick) {
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
-            if ((gotKbdTrig && (inEv.data == 2) && midiArpList->at(l1)->wantTrigByKbd())
-                    || (!gotKbdTrig && (inEv.data == 0))) {
-                gotKbdTrig = false;
-                if (tick + schedDelayTicks >= nextNoteTick[l1]) {
+            if ((gotArpKbdTrig && (inEv.data == 2) && midiArpList->at(l1)->wantTrigByKbd())
+                    || (!gotArpKbdTrig && (inEv.data == 0))) {
+                gotArpKbdTrig = false;
+                if (tick + schedDelayTicks >= nextArpTick[l1]) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArpList->at(l1)->channelOut;
                     midiArpList->at(l1)->newRandomValues();
@@ -343,17 +344,17 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                             }
                         }
                     }
-                    nextNoteTick[l1] = midiArpList->at(l1)->getNextNoteTick();
+                    nextArpTick[l1] = midiArpList->at(l1)->getNextNoteTick();
                 }
             }
             if (!l1)
-                nextArpTick = nextNoteTick[l1] - schedDelayTicks;
-            else if (nextNoteTick[l1] < nextArpTick + schedDelayTicks)
-                nextArpTick = nextNoteTick[l1] - schedDelayTicks;
+                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
+            else if (nextArpTick[l1] < nextMinArpTick + schedDelayTicks)
+                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
         }
 
-        if (0 > nextArpTick) nextArpTick = 0;
-        requestEchoAt(nextArpTick, 0);
+        if (0 > nextMinArpTick) nextMinArpTick = 0;
+        requestEchoAt(nextMinArpTick, 0);
     }
 }
 
@@ -394,23 +395,33 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
         for (l1 = 0; l1 < midiSeqList->count(); l1++) {
             if (midiSeqList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
-                if (inEv.value > 0) emit noteEvent(inEv.data, inEv.value);
+
+                get_time();
+                tick = deltaToTick(aTimeToDelta(&tmptime));
+                midiSeqList->at(l1)->handleNote(inEv.data, inEv.value, tick);
+
+                if (inEv.value && midiSeqList->at(l1)->wantTrigByKbd()) {
+                    nextMinSeqTick = tick;
+                    nextSeqTick[l1] = nextMinSeqTick + schedDelayTicks;
+                    gotSeqKbdTrig = true;
+                    requestEchoAt(nextMinSeqTick, 2);
+                }
             }
         }
         for (l1 = 0; l1 < midiArpList->count(); l1++) {
             if (midiArpList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
-                if (inEv.value > 0) {
+                if (inEv.value) {
 
                     get_time();
                     tick = deltaToTick(aTimeToDelta(&tmptime));
                     midiArpList->at(l1)->handleNoteOn(inEv.data, inEv.value, tick);
 
                     if (midiArpList->at(l1)->wantTrigByKbd()) {
-                        nextArpTick = tick;
-                        nextNoteTick[l1] = nextArpTick + schedDelayTicks;
-                        gotKbdTrig = true;
-                        requestEchoAt(nextArpTick, 2);
+                        nextMinArpTick = tick;
+                        nextArpTick[l1] = nextMinArpTick + schedDelayTicks;
+                        gotArpKbdTrig = true;
+                        requestEchoAt(nextMinArpTick, 2);
                     }
                 }
                 else {
@@ -448,15 +459,13 @@ void SeqDriver::resetTicks()
         midiSeqList->at(l1)->setCurrentIndex(0);
     }
     for (l1 = 0; l1 < 20; l1++) {
-        nextNoteTick[l1] = 0;
-        lastLfoTick[l1] = 0;
-        lfoPacketSize[l1] = 0;
-        lastSeqTick[l1] = 0;
-        seqPacketSize[l1] = 0;
+        nextArpTick[l1] = 0;
+        nextLfoTick[l1] = 0;
+        nextSeqTick[l1] = 0;
     }
-    nextLfoTick = 0;
-    nextSeqTick = 0;
-    nextArpTick = 0;
+    nextMinLfoTick = 0;
+    nextMinSeqTick = 0;
+    nextMinArpTick = 0;
     lastSchedTick = 0;
     jack_offset_tick = 0;
 
