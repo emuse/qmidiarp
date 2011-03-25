@@ -38,8 +38,6 @@ class LfoScreen : public QWidget
   public:
     LfoScreen(QWidget* parent=0);
     ~LfoScreen();
-    virtual QSize sizeHint() const;
-    virtual QSizePolicy sizePolicy() const;
 
   signals:
     void mousePressed(double, double, int);

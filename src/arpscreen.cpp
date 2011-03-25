@@ -79,7 +79,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double minTempo = 1.0;
     int noctaves = 1;
     double vel =1.0;
-    int grooveTmp = 0;
+    //~ int grooveTmp = 0;
     int grooveIndex = 0;
     int chordIndex = 0;
     l2 = 0;
@@ -244,7 +244,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < patternLen; l1++)
     {
         c = a_pattern.at(l1);
-        grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick ;
+        //~ grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick ;
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
@@ -387,15 +387,3 @@ void ArpScreen::setMuted(bool on)
     isMuted = on;
     update();
 }
-
-QSize ArpScreen::sizeHint() const
-{
-    return QSize(ARPSCREEN_MINIMUM_WIDTH, ARPSCREEN_MINIMUM_HEIGHT);
-}
-
-QSizePolicy ArpScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
-}
-

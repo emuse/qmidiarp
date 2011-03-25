@@ -35,8 +35,6 @@ class ArpScreen : public QWidget
   public:
     ArpScreen(QWidget* parent=0);
     ~ArpScreen();
-    virtual QSize sizeHint() const;
-    virtual QSizePolicy sizePolicy() const;
 
   public slots:
     void updateScreen(const QString&);

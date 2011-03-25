@@ -59,20 +59,17 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int beat = 4;
     int npoints = 0;
     int ypos, xpos, xscale, yscale;
-    int octYoffset;
     w = QWidget::width();
     h = QWidget::height();
     int notestreak_thick = 2;
     int ofs;
     int x, x1;
-    int octave = 0;
     int maxOctave = 1;
     int minOctave = 0;
     int beatRes = 1.0;
     int beatDiv = 0;
     int noctaves = 2;
     l2 = 0;
-    QChar c;
 
     //Grid
     if (p_data.isEmpty()) return;
@@ -142,12 +139,10 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     //Draw function
 
-    octave = 0;
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     for (l1 = 0; l1 < npoints; l1++) {
 
-        octYoffset = 0;
         x = l1 * xscale * nsteps / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCREEN_VMARGIN;
@@ -190,17 +185,6 @@ void LfoScreen::setMuted(bool on)
 {
     isMuted = on;
     update();
-}
-
-QSize LfoScreen::sizeHint() const
-{
-    return QSize(LFOSCREEN_MINIMUM_WIDTH, LFOSCREEN_MINIMUM_HEIGHT);
-}
-
-QSizePolicy LfoScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
 }
 
 void LfoScreen::mouseMoveEvent(QMouseEvent *event)

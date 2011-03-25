@@ -62,20 +62,17 @@ void SeqScreen::paintEvent(QPaintEvent*)
     int beat = 4;
     int npoints = 0;
     int ypos, xpos, xscale, yscale;
-    int octYoffset;
     w = QWidget::width();
     h = QWidget::height();
     int notestreak_thick = 4;
     int ofs;
     int x, x1;
-    int octave = 0;
     int maxOctave = 4;
     int minOctave = 0;
     int beatRes = 1.0;
     int beatDiv = 0;
     int noctaves= 4;
     l2 = 0;
-    QChar c;
 
     //Grid setup
     if (p_data.isEmpty()) return;
@@ -165,13 +162,10 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
     //Draw function
 
-    octave = 0;
-
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     for (l1 = 0; l1 < npoints; l1++) {
 
-        octYoffset = 0;
         x = l1 * xscale * nsteps / npoints;
         ypos = yscale - yscale * (p_data.at(l1).value - 36) / noctaves / 12
                         + SEQSCREEN_VMARGIN - pen.width() / 2;
@@ -221,17 +215,6 @@ void SeqScreen::setMuted(bool on)
 {
     isMuted = on;
     update();
-}
-
-QSize SeqScreen::sizeHint() const
-{
-    return QSize(SEQSCREEN_MINIMUM_WIDTH, SEQSCREEN_MINIMUM_HEIGHT);
-}
-
-QSizePolicy SeqScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
 }
 
 void SeqScreen::mouseMoveEvent(QMouseEvent *event)
