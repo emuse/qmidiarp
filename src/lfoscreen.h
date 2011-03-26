@@ -17,9 +17,9 @@
 #include "midilfo.h"
 
 #define LFOSCR_MIN_W   250
-#define LFOSCR_MIN_H  120
-#define LFOSCR_VMARG          10
-#define LFOSCR_HMARG          20
+#define LFOSCR_MIN_H   120
+#define LFOSCR_VMARG    10
+#define LFOSCR_HMARG    20
 
 
 /*! @brief Drawing widget for visualization of waveforms using QPainter

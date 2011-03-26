@@ -14,10 +14,10 @@
 
 #include "midilfo.h"
 
-#define ARPSCR_MIN_W   250
-#define ARPSCR_MIN_H  120
-#define ARPSCR_VMARG          10
-#define ARPSCR_HMARG          16
+#define ARPSCR_MIN_W    250
+#define ARPSCR_MIN_H    120
+#define ARPSCR_VMARG    10
+#define ARPSCR_HMARG    16
 
 
 
