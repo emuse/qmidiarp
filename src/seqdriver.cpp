@@ -137,7 +137,7 @@ void SeqDriver::run()
 
             if ((inEv.type == EV_CLOCK)&& use_midiclock) {
                 midiTick++;
-                tick = midiTick*TICKS_PER_QUARTER/MIDICLK_TPQ;
+                tick = midiTick*TPQN/MIDICLK_TPQN;
                 if ((tick > nextMinLfoTick) && (midiLfoList->count())) {
                     fallback = true;
                 }
@@ -205,7 +205,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     velocity.clear();
 
     if (use_midiclock) {
-        tick = midiTick*TICKS_PER_QUARTER/MIDICLK_TPQ;
+        tick = midiTick*TPQN/MIDICLK_TPQN;
         calcClockRatio();
     }
     else if (use_jacksync) {
@@ -218,14 +218,14 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
 
-            tick = (double)jpos.frame * TICKS_PER_QUARTER
+            tick = (double)jpos.frame * TPQN
                     / jpos.frame_rate * tempo / 60.
                     - jack_offset_tick;
             calcClockRatio();
         }
     }
     else {
-        m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+        m_ratio = 60e9/TPQN/tempo;
         tick = deltaToTick(aTimeToDelta(&real_time));
     }
 
@@ -289,7 +289,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
                     outEv.value = midiSeqList->at(l1)->vel;
                     outEv.channel = midiSeqList->at(l1)->channelOut;
                     midiSeqList->at(l1)->getNextNote(&seqSample);
-                    frame_nticks = TICKS_PER_QUARTER / midiSeqList->at(l1)->res;
+                    frame_nticks = TPQN / midiSeqList->at(l1)->res;
                     length = midiSeqList->at(l1)->notelength;
                     seqtransp = midiSeqList->at(l1)->transp;
                     outport = midiSeqList->at(l1)->portOut;
@@ -480,14 +480,14 @@ void SeqDriver::resetTicks()
                 tempo = jpos.beats_per_minute;
             else
                 tempo = internal_tempo;
-            jack_offset_tick = (double)jpos.frame * TICKS_PER_QUARTER
+            jack_offset_tick = (double)jpos.frame * TPQN
                     / jpos.frame_rate * tempo / 60;
-            m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+            m_ratio = 60e9/TPQN/tempo;
         }
     }
     else {
         tempo = internal_tempo;
-        m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+        m_ratio = 60e9/TPQN/tempo;
     }
 
     tick = 0;
@@ -546,7 +546,7 @@ void SeqDriver::setQueueTempo(int bpm)
 {
     tempo = bpm;
     internal_tempo = bpm;
-    m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+    m_ratio = 60e9/TPQN/tempo;
 }
 
 void SeqDriver::get_time()
@@ -638,7 +638,7 @@ void SeqDriver::jackShutdown()
 
 void SeqDriver::setUseMidiClock(bool on)
 {
-    m_ratio = 60e9/TICKS_PER_QUARTER/tempo;
+    m_ratio = 60e9/TPQN/tempo;
     setQueueStatus(false);
     use_midiclock = on;
 }

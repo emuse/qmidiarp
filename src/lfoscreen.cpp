@@ -1,7 +1,10 @@
-/*
- *      lfoscreen.cpp
+/*!
+ * @file lfoscreen.cpp
+ * @brief Implementation of the LfoScreen class
  *
- *      This file is part of QMidiArp.
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -17,16 +20,13 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
-#include <QPolygon>
 #include <QPainter>
 #include <QPaintDevice>
 #include <QPen>
 #include <QPixmap>
-#include <QBrush>
-#include <QSizePolicy>
-#include <QSize>
 
 #include "lfoscreen.h"
 
@@ -48,7 +48,6 @@ LfoScreen::~LfoScreen()
 void LfoScreen::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
-    QPolygon points(7);
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
@@ -59,29 +58,26 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int beat = 4;
     int npoints = 0;
     int ypos, xpos, xscale, yscale;
-    int octYoffset;
     w = QWidget::width();
     h = QWidget::height();
     int notestreak_thick = 2;
     int ofs;
     int x, x1;
-    int octave = 0;
     int maxOctave = 1;
     int minOctave = 0;
     int beatRes = 1.0;
     int beatDiv = 0;
     int noctaves = 2;
     l2 = 0;
-    QChar c;
 
     //Grid
     if (p_data.isEmpty()) return;
-    nsteps = p_data.at(p_data.count() - 1).tick / TICKS_PER_QUARTER;
+    nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
     beatRes = (p_data.count() - 1) / nsteps;
     beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     npoints = beatRes * nsteps;
-    xscale = (w - 2 * LFOSCREEN_HMARGIN) / nsteps;
-    yscale = h - 2 * LFOSCREEN_VMARGIN;
+    xscale = (w - 2 * LFOSCR_HMARG) / nsteps;
+    yscale = h - 2 * LFOSCR_VMARG;
 
     //Beryll Filled Frame
     if (isMuted)
@@ -97,9 +93,9 @@ void LfoScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < nsteps + 1; l1++) {
 
         if (l1 < 10) {
-            ofs = w / nsteps * .5 - 4 + LFOSCREEN_HMARGIN;
+            ofs = w / nsteps * .5 - 4 + LFOSCR_HMARG;
         } else {
-            ofs = w / nsteps * .5 - 6 + LFOSCREEN_HMARGIN;
+            ofs = w / nsteps * .5 - 6 + LFOSCR_HMARG;
         }
         if ((bool)(l1%beat)) {
             p.setPen(QColor(180, 100, 60));
@@ -107,14 +103,14 @@ void LfoScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(180, 100, 100));
         }
         x = l1 * xscale;
-            p.drawLine(LFOSCREEN_HMARGIN + x, LFOSCREEN_VMARGIN,
-                LFOSCREEN_HMARGIN + x, h-LFOSCREEN_VMARGIN);
+            p.drawLine(LFOSCR_HMARG + x, LFOSCR_VMARG,
+                LFOSCR_HMARG + x, h-LFOSCR_VMARG);
 
         if (l1 < nsteps) {
             p.setPen(QColor(180, 150, 100));
 
             //Beat numbers
-            p.drawText(ofs + x, LFOSCREEN_VMARGIN, QString::number(l1+1));
+            p.drawText(ofs + x, LFOSCR_VMARG, QString::number(l1+1));
 
             // Beat divisor separators
             p.setPen(QColor(120, 60, 20));
@@ -122,9 +118,9 @@ void LfoScreen::paintEvent(QPaintEvent*)
             for (l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / beatDiv;
                 if (x1 < xscale * nsteps)
-                    p.drawLine(LFOSCREEN_HMARGIN + x1,
-                            LFOSCREEN_VMARGIN, LFOSCREEN_HMARGIN + x1,
-                            h - LFOSCREEN_VMARGIN);
+                    p.drawLine(LFOSCR_HMARG + x1,
+                            LFOSCR_VMARG, LFOSCR_HMARG + x1,
+                            h - LFOSCR_VMARG);
             }
         }
     }
@@ -133,25 +129,23 @@ void LfoScreen::paintEvent(QPaintEvent*)
     p.setPen(QColor(180, 120, 40));
     noctaves = maxOctave - minOctave + 1;
     for (l1 = 0; l1 < noctaves + 2; l1++) {
-        ypos = yscale * l1 / noctaves + LFOSCREEN_VMARGIN;
-        p.drawLine(LFOSCREEN_HMARGIN, ypos, w - LFOSCREEN_HMARGIN, ypos);
+        ypos = yscale * l1 / noctaves + LFOSCR_VMARG;
+        p.drawLine(LFOSCR_HMARG, ypos, w - LFOSCR_HMARG, ypos);
         p.drawText(1,
-                yscale * (l1) / noctaves + LFOSCREEN_VMARGIN + 4,
+                yscale * (l1) / noctaves + LFOSCR_VMARG + 4,
                 QString::number((noctaves - l1) * 128 / noctaves));
     }
 
     //Draw function
 
-    octave = 0;
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     for (l1 = 0; l1 < npoints; l1++) {
 
-        octYoffset = 0;
         x = l1 * xscale * nsteps / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
-                        + LFOSCREEN_VMARGIN;
-        xpos = LFOSCREEN_HMARGIN + x + pen.width() / 2;
+                        + LFOSCR_VMARG;
+        xpos = LFOSCR_HMARG + x + pen.width() / 2;
         if (p_data.at(l1).muted) {
             pen.setColor(QColor(100, 40, 5));
         }
@@ -168,7 +162,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     pen.setColor(QColor(200, 180, 70));
     p.setPen(pen);
     x = currentIndex * xscale * (int)nsteps / npoints;
-    xpos = LFOSCREEN_HMARGIN + x + pen.width() / 2;
+    xpos = LFOSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
 }
@@ -192,29 +186,18 @@ void LfoScreen::setMuted(bool on)
     update();
 }
 
-QSize LfoScreen::sizeHint() const
-{
-    return QSize(LFOSCREEN_MINIMUM_WIDTH, LFOSCREEN_MINIMUM_HEIGHT);
-}
-
-QSizePolicy LfoScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
-}
-
 void LfoScreen::mouseMoveEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
     bool cl = false;
 
-    mouseX = clip(mouseX, LFOSCREEN_HMARGIN, w - LFOSCREEN_HMARGIN, &cl);
-    mouseY = clip(mouseY, LFOSCREEN_VMARGIN + 1, h - LFOSCREEN_VMARGIN, &cl);
-    emit mouseMoved(((double)mouseX - LFOSCREEN_HMARGIN) /
-                            ((double)w - 2 * LFOSCREEN_HMARGIN + .2),
-                1. - ((double)mouseY - LFOSCREEN_VMARGIN) /
-                (h - 2 * LFOSCREEN_VMARGIN), event->buttons());
+    mouseX = clip(mouseX, LFOSCR_HMARG, w - LFOSCR_HMARG, &cl);
+    mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
+    emit mouseMoved(((double)mouseX - LFOSCR_HMARG) /
+                            ((double)w - 2 * LFOSCR_HMARG + .2),
+                1. - ((double)mouseY - LFOSCR_VMARG) /
+                (h - 2 * LFOSCR_VMARG), event->buttons());
 }
 
 void LfoScreen::mousePressEvent(QMouseEvent *event)
@@ -223,13 +206,13 @@ void LfoScreen::mousePressEvent(QMouseEvent *event)
     mouseY = event->y();
     bool cl = false;
 
-    mouseX = clip(mouseX, LFOSCREEN_HMARGIN, w - LFOSCREEN_HMARGIN, &cl);
-    mouseY = clip(mouseY, LFOSCREEN_VMARGIN + 1, h - LFOSCREEN_VMARGIN, &cl);
+    mouseX = clip(mouseX, LFOSCR_HMARG, w - LFOSCR_HMARG, &cl);
+    mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
 
-    emit mousePressed(((double)mouseX - LFOSCREEN_HMARGIN) /
-                            ((double)w - 2 * LFOSCREEN_HMARGIN + .2),
-                1. - ((double)mouseY - LFOSCREEN_VMARGIN) /
-                (h - 2 * LFOSCREEN_VMARGIN), event->buttons());
+    emit mousePressed(((double)mouseX - LFOSCR_HMARG) /
+                            ((double)w - 2 * LFOSCR_HMARG + .2),
+                1. - ((double)mouseY - LFOSCR_VMARG) /
+                (h - 2 * LFOSCR_VMARG), event->buttons());
 }
 
 void LfoScreen::wheelEvent(QWheelEvent *event)
@@ -257,4 +240,15 @@ int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
 void LfoScreen::setRecord(bool on)
 {
     recordMode = on;
+}
+
+QSize LfoScreen::sizeHint() const
+{
+    return QSize(LFOSCR_MIN_W, LFOSCR_MIN_H);
+}
+
+QSizePolicy LfoScreen::sizePolicy() const
+{
+    return QSizePolicy(QSizePolicy::MinimumExpanding,
+            QSizePolicy::MinimumExpanding);
 }

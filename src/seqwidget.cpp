@@ -223,7 +223,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     screen = new SeqScreen(this);
     screen->setToolTip(
         tr("Right button to mute points, left button to draw custom wave"));
-    screen->setMinimumHeight(SEQSCREEN_MINIMUM_HEIGHT);
+    screen->setMinimumHeight(SEQSCR_MIN_H);
     connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
     connect(screen, SIGNAL(mousePressed(double, double, int)), this,
@@ -584,7 +584,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     midiWorker->customWave.clear();
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    int step = TICKS_PER_QUARTER / midiWorker->res;
+                    int step = TPQN / midiWorker->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         sample.value = tmpArray.at(l1);
@@ -709,7 +709,7 @@ void SeqWidget::readDataText(QTextStream& arpText)
     wvtmp = qs.toInt();
 
     // Read Mute Mask
-    int step = TICKS_PER_QUARTER / midiWorker->res;
+    int step = TPQN / midiWorker->res;
     qs = arpText.readLine();
     if (qs.isEmpty() || (qs == "EOP")) return;
     qs2 = qs.section(' ', 0, 0);

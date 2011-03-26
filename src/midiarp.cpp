@@ -399,7 +399,7 @@ void MidiArp::getNote(int *tick, int note[],
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
             releasefn = 1.0 - (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / release_time / (double)TICKS_PER_QUARTER
+                    / release_time / (double)TPQN
                     * 60 / queueTempo;
 
             if (releasefn < 0.0) releasefn = 0.0;
@@ -410,7 +410,7 @@ void MidiArp::getNote(int *tick, int note[],
             if (!notes[noteBufPtr][3][noteIndex[l1]]) {
                 attackfn = (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / attack_time / (double)TICKS_PER_QUARTER
+                    / attack_time / (double)TPQN
                     * 60 / queueTempo;
 
                 if (attackfn > 1.0) attackfn = 1.0;
@@ -436,11 +436,11 @@ void MidiArp::getNote(int *tick, int note[],
 
     note[l1] = -1; // mark end of array
     grooveTmp = (grooveIndex % 2) ? -grooveLength : grooveLength;
-    *length = clip(len * stepWidth * (double)TICKS_PER_QUARTER
+    *length = clip(len * stepWidth * (double)TPQN
             * (1.0 + 0.005 * (double)(randomLength + grooveTmp)), 2,
             1000000,  &outOfRange);
     grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick;
-    arpTick += stepWidth * (double)TICKS_PER_QUARTER
+    arpTick += stepWidth * (double)TPQN
         * (1.0 + 0.005 * (double)grooveTmp);
     *tick = arpTick + clip(stepWidth * 0.25 * (double)randomTick, 0,
             1000, &outOfRange);
