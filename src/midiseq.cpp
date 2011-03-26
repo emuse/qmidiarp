@@ -53,7 +53,7 @@ MidiSeq::MidiSeq()
     isMuted = false;
     int lt = 0;
     int l1 = 0;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     Sample sample;
     sample.value = 60;
     customWave.clear();
@@ -132,7 +132,7 @@ void MidiSeq::getData(QVector<Sample> *p_data)
 {
     Sample sample;
     int lt = 0;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
 
     //res: number of events per beat
     //size: size of waveform in beats
@@ -212,7 +212,7 @@ void MidiSeq::setRecordedNote(int note)
 
     sample = customWave.at(currentRecStep);
     sample.value = note;
-    sample.tick = currentRecStep * TICKS_PER_QUARTER / res;
+    sample.tick = currentRecStep * TPQN / res;
     customWave.replace(currentRecStep, sample);
 }
 
@@ -221,7 +221,7 @@ void MidiSeq::resizeAll()
     int lt = 0;
     int l1 = 0;
     int os;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     Sample sample;
 
     currentIndex%=(res * size);

@@ -1,7 +1,10 @@
-/*
- *      arpscreen.cpp
+/*!
+ * @file arpscreen.cpp
+ * @brief Implementation of the ArpScreen class
  *
- *      This file is part of QMidiArp.
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -17,16 +20,13 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
-#include <QPolygon>
 #include <QPainter>
 #include <QPaintDevice>
 #include <QPen>
 #include <QPixmap>
-#include <QBrush>
-#include <QSizePolicy>
-#include <QSize>
 
 #include "arpscreen.h"
 
@@ -49,7 +49,6 @@ ArpScreen::~ArpScreen()
 void ArpScreen::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
-    QPolygon points(7);
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
@@ -182,16 +181,16 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     //Grid
     len = nsteps;
-    xscale = (w - 2 * ARPSCREEN_HMARGIN) / len;
-    yscale = h - 2 * ARPSCREEN_VMARGIN;
+    xscale = (w - 2 * ARPSCR_HMARG) / len;
+    yscale = h - 2 * ARPSCR_VMARG;
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
 
         if (l1 < 10) {
-            ofs = w / len * .5 - 4 + ARPSCREEN_HMARGIN;
+            ofs = w / len * .5 - 4 + ARPSCR_HMARG;
         } else {
-            ofs = w / len * .5 - 6 + ARPSCREEN_HMARGIN;
+            ofs = w / len * .5 - 6 + ARPSCR_HMARG;
         }
         if ((bool)(l1%beat)) {
             p.setPen(QColor(60, 180, 60));
@@ -199,13 +198,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(60, 180, 150));
         }
         x = l1 * xscale;
-        p.drawLine(ARPSCREEN_HMARGIN + x, ARPSCREEN_VMARGIN,
-                ARPSCREEN_HMARGIN + x, h-ARPSCREEN_VMARGIN);
+        p.drawLine(ARPSCR_HMARG + x, ARPSCR_VMARG,
+                ARPSCR_HMARG + x, h-ARPSCR_VMARG);
 
         if (l1 < nsteps) {
 
             //Beat numbers
-            p.drawText(ofs + x, ARPSCREEN_VMARGIN, QString::number(l1+1));
+            p.drawText(ofs + x, ARPSCR_VMARG, QString::number(l1+1));
 
             // Beat divisor separators
             p.setPen(QColor(40, 100, 40));
@@ -213,9 +212,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
             for (l2 = 1; l2 < 1.0/minTempo; l2++) {
                 x1 = x + l2 * xscale * minTempo;
                 if (x1 < xscale*len)
-                    p.drawLine(ARPSCREEN_HMARGIN + x1,
-                            ARPSCREEN_VMARGIN, ARPSCREEN_HMARGIN + x1,
-                            h - ARPSCREEN_VMARGIN);
+                    p.drawLine(ARPSCR_HMARG + x1,
+                            ARPSCR_VMARG, ARPSCR_HMARG + x1,
+                            h - ARPSCR_VMARG);
             }
         }
     }
@@ -224,10 +223,10 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.setPen(QColor(40, 120, 40));
     noctaves = maxOctave - minOctave + 1;
     for (l1 = 0; l1 < noctaves + 1; l1++) {
-        ypos = yscale * l1 / noctaves + ARPSCREEN_VMARGIN;
-        p.drawLine(ARPSCREEN_HMARGIN, ypos, w - ARPSCREEN_HMARGIN, ypos);
-        p.drawText(ARPSCREEN_HMARGIN / 2 - 3,
-                yscale * (l1 + 0.5) / noctaves + ARPSCREEN_VMARGIN + 4,
+        ypos = yscale * l1 / noctaves + ARPSCR_VMARG;
+        p.drawLine(ARPSCR_HMARG, ypos, w - ARPSCR_HMARG, ypos);
+        p.drawText(ARPSCR_HMARG / 2 - 3,
+                yscale * (l1 + 0.5) / noctaves + ARPSCR_VMARG + 4,
                 QString::number(noctaves - l1 + minOctave - 1));
     }
 
@@ -333,8 +332,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 p.setPen(pen);
                 ypos = yscale - yscale * (nlines - 1 + octYoffset)
                             / (patternMaxIndex + 1) / noctaves
-                            + ARPSCREEN_VMARGIN - 3 + notestreak_thick;
-                xpos = ARPSCREEN_HMARGIN + x + pen.width() / 2;
+                            + ARPSCR_VMARG - 3 + notestreak_thick;
+                xpos = ARPSCR_HMARG + x + pen.width() / 2;
                 p.drawLine(xpos, ypos,
                         xpos + notelen - pen.width(), ypos);
                 // Cursor
@@ -342,7 +341,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     pen.setWidth(notestreak_thick * 2);
                     p.setPen(pen);
                     ypos = h - 2;
-                    xpos = ARPSCREEN_HMARGIN + x + pen.width() / 2;
+                    xpos = ARPSCR_HMARG + x + pen.width() / 2;
                     p.drawLine(xpos, ypos,
                         xpos + notelen - pen.width(), ypos);
                 }
@@ -387,3 +386,15 @@ void ArpScreen::setMuted(bool on)
     isMuted = on;
     update();
 }
+
+QSize ArpScreen::sizeHint() const
+{
+    return QSize(ARPSCR_MIN_W, ARPSCR_MIN_H);
+}
+
+QSizePolicy ArpScreen::sizePolicy() const
+{
+    return QSizePolicy(QSizePolicy::MinimumExpanding,
+            QSizePolicy::MinimumExpanding);
+}
+

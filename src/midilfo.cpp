@@ -47,7 +47,7 @@ MidiLfo::MidiLfo()
     recValue = 0;
     int l1 = 0;
     int lt = 0;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     Sample sample;
     sample.value = 63;
     customWave.clear();
@@ -81,7 +81,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data)
 
     QVector<Sample> frame;
     Sample sample;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     int npoints = size * res;
     int lt, l1;
     int framelimit;
@@ -139,7 +139,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     Sample sample;
     int l1 = 0;
     int lt = 0;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     int val = 0;
     int tempval;
     bool cl = false;
@@ -313,7 +313,7 @@ void MidiLfo::resizeAll()
     int lt = 0;
     int l1 = 0;
     int os;
-    int step = TICKS_PER_QUARTER / res;
+    int step = TPQN / res;
     Sample sample;
 
     frameptr%=(res * size);

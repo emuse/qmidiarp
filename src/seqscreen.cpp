@@ -1,7 +1,10 @@
-/*
- *      seqscreen.cpp
+/*!
+ * @file seqscreen.cpp
+ * @brief Implementation of the SeqScreen class
  *
- *      This file is part of QMidiArp.
+ * @section LICENSE
+ *
+ *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -17,16 +20,13 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
-#include <QBrush>
 #include <QPainter>
 #include <QPaintDevice>
 #include <QPen>
 #include <QPixmap>
-#include <QPolygon>
-#include <QSize>
-#include <QSizePolicy>
 
 #include "seqscreen.h"
 #include "arpdata.h"
@@ -51,7 +51,6 @@ SeqScreen::~SeqScreen()
 void SeqScreen::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
-    QPolygon points(7);
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
@@ -76,12 +75,12 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
     //Grid setup
     if (p_data.isEmpty()) return;
-    nsteps = p_data.at(p_data.count() - 1).tick / TICKS_PER_QUARTER;
+    nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
     beatRes = (p_data.count() - 1) / nsteps;
     beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     npoints = beatRes * nsteps;
-    xscale = (w - 2 * SEQSCREEN_HMARGIN) / nsteps;
-    yscale = h - 2 * SEQSCREEN_VMARGIN;
+    xscale = (w - 2 * SEQSCR_HMARG) / nsteps;
+    yscale = h - 2 * SEQSCR_VMARG;
 
     //Blue Filled Frame
     if (isMuted)
@@ -95,18 +94,18 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
     //Draw current record step
     if (recordMode)
-    p.fillRect(currentRecStep * xscale * nsteps / npoints + SEQSCREEN_HMARGIN
-                , SEQSCREEN_VMARGIN
+    p.fillRect(currentRecStep * xscale * nsteps / npoints + SEQSCR_HMARG
+                , SEQSCR_VMARG
                 , xscale * nsteps / npoints
-                , h - 2*SEQSCREEN_VMARGIN, QColor(5, 40, 100));
+                , h - 2*SEQSCR_VMARG, QColor(5, 40, 100));
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
 
         if (l1 < 10) {
-            ofs = w / nsteps * .5 - 4 + SEQSCREEN_HMARGIN;
+            ofs = w / nsteps * .5 - 4 + SEQSCR_HMARG;
         } else {
-            ofs = w / nsteps * .5 - 6 + SEQSCREEN_HMARGIN;
+            ofs = w / nsteps * .5 - 6 + SEQSCR_HMARG;
         }
         if ((bool)(l1%beat)) {
             p.setPen(QColor(60, 100, 180));
@@ -114,14 +113,14 @@ void SeqScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(100, 100, 180));
         }
         x = l1 * xscale;
-        p.drawLine(SEQSCREEN_HMARGIN + x, SEQSCREEN_VMARGIN,
-                SEQSCREEN_HMARGIN + x, h-SEQSCREEN_VMARGIN);
+        p.drawLine(SEQSCR_HMARG + x, SEQSCR_VMARG,
+                SEQSCR_HMARG + x, h-SEQSCR_VMARG);
 
         if (l1 < nsteps) {
             p.setPen(QColor(100, 150, 180));
 
             //Beat numbers
-            p.drawText(ofs + x, SEQSCREEN_VMARGIN, QString::number(l1+1));
+            p.drawText(ofs + x, SEQSCR_VMARG, QString::number(l1+1));
 
             // Beat divisor separators
             p.setPen(QColor(20, 60, 120));
@@ -129,9 +128,9 @@ void SeqScreen::paintEvent(QPaintEvent*)
             for (l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / beatDiv;
                 if (x1 < xscale * nsteps)
-                    p.drawLine(SEQSCREEN_HMARGIN + x1,
-                            SEQSCREEN_VMARGIN, SEQSCREEN_HMARGIN + x1,
-                            h - SEQSCREEN_VMARGIN);
+                    p.drawLine(SEQSCR_HMARG + x1,
+                            SEQSCR_VMARG, SEQSCR_HMARG + x1,
+                            h - SEQSCR_VMARG);
             }
         }
     }
@@ -147,13 +146,13 @@ void SeqScreen::paintEvent(QPaintEvent*)
     else
         p.setPen(QColor(10, 20, 100));
 
-        ypos = yscale * l1 / noctaves / 12 + SEQSCREEN_VMARGIN;
-        p.drawLine(0, ypos, w - SEQSCREEN_HMARGIN, ypos);
+        ypos = yscale * l1 / noctaves / 12 + SEQSCR_VMARG;
+        p.drawLine(0, ypos, w - SEQSCR_HMARG, ypos);
         if ((l3 == 2) || (l3 == 4) || (l3 == 6) || (l3 == 9) || (l3 == 11)) {
             pen.setColor(QColor(20, 60, 180));
             pen.setWidth(notestreak_thick);
             p.setPen(pen);
-            p.drawLine(0, ypos - notestreak_thick / 2, SEQSCREEN_HMARGIN / 2,
+            p.drawLine(0, ypos - notestreak_thick / 2, SEQSCR_HMARG / 2,
             ypos- notestreak_thick / 2);
             pen.setWidth(1);
             p.setPen(pen);
@@ -168,8 +167,8 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
         x = l1 * xscale * nsteps / npoints;
         ypos = yscale - yscale * (p_data.at(l1).value - 36) / noctaves / 12
-                        + SEQSCREEN_VMARGIN - pen.width() / 2;
-        xpos = SEQSCREEN_HMARGIN + x + pen.width() / 2;
+                        + SEQSCR_VMARG - pen.width() / 2;
+        xpos = SEQSCR_HMARG + x + pen.width() / 2;
         if (p_data.at(l1).muted) {
             pen.setColor(QColor(5, 40, 100));
             p.setPen(pen);
@@ -181,19 +180,19 @@ void SeqScreen::paintEvent(QPaintEvent*)
         p.drawLine(xpos, ypos,
                         xpos + (xscale / beatRes) - pen.width(), ypos);
     }
-    ypos = int((mouseY - SEQSCREEN_VMARGIN + 3)/4) * 4 + SEQSCREEN_VMARGIN - 2;
+    ypos = int((mouseY - SEQSCR_VMARG + 3)/4) * 4 + SEQSCR_VMARG - 2;
     pen.setWidth(2);
     pen.setColor(QColor(50, 160, 220));
     p.setPen(pen);
-    p.drawLine(SEQSCREEN_HMARGIN / 2, ypos,
-                        SEQSCREEN_HMARGIN *2 / 3, ypos);
+    p.drawLine(SEQSCR_HMARG / 2, ypos,
+                        SEQSCR_HMARG *2 / 3, ypos);
 
     // Cursor
     pen.setWidth(notestreak_thick * 2);
     pen.setColor(QColor(50, 180, 220));
     p.setPen(pen);
     x = currentIndex * xscale * (int)nsteps / npoints;
-    xpos = SEQSCREEN_HMARGIN + x + pen.width() / 2;
+    xpos = SEQSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
 
@@ -221,14 +220,14 @@ void SeqScreen::mouseMoveEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < SEQSCREEN_HMARGIN)|| (mouseX >= w - SEQSCREEN_HMARGIN))
+    if ((mouseX < SEQSCR_HMARG)|| (mouseX >= w - SEQSCR_HMARG))
         return;
-    if ((mouseY <= SEQSCREEN_VMARGIN)|| (mouseY > h - SEQSCREEN_VMARGIN))
+    if ((mouseY <= SEQSCR_VMARG)|| (mouseY > h - SEQSCR_VMARG))
         return;
-    emit mouseMoved(((double)mouseX - SEQSCREEN_HMARGIN) /
-                            (w - 2 * SEQSCREEN_HMARGIN),
-                1. - ((double)mouseY - SEQSCREEN_VMARGIN) /
-                (h - 2 * SEQSCREEN_VMARGIN), event->buttons());
+    emit mouseMoved(((double)mouseX - SEQSCR_HMARG) /
+                            (w - 2 * SEQSCR_HMARG),
+                1. - ((double)mouseY - SEQSCR_VMARG) /
+                (h - 2 * SEQSCR_VMARG), event->buttons());
 
 }
 
@@ -236,14 +235,14 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < SEQSCREEN_HMARGIN)|| (mouseX >= w - SEQSCREEN_HMARGIN))
+    if ((mouseX < SEQSCR_HMARG)|| (mouseX >= w - SEQSCR_HMARG))
         return;
-    if ((mouseY <= SEQSCREEN_VMARGIN)|| (mouseY > h - SEQSCREEN_VMARGIN))
+    if ((mouseY <= SEQSCR_VMARG)|| (mouseY > h - SEQSCR_VMARG))
         return;
-    emit mousePressed(((double)mouseX - SEQSCREEN_HMARGIN) /
-                            (w - 2 * SEQSCREEN_HMARGIN),
-                1. - ((double)mouseY - SEQSCREEN_VMARGIN) /
-                (h - 2 * SEQSCREEN_VMARGIN), event->buttons());
+    emit mousePressed(((double)mouseX - SEQSCR_HMARG) /
+                            (w - 2 * SEQSCR_HMARG),
+                1. - ((double)mouseY - SEQSCR_VMARG) /
+                (h - 2 * SEQSCR_VMARG), event->buttons());
 }
 
 void SeqScreen::setRecordMode(bool on)
@@ -254,4 +253,15 @@ void SeqScreen::setRecordMode(bool on)
 void SeqScreen::setCurrentRecStep(int recStep)
 {
     currentRecStep = recStep;
+}
+
+QSize SeqScreen::sizeHint() const
+{
+    return QSize(SEQSCR_MIN_W, SEQSCR_MIN_H);
+}
+
+QSizePolicy SeqScreen::sizePolicy() const
+{
+    return QSizePolicy(QSizePolicy::MinimumExpanding,
+            QSizePolicy::MinimumExpanding);
 }

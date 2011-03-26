@@ -1,22 +1,38 @@
+/*!
+ * @file seqscreen.h
+ * @brief Header for the SeqScreen class
+ */
 #ifndef SEQSCREEN_H
 #define SEQSCREEN_H
 
 #include <QLabel>
 #include <QMouseEvent>
-#include <QSize>
-#include <QSizePolicy>
 #include <QString>
 #include <QTimer>
 #include <QWidget>
+#include <QSizePolicy>
+#include <QSize>
 
 #include "midiseq.h"
 
-#define SEQSCREEN_MINIMUM_WIDTH   180
-#define SEQSCREEN_MINIMUM_HEIGHT  212
-#define SEQSCREEN_VMARGIN          10
-#define SEQSCREEN_HMARGIN          20
+#define SEQSCR_MIN_W   180
+#define SEQSCR_MIN_H   212
+#define SEQSCR_VMARG    10
+#define SEQSCR_HMARG    20
 
-
+/*! @brief Drawing widget for visualization of sequences using QPainter
+ *
+ * SeqScreen is created and embedded by SeqWidget. The painter callback
+ * produces a streak map of a waveform as a piano roll display. The
+ * display is updated by calling SeqScreen::updateScreen() with the
+ * Sample vector as argument. A cursor is placed at the corresponding
+ * vector index by calling SeqScreen::updateScreen() with the integer
+ * current index as an overloaded member.
+ * SeqScreen emits mouse events corresponding to the Qt mousePressed()
+ * and mouseMoved() events. The mouse position is transferred as a
+ * double from 0 ... 1.0 representing the relative mouse position on the
+ * entire SeqScreen display area.
+ */
 class SeqScreen : public QWidget
 {
   Q_OBJECT
@@ -37,6 +53,8 @@ class SeqScreen : public QWidget
   public:
     SeqScreen(QWidget* parent=0);
     ~SeqScreen();
+    virtual QSize sizeHint() const;
+    virtual QSizePolicy sizePolicy() const;
 
   signals:
     void mousePressed(double, double, int);

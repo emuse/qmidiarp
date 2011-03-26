@@ -578,7 +578,7 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                     midiWorker->customWave.clear();
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    int step = TICKS_PER_QUARTER / midiWorker->res;
+                    int step = TPQN / midiWorker->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         sample.value = tmpArray.at(l1);
@@ -698,7 +698,7 @@ void LfoWidget::readDataText(QTextStream& arpText)
     wvtmp = qs.toInt();
 
     // Read Mute Mask
-    int step = TICKS_PER_QUARTER / midiWorker->res;
+    int step = TPQN / midiWorker->res;
     qs = arpText.readLine();
     if (qs.isEmpty() || (qs == "EOP")) return;
     qs2 = qs.section(' ', 0, 0);
