@@ -54,12 +54,12 @@ public:
     }
 
     // duration is in ticks and is valid only for note on events
-    virtual void sendMidiEvent(MidiEvent midi_event_ptr, unsigned int outport, unsigned int duration = 0) = 0;
+    virtual void sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration = 0) = 0;
 
 protected:
     DriverBase(
         void * callback_context,
-        void (* midi_event_received_callback)(void * context, MidiEvent midi_event_ptr),
+        void (* midi_event_received_callback)(void * context, MidiEvent ev),
         void (* tick_callback)(void * context),
         uint64_t backend_rate)
         : m_midi_event_received_callback(midi_event_received_callback)

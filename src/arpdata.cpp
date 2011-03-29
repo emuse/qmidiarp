@@ -40,7 +40,7 @@ ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(f
 {
     portCount = p_portCount;
 
-    seqDriver = new SeqDriver(portCount, this);
+    seqDriver = new SeqDriver(portCount, this, this, midi_event_received_callback, tick_callback);
     /* TODO: This is a temporary lazy replacement for a proper callback
      *       to be installed at term
      * */
@@ -395,6 +395,11 @@ void ArpData::setTransportStatus(bool on)
     }
 }
 
+void ArpData::tick_callback(void * context)
+{
+  // ((ArpData *)context)->echoCallback()
+}
+
 void ArpData::echoCallback(MidiEvent inEv, int tick)
 {
     int l1, l2;
@@ -536,6 +541,11 @@ void ArpData::echoCallback(MidiEvent inEv, int tick)
         if (0 > nextMinArpTick) nextMinArpTick = 0;
         seqDriver->requestEchoAt(nextMinArpTick, 0);
     }
+}
+
+void ArpData::midi_event_received_callback(void * context, MidiEvent ev)
+{
+  // ((ArpData *)context)->eventCallback(ev, seqDriver->getCurrentTick())
 }
 
 bool ArpData::eventCallback(MidiEvent inEv, int tick)

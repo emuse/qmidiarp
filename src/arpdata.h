@@ -85,6 +85,9 @@ class ArpData : public QWidget  {
     Sample seqSample;
 
 
+    static void midi_event_received_callback(void * context, MidiEvent ev);
+    static void tick_callback(void * context);
+
   public:
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;

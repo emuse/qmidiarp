@@ -30,8 +30,15 @@
 #include "config.h"
 
 
-SeqDriver::SeqDriver(int p_portCount, QWidget *parent)
-    : QThread(parent), modified(false)
+SeqDriver::SeqDriver(
+    int p_portCount,
+    QWidget *parent,
+    void * callback_context,
+    void (* midi_event_received_callback)(void * context, MidiEvent ev),
+    void (* tick_callback)(void * context))
+    : QThread(parent)
+    , DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
+    , modified(false)
 {
     int err;
     char buf[16];
@@ -248,6 +255,11 @@ void SeqDriver::initTempo()
     if (useMidiClock) {
         midiTick = 0;
     }
+}
+
+void SeqDriver::sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration)
+{
+  qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u)", ev.type, ev.channel, ev.data, ev.value, outport, duration);
 }
 
 void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int length)

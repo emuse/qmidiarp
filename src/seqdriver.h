@@ -14,6 +14,7 @@
 #include "midilfo.h"
 #include "midiseq.h"
 #include "main.h"
+#include "driverbase.h"
 
 /*! @brief ALSA sequencer backend QThread class. Also creates JackSync
  *
@@ -40,7 +41,7 @@
  * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
  * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
  */
-class SeqDriver : public QThread {
+class SeqDriver : public QThread, public DriverBase {
 
     Q_OBJECT
 
@@ -62,6 +63,8 @@ class SeqDriver : public QThread {
         void calcClockRatio();
 
         void initTempo();
+
+        void sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration = 0);
 
         JackSync *jackSync;
         jack_position_t jPos;
@@ -89,7 +92,12 @@ class SeqDriver : public QThread {
  *  @param p_midiSeqList List of pointers to each MidiSeq worker
  *  @param parent QWidget ID of the parent Widget
  */
-        SeqDriver(int p_portCount, QWidget* parent=0);
+        SeqDriver(
+            int p_portCount,
+            QWidget* parent,
+            void * callback_context,
+            void (* midi_event_received_callback)(void * context, MidiEvent ev),
+            void (* tick_callback)(void * context));
         ~SeqDriver();
         void getTime();
         bool isModified();
