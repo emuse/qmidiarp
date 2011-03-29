@@ -92,7 +92,17 @@ protected:
         return tickToBackendOffset(m_next_tick);
     }
 
-    void (* m_midi_event_received_callback)(void * context, MidiEvent midi_event_ptr);
+    void midi_event_received(MidiEvent ev)
+    {
+        m_midi_event_received_callback(m_callback_context, ev);
+    }
+
+    void tick_callback()
+    {
+        m_tick_callback(m_callback_context);
+    }
+
+    void (* m_midi_event_received_callback)(void * context, MidiEvent ev);
     void (* m_tick_callback)(void * context);
     void * m_callback_context;
     uint64_t m_backend_rate;    // samples(?) per minute (granularity)
