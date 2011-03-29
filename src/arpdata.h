@@ -70,11 +70,25 @@ class ArpData : public QWidget  {
     QList<SeqWidget *> seqWidgetList;
     int portCount;
     bool modified;
-    int mute_ccnumber, midiLearnID, midiLearnWindowID, midiLearnModuleID;
-    bool midi_mutable, midiLearnFlag;
+    int midiLearnID, midiLearnWindowID, midiLearnModuleID;
+    bool midiLearnFlag;
+
+    //From SeqDriver
+    bool gotArpKbdTrig;
+    bool gotSeqKbdTrig;
+    int  schedDelayTicks;
+    int nextLfoTick[20], nextMinLfoTick;
+    int nextSeqTick[20], nextMinSeqTick;
+    int nextArpTick[20], nextMinArpTick;
+    int tempo;
+    QVector<Sample> lfoData;
+    Sample seqSample;
+
 
   public:
     int grooveTick, grooveVelocity, grooveLength;
+    bool midiControllable;
+    bool transportStatus;
 
   public:
     SeqDriver *seqDriver;
@@ -117,10 +131,11 @@ class ArpData : public QWidget  {
     int seqWidgetCount();
     MidiSeq *midiSeq(int index);
     SeqWidget *seqWidget(int index);
-    int getAlsaClientId();
+    int getClientId();
+    void setTempo(int bpm);
 
   public slots:
-    void runQueue(bool);
+    void setTransportStatus(bool);
 /**
  * @brief This function is used to set the modified flag, which is queried before
  * loading a new session file or quitting qmidiarp.
@@ -131,11 +146,16 @@ class ArpData : public QWidget  {
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void handleController(int ccnumber, int channel, int value);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
+    void setMidiControllable(bool on);
     void setCompactStyle(bool on);
     void setGrooveTick(int grooveTick);
     void setGrooveVelocity(int grooveVelocity);
     void setGrooveLength(int grooveLength);
     void sendGroove();
+
+    bool eventCallback(MidiEvent inEv, int tick);
+    void echoCallback(MidiEvent inEv, int tick);
+    void resetTicks(int curtick);
 };
 
 #endif

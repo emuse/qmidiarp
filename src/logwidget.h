@@ -5,11 +5,10 @@
 #include <QString>
 #include <QLabel>
 #include <QSlider>
-#include <QComboBox>
 #include <QCheckBox>
-#include <QSpinBox>
 #include <QTextEdit>
-#include <QDateTime>
+
+#include "midievent.h"
 
 class LogWidget : public QWidget
 
@@ -32,7 +31,7 @@ class LogWidget : public QWidget
   public slots:
     void logMidiToggle(bool on);
     void enableLogToggle(bool on);
-    void appendEvent(int type, int data, int channel, int value);
+    void appendEvent(MidiEvent ev, int tick);
     void appendText(const QString&);
     void clear();
 };

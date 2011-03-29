@@ -46,30 +46,14 @@ class SeqDriver : public QThread {
 
     private:
         int portCount;
-        QList<MidiArp *> *midiArpList;
-        QList<MidiLfo *> *midiLfoList;
-        QList<MidiSeq *> *midiSeqList;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
-        int lfoMinPacketSize;
-        int seqMinPacketSize;
         int portid_in;
         int queue_id;
         bool startQueue;
         bool modified;
-        bool midi_controllable;
         bool threadAbort;
-        bool gotArpKbdTrig;
-        bool gotSeqKbdTrig;
-        int tick, jack_offset_tick, schedDelayTicks;
-        int lastSchedTick;
-        int nextLfoTick[20], nextMinLfoTick;
-        int nextSeqTick[20], nextMinSeqTick;
-        int nextArpTick[20], nextMinArpTick;
-        int tempo, internal_tempo;
-        QVector<Sample> lfoData;
-        Sample seqSample;
 
         double tickToDelta(int tick);
         int deltaToTick (double curtime);
@@ -77,24 +61,27 @@ class SeqDriver : public QThread {
         const snd_seq_real_time_t* deltaToATime(double curtime);
         void calcClockRatio();
 
-        void schedEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
-        bool requestEchoAt(int echoTick, int infotag = 1);
-        bool handleEvent(MidiEvent inEv);
-        void handleEcho(MidiEvent inEv);
-        void resetTicks();
+        void initTempo();
 
         JackSync *jackSync;
-        jack_position_t jpos;
+        jack_position_t jPos;
 
         int midiTick;
-        double m_ratio;         /* duration of one tick, in nanoseconds; based on current tempo */
-        snd_seq_real_time_t delta, real_time;
-        snd_seq_real_time_t tmptime;
+        int lastSchedTick;
+        int tick;
+        int jackOffsetTick;
+        int tempo, internalTempo;
+
+        double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
+        snd_seq_real_time_t delta, realTime;
+        snd_seq_real_time_t tmpTime;
 
     public:
-        bool forwardUnmatched, runQueueIfArp, runArp;
+        bool forwardUnmatched, queueStatus;
         int portUnmatched;
-        bool use_midiclock, use_jacksync, trigByKbd;
+        bool useMidiClock, useJackSync;
+        void sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
+        bool requestEchoAt(int echoTick, int infotag = 1);
 
     public:
 /*! @param p_midiArpList List of pointers to each MidiArp worker
@@ -102,19 +89,17 @@ class SeqDriver : public QThread {
  *  @param p_midiSeqList List of pointers to each MidiSeq worker
  *  @param parent QWidget ID of the parent Widget
  */
-        SeqDriver(QList<MidiArp*> *p_midiArpList,
-                QList<MidiLfo *> *p_midiLfoList,
-                QList<MidiSeq *> *p_midiSeqList, int p_portCount, QWidget* parent=0);
+        SeqDriver(int p_portCount, QWidget* parent=0);
         ~SeqDriver();
-        void get_time();
+        void getTime();
         bool isModified();
         void setModified(bool);
         int getAlsaClientId();
         void run();
 
    signals:
-        void midiEvent(int type, int data, int channel, int value);
-        void controlEvent(int ccnumber, int channel, int value);
+        void handleEvent(MidiEvent ev, int tick);
+        void handleEcho(MidiEvent ev, int tick);
         void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
 
@@ -122,9 +107,8 @@ class SeqDriver : public QThread {
         void setForwardUnmatched(bool on);
         void setPortUnmatched(int id);
         void setQueueStatus(bool run);
-        void setQueueTempo(int bpm);
+        void setTempo(int bpm);
         void setUseMidiClock(bool on);
-        void setMidiControllable(bool on);
         void setUseJackTransport(bool on);
         void jackShutdown();
 };

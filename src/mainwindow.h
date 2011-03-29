@@ -270,11 +270,11 @@ class MainWindow : public QMainWindow
 */
     void setGUIforExtSync(bool on);
 /*!
-* @brief This function restarts the Queue if it is running and does
+* @brief This function restarts the transport position if rolling and does
 * nothing if it is stopped
 *
 */
-    void resetQueue();
+    void resetTransport();
 
 /*! @brief Handler for system signals (SIGUSR1, SIGINT...).
  * This function writes a message to the pipe and leaves as soon as possible
@@ -338,7 +338,6 @@ class MainWindow : public QMainWindow
 /* SIGNALS */
   signals:
     void newTempo(int);
-    void runQueue(bool);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -433,7 +432,7 @@ class MainWindow : public QMainWindow
 * @param on True to set Queue to running state or to restart
 *
 */
-    void updateRunQueue(bool on);
+    void updateTransportStatus(bool on);
 /*! @brief Slot for midiClock ToolButton.
 * This function toggles SeqDriver between MIDI Clock and internal clock
 * operation.

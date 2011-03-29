@@ -9,7 +9,7 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
             : QDialog(parent)
 {
     arpData = p_arpData;
-    
+
     forwardCheck = new QCheckBox(this);
     forwardCheck->setText(tr("&Forward unmatched events to port"));
     forwardCheck->setChecked(false);
@@ -22,7 +22,7 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     portUnmatchedSpin->setKeyboardTracking(false);
     QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updatePortUnmatched(int)));
-            
+
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
     portBoxLayout->addWidget(forwardCheck);
     portBoxLayout->addStretch(1);
@@ -33,17 +33,17 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     cbuttonCheck->setChecked(true);
     QObject::connect(cbuttonCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateControlSetting(bool)));
-        
+
     compactStyleCheck = new QCheckBox(this);
     compactStyleCheck->setText(tr("&Compact module layout style"));
     QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateCompactStyle(bool)));
     compactStyle = false;
-        
+
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));    
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     QVBoxLayout *passWidgetLayout = new QVBoxLayout;
     passWidgetLayout->addLayout(portBoxLayout);
@@ -84,7 +84,7 @@ void PassWidget::setPortUnmatched(int id)
 
 void PassWidget::updateControlSetting(bool on)
 {
-    arpData->seqDriver->setMidiControllable(on);
+    arpData->setMidiControllable(on);
 }
 
 void PassWidget::updateCompactStyle(bool on)

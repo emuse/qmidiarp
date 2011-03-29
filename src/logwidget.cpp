@@ -1,15 +1,8 @@
-#include <QString>
-#include <QLabel>
-#include <QSlider>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QStringList>
-#include <QBoxLayout>
-#include <QGroupBox>
 #include <QDateTime>
+#include <QPushButton>
+#include <QStringList>
+#include <QGroupBox>
 
-#include "midievent.h"
 #include "logwidget.h"
 
 
@@ -52,42 +45,42 @@ LogWidget::~LogWidget()
 {
 }
 
-void LogWidget::appendEvent(int type, int data, int channel, int value) {
+void LogWidget::appendEvent(MidiEvent ev, int tick) {
 
     QString qs, qs2;
 
     if (!logActive) {
         return;
     }
-    switch (type) {
+    switch (ev.type) {
         case EV_NOTEON:
-            qs.sprintf("Ch %2d, Note On %3d, Vel %3d",
-                    channel + 1,
-                    data, value);
+            qs.sprintf("Ch %2d, Note On %3d, Vel %3d, tick %d",
+                    ev.channel + 1,
+                    ev.data, ev.value, tick);
             break;
         case EV_NOTEOFF:
-            qs.sprintf("Ch %2d, Note Off %3d", channel+1,
-                    data);
+            qs.sprintf("Ch %2d, Note Off %3d, tick %d", ev.channel+1,
+                    ev.data, tick);
             break;
         case EV_CONTROLLER:
             logText->setTextColor(QColor(100,160,0));
-            qs.sprintf("Ch %2d, Ctrl %3d, Val %3d", channel+1,
-                    data, value);
+            qs.sprintf("Ch %2d, Ctrl %3d, Val %3d, tick %d", ev.channel+1,
+                    ev.data, ev.value, tick);
             break;
         case EV_PITCHBEND:
             logText->setTextColor(QColor(100,0,255));
-            qs.sprintf("Ch %2d, Pitch %5d", channel+1,
-                    value);
+            qs.sprintf("Ch %2d, Pitch %5d, tick %d", ev.channel+1,
+                    ev.value, tick);
             break;
         case EV_PGMCHANGE:
             logText->setTextColor(QColor(0,100,100));
-            qs.sprintf("Ch %2d, PrgChg %5d", channel+1,
-                    value);
+            qs.sprintf("Ch %2d, PrgChg %5d, tick %d", ev.channel+1,
+                    ev.value, tick);
             break;
         case EV_CLOCK:
             if (logMidiActive) {
                 logText->setTextColor(QColor(150,150,150));
-                qs = tr("MIDI Clock");
+                qs = tr("MIDI Clock, tick");
             }
             break;
         case EV_START:
@@ -107,7 +100,7 @@ void LogWidget::appendEvent(int type, int data, int channel, int value) {
             qs = tr("Unknown event type");
             break;
     }
-    if ((type != EV_CLOCK) || logMidiActive)
+    if ((ev.type != EV_CLOCK) || logMidiActive)
         logText->append(QTime::currentTime().toString(
                     "hh:mm:ss.zzz") + "  " + qs);
     logText->setTextColor(QColor(0, 0, 255));

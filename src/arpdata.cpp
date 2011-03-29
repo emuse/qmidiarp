@@ -39,13 +39,29 @@
 ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
     portCount = p_portCount;
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
-    connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
-            this, SLOT(handleController(int, int, int)));
+
+    seqDriver = new SeqDriver(portCount, this);
+    /* TODO: This is a temporary lazy replacement for a proper callback
+     *       to be installed at term
+     * */
+    qRegisterMetaType<MidiEvent>("MidiEvent");
+    connect(seqDriver, SIGNAL(handleEvent(MidiEvent, int)),
+            this, SLOT(eventCallback(MidiEvent, int)));
+    connect(seqDriver, SIGNAL(handleEcho(MidiEvent, int)),
+            this, SLOT(echoCallback(MidiEvent, int)));
+
+
     midiLearnFlag = false;
+    midiControllable = true;
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
+    gotArpKbdTrig = false;
+    gotSeqKbdTrig = false;
+    schedDelayTicks = 2;
+    transportStatus = false;
+
+    resetTicks(0);
 }
 
 ArpData::~ArpData(){
@@ -64,8 +80,8 @@ void ArpData::addArpWidget(ArpWidget *arpWidget)
 
 void ArpData::removeMidiArp(MidiArp *midiArp)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (transportStatus && (moduleWindowCount() < 1)) {
+        setTransportStatus(false);
     }
     int i = midiArpList.indexOf(midiArp);
     if (i != -1)
@@ -132,7 +148,7 @@ void ArpData::setGrooveLength(int val)
 void ArpData::sendGroove()
 {
     for (int l1 = 0; l1 < midiArpList.count(); l1++) {
-        midiArpList.at(l1)->newGrooveValues(grooveTick, grooveVelocity,
+        midiArp(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
 }
@@ -152,8 +168,8 @@ void ArpData::addLfoWidget(LfoWidget *lfoWidget)
 
 void ArpData::removeMidiLfo(MidiLfo *midiLfo)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (transportStatus && (moduleWindowCount() < 1)) {
+        setTransportStatus(false);
     }
     int i = midiLfoList.indexOf(midiLfo);
     if (i != -1)
@@ -202,8 +218,8 @@ void ArpData::addSeqWidget(SeqWidget *seqWidget)
 
 void ArpData::removeMidiSeq(MidiSeq *midiSeq)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (transportStatus && (moduleWindowCount() < 1)) {
+        setTransportStatus(false);
     }
     int i = midiSeqList.indexOf(midiSeq);
     if (i != -1)
@@ -290,6 +306,19 @@ void ArpData::updateIDs(int curID)
 
 //general
 
+void ArpData::setCompactStyle(bool on)
+{
+    int l1;
+    if (on) {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindow(l1)->setStyleSheet(COMPACT_STYLE);
+    }
+    else {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindow(l1)->setStyleSheet("");
+    }
+}
+
 bool ArpData::isModified()
 {
     bool arpmodified = false;
@@ -332,20 +361,254 @@ void ArpData::setModified(bool m)
         seqWidget(l1)->setModified(m);
 }
 
+/* All following functions are the core engine to be placed into
+ * Nedko's new DriverBase class. They need to be made realtime-safe.
+ * They currently call different seqDriver backend functions, which
+ * can eventually (hopefully) get a jackDriver equivalent, so that
+ * switching between the driver backends can be done from here.
+ * Note that these function have been in the SeqDriver thread before, and
+ * that they are now in the main (GUI) thread. This is why there are
+ * dropouts when moving windows.
+ */
+
 int ArpData::getPortCount()
 {
     return(portCount);
 }
 
-void ArpData::runQueue(bool on)
-{
-    if (midiArpList.count() > 0)
-        seqDriver->setQueueStatus(on);
-}
-
-int ArpData::getAlsaClientId()
+int ArpData::getClientId()
 {
     return seqDriver->getAlsaClientId();
+}
+
+void ArpData::setTransportStatus(bool on)
+{
+    if (moduleWindowCount()) {
+        if (!on) {
+            for (int l1 = 0; l1 < midiArpCount(); l1++) {
+                midiArp(l1)->clearNoteBuffer();
+            }
+        }
+        transportStatus = on;
+        resetTicks(0);
+        seqDriver->setQueueStatus(on);
+    }
+}
+
+void ArpData::echoCallback(MidiEvent inEv, int tick)
+{
+    int l1, l2;
+    QVector<int> note, velocity;
+    int note_tick = 0;
+    int length;
+    int outport;
+    int seqtransp;
+    bool isNew;
+    MidiEvent outEv;
+    int frame_nticks = 0;
+
+    note.clear();
+    velocity.clear();
+
+
+
+        //~ printf("       tick %d     ",tick);
+        //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
+        //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
+        //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
+        //~ printf("midiTick %d   ",midiTick);
+        //~ printf("clockRatio %f  ",clockRatio);
+        //~ printf("Jack Beat %d\n", jpos.beat);
+        //~ printf("Jack Frame %d \n ", (int)jpos.frame);
+        //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
+
+    //LFO data request and queueing
+    //add 8 ticks to startoff condition to cope with initial sync imperfections
+    if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
+        for (l1 = 0; l1 < midiLfoCount(); l1++) {
+            if ((tick + 8) >= nextLfoTick[l1]) {
+                outEv.type = EV_CONTROLLER;
+                outEv.data = midiLfo(l1)->ccnumber;
+                outEv.channel = midiLfo(l1)->channelOut;
+                midiLfo(l1)->getNextFrame(&lfoData);
+                frame_nticks = lfoData.last().tick;
+                outport = midiLfo(l1)->portOut;
+                if (!midiLfo(l1)->isMuted) {
+                    l2 = 0;
+                    while (lfoData.at(l2).value > -1) {
+                        if (!lfoData.at(l2).muted) {
+                            outEv.value = lfoData.at(l2).value;
+                            seqDriver->sendMidiEvent(outEv, nextLfoTick[l1] + lfoData.at(l2).tick
+                                , outport);
+                        }
+                        l2++;
+                    }
+                }
+                nextLfoTick[l1] += frame_nticks;
+                /** round-up to current resolution (quantize) */
+                nextLfoTick[l1]/= frame_nticks;
+                nextLfoTick[l1]*= frame_nticks;
+            }
+            if (!l1)
+                nextMinLfoTick = nextLfoTick[l1];
+            else if (nextLfoTick[l1] < nextMinLfoTick)
+                nextMinLfoTick = nextLfoTick[l1];
+        }
+        seqDriver->requestEchoAt(nextMinLfoTick);
+    }
+
+    //Seq notes data request and queueing
+    //add 8 ticks to startoff condition to cope with initial sync imperfections
+    if (((tick + 8) >= nextMinSeqTick) && (midiSeqCount())) {
+        for (l1 = 0; l1 < midiSeqCount(); l1++) {
+            if ((gotSeqKbdTrig && (inEv.data == 2) && midiSeq(l1)->wantTrigByKbd())
+                    || (!gotSeqKbdTrig && (inEv.data == 0))) {
+                gotSeqKbdTrig = false;
+                if ((tick + 8) >= nextSeqTick[l1]) {
+                    outEv.type = EV_NOTEON;
+                    outEv.value = midiSeq(l1)->vel;
+                    outEv.channel = midiSeq(l1)->channelOut;
+                    midiSeq(l1)->getNextNote(&seqSample);
+                    frame_nticks = TPQN / midiSeq(l1)->res;
+                    length = midiSeq(l1)->notelength;
+                    seqtransp = midiSeq(l1)->transp;
+                    outport = midiSeq(l1)->portOut;
+                    if (!midiSeq(l1)->isMuted) {
+                        if (!seqSample.muted) {
+                            outEv.data = seqSample.value + seqtransp;
+                            seqDriver->sendMidiEvent(outEv, nextSeqTick[l1], outport, length);
+                        }
+                    }
+                    nextSeqTick[l1]+=frame_nticks;
+                    if (!midiSeq(l1)->trigByKbd) {
+                        /** round-up to current resolution (quantize) */
+                        nextSeqTick[l1]/=frame_nticks;
+                        nextSeqTick[l1]*=frame_nticks;
+                    }
+                }
+            }
+            if (!l1)
+                nextMinSeqTick = nextSeqTick[l1];
+            else if (nextSeqTick[l1] < nextMinSeqTick)
+                nextMinSeqTick = nextSeqTick[l1];
+        }
+        seqDriver->requestEchoAt(nextMinSeqTick, 0);
+    }
+
+    //Arp Note queueing
+    if ((tick + 8) >= nextMinArpTick) {
+        for (l1 = 0; l1 < midiArpCount(); l1++) {
+            if ((gotArpKbdTrig && (inEv.data == 2) && midiArp(l1)->wantTrigByKbd())
+                    || (!gotArpKbdTrig && (inEv.data == 0))) {
+                gotArpKbdTrig = false;
+                if (tick + schedDelayTicks >= nextArpTick[l1]) {
+                    outEv.type = EV_NOTEON;
+                    outEv.channel = midiArp(l1)->channelOut;
+                    midiArp(l1)->newRandomValues();
+                    midiArp(l1)->updateQueueTempo(tempo);
+                    midiArp(l1)->prepareCurrentNote(tick);
+                    note = midiArp(l1)->returnNote;
+                    velocity = midiArp(l1)->returnVelocity;
+                    note_tick = midiArp(l1)->returnTick;
+                    length = midiArp(l1)->returnLength * 4;
+                    outport = midiArp(l1)->portOut;
+                    isNew = midiArp(l1)->returnIsNew;
+                    if (!velocity.isEmpty()) {
+                        if (isNew && velocity.at(0)) {
+                            l2 = 0;
+                            while(note.at(l2) >= 0) {
+                                outEv.data = note.at(l2);
+                                outEv.value = velocity.at(l2);
+                                seqDriver->sendMidiEvent(outEv, note_tick, outport, length);
+                                l2++;
+                            }
+                        }
+                    }
+                    nextArpTick[l1] = midiArp(l1)->getNextNoteTick();
+                }
+            }
+            if (!l1)
+                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
+            else if (nextArpTick[l1] < nextMinArpTick + schedDelayTicks)
+                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
+        }
+
+        if (0 > nextMinArpTick) nextMinArpTick = 0;
+        seqDriver->requestEchoAt(nextMinArpTick, 0);
+    }
+}
+
+bool ArpData::eventCallback(MidiEvent inEv, int tick)
+{
+    bool unmatched;
+    int l1;
+    unmatched = true;
+
+    if (inEv.type == EV_CONTROLLER) {
+
+        if (inEv.data == CT_FOOTSW) {
+            for (l1 = 0; l1 < midiArpCount(); l1++) {
+                if (midiArp(l1)->wantEvent(inEv)) {
+                    midiArp(l1)->setSustain((inEv.value == 127), tick);
+                    unmatched = false;
+                }
+            }
+        }
+        else {
+            //Does any LFO want to record this?
+            for (l1 = 0; l1 < midiLfoCount(); l1++) {
+                if (midiLfo(l1)->wantEvent(inEv)) {
+                    midiLfo(l1)->record(inEv.value);
+                    unmatched = false;
+                }
+            }
+            if (midiControllable) {
+                handleController(inEv.data, inEv.channel, inEv.value);
+                unmatched = false;
+            }
+        }
+        return unmatched;
+    }
+
+    if (inEv.type == EV_NOTEON) {
+
+        for (l1 = 0; l1 < midiSeqCount(); l1++) {
+            if (midiSeq(l1)->wantEvent(inEv)) {
+                unmatched = false;
+
+                midiSeq(l1)->handleNote(inEv.data, inEv.value, tick);
+
+                if (inEv.value && midiSeq(l1)->wantTrigByKbd()) {
+                    nextMinSeqTick = tick;
+                    nextSeqTick[l1] = nextMinSeqTick + 2;
+                    gotSeqKbdTrig = true;
+                    seqDriver->requestEchoAt(nextMinSeqTick, 2);
+                }
+            }
+        }
+        for (l1 = 0; l1 < midiArpCount(); l1++) {
+            if (midiArp(l1)->wantEvent(inEv)) {
+                unmatched = false;
+                if (inEv.value) {
+
+                    midiArp(l1)->handleNoteOn(inEv.data, inEv.value, tick);
+
+                    if (midiArp(l1)->wantTrigByKbd()) {
+                        nextMinArpTick = tick;
+                        nextArpTick[l1] = nextMinArpTick + 2;
+                        gotArpKbdTrig = true;
+                        seqDriver->requestEchoAt(nextMinArpTick, 2);
+                    }
+                }
+                else {
+                    midiArp(l1)->handleNoteOff(inEv.data, tick, 1);
+                }
+            }
+        }
+        return unmatched;
+    }
+
+    return unmatched;
 }
 
 void ArpData::handleController(int ccnumber, int channel, int value)
@@ -550,6 +813,36 @@ void ArpData::handleController(int ccnumber, int channel, int value)
     }
 }
 
+void ArpData::resetTicks(int curtick)
+{
+    int l1;
+
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        midiArp(l1)->foldReleaseTicks(curtick);
+        midiArp(l1)->initArpTick(0);
+    }
+    for (l1 = 0; l1 < midiLfoCount(); l1++) {
+        midiLfo(l1)->resetFramePtr();
+    }
+    for (l1 = 0; l1 < midiSeqCount(); l1++) {
+        midiSeq(l1)->setCurrentIndex(0);
+    }
+    for (l1 = 0; l1 < 20; l1++) {
+        nextArpTick[l1] = 0;
+        nextLfoTick[l1] = 0;
+        nextSeqTick[l1] = 0;
+    }
+    nextMinLfoTick = 0;
+    nextMinSeqTick = 0;
+    nextMinArpTick = 0;
+}
+
+void ArpData::setMidiControllable(bool on)
+{
+    midiControllable = on;
+    modified = true;
+}
+
 void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 {
     if (0 > controlID) {
@@ -564,15 +857,9 @@ void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
     }
 }
 
-void ArpData::setCompactStyle(bool on)
+void ArpData::setTempo(int bpm)
 {
-    int l1;
-    if (on) {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
-            moduleWindowList.at(l1)->setStyleSheet(COMPACT_STYLE);
-    }
-    else {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
-            moduleWindowList.at(l1)->setStyleSheet("");
-    }
+    tempo = bpm;
+    seqDriver->setTempo(bpm);
+    modified = true;
 }

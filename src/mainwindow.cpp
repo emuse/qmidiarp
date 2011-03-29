@@ -31,6 +31,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMetaType>
 #include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
@@ -85,13 +86,11 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(arpData->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
-            logWidget, SLOT(appendEvent(int, int, int, int)));
+    connect(arpData->seqDriver, SIGNAL(handleEvent(MidiEvent, int)),
+            logWidget, SLOT(appendEvent(MidiEvent, int)));
 
     passWidget = new PassWidget(arpData, p_portCount, this);
 
-    connect(this, SIGNAL(runQueue(bool)),
-            arpData->seqDriver, SLOT(setQueueStatus(bool)));
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -151,7 +150,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     runAction = new QAction(QIcon(play_xpm), tr("&Run with internal clock"), this);
-    connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
+    connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateTransportStatus(bool)));
     runAction->setCheckable(true);
     runAction->setChecked(false);
     runAction->setDisabled(true);
@@ -184,7 +183,7 @@ MainWindow::MainWindow(int p_portCount)
             jackSyncAction, SLOT(setChecked(bool)));
 
 
-    updateRunQueue(false);
+    updateTransportStatus(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setIcon(QIcon(eventlog_xpm));
@@ -293,12 +292,12 @@ void MainWindow::updateWindowTitle()
     if (filename.isEmpty())
         setWindowTitle(QString("%1 (%2)")
                 .arg(APP_NAME)
-                .arg(arpData->getAlsaClientId()));
+                .arg(arpData->getClientId()));
     else
         setWindowTitle(QString("%1 - %2  (%3)")
                 .arg(filename)
                 .arg(APP_NAME)
-                .arg(arpData->getAlsaClientId()));
+                .arg(arpData->getClientId()));
 }
 
 void MainWindow::helpAbout()
@@ -534,7 +533,7 @@ void MainWindow::removeSeq(int index)
 
 void MainWindow::clear()
 {
-    updateRunQueue(false);
+    updateTransportStatus(false);
     jackSyncToggle(false);
 
     while (arpData->midiArpCount()) {
@@ -879,9 +878,9 @@ bool MainWindow::saveFile()
             xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
-                QString::number((int)arpData->seqDriver->use_midiclock));
+                QString::number((int)arpData->seqDriver->useMidiClock));
             xml.writeTextElement("jackSyncEnabled",
-                QString::number((int)arpData->seqDriver->use_jacksync));
+                QString::number((int)arpData->seqDriver->useJackSync));
             xml.writeTextElement("forwardUnmatched",
                 QString::number((int)arpData->seqDriver->forwardUnmatched));
             xml.writeTextElement("forwardPort",
@@ -1012,19 +1011,18 @@ bool MainWindow::isModified()
 
 void MainWindow::updateTempo(int p_tempo)
 {
-    arpData->seqDriver->setQueueTempo(p_tempo);
-    arpData->setModified(true);
+    arpData->setTempo(p_tempo);
 }
 
-void MainWindow::updateRunQueue(bool on)
+void MainWindow::updateTransportStatus(bool on)
 {
-    emit(runQueue(on));
+    arpData->setTransportStatus(on);
     tempoSpin->setDisabled(on);
 }
 
-void MainWindow::resetQueue()
+void MainWindow::resetTransport()
 {
-    arpData->seqDriver->setQueueStatus(arpData->seqDriver->runArp);
+    arpData->setTransportStatus(arpData->transportStatus);
 }
 
 void MainWindow::midiClockToggle(bool on)
