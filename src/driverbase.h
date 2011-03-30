@@ -60,7 +60,7 @@ protected:
     DriverBase(
         void * callback_context,
         void (* midi_event_received_callback)(void * context, MidiEvent ev),
-        void (* tick_callback)(void * context),
+        void (* tick_callback)(void * context, MidiEvent ev),
         uint64_t backend_rate)
         : m_midi_event_received_callback(midi_event_received_callback)
         , m_tick_callback(tick_callback)
@@ -82,12 +82,12 @@ protected:
         return backend_offset * m_tpm / m_backend_rate;
     }
 
-    uint64_t getCurrentTickBackedOffset()
+    uint64_t getCurrentTickBackendOffset()
     {
         return tickToBackendOffset(m_current_tick);
     }
 
-    uint64_t getNextTickBackedOffset()
+    uint64_t getNextTickBackendOffset()
     {
         return tickToBackendOffset(m_next_tick);
     }
@@ -97,13 +97,13 @@ protected:
         m_midi_event_received_callback(m_callback_context, ev);
     }
 
-    void tick_callback()
+    void tick_callback(MidiEvent ev)
     {
-        m_tick_callback(m_callback_context);
+        m_tick_callback(m_callback_context, ev);
     }
 
     void (* m_midi_event_received_callback)(void * context, MidiEvent ev);
-    void (* m_tick_callback)(void * context);
+    void (* m_tick_callback)(void * context, MidiEvent ev);
     void * m_callback_context;
     uint64_t m_backend_rate;    // samples(?) per minute (granularity)
     unsigned int m_current_tick;
