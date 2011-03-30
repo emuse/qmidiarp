@@ -80,22 +80,20 @@ class ArpData : public QWidget  {
     int nextLfoTick[20], nextMinLfoTick;
     int nextSeqTick[20], nextMinSeqTick;
     int nextArpTick[20], nextMinArpTick;
-    int tempo;
     QVector<Sample> lfoData;
     Sample seqSample;
 
 
     static void midi_event_received_callback(void * context, MidiEvent ev);
-    static void tick_callback(void * context);
+    static void tick_callback(void * context, MidiEvent ev);
 
   public:
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;
     bool transportStatus;
-
-  public:
     SeqDriver *seqDriver;
 
+  public:
     ArpData(int p_portCount, QWidget* parent=0);
     ~ArpData();
     int getPortCount();
@@ -137,6 +135,15 @@ class ArpData : public QWidget  {
     int getClientId();
     void setTempo(int bpm);
 
+  signals:
+/**
+ * @brief This signal is connected to the LogWidget::appendEvent() slot
+ *
+ * @param ev MidiEvent received by ArpData
+ * @param tick Set to the tick value at which the event was received
+ */
+    void midiEventReceived(MidiEvent ev, int tick);
+
   public slots:
     void setTransportStatus(bool);
 /**
@@ -156,8 +163,8 @@ class ArpData : public QWidget  {
     void setGrooveLength(int grooveLength);
     void sendGroove();
 
-    bool eventCallback(MidiEvent inEv, int tick);
-    void echoCallback(MidiEvent inEv, int tick);
+    bool eventCallback(MidiEvent inEv);
+    void echoCallback(MidiEvent inEv);
     void resetTicks(int curtick);
 };
 

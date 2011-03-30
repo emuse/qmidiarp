@@ -71,7 +71,6 @@ class SeqDriver : public QThread, public DriverBase {
 
         int midiTick;
         int lastSchedTick;
-        int tick;
         int jackOffsetTick;
         int tempo, internalTempo;
 
@@ -87,17 +86,12 @@ class SeqDriver : public QThread, public DriverBase {
         bool requestEchoAt(int echoTick, int infotag = 1);
 
     public:
-/*! @param p_midiArpList List of pointers to each MidiArp worker
- *  @param p_midiLfoList List of pointers to each MidiLfo worker
- *  @param p_midiSeqList List of pointers to each MidiSeq worker
- *  @param parent QWidget ID of the parent Widget
- */
         SeqDriver(
             int p_portCount,
             QWidget* parent,
             void * callback_context,
             void (* midi_event_received_callback)(void * context, MidiEvent ev),
-            void (* tick_callback)(void * context));
+            void (* tick_callback)(void * context, MidiEvent ev));
         ~SeqDriver();
         void getTime();
         bool isModified();
@@ -106,8 +100,6 @@ class SeqDriver : public QThread, public DriverBase {
         void run();
 
    signals:
-        void handleEvent(MidiEvent ev, int tick);
-        void handleEcho(MidiEvent ev, int tick);
         void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
 

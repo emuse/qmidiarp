@@ -35,7 +35,7 @@ SeqDriver::SeqDriver(
     QWidget *parent,
     void * callback_context,
     void (* midi_event_received_callback)(void * context, MidiEvent ev),
-    void (* tick_callback)(void * context))
+    void (* tick_callback)(void * context, MidiEvent ev))
     : QThread(parent)
     , DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
     , modified(false)
@@ -86,7 +86,7 @@ SeqDriver::SeqDriver(
     forwardUnmatched = false;
 
     lastSchedTick = 0;
-    tick = 0;
+    m_current_tick = 0;
     jackOffsetTick = 0;
 
     queueStatus = false;
@@ -135,14 +135,16 @@ void SeqDriver::run()
 
             inEv.type = evIn->type;
             inEv.data = evIn->data.note.note;
+            inEv.channel = 0;
+            inEv.value = 0;
 
             if ((inEv.type == EV_CLOCK)&& useMidiClock) {
                 midiTick++;
-                tick = midiTick*TPQN/MIDICLK_TPQN;
-/*                if ((tick > nextMinLfoTick) && (midiLfoList->count())) {
+                m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
+/*                if ((m_current_tick > nextMinLfoTick) && (midiLfoList->count())) {
                     fallback = true;
                 }
-                if ((tick > nextMinSeqTick) && (midiSeqList->count())) {
+                if ((m_current_tick > nextMinSeqTick) && (midiSeqList->count())) {
                     fallback = true;
                 } */
             }
@@ -153,7 +155,7 @@ void SeqDriver::run()
                 unmatched = false;
                 realTime = evIn->time.time;
                 if (useMidiClock) {
-                    tick = midiTick*TPQN/MIDICLK_TPQN;
+                    m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
                     calcClockRatio();
                 }
                 else if (useJackSync) {
@@ -165,7 +167,7 @@ void SeqDriver::run()
                         if (jPos.beats_per_minute > 0)
                             tempo = jPos.beats_per_minute;
 
-                        tick = (double)jPos.frame * TPQN
+                        m_current_tick = (double)jPos.frame * TPQN
                                 / jPos.frame_rate * tempo / 60.
                                 - jackOffsetTick;
                         calcClockRatio();
@@ -173,11 +175,10 @@ void SeqDriver::run()
                 }
                 else {
                     clockRatio = 60e9/TPQN/tempo;
-                    tick = deltaToTick(aTimeToDelta(&realTime));
+                    m_current_tick = deltaToTick(aTimeToDelta(&realTime));
                 }
-                if (tick < 0) return;
 
-                emit handleEcho(inEv, tick);
+                tick_callback(inEv);
             }
             else {
                 unmatched = true;
@@ -211,11 +212,11 @@ void SeqDriver::run()
                 }
 
                 getTime();
-                tick = deltaToTick(aTimeToDelta(&tmpTime));
+                m_current_tick = deltaToTick(aTimeToDelta(&tmpTime));
                 /* TODO: restablish unmatched return value by handleEvent
                  *       forwarding doesn't work at the moment     */
 
-                emit handleEvent(inEv, tick);
+                midi_event_received(inEv);
 
                 unmatched = false;
 
@@ -226,7 +227,7 @@ void SeqDriver::run()
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
             }
-            if (!queueStatus) tick = 0; //some events still come in after queue stop
+            if (!queueStatus) m_current_tick = 0; //some events still come in after queue stop
             pollr = snd_seq_event_input_pending(seq_handle, 0);
         }
     }
@@ -359,7 +360,7 @@ void SeqDriver::setQueueStatus(bool run)
 
         snd_seq_stop_queue(seq_handle, queue_id, NULL);
 
-        tick = 0;
+        m_current_tick = 0;
 
         qWarning("Alsa Queue stopped");
     }
@@ -443,8 +444,8 @@ void SeqDriver::calcClockRatio()
 {
     double old_clock_ratio = clockRatio;
 
-    if (tick > 0) {
-        clockRatio = aTimeToDelta(&realTime)/tick;
+    if (m_current_tick > 0) {
+        clockRatio = aTimeToDelta(&realTime)/m_current_tick;
     }
     if ((clockRatio == 0) || (clockRatio > 60e9 / tempo)) {
         clockRatio = old_clock_ratio;

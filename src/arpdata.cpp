@@ -41,14 +41,6 @@ ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(f
     portCount = p_portCount;
 
     seqDriver = new SeqDriver(portCount, this, this, midi_event_received_callback, tick_callback);
-    /* TODO: This is a temporary lazy replacement for a proper callback
-     *       to be installed at term
-     * */
-    qRegisterMetaType<MidiEvent>("MidiEvent");
-    connect(seqDriver, SIGNAL(handleEvent(MidiEvent, int)),
-            this, SLOT(eventCallback(MidiEvent, int)));
-    connect(seqDriver, SIGNAL(handleEcho(MidiEvent, int)),
-            this, SLOT(echoCallback(MidiEvent, int)));
 
 
     midiLearnFlag = false;
@@ -361,8 +353,8 @@ void ArpData::setModified(bool m)
         seqWidget(l1)->setModified(m);
 }
 
-/* All following functions are the core engine to be placed into
- * Nedko's new DriverBase class. They need to be made realtime-safe.
+/* All following functions are the core engine of QMidiArp. They need to
+ * be made realtime-safe.
  * They currently call different seqDriver backend functions, which
  * can eventually (hopefully) get a jackDriver equivalent, so that
  * switching between the driver backends can be done from here.
@@ -395,15 +387,16 @@ void ArpData::setTransportStatus(bool on)
     }
 }
 
-void ArpData::tick_callback(void * context)
+void ArpData::tick_callback(void * context, MidiEvent inEv)
 {
-  // ((ArpData *)context)->echoCallback()
+  ((ArpData *)context)->echoCallback(inEv);
 }
 
-void ArpData::echoCallback(MidiEvent inEv, int tick)
+void ArpData::echoCallback(MidiEvent inEv)
 {
     int l1, l2;
     QVector<int> note, velocity;
+    int tick = seqDriver->getCurrentTick();
     int note_tick = 0;
     int length;
     int outport;
@@ -510,7 +503,6 @@ void ArpData::echoCallback(MidiEvent inEv, int tick)
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArp(l1)->channelOut;
                     midiArp(l1)->newRandomValues();
-                    midiArp(l1)->updateQueueTempo(tempo);
                     midiArp(l1)->prepareCurrentNote(tick);
                     note = midiArp(l1)->returnNote;
                     velocity = midiArp(l1)->returnVelocity;
@@ -545,14 +537,18 @@ void ArpData::echoCallback(MidiEvent inEv, int tick)
 
 void ArpData::midi_event_received_callback(void * context, MidiEvent ev)
 {
-  // ((ArpData *)context)->eventCallback(ev, seqDriver->getCurrentTick())
+  ((ArpData *)context)->eventCallback(ev);
 }
 
-bool ArpData::eventCallback(MidiEvent inEv, int tick)
+bool ArpData::eventCallback(MidiEvent inEv)
 {
     bool unmatched;
     int l1;
     unmatched = true;
+    int tick = seqDriver->getCurrentTick();
+
+    /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
+    emit midiEventReceived(inEv, tick);
 
     if (inEv.type == EV_CONTROLLER) {
 
@@ -869,7 +865,6 @@ void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 
 void ArpData::setTempo(int bpm)
 {
-    tempo = bpm;
     seqDriver->setTempo(bpm);
     modified = true;
 }
