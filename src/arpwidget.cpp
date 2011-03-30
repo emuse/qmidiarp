@@ -376,11 +376,11 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     envelopeBox = new QGroupBox(tr("Envelope"), this);
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
     attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
-            tr("&Attack (s)"), envelopeBox);
+            tr("&Attack (beats)"), envelopeBox);
     connect(attackTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateAttackTime(int)));
     releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
-            tr("&Release (s)"), envelopeBox);
+            tr("&Release (beats)"), envelopeBox);
     connect(releaseTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateReleaseTime(int)));
 

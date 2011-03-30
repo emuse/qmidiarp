@@ -119,7 +119,6 @@ MidiArp::MidiArp()
     isMuted = false;
     attack_time = 0.0;
     release_time = 0.0;
-    queueTempo = 100.0;
     sustain = false;
     sustainBuffer.clear();
     latch_mode = false;
@@ -399,8 +398,7 @@ void MidiArp::getNote(int *tick, int note[],
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
             releasefn = 1.0 - (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / release_time / (double)TPQN
-                    * 60 / queueTempo;
+                    / (release_time * (double)TPQN * 2);
 
             if (releasefn < 0.0) releasefn = 0.0;
         }
@@ -410,8 +408,7 @@ void MidiArp::getNote(int *tick, int note[],
             if (!notes[noteBufPtr][3][noteIndex[l1]]) {
                 attackfn = (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / attack_time / (double)TPQN
-                    * 60 / queueTempo;
+                    / (attack_time * (double)TPQN * 2);
 
                 if (attackfn > 1.0) attackfn = 1.0;
                 old_attackfn[noteIndex[l1]] = attackfn;
@@ -677,11 +674,6 @@ void MidiArp::updateAttackTime(int val)
 void MidiArp::updateReleaseTime(int val)
 {
     release_time = (double)val;
-}
-
-void MidiArp::updateQueueTempo(int val)
-{
-    queueTempo = (double)val;
 }
 
 void MidiArp::updateTriggerMode(int val)
