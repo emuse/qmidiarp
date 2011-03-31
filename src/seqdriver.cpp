@@ -35,7 +35,7 @@ SeqDriver::SeqDriver(
     QWidget *parent,
     void * callback_context,
     void (* midi_event_received_callback)(void * context, MidiEvent ev),
-    void (* tick_callback)(void * context, MidiEvent ev))
+    void (* tick_callback)(void * context, bool echo_from_trig))
     : QThread(parent)
     , DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
     , modified(false)
@@ -178,7 +178,7 @@ void SeqDriver::run()
                     m_current_tick = deltaToTick(aTimeToDelta(&realTime));
                 }
 
-                tick_callback(inEv);
+                tick_callback((inEv.data));
             }
             else {
                 unmatched = true;
@@ -284,7 +284,7 @@ void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int leng
     snd_seq_event_output_direct(seq_handle, &ev);
 }
 
-bool SeqDriver::requestEchoAt(int echo_tick, int info_tag)
+bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 {
     if ((echo_tick == lastSchedTick) && (echo_tick)) return false;
 
@@ -293,7 +293,7 @@ bool SeqDriver::requestEchoAt(int echo_tick, int info_tag)
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);
     ev.type = SND_SEQ_EVENT_ECHO;
-    ev.data.note.note = info_tag;
+    ev.data.note.note = echo_from_trig;
     snd_seq_ev_schedule_real(&ev, queue_id,  0, deltaToATime(tickToDelta(echo_tick)));
     snd_seq_ev_set_dest(&ev, clientid, portid_in);
     snd_seq_event_output_direct(seq_handle, &ev);

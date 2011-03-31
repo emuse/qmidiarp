@@ -1,14 +1,7 @@
 /**
  * @file arpdata.cpp
- * @brief Managing class for created module components in lists. Instantiates SeqDriver.
+ * @brief Implementation of the ArpData class
  *
- * For each module component and type there is a QList (for example MidiArp
- * and ArpWidget). In parallel there is
- * a common list for all modules containing their DockWidgets.
- * ArpData also instantiates the SeqDriver MIDI backend and handles MIDI
- * controller events through signaling by seqDriver. Controllers are
- * dispatched to the modules as requiered by their MIDI Learn
- * MidiCCList.
  * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
@@ -387,12 +380,12 @@ void ArpData::setTransportStatus(bool on)
     }
 }
 
-void ArpData::tick_callback(void * context, MidiEvent inEv)
+void ArpData::tick_callback(void * context, bool echo_from_trig)
 {
-  ((ArpData *)context)->echoCallback(inEv);
+  ((ArpData *)context)->echoCallback(echo_from_trig);
 }
 
-void ArpData::echoCallback(MidiEvent inEv)
+void ArpData::echoCallback(bool echo_from_trig)
 {
     int l1, l2;
     QVector<int> note, velocity;
@@ -408,17 +401,10 @@ void ArpData::echoCallback(MidiEvent inEv)
     note.clear();
     velocity.clear();
 
-
-
         //~ printf("       tick %d     ",tick);
         //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
         //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
         //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
-        //~ printf("midiTick %d   ",midiTick);
-        //~ printf("clockRatio %f  ",clockRatio);
-        //~ printf("Jack Beat %d\n", jpos.beat);
-        //~ printf("Jack Frame %d \n ", (int)jpos.frame);
-        //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
 
     //LFO data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
@@ -459,8 +445,8 @@ void ArpData::echoCallback(MidiEvent inEv)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinSeqTick) && (midiSeqCount())) {
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
-            if ((gotSeqKbdTrig && (inEv.data == 2) && midiSeq(l1)->wantTrigByKbd())
-                    || (!gotSeqKbdTrig && (inEv.data == 0))) {
+            if ((gotSeqKbdTrig && echo_from_trig && midiSeq(l1)->wantTrigByKbd())
+                    || (!gotSeqKbdTrig && !echo_from_trig)) {
                 gotSeqKbdTrig = false;
                 if ((tick + 8) >= nextSeqTick[l1]) {
                     outEv.type = EV_NOTEON;
@@ -496,8 +482,8 @@ void ArpData::echoCallback(MidiEvent inEv)
     //Arp Note queueing
     if ((tick + 8) >= nextMinArpTick) {
         for (l1 = 0; l1 < midiArpCount(); l1++) {
-            if ((gotArpKbdTrig && (inEv.data == 2) && midiArp(l1)->wantTrigByKbd())
-                    || (!gotArpKbdTrig && (inEv.data == 0))) {
+            if ((gotArpKbdTrig && echo_from_trig && midiArp(l1)->wantTrigByKbd())
+                    || (!gotArpKbdTrig && !echo_from_trig)) {
                 gotArpKbdTrig = false;
                 if (tick + schedDelayTicks >= nextArpTick[l1]) {
                     outEv.type = EV_NOTEON;
@@ -586,9 +572,9 @@ bool ArpData::eventCallback(MidiEvent inEv)
 
                 if (inEv.value && midiSeq(l1)->wantTrigByKbd()) {
                     nextMinSeqTick = tick;
-                    nextSeqTick[l1] = nextMinSeqTick + 2;
+                    nextSeqTick[l1] = nextMinSeqTick + schedDelayTicks;
                     gotSeqKbdTrig = true;
-                    seqDriver->requestEchoAt(nextMinSeqTick, 2);
+                    seqDriver->requestEchoAt(nextMinSeqTick, true);
                 }
             }
         }
@@ -601,9 +587,9 @@ bool ArpData::eventCallback(MidiEvent inEv)
 
                     if (midiArp(l1)->wantTrigByKbd()) {
                         nextMinArpTick = tick;
-                        nextArpTick[l1] = nextMinArpTick + 2;
+                        nextArpTick[l1] = nextMinArpTick + schedDelayTicks;
                         gotArpKbdTrig = true;
-                        seqDriver->requestEchoAt(nextMinArpTick, 2);
+                        seqDriver->requestEchoAt(nextMinArpTick, true);
                     }
                 }
                 else {

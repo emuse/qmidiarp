@@ -83,7 +83,7 @@ class SeqDriver : public QThread, public DriverBase {
         int portUnmatched;
         bool useMidiClock, useJackSync;
         void sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
-        bool requestEchoAt(int echoTick, int infotag = 1);
+        bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
 
     public:
         SeqDriver(
@@ -91,7 +91,7 @@ class SeqDriver : public QThread, public DriverBase {
             QWidget* parent,
             void * callback_context,
             void (* midi_event_received_callback)(void * context, MidiEvent ev),
-            void (* tick_callback)(void * context, MidiEvent ev));
+            void (* tick_callback)(void * context, bool echo_from_trig));
         ~SeqDriver();
         void getTime();
         bool isModified();
