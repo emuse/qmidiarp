@@ -658,7 +658,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
                 else if (xml.name() == "forwardPort")
-                    passWidget->setPortUnmatched(xml.readElementText().toInt() + 1);
+                    passWidget->setPortUnmatched(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }

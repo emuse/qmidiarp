@@ -49,6 +49,8 @@
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
+    int l1;
+
     // QSignalMappers allow identifying signal senders for MIDI learn/forget
     learnSignalMapper = new QSignalMapper(this);
     connect(learnSignalMapper, SIGNAL(mapped(int)),
@@ -100,11 +102,10 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
 
 
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QSpinBox(inBox);
-    chIn->setRange(1, 16);
-    chIn->setKeyboardTracking(false);
+    chIn = new QComboBox(inBox);
+    for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
     chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
+    connect(chIn, SIGNAL(activated(int)), this, SLOT(updateChIn(int)));
 
     QGridLayout *inBoxLayout = new QGridLayout;
 
@@ -153,19 +154,18 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QW
             SLOT(updateCcnumber(int)));
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QSpinBox(portBox);
+    portOut = new QComboBox(portBox);
     portLabel->setBuddy(portOut);
-    portOut->setRange(1, portCount);
-    portOut->setKeyboardTracking(false);
-    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
+    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+    connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
 
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
-    channelOut = new QSpinBox(portBox);
+    channelOut = new QComboBox(portBox);
     channelLabel->setBuddy(channelOut);
-    channelOut->setRange(1, 16);
-    channelOut->setKeyboardTracking(false);
-    connect(channelOut, SIGNAL(valueChanged(int)), this,
+    for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
+    connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+
 
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(muteLabel, 0, 0);
@@ -501,8 +501,11 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "channel")
-                    chIn->setValue(xml.readElementText().toInt() + 1);
+                if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    chIn->setCurrentIndex(tmp);
+                    updateChIn(tmp);
+                }
                 else if (xml.name() == "ccnumber")
                     ccnumberInBox->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -514,10 +517,16 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "channel")
-                    channelOut->setValue(xml.readElementText().toInt() + 1);
-                else if (xml.name() == "port")
-                    portOut->setValue(xml.readElementText().toInt() + 1);
+                if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    channelOut->setCurrentIndex(tmp);
+                    updateChannelOut(tmp);
+                }
+                else if (xml.name() == "port") {
+                    tmp = xml.readElementText().toInt();
+                    portOut->setCurrentIndex(tmp);
+                    updatePortOut(tmp);
+                }
                 else if (xml.name() == "ccnumber")
                     ccnumberBox->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -655,9 +664,9 @@ void LfoWidget::readDataText(QTextStream& arpText)
 
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0);
-    channelOut->setValue(qs2.toInt() + 1);
+    channelOut->setCurrentIndex(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
-    portOut->setValue(qs2.toInt() + 1);
+    portOut->setCurrentIndex(qs2.toInt());
     qs2 = qs.section(' ', 2, 2);
     ccnumberBox->setValue(qs2.toInt());
     qs = arpText.readLine();
@@ -901,25 +910,25 @@ void LfoWidget::setRecord(bool on)
 
 void LfoWidget::setPortOut(int value)
 {
-    portOut->setValue(value);
+    portOut->setCurrentIndex(value);
     modified = true;
 }
 
 void LfoWidget::setChannelOut(int value)
 {
-    channelOut->setValue(value);
+    channelOut->setCurrentIndex(value);
     modified = true;
 }
 
 void LfoWidget::updatePortOut(int value)
 {
-    midiWorker->portOut = value - 1;
+    midiWorker->portOut = value;
     modified = true;
 }
 
 void LfoWidget::updateChannelOut(int value)
 {
-    midiWorker->channelOut = value - 1;
+    midiWorker->channelOut = value;
     modified = true;
 }
 

@@ -8,6 +8,8 @@
 PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
             : QDialog(parent)
 {
+    int l1;
+
     arpData = p_arpData;
 
     forwardCheck = new QCheckBox(this);
@@ -16,11 +18,10 @@ PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
     QObject::connect(forwardCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateForward(bool)));
 
-    portUnmatchedSpin = new QSpinBox(this);
+    portUnmatchedSpin = new QComboBox(this);
     portUnmatchedSpin->setDisabled(true);
-    portUnmatchedSpin->setRange(1, p_portcount);
-    portUnmatchedSpin->setKeyboardTracking(false);
-    QObject::connect(portUnmatchedSpin, SIGNAL(valueChanged(int)), this,
+    for (l1 = 0; l1 < p_portcount; l1++) portUnmatchedSpin->addItem(QString::number(l1 + 1));
+    QObject::connect(portUnmatchedSpin, SIGNAL(activated(int)), this,
             SLOT(updatePortUnmatched(int)));
 
     QHBoxLayout *portBoxLayout = new QHBoxLayout;
@@ -69,7 +70,7 @@ void PassWidget::updateForward(bool on)
 
 void PassWidget::updatePortUnmatched(int id)
 {
-    arpData->seqDriver->setPortUnmatched(id - 1);
+    arpData->seqDriver->setPortUnmatched(id);
 }
 
 void PassWidget::setForward(bool on)
@@ -79,7 +80,8 @@ void PassWidget::setForward(bool on)
 
 void PassWidget::setPortUnmatched(int id)
 {
-    portUnmatchedSpin->setValue(id);
+    portUnmatchedSpin->setCurrentIndex(id);
+    updatePortUnmatched(id);
 }
 
 void PassWidget::updateControlSetting(bool on)

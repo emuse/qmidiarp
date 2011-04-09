@@ -1,7 +1,7 @@
 #ifndef PASSWIDGET_H
 #define PASSWIDGET_H
 
-#include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QSpinBox>
 
@@ -15,8 +15,8 @@ class PassWidget : public QDialog
   private:
     ArpData *arpData;
     QCheckBox *forwardCheck;
-    QSpinBox *portUnmatchedSpin;
-          
+    QComboBox *portUnmatchedSpin;
+
   public:
     PassWidget(ArpData* arpData, int p_portcount, QWidget* parent=0);
     ~PassWidget();
@@ -24,15 +24,15 @@ class PassWidget : public QDialog
     void setPortUnmatched(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck;
     bool compactStyle;
-    
+
   signals:
     void compactLayoutToggle(bool);
-        
+
   public slots:
     void updateForward(bool on);
     void updatePortUnmatched(int);
-    void updateControlSetting(bool);   
-    void updateCompactStyle(bool);   
+    void updateControlSetting(bool);
+    void updateCompactStyle(bool);
 };
-  
+
 #endif
