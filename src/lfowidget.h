@@ -79,9 +79,11 @@ class LfoWidget : public QWidget
 {
     Q_OBJECT
 
-    QSpinBox *chIn, *ccnumberInBox;
+    QComboBox *chIn;
+    QSpinBox  *ccnumberInBox;
+    QSpinBox  *ccnumberBox;
     // Output channel / port (ALSA Sequencer)
-    QSpinBox *channelOut, *portOut, *ccnumberBox;
+    QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox;
 
     QAction *deleteAction, *renameAction;

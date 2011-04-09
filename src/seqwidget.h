@@ -75,8 +75,8 @@ class SeqWidget : public QWidget
 {
     Q_OBJECT
 
-    QSpinBox *chIn;
-    QSpinBox *channelOut, *portOut;
+    QComboBox *chIn;
+    QComboBox *channelOut, *portOut;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
     QAction *deleteAction, *renameAction;

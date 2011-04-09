@@ -44,6 +44,8 @@
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
+    int l1;
+
     // QSignalMappers allow identifying signal senders for MIDI learn/forget
     learnSignalMapper = new QSignalMapper(this);
     connect(learnSignalMapper, SIGNAL(mapped(int)),
@@ -127,11 +129,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     enableLoop->setChecked(true);
 
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QSpinBox(inBox);
-    chIn->setRange(1, 16);
-    chIn->setKeyboardTracking(false);
+    chIn = new QComboBox(inBox);
+    for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
     chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(valueChanged(int)), this, SLOT(updateChIn(int)));
+    connect(chIn, SIGNAL(activated(int)), this, SLOT(updateChIn(int)));
 
     QGridLayout *inBoxLayout = new QGridLayout;
 
@@ -180,19 +181,18 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
 
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QSpinBox(portBox);
+    portOut = new QComboBox(portBox);
     portLabel->setBuddy(portOut);
-    portOut->setRange(1, portCount);
-    portOut->setKeyboardTracking(false);
-    connect(portOut, SIGNAL(valueChanged(int)), this, SLOT(updatePortOut(int)));
+    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+    connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
 
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
-    channelOut = new QSpinBox(portBox);
+    channelOut = new QComboBox(portBox);
     channelLabel->setBuddy(channelOut);
-    channelOut->setRange(1, 16);
-    channelOut->setKeyboardTracking(false);
-    connect(channelOut, SIGNAL(valueChanged(int)), this,
+    for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
+    connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+
 
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(muteLabel, 0, 0);
@@ -509,8 +509,11 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     enableTrigByKbd->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "enableLoop")
                     enableLoop->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel")
-                    chIn->setValue(xml.readElementText().toInt() + 1);
+                else if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    chIn->setCurrentIndex(tmp);
+                    updateChIn(tmp);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -520,10 +523,16 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "channel")
-                    channelOut->setValue(xml.readElementText().toInt() + 1);
-                else if (xml.name() == "port")
-                    portOut->setValue(xml.readElementText().toInt() + 1);
+                if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    channelOut->setCurrentIndex(tmp);
+                    updateChannelOut(tmp);
+                }
+                else if (xml.name() == "port") {
+                    tmp = xml.readElementText().toInt();
+                    portOut->setCurrentIndex(tmp);
+                    updatePortOut(tmp);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -666,12 +675,12 @@ void SeqWidget::readDataText(QTextStream& arpText)
     qs2 = qs.section(' ', 1, 1);
     enableVelIn->setChecked(qs2.toInt());
     qs2 = qs.section(' ', 2, 2);
-    chIn->setValue(qs2.toInt() + 1);
+    chIn->setCurrentIndex(qs2.toInt());
     qs = arpText.readLine();
     qs2 = qs.section(' ', 0, 0);
-    channelOut->setValue(qs2.toInt() + 1);
+    channelOut->setCurrentIndex(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
-    portOut->setValue(qs2.toInt() + 1);
+    portOut->setCurrentIndex(qs2.toInt());
     qs2 = qs.section(' ', 2, 2);
     notelength->setValue(qs2.toInt());
     qs = arpText.readLine();
@@ -762,13 +771,13 @@ void SeqWidget::setEnableVelIn(bool on)
 
 void SeqWidget::setChIn(int value)
 {
-    chIn->setValue(value);
+    chIn->setCurrentIndex(value);
     modified = true;
 }
 
 void SeqWidget::updateChIn(int value)
 {
-    midiWorker->chIn = value - 1;
+    midiWorker->chIn = value;
     modified = true;
 }
 
@@ -919,25 +928,25 @@ void SeqWidget::setMuted(bool on)
 
 void SeqWidget::setPortOut(int value)
 {
-    portOut->setValue(value);
+    portOut->setCurrentIndex(value);
     modified = true;
 }
 
 void SeqWidget::setChannelOut(int value)
 {
-    channelOut->setValue(value);
+    channelOut->setCurrentIndex(value);
     modified = true;
 }
 
 void SeqWidget::updatePortOut(int value)
 {
-    midiWorker->portOut = value - 1;
+    midiWorker->portOut = value;
     modified = true;
 }
 
 void SeqWidget::updateChannelOut(int value)
 {
-    midiWorker->channelOut = value - 1;
+    midiWorker->channelOut = value;
     modified = true;
 }
 

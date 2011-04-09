@@ -75,11 +75,11 @@ class ArpWidget : public QWidget
   Q_OBJECT
 
   private:
-    QSpinBox *chIn;                        // Channel of input events
+    QComboBox *chIn;                        // Channel of input events
     QSpinBox *indexIn[2];                  // Index input
     QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
     QLabel *rangeInLabel, *indexInLabel;
-    QSpinBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
+    QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *triggerMode;
     QComboBox *patternPresetBox;
