@@ -36,7 +36,7 @@
 #include <QToolBar>
 
 #include "logwidget.h"
-#include "arpdata.h"
+#include "engine.h"
 #include "midicctable.h"
 #include "passwidget.h"
 #include "groovewidget.h"
@@ -56,9 +56,9 @@ static const char ABOUTMSG[] = "<html> <p><b><big>" APP_NAME " " PACKAGE_VERSION
  * disk. The constructor sets up all main window elements including
  * toolbars and menus. It instantiates the LogWidget, PassWidget,
  * MidiCCTable and their DockWidget windows. It also instantiates the
- * ArpData widget holding the lists of modules.
+ * Engine widget holding the lists of modules.
 
- * @brief Top-level UI class. Instantiates ArpData
+ * @brief Top-level UI class. Instantiates Engine
  */
 class MainWindow : public QMainWindow
 {
@@ -70,7 +70,7 @@ class MainWindow : public QMainWindow
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
     LogWidget *logWidget;
-    ArpData *arpData;
+    Engine *engine;
     MidiCCTable *midiCCTable;
     QString lastDir, filename;
     QStringList patternNames, patternPresets;
@@ -117,41 +117,41 @@ class MainWindow : public QMainWindow
  */
     bool saveFileAs();
 /*!
-* @brief This function returns the result of ArpData::isModified
+* @brief This function returns the result of Engine::isModified
 * @return True if unsaved parameter modifications exist in any module
 *
 */
     bool isModified();
 
 /*!
-* @brief This function creates and adds a new MidiArp to ArpData.
+* @brief This function creates and adds a new MidiArp to Engine.
 *
 * It also creates and adds the associated ArpWidget
-* and DockWidget to the corresponding lists in ArpData. It sets
+* and DockWidget to the corresponding lists in Engine. It sets
 * the ArpWidget::name and ArpWidget::ID as the current count of the
-* ArpData::MidiArpList.
+* Engine::MidiArpList.
 *
 * @param name Name attribute of the created arpeggiator module
 */
     void addArp(const QString&);
 /*!
-* @brief This function creates and adds a new MidiLfo to ArpData.
+* @brief This function creates and adds a new MidiLfo to Engine.
 *
 * It also creates and adds the associated LfoWidget
-* and DockWidget to the corresponding lists in ArpData. It sets
+* and DockWidget to the corresponding lists in Engine. It sets
 * the LfoWidget::name and SeqWidget::ID as the current count of the
-* ArpData::MidiLfoList.
+* Engine::MidiLfoList.
 *
 * @param name Name attribute of this LFO module
 */
     void addLfo(const QString&);
 /*!
-* @brief This function creates and adds a new MidiSeq to ArpData.
+* @brief This function creates and adds a new MidiSeq to Engine.
 *
 * It also creates and adds the associated SeqWidget
-* and DockWidget to the corresponding lists in ArpData. It sets
+* and DockWidget to the corresponding lists in Engine. It sets
 * the SeqWidget::name and SeqWidget::ID as the current count of the
-* ArpData::MidiSeqList.
+* Engine::MidiSeqList.
 *
 * @param name Name attribute of this arpeggiator module
 */
@@ -171,7 +171,7 @@ class MainWindow : public QMainWindow
 * It uses the first three letters of the module name to distinguish their
 * type. It creates the according module components and calls their UI
 * widgets, which fill them with the parameters found in the same stream.
-* Calls ArpData->NNNWidget->readData, where NNN is Arp, Lfo or Seq.
+* Calls Engine->NNNWidget->readData, where NNN is Arp, Lfo or Seq.
 *
 * @param xml Reference to QXmlStreamReader containing the open XML stream
 */
@@ -397,27 +397,27 @@ class MainWindow : public QMainWindow
 * @brief This function removes and deletes an Arpeggiator module.
 *
 * It removes all components MidiArp, ArpWidget and
-* DockWidget from the corresponding lists in ArpData.
+* DockWidget from the corresponding lists in Engine.
 *
-* @param index The ArpData::midiArpList index of the arpeggiator to remove
+* @param index The Engine::midiArpList index of the arpeggiator to remove
 */
     void removeArp(int index);
 /*!
 * @brief This function removes and deletes an LFO module.
 *
 * It removes all components MidiLfo, LfoWidget and
-* DockWidget from the corresponding lists in ArpData.
+* DockWidget from the corresponding lists in Engine.
 *
-* @param index The ArpData::midiLfoList index of the LFO to
+* @param index The Engine::midiLfoList index of the LFO to
 */
     void removeLfo(int index);
 /*!
 * @brief This function removes and deletes a Seq module.
 *
 * It removes all components MidiSeq, SeqWidget and
-* DockWidget from the corresponding lists in ArpData.
+* DockWidget from the corresponding lists in Engine.
 *
-* @param index The ArpData::MidiSeqList index of the sequencer to remove
+* @param index The Engine::MidiSeqList index of the sequencer to remove
 */
     void removeSeq(int index);
     void helpAbout();
@@ -461,7 +461,7 @@ class MainWindow : public QMainWindow
 * If index = 0, it appends an Arp pattern. If index > 0 it deletes
 * the Arp pattern at index from the list.
 * It deploys the new pattern preset list to all Arp modules by calling
-* ArpData::updatePatternPresets and writes
+* Engine::updatePatternPresets and writes
 * the new preset list to the resource file.
 * This function is a signal slot for ArpWidget::presetsChanged and
 * called whenever the preset list is modified in one Arp module.
@@ -469,7 +469,7 @@ class MainWindow : public QMainWindow
 * @param n Name of the preset to append if index = 0
 * @param p Text sequence of te preset to append if index = 0
 * @param index List index of the preset to delete or 0 to append a preset
-* @see ArpWidget::presetsChanged, ArpData::updatePatternPresets
+* @see ArpWidget::presetsChanged, Engine::updatePatternPresets
 */
     void updatePatternPresets(const QString& n, const QString& p, int index);
 /*! @brief Slot for fileRecentlyOpenedFiles.

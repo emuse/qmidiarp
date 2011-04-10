@@ -128,8 +128,8 @@ class SeqWidget : public QWidget
     ~SeqWidget();
 
     QString name;       /**< @brief The name of this SeqWidget as shown in the DockWidget TitleBar */
-    int ID;                     /**< @brief Corresponds to the ArpData::midiSeqList index of the associated MidiSeq */
-    int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in ArpData::moduleWindowList */
+    int ID;                     /**< @brief Corresponds to the Engine::midiSeqList index of the associated MidiSeq */
+    int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
     QVector<MidiCC> ccList;     /**< @brief Contains MIDI controller - GUI element bindings */
 
     SeqScreen *screen;
@@ -217,7 +217,7 @@ class SeqWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
-/*! @brief Emitted to ArpData::setMidiLearn to listen for incoming events.
+/*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
  *  @param controlID ID of the GUI element to be assigned to the controller
@@ -410,11 +410,11 @@ class SeqWidget : public QWidget
 * @brief Slot for SeqWidget::triggered signal created by MIDI-Learn context
 * menu MIDI Learn action.
 *
-* This function sets ArpData into
+* This function sets Engine into
 * MIDI Learn status for this module and controlID.
 * It emits SeqWidget::setMidiLearn with the necessary module and GUI element
 * information parameters.
-* ArpData will then wait for an incoming controller event and trigger the
+* Engine will then wait for an incoming controller event and trigger the
 * attribution by calling appendMidiCC.
 *
 * @param controlID The ID of the control GUI element (found
@@ -435,7 +435,7 @@ class SeqWidget : public QWidget
 /*!
 * @brief Slot for SeqWidget::cancelMidiLearnAction in MIDI-Learn
 * context menu. This function signals cancellation of the
-* MIDI-Learn Process to ArpData.
+* MIDI-Learn Process to Engine.
 *
 * It emits SeqWidget::setMidiLearn with controlID set to -1 meaning cancel.
 */

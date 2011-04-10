@@ -145,8 +145,8 @@ class LfoWidget : public QWidget
     ~LfoWidget();
 
     QString name;               /**< The name of this LfoWidget as shown in the DockWidget TitleBar */
-    int ID;                     /**< Corresponds to the ArpData::midiLfoList index of the associated MidiLfo */
-    int parentDockID;           /**< The index of the LfoWidget's parent DockWidget in ArpData::moduleWindowList */
+    int ID;                     /**< Corresponds to the Engine::midiLfoList index of the associated MidiLfo */
+    int parentDockID;           /**< The index of the LfoWidget's parent DockWidget in Engine::moduleWindowList */
     QVector<MidiCC> ccList;     /**< Contains MIDI controller - GUI element bindings */
 
     LfoScreen *screen;
@@ -224,7 +224,7 @@ class LfoWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
-/*! @brief Emitted to ArpData::setMidiLearn to listen for incoming events.
+/*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
  *  @param controlID ID of the GUI element to be assigned to the controller
@@ -424,11 +424,11 @@ class LfoWidget : public QWidget
 * @brief Slot for LfoWidget::triggered signal created by MIDI-Learn context
 * menu MIDI Learn action.
 *
-* This function sets ArpData into
+* This function sets Engine into
 * MIDI Learn status for this module and controlID.
 * It emits LfoWidget::setMidiLearn with the necessary module and GUI element
 * information parameters.
-* ArpData will then wait for an incoming controller event and trigger the
+* Engine will then wait for an incoming controller event and trigger the
 * attribution by calling appendMidiCC.
 *
 * @param controlID The ID of the control GUI element (found in
@@ -449,7 +449,7 @@ class LfoWidget : public QWidget
 /*!
 * @brief Slot for LfoWidget::cancelMidiLearnAction in MIDI-Learn context
 * menu. This function signals cancellation of the MIDI-Learn Process to
-* ArpData.
+* Engine.
 *
 * It emits LfoWidget::setMidiLearn with controlID set to -1 meaning cancel.
 */

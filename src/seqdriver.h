@@ -17,7 +17,7 @@
 
 /*! @brief ALSA sequencer backend QThread class. Also creates JackSync
  *
- * SeqDriver is created by ArpData at the moment of program start. Its
+ * SeqDriver is created by Engine at the moment of program start. Its
  * constructor registers ALSA seq input port and the requested number of
  * output ports. I also creates a JackSync instance whose ports are only
  * created when the SeqDriver::setUseJackTransport member is called.

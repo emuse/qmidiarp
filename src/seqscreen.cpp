@@ -29,7 +29,7 @@
 #include <QPixmap>
 
 #include "seqscreen.h"
-#include "arpdata.h"
+#include "engine.h"
 
 
 SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)

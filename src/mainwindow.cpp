@@ -73,9 +73,9 @@ MainWindow::MainWindow(int p_portCount)
     filename = "";
     lastDir = QDir::homePath();
 
-    arpData = new ArpData(p_portCount, this);
+    engine = new Engine(p_portCount, this);
 
-    midiCCTable = new MidiCCTable(arpData, this);
+    midiCCTable = new MidiCCTable(engine, this);
 
     logWidget = new LogWidget(this);
     logWindow = new QDockWidget(tr("Event Log"), this);
@@ -85,13 +85,13 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(arpData->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
+    connect(engine->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
             logWidget, SLOT(appendEvent(int, int, int, int)));
 
-    passWidget = new PassWidget(arpData, p_portCount, this);
+    passWidget = new PassWidget(engine, p_portCount, this);
 
     connect(this, SIGNAL(runQueue(bool)),
-            arpData->seqDriver, SLOT(setQueueStatus(bool)));
+            engine->seqDriver, SLOT(setQueueStatus(bool)));
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
@@ -102,11 +102,11 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            arpData, SLOT(setGrooveTick(int)));
+            engine, SLOT(setGrooveTick(int)));
     connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            arpData, SLOT(setGrooveVelocity(int)));
+            engine, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            arpData, SLOT(setGrooveLength(int)));
+            engine, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -180,7 +180,7 @@ MainWindow::MainWindow(int p_portCount)
     jackSyncAction->setDisabled(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(arpData->seqDriver, SIGNAL(jackShutdown(bool)),
+    connect(engine->seqDriver, SIGNAL(jackShutdown(bool)),
             jackSyncAction, SLOT(setChecked(bool)));
 
 
@@ -293,12 +293,12 @@ void MainWindow::updateWindowTitle()
     if (filename.isEmpty())
         setWindowTitle(QString("%1 (%2)")
                 .arg(APP_NAME)
-                .arg(arpData->getAlsaClientId()));
+                .arg(engine->getAlsaClientId()));
     else
         setWindowTitle(QString("%1 - %2  (%3)")
                 .arg(filename)
                 .arg(APP_NAME)
-                .arg(arpData->getAlsaClientId()));
+                .arg(engine->getAlsaClientId()));
 }
 
 void MainWindow::helpAbout()
@@ -318,7 +318,7 @@ void MainWindow::arpNew()
 
     name = QInputDialog::getText(this, APP_NAME,
             tr("Add MIDI Arpeggiator"), QLineEdit::Normal,
-            tr("%1").arg(arpData->midiArpCount() + 1), &ok);
+            tr("%1").arg(engine->midiArpCount() + 1), &ok);
     if (ok && !name.isEmpty()) {
         addArp("Arp:"+name);
     }
@@ -331,7 +331,7 @@ void MainWindow::lfoNew()
 
     name = QInputDialog::getText(this, APP_NAME,
             tr("Add MIDI LFO"), QLineEdit::Normal,
-            tr("%1").arg(arpData->midiLfoCount() + 1), &ok);
+            tr("%1").arg(engine->midiLfoCount() + 1), &ok);
     if (ok && !name.isEmpty()) {
         addLfo("LFO:"+name);
     }
@@ -344,7 +344,7 @@ void MainWindow::seqNew()
 
     name = QInputDialog::getText(this, APP_NAME,
             tr("Add Step Sequencer"), QLineEdit::Normal,
-            tr("%1").arg(arpData->midiSeqCount() + 1), &ok);
+            tr("%1").arg(engine->midiSeqCount() + 1), &ok);
     if (ok && !name.isEmpty()) {
         addSeq("Seq:"+name);
     }
@@ -354,9 +354,9 @@ void MainWindow::addArp(const QString& name)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
-    arpData->addMidiArp(midiWorker);
+    engine->addMidiArp(midiWorker);
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
-            arpData->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle, this);
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
     connect(midiWorker, SIGNAL(nextStep(int)),
@@ -370,7 +370,7 @@ void MainWindow::addArp(const QString& name)
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
-            arpData, SLOT(setMidiLearn(int, int, int)));
+            engine, SLOT(setMidiLearn(int, int, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             moduleWidget->screen, SLOT(setGrooveTick(int)));
@@ -379,12 +379,12 @@ void MainWindow::addArp(const QString& name)
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
             moduleWidget->screen, SLOT(setGrooveLength(int)));
 
-    widgetID = arpData->arpWidgetCount();
+    widgetID = engine->arpWidgetCount();
     moduleWidget->name = name;
     moduleWidget->ID = widgetID;
 
-    arpData->addArpWidget(moduleWidget);
-    arpData->sendGroove();
+    engine->addArpWidget(moduleWidget);
+    engine->sendGroove();
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -394,10 +394,10 @@ void MainWindow::addArp(const QString& name)
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
-    count = arpData->moduleWindowCount();
+    count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
-    arpData->addModuleWindow(moduleWindow);
+    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    engine->addModuleWindow(moduleWindow);
     moduleWindow->show();
     checkIfFirstModule();
 }
@@ -406,9 +406,9 @@ void MainWindow::addLfo(const QString& name)
 {
     int count, widgetID;
     MidiLfo *midiWorker = new MidiLfo();
-    arpData->addMidiLfo(midiWorker);
+    engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
-            arpData->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
@@ -416,13 +416,13 @@ void MainWindow::addLfo(const QString& name)
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
-            arpData, SLOT(setMidiLearn(int, int, int)));
+            engine, SLOT(setMidiLearn(int, int, int)));
 
-    widgetID = arpData->lfoWidgetCount();
+    widgetID = engine->lfoWidgetCount();
     moduleWidget->name = name;
     moduleWidget->ID = widgetID;
 
-    arpData->addLfoWidget(moduleWidget);
+    engine->addLfoWidget(moduleWidget);
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -432,10 +432,10 @@ void MainWindow::addLfo(const QString& name)
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
-    count = arpData->moduleWindowCount();
+    count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
-    arpData->addModuleWindow(moduleWindow);
+    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    engine->addModuleWindow(moduleWindow);
     checkIfFirstModule();
 }
 
@@ -443,24 +443,24 @@ void MainWindow::addSeq(const QString& name)
 {
     int count, widgetID;
     MidiSeq *midiWorker = new MidiSeq();
-    arpData->addMidiSeq(midiWorker);
+    engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
-            arpData->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
-            arpData, SLOT(setMidiLearn(int, int, int)));
+            engine, SLOT(setMidiLearn(int, int, int)));
     connect(midiWorker, SIGNAL(noteEvent(int, int)),
             moduleWidget, SLOT(processNote(int, int)));
 
-    widgetID = arpData->seqWidgetCount();
+    widgetID = engine->seqWidgetCount();
     moduleWidget->name = name;
     moduleWidget->ID = widgetID;
 
-    arpData->addSeqWidget(moduleWidget);
+    engine->addSeqWidget(moduleWidget);
 
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -470,65 +470,65 @@ void MainWindow::addSeq(const QString& name)
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
-    count = arpData->moduleWindowCount();
+    count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(arpData->moduleWindow(count - 1), moduleWindow);
-    arpData->addModuleWindow(moduleWindow);
+    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    engine->addModuleWindow(moduleWindow);
 
     checkIfFirstModule();
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)
 {
-    arpData->moduleWindow(parentDockID)->setWindowTitle(name);
-    arpData->setModified(true);
+    engine->moduleWindow(parentDockID)->setWindowTitle(name);
+    engine->setModified(true);
 }
 
 void MainWindow::removeArp(int index)
 {
     int parentDockID;
-    ArpWidget *arpWidget = arpData->arpWidget(index);
+    ArpWidget *arpWidget = engine->arpWidget(index);
 
     parentDockID = arpWidget->parentDockID;
-    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
-    arpData->removeMidiArp(arpWidget->getMidiWorker());
-    arpData->removeArpWidget(arpWidget);
+    engine->removeMidiArp(arpWidget->getMidiWorker());
+    engine->removeArpWidget(arpWidget);
     delete arpWidget;
-    arpData->removeModuleWindow(dockWidget);
-    arpData->updateIDs(parentDockID);
+    engine->removeModuleWindow(dockWidget);
+    engine->updateIDs(parentDockID);
     checkIfLastModule();
 }
 
 void MainWindow::removeLfo(int index)
 {
     int parentDockID;
-    LfoWidget *lfoWidget = arpData->lfoWidget(index);
+    LfoWidget *lfoWidget = engine->lfoWidget(index);
 
     parentDockID = lfoWidget->parentDockID;
-    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
-    arpData->removeMidiLfo(lfoWidget->getMidiWorker());
-    arpData->removeLfoWidget(lfoWidget);
+    engine->removeMidiLfo(lfoWidget->getMidiWorker());
+    engine->removeLfoWidget(lfoWidget);
     delete lfoWidget;
-    arpData->removeModuleWindow(dockWidget);
-    arpData->updateIDs(parentDockID);
+    engine->removeModuleWindow(dockWidget);
+    engine->updateIDs(parentDockID);
     checkIfLastModule();
 }
 
 void MainWindow::removeSeq(int index)
 {
     int parentDockID;
-    SeqWidget *seqWidget = arpData->seqWidget(index);
+    SeqWidget *seqWidget = engine->seqWidget(index);
 
     parentDockID = seqWidget->parentDockID;
-    QDockWidget *dockWidget = arpData->moduleWindow(parentDockID);
+    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
-    arpData->removeMidiSeq(seqWidget->getMidiWorker());
-    arpData->removeSeqWidget(seqWidget);
+    engine->removeMidiSeq(seqWidget->getMidiWorker());
+    engine->removeSeqWidget(seqWidget);
     delete seqWidget;
-    arpData->removeModuleWindow(dockWidget);
-    arpData->updateIDs(parentDockID);
+    engine->removeModuleWindow(dockWidget);
+    engine->updateIDs(parentDockID);
     checkIfLastModule();
 }
 
@@ -537,16 +537,16 @@ void MainWindow::clear()
     updateRunQueue(false);
     jackSyncToggle(false);
 
-    while (arpData->midiArpCount()) {
-        removeArp(arpData->midiArpCount() - 1);
+    while (engine->midiArpCount()) {
+        removeArp(engine->midiArpCount() - 1);
     }
 
-    while (arpData->midiLfoCount()) {
-        removeLfo(arpData->midiLfoCount() - 1);
+    while (engine->midiLfoCount()) {
+        removeLfo(engine->midiLfoCount() - 1);
     }
 
-    while (arpData->midiSeqCount()) {
-        removeSeq(arpData->midiSeqCount() - 1);
+    while (engine->midiSeqCount()) {
+        removeSeq(engine->midiSeqCount() - 1);
     }
 }
 
@@ -556,7 +556,7 @@ void MainWindow::fileNew()
         clear();
         filename = "";
         updateWindowTitle();
-        arpData->setModified(false);
+        engine->setModified(false);
     }
 }
 
@@ -630,7 +630,7 @@ void MainWindow::openFile(const QString& fn)
     }
 
     addRecentlyOpenedFile(filename, recentFiles);
-    arpData->setModified(false);
+    engine->setModified(false);
 }
 
 void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
@@ -687,17 +687,17 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             break;
         if (xml.isStartElement() && (xml.name() == "Arp")) {
             addArp("Arp:" + xml.attributes().value("name").toString());
-            arpData->arpWidget(arpData->midiArpCount() - 1)
+            engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml);
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             addLfo("LFO:" + xml.attributes().value("name").toString());
-            arpData->lfoWidget(arpData->midiLfoCount() - 1)
+            engine->lfoWidget(engine->midiLfoCount() - 1)
                     ->readData(xml);
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             addSeq("Seq:" + xml.attributes().value("name").toString());
-            arpData->seqWidget(arpData->midiSeqCount() - 1)
+            engine->seqWidget(engine->midiSeqCount() - 1)
                     ->readData(xml);
         }
         else skipXmlElement(xml);
@@ -783,13 +783,13 @@ void MainWindow::openTextFile(const QString& fn)
     qs2 = qs.section(' ', 0, 0);
 
     grooveWidget->grooveTick->setValue(qs2.toInt());
-    //  arpData->seqDriver->setGrooveTick(qs2.toInt());
+    //  engine->seqDriver->setGrooveTick(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
     grooveWidget->grooveVelocity->setValue(qs2.toInt());
-    //  arpData->seqDriver->setGrooveVelocity(qs2.toInt());
+    //  engine->seqDriver->setGrooveVelocity(qs2.toInt());
     qs2 = qs.section(' ', 2, 2);
     grooveWidget->grooveLength->setValue(qs2.toInt());
-    //  arpData->seqDriver->setGrooveLength(qs2.toInt());
+    //  engine->seqDriver->setGrooveLength(qs2.toInt());
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
@@ -805,20 +805,20 @@ void MainWindow::openTextFile(const QString& fn)
         switch (c) {
             case 1:
                 addSeq(qs);
-                arpData->seqWidget(arpData->midiSeqCount() - 1)->readDataText(loadText);
+                engine->seqWidget(engine->midiSeqCount() - 1)->readDataText(loadText);
             break;
             case 2:
                 addLfo(qs);
-                arpData->lfoWidget(arpData->midiLfoCount() - 1)->readDataText(loadText);
+                engine->lfoWidget(engine->midiLfoCount() - 1)->readDataText(loadText);
             break;
             case 3:
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readDataText(loadText);
+                engine->arpWidget(engine->midiArpCount() - 1)->readDataText(loadText);
             break;
             default:
                 qs = "Arp: " + qs;
                 addArp(qs);
-                arpData->arpWidget(arpData->midiArpCount() - 1)->readDataText(loadText);
+                engine->arpWidget(engine->midiArpCount() - 1)->readDataText(loadText);
             break;
         }
     }
@@ -879,42 +879,42 @@ bool MainWindow::saveFile()
             xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
-                QString::number((int)arpData->seqDriver->use_midiclock));
+                QString::number((int)engine->seqDriver->use_midiclock));
             xml.writeTextElement("jackSyncEnabled",
-                QString::number((int)arpData->seqDriver->use_jacksync));
+                QString::number((int)engine->seqDriver->use_jacksync));
             xml.writeTextElement("forwardUnmatched",
-                QString::number((int)arpData->seqDriver->forwardUnmatched));
+                QString::number((int)engine->seqDriver->forwardUnmatched));
             xml.writeTextElement("forwardPort",
-                QString::number(arpData->seqDriver->portUnmatched));
+                QString::number(engine->seqDriver->portUnmatched));
         xml.writeEndElement();
 
         xml.writeStartElement("groove");
             xml.writeTextElement("tick",
-                QString::number(arpData->grooveTick));
+                QString::number(engine->grooveTick));
             xml.writeTextElement("velocity",
-                QString::number(arpData->grooveVelocity));
+                QString::number(engine->grooveVelocity));
             xml.writeTextElement("length",
-                QString::number(arpData->grooveLength));
+                QString::number(engine->grooveLength));
         xml.writeEndElement();
 
     xml.writeEndElement();
 
     xml.writeStartElement("modules");
 
-    for (l1 = 0; l1 < arpData->moduleWindowCount(); l1++) {
+    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++) {
 
-        nameTest = arpData->moduleWindow(l1)->objectName();
+        nameTest = engine->moduleWindow(l1)->objectName();
 
         if (nameTest.startsWith('S')) {
-            arpData->seqWidget(ns)->writeData(xml);
+            engine->seqWidget(ns)->writeData(xml);
             ns++;
         }
         if (nameTest.startsWith('L')) {
-            arpData->lfoWidget(nl)->writeData(xml);
+            engine->lfoWidget(nl)->writeData(xml);
             nl++;
         }
         if (nameTest.startsWith('A')) {
-            arpData->arpWidget(na)->writeData(xml);
+            engine->arpWidget(na)->writeData(xml);
             na++;
         }
     }
@@ -929,7 +929,7 @@ bool MainWindow::saveFile()
     xml.writeEndDocument();
 
 
-    arpData->setModified(false);
+    engine->setModified(false);
     return true;
 }
 
@@ -1007,13 +1007,13 @@ void MainWindow::closeEvent(QCloseEvent* e)
 
 bool MainWindow::isModified()
 {
-    return arpData->isModified();
+    return engine->isModified();
 }
 
 void MainWindow::updateTempo(int p_tempo)
 {
-    arpData->seqDriver->setQueueTempo(p_tempo);
-    arpData->setModified(true);
+    engine->seqDriver->setQueueTempo(p_tempo);
+    engine->setModified(true);
 }
 
 void MainWindow::updateRunQueue(bool on)
@@ -1024,13 +1024,13 @@ void MainWindow::updateRunQueue(bool on)
 
 void MainWindow::resetQueue()
 {
-    arpData->seqDriver->setQueueStatus(arpData->seqDriver->runArp);
+    engine->seqDriver->setQueueStatus(engine->seqDriver->runArp);
 }
 
 void MainWindow::midiClockToggle(bool on)
 {
     if (on) jackSyncAction->setChecked(false);
-    arpData->seqDriver->setUseMidiClock(on);
+    engine->seqDriver->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
 
@@ -1038,7 +1038,7 @@ void MainWindow::jackSyncToggle(bool on)
 {
     if (on) midiClockAction->setChecked(false);
     setGUIforExtSync(on);
-    arpData->seqDriver->setUseJackTransport(on);
+    engine->seqDriver->setUseJackTransport(on);
 }
 
 void MainWindow::setGUIforExtSync(bool on)
@@ -1234,13 +1234,13 @@ void MainWindow::updatePatternPresets(const QString& n, const QString& p,
         patternNames.append(n);
         patternPresets.append(p);
     }
-    arpData->updatePatternPresets(n, p, index);
+    engine->updatePatternPresets(n, p, index);
     writeRcFile();
 }
 
 void MainWindow::checkIfLastModule()
 {
-    if (!arpData->moduleWindowCount()) {
+    if (!engine->moduleWindowCount()) {
         runAction->setDisabled(true);
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
@@ -1252,7 +1252,7 @@ void MainWindow::checkIfLastModule()
 
 void MainWindow::checkIfFirstModule()
 {
-    if (arpData->moduleWindowCount() == 1) {
+    if (engine->moduleWindowCount() == 1) {
         midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()

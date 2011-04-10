@@ -124,8 +124,8 @@ class ArpWidget : public QWidget
     ~ArpWidget();
 
     QString name;       /**< @brief The name of this ArpWidget as shown in the DockWidget TitleBar */
-    int ID;                     /**< @brief Corresponds to the ArpData::midiArpList index of the associated MidiArp */
-    int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in ArpData::moduleWindowList */
+    int ID;                     /**< @brief Corresponds to the Engine::midiArpList index of the associated MidiArp */
+    int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
     QVector<MidiCC> ccList;     /**< @brief Contains MIDI controller - GUI element bindings */
 
     ArpScreen *screen;
@@ -210,7 +210,7 @@ class ArpWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
-/*! @brief Emitted to ArpData::setMidiLearn to listen for incoming events.
+/*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
  *  @param controlID ID of the GUI element to be assigned to the controller
@@ -320,11 +320,11 @@ class ArpWidget : public QWidget
 * @brief Slot for ArpWidget::triggered signal created by MIDI-Learn context
 * menu MIDI Learn action.
 *
-* This function sets ArpData into
+* This function sets Engine into
 * MIDI Learn status for this module and controlID.
 * It emits ArpWidget::setMidiLearn with the necessary module and GUI element
 * information parameters.
-* ArpData will then wait for an incoming controller event and trigger the
+* Engine will then wait for an incoming controller event and trigger the
 * attribution by calling appendMidiCC.
 *
 * @param controlID The ID of the control GUI element (found
@@ -345,7 +345,7 @@ class ArpWidget : public QWidget
 /*!
 * @brief Slot for ArpWidget::cancelMidiLearnAction in MIDI-Learn
 * context menu. This function signals cancellation of the
-* MIDI-Learn Process to ArpData.
+* MIDI-Learn Process to Engine.
 *
 * It emits ArpWidget::setMidiLearn with controlID set to -1 meaning cancel.
 */
