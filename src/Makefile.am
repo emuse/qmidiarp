@@ -24,7 +24,7 @@ nodist_qmidiarp_SOURCES = \
 	slider_moc.cpp
 
 qmidiarp_SOURCES = \
-	engine.cpp arpdata.h \
+	engine.cpp engine.h \
 	arpscreen.cpp arpscreen.h \
 	lfoscreen.cpp lfoscreen.h \
 	seqscreen.cpp seqscreen.h \
