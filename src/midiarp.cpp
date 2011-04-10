@@ -30,7 +30,7 @@
 
 // this class must be implemented in such way
 // so that its copy (= operator) is realtime safe
-class MidiArpData
+class MidiEngine
 {
 public:
     int foo;
@@ -42,12 +42,12 @@ MidiArp::MidiArp()
     // lock congestion is simulated by attempt to update
     // when LockedData destructor is not called
     {
-        LockFreeStore<MidiArpData> store; // store for the two instances of MidiArpData
-        const MidiArpData * rdata(store); // pointer to the read-only store, to be used from the seq/jack driver thread
+        LockFreeStore<MidiEngine> store; // store for the two instances of MidiEngine
+        const MidiEngine * rdata(store); // pointer to the read-only store, to be used from the seq/jack driver thread
 
         // write to the writable store
         {
-            LockedData<MidiArpData> ldata(store); // lock the writable store, destructor will unlock it
+            LockedData<MidiEngine> ldata(store); // lock the writable store, destructor will unlock it
             ldata->foo = 1;                       // write access the writable store (lock obtained)
             qWarning("gui: %d", ldata->foo);      // read access to the writable store (lock obtained)
         } // ldata gets out of the scope and its destructor is called. this results in unlock of the writable store
@@ -60,7 +60,7 @@ MidiArp::MidiArp()
 
         // write to the writable store
         {
-            LockedData<MidiArpData> ldata(store);
+            LockedData<MidiEngine> ldata(store);
             ldata->foo = 2;
             qWarning("gui: %d", ldata->foo);
 

@@ -5,7 +5,7 @@
 #include <QDialog>
 #include <QSpinBox>
 
-#include "arpdata.h"
+#include "engine.h"
 
 class PassWidget : public QDialog
 
@@ -13,12 +13,12 @@ class PassWidget : public QDialog
   Q_OBJECT
 
   private:
-    ArpData *arpData;
+    Engine *engine;
     QCheckBox *forwardCheck;
     QComboBox *portUnmatchedSpin;
 
   public:
-    PassWidget(ArpData* arpData, int p_portcount, QWidget* parent=0);
+    PassWidget(Engine* engine, int p_portcount, QWidget* parent=0);
     ~PassWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);

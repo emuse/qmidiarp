@@ -5,12 +5,12 @@
 #include "mainwindow.h"
 #include "passwidget.h"
 
-PassWidget::PassWidget(ArpData *p_arpData, int p_portcount, QWidget *parent)
+PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
             : QDialog(parent)
 {
     int l1;
 
-    arpData = p_arpData;
+    engine = p_engine;
 
     forwardCheck = new QCheckBox(this);
     forwardCheck->setText(tr("&Forward unmatched events to port"));
@@ -64,13 +64,13 @@ PassWidget::~PassWidget()
 
 void PassWidget::updateForward(bool on)
 {
-    arpData->seqDriver->setForwardUnmatched(on);
+    engine->seqDriver->setForwardUnmatched(on);
     portUnmatchedSpin->setDisabled(!on);
 }
 
 void PassWidget::updatePortUnmatched(int id)
 {
-    arpData->seqDriver->setPortUnmatched(id);
+    engine->seqDriver->setPortUnmatched(id);
 }
 
 void PassWidget::setForward(bool on)
@@ -86,13 +86,13 @@ void PassWidget::setPortUnmatched(int id)
 
 void PassWidget::updateControlSetting(bool on)
 {
-    arpData->setMidiControllable(on);
+    engine->setMidiControllable(on);
 }
 
 void PassWidget::updateCompactStyle(bool on)
 {
     compactStyle = on;
-    arpData->setCompactStyle(on);
+    engine->setCompactStyle(on);
 }
 
 

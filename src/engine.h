@@ -1,6 +1,6 @@
 /**
- * @file arpdata.h
- * @brief Header file for the ArpData class
+ * @file engine.h
+ * @brief Header file for the Engine class
  *
  * @section LICENSE
  *
@@ -22,8 +22,8 @@
  *      MA 02110-1301, USA.
  */
 
-#ifndef ARPDATA_H
-#define ARPDATA_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 #include <QWidget>
 #include <QDockWidget>
@@ -42,13 +42,13 @@
  * For each module type there is a QList for each of
  * its components (for example MidiArp and ArpWidget). In parallel there is
  * a common list for all modules containing their DockWidgets.
- * ArpData also instantiates the SeqDriver MIDI backend and handles MIDI
+ * Engine also instantiates the SeqDriver MIDI backend and handles MIDI
  * controller events through signaling by SeqDriver. Controllers are
  * dispatched to the modules as requiered by their MIDI Learn
  * MidiCCList.
  *
  */
-class ArpData : public QWidget  {
+class Engine : public QWidget  {
 
   Q_OBJECT
 
@@ -82,12 +82,12 @@ class ArpData : public QWidget  {
   public:
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;
-    bool transportStatus;
+    bool status;
     SeqDriver *seqDriver;
 
   public:
-    ArpData(int p_portCount, QWidget* parent=0);
-    ~ArpData();
+    Engine(int p_portCount, QWidget* parent=0);
+    ~Engine();
     int getPortCount();
     bool isModified();
 
@@ -131,13 +131,13 @@ class ArpData : public QWidget  {
 /**
  * @brief This signal is connected to the LogWidget::appendEvent() slot
  *
- * @param ev MidiEvent received by ArpData
+ * @param ev MidiEvent received by Engine
  * @param tick Set to the tick value at which the event was received
  */
     void midiEventReceived(MidiEvent ev, int tick);
 
   public slots:
-    void setTransportStatus(bool);
+    void setStatus(bool);
 /**
  * @brief This function is used to set the modified flag, which is queried before
  * loading a new session file or quitting qmidiarp.

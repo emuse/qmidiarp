@@ -1,6 +1,6 @@
 /**
- * @file arpdata.cpp
- * @brief Implementation of the ArpData class
+ * @file engine.cpp
+ * @brief Implementation of the Engine class
  *
  * @section LICENSE
  *
@@ -26,10 +26,10 @@
 #include <QString>
 
 #include "seqdriver.h"
-#include "arpdata.h"
+#include "engine.h"
 
 
-ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
+Engine::Engine(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
     portCount = p_portCount;
 
@@ -44,43 +44,43 @@ ArpData::ArpData(int p_portCount, QWidget *parent) : QWidget(parent), modified(f
     gotArpKbdTrig = false;
     gotSeqKbdTrig = false;
     schedDelayTicks = 2;
-    transportStatus = false;
+    status = false;
 
     resetTicks(0);
 }
 
-ArpData::~ArpData(){
+Engine::~Engine(){
 }
 //Arp handling
-void ArpData::addMidiArp(MidiArp *midiArp)
+void Engine::addMidiArp(MidiArp *midiArp)
 {
     midiArpList.append(midiArp);
 }
 
-void ArpData::addArpWidget(ArpWidget *arpWidget)
+void Engine::addArpWidget(ArpWidget *arpWidget)
 {
     arpWidgetList.append(arpWidget);
     modified = true;
 }
 
-void ArpData::removeMidiArp(MidiArp *midiArp)
+void Engine::removeMidiArp(MidiArp *midiArp)
 {
-    if (transportStatus && (moduleWindowCount() < 1)) {
-        setTransportStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiArpList.indexOf(midiArp);
     if (i != -1)
         delete midiArpList.takeAt(i);
 }
 
-void ArpData::removeArpWidget(ArpWidget *arpWidget)
+void Engine::removeArpWidget(ArpWidget *arpWidget)
 {
     removeMidiArp(arpWidget->getMidiWorker());
     arpWidgetList.removeOne(arpWidget);
     modified = true;
 }
 
-void ArpData::updatePatternPresets(const QString& n, const QString& p, int index)
+void Engine::updatePatternPresets(const QString& n, const QString& p, int index)
 {
     int l1;
     for (l1 = 0; l1 < midiArpCount(); l1++) {
@@ -88,49 +88,49 @@ void ArpData::updatePatternPresets(const QString& n, const QString& p, int index
     }
 }
 
-int ArpData::midiArpCount()
+int Engine::midiArpCount()
 {
     return(midiArpList.count());
 }
 
-int ArpData::arpWidgetCount()
+int Engine::arpWidgetCount()
 {
     return(arpWidgetList.count());
 }
 
-MidiArp *ArpData::midiArp(int index)
+MidiArp *Engine::midiArp(int index)
 {
     return(midiArpList.at(index));
 }
 
-ArpWidget *ArpData::arpWidget(int index)
+ArpWidget *Engine::arpWidget(int index)
 {
     return(arpWidgetList.at(index));
 }
 
 
-void ArpData::setGrooveTick(int val)
+void Engine::setGrooveTick(int val)
 {
     grooveTick = val;
     sendGroove();
     modified = true;
 }
 
-void ArpData::setGrooveVelocity(int val)
+void Engine::setGrooveVelocity(int val)
 {
     grooveVelocity = val;
     sendGroove();
     modified = true;
 }
 
-void ArpData::setGrooveLength(int val)
+void Engine::setGrooveLength(int val)
 {
     grooveLength = val;
     sendGroove();
     modified = true;
 }
 
-void ArpData::sendGroove()
+void Engine::sendGroove()
 {
     for (int l1 = 0; l1 < midiArpList.count(); l1++) {
         midiArp(l1)->newGrooveValues(grooveTick, grooveVelocity,
@@ -140,130 +140,130 @@ void ArpData::sendGroove()
 
 //LFO handling
 
-void ArpData::addMidiLfo(MidiLfo *midiLfo)
+void Engine::addMidiLfo(MidiLfo *midiLfo)
 {
     midiLfoList.append(midiLfo);
 }
 
-void ArpData::addLfoWidget(LfoWidget *lfoWidget)
+void Engine::addLfoWidget(LfoWidget *lfoWidget)
 {
     lfoWidgetList.append(lfoWidget);
     modified = true;
 }
 
-void ArpData::removeMidiLfo(MidiLfo *midiLfo)
+void Engine::removeMidiLfo(MidiLfo *midiLfo)
 {
-    if (transportStatus && (moduleWindowCount() < 1)) {
-        setTransportStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiLfoList.indexOf(midiLfo);
     if (i != -1)
         delete midiLfoList.takeAt(i);
 }
 
-void ArpData::removeLfoWidget(LfoWidget *lfoWidget)
+void Engine::removeLfoWidget(LfoWidget *lfoWidget)
 {
     removeMidiLfo(lfoWidget->getMidiWorker());
     lfoWidgetList.removeOne(lfoWidget);
     modified = true;
 }
 
-int ArpData::midiLfoCount()
+int Engine::midiLfoCount()
 {
     return(midiLfoList.count());
 }
 
-int ArpData::lfoWidgetCount()
+int Engine::lfoWidgetCount()
 {
     return(lfoWidgetList.count());
 }
 
-MidiLfo *ArpData::midiLfo(int index)
+MidiLfo *Engine::midiLfo(int index)
 {
     return(midiLfoList.at(index));
 }
 
-LfoWidget *ArpData::lfoWidget(int index)
+LfoWidget *Engine::lfoWidget(int index)
 {
     return(lfoWidgetList.at(index));
 }
 
 //SEQ handling
 
-void ArpData::addMidiSeq(MidiSeq *midiSeq)
+void Engine::addMidiSeq(MidiSeq *midiSeq)
 {
     midiSeqList.append(midiSeq);
 }
 
-void ArpData::addSeqWidget(SeqWidget *seqWidget)
+void Engine::addSeqWidget(SeqWidget *seqWidget)
 {
     seqWidgetList.append(seqWidget);
     modified = true;
 }
 
-void ArpData::removeMidiSeq(MidiSeq *midiSeq)
+void Engine::removeMidiSeq(MidiSeq *midiSeq)
 {
-    if (transportStatus && (moduleWindowCount() < 1)) {
-        setTransportStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiSeqList.indexOf(midiSeq);
     if (i != -1)
         delete midiSeqList.takeAt(i);
 }
 
-void ArpData::removeSeqWidget(SeqWidget *seqWidget)
+void Engine::removeSeqWidget(SeqWidget *seqWidget)
 {
     removeMidiSeq(seqWidget->getMidiWorker());
     seqWidgetList.removeOne(seqWidget);
     modified = true;
 }
 
-int ArpData::midiSeqCount()
+int Engine::midiSeqCount()
 {
     return(midiSeqList.count());
 }
 
-int ArpData::seqWidgetCount()
+int Engine::seqWidgetCount()
 {
     return(seqWidgetList.count());
 }
 
-MidiSeq *ArpData::midiSeq(int index)
+MidiSeq *Engine::midiSeq(int index)
 {
     return(midiSeqList.at(index));
 }
 
-SeqWidget *ArpData::seqWidget(int index)
+SeqWidget *Engine::seqWidget(int index)
 {
     return(seqWidgetList.at(index));
 }
 
 //module Window handling (dockWidgets)
 
-void ArpData::addModuleWindow(QDockWidget *moduleWindow)
+void Engine::addModuleWindow(QDockWidget *moduleWindow)
 {
     moduleWindowList.append(moduleWindow);
     modified = true;
 }
 
-void ArpData::removeModuleWindow(QDockWidget *moduleWindow)
+void Engine::removeModuleWindow(QDockWidget *moduleWindow)
 {
     moduleWindowList.removeOne(moduleWindow);
     delete moduleWindow;
     modified = true;
 }
 
-QDockWidget *ArpData::moduleWindow(int index)
+QDockWidget *Engine::moduleWindow(int index)
 {
     return(moduleWindowList.at(index));
 }
 
-int ArpData::moduleWindowCount()
+int Engine::moduleWindowCount()
 {
     return(moduleWindowList.count());
 }
 
-void ArpData::updateIDs(int curID)
+void Engine::updateIDs(int curID)
 {
     int l1, tempDockID;
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
@@ -291,7 +291,7 @@ void ArpData::updateIDs(int curID)
 
 //general
 
-void ArpData::setCompactStyle(bool on)
+void Engine::setCompactStyle(bool on)
 {
     int l1;
     if (on) {
@@ -304,7 +304,7 @@ void ArpData::setCompactStyle(bool on)
     }
 }
 
-bool ArpData::isModified()
+bool Engine::isModified()
 {
     bool arpmodified = false;
     bool lfomodified = false;
@@ -331,7 +331,7 @@ bool ArpData::isModified()
                     || arpmodified || lfomodified || seqmodified;
 }
 
-void ArpData::setModified(bool m)
+void Engine::setModified(bool m)
 {
     modified = m;
     seqDriver->setModified(m);
@@ -356,17 +356,17 @@ void ArpData::setModified(bool m)
  * dropouts when moving windows.
  */
 
-int ArpData::getPortCount()
+int Engine::getPortCount()
 {
     return(portCount);
 }
 
-int ArpData::getClientId()
+int Engine::getClientId()
 {
     return seqDriver->getAlsaClientId();
 }
 
-void ArpData::setTransportStatus(bool on)
+void Engine::setStatus(bool on)
 {
     if (moduleWindowCount()) {
         if (!on) {
@@ -374,18 +374,18 @@ void ArpData::setTransportStatus(bool on)
                 midiArp(l1)->clearNoteBuffer();
             }
         }
-        transportStatus = on;
+        status = on;
         resetTicks(0);
         seqDriver->setQueueStatus(on);
     }
 }
 
-void ArpData::tick_callback(void * context, bool echo_from_trig)
+void Engine::tick_callback(void * context, bool echo_from_trig)
 {
-  ((ArpData *)context)->echoCallback(echo_from_trig);
+  ((Engine *)context)->echoCallback(echo_from_trig);
 }
 
-void ArpData::echoCallback(bool echo_from_trig)
+void Engine::echoCallback(bool echo_from_trig)
 {
     int l1, l2;
     QVector<int> note, velocity;
@@ -521,12 +521,12 @@ void ArpData::echoCallback(bool echo_from_trig)
     }
 }
 
-void ArpData::midi_event_received_callback(void * context, MidiEvent ev)
+void Engine::midi_event_received_callback(void * context, MidiEvent ev)
 {
-  ((ArpData *)context)->eventCallback(ev);
+  ((Engine *)context)->eventCallback(ev);
 }
 
-bool ArpData::eventCallback(MidiEvent inEv)
+bool Engine::eventCallback(MidiEvent inEv)
 {
     bool unmatched;
     int l1;
@@ -603,7 +603,7 @@ bool ArpData::eventCallback(MidiEvent inEv)
     return unmatched;
 }
 
-void ArpData::handleController(int ccnumber, int channel, int value)
+void Engine::handleController(int ccnumber, int channel, int value)
 {
     bool m;
     int min, max, sval;
@@ -805,7 +805,7 @@ void ArpData::handleController(int ccnumber, int channel, int value)
     }
 }
 
-void ArpData::resetTicks(int curtick)
+void Engine::resetTicks(int curtick)
 {
     int l1;
 
@@ -829,13 +829,13 @@ void ArpData::resetTicks(int curtick)
     nextMinArpTick = 0;
 }
 
-void ArpData::setMidiControllable(bool on)
+void Engine::setMidiControllable(bool on)
 {
     midiControllable = on;
     modified = true;
 }
 
-void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
+void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 {
     if (0 > controlID) {
         midiLearnFlag = false;
@@ -849,7 +849,7 @@ void ArpData::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
     }
 }
 
-void ArpData::setTempo(int bpm)
+void Engine::setTempo(int bpm)
 {
     seqDriver->setTempo(bpm);
     modified = true;
