@@ -298,17 +298,17 @@
 <context>
     <name>GrooveWidget</name>
     <message>
-        <location filename="../groovewidget.cpp" line="20"/>
+        <location filename="../groovewidget.cpp" line="45"/>
         <source>&amp;Shift</source>
         <translation>&amp;Posunutí</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="25"/>
+        <location filename="../groovewidget.cpp" line="50"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="30"/>
+        <location filename="../groovewidget.cpp" line="55"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
@@ -557,42 +557,42 @@ Kolečko myši: změna posunu</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../logwidget.cpp" line="26"/>
+        <location filename="../logwidget.cpp" line="49"/>
         <source>&amp;Enable Log</source>
         <translation>&amp;Povolit zápis</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="32"/>
+        <location filename="../logwidget.cpp" line="55"/>
         <source>Log &amp;MIDI Clock</source>
         <translation>Zachycovat hodiny &amp;MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="37"/>
+        <location filename="../logwidget.cpp" line="60"/>
         <source>&amp;Clear</source>
         <translation>&amp;Smazat</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="90"/>
+        <location filename="../logwidget.cpp" line="113"/>
         <source>MIDI Clock</source>
         <translation>Hodiny MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="95"/>
+        <location filename="../logwidget.cpp" line="118"/>
         <source>MIDI Start (Transport)</source>
         <translation>Začátek hodin MIDI (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="99"/>
+        <location filename="../logwidget.cpp" line="122"/>
         <source>MIDI Continue (Transport)</source>
         <translation>Pokračování MIDI (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="103"/>
+        <location filename="../logwidget.cpp" line="126"/>
         <source>MIDI Stop (Transport)</source>
         <translation>Zastavení MIDI (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="107"/>
+        <location filename="../logwidget.cpp" line="130"/>
         <source>Unknown event type</source>
         <translation>Neznámá událost (signál) MIDI</translation>
     </message>
@@ -981,42 +981,42 @@ Uložit změny?</translation>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="44"/>
+        <location filename="../midicctable.cpp" line="48"/>
         <source>Re&amp;move</source>
         <translation>&amp;Odstranit</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="45"/>
+        <location filename="../midicctable.cpp" line="49"/>
         <source>Re&amp;vert</source>
         <translation>&amp;Vrátit</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="58"/>
+        <location filename="../midicctable.cpp" line="62"/>
         <source>MIDI Controllers - </source>
         <translation>Ovladače MIDI - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="113"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>Control</source>
         <translation>Ovládání</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="117"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="121"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>Ch</source>
         <translation>Kanál</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="125"/>
+        <location filename="../midicctable.cpp" line="129"/>
         <source>min</source>
         <translation>Min</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="129"/>
+        <location filename="../midicctable.cpp" line="133"/>
         <source>max</source>
         <translation>Max</translation>
     </message>
@@ -1024,22 +1024,22 @@ Uložit změny?</translation>
 <context>
     <name>PassWidget</name>
     <message>
-        <location filename="../passwidget.cpp" line="16"/>
+        <location filename="../passwidget.cpp" line="40"/>
         <source>&amp;Forward unmatched events to port</source>
         <translation>&amp;Neodpovídající události (signály MIDI) vést dál na přípojku</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="39"/>
+        <location filename="../passwidget.cpp" line="63"/>
         <source>&amp;Compact module layout style</source>
         <translation>&amp;Kompaktní styl rozvržení pro moduly</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="33"/>
+        <location filename="../passwidget.cpp" line="57"/>
         <source>&amp;Modules controllable by MIDI controller</source>
         <translation>&amp;Moduly jsou říditelné ovladačem MIDI</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="58"/>
+        <location filename="../passwidget.cpp" line="82"/>
         <source>Settings - </source>
         <translation>Nastavení - </translation>
     </message>

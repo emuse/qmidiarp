@@ -298,17 +298,17 @@
 <context>
     <name>GrooveWidget</name>
     <message>
-        <location filename="../groovewidget.cpp" line="20"/>
+        <location filename="../groovewidget.cpp" line="45"/>
         <source>&amp;Shift</source>
         <translation>&amp;Verschiebung</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="25"/>
+        <location filename="../groovewidget.cpp" line="50"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Anschlag</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="30"/>
+        <location filename="../groovewidget.cpp" line="55"/>
         <source>&amp;Length</source>
         <translation>&amp;Dauer</translation>
     </message>
@@ -557,42 +557,42 @@ Mausrad: Verschieben des Offsets</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../logwidget.cpp" line="26"/>
+        <location filename="../logwidget.cpp" line="49"/>
         <source>&amp;Enable Log</source>
         <translation>&amp;Protokollieren</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="32"/>
+        <location filename="../logwidget.cpp" line="55"/>
         <source>Log &amp;MIDI Clock</source>
         <translation>&amp;MIDI Clock aufzeichnen</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="37"/>
+        <location filename="../logwidget.cpp" line="60"/>
         <source>&amp;Clear</source>
         <translation>&amp;Löschen</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="90"/>
+        <location filename="../logwidget.cpp" line="113"/>
         <source>MIDI Clock</source>
         <translation>MIDI Clock</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="95"/>
+        <location filename="../logwidget.cpp" line="118"/>
         <source>MIDI Start (Transport)</source>
         <translation>MIDI Clock Start (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="99"/>
+        <location filename="../logwidget.cpp" line="122"/>
         <source>MIDI Continue (Transport)</source>
         <translation>MIDI Continue (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="103"/>
+        <location filename="../logwidget.cpp" line="126"/>
         <source>MIDI Stop (Transport)</source>
         <translation>MIDI Stop (Transport)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="107"/>
+        <location filename="../logwidget.cpp" line="130"/>
         <source>Unknown event type</source>
         <translation>Unbekanntes MIDI-Signal</translation>
     </message>
@@ -981,42 +981,42 @@ Die Änderungen speichern?</translation>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="44"/>
+        <location filename="../midicctable.cpp" line="48"/>
         <source>Re&amp;move</source>
         <translation>Ent&amp;fernen</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="45"/>
+        <location filename="../midicctable.cpp" line="49"/>
         <source>Re&amp;vert</source>
         <translation>&amp;Wiederherstellen</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="58"/>
+        <location filename="../midicctable.cpp" line="62"/>
         <source>MIDI Controllers - </source>
         <translation>MIDI-Steuerungen - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="113"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>Control</source>
         <translation>Steuerung</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="117"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="121"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>Ch</source>
         <translation>Kan</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="125"/>
+        <location filename="../midicctable.cpp" line="129"/>
         <source>min</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="129"/>
+        <location filename="../midicctable.cpp" line="133"/>
         <source>max</source>
         <translation></translation>
     </message>
@@ -1024,22 +1024,22 @@ Die Änderungen speichern?</translation>
 <context>
     <name>PassWidget</name>
     <message>
-        <location filename="../passwidget.cpp" line="16"/>
+        <location filename="../passwidget.cpp" line="40"/>
         <source>&amp;Forward unmatched events to port</source>
         <translation>&amp;Unpassende MIDI Signale weiterleiten an Anschluss</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="39"/>
+        <location filename="../passwidget.cpp" line="63"/>
         <source>&amp;Compact module layout style</source>
         <translation>&amp;Kompakter Layout-Stil für Module</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="33"/>
+        <location filename="../passwidget.cpp" line="57"/>
         <source>&amp;Modules controllable by MIDI controller</source>
         <translation>&amp;Module sind MIDI-steuerbar</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="58"/>
+        <location filename="../passwidget.cpp" line="82"/>
         <source>Settings - </source>
         <translation>Einstellungen - </translation>
     </message>
