@@ -369,17 +369,17 @@
     <message>
         <location filename="../lfowidget.cpp" line="91"/>
         <source>Input</source>
-        <translation type="unfinished">Vstup</translation>
+        <translation>Vstup</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="99"/>
         <source>MIDI Controller number to record</source>
-        <translation type="unfinished"></translation>
+        <translation>Číslo ovladače MIDI pro nahrávání</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="104"/>
         <source>&amp;Channel</source>
-        <translation type="unfinished">&amp;Каnál</translation>
+        <translation>&amp;Каnál</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="133"/>
@@ -487,12 +487,12 @@ Kolečko myši: změna posunu</translation>
         <location filename="../lfowidget.cpp" line="293"/>
         <location filename="../lfowidget.cpp" line="294"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished">&amp;Nahrát</translation>
+        <translation>&amp;Nahrát</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="295"/>
         <source>Record incoming controller</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrát příchozí ovladač</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="316"/>
@@ -1089,42 +1089,42 @@ Uložit změny?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note Off</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nota vypnuta</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="98"/>
         <source>Stop output when Note is released</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastavit výstup, když je nota vydána</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="106"/>
         <source>&amp;Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Spustit znovu</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="110"/>
         <source>Restart sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit sekvenci znovu, když je nota přijata</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="112"/>
         <source>&amp;Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Spoušť</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="116"/>
         <source>Retrigger sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit sekvenci znovu, když je přijata nová nota</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Smyčka</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="122"/>
         <source>Play sequence as loop instead of a single run</source>
-        <translation type="unfinished"></translation>
+        <translation>Přehrávat sekvenci ve smyčce namísto jednoho přehrání</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="175"/>
