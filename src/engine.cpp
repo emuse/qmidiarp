@@ -1,14 +1,7 @@
 /**
  * @file engine.cpp
- * @brief Managing class for created module components in lists. Instantiates SeqDriver.
+ * @brief Implements the Engine module management class
  *
- * For each module component and type there is a QList (for example MidiArp
- * and ArpWidget). In parallel there is
- * a common list for all modules containing their DockWidgets.
- * Engine also instantiates the SeqDriver MIDI backend and handles MIDI
- * controller events through signaling by seqDriver. Controllers are
- * dispatched to the modules as requiered by their MIDI Learn
- * MidiCCList.
  * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
