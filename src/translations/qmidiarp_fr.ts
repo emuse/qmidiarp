@@ -359,17 +359,17 @@ d h durée de note augm/dim
     <message>
         <location filename="../lfowidget.cpp" line="91"/>
         <source>Input</source>
-        <translation type="unfinished">Entrée</translation>
+        <translation>Entrée</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="99"/>
         <source>MIDI Controller number to record</source>
-        <translation type="unfinished"></translation>
+        <translation>Le numéro du contrôleur MIDI à enregistrer</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="104"/>
         <source>&amp;Channel</source>
-        <translation type="unfinished">&amp;Canal</translation>
+        <translation>&amp;Canal</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="133"/>
@@ -482,12 +482,12 @@ Molette pour changer l&apos;offset</translation>
         <location filename="../lfowidget.cpp" line="293"/>
         <location filename="../lfowidget.cpp" line="294"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished">&amp;Enregistrer</translation>
+        <translation>&amp;Enregistrer</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="295"/>
         <source>Record incoming controller</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer les évênements contrôleurs reçus à l&apos;entrée</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="316"/>
@@ -1060,42 +1060,42 @@ Enregistrer les modifications?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note Off</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="98"/>
         <source>Stop output when Note is released</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrêter l&apos;envoi de notes quand la touche est relâchée</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="106"/>
         <source>&amp;Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Redémarre</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="110"/>
         <source>Restart sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Redémarrer la séquence au départ quand une nouvelle note est reçue</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="112"/>
         <source>&amp;Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="116"/>
         <source>Retrigger sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Déclencher la séquence avec le timing des notes reçues</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Boucle</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="122"/>
         <source>Play sequence as loop instead of a single run</source>
-        <translation type="unfinished"></translation>
+        <translation>Jouer la séquence en boucle au lieu d&apos;un passage unique</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="175"/>

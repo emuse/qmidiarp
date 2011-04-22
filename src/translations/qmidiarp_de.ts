@@ -369,17 +369,17 @@
     <message>
         <location filename="../lfowidget.cpp" line="91"/>
         <source>Input</source>
-        <translation type="unfinished">Eingang</translation>
+        <translation>Eingang</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="99"/>
         <source>MIDI Controller number to record</source>
-        <translation type="unfinished"></translation>
+        <translation>Die aufzunehmende MIDI Controller ID</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="104"/>
         <source>&amp;Channel</source>
-        <translation type="unfinished">&amp;Kanal</translation>
+        <translation>&amp;Kanal</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="133"/>
@@ -487,12 +487,12 @@ Mausrad: Verschieben des Offsets</translation>
         <location filename="../lfowidget.cpp" line="293"/>
         <location filename="../lfowidget.cpp" line="294"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished">&amp;Aufnahme</translation>
+        <translation>&amp;Aufnahme</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="295"/>
         <source>Record incoming controller</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingehenden MIDI controller aufzeichnen</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="316"/>
@@ -1089,42 +1089,42 @@ Die Änderungen speichern?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note Off</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="98"/>
         <source>Stop output when Note is released</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Noten senden wenn die Taste losgelassen wird</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="106"/>
         <source>&amp;Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Neustarten</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="110"/>
         <source>Restart sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sequenz neu starten wenn eine neue Note empfangen wird</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="112"/>
         <source>&amp;Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="116"/>
         <source>Retrigger sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sequenz mit dem timing der empfangenen Noten starten (triggern)</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schleife</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="122"/>
         <source>Play sequence as loop instead of a single run</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sequenz ständig wiederholen anstatt sie nur einmal zu spielen</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="175"/>
