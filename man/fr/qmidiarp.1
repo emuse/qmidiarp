@@ -241,7 +241,7 @@ sortie sont incrémentées pendant le temps d'attack défini en secondes.
 Si un temps "release" est spécifié, les notes relâchées sont gardées dans 
 le tampon, et leur vélocité est linéairement diminuée jusqu'à la fin du 
 temps "release". Cette fonction n'a un effet sur le son que si le 
-synthétiseur connecté à la sortie produit des sons sensible à la 
+synthétiseur connecté à la sortie produit des sons sensibles à la 
 vélocité. Elle fonctionne aux mieux avec des motifs à haute polyphonie
 comme par exemple le motif "Chord Oct 16 A".
 .PP
@@ -259,8 +259,7 @@ Les modules arpégiateurs de QMidiArp ont été inspiré par l'arpégiateur
 matériel MAP1 par Rudi Linhard.
 
 .SS "Les modules LFO"
-En parallèle aux arpégiateurs,  
-QMidiArp
+En parallèle aux arpégiateurs, QMidiArp
 peut envoyer des données de contrôle MIDI sous forme d'un oscillateur
 à basse fréquence (LFO) à une sortie spécifiée. Les données LFO sont des
 évênements MIDI envoyés en synchronie avec la queue de l'arpégiateur.
@@ -305,14 +304,20 @@ En sélectionnant la forme
 .B Libre,
 l'onde peut être dessinée ou modifiée avec le 
 .I bouton gauche 
-de la souris. Le bouton 
-.B Copier dans l'onde libre
-permet de copier la forme actuellement affichée vers la forme libre pour
-être modifiée. La forme libre précédente sera écrasée en utilisant cette
-fonction.
+de la souris. Lorqu'on tente à modifier une forme calculée, elle est
+automatiquement copiée vers la forme libre, et la forme libre précédente 
+est écrasée.
 Toutes les opérations du LFO incluant le dessin peuvent être faites 
-pendant que la queue est en route, et elles auront leur effet au 
-prochain cycle de l'onde.
+pendant que le transport est en marche.
+.PP
+.B Enregistrement
+.PP
+Les données de contrôle MIDI reçues à l'entrée peuvent être enregistrées
+en continue en appuyant sur le bouton
+.B Enregistrer.
+Ce bouton est lui-même contrôlable par MIDI (c.f. 
+.B Apprentissage MIDI)
+et QMidiArp est ainsi utilisable comme Looper et séquenceur de contrôles.
 .PP
 .B "Le champ Sortie du LFO"
 .PP
@@ -321,8 +326,8 @@ Ce champ contient les réglages du
 .B canal
 et
 .B contrôleur 
-des données produites par chaque onglet LFO. Il permet également de 
-rendre muet chaque LFO entièrement après un cycle d'onde complet.
+des données produites. Il permet également de rendre muet le module 
+entièrement.
 
 .SS "Les modules séquenceurs"
 En cliquant sur le bouton 
@@ -376,9 +381,21 @@ est cochée, la séquence est globalement transposée avec la note reçue
 comme valeur de transposition. Si la case
 .B Vélocité
 est cochée également, la séquence produira des notes avec la même
-vélocité que celle de la note reçue. Si aucun des deux cases est cochée,
-les notes reçues seront ignorées. Tous les changements de contrôle
-s'appliquent au prochain passage dans la boucle de la séquence. Le 
+vélocité que celle de la note reçue. Le champ
+.B Entrée
+définit également le comportement de déclenchement de la séquence en
+cas de réception de notes à l'entrée.
+.B Redémarre
+renvoie la séquence à son début, mais sans interrompre le rythme. La 
+séquence est re-déclenchée avec le timing des notes jouées seulement
+si
+.B Trigger
+est est coché.
+.B Note Off
+arretera la séquence avec une note relachée, et
+.B Boucle
+doit être cochée pour une répétition permanente au lieu d'un seul 
+passage. Le
 champ
 .B Sortie
 est équivalent à celui des arpégiateurs et LFOs. 
@@ -523,6 +540,6 @@ Les erreurs et avertissements sont écrits dans
 qmidiarp-devel@lists.sourceforge.net
 
 .SH AUTEURS
-Matthias Nagorni, Frank Kober et Guido Scholz. Cette page de manuel 
+Frank Kober, Guido Scholz et Matthias Nagorni. Cette page de manuel 
 a été écrite par
 Frank Kober <emuse@users.sourceforge.net>.

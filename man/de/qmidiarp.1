@@ -322,13 +322,19 @@ Wenn
 .B Frei
 gewählt wird, kann die Wellenform mit der
 .I linken Maustaste
-in der Wellenform-Graphik gezeichnet werden. Durch klicken auf 
-.B Kopieren in freie Wellenform
-kann eine errechnete Wellenform in die freie Form kopiert werden, um sie
-zu verändern. Dies überschreibt die vorhergehende freie Wellenform mit
+in der Wellenform-Graphik gezeichnet werden. Beim Modifizieren einer
+errechneten Wellenform wird diese automatisch in die freie Form kopiert. Dies überschreibt die vorhergehende freie Wellenform mit
 der gerade dargestellten Form. Wie alle LFO-Funktionen kann auch das 
-Zeichnen oder Stummschalten bei laufendem Sequenzer geschehen. Alle
-Änderungen werden beim nächsten ausgespielten Wellenzyklus wirkend.
+Zeichnen oder Stummschalten bei laufendem Sequenzer geschehen.
+.PP
+.B Aufnahme
+.PP
+Controller-Daten, die das Filter im Eingang passieren, können 
+kontinuierlich aufgezeichnet werden durch wählen des
+.B Aufnehmen
+Knopfes. Dieser Knopf ist selbst über MIDI ansteuerbar (siehe MIDI Learn)
+und QMidiArp wird somit zu einem einfachen Control-Looper/Sampler.
+
 .PP
 .B "LFO Ausgangs-Feld"
 .PP
@@ -338,8 +344,7 @@ Das LFO Ausgangs-Feld enthält die Einstellungen für
 und 
 .B Controller 
 ID der LFO-Daten jedes LFO-Reiters. Es erlaubt auch ein komplettes 
-Stummschalten jedes LFOs nach einem kompletten Wellenzyklus durch 
-markieren des 
+Stummschalten jedes LFOs durch Klicken des 
 .B Stumm 
 Knopfes.
 
@@ -386,8 +391,7 @@ QMidiArp erlaubt die globale Einstellung des
 .B Notenlänge
 und der
 .B Transposition
-der Sequenz in Halbtönen. Alle hier eingestellten Änderungen werden nach
-dem momentanen Durchlauf der Sequenz wirksam.
+der Sequenz in Halbtönen.
 .PP
 .B Eingans- und Ausgangsfelder der Seq Module
 .PP
@@ -403,11 +407,20 @@ die Tonhöhe der empfangenen Note transponiert. Wenn zusätzlich
 angekreuzt ist, werden auch die Anschlagsdynamik-Daten der empfangenen
 Noten auf die Sequenz übertragen, und die gesendeten Noten bekommen
 dieselbe Anschlagsdynamik wie die auf der Tastatur gespielte Note.
-Sind weder 
-.B Note
-noch
-.B Anschlag
-angekreuzt, so werden empfangene Noten ignoriert.
+Weitere Optionen des Eingangsfeldes steuern das Start- und 
+Stop-Verhalten der Sequenz beim Empfang von Noten. 
+.B Neustart
+verursacht ein Zurücksetzen der Sequenz an den Start, jedoch ohne den 
+Rhythmus zu unterbrechen. Nur wenn 
+.B Trigger
+angewählt ist, startet die Sequenz exakt mit dem Timing der angeschlagenen
+Note.
+.B Note Off
+stoppt den Notenausgang beim Loslassen von Noten. Ist
+.B Schleife
+nicht angewählt, so läuft die Sequenz nur einmal nach dem Start (oder nach)
+Notenanschlag) durch.
+
 Das
 .B Ausgangs-Feld
 der Seq-Module ist das gleiche wie das der Arpeggiator- oder LFO-Module.
@@ -556,7 +569,7 @@ geschrieben.
 .SH UNTERSTÜTZUNG
 qmidiarp-devel@lists.sourceforge.net
 .SH AUTOREN
-Matthias Nagorni, Frank Kober and Guido Scholz. Das Original dieser
+Frank Kober and Guido Scholz, Matthias Nagorni. Das Original dieser
 Handbuchseite wurde von Frank Kober <emuse@users.sourceforge.net>
 geschrieben; die deutsche Übersetzung wurde von Robert Dietrich
 <flyingrobin@online.de> angefertigt.
