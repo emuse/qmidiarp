@@ -44,6 +44,8 @@ qmidiarp_SOURCES = \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
 
+qmidiarp_LDADD = $(QT_LIBS)
+
 translationsdir = $(pkgdatadir)/translations
 translations = \
 	translations/qmidiarp_cs.ts \
@@ -58,7 +60,6 @@ translations_DATA = \
 	translations/qmidiarp_fr.qm
 
 
-AM_LDFLAGS = @QT_LIBS@ @DEFS@
 AM_CXXFLAGS = @QT_CXXFLAGS@
 DEFS = -Wall -Wextra -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
 
