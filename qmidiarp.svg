@@ -16,7 +16,17 @@
    inkscape:version="0.48.1 r9760"
    sodipodi:docname="qmidiarp.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       color-interpolation-filters="sRGB"
+       inkscape:collect="always"
+       id="filter3787">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.3609914"
+         id="feGaussianBlur3789" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -32,8 +42,8 @@
      showgrid="false"
      inkscape:window-width="960"
      inkscape:window-height="634"
-     inkscape:window-x="83"
-     inkscape:window-y="0"
+     inkscape:window-x="102"
+     inkscape:window-y="10"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -53,9 +63,17 @@
      id="layer1"
      transform="translate(0,-924.36218)">
     <rect
-       style="fill:#003200;fill-opacity:1;stroke:#00a440;stroke-opacity:1"
+       style="fill:#1a1a1a;fill-opacity:0.70297032;fill-rule:nonzero;stroke:none;filter:url(#filter3787)"
+       id="rect4931"
+       width="123.27586"
+       height="58.189655"
+       x="2.1551704"
+       y="983.61212"
+       transform="matrix(0.96932332,0,0,1,2.1670552,0)" />
+    <rect
+       style="fill:#003200;fill-opacity:1;stroke:#00a440;stroke-width:0.97753412;stroke-opacity:1"
        id="rect2985"
-       width="125.87412"
+       width="120.28191"
        height="59.090908"
        x="0.69930071"
        y="973.60693" />
