@@ -1,4 +1,4 @@
-qmidiarp-0.4.0 (2011-05-DD)
+qmidiarp-0.4.0 (2011-05-28)
 
 New Features
   o All modules now have a playhead cursor
@@ -7,6 +7,7 @@ New Features
   o Spanish translation thanks to Pedro Lopez-Cabanillas (plcl)
   o Czech translation thanks to Pavel Fric
   o Functional doxygen documentation available by "make doxygen-doc"
+  o New SVG icon and desktop file
 
 
 qmidiarp-0.3.9 (2011-01-05)
