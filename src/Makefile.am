@@ -39,6 +39,7 @@ qmidiarp_SOURCES = \
 	midilfo.cpp midilfo.h \
 	midiseq.cpp midiseq.h \
 	midicctable.cpp midicctable.h \
+	midievent.h \
 	passwidget.cpp passwidget.h \
 	jacksync.cpp jacksync.h \
 	seqdriver.cpp seqdriver.h \
