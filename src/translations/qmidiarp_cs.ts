@@ -975,7 +975,7 @@ Uložit změny?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="236"/>
         <source>&amp;About %1...</source>
-        <translation>&amp;Über %1...</translation>
+        <translation>&amp;O %1...</translation>
     </message>
 </context>
 <context>
