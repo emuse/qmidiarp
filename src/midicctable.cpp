@@ -1,5 +1,8 @@
-/*
- *      midicctable.cpp
+/*!
+ * @file midicctable.cpp
+ * @brief Implementation of the MidiCCTable QDialog class
+ *
+ * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -17,6 +20,7 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
 

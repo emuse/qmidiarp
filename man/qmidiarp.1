@@ -266,8 +266,7 @@ create swing timing and accent. The Groove settings are adjusted for all
 arps simultaneously.
 
 .SS "LFO Modules"
-In parallel to the arps, 
-QMidiArp
+In parallel to the arps, QMidiArp
 can send MIDI controller data in form of a low frequency oscillator (LFO)
 to the assigned output. The LFO data consist of controller events that 
 are in sync with the arpeggiator queue. The queue has to be in running 
@@ -279,8 +278,7 @@ panel to define MIDI Channel, ALSA port and controller number to be
 produced. The waveform can currently be set to Sine,
 Saw Up, Saw Down, Triangle, Square and Custom. The 
 .B frequency 
-of the LFO can be
-set in muliples and divisors of the arp 
+of the LFO can be set in muliples and divisors of the arp 
 .B tempo, 
 such that frequency of 1
 produces one full wave per beat. If frequencies lower than 1 are
@@ -295,8 +293,7 @@ and
 of the waveform can be adjusted from 0...127. Low 
 .B resolutions 
 lead to audibly discrete rythmic controller changes whereas higher 
-resolution values lead to 
-more continuous waves.
+resolution values lead to more continuous waves.
 .PP
 .B Muting individual wave points
 .PP
@@ -311,13 +308,21 @@ When
 .B Custom
 is selected, the waveform can be drawn with the
 .I left mouse button
-in the waveform display. A calculated waveform can be copied to the
-custom waveform by clicking on the
-.B Copy to custom
-button, which will overwrite the previous custom waveform with the 
-currently displayed waveform. As all LFO operations, drawing and muting
-can be done while the queue is running and will have effect on the next
-output wavecycle.
+in the waveform display. A calculated waveform is copied to the custom 
+waveform whenever it is being modified by the mouse. This will overwrite 
+the previous custom waveform with the currently displayed waveform. As 
+all LFO operations, drawing and muting can be done while the queue is 
+running, and becomes effective immediately.
+.PP
+.B Recording
+.PP
+The LFO records incoming controller data as selected in the 
+.B Input
+panel, when the 
+.B Record
+button is pressed. Note that the Record button itself can be attributed
+to a MIDI toggle controller so that it provides a convenient 
+implementation of a controller motion sampler and looper.
 .PP
 .B "LFO Output panel"
 .PP
@@ -369,8 +374,7 @@ There are sliders to adjust the global
 .B note length 
 and 
 .B transpose 
-of the sequence in semitones. All changes made to these controls
-apply after completion of the current loop.
+of the sequence in semitones.
 .PP
 .B Seq Input and Output panels
 .PP
@@ -384,12 +388,13 @@ is checked, the sequence will be globally transposed with the incoming
 note as transpose value. If 
 .B Velocity
 is checked in addition, the sequence will output notes with the same 
-velocity as that received on its input. If neither
-.B Note
-nor
-.B Velocity
-are checked, incoming notes will have no effect. All changes due to 
-incoming notes apply after completion of the current loop. The Seq
+velocity as that received on its input. The 
+.B Input
+panel also determines how the sequence behaves when incoming notes
+are received. It can be restarted, triggered and stopped with the 
+timing of received notes. 
+
+The Seq
 .B Output
 panel is equivalent to that of arpeggiator and LFO modules. 
 .PP 
@@ -523,6 +528,6 @@ Errors and warnings are written to
 .SH SUPPORT
 qmidiarp-devel@lists.sourceforge.net
 .SH AUTHORS
-Matthias Nagorni, Frank Kober and Guido Scholz. This
+Frank Kober, Guido Scholz and Matthias Nagorni. This
 manual page was written by
 Frank Kober <emuse@users.sourceforge.net>.

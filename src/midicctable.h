@@ -1,5 +1,8 @@
-/*
- *      midicctable.h
+/*!
+ * @file midicctable.cpp
+ * @brief Header for the MidiCCTable QDialog class
+ *
+ * @section LICENSE
  *
  *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -17,6 +20,7 @@
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
+ *
  */
 
 #ifndef MIDICCTABLE_H
@@ -27,6 +31,14 @@
 #include <QPushButton>
 #include "engine.h"
 
+/*! @brief QDialog class for managing MIDI controller mappings
+ *
+ * MidiCCTable uses a QTableWidget to display and modify the content of
+ * all MIDI controllers attributed to QMidiArp's UI elements. It is
+ * instantiated on program start by MainWindow and shown when the MainWindow
+ * menu entry is selected. Calling the menu entry will also cause retrieval
+ * and display of all modules' CCLists.
+ */
 class MidiCCTable : public QDialog
 {
     Q_OBJECT

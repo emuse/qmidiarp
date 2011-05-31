@@ -272,17 +272,17 @@
 <context>
     <name>GrooveWidget</name>
     <message>
-        <location filename="../groovewidget.cpp" line="20"/>
+        <location filename="../groovewidget.cpp" line="45"/>
         <source>&amp;Shift</source>
         <translation>&amp;Desfase</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="25"/>
+        <location filename="../groovewidget.cpp" line="50"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Velocidad</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="30"/>
+        <location filename="../groovewidget.cpp" line="55"/>
         <source>&amp;Length</source>
         <translation>&amp;Longitud</translation>
     </message>
@@ -353,17 +353,17 @@
     <message>
         <location filename="../lfowidget.cpp" line="91"/>
         <source>Input</source>
-        <translation type="unfinished">Entrada</translation>
+        <translation>Entrada</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="99"/>
         <source>MIDI Controller number to record</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de controlador MIDI a grabar</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="104"/>
         <source>&amp;Channel</source>
-        <translation type="unfinished">&amp;Canal</translation>
+        <translation>&amp;Canal</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="152"/>
@@ -438,12 +438,12 @@ Rueda para cambiar desplazamiento</translation>
         <location filename="../lfowidget.cpp" line="293"/>
         <location filename="../lfowidget.cpp" line="294"/>
         <source>Re&amp;cord</source>
-        <translation type="unfinished">&amp;Grabar</translation>
+        <translation>&amp;Grabar</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="295"/>
         <source>Record incoming controller</source>
-        <translation type="unfinished"></translation>
+        <translation>Grabar controlador entrante</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="316"/>
@@ -499,17 +499,17 @@ Rueda para cambiar desplazamiento</translation>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../logwidget.cpp" line="19"/>
+        <location filename="../logwidget.cpp" line="45"/>
         <source>&amp;Enable Log</source>
         <translation>&amp;Habilitar registro</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="25"/>
+        <location filename="../logwidget.cpp" line="51"/>
         <source>Log &amp;MIDI Clock</source>
         <translation>Registrar reloj &amp;MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="30"/>
+        <location filename="../logwidget.cpp" line="56"/>
         <source>&amp;Clear</source>
         <translation>&amp;Limpiar</translation>
     </message>
@@ -518,27 +518,27 @@ Rueda para cambiar desplazamiento</translation>
         <translation type="obsolete">Reloj MIDI</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="83"/>
+        <location filename="../logwidget.cpp" line="109"/>
         <source>MIDI Clock, tick</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="88"/>
+        <location filename="../logwidget.cpp" line="114"/>
         <source>MIDI Start (Transport)</source>
         <translation>MIDI Iniciar (transporte)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="92"/>
+        <location filename="../logwidget.cpp" line="118"/>
         <source>MIDI Continue (Transport)</source>
         <translation>MIDI Continuar (transporte)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="96"/>
+        <location filename="../logwidget.cpp" line="122"/>
         <source>MIDI Stop (Transport)</source>
         <translation>MIDI Parar (transporte)</translation>
     </message>
     <message>
-        <location filename="../logwidget.cpp" line="100"/>
+        <location filename="../logwidget.cpp" line="126"/>
         <source>Unknown event type</source>
         <translation>Tipo de evento desconocido</translation>
     </message>
@@ -874,42 +874,42 @@ Save changes?</source>
 <context>
     <name>MidiCCTable</name>
     <message>
-        <location filename="../midicctable.cpp" line="44"/>
+        <location filename="../midicctable.cpp" line="48"/>
         <source>Re&amp;move</source>
         <translation>&amp;Borrar</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="45"/>
+        <location filename="../midicctable.cpp" line="49"/>
         <source>Re&amp;vert</source>
         <translation>Re&amp;vertir</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="58"/>
+        <location filename="../midicctable.cpp" line="62"/>
         <source>MIDI Controllers - </source>
         <translation>Controladores MIDI</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="113"/>
+        <location filename="../midicctable.cpp" line="117"/>
         <source>Control</source>
         <translation>Control</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="117"/>
+        <location filename="../midicctable.cpp" line="121"/>
         <source>CC#</source>
         <translation>CC#</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="121"/>
+        <location filename="../midicctable.cpp" line="125"/>
         <source>Ch</source>
         <translation>Canal</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="125"/>
+        <location filename="../midicctable.cpp" line="129"/>
         <source>min</source>
         <translation>min</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="129"/>
+        <location filename="../midicctable.cpp" line="133"/>
         <source>max</source>
         <translation>max</translation>
     </message>
@@ -917,22 +917,22 @@ Save changes?</source>
 <context>
     <name>PassWidget</name>
     <message>
-        <location filename="../passwidget.cpp" line="16"/>
+        <location filename="../passwidget.cpp" line="40"/>
         <source>&amp;Forward unmatched events to port</source>
         <translation>&amp;Redireccionar eventos no coincidentes al puerto</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="33"/>
+        <location filename="../passwidget.cpp" line="57"/>
         <source>&amp;Modules controllable by MIDI controller</source>
         <translation>&amp;Módulos controlables por controlador MIDI</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="39"/>
+        <location filename="../passwidget.cpp" line="63"/>
         <source>&amp;Compact module layout style</source>
         <translation>Estilo &amp;compacto de distribución de módulo</translation>
     </message>
     <message>
-        <location filename="../passwidget.cpp" line="58"/>
+        <location filename="../passwidget.cpp" line="82"/>
         <source>Settings - </source>
         <translation>Preferencias - </translation>
     </message>
@@ -1007,42 +1007,42 @@ Save changes?</source>
     <message>
         <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconectar &amp;Nota</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="98"/>
         <source>Stop output when Note is released</source>
-        <translation type="unfinished"></translation>
+        <translation>Parar la salida cuando la nota sea liberada</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="106"/>
         <source>&amp;Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Reinicio</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="110"/>
         <source>Restart sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar la secuencia cuando una nueva nota sea recibida</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="112"/>
         <source>&amp;Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Disparador</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="116"/>
         <source>Retrigger sequence when a new note is received</source>
-        <translation type="unfinished"></translation>
+        <translation>Volver a disparar la secuencia cuando una nueva nota sea recibida</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bucle</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="122"/>
         <source>Play sequence as loop instead of a single run</source>
-        <translation type="unfinished"></translation>
+        <translation>Reproducir la secuencia en bucle en lugar de una vez</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="170"/>

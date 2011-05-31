@@ -1,7 +1,6 @@
 /*!
  * @file midievent.h
- * @brief Defines the MidiEvent struct and midi_event_type enum in
- * analogy to the ALSA snd_seq_event_type enum.
+ * @brief Defines the MidiEvent structure and the midi_event_type enum
  *
  * @section LICENSE
  *

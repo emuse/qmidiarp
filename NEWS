@@ -1,7 +1,14 @@
-qmidiarp-0.4.0 (2011-MM-DD)
+qmidiarp-0.4.1 (2011-05-29)
+
 New Features
   o All modules now have a playhead cursor
-  o LFOs can record controller data by a new MIDI-learnable Record button.
+  o LFOs can record controller data by a MIDI-learnable Record button.
+  o Seq modules handle note events at the input for triggering
+  o Spanish translation thanks to Pedro Lopez-Cabanillas (plcl)
+  o Czech translation thanks to Pavel Fric
+  o Functional doxygen documentation available by "make doxygen-doc"
+  o New SVG icon and desktop file
+
 
 qmidiarp-0.3.9 (2011-01-05)
 

@@ -39,10 +39,13 @@ qmidiarp_SOURCES = \
 	midilfo.cpp midilfo.h \
 	midiseq.cpp midiseq.h \
 	midicctable.cpp midicctable.h \
+	midievent.h \
 	passwidget.cpp passwidget.h \
 	jacksync.cpp jacksync.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h
+
+qmidiarp_LDADD = $(QT_LIBS)
 
 translationsdir = $(pkgdatadir)/translations
 translations = \
@@ -58,7 +61,6 @@ translations_DATA = \
 	translations/qmidiarp_fr.qm
 
 
-AM_LDFLAGS = @QT_LIBS@ @DEFS@
 AM_CXXFLAGS = @QT_CXXFLAGS@
 DEFS = -Wall -Wextra -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
 

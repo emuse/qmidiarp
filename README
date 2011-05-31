@@ -1,12 +1,26 @@
-QMidiArp by     Matthias Nagorni, (c)2004 by Novell,
-                Frank Kober, Guido Scholz (c)2009 - 2011
-         published under GNU General Public License
-         a copy of the License can be found in the COPYING file
+QMidiArp by Frank Kober, Guido Scholz (c)2009 - 2011
+            Matthias Nagorni          (c)2004 by Novell
+
+         published under the GNU General Public License.
+         A copy of the License can be found in the COPYING file
 ---------------------------------------------------------------
 
+
+Description
+-----------
 QMidiArp is an arpeggiator, sequencer and MIDI LFO for ALSA.
 For further information on general function please refer to the qmidiarp
 manual page.
+
+
+Dependencies
+------------
+You need the following development headers and libraries for building.
+
+libqt4-dev     (qt-devel)
+libasound2-dev (alsa-lib-devel)
+libjack-dev    (jackit-devel)
+
 
 Installation
 -------------
@@ -19,7 +33,7 @@ qmidiarp uses autoconf/automake as build system. For short
 does the trick. Please refer to the INSTALL file for more information.
 
 
-Git check out
+Git check-out
 -------------
 If you start with a fresh Git checkout, please first apply
 
@@ -27,3 +41,22 @@ If you start with a fresh Git checkout, please first apply
 
 to get a proper configure script. For more instructions about compiling
 and installing this application please refer to the INSTALL file.
+
+
+Doxygen documentation
+---------------------
+If you have doxygen installed, you can use
+
+make doxygen-doc
+
+to produce functional html documentation of all classes. The html files
+are written to the doxygen-doc directory.
+
+
+Help
+----
+User documentation is provided at
+
+qmidiarp.sourceforge.net
+
+Please ask for help there, too.
