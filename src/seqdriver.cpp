@@ -433,7 +433,7 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
     }
 
     if (use_midiclock){
-        if (inEv.type == EV_START) {
+        if ((inEv.type == EV_START) || (inEv.type == EV_CONTINUE)){
             setQueueStatus(true);
         }
         if (inEv.type == EV_STOP) {
