@@ -259,8 +259,7 @@ void MidiArp::copyNoteBuffer()
     }
 }
 
-void MidiArp::getNote(int *tick, int note[],
-        int velocity[], int *length)
+void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 {
     QChar c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
@@ -481,7 +480,7 @@ void MidiArp::run()
 {
     int l1 = 0;
     mutex.lock();
-    updateNotes(currentTick);
+    updateNotes();
     returnTick = currentNoteTick;
     returnNote.clear();
     returnVelocity.clear();
@@ -498,7 +497,7 @@ void MidiArp::run()
     mutex.unlock();
 }
 
-void MidiArp::updateNotes(int currentTick)
+void MidiArp::updateNotes()
 {
     int l1 = 0;
 
@@ -518,7 +517,7 @@ void MidiArp::updateNotes(int currentTick)
     }
 }
 
-void MidiArp::foldReleaseTicks(int currentTick)
+void MidiArp::foldReleaseTicks(int tick)
 {
     int bufPtr, l2;
 
@@ -526,19 +525,19 @@ void MidiArp::foldReleaseTicks(int currentTick)
     bufPtr = (noteBufPtr) ? 0 : 1;
 
     for (l2 = 0; l2 < noteCount; l2++) {
-            notes[bufPtr][2][l2] -= currentTick;
+            notes[bufPtr][2][l2] -= tick;
     }
 
     copyNoteBuffer();
     mutex.unlock();
 }
 
-void MidiArp::initArpTick(int currentTick)
+void MidiArp::initArpTick(int tick)
 {
-    arpTick = currentTick;
+    arpTick = tick;
     currentVelocity[0] = 0;
-    currentNoteTick = currentTick;
-    nextNoteTick  = currentTick;
+    currentNoteTick = tick;
+    nextNoteTick  = tick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;

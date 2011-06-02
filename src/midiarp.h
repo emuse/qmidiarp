@@ -142,9 +142,8 @@ class MidiArp : public QThread  {
  * MidiArp::nextNote and MidiArp::nextVelocity arrays into
  * MidiArp::currentNote and MidiArp::currentVelocity.
  *
- * @param currentTick The current timing information in internal ticks
  */
-    void updateNotes(int currentTick);
+    void updateNotes();
 /**
  * @brief This is MidiArp's main note processor producing output notes
  * from input notes.
@@ -370,7 +369,7 @@ class MidiArp : public QThread  {
  * @param currentTick The timing in internal ticks, relative to which
  * the following arpeggio notes are calculated.
  */
-    void initArpTick(int currentTick);
+    void initArpTick(int tick);
 /**
  * @brief This function ensures continuity of the release function
  * when the currentTick position jumps into
@@ -379,9 +378,9 @@ class MidiArp : public QThread  {
  * It should be called whenever the transport position is looping. At
  * this time, this is the case when JACK Transport is looping.
 
- * @param currentTick The current time position in internal ticks.
+ * @param tick The current time position in internal ticks.
  */
-    void foldReleaseTicks(int currentTick);
+    void foldReleaseTicks(int tick);
 /**
  * @brief This function seeds new random values for the three parameters
  * concerned, timing (tick), velocity and length.
