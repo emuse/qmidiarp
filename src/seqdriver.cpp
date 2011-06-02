@@ -321,12 +321,12 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             if ((gotArpKbdTrig && (inEv.data == 2) && midiArpList->at(l1)->wantTrigByKbd())
                     || (!gotArpKbdTrig && (inEv.data == 0))) {
                 gotArpKbdTrig = false;
-                if (tick + schedDelayTicks >= nextArpTick[l1]) {
+                if ((tick + 8) >= nextArpTick[l1]) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArpList->at(l1)->channelOut;
                     midiArpList->at(l1)->newRandomValues();
                     midiArpList->at(l1)->updateQueueTempo(tempo);
-                    midiArpList->at(l1)->prepareCurrentNote(tick);
+                    midiArpList->at(l1)->prepareCurrentNote(tick + schedDelayTicks);
                     note = midiArpList->at(l1)->returnNote;
                     velocity = midiArpList->at(l1)->returnVelocity;
                     note_tick = midiArpList->at(l1)->returnTick;
