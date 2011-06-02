@@ -77,12 +77,12 @@ Sobald der
 rechts vom Tempo-Wahlfeld betätigt wird, wird der ALSA-Sequenzer
 gestoppt und
 QMidiArp
-wartet auf das "MIDI Clock Start"-Signal einer externen Quelle,
+wartet auf das "MIDI Clock Start"\-Signal einer externen Quelle,
 die an QMidiArp's MIDI-Eingang angeschlossen wurde. Sobald dieses
 Signal eintrifft, wird die Sequenzerzeugung mit der MIDI-Taktvorgabe der
 externen Quelle gestartet.
 Der Sequenzer/Arpeggiator hält an, sobald ein 
-"MIDI Clock Stop"-Signal empfangen wird. Während des 
+"MIDI Clock Stop"\-Signal empfangen wird. Während des
 "MIDI-Clock-Betriebs" sind die QMidiArp-eigenen Start/Stop-Funktionen 
 sowie das Hinzufügen oder Laden weiterer Module gesperrt. Sie werden 
 erst bei erneutem Klick auf das MIDI-Uhrsymbol wieder verfügbar. Die 
@@ -152,7 +152,7 @@ entspricht dem jeweiligen Notenwert. Oktavenübergänge (siehe
 tatsächlich gesendeten Noten hängen ab von den empfangenen Eingangsnoten.
 Diese werden in aufsteigender Reihenfolge den im Muster definierten
 Noten zugeordnet. Zum Beispiel bedeutet ein einzelner Streifen im unteren
-Teil der Grafik ("Simple"-Muster), daß beim ersten Durchlauf durch das
+Teil der Grafik ("Simple"\-Muster), daß beim ersten Durchlauf durch das
 Muster die unterste empfangene Note gespielt wird.
 Wenn ein Akkord auf dem Keyboard gespielt wird, und nur eine Note im 
 Muster definiert ist, wird beim ersten Durchlauf die unterste Note 
@@ -250,9 +250,9 @@ QMidiArp kann der Anschlagsdynamik der Arpeggios eine Hüllkurve
 überlagern, um langsame Übergänge von Akkordmustern zu erzeugen.
 Die Funktion dieser Hüllkurve wird durch 
 .B Attack 
--Zeit und
+\-Zeit und
 .B Release
--Zeit definiert. Wird eine von Null verschiedene Attackzeit gewählt, so
+\-Zeit definiert. Wird eine von Null verschiedene Attackzeit gewählt, so
 werden die Anschläge der gesendeten Noten während der Attackzeit von 
 Null bis zu ihrem eigentlichen Wert hochgefahren. Ist eine Releasezeit
 verschieden von Null eingestellt, so werden die losgelassenen Noten 
@@ -266,7 +266,7 @@ am besten mit Mustern mit hoher Polyphonie, zum Beispiel "Chord Oct 16 A".
 .PP
 Die
 .B Groove
--Regler erlauben es, Noten innerhalb eines Taktes linear zu verschieben
+\-Regler erlauben es, Noten innerhalb eines Taktes linear zu verschieben
 in ihrer Zeit, Länge und ihrem Anschlag. Dies kann benutzt werden, um
 Swing-Rythmen und Akzente zu erzeugen, oder um den Akzent auf eine 
 bestimmte Stelle jedes Taktes zu setzen. Die Groove-Einstellungen gelten 
