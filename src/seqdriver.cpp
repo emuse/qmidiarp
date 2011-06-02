@@ -274,7 +274,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             else if (nextLfoTick[l1] < nextMinLfoTick)
                 nextMinLfoTick = nextLfoTick[l1];
         }
-        requestEchoAt(nextMinLfoTick);
+        if (midiLfoList->count()) requestEchoAt(nextMinLfoTick);
     }
 
     //Seq notes data request and queueing
@@ -312,7 +312,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             else if (nextSeqTick[l1] < nextMinSeqTick)
                 nextMinSeqTick = nextSeqTick[l1];
         }
-        requestEchoAt(nextMinSeqTick, 0);
+        if (midiSeqList->count()) requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
@@ -354,7 +354,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
-        requestEchoAt(nextMinArpTick, 0);
+        if (midiArpList->count()) requestEchoAt(nextMinArpTick, 0);
     }
 }
 
