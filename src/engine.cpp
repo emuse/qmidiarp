@@ -438,7 +438,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (nextLfoTick[l1] < nextMinLfoTick)
                 nextMinLfoTick = nextLfoTick[l1];
         }
-        seqDriver->requestEchoAt(nextMinLfoTick);
+        if (midiLfoCount()) seqDriver->requestEchoAt(nextMinLfoTick);
     }
 
     //Seq notes data request and queueing
@@ -476,7 +476,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (nextSeqTick[l1] < nextMinSeqTick)
                 nextMinSeqTick = nextSeqTick[l1];
         }
-        seqDriver->requestEchoAt(nextMinSeqTick, 0);
+        if (midiSeqCount()) seqDriver->requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
@@ -485,11 +485,11 @@ void Engine::echoCallback(bool echo_from_trig)
             if ((gotArpKbdTrig && echo_from_trig && midiArp(l1)->wantTrigByKbd())
                     || (!gotArpKbdTrig && !echo_from_trig)) {
                 gotArpKbdTrig = false;
-                if (tick + schedDelayTicks >= nextArpTick[l1]) {
+                if ((tick + 8) >= nextArpTick[l1]) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArp(l1)->channelOut;
                     midiArp(l1)->newRandomValues();
-                    midiArp(l1)->prepareCurrentNote(tick);
+                    midiArp(l1)->prepareCurrentNote(tick + schedDelayTicks);
                     note = midiArp(l1)->returnNote;
                     velocity = midiArp(l1)->returnVelocity;
                     note_tick = midiArp(l1)->returnTick;
@@ -517,7 +517,7 @@ void Engine::echoCallback(bool echo_from_trig)
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
-        seqDriver->requestEchoAt(nextMinArpTick, 0);
+        if (midiArpCount()) seqDriver->requestEchoAt(nextMinArpTick, 0);
     }
 }
 
