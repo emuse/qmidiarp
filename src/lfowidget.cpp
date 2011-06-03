@@ -753,9 +753,9 @@ void LfoWidget::updateCcnumber(int val)
     modified = true;
 }
 
-void LfoWidget::updateChIn(int value)
+void LfoWidget::updateChIn(int val)
 {
-    midiWorker->chIn = value - 1;
+    midiWorker->chIn = val;
     modified = true;
 }
 
