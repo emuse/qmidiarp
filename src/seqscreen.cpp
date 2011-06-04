@@ -194,7 +194,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
                         SEQSCR_HMARG *2 / 3, ypos);
 
     // Cursor
-    pen.setWidth(notestreak_thick * 2);
+    pen.setWidth(notestreak_thick);
     pen.setColor(QColor(50, 180, 220));
     p.setPen(pen);
     x = currentIndex * xscale * (int)nsteps / npoints;

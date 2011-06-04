@@ -87,30 +87,41 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     // Display group box on right
     QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
 
+    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
+    connect(dispSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(updateDispVert(int)));
+
     QLabel *fullLabel = new QLabel(tr("&Full"),dispBox);
-    dispFull = new QCheckBox(this);
-    dispFull->setChecked(true);
-    connect(dispFull, SIGNAL(toggled(bool)), this, SLOT(setDispFull(bool)));
-    fullLabel->setBuddy(dispFull);
+    dispVertFull = new QCheckBox(this);
+    dispVertFull->setChecked(true);
+    dispVertical = 0;
+    connect(dispVertFull, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+    dispSignalMapper->setMapping(dispVertFull, 0);
+    dispVertFull->setAutoExclusive(true);
+    fullLabel->setBuddy(dispVertFull);
 
     QLabel *upperLabel = new QLabel(tr("&Upper"),dispBox);
-    dispUpper = new QCheckBox(this);
-    connect(dispUpper, SIGNAL(toggled(bool)), this, SLOT(setDispUpper(bool)));
-    upperLabel->setBuddy(dispUpper);
+    dispVertUpper = new QCheckBox(this);
+    connect(dispVertUpper, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+    dispSignalMapper->setMapping(dispVertUpper, 1);
+    dispVertUpper->setAutoExclusive(true);
+    upperLabel->setBuddy(dispVertUpper);
 
     QLabel *lowerLabel = new QLabel(tr("&Lower"),dispBox);
-    dispLower = new QCheckBox(this);
-    connect(dispLower, SIGNAL(toggled(bool)), this, SLOT(setDispLower(bool)));
-    lowerLabel->setBuddy(dispLower);
+    dispVertLower = new QCheckBox(this);
+    connect(dispVertLower, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+    dispSignalMapper->setMapping(dispVertLower, 2);
+    dispVertLower->setAutoExclusive(true);
+    lowerLabel->setBuddy(dispVertLower);
 
 
     QGridLayout *dispBoxLayout = new QGridLayout;
     dispBoxLayout->addWidget(fullLabel, 0, 0);
-    dispBoxLayout->addWidget(dispFull, 0, 1);
+    dispBoxLayout->addWidget(dispVertFull, 0, 1);
     dispBoxLayout->addWidget(upperLabel, 1, 0);
-    dispBoxLayout->addWidget(dispUpper, 1, 1);
+    dispBoxLayout->addWidget(dispVertUpper, 1, 1);
     dispBoxLayout->addWidget(lowerLabel, 2, 0);
-    dispBoxLayout->addWidget(dispLower, 2, 1);
+    dispBoxLayout->addWidget(dispVertLower, 2, 1);
 
     QVBoxLayout* dispLayout = new QVBoxLayout;
     dispLayout->addLayout(dispBoxLayout);
@@ -451,6 +462,12 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
     xml.writeStartElement(name.left(3));
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+
+        xml.writeStartElement("display");
+            xml.writeTextElement("vertical", QString::number(
+                dispVertical));
+        xml.writeEndElement();
+
         xml.writeStartElement("input");
             xml.writeTextElement("enableNote", QString::number(
                 midiWorker->enableNoteIn));
@@ -537,6 +554,16 @@ void SeqWidget::readData(QXmlStreamReader& xml)
         if (xml.isEndElement())
             break;
 
+        else if (xml.isStartElement() && (xml.name() == "display")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "vertical")
+                    setDispVert(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
         else if (xml.isStartElement() && (xml.name() == "input")) {
             while (!xml.atEnd()) {
                 xml.readNext();
@@ -884,7 +911,7 @@ void SeqWidget::setRecord(bool on)
     midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(data);
+    screen->update();
 }
 
 void SeqWidget::updateRes(int val)
@@ -1102,46 +1129,46 @@ void SeqWidget::midiLearnCancel()
     cancelMidiLearnAction->setEnabled(false);
 }
 
-void SeqWidget::setDispFull(bool on)
+void SeqWidget::setDispVert(int mode)
 {
-    if (on) {
-        midiWorker->nOctaves = 4;
-        midiWorker->baseOctave = 3;
-        screen->nOctaves = 4;
-        screen->baseOctave = 3;
-        dispUpper->setChecked(false);
-        dispLower->setChecked(false);
-        midiWorker->getData(&data);
-        screen->updateScreen(data);
-        modified = true;
+    switch (mode) {
+        case 0: dispVertFull->setChecked(true);
+        break;
+        case 1: dispVertUpper->setChecked(true);
+        break;
+        case 2: dispVertLower->setChecked(true);
+        break;
+        default: dispVertFull->setChecked(true);
     }
 }
 
-void SeqWidget::setDispUpper(bool on)
+void SeqWidget::updateDispVert(int mode)
 {
-    if (on) {
-        midiWorker->nOctaves = 2;
-        midiWorker->baseOctave = 5;
-        screen->nOctaves = 2;
-        screen->baseOctave = 5;
-        dispLower->setChecked(false);
-        dispFull->setChecked(false);
-        midiWorker->getData(&data);
-        screen->updateScreen(data);
-        modified = true;
+    int noct, baseoct;
+
+    switch (mode) {
+        case 0:
+            noct = 4;
+            baseoct = 3;
+        break;
+        case 1:
+            noct = 2;
+            baseoct = 5;
+        break;
+        case 2:
+            noct = 2;
+            baseoct = 3;
+        break;
+        default:
+            noct = 4;
+            baseoct = 3;
     }
-}
-void SeqWidget::setDispLower(bool on)
-{
-    if (on) {
-        midiWorker->nOctaves = 2;
-        midiWorker->baseOctave = 3;
-        screen->nOctaves = 2;
-        screen->baseOctave = 3;
-        dispFull->setChecked(false);
-        dispUpper->setChecked(false);
-        midiWorker->getData(&data);
-        screen->updateScreen(data);
-        modified = true;
-    }
+
+    dispVertical = mode;
+    midiWorker->nOctaves = noct;
+    midiWorker->baseOctave = baseoct;
+    screen->nOctaves = noct;
+    screen->baseOctave = baseoct;
+    screen->update();
+    modified = true;
 }
