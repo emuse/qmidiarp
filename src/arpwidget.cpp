@@ -45,8 +45,9 @@
 
 
 
-ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QWidget *parent)
-: QWidget(parent), midiWorker(p_midiWorker), modified(false)
+ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
+    bool mutedAdd, QWidget *parent):
+    QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
 
@@ -397,6 +398,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle, QW
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
+    muteOut->setChecked(mutedAdd);
+
     QGridLayout *widgetLayout = new QGridLayout;
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);
@@ -483,6 +486,8 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         xml.writeEndElement();
 
         xml.writeStartElement("output");
+            xml.writeTextElement("muted", QString::number(
+                midiWorker->isMuted));
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
@@ -577,7 +582,9 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "channel") {
+                if (xml.name() == "muted")
+                    muteOut->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     channelOut->setCurrentIndex(tmp);
                     updateChannelOut(tmp);

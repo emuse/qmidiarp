@@ -41,7 +41,8 @@
 #include "config.h"
 
 
-SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget *parent):
+SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
+    bool mutedAdd, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
@@ -380,6 +381,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QW
     }
     seqBox->setLayout(seqBoxLayout);
 
+    muteOut->setChecked(mutedAdd);
+
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addLayout(inOutBoxLayout, 0);
@@ -426,6 +429,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeEndElement();
 
         xml.writeStartElement("output");
+            xml.writeTextElement("muted", QString::number(
+                midiWorker->isMuted));
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
@@ -523,7 +528,9 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "channel") {
+                if (xml.name() == "muted")
+                    muteOut->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     channelOut->setCurrentIndex(tmp);
                     updateChannelOut(tmp);

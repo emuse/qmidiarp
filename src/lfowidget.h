@@ -139,9 +139,11 @@ class LfoWidget : public QWidget
  * @param p_midiWorker Associated MidiLfo Object
  * @param portCount Number of available ALSA MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
+ * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-    LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
+    LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
+            bool mutedAdd = false, QWidget* parent=0);
     ~LfoWidget();
 
     QString name;               /**< The name of this LfoWidget as shown in the DockWidget TitleBar */

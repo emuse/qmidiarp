@@ -122,9 +122,11 @@ class SeqWidget : public QWidget
  * @param p_midiWorker Associated MidiSeq Object
  * @param portCount Number of available ALSA MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
+ * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-    SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle, QWidget* parent=0);
+    SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
+            bool mutedAdd = false, QWidget* parent=0);
     ~SeqWidget();
 
     QString name;       /**< @brief The name of this SeqWidget as shown in the DockWidget TitleBar */

@@ -356,7 +356,8 @@ void MainWindow::addArp(const QString& name)
     MidiArp *midiWorker = new MidiArp();
     engine->addMidiArp(midiWorker);
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     // passing compactStyle property was necessary because stylesheet
     // seems to have no effect on layout spacing/margin
     connect(midiWorker, SIGNAL(nextStep(int)),
@@ -408,7 +409,8 @@ void MainWindow::addLfo(const QString& name)
     MidiLfo *midiWorker = new MidiLfo();
     engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
@@ -445,7 +447,8 @@ void MainWindow::addSeq(const QString& name)
     MidiSeq *midiWorker = new MidiSeq();
     engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
@@ -1120,6 +1123,8 @@ void MainWindow::readRcFile()
             }
             else if ((value.at(0) == "#CompactStyle"))
                 passWidget->compactStyleCheck->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#MutedAdd"))
+                passWidget->mutedAddCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#EnableLog"))
                 logWidget->enableLog->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LogMidiClock"))
@@ -1158,6 +1163,8 @@ void MainWindow::writeRcFile()
 
     writeText << "#CompactStyle%";
     writeText << passWidget->compactStyle << endl;
+    writeText << "#MutedAdd%";
+    writeText << passWidget->mutedAdd << endl;
     writeText << "#EnableLog%";
     writeText << logWidget->enableLog->isChecked() << endl;
     writeText << "#LogMidiClock%";
