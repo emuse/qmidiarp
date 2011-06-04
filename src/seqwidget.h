@@ -143,6 +143,7 @@ class SeqWidget : public QWidget
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
     QCheckBox *enableLoop;
+    QCheckBox *dispFull, *dispUpper, *dispLower;
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
 
@@ -282,6 +283,9 @@ class SeqWidget : public QWidget
     void updateEnableTrigByKbd(bool on);
     void updateEnableLoop(bool on);
     void setRecord(bool on);
+    void setDispFull(bool on);
+    void setDispUpper(bool on);
+    void setDispLower(bool on);
 /*!
 * @brief Slot currently not in use.
 *

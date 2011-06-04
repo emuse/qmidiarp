@@ -83,6 +83,45 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
 
+
+    // Display group box on right
+    QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
+
+    QLabel *fullLabel = new QLabel(tr("&Full"),dispBox);
+    dispFull = new QCheckBox(this);
+    dispFull->setChecked(true);
+    connect(dispFull, SIGNAL(toggled(bool)), this, SLOT(setDispFull(bool)));
+    fullLabel->setBuddy(dispFull);
+
+    QLabel *upperLabel = new QLabel(tr("&Upper"),dispBox);
+    dispUpper = new QCheckBox(this);
+    connect(dispUpper, SIGNAL(toggled(bool)), this, SLOT(setDispUpper(bool)));
+    upperLabel->setBuddy(dispUpper);
+
+    QLabel *lowerLabel = new QLabel(tr("&Lower"),dispBox);
+    dispLower = new QCheckBox(this);
+    connect(dispLower, SIGNAL(toggled(bool)), this, SLOT(setDispLower(bool)));
+    lowerLabel->setBuddy(dispLower);
+
+
+    QGridLayout *dispBoxLayout = new QGridLayout;
+    dispBoxLayout->addWidget(fullLabel, 0, 0);
+    dispBoxLayout->addWidget(dispFull, 0, 1);
+    dispBoxLayout->addWidget(upperLabel, 1, 0);
+    dispBoxLayout->addWidget(dispUpper, 1, 1);
+    dispBoxLayout->addWidget(lowerLabel, 2, 0);
+    dispBoxLayout->addWidget(dispLower, 2, 1);
+
+    QVBoxLayout* dispLayout = new QVBoxLayout;
+    dispLayout->addLayout(dispBoxLayout);
+
+    if (compactStyle) {
+        dispLayout->setSpacing(1);
+        dispLayout->setMargin(2);
+    }
+
+    dispBox->setLayout(dispLayout);
+
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
@@ -214,6 +253,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -1060,4 +1100,48 @@ void SeqWidget::midiLearnCancel()
     emit setMidiLearn(parentDockID, ID, -1);
     qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
+}
+
+void SeqWidget::setDispFull(bool on)
+{
+    if (on) {
+        midiWorker->nOctaves = 4;
+        midiWorker->baseOctave = 3;
+        screen->nOctaves = 4;
+        screen->baseOctave = 3;
+        dispUpper->setChecked(false);
+        dispLower->setChecked(false);
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+        modified = true;
+    }
+}
+
+void SeqWidget::setDispUpper(bool on)
+{
+    if (on) {
+        midiWorker->nOctaves = 2;
+        midiWorker->baseOctave = 5;
+        screen->nOctaves = 2;
+        screen->baseOctave = 5;
+        dispLower->setChecked(false);
+        dispFull->setChecked(false);
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+        modified = true;
+    }
+}
+void SeqWidget::setDispLower(bool on)
+{
+    if (on) {
+        midiWorker->nOctaves = 2;
+        midiWorker->baseOctave = 3;
+        screen->nOctaves = 2;
+        screen->baseOctave = 3;
+        dispFull->setChecked(false);
+        dispUpper->setChecked(false);
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+        modified = true;
+    }
 }

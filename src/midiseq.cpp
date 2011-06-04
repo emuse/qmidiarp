@@ -39,6 +39,9 @@ MidiSeq::MidiSeq()
     seqFinished = false;
     noteCount = 0;
 
+    nOctaves = 4;
+    baseOctave = 3;
+
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
@@ -198,7 +201,7 @@ void MidiSeq::updateQueueTempo(int val)
 void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 {
     currentRecStep = mouseX * res * size;
-    setRecordedNote(mouseY * 48 + 36);
+    setRecordedNote(12 * (mouseY * nOctaves + baseOctave));
 }
 
 void MidiSeq::setRecordMode(int on)

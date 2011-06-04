@@ -37,6 +37,8 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
     mouseY = 0;
+    baseOctave = 3;
+    nOctaves= 4;
     recordMode = false;
     currentRecStep = false;
     currentIndex = 0;
@@ -60,17 +62,17 @@ void SeqScreen::paintEvent(QPaintEvent*)
     double nsteps = 0.0;
     int beat = 4;
     int npoints = 0;
+    int tmpval = 0;
     int ypos, xpos, xscale, yscale;
     w = QWidget::width();
     h = QWidget::height();
-    int notestreak_thick = 4;
     int ofs;
     int x, x1;
-    int maxOctave = 4;
-    int minOctave = 0;
+    int minOctave = baseOctave;
+    int maxOctave = nOctaves + minOctave;
+    int notestreak_thick = 16 / nOctaves;
     int beatRes = 1.0;
     int beatDiv = 0;
-    int noctaves= 4;
     l2 = 0;
 
     //Grid setup
@@ -136,9 +138,9 @@ void SeqScreen::paintEvent(QPaintEvent*)
     }
 
     //Horizontal separators and numbers
-    noctaves = maxOctave - minOctave;
+    nOctaves = maxOctave - minOctave;
     int l3 = 0;
-    for (l1 = 0; l1 <= noctaves * 12; l1++) {
+    for (l1 = 0; l1 <= nOctaves * 12; l1++) {
         l3 = l1%12;
 
     if (!l3)
@@ -146,7 +148,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
     else
         p.setPen(QColor(10, 20, 100));
 
-        ypos = yscale * l1 / noctaves / 12 + SEQSCR_VMARG;
+        ypos = yscale * l1 / nOctaves / 12 + SEQSCR_VMARG;
         p.drawLine(0, ypos, w - SEQSCR_HMARG, ypos);
         if ((l3 == 2) || (l3 == 4) || (l3 == 6) || (l3 == 9) || (l3 == 11)) {
             pen.setColor(QColor(20, 60, 180));
@@ -166,19 +168,23 @@ void SeqScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < npoints; l1++) {
 
         x = l1 * xscale * nsteps / npoints;
-        ypos = yscale - yscale * (p_data.at(l1).value - 36) / noctaves / 12
-                        + SEQSCR_VMARG - pen.width() / 2;
-        xpos = SEQSCR_HMARG + x + pen.width() / 2;
-        if (p_data.at(l1).muted) {
-            pen.setColor(QColor(5, 40, 100));
-            p.setPen(pen);
+        tmpval = p_data.at(l1).value;
+        if ((tmpval >= 12 * baseOctave) && (tmpval < 12 * maxOctave)) {
+            ypos = yscale - yscale
+                * (p_data.at(l1).value - 12 * baseOctave) / nOctaves / 12
+                + SEQSCR_VMARG - pen.width() / 2;
+            xpos = SEQSCR_HMARG + x + pen.width() / 2;
+            if (p_data.at(l1).muted) {
+                pen.setColor(QColor(5, 40, 100));
+                p.setPen(pen);
+            }
+            else {
+                pen.setColor(QColor(50, 130, 180));
+                p.setPen(pen);
+            }
+            p.drawLine(xpos, ypos,
+                            xpos + (xscale / beatRes) - pen.width(), ypos);
         }
-        else {
-            pen.setColor(QColor(50, 130, 180));
-            p.setPen(pen);
-        }
-        p.drawLine(xpos, ypos,
-                        xpos + (xscale / beatRes) - pen.width(), ypos);
     }
     ypos = int((mouseY - SEQSCR_VMARG + 3)/4) * 4 + SEQSCR_VMARG - 2;
     pen.setWidth(2);
