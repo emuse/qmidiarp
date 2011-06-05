@@ -480,7 +480,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("input");
             xml.writeTextElement("enableNote", QString::number(
                 midiWorker->enableNoteIn));
-            xml.writeTextElement("enableNote", QString::number(
+            xml.writeTextElement("enableNoteOff", QString::number(
                 midiWorker->enableNoteOff));
             xml.writeTextElement("enableVelocity", QString::number(
                 midiWorker->enableVelIn));
