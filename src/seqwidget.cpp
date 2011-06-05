@@ -107,10 +107,17 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     dispVertUpper->setAutoExclusive(true);
     upperLabel->setBuddy(dispVertUpper);
 
+    QLabel *midLabel = new QLabel(tr("&Mid"),dispBox);
+    dispVertMid = new QCheckBox(this);
+    connect(dispVertMid, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+    dispSignalMapper->setMapping(dispVertMid, 2);
+    dispVertMid->setAutoExclusive(true);
+    midLabel->setBuddy(dispVertMid);
+
     QLabel *lowerLabel = new QLabel(tr("&Lower"),dispBox);
     dispVertLower = new QCheckBox(this);
     connect(dispVertLower, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-    dispSignalMapper->setMapping(dispVertLower, 2);
+    dispSignalMapper->setMapping(dispVertLower, 3);
     dispVertLower->setAutoExclusive(true);
     lowerLabel->setBuddy(dispVertLower);
 
@@ -120,8 +127,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     dispBoxLayout->addWidget(dispVertFull, 0, 1);
     dispBoxLayout->addWidget(upperLabel, 1, 0);
     dispBoxLayout->addWidget(dispVertUpper, 1, 1);
-    dispBoxLayout->addWidget(lowerLabel, 2, 0);
-    dispBoxLayout->addWidget(dispVertLower, 2, 1);
+    dispBoxLayout->addWidget(midLabel, 2, 0);
+    dispBoxLayout->addWidget(dispVertMid, 2, 1);
+    dispBoxLayout->addWidget(lowerLabel, 3, 0);
+    dispBoxLayout->addWidget(dispVertLower, 3, 1);
 
     QVBoxLayout* dispLayout = new QVBoxLayout;
     dispLayout->addLayout(dispBoxLayout);
@@ -359,7 +368,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
     velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    connect(velocity, SIGNAL(sliderMoved(int)), this,
+    connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
 
 
@@ -396,7 +405,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
-    connect(transpose, SIGNAL(sliderMoved(int)), this,
+    connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
 
 
@@ -1136,7 +1145,9 @@ void SeqWidget::setDispVert(int mode)
         break;
         case 1: dispVertUpper->setChecked(true);
         break;
-        case 2: dispVertLower->setChecked(true);
+        case 2: dispVertMid->setChecked(true);
+        break;
+        case 3: dispVertLower->setChecked(true);
         break;
         default: dispVertFull->setChecked(true);
     }
@@ -1156,6 +1167,10 @@ void SeqWidget::updateDispVert(int mode)
             baseoct = 5;
         break;
         case 2:
+            noct = 2;
+            baseoct = 4;
+        break;
+        case 3:
             noct = 2;
             baseoct = 3;
         break;
