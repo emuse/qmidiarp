@@ -45,7 +45,7 @@
 const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 /*! This array holds the currently available frequency values.
  */
-const int lfoFreqValues[11] = {1, 2, 3, 4, 8, 12, 16, 20, 24, 28, 32};
+const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};
 #ifndef MIDICC_H
 
 /*! @brief Structure holding all elements of a MIDI controller allocated to

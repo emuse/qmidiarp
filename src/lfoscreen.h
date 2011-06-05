@@ -64,6 +64,7 @@ class LfoScreen : public QWidget
     QVector<Sample> p_data, data;
     int mouseX, mouseY, mouseW;
     int w, h;
+    int xMax;
     int currentIndex;
     int clip(int value, int min, int max, bool *outOfRange);
     bool recordMode;

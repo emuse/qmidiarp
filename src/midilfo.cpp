@@ -153,7 +153,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
         case 0: //sine
             for (l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((-cos((double)(l1 * 6.28 /
-                res * freq / 4)) + 1) * amp / 2 + offs, 0, 127, &cl);
+                res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
                 data.append(sample);
@@ -163,47 +163,47 @@ void MidiLfo::getData(QVector<Sample> *p_data)
         case 1: //sawtooth up
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(val * amp / res / 4
+                sample.value = clip(val * amp / res / 32
                 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
                 data.append(sample);
                 lt += step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 2: //triangle
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                tempval = val - res * 2;
+                tempval = val - res * 16;
                 if (tempval < 0 ) tempval = -tempval;
-                sample.value = clip((res * 2 - tempval) * amp
-                        / res / 2 + offs, 0, 127, &cl);
+                sample.value = clip((res * 16 - tempval) * amp
+                        / res / 16 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
                 data.append(sample);
                 lt += step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 3: //sawtooth down
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip((res * 4 - val)
-                        * amp / res / 4 + offs, 0, 127, &cl);
+                sample.value = clip((res * 32 - val)
+                        * amp / res / 32 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
                 data.append(sample);
                 lt+=step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 4: //square
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(amp * ((l1 * freq / 2
+                sample.value = clip(amp * ((l1 * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);

@@ -241,7 +241,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     freqBox = new QComboBox(waveBox);
     freqBoxLabel->setBuddy(freqBox);
     QStringList names;
-    names << "1/4" << "1/2" << "3/4" << "1" << "2" << "3"
+    names << "1/32" << "1/16" << "1/8" << "1/4"
+        << "1/2" << "3/4" << "1" << "2" << "3"
         << "4" << "5" << "6" << "7" << "8";
     freqBox->insertItems(0, names);
     freqBox->setCurrentIndex(3);
@@ -283,7 +284,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     sizeBox = new QComboBox(waveBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8"
+            << "12" << "16" << "24" << "32" ;
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(0);
     sizeBox->setToolTip(tr("Length of LFO wave in beats"));
@@ -798,7 +800,7 @@ void LfoWidget::updateScreen(int val)
 
 void LfoWidget::updateFreq(int val)
 {
-    if (val > 10) return;
+    if (val > 13) return;
     midiWorker->updateFrequency(lfoFreqValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -815,7 +817,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-    midiWorker->updateSize(val + 1);
+    midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
