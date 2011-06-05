@@ -138,17 +138,21 @@ void SeqScreen::paintEvent(QPaintEvent*)
     }
 
     //Horizontal separators and numbers
-    nOctaves = maxOctave - minOctave;
     int l3 = 0;
     for (l1 = 0; l1 <= nOctaves * 12; l1++) {
         l3 = l1%12;
 
-    if (!l3)
-        p.setPen(QColor(20, 60, 180));
-    else
-        p.setPen(QColor(10, 20, 100));
-
         ypos = yscale * l1 / nOctaves / 12 + SEQSCR_VMARG;
+
+        if (!l3) {
+            p.setPen(QColor(30, 60, 180));
+            p.drawText(w - SEQSCR_HMARG / 2 - 4,
+                    ypos + SEQSCR_VMARG - 5 - yscale / nOctaves / 2,
+                    QString::number(maxOctave - l1 / 12));
+        }
+        else
+            p.setPen(QColor(10, 20, 100));
+
         p.drawLine(0, ypos, w - SEQSCR_HMARG, ypos);
         if ((l3 == 2) || (l3 == 4) || (l3 == 6) || (l3 == 9) || (l3 == 11)) {
             pen.setColor(QColor(20, 60, 180));
