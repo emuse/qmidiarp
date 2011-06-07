@@ -143,7 +143,7 @@ class SeqWidget : public QWidget
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
     QCheckBox *enableLoop;
-    QCheckBox *dispVertFull, *dispVertUpper, *dispVertMid, *dispVertLower;
+    QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
     int dispVertical;

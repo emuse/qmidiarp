@@ -88,49 +88,25 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
 
     QSignalMapper *dispSignalMapper = new QSignalMapper(this);
+    QLabel *dispLabel[4];
+    QString dispText[4] = {tr("&Full"), tr("&Upper"), tr("&Mid"), tr("&Lower")};
+    QGridLayout *dispBoxLayout = new QGridLayout;
+
+    for (int l1 = 0; l1 < 4; l1++) {
+        dispLabel[l1] = new QLabel(dispText[l1],dispBox);
+        dispVert[l1] = new QCheckBox(this);
+        connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+        dispSignalMapper->setMapping(dispVert[l1], l1);
+        dispVert[l1]->setAutoExclusive(true);
+        dispLabel[l1]->setBuddy(dispVert[l1]);
+        dispBoxLayout->addWidget(dispLabel[l1], l1, 0);
+        dispBoxLayout->addWidget(dispVert[l1], l1, 1);
+    }
+
+    dispVert[0]->setChecked(true);
+    dispVertical = 0;
     connect(dispSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(updateDispVert(int)));
-
-    QLabel *fullLabel = new QLabel(tr("&Full"),dispBox);
-    dispVertFull = new QCheckBox(this);
-    dispVertFull->setChecked(true);
-    dispVertical = 0;
-    connect(dispVertFull, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-    dispSignalMapper->setMapping(dispVertFull, 0);
-    dispVertFull->setAutoExclusive(true);
-    fullLabel->setBuddy(dispVertFull);
-
-    QLabel *upperLabel = new QLabel(tr("&Upper"),dispBox);
-    dispVertUpper = new QCheckBox(this);
-    connect(dispVertUpper, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-    dispSignalMapper->setMapping(dispVertUpper, 1);
-    dispVertUpper->setAutoExclusive(true);
-    upperLabel->setBuddy(dispVertUpper);
-
-    QLabel *midLabel = new QLabel(tr("&Mid"),dispBox);
-    dispVertMid = new QCheckBox(this);
-    connect(dispVertMid, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-    dispSignalMapper->setMapping(dispVertMid, 2);
-    dispVertMid->setAutoExclusive(true);
-    midLabel->setBuddy(dispVertMid);
-
-    QLabel *lowerLabel = new QLabel(tr("&Lower"),dispBox);
-    dispVertLower = new QCheckBox(this);
-    connect(dispVertLower, SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-    dispSignalMapper->setMapping(dispVertLower, 3);
-    dispVertLower->setAutoExclusive(true);
-    lowerLabel->setBuddy(dispVertLower);
-
-
-    QGridLayout *dispBoxLayout = new QGridLayout;
-    dispBoxLayout->addWidget(fullLabel, 0, 0);
-    dispBoxLayout->addWidget(dispVertFull, 0, 1);
-    dispBoxLayout->addWidget(upperLabel, 1, 0);
-    dispBoxLayout->addWidget(dispVertUpper, 1, 1);
-    dispBoxLayout->addWidget(midLabel, 2, 0);
-    dispBoxLayout->addWidget(dispVertMid, 2, 1);
-    dispBoxLayout->addWidget(lowerLabel, 3, 0);
-    dispBoxLayout->addWidget(dispVertLower, 3, 1);
 
     QVBoxLayout* dispLayout = new QVBoxLayout;
     dispLayout->addLayout(dispBoxLayout);
@@ -1140,17 +1116,7 @@ void SeqWidget::midiLearnCancel()
 
 void SeqWidget::setDispVert(int mode)
 {
-    switch (mode) {
-        case 0: dispVertFull->setChecked(true);
-        break;
-        case 1: dispVertUpper->setChecked(true);
-        break;
-        case 2: dispVertMid->setChecked(true);
-        break;
-        case 3: dispVertLower->setChecked(true);
-        break;
-        default: dispVertFull->setChecked(true);
-    }
+    dispVert[mode]->setChecked(true);
 }
 
 void SeqWidget::updateDispVert(int mode)
