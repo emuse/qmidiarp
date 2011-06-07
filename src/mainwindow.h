@@ -494,6 +494,9 @@ class MainWindow : public QMainWindow
  * @param fd UNIX signal number
 */
     void signalAction(int);
+
+    void ctb_update_orientation(Qt::Orientation orient);
+    void ftb_update_orientation(Qt::Orientation orient);
 };
 
 #endif

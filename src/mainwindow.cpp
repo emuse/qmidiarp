@@ -245,6 +245,8 @@ MainWindow::MainWindow(int p_portCount)
     fileToolBar->addAction(fileSaveAsAction);
     fileToolBar->setObjectName("fileToolBar");
     fileToolBar->setMaximumHeight(30);
+    connect(fileToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
+            SLOT(ftb_update_orientation(Qt::Orientation)));
 
     controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
     controlToolBar->addAction(viewLogAction);
@@ -260,6 +262,8 @@ MainWindow::MainWindow(int p_portCount)
     controlToolBar->addAction(jackSyncAction);
     controlToolBar->setObjectName("controlToolBar");
     controlToolBar->setMaximumHeight(30);
+    connect(controlToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
+            SLOT(ctb_update_orientation(Qt::Orientation)));
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(viewMenu);
@@ -273,6 +277,7 @@ MainWindow::MainWindow(int p_portCount)
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     QWidget *centWidget = new QWidget(this);
     setCentralWidget(centWidget);
+    setDockNestingEnabled(true);
     updateWindowTitle();
 
     if (checkRcFile())
@@ -1334,4 +1339,18 @@ void MainWindow::signalAction(int fd)
             qWarning("Unexpected signal received: %d", message);
             break;
     }
+}
+
+void MainWindow::ctb_update_orientation(Qt::Orientation orient)
+{
+    if (orient == Qt::Vertical)
+        controlToolBar->setMinimumHeight(controlToolBar->iconSize().height() * 15);
+    else controlToolBar->setMinimumHeight(0);
+}
+
+void MainWindow::ftb_update_orientation(Qt::Orientation orient)
+{
+    if (orient == Qt::Vertical)
+        fileToolBar->setMinimumHeight(fileToolBar->iconSize().height() * 7);
+    else fileToolBar->setMinimumHeight(0);
 }
