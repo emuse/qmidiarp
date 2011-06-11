@@ -56,9 +56,9 @@ int JackSync::initJack()
 
     jack_on_shutdown(jack_handle, jack_shutdown, (void *)this);
 
-    jack_set_sync_callback(jack_handle, sync_callback, (void *)this);
+    jack_set_process_callback(jack_handle, process_callback, (void *)this);
 
-    qWarning("jack sync callback registered");
+    qWarning("jack process callback registered");
 
     return(0);
 }
@@ -97,29 +97,21 @@ void JackSync::jack_shutdown(void *arg)
     emit rd->j_shutdown();
 }
 
-int JackSync::sync_callback(jack_transport_state_t state,
-                            jack_position_t *pos, void *arg)
+int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 {
     JackSync *rd;
 
     rd = (JackSync *)arg;
+    rd->get_pos();
 
-    //detect transport stop by unchanged frame since last call
-    rd->setCurrentPos(pos);
-
-    if (rd->lastPos.frame == rd->currentPos.frame)
-        rd->trStateCb(false, rd->cbContext);
-
-    rd->setLastPos(pos);
-
-    return(rd->jack_sync(state));
+    return(0);
 }
 
-int JackSync::jack_sync(jack_transport_state_t state)
+void JackSync::jack_sync(jack_transport_state_t state)
 {
-
     switch (state){
         case JackTransportStopped:
+            trStateCb(false, cbContext);
             qWarning( "[JackTransportStopped]" );
         break;
 
@@ -138,19 +130,15 @@ int JackSync::jack_sync(jack_transport_state_t state)
         default:
         break;
     }
-    if (transportState != state)
-        transportState = state;
-
-    bool ready = true;
-    return(ready);
 }
 
-jack_position_t JackSync::get_pos()
+void JackSync::get_pos()
 {
     jack_transport_state_t state = jack_transport_query(jack_handle, &currentPos);
-    if (transportState != state)
+    if (transportState != state) {
         transportState = state;
-    return(currentPos);
+        jack_sync(state);
+    }
 }
 
 jack_transport_state_t JackSync::get_state()
@@ -163,12 +151,7 @@ void JackSync::setJackRunning(bool on)
     jackRunning = on;
 }
 
-void JackSync::setCurrentPos(jack_position_t *pos)
+jack_position_t JackSync::getCurrentPos()
 {
-    currentPos = *pos;
-}
-
-void JackSync::setLastPos(jack_position_t *pos)
-{
-    lastPos = *pos;
+    return currentPos;
 }

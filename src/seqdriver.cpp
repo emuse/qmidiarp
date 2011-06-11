@@ -210,11 +210,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     else if (use_jacksync) {
         if (jackSync->isRunning()) {
 
-            // The following is now replaced by callback from JackSync
-            //if (!jackSync->get_state())
-                //setQueueStatus(false);
-
-            jpos = jackSync->get_pos();
+            jpos = jackSync->getCurrentPos();
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
 
@@ -474,7 +470,7 @@ void SeqDriver::resetTicks()
     }
     else if (use_jacksync) {
         if (jackSync->isRunning()) {
-            jpos = jackSync->get_pos();
+            jpos = jackSync->getCurrentPos();
             // qtractor for instance doesn't set tempo atm...
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;

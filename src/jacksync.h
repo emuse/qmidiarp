@@ -42,16 +42,14 @@ class JackSync : public QObject
     Q_OBJECT
 
   private:
-    static int sync_callback(jack_transport_state_t state,
-                            jack_position_t *pos, void *arg);
+    static int process_callback(jack_nframes_t nframes, void *arg);
     static void jack_shutdown(void *arg);
-    int jack_sync(jack_transport_state_t state);
+    void jack_sync(jack_transport_state_t state);
     bool jackRunning;
     int transportState;
     double j_frame_time;
     jack_client_t *jack_handle;
     jack_position_t currentPos;
-    jack_position_t lastPos;
 
 
   public:
@@ -72,11 +70,10 @@ class JackSync : public QObject
     int deactivateJack();
 
     void setJackRunning(bool on);
-    void setCurrentPos(jack_position_t *pos);
-    void setLastPos(jack_position_t *pos);
 
     jack_transport_state_t get_state();
-    jack_position_t get_pos();
+    void get_pos();
+    jack_position_t getCurrentPos();
 };
 
 
