@@ -214,7 +214,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
 
-            tick = (double)jpos.frame * TPQN
+            tick = (long)jpos.frame * TPQN
                     / jpos.frame_rate * tempo / 60.
                     - jack_offset_tick;
             calcClockRatio();
@@ -226,16 +226,16 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     }
 
 
-        //~ printf("       tick %d     ",tick);
+        printf("       tick %d     ",tick);
         //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
         //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
         //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
         //~ printf("midiTick %d   ",midiTick);
-        //~ printf("m_ratio %f  ",m_ratio);
+        printf("m_ratio %f  ",m_ratio);
         //~ printf("Jack Beat %d\n", jpos.beat);
-        //~ printf("Jack Frame %d \n ", (int)jpos.frame);
+        printf("Jack Frame %d \n ", (int)jpos.frame);
         //~ printf("Jack BBT offset %d\n", (int)jpos.bbt_offset);
-    if (tick < 0) return;
+    if (tick < 0) setQueueStatus(true);
     startQueue = false;
 
     //LFO data request and queueing
@@ -471,7 +471,6 @@ void SeqDriver::resetTicks()
     else if (use_jacksync) {
         if (jackSync->isRunning()) {
             jpos = jackSync->getCurrentPos();
-            // qtractor for instance doesn't set tempo atm...
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
             else
