@@ -145,7 +145,6 @@ void SeqDriver::run()
                     fallback = true;
                 }
             }
-
             if (((inEv.type == EV_ECHO) || startQueue || fallback) && runArp) {
                 fallback = false;
                 real_time = evIn->time.time;
@@ -211,8 +210,9 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     else if (use_jacksync) {
         if (jackSync->isRunning()) {
 
-            if (!jackSync->get_state())
-                setQueueStatus(false);
+            // The following is now replaced by callback from JackSync
+            //if (!jackSync->get_state())
+                //setQueueStatus(false);
 
             jpos = jackSync->get_pos();
             if (jpos.beats_per_minute > 0)
@@ -604,10 +604,8 @@ void SeqDriver::setQueueStatus(bool run)
 void SeqDriver::setUseJackTransport(bool on)
 {
     if (on) {
-        jackSync = new JackSync();
+        jackSync = new JackSync(tr_state_cb, this);
         jackSync->setParent(this);
-        connect(jackSync, SIGNAL(j_tr_state(bool)),
-                this, SLOT(setQueueStatus(bool)));
         connect(jackSync, SIGNAL(j_shutdown()),
                 this, SLOT(jackShutdown()));
         use_jacksync = true;
@@ -696,4 +694,9 @@ void SeqDriver::setMidiControllable(bool on)
 {
     midi_controllable = on;
     modified = true;
+}
+
+void SeqDriver::tr_state_cb(bool on, void *context)
+{
+    ((SeqDriver  *)context)->setQueueStatus(on);
 }

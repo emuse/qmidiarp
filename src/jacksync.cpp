@@ -27,10 +27,13 @@
 #include "config.h"
 
 
-JackSync::JackSync()
+JackSync::JackSync(void (* p_tr_state_cb)(bool j_tr_state, void * context),
+                    void * p_cb_context)
 {
     transportState = JackTransportStopped;
     j_frame_time = 0;
+    cbContext = p_cb_context;
+    trStateCb = p_tr_state_cb;
  }
 
 JackSync::~JackSync()
@@ -101,6 +104,14 @@ int JackSync::sync_callback(jack_transport_state_t state,
 
     rd = (JackSync *)arg;
 
+    //detect transport stop by unchanged frame since last call
+    rd->setCurrentPos(pos);
+
+    if (rd->lastPos.frame == rd->currentPos.frame)
+        rd->trStateCb(false, rd->cbContext);
+
+    rd->setLastPos(pos);
+
     return(rd->jack_sync(state));
 }
 
@@ -117,7 +128,7 @@ int JackSync::jack_sync(jack_transport_state_t state)
         break;
 
         case JackTransportStarting:
-            emit j_tr_state(true);
+            trStateCb(true, cbContext);
             qWarning( "[JackTransportStarting]" );
         break;
 
@@ -136,18 +147,28 @@ int JackSync::jack_sync(jack_transport_state_t state)
 
 jack_position_t JackSync::get_pos()
 {
-    jack_transport_state_t state = jack_transport_query(jack_handle, &current_pos);
+    jack_transport_state_t state = jack_transport_query(jack_handle, &currentPos);
     if (transportState != state)
         transportState = state;
-    return(current_pos);
+    return(currentPos);
 }
 
 jack_transport_state_t JackSync::get_state()
 {
-    return jack_transport_query(jack_handle, &current_pos);
+    return jack_transport_query(jack_handle, &currentPos);
 }
 
 void JackSync::setJackRunning(bool on)
 {
     jackRunning = on;
+}
+
+void JackSync::setCurrentPos(jack_position_t *pos)
+{
+    currentPos = *pos;
+}
+
+void JackSync::setLastPos(jack_position_t *pos)
+{
+    lastPos = *pos;
 }

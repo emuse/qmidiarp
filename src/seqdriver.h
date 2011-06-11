@@ -111,6 +111,8 @@ class SeqDriver : public QThread {
         snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
+        static void tr_state_cb(bool echo_from_trig, void * context);
+
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
         int portUnmatched;
