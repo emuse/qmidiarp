@@ -1343,14 +1343,25 @@ void MainWindow::signalAction(int fd)
 
 void MainWindow::ctb_update_orientation(Qt::Orientation orient)
 {
-    if (orient == Qt::Vertical)
+    if (orient == Qt::Vertical) {
         controlToolBar->setMinimumHeight(controlToolBar->iconSize().height() * 15);
-    else controlToolBar->setMinimumHeight(0);
+        if (fileToolBar->orientation() == Qt::Vertical)
+            fileToolBar->setMinimumWidth(controlToolBar->minimumWidth());
+    }
+    else {
+        controlToolBar->setMinimumHeight(0);
+        if (fileToolBar->orientation() == Qt::Vertical)
+            fileToolBar->setMinimumHeight(controlToolBar->minimumHeight());
+    }
+
 }
 
 void MainWindow::ftb_update_orientation(Qt::Orientation orient)
 {
-    if (orient == Qt::Vertical)
+    if (orient == Qt::Vertical) {
         fileToolBar->setMinimumHeight(fileToolBar->iconSize().height() * 7);
-    else fileToolBar->setMinimumHeight(0);
+    }
+    else {
+        fileToolBar->setMinimumHeight(0);
+    }
 }
