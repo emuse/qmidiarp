@@ -199,6 +199,7 @@ void SeqDriver::handleEcho(MidiEvent inEv)
     bool isNew;
     MidiEvent outEv;
     int frame_nticks = 0;
+    jack_position_t jpos;
 
     note.clear();
     velocity.clear();
@@ -214,8 +215,8 @@ void SeqDriver::handleEcho(MidiEvent inEv)
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
 
-            tick = (long)jpos.frame * TPQN
-                    / jpos.frame_rate * tempo / 60.
+            tick = (uint64_t)jpos.frame * TPQN
+                    * tempo / (jpos.frame_rate * 60)
                     - jack_offset_tick;
             calcClockRatio();
         }
@@ -391,8 +392,7 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
         for (l1 = 0; l1 < midiSeqList->count(); l1++) {
             if (midiSeqList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
-
-                get_time();
+                getTime();
                 tick = deltaToTick(aTimeToDelta(&tmptime));
                 midiSeqList->at(l1)->handleNote(inEv.data, inEv.value, tick);
 
@@ -408,8 +408,7 @@ bool SeqDriver::handleEvent(MidiEvent inEv)
             if (midiArpList->at(l1)->wantEvent(inEv)) {
                 unmatched = false;
                 if (inEv.value) {
-
-                    get_time();
+                    getTime();
                     tick = deltaToTick(aTimeToDelta(&tmptime));
                     midiArpList->at(l1)->handleNoteOn(inEv.data, inEv.value, tick);
 
@@ -470,13 +469,13 @@ void SeqDriver::resetTicks()
     }
     else if (use_jacksync) {
         if (jackSync->isRunning()) {
-            jpos = jackSync->getCurrentPos();
+            jack_position_t jpos = jackSync->getCurrentPos();
             if (jpos.beats_per_minute > 0)
                 tempo = jpos.beats_per_minute;
             else
                 tempo = internal_tempo;
-            jack_offset_tick = (double)jpos.frame * TPQN
-                    / jpos.frame_rate * tempo / 60;
+            jack_offset_tick = (uint64_t)jpos.frame * TPQN
+                    * tempo / (jpos.frame_rate * 60);
             m_ratio = 60e9/TPQN/tempo;
         }
     }
@@ -544,7 +543,7 @@ void SeqDriver::setQueueTempo(int bpm)
     m_ratio = 60e9/TPQN/tempo;
 }
 
-void SeqDriver::get_time()
+void SeqDriver::getTime()
 {
     snd_seq_queue_status_t *status;
 

@@ -104,14 +104,13 @@ class SeqDriver : public QThread {
         void resetTicks();
 
         JackSync *jackSync;
-        jack_position_t jpos;
 
         int midiTick;
         double m_ratio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, real_time;
         snd_seq_real_time_t tmptime;
 
-        static void tr_state_cb(bool echo_from_trig, void * context);
+        static void tr_state_cb(bool tr_state, void * context);
 
     public:
         bool forwardUnmatched, runQueueIfArp, runArp;
@@ -128,7 +127,7 @@ class SeqDriver : public QThread {
                 QList<MidiLfo *> *p_midiLfoList,
                 QList<MidiSeq *> *p_midiSeqList, int p_portCount, QWidget* parent=0);
         ~SeqDriver();
-        void get_time();
+        void getTime();
         bool isModified();
         void setModified(bool);
         int getAlsaClientId();

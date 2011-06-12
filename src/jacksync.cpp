@@ -31,7 +31,6 @@ JackSync::JackSync(void (* p_tr_state_cb)(bool j_tr_state, void * context),
                     void * p_cb_context)
 {
     transportState = JackTransportStopped;
-    j_frame_time = 0;
     cbContext = p_cb_context;
     trStateCb = p_tr_state_cb;
  }
@@ -99,16 +98,17 @@ void JackSync::jack_shutdown(void *arg)
 
 int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 {
-    JackSync *rd;
-
-    rd = (JackSync *)arg;
-    rd->get_pos();
-
+    ((JackSync *)arg)->jackTrCheckState();
     return(0);
 }
 
-void JackSync::jack_sync(jack_transport_state_t state)
+void JackSync::jackTrCheckState()
 {
+    int state = getState();
+
+    if (transportState == state) return;
+
+    transportState = state;
     switch (state){
         case JackTransportStopped:
             trStateCb(false, cbContext);
@@ -132,16 +132,7 @@ void JackSync::jack_sync(jack_transport_state_t state)
     }
 }
 
-void JackSync::get_pos()
-{
-    jack_transport_state_t state = jack_transport_query(jack_handle, &currentPos);
-    if (transportState != state) {
-        transportState = state;
-        jack_sync(state);
-    }
-}
-
-jack_transport_state_t JackSync::get_state()
+jack_transport_state_t JackSync::getState()
 {
     return jack_transport_query(jack_handle, &currentPos);
 }
