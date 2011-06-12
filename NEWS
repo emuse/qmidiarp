@@ -1,3 +1,22 @@
+qmidiarp-0.4.2 (2011-06-??)
+
+New Features
+  o LFO wave lengths up to 32 bars for very low frequencies
+  o Option to add new modules in muted state
+  o Vertical Zoom switch for Seq module display
+  o ToolBars can be positioned vertically
+  o Nested arrangement of modules allows more flexible layouts
+
+Fixed Bugs
+  o Jack Transport sync arbitrarily stopping with only arp modules
+  o Instability with ALSA clock with only Seq and LFO modules
+  o Faster response to Jack Transport state changes
+  o Incorrect response to two Seq sliders
+
+General Changes
+  o Jack Transport sync uses jack process callback not sync callback
+
+
 qmidiarp-0.4.1 (2011-05-29)
 
 New Features
