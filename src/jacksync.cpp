@@ -116,11 +116,11 @@ void JackSync::jackTrCheckState()
         break;
 
         case JackTransportRolling:
+            trStateCb(true, cbContext);
             qWarning( "[JackTransportRolling]" );
         break;
 
         case JackTransportStarting:
-            trStateCb(true, cbContext);
             qWarning( "[JackTransportStarting]" );
         break;
 
