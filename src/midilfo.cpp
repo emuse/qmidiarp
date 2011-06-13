@@ -31,7 +31,7 @@ MidiLfo::MidiLfo()
     queueTempo = 100.0;
     amp = 0;
     offs = 0;
-    freq = 4;
+    freq = 32;
     size = 1;
     res = 16;
     old_res = 0;
