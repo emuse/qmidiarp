@@ -26,16 +26,19 @@
 #ifndef MIDIEVENT_H
 #define MIDIEVENT_H
 
+#include <QMetaType>
+
 /*! @brief Structure holding elements of a MIDI event
  */
-struct MidiEvent {
+typedef struct {
         int type;
         int channel;
         int data;
         int value;
-    };
+    } MidiEvent;
 
-#endif
+Q_DECLARE_METATYPE (MidiEvent)
+
 
 /*! @brief Sequencer event type enum in analogy to the ALSA snd_seq_event_types */
 enum midi_event_type {
@@ -82,3 +85,5 @@ enum midi_event_type {
 
     EV_NONE = 255
 };
+
+#endif

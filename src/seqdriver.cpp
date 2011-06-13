@@ -89,6 +89,7 @@ SeqDriver::SeqDriver(QList<MidiArp *> *p_midiArpList,
     use_jacksync = false;
     use_midiclock = false;
     midi_controllable = true;
+    sendLogEvents = false;
 
     internal_tempo = 100;
     schedDelayTicks = 2;
@@ -180,7 +181,7 @@ void SeqDriver::run()
                     snd_seq_event_output_direct(seq_handle, evIn);
                 }
 
-                emit midiEvent(inEv.type, inEv.data, inEv.channel, inEv.value);
+                if (sendLogEvents) emit midiEvent(inEv);
             }
             if (!runArp) tick = 0; //some events still come in after queue stop
             pollR = snd_seq_event_input_pending(seq_handle, 0);
@@ -687,6 +688,12 @@ int SeqDriver::getAlsaClientId()
 void SeqDriver::setMidiControllable(bool on)
 {
     midi_controllable = on;
+    modified = true;
+}
+
+void SeqDriver::setSendLogEvents(bool on)
+{
+    sendLogEvents = on;
     modified = true;
 }
 

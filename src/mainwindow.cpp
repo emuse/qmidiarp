@@ -31,6 +31,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMetaType>
 #include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
@@ -85,8 +86,12 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-    connect(engine->seqDriver, SIGNAL(midiEvent(int, int, int, int)),
-            logWidget, SLOT(appendEvent(int, int, int, int)));
+    qRegisterMetaType<MidiEvent>("MidiEvent");
+    connect(engine->seqDriver, SIGNAL(midiEvent(MidiEvent)),
+            logWidget, SLOT(appendEvent(MidiEvent)));
+
+    connect(logWidget, SIGNAL(sendLogEvents(bool)),
+            engine->seqDriver, SLOT(setSendLogEvents(bool)));
 
     passWidget = new PassWidget(engine, p_portCount, this);
 

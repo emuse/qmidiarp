@@ -35,6 +35,8 @@
 #include <QTextEdit>
 #include <QDateTime>
 
+#include "midievent.h"
+
 /*!
  * @brief Creates a QWidget with three sliders controlling the arpeggiator groove.
  *
@@ -63,10 +65,13 @@ class LogWidget : public QWidget
     QCheckBox *enableLog;
     QCheckBox *logMidiClock;
 
+  signals:
+    void sendLogEvents(bool on);
+
   public slots:
     void logMidiToggle(bool on);
     void enableLogToggle(bool on);
-    void appendEvent(int type, int data, int channel, int value);
+    void appendEvent(MidiEvent ev);
     void appendText(const QString&);
     void clear();
 };

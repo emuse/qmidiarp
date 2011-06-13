@@ -82,6 +82,7 @@ class SeqDriver : public QThread {
         bool threadAbort;
         bool gotArpKbdTrig;
         bool gotSeqKbdTrig;
+        bool sendLogEvents;
         int tick, jack_offset_tick, schedDelayTicks;
         int lastSchedTick;
         int nextLfoTick[20], nextMinLfoTick;
@@ -134,7 +135,7 @@ class SeqDriver : public QThread {
         void run();
 
    signals:
-        void midiEvent(int type, int data, int channel, int value);
+        void midiEvent(MidiEvent ev);
         void controlEvent(int ccnumber, int channel, int value);
         void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
@@ -147,6 +148,7 @@ class SeqDriver : public QThread {
         void setUseMidiClock(bool on);
         void setMidiControllable(bool on);
         void setUseJackTransport(bool on);
+        void setSendLogEvents(bool on);
         void jackShutdown();
 };
 
