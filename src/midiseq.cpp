@@ -232,6 +232,7 @@ void MidiSeq::resizeAll()
     customWave.resize(size * res);
     muteMask.resize(size * res);
     for (l1 = 0; l1 < customWave.count(); l1++) {
+        if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
         sample = customWave.at(l1 % os);
         sample.tick = lt;
         sample.muted = muteMask.at(l1);
