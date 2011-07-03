@@ -1069,9 +1069,15 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 {
     int tmp;
 
-    setChIn(fromWidget->chIn->currentIndex());
-    setChannelOut(fromWidget->channelOut->currentIndex());
-    setPortOut(fromWidget->portOut->currentIndex());
+    tmp = fromWidget->chIn->currentIndex();
+    chIn->setCurrentIndex(tmp);
+    updateChIn(tmp);
+    tmp = fromWidget->channelOut->currentIndex();
+    channelOut->setCurrentIndex(tmp);
+    updateChannelOut(tmp);
+    tmp = fromWidget->portOut->currentIndex();
+    portOut->setCurrentIndex(tmp);
+    updatePortOut(tmp);
 
     tmp = fromWidget->ccnumberInBox->value();
     ccnumberInBox->setValue(tmp);

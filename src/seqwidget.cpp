@@ -1166,9 +1166,16 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
     enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
     enableLoop->setChecked(fromWidget->enableLoop->isChecked());
-    setChIn(fromWidget->chIn->currentIndex());
-    setChannelOut(fromWidget->channelOut->currentIndex());
-    setPortOut(fromWidget->portOut->currentIndex());
+
+    tmp = fromWidget->chIn->currentIndex();
+    chIn->setCurrentIndex(tmp);
+    updateChIn(tmp);
+    tmp = fromWidget->channelOut->currentIndex();
+    channelOut->setCurrentIndex(tmp);
+    updateChannelOut(tmp);
+    tmp = fromWidget->portOut->currentIndex();
+    portOut->setCurrentIndex(tmp);
+    updatePortOut(tmp);
 
     tmp = fromWidget->resBox->currentIndex();
     resBox->setCurrentIndex(tmp);
