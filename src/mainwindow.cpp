@@ -415,7 +415,7 @@ void MainWindow::addArp(const QString& name)
 
 void MainWindow::addLfo(const QString& name)
 {
-    int count, widgetID;
+    int widgetID;
     MidiLfo *midiWorker = new MidiLfo();
     engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
@@ -425,6 +425,7 @@ void MainWindow::addLfo(const QString& name)
             moduleWidget, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
@@ -435,25 +436,14 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->ID = widgetID;
 
     engine->addLfoWidget(moduleWidget);
+    appendLfoDock(moduleWidget);
 
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
-    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
-    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
-    engine->addModuleWindow(moduleWindow);
     checkIfFirstModule();
 }
 
 void MainWindow::addSeq(const QString& name)
 {
-    int count, widgetID;
+    int widgetID;
     MidiSeq *midiWorker = new MidiSeq();
     engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
@@ -462,6 +452,7 @@ void MainWindow::addSeq(const QString& name)
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
@@ -474,12 +465,80 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->ID = widgetID;
 
     engine->addSeqWidget(moduleWidget);
+    appendSeqDock(moduleWidget);
 
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
+    checkIfFirstModule();
+}
+
+void MainWindow::cloneLfo(int ID)
+{
+    int widgetID;
+    MidiLfo *midiWorker = new MidiLfo();
+    engine->addMidiLfo(midiWorker);
+    LfoWidget *moduleWidget = new LfoWidget(midiWorker,
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget, SLOT(updateScreen(int)));
+    connect(moduleWidget, SIGNAL(moduleRemove(int)),
+            this, SLOT(removeLfo(int)));
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
+            engine, SLOT(setMidiLearn(int, int, int)));
+
+    widgetID = engine->lfoWidgetCount();
+    moduleWidget->name = engine->lfoWidget(ID)->name + "_0";
+    moduleWidget->ID = widgetID;
+
+    moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
+
+    engine->addLfoWidget(moduleWidget);
+    appendLfoDock(moduleWidget);
+
+    checkIfFirstModule();
+}
+
+void MainWindow::cloneSeq(int ID)
+{
+    int widgetID;
+    QString name;
+    MidiSeq *midiWorker = new MidiSeq();
+
+    engine->addMidiSeq(midiWorker);
+    SeqWidget *moduleWidget = new SeqWidget(midiWorker,
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget->screen, SLOT(updateScreen(int)));
+    connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
+            engine, SLOT(setMidiLearn(int, int, int)));
+    connect(midiWorker, SIGNAL(noteEvent(int, int)),
+            moduleWidget, SLOT(processNote(int, int)));
+
+    widgetID = engine->seqWidgetCount();
+    moduleWidget->name = engine->seqWidget(ID)->name + "_0";
+    moduleWidget->ID = widgetID;
+
+    moduleWidget->copyParamsFrom(engine->seqWidget(ID));
+
+    engine->addSeqWidget(moduleWidget);
+    appendSeqDock(moduleWidget);
+}
+
+void MainWindow::appendLfoDock(LfoWidget *moduleWidget)
+{
+    int count;
+    QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
+    moduleWindow->setObjectName(moduleWidget->name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
@@ -487,8 +546,23 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
+}
 
-    checkIfFirstModule();
+void MainWindow::appendSeqDock(SeqWidget *moduleWidget)
+{
+    int count;
+    QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
+    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    moduleWindow->setWidget(moduleWidget);
+    moduleWindow->setObjectName(moduleWidget->name);
+    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
+
+    count = engine->moduleWindowCount();
+    moduleWidget->parentDockID = count;
+    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    engine->addModuleWindow(moduleWindow);
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)

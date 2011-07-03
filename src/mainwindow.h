@@ -158,7 +158,22 @@ class MainWindow : public QMainWindow
 * @param name Name attribute of this arpeggiator module
 */
     void addSeq(const QString&);
-
+/*!
+* @brief This function wraps the given widget in a QDockWidget and adds
+* it to the list in Engine.
+*
+* @param *moduleWidget The LfoWidget to be embedded
+*
+*/
+    void appendLfoDock(LfoWidget *moduleWidget);
+/*!
+* @brief This function wraps the given widget in a QDockWidget and adds
+* it to the list in Engine.
+*
+* @param *moduleWidget The SeqWidget to be embedded
+*
+*/
+    void appendSeqDock(SeqWidget *moduleWidget);
 /*!
 * @brief This function reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
@@ -422,6 +437,13 @@ class MainWindow : public QMainWindow
 * @param index The Engine::MidiSeqList index of the sequencer to remove
 */
     void removeSeq(int index);
+/*!
+* @brief This function duplicates and adds a MidiSeq to the Engine.
+*
+* @param ID List ID of the module to copy
+*/
+    void cloneLfo(int ID);
+    void cloneSeq(int ID);
     void helpAbout();
     void helpAboutQt();
 /*! @brief Slot for tempo spinBox changes.

@@ -79,14 +79,7 @@ class LfoWidget : public QWidget
 {
     Q_OBJECT
 
-    QComboBox *chIn;
-    QSpinBox  *ccnumberInBox;
-    QSpinBox  *ccnumberBox;
-    // Output channel / port (ALSA Sequencer)
-    QComboBox *channelOut, *portOut;
-    QComboBox *resBox, *sizeBox;
-
-    QAction *deleteAction, *renameAction;
+    QAction *deleteAction, *renameAction, *cloneAction;
     QAction *cancelMidiLearnAction;
     QSignalMapper *learnSignalMapper, *forgetSignalMapper;
     QStringList midiCCNames; /**< List of from GUI-element names for index = ControlID */
@@ -153,10 +146,19 @@ class LfoWidget : public QWidget
 
     LfoScreen *screen;
     QStringList waveForms;
+    QComboBox *chIn;
+    QSpinBox  *ccnumberInBox;
+    QSpinBox  *ccnumberBox;
+    // Output channel / port (ALSA Sequencer)
+    QComboBox *channelOut, *portOut;
+    QComboBox *resBox, *sizeBox;
     QCheckBox *muteOut;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QComboBox *waveFormBox, *freqBox;
+
+    void setChIn(int value);
+    QVector<Sample> getCustomWave();
 
 /*!
 * @brief This function returns the MidiLfo instance associated with this GUI
@@ -186,6 +188,13 @@ class LfoWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+/*!
+* @brief This function copies all LFO module GUI parameters from
+* fromWidget
+*
+* @param fromWidget pointer to the LfoWidget parameters are to be taken from
+*/
+    void copyParamsFrom(LfoWidget *fromWidget);
 /*!
 * @brief Settor for the LfoWidget::channelOut spinbox setting the output
 * channel of this module.
@@ -226,6 +235,10 @@ class LfoWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
+/*! @brief Emitted to MainWindow::cloneLfo for module duplication.
+ *  @param ID MidiLfo::ID of the module to clone
+ * */
+    void moduleClone(int ID);
 /*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
@@ -399,6 +412,13 @@ class LfoWidget : public QWidget
 * signal to MainWindow with the new name and the dockWidget ID to rename.
 */
     void moduleRename();
+/*!
+* @brief Slot for SeqWidget::cloneAction.
+*
+* This function emits the SeqWidget::dockClone
+* signal to MainWindow with the module ID and the dockWidget ID.
+*/
+    void moduleClone();
 /*!
 * @brief This function appends a new MIDI controller - GUI element
 * binding to LfoWidget::ccList.

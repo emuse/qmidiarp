@@ -33,6 +33,7 @@
 #include <QCheckBox>
 #include <QAction>
 #include <QToolButton>
+#include <QVector>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
@@ -75,14 +76,10 @@ class SeqWidget : public QWidget
 {
     Q_OBJECT
 
-    QComboBox *chIn;
-    QComboBox *channelOut, *portOut;
-    QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QAction *copyToCustomAction;
-    QAction *deleteAction, *renameAction;
+    QAction *deleteAction, *renameAction, *cloneAction;
     QAction *cancelMidiLearnAction;
     QSignalMapper *learnSignalMapper, *forgetSignalMapper;
-    QToolButton *copyToCustomButton;
     QStringList midiCCNames; /**< List of GUI-element names with index = ControlID */
 
     MidiSeq *midiWorker;
@@ -136,6 +133,9 @@ class SeqWidget : public QWidget
 
     SeqScreen *screen;
     QStringList waveForms;
+    QComboBox *chIn;
+    QComboBox *channelOut, *portOut;
+    QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;
     QCheckBox *enableNoteOff;
@@ -151,6 +151,7 @@ class SeqWidget : public QWidget
     void setChIn(int value);
     void setEnableNoteIn(bool on);
     void setEnableVelIn(bool on);
+    QVector<Sample> getCustomWave();
 
 /*!
 * @brief This function returns the MidiSeq instance associated with this GUI
@@ -180,6 +181,13 @@ class SeqWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+/*!
+* @brief This function copies all Seq module GUI parameters from
+* fromWidget
+*
+* @param fromWidget pointer to the SeqWidget parameters are to be taken from
+*/
+    void copyParamsFrom(SeqWidget *fromWidget);
 /*!
 * @brief This function is obsolete.
 * It writes to an old QMidiArp .qma text file passed as a stream
@@ -221,6 +229,10 @@ class SeqWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
+/*! @brief Emitted to MainWindow::cloneSeq for module duplication.
+ *  @param ID MidiSeq::ID of the module to clone
+ * */
+    void moduleClone(int ID);
 /*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
@@ -390,6 +402,13 @@ class SeqWidget : public QWidget
 * signal to MainWindow with the new name and the dockWidget ID to rename.
 */
     void moduleRename();
+/*!
+* @brief Slot for SeqWidget::cloneAction.
+*
+* This function emits the SeqWidget::dockClone
+* signal to MainWindow with the module ID and the dockWidget ID.
+*/
+    void moduleClone();
 /*!
 * @brief This function appends a new MIDI controller - GUI element
 * binding to SeqWidget::ccList.

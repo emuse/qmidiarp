@@ -34,6 +34,7 @@
 #include "lfowidget.h"
 #include "slider.h"
 #include "lfoscreen.h"
+#include "pixmaps/lfowavcp.xpm"
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
 #include "pixmaps/lfowsine.xpm"
@@ -72,6 +73,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
+    cloneAction = new QAction(QIcon(lfowavcp_xpm), tr("&Clone..."), this);
+    cloneAction->setToolTip(tr("Duplicate this LFO in muted state"));
+    QToolButton *cloneButton = new QToolButton(this);
+    cloneButton->setDefaultAction(cloneAction);
+    connect(cloneAction, SIGNAL(triggered()), this, SLOT(moduleClone()));
+
     renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
     renameAction->setToolTip(tr("Rename this LFO"));
     QToolButton *renameButton = new QToolButton(this);
@@ -85,6 +92,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
 
     manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(cloneButton);
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
 
@@ -762,6 +770,12 @@ void LfoWidget::updateCcnumber(int val)
     modified = true;
 }
 
+void LfoWidget::setChIn(int value)
+{
+    chIn->setCurrentIndex(value);
+    modified = true;
+}
+
 void LfoWidget::updateChIn(int val)
 {
     midiWorker->chIn = val;
@@ -981,6 +995,11 @@ void LfoWidget::moduleRename()
     }
 }
 
+void LfoWidget::moduleClone()
+{
+        emit moduleClone(ID);
+}
+
 void LfoWidget::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
@@ -1044,4 +1063,50 @@ void LfoWidget::midiLearnCancel()
     emit setMidiLearn(parentDockID, ID, -1);
     qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
+}
+
+void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
+{
+    int tmp;
+
+    setChIn(fromWidget->chIn->currentIndex());
+    setChannelOut(fromWidget->channelOut->currentIndex());
+    setPortOut(fromWidget->portOut->currentIndex());
+
+    tmp = fromWidget->ccnumberInBox->value();
+    ccnumberInBox->setValue(tmp);
+    updateCcnumberIn(tmp);
+    tmp = fromWidget->ccnumberBox->value();
+    ccnumberBox->setValue(tmp);
+    updateCcnumber(tmp);
+
+    tmp = fromWidget->resBox->currentIndex();
+    resBox->setCurrentIndex(tmp);
+    updateRes(tmp);
+    tmp = fromWidget->sizeBox->currentIndex();
+    sizeBox->setCurrentIndex(tmp);
+    updateSize(tmp);
+    tmp = fromWidget->freqBox->currentIndex();
+    freqBox->setCurrentIndex(tmp);
+    updateFreq(tmp);
+
+    amplitude->setValue(fromWidget->amplitude->value());
+    offset->setValue(fromWidget->offset->value());
+
+    midiWorker->customWave = fromWidget->getCustomWave();
+    midiWorker->muteMask.clear();
+    for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
+        midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
+    }
+    ccList = fromWidget->ccList;
+    muteOut->setChecked(true);
+
+    tmp = fromWidget->waveFormBox->currentIndex();
+    waveFormBox->setCurrentIndex(tmp);
+    updateWaveForm(tmp);
+}
+
+QVector<Sample> LfoWidget::getCustomWave()
+{
+    return midiWorker->customWave;
 }

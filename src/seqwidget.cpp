@@ -34,9 +34,9 @@
 #include "seqwidget.h"
 #include "slider.h"
 #include "seqscreen.h"
+#include "pixmaps/seqwavcp.xpm"
 #include "pixmaps/arpremove.xpm"
 #include "pixmaps/arprename.xpm"
-#include "pixmaps/seqwavcp.xpm"
 #include "pixmaps/seqrecord.xpm"
 #include "config.h"
 
@@ -67,6 +67,12 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
+    cloneAction = new QAction(QIcon(seqwavcp_xpm), tr("&Clone..."), this);
+    cloneAction->setToolTip(tr("Duplicate this Sequencer in muted state"));
+    QToolButton *cloneButton = new QToolButton(this);
+    cloneButton->setDefaultAction(cloneAction);
+    connect(cloneAction, SIGNAL(triggered()), this, SLOT(moduleClone()));
+
     renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
     renameAction->setToolTip(tr("Rename this Sequencer"));
     QToolButton *renameButton = new QToolButton(this);
@@ -80,6 +86,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
 
     manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(cloneButton);
     manageBoxLayout->addWidget(renameButton);
     manageBoxLayout->addWidget(deleteButton);
 
@@ -326,17 +333,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
 
-    copyToCustomButton = new QToolButton(this);
-    copyToCustomAction = new QAction( QIcon(seqwavcp_xpm),
-            tr("C&opy to new wave"), this);
-    connect(copyToCustomAction, SIGNAL(triggered()), this,
-            SLOT(copyToCustom()));
-    copyToCustomButton->setDefaultAction(copyToCustomAction);
-
     //temporarily hide these elements until multiple patterns are implemented
-    copyToCustomAction->setEnabled(false);
     waveFormBox->setEnabled(false);
-    copyToCustomButton->setVisible(false);
     waveFormBox->setVisible(false);
     waveFormBoxLabel->setVisible(false);
 
@@ -386,7 +384,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
 
     QGridLayout* sliderLayout = new QGridLayout;
-    sliderLayout->addWidget(copyToCustomButton, 0 , 0);
     sliderLayout->addWidget(velocity, 1, 0);
     sliderLayout->addWidget(notelength, 2, 0);
     sliderLayout->addWidget(transpose, 3, 0);
@@ -1049,6 +1046,11 @@ void SeqWidget::moduleRename()
     }
 }
 
+void SeqWidget::moduleClone()
+{
+        emit moduleClone(ID);
+}
+
 void SeqWidget::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
 {
     MidiCC midiCC;
@@ -1152,4 +1154,48 @@ void SeqWidget::updateDispVert(int mode)
     screen->baseOctave = baseoct;
     screen->update();
     modified = true;
+}
+
+void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
+{
+    int tmp;
+    setDispVert(fromWidget->dispVertical);
+    enableNoteIn->setChecked(fromWidget->enableNoteIn->isChecked());
+    enableNoteOff->setChecked(fromWidget->enableNoteOff->isChecked());
+    enableVelIn->setChecked(fromWidget->enableVelIn->isChecked());
+    enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
+    enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
+    enableLoop->setChecked(fromWidget->enableLoop->isChecked());
+    setChIn(fromWidget->chIn->currentIndex());
+    setChannelOut(fromWidget->channelOut->currentIndex());
+    setPortOut(fromWidget->portOut->currentIndex());
+
+    tmp = fromWidget->resBox->currentIndex();
+    resBox->setCurrentIndex(tmp);
+    updateRes(tmp);
+    tmp = fromWidget->sizeBox->currentIndex();
+    sizeBox->setCurrentIndex(tmp);
+    updateSize(tmp);
+
+    tmp = fromWidget->velocity->value();
+    updateVelocity(tmp);
+    velocity->setValue(tmp);
+    tmp = fromWidget->transpose->value();
+    updateTranspose(tmp);
+    transpose->setValue(tmp);
+
+    notelength->setValue(fromWidget->notelength->value());
+    midiWorker->customWave = fromWidget->getCustomWave();
+    midiWorker->muteMask.clear();
+    for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
+        midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
+    }
+    ccList = fromWidget->ccList;
+    muteOut->setChecked(true);
+    updateWaveForm(0);
+}
+
+QVector<Sample> SeqWidget::getCustomWave()
+{
+    return midiWorker->customWave;
 }
