@@ -144,10 +144,11 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     int tempval;
     bool cl = false;
     int npoints = size * res;
+    QVector<Sample> tmpdata;
     //res: number of events per beat
     //size: size of waveform in beats
 
-    data.clear();
+    tmpdata.clear();
 
     switch(waveFormIndex) {
         case 0: //sine
@@ -156,7 +157,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
             }
         break;
@@ -167,7 +168,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
                 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
                 val += freq;
                 val %= res * 32;
@@ -182,7 +183,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
                         / res / 16 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
                 val += freq;
                 val %= res * 32;
@@ -195,7 +196,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
                         * amp / res / 32 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt+=step;
                 val += freq;
                 val %= res * 32;
@@ -207,20 +208,21 @@ void MidiLfo::getData(QVector<Sample> *p_data)
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt+=step;
             }
         break;
         case 5: //custom
             lt = step * customWave.count();
-            data = customWave;
+            tmpdata = customWave;
         break;
         default:
         break;
     }
     sample.value = -1;
     sample.tick = lt;
-    data.append(sample);
+    tmpdata.append(sample);
+    data = tmpdata;
     *p_data = data;
 }
 
