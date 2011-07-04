@@ -108,6 +108,16 @@ class ArpWidget : public QWidget
 */
     void skipXmlElement(QXmlStreamReader& xml);
     void loadPatternPresets();
+/*!
+* @brief This function creates and attributes a MIDI-Learn context menu
+* to the passed QWidget.
+*
+* The menu is connected to a QSignalMapper for dispatching its actions
+*
+* @param *widget QWidget to which the context menu is attributed
+* @param count Internal identifier of the controllable QWidget
+*/
+    void addMidiLearnMenu(QWidget *widget, int count = 0);
 
 /* PUBLIC MEMBERS */
   public:

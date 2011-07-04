@@ -62,7 +62,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     cancelMidiLearnAction->setEnabled(false);
 
     midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
-                << "RecordToggle" << "unknown";
+                << "RecordToggle" << "Resolution"<< "Size" << "unknown";
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -206,22 +206,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
-    muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-
-    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
-    muteOut->addAction(muteLearnAction);
-    connect(muteLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(muteLearnAction, 0);
-
-    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
-    muteOut->addAction(muteForgetAction);
-    connect(muteForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(muteForgetAction, 0);
-
-    muteOut->addAction(cancelMidiLearnAction);
-
+    addMidiLearnMenu(muteOut, 0);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
@@ -292,19 +279,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    recordButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-
-    QAction *recordLearnAction = new QAction(tr("MIDI &Learn"), this);
-    recordButton->addAction(recordLearnAction);
-    connect(recordLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(recordLearnAction, 3);
-
-    QAction *recordForgetAction = new QAction(tr("MIDI &Forget"), this);
-    recordButton->addAction(recordForgetAction);
-    connect(recordForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(recordForgetAction, 3);
-
-    recordButton->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(recordButton, 3);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);
@@ -320,6 +295,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
+    addMidiLearnMenu(resBox, 4);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
     sizeBox = new QComboBox(seqBox);
@@ -332,6 +308,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
+    addMidiLearnMenu(sizeBox, 5);
 
     //temporarily hide these elements until multiple patterns are implemented
     waveFormBox->setEnabled(false);
@@ -341,41 +318,16 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
-    velocity->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
-
-
-    QAction *velocityLearnAction = new QAction(tr("MIDI &Learn"), this);
-    velocity->addAction(velocityLearnAction);
-    connect(velocityLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(velocityLearnAction, 1);
-
-    QAction *velocityForgetAction = new QAction(tr("MIDI &Forget"), this);
-    velocity->addAction(velocityForgetAction);
-    connect(velocityForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(velocityForgetAction, 1);
-
-    velocity->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(velocity, 1);
 
 
     notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
-    notelength->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
-
-    QAction *noteLengthLearnAction = new QAction(tr("MIDI &Learn"), this);
-    notelength->addAction(noteLengthLearnAction);
-    connect(noteLengthLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(noteLengthLearnAction, 2);
-
-    QAction *noteLengthForgetAction = new QAction(tr("MIDI &Forget"), this);
-    notelength->addAction(noteLengthForgetAction);
-    connect(noteLengthForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(noteLengthForgetAction, 2);
-
-    notelength->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(notelength, 2);
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
@@ -898,6 +850,7 @@ void SeqWidget::setRecord(bool on)
 
 void SeqWidget::updateRes(int val)
 {
+    if (val > 4) return;
     midiWorker->res = seqResValues[val];
     midiWorker->resizeAll();
     midiWorker->getData(&data);
@@ -908,6 +861,7 @@ void SeqWidget::updateRes(int val)
 
 void SeqWidget::updateSize(int val)
 {
+    if (val > 7) return;
     midiWorker->size = val + 1;
     midiWorker->resizeAll();
     midiWorker->getData(&data);
@@ -1205,4 +1159,20 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 QVector<Sample> SeqWidget::getCustomWave()
 {
     return midiWorker->customWave;
+}
+
+void SeqWidget::addMidiLearnMenu(QWidget *widget, int count)
+{
+    widget->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    QAction *learnAction = new QAction(tr("MIDI &Learn"), this);
+    widget->addAction(learnAction);
+    connect(learnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(learnAction, count);
+
+    QAction *forgetAction = new QAction(tr("MIDI &Forget"), this);
+    widget->addAction(forgetAction);
+    connect(forgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(forgetAction, count);
+
+    widget->addAction(cancelMidiLearnAction);
 }

@@ -453,6 +453,20 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
+                        case 6:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->resBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateRes(sval);
+                                return;
+                        break;
+                        case 7:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->sizeBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateSize(sval);
+                                return;
+                        break;
 
                         default:
                         break;
@@ -515,6 +529,20 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         seqWidget(l1)->recordAction->setChecked(false);
                                     }
                                 }
+                        break;
+                        case 4:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->resBox->setCurrentIndex(sval);
+                                seqWidget(l1)->updateRes(sval);
+                                return;
+                        break;
+                        case 5:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->sizeBox->setCurrentIndex(sval);
+                                seqWidget(l1)->updateSize(sval);
+                                return;
                         break;
 
                         default:

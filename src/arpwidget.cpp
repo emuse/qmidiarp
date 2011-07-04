@@ -158,21 +158,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
-    muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-
-    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
-    muteOut->addAction(muteLearnAction);
-    connect(muteLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(muteLearnAction, 0);
-
-    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
-    muteOut->addAction(muteForgetAction);
-    connect(muteForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(muteForgetAction, 0);
-
-    muteOut->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(muteOut, 0);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
@@ -244,19 +232,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
-    patternPresetBox->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-
-    QAction *presetSwitchLearnAction = new QAction(tr("MIDI &Learn"), this);
-    patternPresetBox->addAction(presetSwitchLearnAction);
-    connect(presetSwitchLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(presetSwitchLearnAction, 1);
-
-    QAction *presetSwitchForgetAction = new QAction(tr("MIDI &Forget"), this);
-    patternPresetBox->addAction(presetSwitchForgetAction);
-    connect(presetSwitchForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(presetSwitchForgetAction, 1);
-
-    patternPresetBox->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(patternPresetBox, 1);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames;
@@ -1115,4 +1091,20 @@ void ArpWidget::midiLearnCancel()
     emit setMidiLearn(parentDockID, ID, -1);
     qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
+}
+
+void ArpWidget::addMidiLearnMenu(QWidget *widget, int count)
+{
+    widget->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    QAction *learnAction = new QAction(tr("MIDI &Learn"), this);
+    widget->addAction(learnAction);
+    connect(learnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(learnAction, count);
+
+    QAction *forgetAction = new QAction(tr("MIDI &Forget"), this);
+    widget->addAction(forgetAction);
+    connect(forgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(forgetAction, count);
+
+    widget->addAction(cancelMidiLearnAction);
 }

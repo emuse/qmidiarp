@@ -68,7 +68,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     cancelMidiLearnAction->setEnabled(false);
 
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
-                << "RecordToggle" << "unknown";
+                << "RecordToggle"<< "Resolution"<< "Size" << "unknown";
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -134,22 +134,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
     muteOut = new QCheckBox(this);
-
-    muteOut->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-
-    QAction *muteLearnAction = new QAction(tr("MIDI &Learn"), this);
-    muteOut->addAction(muteLearnAction);
-    connect(muteLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(muteLearnAction, 0);
-
-    QAction *muteForgetAction = new QAction(tr("MIDI &Forget"), this);
-    muteOut->addAction(muteForgetAction);
-    connect(muteForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(muteForgetAction, 0);
-
-    muteOut->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(muteOut, 0);
 
 
     QLabel *ccnumberLabel = new QLabel(tr("MIDI &CC#"), portBox);
@@ -229,19 +216,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-    waveFormBox->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-
-    QAction *waveFormBoxLearnAction = new QAction(tr("MIDI &Learn"), this);
-    waveFormBox->addAction(waveFormBoxLearnAction);
-    connect(waveFormBoxLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(waveFormBoxLearnAction, 3);
-
-    QAction *waveFormBoxForgetAction = new QAction(tr("MIDI &Forget"), this);
-    waveFormBox->addAction(waveFormBoxForgetAction);
-    connect(waveFormBoxForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(waveFormBoxForgetAction, 3);
-
-    waveFormBox->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(waveFormBox, 3);
 
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
@@ -259,20 +234,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     freqBox->setMinimumContentsLength(3);
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
-
-    freqBox->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-
-    QAction *freqBoxLearnAction = new QAction(tr("MIDI &Learn"), this);
-    freqBox->addAction(freqBoxLearnAction);
-    connect(freqBoxLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(freqBoxLearnAction, 4);
-
-    QAction *freqBoxForgetAction = new QAction(tr("MIDI &Forget"), this);
-    freqBox->addAction(freqBoxForgetAction);
-    connect(freqBoxForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(freqBoxForgetAction, 4);
-
-    freqBox->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(freqBox, 4);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             waveBox);
@@ -287,6 +249,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
+    addMidiLearnMenu(resBox, 6);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
     sizeBox = new QComboBox(waveBox);
@@ -300,6 +263,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
+    addMidiLearnMenu(sizeBox, 7);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
@@ -309,57 +273,20 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    recordButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-
-    QAction *recordLearnAction = new QAction(tr("MIDI &Learn"), this);
-    recordButton->addAction(recordLearnAction);
-    connect(recordLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(recordLearnAction, 5);
-
-    QAction *recordForgetAction = new QAction(tr("MIDI &Forget"), this);
-    recordButton->addAction(recordForgetAction);
-    connect(recordForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(recordForgetAction, 5);
-
-    recordButton->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(recordButton, 5);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), waveBox);
-
-    amplitude->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
-
-    QAction *amplitudeLearnAction = new QAction(tr("MIDI &Learn"), this);
-    amplitude->addAction(amplitudeLearnAction);
-    connect(amplitudeLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(amplitudeLearnAction, 1);
-
-    QAction *amplitudeForgetAction = new QAction(tr("MIDI &Forget"), this);
-    amplitude->addAction(amplitudeForgetAction);
-    connect(amplitudeForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(amplitudeForgetAction, 1);
-
-    amplitude->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(amplitude, 1);
 
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), waveBox);
-    offset->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
-
-    QAction *offsetLearnAction = new QAction(tr("MIDI &Learn"), this);
-    offset->addAction(offsetLearnAction);
-    connect(offsetLearnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(offsetLearnAction, 2);
-
-    QAction *offsetForgetAction = new QAction(tr("MIDI &Forget"), this);
-    offset->addAction(offsetForgetAction);
-    connect(offsetForgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(offsetForgetAction, 2);
-
-    offset->addAction(cancelMidiLearnAction);
+    addMidiLearnMenu(offset, 2);
 
     QVBoxLayout* sliderLayout = new QVBoxLayout;
     sliderLayout->addWidget(amplitude);
@@ -823,6 +750,7 @@ void LfoWidget::updateFreq(int val)
 
 void LfoWidget::updateRes(int val)
 {
+    if (val > 8) return;
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -831,6 +759,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
+    if (val > 11) return;
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -1115,4 +1044,20 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 QVector<Sample> LfoWidget::getCustomWave()
 {
     return midiWorker->customWave;
+}
+
+void LfoWidget::addMidiLearnMenu(QWidget *widget, int count)
+{
+    widget->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+    QAction *learnAction = new QAction(tr("MIDI &Learn"), this);
+    widget->addAction(learnAction);
+    connect(learnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
+    learnSignalMapper->setMapping(learnAction, count);
+
+    QAction *forgetAction = new QAction(tr("MIDI &Forget"), this);
+    widget->addAction(forgetAction);
+    connect(forgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
+    forgetSignalMapper->setMapping(forgetAction, count);
+
+    widget->addAction(cancelMidiLearnAction);
 }
