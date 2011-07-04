@@ -368,8 +368,6 @@ void MainWindow::addArp(const QString& name)
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    // passing compactStyle property was necessary because stylesheet
-    // seems to have no effect on layout spacing/margin
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
@@ -397,25 +395,16 @@ void MainWindow::addArp(const QString& name)
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
 
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
-    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
-    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
-    engine->addModuleWindow(moduleWindow);
-    moduleWindow->show();
+    appendDock(moduleWidget, name, count);
+
     checkIfFirstModule();
 }
 
 void MainWindow::addLfo(const QString& name)
 {
-    int widgetID;
+    int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
     engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
@@ -436,14 +425,16 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->ID = widgetID;
 
     engine->addLfoWidget(moduleWidget);
-    appendLfoDock(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->parentDockID = count;
+    appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
 }
 
 void MainWindow::addSeq(const QString& name)
 {
-    int widgetID;
+    int widgetID, count;
     MidiSeq *midiWorker = new MidiSeq();
     engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
@@ -465,14 +456,16 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->ID = widgetID;
 
     engine->addSeqWidget(moduleWidget);
-    appendSeqDock(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->parentDockID = count;
+    appendDock(moduleWidget, moduleWidget->name, count);
 
     checkIfFirstModule();
 }
 
 void MainWindow::cloneLfo(int ID)
 {
-    int widgetID;
+    int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
     engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
@@ -495,14 +488,16 @@ void MainWindow::cloneLfo(int ID)
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
 
     engine->addLfoWidget(moduleWidget);
-    appendLfoDock(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->parentDockID = count;
+    appendDock(moduleWidget, moduleWidget->name, count);
 
     checkIfFirstModule();
 }
 
 void MainWindow::cloneSeq(int ID)
 {
-    int widgetID;
+    int widgetID, count;
     QString name;
     MidiSeq *midiWorker = new MidiSeq();
 
@@ -528,39 +523,21 @@ void MainWindow::cloneSeq(int ID)
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
 
     engine->addSeqWidget(moduleWidget);
-    appendSeqDock(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->parentDockID = count;
+    appendDock(moduleWidget, moduleWidget->name, count);
 }
 
-void MainWindow::appendLfoDock(LfoWidget *moduleWidget)
+void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
 {
-    int count;
-    QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
+    QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(moduleWidget->name);
+    moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
-    engine->addModuleWindow(moduleWindow);
-}
-
-void MainWindow::appendSeqDock(SeqWidget *moduleWidget)
-{
-    int count;
-    QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
-    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(moduleWidget->name);
-    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
 }

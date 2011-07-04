@@ -48,8 +48,8 @@ static const char ABOUTMSG[] =
             "(C) 2009-2011 Frank Kober<br/>"
             "(C) 2009 Guido Scholz</br></p>"
             "<p>For getting support please type <b>man qmidiarp</b> or go to<br/>"
-            "<a href=\"http://sourceforge.net/projects/qmidiarp\">"
-            "http://sourceforge.net/projects/qmidiarp</a></p>"
+            "<a href=\"http://qmidiarp.sourceforge.net\">"
+            "http://qmidiarp.sourceforge.net</a></p>"
             APP_NAME " is licensed under the GPL.</b></p></html>";
 
 /*!
@@ -162,18 +162,10 @@ class MainWindow : public QMainWindow
 * @brief This function wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
 *
-* @param *moduleWidget The LfoWidget to be embedded
+* @param *moduleWidget The QWidget to be embedded
 *
 */
-    void appendLfoDock(LfoWidget *moduleWidget);
-/*!
-* @brief This function wraps the given widget in a QDockWidget and adds
-* it to the list in Engine.
-*
-* @param *moduleWidget The SeqWidget to be embedded
-*
-*/
-    void appendSeqDock(SeqWidget *moduleWidget);
+    void appendDock(QWidget *moduleWidget, const QString& name, int count);
 /*!
 * @brief This function reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
