@@ -1,7 +1,8 @@
-qmidiarp-0.4.2 (2011-06-??)
+qmidiarp-0.4.2 (2011-07-??)
 
 New Features
   o LFO wave lengths up to 32 bars for very low frequencies
+  o One-click duplication of LFO and Seq modules
   o Option to add new modules in muted state
   o Vertical Zoom switch for Seq module display
   o ToolBars can be positioned vertically
