@@ -268,24 +268,24 @@ void Engine::updateIDs(int curID)
 {
     int l1, tempDockID;
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->ID = l1;
-        tempDockID = arpWidget(l1)->parentDockID;
+        arpWidget(l1)->manageBox->ID = l1;
+        tempDockID = arpWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            arpWidget(l1)->parentDockID = tempDockID - 1;
+            arpWidget(l1)->manageBox->parentDockID = tempDockID - 1;
             }
     }
     for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->ID = l1;
-        tempDockID = lfoWidget(l1)->parentDockID;
+        lfoWidget(l1)->manageBox->ID = l1;
+        tempDockID = lfoWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            lfoWidget(l1)->parentDockID = tempDockID - 1;
+            lfoWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->ID = l1;
-        tempDockID = seqWidget(l1)->parentDockID;
+        seqWidget(l1)->manageBox->ID = l1;
+        tempDockID = seqWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            seqWidget(l1)->parentDockID = tempDockID - 1;
+            seqWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
 }

@@ -36,8 +36,6 @@
 #include "arpscreen.h"
 #include "config.h"
 
-#include "pixmaps/arpremove.xpm"
-#include "pixmaps/arprename.xpm"
 #include "pixmaps/editmodeon.xpm"
 #include "pixmaps/patternremove.xpm"
 #include "pixmaps/patternstore.xpm"
@@ -54,24 +52,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     midiCCNames << "MuteToggle" << "PresetSwitch" << "unknown";
     midiControl = new MidiControl(midiCCNames);
 
-    // Management Buttons on the right top
-    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
-
-    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
-    renameAction->setToolTip(tr("Rename this Arp"));
-    QToolButton *renameButton = new QToolButton(this);
-    renameButton->setDefaultAction(renameAction);
-    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-
-    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
-    deleteAction->setToolTip(tr("Delete this Arp"));
-    QToolButton *deleteButton = new QToolButton(this);
-    deleteButton->setDefaultAction(deleteAction);
-    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
-
-    manageBoxLayout->addStretch();
-    manageBoxLayout->addWidget(renameButton);
-    manageBoxLayout->addWidget(deleteButton);
+    manageBox = new ManageBox("Arp:", false, this);
 
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
@@ -177,7 +158,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
 
     // Layout for left/right placements of in/out group boxes
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout();
-    inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -421,8 +402,8 @@ void ArpWidget::checkIfInputFilterSet()
 
 void ArpWidget::writeData(QXmlStreamWriter& xml)
 {
-    xml.writeStartElement(name.left(3));
-    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+    xml.writeStartElement(manageBox->name.left(3));
+    xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
@@ -938,34 +919,4 @@ void ArpWidget::setModified(bool m)
 {
     modified = m;
     midiControl->setModified(m);
-}
-
-void ArpWidget::moduleDelete()
-{
-    QString qs;
-    qs = tr("Delete \"%1\"?")
-        .arg(name);
-    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
-                QMessageBox::No | QMessageBox::Default
-                | QMessageBox::Escape, QMessageBox::NoButton)
-            == QMessageBox::No) {
-        return;
-    }
-    emit moduleRemove(ID);
-}
-
-void ArpWidget::moduleRename()
-{
-    QString newname, oldname;
-    bool ok;
-
-    oldname = name;
-
-    newname = QInputDialog::getText(this, APP_NAME,
-                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
-
-    if (ok && !newname.isEmpty()) {
-        name = "Arp:" + newname;
-        emit dockRename(name, parentDockID);
-    }
 }

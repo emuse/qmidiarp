@@ -11,6 +11,7 @@ nodist_qmidiarp_SOURCES = \
 	arpwidget_moc.cpp \
 	lfowidget_moc.cpp \
 	seqwidget_moc.cpp \
+	managebox_moc.cpp \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
 	logwidget_moc.cpp \
@@ -32,6 +33,7 @@ qmidiarp_SOURCES = \
 	arpwidget.cpp arpwidget.h \
 	lfowidget.cpp lfowidget.h \
 	seqwidget.cpp seqwidget.h \
+	managebox.cpp managebox.h \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
 	logwidget.cpp logwidget.h \

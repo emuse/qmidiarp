@@ -52,7 +52,7 @@ struct MidiCC {
 /*!
  * @brief Manages the list of MIDI-controllable Widgets for a Module.
  *
- * A MidiControl is instantiated by each of QMidiArp's module widgets.
+ * MidiControl is instantiated by each of QMidiArp's module widgets.
  */
 class MidiControl : public QWidget
 

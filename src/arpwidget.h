@@ -25,7 +25,6 @@
 #ifndef ARPWIDGET_H
 #define ARPWIDGET_H
 
-#include <QSignalMapper>
 #include <QString>
 #include <QTextStream>
 #include <QToolButton>
@@ -43,6 +42,7 @@
 #include "slider.h"
 #include "arpscreen.h"
 #include "midicontrol.h"
+#include "managebox.h"
 
 /*! @brief GUI class associated with and controlling a MidiArp worker
  *
@@ -108,12 +108,10 @@ class ArpWidget : public QWidget
             bool mutedAdd = false, QWidget* parent=0);
     ~ArpWidget();
 
-    QString name;       /**< @brief The name of this ArpWidget as shown in the DockWidget TitleBar */
-    int ID;                     /**< @brief Corresponds to the Engine::midiArpList index of the associated MidiArp */
-    int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
-
     MidiControl *midiControl;
     ArpScreen *screen;
+    ManageBox *manageBox;
+
     QStringList patternPresets, patternNames;
     QCheckBox *muteOut;
 
@@ -185,16 +183,6 @@ class ArpWidget : public QWidget
  *  @param index Set to the index of the pattern for removal, or to zero for appending a pattern
  * */
     void presetsChanged(const QString& pname, const QString& pattern, int index);
-/*! @brief Emitted to MainWindow::removeLfo for module deletion.
- *  @param ID The internal ArpWidget::ID of the module to be removed
- * */
-/*! Emitted to MainWindow::removeSeq for module deletion. */
-    void moduleRemove(int ID);
-/*! @brief Emitted to MainWindow::renameDock for module rename.
- *  @param mname New name of the module
- *  @param parentDockID SeqWidget::parentDockID of the module to rename
- * */
-    void dockRename(const QString& mname, int parentDockID);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -253,21 +241,6 @@ class ArpWidget : public QWidget
 *
 */
     void setMuted(bool on);
-/*!
-* @brief Slot for ArpWidget::deleteAction.
-*
-* This function displays a warning and then emits the
-* ArpWidget::moduleRemove signal to MainWindow with the module ID as
-* parameter.
-*/
-    void moduleDelete();
-/*!
-* @brief Slot for ArpWidget::renameAction.
-*
-* This function queries a new name then emits the ArpWidget::dockRename
-* signal to MainWindow with the new name and the dockWidget ID to rename.
-*/
-    void moduleRename();
 };
 
 #endif

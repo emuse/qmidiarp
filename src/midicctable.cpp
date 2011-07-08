@@ -91,9 +91,9 @@ void MidiCCTable::getCurrentControls()
         for (l2 = 0; l2 < engine->arpWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->arpWidget(l1)->name));
+                    new QTableWidgetItem(engine->arpWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->arpWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->arpWidget(l1)->manageBox->ID);
             nrows++;
         }
     }
@@ -104,9 +104,9 @@ void MidiCCTable::getCurrentControls()
         for (l2 = 0; l2 < engine->lfoWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->lfoWidget(l1)->name));
+                    new QTableWidgetItem(engine->lfoWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->lfoWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->lfoWidget(l1)->manageBox->ID);
             nrows++;
         }
     }
@@ -117,9 +117,9 @@ void MidiCCTable::getCurrentControls()
         for (l2 = 0; l2 < engine->seqWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->seqWidget(l1)->name));
+                    new QTableWidgetItem(engine->seqWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->seqWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->seqWidget(l1)->manageBox->ID);
             nrows++;
         }
     }

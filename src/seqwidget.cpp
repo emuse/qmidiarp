@@ -30,15 +30,9 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
-#include "midiseq.h"
 #include "seqwidget.h"
-#include "slider.h"
-#include "seqscreen.h"
-#include "pixmaps/seqwavcp.xpm"
-#include "pixmaps/arpremove.xpm"
-#include "pixmaps/arprename.xpm"
+
 #include "pixmaps/seqrecord.xpm"
-#include "config.h"
 
 
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
@@ -51,32 +45,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
                 << "RecordToggle" << "Resolution"<< "Size" << "unknown";
     midiControl = new MidiControl(midiCCNames);
 
-    // Management Buttons on the right top
-    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
-
-    cloneAction = new QAction(QIcon(seqwavcp_xpm), tr("&Clone..."), this);
-    cloneAction->setToolTip(tr("Duplicate this Sequencer in muted state"));
-    QToolButton *cloneButton = new QToolButton(this);
-    cloneButton->setDefaultAction(cloneAction);
-    connect(cloneAction, SIGNAL(triggered()), this, SLOT(moduleClone()));
-
-    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
-    renameAction->setToolTip(tr("Rename this Sequencer"));
-    QToolButton *renameButton = new QToolButton(this);
-    renameButton->setDefaultAction(renameAction);
-    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
-
-    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
-    deleteAction->setToolTip(tr("Delete this Sequencer"));
-    QToolButton *deleteButton = new QToolButton(this);
-    deleteButton->setDefaultAction(deleteAction);
-    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
-
-    manageBoxLayout->addStretch();
-    manageBoxLayout->addWidget(cloneButton);
-    manageBoxLayout->addWidget(renameButton);
-    manageBoxLayout->addWidget(deleteButton);
-
+    manageBox = new ManageBox("Seq:", true, this);
 
     // Display group box on right
     QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
@@ -229,7 +198,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     portBox->setLayout(outputLayout);
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    inOutBoxLayout->addLayout(manageBoxLayout);
+    inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
@@ -380,8 +349,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
     QByteArray tempArray;
     int l1;
 
-    xml.writeStartElement(name.left(3));
-    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+    xml.writeStartElement(manageBox->name.left(3));
+    xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
 
         xml.writeStartElement("display");
             xml.writeTextElement("vertical", QString::number(
@@ -914,41 +883,6 @@ void SeqWidget::setModified(bool m)
 {
     modified = m;
     midiControl->setModified(m);
-}
-
-void SeqWidget::moduleDelete()
-{
-    QString qs;
-    qs = tr("Delete \"%1\"?")
-        .arg(name);
-    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
-                QMessageBox::No | QMessageBox::Default
-                | QMessageBox::Escape, QMessageBox::NoButton)
-            == QMessageBox::No) {
-        return;
-    }
-    emit moduleRemove(ID);
-}
-
-void SeqWidget::moduleRename()
-{
-    QString newname, oldname;
-    bool ok;
-
-    oldname = name;
-
-    newname = QInputDialog::getText(this, APP_NAME,
-                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
-
-    if (ok && !newname.isEmpty()) {
-        name = "Seq:" + newname;
-        emit dockRename(name, parentDockID);
-    }
-}
-
-void SeqWidget::moduleClone()
-{
-        emit moduleClone(ID);
 }
 
 void SeqWidget::setDispVert(int mode)

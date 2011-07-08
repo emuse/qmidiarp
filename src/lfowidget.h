@@ -39,6 +39,7 @@
 #include "slider.h"
 #include "lfoscreen.h"
 #include "midicontrol.h"
+#include "managebox.h"
 
 /*! This array holds the currently available resolution values.
  */
@@ -63,8 +64,6 @@ const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 22
 class LfoWidget : public QWidget
 {
     Q_OBJECT
-
-    QAction *deleteAction, *renameAction, *cloneAction;
 
     MidiLfo *midiWorker;
     QVector<Sample> data;
@@ -121,12 +120,10 @@ class LfoWidget : public QWidget
             bool mutedAdd = false, QWidget* parent=0);
     ~LfoWidget();
 
-    QString name;               /**< The name of this LfoWidget as shown in the DockWidget TitleBar */
-    int ID;                     /**< Corresponds to the Engine::midiLfoList index of the associated MidiLfo */
-    int parentDockID;           /**< The index of the LfoWidget's parent DockWidget in Engine::moduleWindowList */
-
     MidiControl *midiControl;
     LfoScreen *screen;
+    ManageBox *manageBox;
+
     QStringList waveForms;
     QComboBox *chIn;
     QSpinBox  *ccnumberInBox;
@@ -208,19 +205,6 @@ class LfoWidget : public QWidget
   signals:
 /*! @brief Currently not in use. */
     void patternChanged();
-/*! @brief Emitted to MainWindow::removeLfo for module deletion.
- *  @param ID The internal LfoWidget::ID of the module to remove
- *  */
-    void moduleRemove(int ID);
-/*! @brief Emitted to MainWindow::renameDock for module rename.
- *  @param mname New name of the module
- *  @param parentDockID SeqWidget::parentDockID of the module to rename
- * */
-    void dockRename(const QString& mname, int parentDockID);
-/*! @brief Emitted to MainWindow::cloneLfo for module duplication.
- *  @param ID MidiLfo::ID of the module to clone
- * */
-    void moduleClone(int ID);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -369,28 +353,6 @@ class LfoWidget : public QWidget
 *
 */
     void setMuted(bool on);
-/*!
-* @brief Slot for LfoWidget::deleteAction.
-*
-* This function displays a warning and then emits the
-* LfoWidget::moduleRemove signal to MainWindow with the module ID as
-* parameter.
-*/
-    void moduleDelete();
-/*!
-* @brief Slot for LfoWidget::renameAction.
-*
-* This function queries a new name then emits the LfoWidget::dockRename
-* signal to MainWindow with the new name and the dockWidget ID to rename.
-*/
-    void moduleRename();
-/*!
-* @brief Slot for SeqWidget::cloneAction.
-*
-* This function emits the SeqWidget::dockClone
-* signal to MainWindow with the module ID and the dockWidget ID.
-*/
-    void moduleClone();
 };
 
 #endif
