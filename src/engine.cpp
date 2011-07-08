@@ -360,26 +360,21 @@ void Engine::handleController(int ccnumber, int channel, int value)
         for (int l2 = 0; l2 < cclist.count(); l2++) {
             min = cclist.at(l2).min;
             max = cclist.at(l2).max;
+            sval = min + ((double)value * (max - min) / 127);
             if ((ccnumber == cclist.at(l2).ccnumber) &&
                 (channel == cclist.at(l2).channel)) {
                 switch (cclist.at(l2).ID) {
                     case 0:
-                            sval = min + ((double)value * (max - min)
-                                    / 127);
                             grooveWidget->grooveTick->setValue(sval);
                             return;
                     break;
 
                     case 1:
-                            sval = min + ((double)value * (max - min)
-                                    / 127);
                             grooveWidget->grooveVelocity->setValue(sval);
                             return;
                     break;
 
                     case 2:
-                            sval = min + ((double)value * (max - min)
-                                    / 127);
                             grooveWidget->grooveLength->setValue(sval);
                             return;
                     break;
@@ -404,12 +399,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(!m);
                                         return;
                                     }
-                        case 1:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                arpWidget(l1)->selectPatternPreset(sval);
-                                return;
-                        break;
                                 }
                                 else {
                                     if (value == max) {
@@ -419,6 +408,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(true);
                                     }
                                 }
+                        break;
+                        case 1:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                arpWidget(l1)->selectPatternPreset(sval);
+                                return;
                         break;
                         default:
                         break;
