@@ -33,7 +33,9 @@
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
+#if defined(TRANSLATIONSDIR)
 #include <QTranslator>
+#endif
 #include <QLocale>
 #include <QLibraryInfo>
 
@@ -89,6 +91,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QLocale loc = QLocale::system();
 
+#if defined(TRANSLATIONSDIR)
     // translator for Qt library messages
     QTranslator qtTr;
 
@@ -101,6 +104,7 @@ int main(int argc, char *argv[])
 
     if (qmidiarpTr.load(QString(PACKAGE "_") + loc.name(), TRANSLATIONSDIR))
         app.installTranslator(&qmidiarpTr);
+#endif
 
     MainWindow* qmidiarp = new MainWindow(portCount);
     if (optind < argc) {
