@@ -170,7 +170,7 @@ void MidiControl::readData(QXmlStreamReader& xml)
                     max = xml.readElementText().toInt();
                 else skipXmlElement(xml);
             }
-            if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
+            if ((-1 < ccnumber) && (-1 < channel))
                 appendMidiCC(controlID, ccnumber, channel, min, max);
             else qWarning("Controller data incomplete");
         }

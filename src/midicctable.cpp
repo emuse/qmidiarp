@@ -74,6 +74,17 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->clear();
 
+    ccList = engine->grooveWidget->midiControl->ccList;
+
+    for (l2 = 0; l2 < engine->grooveWidget->midiControl->ccList.count(); l2++) {
+
+        midiCCTable->setVerticalHeaderItem(nrows,
+                new QTableWidgetItem("Groove"));
+
+        fillControlRow(nrows, ccList.at(l2), -1);
+        nrows++;
+    }
+
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++) {
         ccList = engine->arpWidget(l1)->midiControl->ccList;
 
@@ -148,6 +159,8 @@ void MidiCCTable::apply()
     int l1;
     QChar moduleType;
 
+    engine->grooveWidget->midiControl->ccList.clear();
+
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++)
             engine->arpWidget(l1)->midiControl->ccList.clear();
     for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++)
@@ -165,6 +178,10 @@ void MidiCCTable::apply()
         moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
 
         switch (moduleType.toLatin1()) {
+            case 'G':
+                    engine->grooveWidget->midiControl
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            break;
             case 'A':
                     engine->arpWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);

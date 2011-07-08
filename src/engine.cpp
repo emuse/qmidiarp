@@ -29,8 +29,17 @@
 #include "engine.h"
 
 
-Engine::Engine(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
+Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
+    grooveWidget = p_grooveWidget;
+    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
+            this, SLOT(setGrooveTick(int)));
+    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
+            this, SLOT(setGrooveVelocity(int)));
+    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
+            this, SLOT(setGrooveLength(int)));
+    connect(grooveWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
     seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
     connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
@@ -347,6 +356,39 @@ void Engine::handleController(int ccnumber, int channel, int value)
     int min, max, sval;
     QVector<MidiCC> cclist;
     if (!midiLearnFlag) {
+        cclist = grooveWidget->midiControl->ccList;
+        for (int l2 = 0; l2 < cclist.count(); l2++) {
+            min = cclist.at(l2).min;
+            max = cclist.at(l2).max;
+            if ((ccnumber == cclist.at(l2).ccnumber) &&
+                (channel == cclist.at(l2).channel)) {
+                switch (cclist.at(l2).ID) {
+                    case 0:
+                            sval = min + ((double)value * (max - min)
+                                    / 127);
+                            grooveWidget->grooveTick->setValue(sval);
+                            return;
+                    break;
+
+                    case 1:
+                            sval = min + ((double)value * (max - min)
+                                    / 127);
+                            grooveWidget->grooveVelocity->setValue(sval);
+                            return;
+                    break;
+
+                    case 2:
+                            sval = min + ((double)value * (max - min)
+                                    / 127);
+                            grooveWidget->grooveLength->setValue(sval);
+                            return;
+                    break;
+
+                    default:
+                    break;
+                }
+            }
+        }
         for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
             cclist = arpWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
@@ -553,6 +595,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
     }
     else {
+        if (midiLearnWindowID == -1) {
+            grooveWidget->midiControl->appendMidiCC(midiLearnID,
+                    ccnumber, channel, -100, 100);
+            midiLearnFlag = false;
+            return;
+            }
         int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
             arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,

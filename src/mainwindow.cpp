@@ -74,7 +74,17 @@ MainWindow::MainWindow(int p_portCount)
     filename = "";
     lastDir = QDir::homePath();
 
-    engine = new Engine(p_portCount, this);
+    grooveWidget = new GrooveWidget(this);
+    grooveWindow = new QDockWidget(tr("Groove"), this);
+    grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    grooveWindow->setWidget(grooveWidget);;
+    grooveWindow->setObjectName("grooveWidget");
+    grooveWindow->setVisible(true);
+    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+
+    engine = new Engine(grooveWidget, p_portCount, this);
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -97,21 +107,6 @@ MainWindow::MainWindow(int p_portCount)
 
     connect(this, SIGNAL(runQueue(bool)),
             engine->seqDriver, SLOT(setQueueStatus(bool)));
-    grooveWidget = new GrooveWidget(this);
-    grooveWindow = new QDockWidget(tr("Groove"), this);
-    grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
-            | QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    grooveWindow->setWidget(grooveWidget);;
-    grooveWindow->setObjectName("grooveWidget");
-    grooveWindow->setVisible(true);
-    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
-    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            engine, SLOT(setGrooveTick(int)));
-    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            engine, SLOT(setGrooveVelocity(int)));
-    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            engine, SLOT(setGrooveLength(int)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -746,6 +741,9 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     grooveWidget->grooveVelocity->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "length")
                     grooveWidget->grooveLength->setValue(xml.readElementText().toInt());
+                else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+                    grooveWidget->midiControl->readData(xml);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -969,6 +967,7 @@ bool MainWindow::saveFile()
                 QString::number(engine->grooveVelocity));
             xml.writeTextElement("length",
                 QString::number(engine->grooveLength));
+            grooveWidget->midiControl->writeData(xml);
         xml.writeEndElement();
 
     xml.writeEndElement();
