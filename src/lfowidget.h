@@ -28,7 +28,6 @@
 #include <QAction>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QSignalMapper>
 #include <QSpinBox>
 #include <QString>
 #include <QTextStream>
@@ -71,7 +70,6 @@ class LfoWidget : public QWidget
     QVector<Sample> data;
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
-    QStringList midiCCNames; /**< List of from GUI-element names for index = ControlID */
 /*!
 * @brief This function allows ignoring one XML element in the XML stream
 * passed by the caller.
