@@ -75,9 +75,9 @@ void MidiCCTable::getCurrentControls()
     midiCCTable->clear();
 
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++) {
-        ccList = engine->arpWidget(l1)->ccList;
+        ccList = engine->arpWidget(l1)->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->arpWidget(l1)->ccList.count(); l2++) {
+        for (l2 = 0; l2 < engine->arpWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
                     new QTableWidgetItem(engine->arpWidget(l1)->name));
@@ -88,9 +88,9 @@ void MidiCCTable::getCurrentControls()
     }
 
     for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++) {
-        ccList = engine->lfoWidget(l1)->ccList;
+        ccList = engine->lfoWidget(l1)->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->lfoWidget(l1)->ccList.count(); l2++) {
+        for (l2 = 0; l2 < engine->lfoWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
                     new QTableWidgetItem(engine->lfoWidget(l1)->name));
@@ -101,9 +101,9 @@ void MidiCCTable::getCurrentControls()
     }
 
     for (l1 = 0; l1 < engine->seqWidgetCount(); l1++) {
-        ccList = engine->seqWidget(l1)->ccList;
+        ccList = engine->seqWidget(l1)->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->seqWidget(l1)->ccList.count(); l2++) {
+        for (l2 = 0; l2 < engine->seqWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
                     new QTableWidgetItem(engine->seqWidget(l1)->name));
@@ -149,11 +149,11 @@ void MidiCCTable::apply()
     QChar moduleType;
 
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++)
-            engine->arpWidget(l1)->ccList.clear();
+            engine->arpWidget(l1)->midiControl->ccList.clear();
     for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++)
-            engine->lfoWidget(l1)->ccList.clear();
+            engine->lfoWidget(l1)->midiControl->ccList.clear();
     for (l1 = 0; l1 < engine->seqWidgetCount(); l1++)
-            engine->seqWidget(l1)->ccList.clear();
+            engine->seqWidget(l1)->midiControl->ccList.clear();
 
     for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
         ccnumber = midiCCTable->item(l1, 1)->text().toInt();
@@ -166,15 +166,15 @@ void MidiCCTable::apply()
 
         switch (moduleType.toLatin1()) {
             case 'A':
-                    engine->arpWidget(moduleID)
+                    engine->arpWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'L':
-                    engine->lfoWidget(moduleID)
+                    engine->lfoWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'S':
-                    engine->seqWidget(moduleID)
+                    engine->seqWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
         }

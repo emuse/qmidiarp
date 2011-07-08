@@ -40,25 +40,11 @@
 #include "midiseq.h"
 #include "slider.h"
 #include "seqscreen.h"
+#include "midicontrol.h"
 
 /*! @brief This array holds the currently available resolution values.
  */
 const int seqResValues[5] = {1, 2, 4, 8, 16};
-#ifndef MIDICC_H
-
-/*! @brief Structure holding all elements of a MIDI controller allocated to
- * a QMidiArp parameter assigned via MIDI learn
- */
-struct MidiCC {
-        QString name;   /**< @brief Name of the assigned parameter (GUI element)*/
-        int min;        /**< @brief Value output when the CC value is 0 */
-        int max;        /**< @brief Value output when the CC value is 127 */
-        int ccnumber;   /**< @brief MIDI CC number of the assigned controller event */
-        int channel;    /**< @brief MIDI channel on which the controller has to come in */
-        int ID;         /**< @brief Internal ID of the assigned parameter (GUI element)*/
-    };
-#define MIDICC_H
-#endif
 
 /*!
  * @brief GUI class associated with and controlling a MidiSeq worker
@@ -78,9 +64,6 @@ class SeqWidget : public QWidget
 
     QAction *copyToCustomAction;
     QAction *deleteAction, *renameAction, *cloneAction;
-    QAction *cancelMidiLearnAction;
-    QSignalMapper *learnSignalMapper, *forgetSignalMapper;
-    QStringList midiCCNames; /**< List of GUI-element names with index = ControlID */
 
     MidiSeq *midiWorker;
     QVector<Sample> data;
@@ -107,16 +90,6 @@ class SeqWidget : public QWidget
 *
 */
     void loadWaveForms();
-/*!
-* @brief This function creates and attributes a MIDI-Learn context menu
-* to the passed QWidget.
-*
-* The menu is connected to a QSignalMapper for dispatching its actions
-*
-* @param *widget QWidget to which the context menu is attributed
-* @param count Internal identifier of the controllable QWidget
-*/
-    void addMidiLearnMenu(QWidget *widget, int count = 0);
 
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
 
@@ -139,8 +112,8 @@ class SeqWidget : public QWidget
     QString name;       /**< @brief The name of this SeqWidget as shown in the DockWidget TitleBar */
     int ID;                     /**< @brief Corresponds to the Engine::midiSeqList index of the associated MidiSeq */
     int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
-    QVector<MidiCC> ccList;     /**< @brief Contains MIDI controller - GUI element bindings */
 
+    MidiControl *midiControl;
     SeqScreen *screen;
     QStringList waveForms;
     QComboBox *chIn;
@@ -249,10 +222,6 @@ class SeqWidget : public QWidget
  *  @param controlID ID of the GUI element to be assigned to the controller
  *  */
     void setMidiLearn(int parentDockID, int ID, int controlID);
-/*! @brief Forwarded context menu action by signalMapper to call MIDI-Learn/Forget functions.
- *  @param controlID ID of the GUI element requesting the MIDI controller
- *  */
-    void triggered(int controlID);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -419,63 +388,6 @@ class SeqWidget : public QWidget
 * signal to MainWindow with the module ID and the dockWidget ID.
 */
     void moduleClone();
-/*!
-* @brief This function appends a new MIDI controller - GUI element
-* binding to SeqWidget::ccList.
-*
-* Before appending, it checks whether this binding already exists.
-* @param controlID The ID of the control GUI element (found
-* in SeqWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be attributed
-* @param channel The MIDI Channel of the MIDI controller to be attributed
-* @param min The minimum value to which the controller range is mapped
-* @param max The maximum value to which the controller range is mapped
-*/
-    void appendMidiCC(int controlID, int ccnumber, int channel, int min, int max);
-/*!
-* @brief This function removes a MIDI controller - GUI element
-* binding from the SeqWidget::ccList.
-*
-* @param controlID The ID of the control GUI element (found
-* in SeqWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be removed
-* @param channel The MIDI Channel of the MIDI controller to be removed
-*/
-    void removeMidiCC(int controlID, int ccnumber, int channel);
-/*!
-* @brief Slot for SeqWidget::triggered signal created by MIDI-Learn context
-* menu MIDI Learn action.
-*
-* This function sets Engine into
-* MIDI Learn status for this module and controlID.
-* It emits SeqWidget::setMidiLearn with the necessary module and GUI element
-* information parameters.
-* Engine will then wait for an incoming controller event and trigger the
-* attribution by calling appendMidiCC.
-*
-* @param controlID The ID of the control GUI element (found
-* in SeqWidget::midiCCNames)
-*/
-    void midiLearn(int controlID);
-/*!
-* @brief Slot for SeqWidget::triggered signal created by a
-* MIDI-Learn context menu Forget action.
-*
-* This function removes a controller
-* binding attribution by calling removeMidiCC.
-*
-* @param controlID The ID of the control GUI element (found
-* in SeqWidget::midiCCNames)
-*/
-    void midiForget(int controlID);
-/*!
-* @brief Slot for SeqWidget::cancelMidiLearnAction in MIDI-Learn
-* context menu. This function signals cancellation of the
-* MIDI-Learn Process to Engine.
-*
-* It emits SeqWidget::setMidiLearn with controlID set to -1 meaning cancel.
-*/
-    void midiLearnCancel();
 };
 
 #endif

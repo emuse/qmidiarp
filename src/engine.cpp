@@ -348,7 +348,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
     QVector<MidiCC> cclist;
     if (!midiLearnFlag) {
         for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
-            cclist = arpWidget(l1)->ccList;
+            cclist = arpWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -386,7 +386,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
 
         for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
-            cclist = lfoWidget(l1)->ccList;
+            cclist = lfoWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -476,7 +476,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
 
         for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
-            cclist = seqWidget(l1)->ccList;
+            cclist = seqWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -555,15 +555,15 @@ void Engine::handleController(int ccnumber, int channel, int value)
     else {
         int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
-            arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
-            lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            lfoWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
-            seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            seqWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
 

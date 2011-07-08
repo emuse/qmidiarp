@@ -18,6 +18,7 @@ nodist_qmidiarp_SOURCES = \
 	midilfo_moc.cpp \
 	midiseq_moc.cpp \
 	midicctable_moc.cpp \
+	midicontrol_moc.cpp \
 	passwidget_moc.cpp \
 	jacksync_moc.cpp \
 	seqdriver_moc.cpp \
@@ -39,6 +40,7 @@ qmidiarp_SOURCES = \
 	midilfo.cpp midilfo.h \
 	midiseq.cpp midiseq.h \
 	midicctable.cpp midicctable.h \
+	midicontrol.cpp midicontrol.h \
 	midievent.h \
 	passwidget.cpp passwidget.h \
 	jacksync.cpp jacksync.h \

@@ -52,23 +52,10 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
-
-    // QSignalMappers allow identifying signal senders for MIDI learn/forget
-    learnSignalMapper = new QSignalMapper(this);
-    connect(learnSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(midiLearn(int)));
-
-    forgetSignalMapper = new QSignalMapper(this);
-    connect(forgetSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(midiForget(int)));
-
-    // we need the cancel MIDI Learn action only once for all
-    cancelMidiLearnAction = new QAction(tr("Cancel MIDI &Learning"), this);
-    connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
-    cancelMidiLearnAction->setEnabled(false);
-
+    QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
                 << "RecordToggle"<< "Resolution"<< "Size" << "unknown";
+    midiControl = new MidiControl(midiCCNames);
 
     // Management Buttons on the right top
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -136,7 +123,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-    addMidiLearnMenu(muteOut, 0);
+    midiControl->addMidiLearnMenu(muteOut, 0);
 
 
     QLabel *ccnumberLabel = new QLabel(tr("MIDI &CC#"), portBox);
@@ -216,7 +203,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-    addMidiLearnMenu(waveFormBox, 3);
+    midiControl->addMidiLearnMenu(waveFormBox, 3);
 
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
@@ -234,7 +221,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     freqBox->setMinimumContentsLength(3);
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
-    addMidiLearnMenu(freqBox, 4);
+    midiControl->addMidiLearnMenu(freqBox, 4);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             waveBox);
@@ -249,7 +236,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    addMidiLearnMenu(resBox, 6);
+    midiControl->addMidiLearnMenu(resBox, 6);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
     sizeBox = new QComboBox(waveBox);
@@ -263,7 +250,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    addMidiLearnMenu(sizeBox, 7);
+    midiControl->addMidiLearnMenu(sizeBox, 7);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
@@ -273,20 +260,20 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    addMidiLearnMenu(recordButton, 5);
+    midiControl->addMidiLearnMenu(recordButton, 5);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), waveBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
-    addMidiLearnMenu(amplitude, 1);
+    midiControl->addMidiLearnMenu(amplitude, 1);
 
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), waveBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
-    addMidiLearnMenu(offset, 2);
+    midiControl->addMidiLearnMenu(offset, 2);
 
     QVBoxLayout* sliderLayout = new QVBoxLayout;
     sliderLayout->addWidget(amplitude);
@@ -334,7 +321,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     setLayout(widgetLayout);
     updateAmp(64);
 
-    ccList.clear();
     lastMute = false;
 }
 
@@ -407,28 +393,13 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("data", tempArray.toHex());
         xml.writeEndElement();
 
-        xml.writeStartElement("midiControllers");
-        for (int l1 = 0; l1 < ccList.count(); l1++) {
-            xml.writeStartElement("MIDICC");
-            xml.writeAttribute("CtrlID", QString::number(ccList.at(l1).ID));
-                xml.writeTextElement("ccnumber", QString::number(
-                    ccList.at(l1).ccnumber));
-                xml.writeTextElement("channel", QString::number(
-                    ccList.at(l1).channel));
-                xml.writeTextElement("min", QString::number(
-                    ccList.at(l1).min));
-                xml.writeTextElement("max", QString::number(
-                    ccList.at(l1).max));
-            xml.writeEndElement();
-        }
-        xml.writeEndElement();
+        midiControl->writeData(xml);
 
     xml.writeEndElement();
 }
 
 void LfoWidget::readData(QXmlStreamReader& xml)
 {
-    int controlID, ccnumber, channel, min, max;
     int tmp;
     int wvtmp = 0;
     Sample sample;
@@ -545,36 +516,7 @@ void LfoWidget::readData(QXmlStreamReader& xml)
             }
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.isStartElement() && (xml.name() == "MIDICC")) {
-                    controlID = xml.attributes().value("CtrlID").toString().toInt();
-                    ccnumber = -1;
-                    channel = -1;
-                    min = -1;
-                    max = -1;
-                    while (!xml.atEnd()) {
-                        xml.readNext();
-                        if (xml.isEndElement())
-                            break;
-                        if (xml.name() == "ccnumber")
-                            ccnumber = xml.readElementText().toInt();
-                        else if (xml.name() == "channel")
-                            channel = xml.readElementText().toInt();
-                        else if (xml.name() == "min")
-                            min = xml.readElementText().toInt();
-                        else if (xml.name() == "max")
-                            max = xml.readElementText().toInt();
-                        else skipXmlElement(xml);
-                    }
-                    if ((-1 < ccnumber) && (-1 < channel) && (-1 < min) && (-1 < max))
-                        appendMidiCC(controlID, ccnumber, channel, min, max);
-                    else qWarning("Controller data incomplete");
-                }
-                else skipXmlElement(xml);
-            }
+            midiControl->readData(xml);
         }
         else skipXmlElement(xml);
     }
@@ -642,7 +584,7 @@ void LfoWidget::readDataText(QTextStream& arpText)
             int min = qs2.toInt();
             qs2 = qs.section(' ', 4, 4);
             int max = qs2.toInt();
-            appendMidiCC(controlID, ccnumber, channel, min, max);
+            midiControl->appendMidiCC(controlID, ccnumber, channel, min, max);
             qs = arpText.readLine();
         }
     qs = arpText.readLine();
@@ -886,12 +828,13 @@ void LfoWidget::updateChannelOut(int value)
 
 bool LfoWidget::isModified()
 {
-    return modified;
+    return (modified || midiControl->isModified());
 }
 
 void LfoWidget::setModified(bool m)
 {
     modified = m;
+    midiControl->setModified(m);
 }
 
 void LfoWidget::moduleDelete()
@@ -927,71 +870,6 @@ void LfoWidget::moduleRename()
 void LfoWidget::moduleClone()
 {
         emit moduleClone(ID);
-}
-
-void LfoWidget::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
-{
-    MidiCC midiCC;
-    int l1 = 0;
-    midiCC.name = midiCCNames.at(controlID);
-    midiCC.ID = controlID;
-    midiCC.ccnumber = ccnumber;
-    midiCC.channel = channel;
-    midiCC.min = min;
-    midiCC.max = max;
-
-    while ( (l1 < ccList.count()) &&
-        ((controlID != ccList.at(l1).ID) ||
-        (ccnumber != ccList.at(l1).ccnumber) ||
-        (channel != ccList.at(l1).channel)) ) l1++;
-
-    if (ccList.count() == l1) {
-        ccList.append(midiCC);
-        qWarning("MIDI Controller %d appended for %s"
-        , ccnumber, qPrintable(midiCC.name));
-    }
-    else {
-        qWarning("MIDI Controller %d already attributed to %s"
-                , ccnumber, qPrintable(midiCC.name));
-    }
-
-    cancelMidiLearnAction->setEnabled(false);
-    modified = true;
-}
-
-void LfoWidget::removeMidiCC(int controlID, int ccnumber, int channel)
-{
-    for (int l1 = 0; l1 < ccList.count(); l1++) {
-        if (ccList.at(l1).ID == controlID) {
-            if (((ccList.at(l1).ccnumber == ccnumber)
-                    && (ccList.at(l1).channel == channel))
-                    || (0 > channel)) {
-                ccList.remove(l1);
-                l1--;
-                qWarning("controller removed");
-            }
-        }
-    }
-    modified = true;
-}
-
-void LfoWidget::midiLearn(int controlID)
-{
-    emit setMidiLearn(parentDockID, ID, controlID);
-    qWarning("Requesting Midi Learn for %s", qPrintable(midiCCNames.at(controlID)));
-    cancelMidiLearnAction->setEnabled(true);
-}
-
-void LfoWidget::midiForget(int controlID)
-{
-    removeMidiCC(controlID, 0, -1);
-}
-
-void LfoWidget::midiLearnCancel()
-{
-    emit setMidiLearn(parentDockID, ID, -1);
-    qWarning("Cancelling Midi Learn request");
-    cancelMidiLearnAction->setEnabled(false);
 }
 
 void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
@@ -1033,7 +911,7 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
     for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
         midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
     }
-    ccList = fromWidget->ccList;
+    midiControl->setCcList(fromWidget->midiControl->ccList);
     muteOut->setChecked(true);
 
     tmp = fromWidget->waveFormBox->currentIndex();
@@ -1044,20 +922,4 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 QVector<Sample> LfoWidget::getCustomWave()
 {
     return midiWorker->customWave;
-}
-
-void LfoWidget::addMidiLearnMenu(QWidget *widget, int count)
-{
-    widget->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-    QAction *learnAction = new QAction(tr("MIDI &Learn"), this);
-    widget->addAction(learnAction);
-    connect(learnAction, SIGNAL(triggered()), learnSignalMapper, SLOT(map()));
-    learnSignalMapper->setMapping(learnAction, count);
-
-    QAction *forgetAction = new QAction(tr("MIDI &Forget"), this);
-    widget->addAction(forgetAction);
-    connect(forgetAction, SIGNAL(triggered()), forgetSignalMapper, SLOT(map()));
-    forgetSignalMapper->setMapping(forgetAction, count);
-
-    widget->addAction(cancelMidiLearnAction);
 }

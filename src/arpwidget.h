@@ -42,22 +42,7 @@
 #include "midiarp.h"
 #include "slider.h"
 #include "arpscreen.h"
-
-#ifndef MIDICC_H
-
-/*! @brief Structure holding all elements of a MIDI controller allocated to
- * a QMidiArp parameter assigned via MIDI learn
- */
-struct MidiCC {
-        QString name;   /**< @brief Name of the assigned parameter (GUI element)*/
-        int min;        /**< @brief Value output when the CC value is 0 */
-        int max;        /**< @brief Value output when the CC value is 127 */
-        int ccnumber;   /**< @brief MIDI CC number of the assigned controller event */
-        int channel;    /**< @brief MIDI channel on which the controller has to come in */
-        int ID;         /**< @brief Internal ID of the assigned parameter (GUI element)*/
-    };
-#define MIDICC_H
-#endif
+#include "midicontrol.h"
 
 /*! @brief GUI class associated with and controlling a MidiArp worker
  *
@@ -90,8 +75,6 @@ class ArpWidget : public QWidget
     QAction *latchModeAction;
     QAction *deleteAction, *renameAction;
     QAction *cancelMidiLearnAction;
-    QSignalMapper *learnSignalMapper, *forgetSignalMapper;
-    QStringList midiCCNames;
     MidiArp *midiWorker;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
@@ -108,16 +91,6 @@ class ArpWidget : public QWidget
 */
     void skipXmlElement(QXmlStreamReader& xml);
     void loadPatternPresets();
-/*!
-* @brief This function creates and attributes a MIDI-Learn context menu
-* to the passed QWidget.
-*
-* The menu is connected to a QSignalMapper for dispatching its actions
-*
-* @param *widget QWidget to which the context menu is attributed
-* @param count Internal identifier of the controllable QWidget
-*/
-    void addMidiLearnMenu(QWidget *widget, int count = 0);
 
 /* PUBLIC MEMBERS */
   public:
@@ -138,8 +111,8 @@ class ArpWidget : public QWidget
     QString name;       /**< @brief The name of this ArpWidget as shown in the DockWidget TitleBar */
     int ID;                     /**< @brief Corresponds to the Engine::midiArpList index of the associated MidiArp */
     int parentDockID;           /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
-    QVector<MidiCC> ccList;     /**< @brief Contains MIDI controller - GUI element bindings */
 
+    MidiControl *midiControl;
     ArpScreen *screen;
     QStringList patternPresets, patternNames;
     QCheckBox *muteOut;
@@ -222,16 +195,6 @@ class ArpWidget : public QWidget
  *  @param parentDockID SeqWidget::parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
-/*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
- *  @param parentDockID SeqWidget::parentDockID of the module to rename
- *  @param ID SeqWidget::ID of the module receiving the MIDI controller
- *  @param controlID ID of the GUI element to be assigned to the controller
- *  */
-    void setMidiLearn(int parentDockID, int ID, int controlID);
-/*! @brief Forwarded context menu action by signalMapper to call MIDI-Learn/Forget functions.
- *  @param controlID ID of the GUI element requesting the MIDI controller
- *  */
-    void triggered(int controlID);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -305,63 +268,6 @@ class ArpWidget : public QWidget
 * signal to MainWindow with the new name and the dockWidget ID to rename.
 */
     void moduleRename();
-/*!
-* @brief This function appends a new MIDI controller - GUI element
-* binding to ArpWidget::ccList.
-*
-* Before appending, it checks whether this binding already exists.
-* @param controlID The ID of the control GUI element (found
-* in ArpWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be attributed
-* @param channel The MIDI Channel of the MIDI controller to be attributed
-* @param min The minimum value to which the controller range is mapped
-* @param max The maximum value to which the controller range is mapped
-*/
-    void appendMidiCC(int controlID, int ccnumber, int channel, int min, int max);
-/*!
-* @brief This function removes a MIDI controller - GUI element
-* binding from the ArpWidget::ccList.
-*
-* @param controlID The ID of the control GUI element (found
-* in ArpWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be removed
-* @param channel The MIDI Channel of the MIDI controller to be removed
-*/
-    void removeMidiCC(int controlID, int ccnumber, int channel);
-/*!
-* @brief Slot for ArpWidget::triggered signal created by MIDI-Learn context
-* menu MIDI Learn action.
-*
-* This function sets Engine into
-* MIDI Learn status for this module and controlID.
-* It emits ArpWidget::setMidiLearn with the necessary module and GUI element
-* information parameters.
-* Engine will then wait for an incoming controller event and trigger the
-* attribution by calling appendMidiCC.
-*
-* @param controlID The ID of the control GUI element (found
-* in ArpWidget::midiCCNames)
-*/
-    void midiLearn(int controlID);
-/*!
-* @brief Slot for ArpWidget::triggered signal created by a
-* MIDI-Learn context menu Forget action.
-*
-* This function removes a controller
-* binding attribution by calling removeMidiCC.
-*
-* @param controlID The ID of the control GUI element (found
-* in ArpWidget::midiCCNames)
-*/
-    void midiForget(int controlID);
-/*!
-* @brief Slot for ArpWidget::cancelMidiLearnAction in MIDI-Learn
-* context menu. This function signals cancellation of the
-* MIDI-Learn Process to Engine.
-*
-* It emits ArpWidget::setMidiLearn with controlID set to -1 meaning cancel.
-*/
-    void midiLearnCancel();
 };
 
 #endif

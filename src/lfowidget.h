@@ -39,6 +39,7 @@
 #include "midilfo.h"
 #include "slider.h"
 #include "lfoscreen.h"
+#include "midicontrol.h"
 
 /*! This array holds the currently available resolution values.
  */
@@ -46,21 +47,6 @@ const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 /*! This array holds the currently available frequency values.
  */
 const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};
-#ifndef MIDICC_H
-
-/*! @brief Structure holding all elements of a MIDI controller allocated to
- * a QMidiArp parameter assigned via MIDI learn
- */
-struct MidiCC {
-        QString name;   /**< @brief Name of the assigned parameter (GUI element)*/
-        int min;        /**< @brief Value output when the CC value is 0 */
-        int max;        /**< @brief Value output when the CC value is 127 */
-        int ccnumber;   /**< @brief MIDI CC number of the assigned controller event */
-        int channel;    /**< @brief MIDI channel on which the controller has to come in */
-        int ID;         /**< @brief Internal ID of the assigned parameter (GUI element)*/
-    };
-#define MIDICC_H
-#endif
 
 /*!
  * @brief GUI class associated with and controlling a MidiLfo worker
@@ -80,14 +66,12 @@ class LfoWidget : public QWidget
     Q_OBJECT
 
     QAction *deleteAction, *renameAction, *cloneAction;
-    QAction *cancelMidiLearnAction;
-    QSignalMapper *learnSignalMapper, *forgetSignalMapper;
-    QStringList midiCCNames; /**< List of from GUI-element names for index = ControlID */
 
     MidiLfo *midiWorker;
     QVector<Sample> data;
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
+    QStringList midiCCNames; /**< List of from GUI-element names for index = ControlID */
 /*!
 * @brief This function allows ignoring one XML element in the XML stream
 * passed by the caller.
@@ -112,16 +96,6 @@ class LfoWidget : public QWidget
 *
 */
     void loadWaveForms();
-/*!
-* @brief This function creates and attributes a MIDI-Learn context menu
-* to the passed QWidget.
-*
-* The menu is connected to a QSignalMapper for dispatching its actions
-*
-* @param *widget QWidget to which the context menu is attributed
-* @param count Internal identifier of the controllable QWidget
-*/
-    void addMidiLearnMenu(QWidget *widget, int count = 0);
 
 /*!
 * @brief This function determines the minimum of the current waveform and
@@ -152,8 +126,8 @@ class LfoWidget : public QWidget
     QString name;               /**< The name of this LfoWidget as shown in the DockWidget TitleBar */
     int ID;                     /**< Corresponds to the Engine::midiLfoList index of the associated MidiLfo */
     int parentDockID;           /**< The index of the LfoWidget's parent DockWidget in Engine::moduleWindowList */
-    QVector<MidiCC> ccList;     /**< Contains MIDI controller - GUI element bindings */
 
+    MidiControl *midiControl;
     LfoScreen *screen;
     QStringList waveForms;
     QComboBox *chIn;
@@ -249,16 +223,6 @@ class LfoWidget : public QWidget
  *  @param ID MidiLfo::ID of the module to clone
  * */
     void moduleClone(int ID);
-/*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.
- *  @param parentDockID SeqWidget::parentDockID of the module to rename
- *  @param ID SeqWidget::ID of the module receiving the MIDI controller
- *  @param controlID ID of the GUI element to be assigned to the controller
- *  */
-    void setMidiLearn(int parentDockID, int ID, int controlID);
-/*! @brief Forwarded context menu action by signalMapper to call MIDI-Learn/Forget functions.
- *  @param controlID ID of the GUI element requesting the MIDI controller
- *  */
-    void triggered(int controlID);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -429,63 +393,6 @@ class LfoWidget : public QWidget
 * signal to MainWindow with the module ID and the dockWidget ID.
 */
     void moduleClone();
-/*!
-* @brief This function appends a new MIDI controller - GUI element
-* binding to LfoWidget::ccList.
-*
-* Before appending, it checks whether this binding already exists.
-* @param controlID The ID of the control GUI element (found in
-* LfoWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be attributed
-* @param channel The MIDI Channel of the MIDI controller to be attributed
-* @param min The minimum value to which the controller range is mapped
-* @param max The maximum value to which the controller range is mapped
-*/
-    void appendMidiCC(int controlID, int ccnumber, int channel, int min, int max);
-/*!
-* @brief This function removes a MIDI controller - GUI element
-* binding from the LfoWidget::ccList.
-*
-* @param controlID The ID of the control GUI element (found in
-* LfoWidget::midiCCNames)
-* @param ccnumber The CC of the MIDI controller to be removed
-* @param channel The MIDI Channel of the MIDI controller to be removed
-*/
-    void removeMidiCC(int controlID, int ccnumber, int channel);
-/*!
-* @brief Slot for LfoWidget::triggered signal created by MIDI-Learn context
-* menu MIDI Learn action.
-*
-* This function sets Engine into
-* MIDI Learn status for this module and controlID.
-* It emits LfoWidget::setMidiLearn with the necessary module and GUI element
-* information parameters.
-* Engine will then wait for an incoming controller event and trigger the
-* attribution by calling appendMidiCC.
-*
-* @param controlID The ID of the control GUI element (found in
-* LfoWidget::midiCCNames)
-*/
-    void midiLearn(int controlID);
-/*!
-* @brief Slot for LfoWidget::triggered signal created by a MIDI-Learn
-* context menu Forget action.
-*
-* This function removes a controller
-* binding attribution by calling removeMidiCC.
-*
-* @param controlID The ID of the control GUI element (found in
-* LfoWidget::midiCCNames)
-*/
-    void midiForget(int controlID);
-/*!
-* @brief Slot for LfoWidget::cancelMidiLearnAction in MIDI-Learn context
-* menu. This function signals cancellation of the MIDI-Learn Process to
-* Engine.
-*
-* It emits LfoWidget::setMidiLearn with controlID set to -1 meaning cancel.
-*/
-    void midiLearnCancel();
 };
 
 #endif
