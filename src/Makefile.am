@@ -51,6 +51,7 @@ qmidiarp_SOURCES = \
 
 qmidiarp_LDADD = $(QT_LIBS)
 
+if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
 translations = \
 	translations/qmidiarp_cs.ts \
@@ -64,9 +65,11 @@ translations_DATA = \
 	translations/qmidiarp_es.qm \
 	translations/qmidiarp_fr.qm
 
+TRANSLATION_DEFS = -DTRANSLATIONSDIR=\"$(translationsdir)\"
+endif
 
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -Wall -Wextra -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
+DEFS = -Wall -Wextra -D_REENTRANT $(TRANSLATION_DEFS) @DEFS@
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations)
@@ -80,6 +83,7 @@ SUFFIXES = _moc.cpp
 .h_moc.cpp: $(qmidiarp_SOURCES)
 	$(MOC) $< -o $@
 
+if ENABLE_TRANSLATIONS
 # rule for translation file updates
 $(translations): $(qmidiarp_SOURCES)
 	$(LUPDATE) -verbose $(qmidiarp_SOURCES) -ts $@
@@ -87,4 +91,4 @@ $(translations): $(qmidiarp_SOURCES)
 # rule to generate binary translation files
 .ts.qm: $(translations)
 	$(LRELEASE) -verbose $< -qm $@
-
+endif
