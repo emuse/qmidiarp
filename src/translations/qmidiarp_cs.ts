@@ -4,28 +4,28 @@
 <context>
     <name>ArpWidget</name>
     <message>
-        <location filename="../arpwidget.cpp" line="77"/>
+        <location filename="../arpwidget.cpp" line="58"/>
         <source>Input</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="85"/>
-        <location filename="../arpwidget.cpp" line="418"/>
+        <location filename="../arpwidget.cpp" line="66"/>
+        <location filename="../arpwidget.cpp" line="399"/>
         <source>Note Filter</source>
         <translation>Notový filtr</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="86"/>
+        <location filename="../arpwidget.cpp" line="67"/>
         <source>&amp;Note</source>
         <translation>&amp;Nota</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="143"/>
+        <location filename="../arpwidget.cpp" line="124"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="145"/>
+        <location filename="../arpwidget.cpp" line="126"/>
         <source>&amp;Mute</source>
         <translation>&amp;Ztlumit</translation>
     </message>
@@ -42,57 +42,57 @@
         <translation type="obsolete">&amp;Zapomenutí nastavení MIDI</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="151"/>
+        <location filename="../arpwidget.cpp" line="132"/>
         <source>&amp;Port</source>
         <translation>&amp;Přípojka</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="186"/>
+        <location filename="../arpwidget.cpp" line="167"/>
         <source>Pattern</source>
         <translation>Vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="191"/>
+        <location filename="../arpwidget.cpp" line="172"/>
         <source>&amp;Edit Pattern</source>
         <translation>&amp;Upravit vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="199"/>
+        <location filename="../arpwidget.cpp" line="180"/>
         <source>&amp;Remove Pattern</source>
         <translation>&amp;Odstranit vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="207"/>
+        <location filename="../arpwidget.cpp" line="188"/>
         <source>&amp;Store Pattern</source>
         <translation>&amp;Uložit vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="217"/>
+        <location filename="../arpwidget.cpp" line="198"/>
         <source>Pattern preset</source>
         <translation>Přednastavení vzoru</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="234"/>
+        <location filename="../arpwidget.cpp" line="215"/>
         <source>No trigger</source>
         <translation>Přehrát</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="234"/>
+        <location filename="../arpwidget.cpp" line="215"/>
         <source>Kbd restart</source>
         <translation>Nové spuštění</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="236"/>
+        <location filename="../arpwidget.cpp" line="217"/>
         <source>Trigger Mode</source>
         <translation>Zůstat stát na nové staccato notě</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="243"/>
+        <location filename="../arpwidget.cpp" line="224"/>
         <source>&amp;Latch Mode</source>
         <translation>&amp;Držet noty</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="414"/>
+        <location filename="../arpwidget.cpp" line="395"/>
         <source>Note Filter - ACTIVE</source>
         <translation>Notový filtr - ČINNÝ</translation>
     </message>
@@ -117,25 +117,24 @@
  p Pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="341"/>
+        <location filename="../arpwidget.cpp" line="322"/>
         <source>&amp;Attack (s)</source>
         <translation>&amp;Náběh (s)</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="345"/>
+        <location filename="../arpwidget.cpp" line="326"/>
         <source>&amp;Release (s)</source>
         <translation>&amp;Uvolnění (s)</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="305"/>
-        <location filename="../arpwidget.cpp" line="784"/>
+        <location filename="../arpwidget.cpp" line="286"/>
+        <location filename="../arpwidget.cpp" line="765"/>
         <source>Random</source>
         <translation>Náhodný</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="60"/>
         <source>&amp;Rename...</source>
-        <translation>Pře&amp;jmenovat...</translation>
+        <translation type="obsolete">Pře&amp;jmenovat...</translation>
     </message>
     <message>
         <source>Ctrl+R</source>
@@ -143,14 +142,12 @@
         <translation type="obsolete">Strg+R</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="61"/>
         <source>Rename this Arp</source>
-        <translation>Přejmenovat tento arpeggiator</translation>
+        <translation type="obsolete">Přejmenovat tento arpeggiator</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="66"/>
         <source>&amp;Delete...</source>
-        <translation>S&amp;mazat...</translation>
+        <translation type="obsolete">S&amp;mazat...</translation>
     </message>
     <message>
         <source>Ctrl+Del</source>
@@ -158,22 +155,21 @@
         <translation type="obsolete">Strg+Del</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="67"/>
         <source>Delete this Arp</source>
-        <translation>Smazat tento arpeggiator</translation>
+        <translation type="obsolete">Smazat tento arpeggiator</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="227"/>
+        <location filename="../arpwidget.cpp" line="208"/>
         <source>Repeat mode</source>
         <translation>Režim opakování</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="234"/>
+        <location filename="../arpwidget.cpp" line="215"/>
         <source>Kbd trigger</source>
         <translation>Rozběhnout se</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="276"/>
+        <location filename="../arpwidget.cpp" line="257"/>
         <source>0..9  note played on keyboard, 0 is lowest
 ( ) numbers in parenthesis are stacked to chords
   + = -  octave up/reset/down
@@ -190,102 +186,100 @@
  p Přestávka</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="309"/>
+        <location filename="../arpwidget.cpp" line="290"/>
         <source>&amp;Shift</source>
         <translation>&amp;Posunutí</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="314"/>
+        <location filename="../arpwidget.cpp" line="295"/>
         <source>Vel&amp;ocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="319"/>
+        <location filename="../arpwidget.cpp" line="300"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="338"/>
-        <location filename="../arpwidget.cpp" line="810"/>
+        <location filename="../arpwidget.cpp" line="319"/>
+        <location filename="../arpwidget.cpp" line="791"/>
         <source>Envelope</source>
         <translation>Obálka</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="946"/>
         <source>Delete &quot;%1&quot;?</source>
-        <translation>Smazat &quot;%1&quot;?</translation>
+        <translation type="obsolete">Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="965"/>
         <source>New Name</source>
-        <translation>Nový název</translation>
+        <translation type="obsolete">Nový název</translation>
     </message>
     <message>
         <source>Could not write to resource file</source>
         <translation type="obsolete">Konnte Ressourcendatei nicht speichern</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="722"/>
+        <location filename="../arpwidget.cpp" line="703"/>
         <source>Could not read from resource file</source>
         <translation>Nepodařilo se číst ze zdrojového souboru</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="780"/>
+        <location filename="../arpwidget.cpp" line="761"/>
         <source>Random - ACTIVE</source>
         <translation>Náhodný - ČINNÝ</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="806"/>
+        <location filename="../arpwidget.cpp" line="787"/>
         <source>Envelope - ACTIVE</source>
         <translation>Obálka - ČINNÁ</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="824"/>
+        <location filename="../arpwidget.cpp" line="805"/>
         <source>%1: Store pattern</source>
         <translation>%1: Uložit vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="825"/>
+        <location filename="../arpwidget.cpp" line="806"/>
         <source>New pattern</source>
         <translation>Nový vzor</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="825"/>
+        <location filename="../arpwidget.cpp" line="806"/>
         <source>Arp pattern</source>
         <translation>Vzor pro arpeggiator</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="861"/>
+        <location filename="../arpwidget.cpp" line="842"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Odstranit &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="79"/>
+        <location filename="../arpwidget.cpp" line="60"/>
         <source>&amp;Channel</source>
         <translation>&amp;Каnál</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="100"/>
+        <location filename="../arpwidget.cpp" line="81"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="157"/>
+        <location filename="../arpwidget.cpp" line="138"/>
         <source>C&amp;hannel</source>
         <translation>Ka&amp;nál</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="225"/>
+        <location filename="../arpwidget.cpp" line="206"/>
         <source>Static</source>
         <translation>Statický</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="225"/>
+        <location filename="../arpwidget.cpp" line="206"/>
         <source>Up</source>
         <translation>Nahoru</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="225"/>
+        <location filename="../arpwidget.cpp" line="206"/>
         <source>Down</source>
         <translation>Dolů</translation>
     </message>
@@ -293,17 +287,17 @@
 <context>
     <name>GrooveWidget</name>
     <message>
-        <location filename="../groovewidget.cpp" line="45"/>
+        <location filename="../groovewidget.cpp" line="51"/>
         <source>&amp;Shift</source>
         <translation>&amp;Posunutí</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="50"/>
+        <location filename="../groovewidget.cpp" line="57"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../groovewidget.cpp" line="55"/>
+        <location filename="../groovewidget.cpp" line="63"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
@@ -311,78 +305,64 @@
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="120"/>
+        <location filename="../lfowidget.cpp" line="93"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="122"/>
+        <location filename="../lfowidget.cpp" line="95"/>
         <source>&amp;Mute</source>
         <translation>&amp;Ztlumit</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="89"/>
-        <location filename="../lfowidget.cpp" line="129"/>
+        <location filename="../lfowidget.cpp" line="62"/>
+        <location filename="../lfowidget.cpp" line="102"/>
         <source>MIDI &amp;CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="135"/>
+        <location filename="../lfowidget.cpp" line="108"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Číslo ovladače MIDI poslaného do výstupu</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="145"/>
+        <location filename="../lfowidget.cpp" line="118"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Kanál</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="139"/>
+        <location filename="../lfowidget.cpp" line="112"/>
         <source>&amp;Port</source>
         <translation>&amp;Přípojka</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="63"/>
-        <source>&amp;Clone...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../lfowidget.cpp" line="64"/>
-        <source>Duplicate this LFO in muted state</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../lfowidget.cpp" line="69"/>
         <source>&amp;Rename...</source>
-        <translation>Pře&amp;jmenovat...</translation>
+        <translation type="obsolete">Pře&amp;jmenovat...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="70"/>
         <source>Rename this LFO</source>
-        <translation>Přejmenovat tento nízkokmitočtový oscilátor (LFO)</translation>
+        <translation type="obsolete">Přejmenovat tento nízkokmitočtový oscilátor (LFO)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="75"/>
         <source>&amp;Delete...</source>
-        <translation>S&amp;mazat...</translation>
+        <translation type="obsolete">S&amp;mazat...</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="76"/>
         <source>Delete this LFO</source>
-        <translation>Smazat tento nízkokmitočtový oscilátor (LFO)</translation>
+        <translation type="obsolete">Smazat tento nízkokmitočtový oscilátor (LFO)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="87"/>
+        <location filename="../lfowidget.cpp" line="60"/>
         <source>Input</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="95"/>
+        <location filename="../lfowidget.cpp" line="68"/>
         <source>MIDI Controller number to record</source>
         <translation>Číslo ovladače MIDI pro nahrávání</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="100"/>
+        <location filename="../lfowidget.cpp" line="73"/>
         <source>&amp;Channel</source>
         <translation>&amp;Каnál</translation>
     </message>
@@ -399,7 +379,7 @@
         <translation type="obsolete">&amp;Zapomenutí nastavení MIDI</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="179"/>
+        <location filename="../lfowidget.cpp" line="152"/>
         <source>Wave</source>
         <translation>Vlna</translation>
     </message>
@@ -408,7 +388,7 @@
         <translation type="obsolete">Rechte Maustaste: Stummschalten einzelner Punkte, linke Maustaste: Zeichnen der Wellenform</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="202"/>
+        <location filename="../lfowidget.cpp" line="175"/>
         <source>Waveform Basis</source>
         <translation>Základ tvaru vlny</translation>
     </message>
@@ -433,7 +413,7 @@
         <translation type="obsolete">Län&amp;ge (Takte)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="183"/>
+        <location filename="../lfowidget.cpp" line="156"/>
         <source>Right button to mute points
 Left button to draw custom wave
 Wheel to change offset</source>
@@ -442,32 +422,32 @@ Levé tlačítko myši: kreslení tvaru vlny
 Kolečko myši: změna posunu</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="209"/>
+        <location filename="../lfowidget.cpp" line="182"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Kmitočet</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="220"/>
+        <location filename="../lfowidget.cpp" line="193"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Kmitočet (cyklů za dobu): Počet vytvořených vlnových cyklů za čtvrťový takt</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="226"/>
+        <location filename="../lfowidget.cpp" line="199"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Rozlišení</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="235"/>
+        <location filename="../lfowidget.cpp" line="208"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Rozlišení (události (signály) za dobu): Počet signálů MIDI vytvořených za čtvrťový takt</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="241"/>
+        <location filename="../lfowidget.cpp" line="214"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="249"/>
+        <location filename="../lfowidget.cpp" line="222"/>
         <source>Length of LFO wave in beats</source>
         <translation>Délka tvaru vlny LFO ve čtvrťových taktech</translation>
     </message>
@@ -476,72 +456,70 @@ Kolečko myši: změna posunu</translation>
         <translation type="obsolete">&amp;In die freie Wellenform kopieren</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="255"/>
-        <location filename="../lfowidget.cpp" line="256"/>
+        <location filename="../lfowidget.cpp" line="228"/>
+        <location filename="../lfowidget.cpp" line="229"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Nahrát</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="257"/>
+        <location filename="../lfowidget.cpp" line="230"/>
         <source>Record incoming controller</source>
         <translation>Nahrát příchozí ovladač</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="266"/>
+        <location filename="../lfowidget.cpp" line="239"/>
         <source>&amp;Amplitude</source>
         <translation>Ro&amp;zkmit</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="273"/>
+        <location filename="../lfowidget.cpp" line="246"/>
         <source>&amp;Offset</source>
         <translation>Pos&amp;un</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="632"/>
+        <location filename="../lfowidget.cpp" line="605"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="632"/>
+        <location filename="../lfowidget.cpp" line="605"/>
         <source>Saw up</source>
         <translation>Pila nahoru</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="632"/>
+        <location filename="../lfowidget.cpp" line="605"/>
         <source>Triangle</source>
         <translation>Trojúhelník</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="633"/>
+        <location filename="../lfowidget.cpp" line="606"/>
         <source>Saw down</source>
         <translation>Pila dolů</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="633"/>
+        <location filename="../lfowidget.cpp" line="606"/>
         <source>Square</source>
         <translation>Čtverec</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="633"/>
+        <location filename="../lfowidget.cpp" line="606"/>
         <source>Custom</source>
         <translation>Vlastní</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="843"/>
         <source>Delete &quot;%1&quot;?</source>
-        <translation>Smazat &quot;%1&quot;?</translation>
+        <translation type="obsolete">Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="862"/>
         <source>New Name</source>
-        <translation>Nový název</translation>
+        <translation type="obsolete">Nový název</translation>
     </message>
     <message>
         <source>&amp;MIDI CC#</source>
         <translation type="obsolete">&amp;MIDI CC#</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="191"/>
+        <location filename="../lfowidget.cpp" line="164"/>
         <source>&amp;Waveform</source>
         <translation>&amp;Tvar vlny</translation>
     </message>
@@ -592,7 +570,7 @@ Kolečko myši: změna posunu</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="82"/>
+        <location filename="../mainwindow.cpp" line="92"/>
         <source>Event Log</source>
         <translation>Zápis událostí</translation>
     </message>
@@ -601,28 +579,28 @@ Kolečko myši: změna posunu</translation>
         <translation type="obsolete">Einstellungen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="101"/>
+        <location filename="../mainwindow.cpp" line="78"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="121"/>
+        <location filename="../mainwindow.cpp" line="116"/>
         <source>&amp;New LFO...</source>
         <translation>&amp;Nový LFO...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="126"/>
+        <location filename="../mainwindow.cpp" line="121"/>
         <source>&amp;New Sequencer...</source>
         <translation>&amp;Nový sekvencer...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="127"/>
+        <location filename="../mainwindow.cpp" line="122"/>
         <source>Ctrl+T</source>
         <comment>Module|New Sequencer</comment>
         <translation>Ctrl+T</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="128"/>
+        <location filename="../mainwindow.cpp" line="123"/>
         <source>Add new Sequencer to tab bar</source>
         <translation>Přidat nový sekvencer do pruhu s kartami</translation>
     </message>
@@ -643,179 +621,179 @@ Kolečko myši: změna posunu</translation>
         <translation type="obsolete">Dieses Modul löschen</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="132"/>
+        <location filename="../mainwindow.cpp" line="127"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="134"/>
+        <location filename="../mainwindow.cpp" line="129"/>
         <source>Create new arpeggiator file</source>
         <translation>Vytvořit nový soubor s arpeggiatorem</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="137"/>
+        <location filename="../mainwindow.cpp" line="132"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otevřít...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="142"/>
+        <location filename="../mainwindow.cpp" line="137"/>
         <source>&amp;Save</source>
         <translation>&amp;Uložit</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="144"/>
+        <location filename="../mainwindow.cpp" line="139"/>
         <source>Save current arpeggiator file</source>
         <translation>Uložit nynější soubor s arpeggiatorem</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="147"/>
+        <location filename="../mainwindow.cpp" line="142"/>
         <source>Save &amp;as...</source>
         <translation>Uložit &amp;jako...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="150"/>
+        <location filename="../mainwindow.cpp" line="145"/>
         <source>Save current arpeggiator file with new name</source>
         <translation>Uložit nynější soubor s arpeggiatorem pod novým názvem</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="153"/>
+        <location filename="../mainwindow.cpp" line="148"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="154"/>
+        <location filename="../mainwindow.cpp" line="149"/>
         <source>Ctrl+Q</source>
         <comment>File|Quit</comment>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="155"/>
+        <location filename="../mainwindow.cpp" line="150"/>
         <source>Quit application</source>
         <translation>Ukončit program</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="158"/>
+        <location filename="../mainwindow.cpp" line="153"/>
         <source>&amp;Run with internal clock</source>
         <translation>&amp;Spustit/Zastavit s vnitřními hodinami</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="182"/>
+        <location filename="../mainwindow.cpp" line="177"/>
         <source>&amp;Connect to Jack Transport</source>
         <translation>Spojit s &amp;Jack Transport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="197"/>
+        <location filename="../mainwindow.cpp" line="192"/>
         <source>Ctrl+H</source>
         <comment>View|Event Log</comment>
         <translation>Ctrl+H</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="201"/>
+        <location filename="../mainwindow.cpp" line="196"/>
         <source>&amp;Groove Settings</source>
         <translation>Nastavení &amp;Groove</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="202"/>
+        <location filename="../mainwindow.cpp" line="197"/>
         <source>Ctrl+G</source>
         <comment>View|Groove</comment>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="213"/>
+        <location filename="../mainwindow.cpp" line="208"/>
         <source>Mod&amp;ule</source>
         <translation>Mod&amp;ul</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="219"/>
+        <location filename="../mainwindow.cpp" line="214"/>
         <source>&amp;Recently opened files</source>
         <translation>Naposledy otevřené sou&amp;bory</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="233"/>
+        <location filename="../mainwindow.cpp" line="228"/>
         <source>&amp;MIDI Controllers...</source>
         <translation>Ovladače &amp;MIDI...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="246"/>
+        <location filename="../mainwindow.cpp" line="241"/>
         <source>&amp;File Toolbar</source>
         <translation>Nástrojový pruh pro &amp;soubor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="256"/>
+        <location filename="../mainwindow.cpp" line="251"/>
         <source>&amp;Control Toolbar</source>
         <translation>Nástrojový pruh pro &amp;ovládání</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="331"/>
-        <location filename="../mainwindow.cpp" line="344"/>
-        <location filename="../mainwindow.cpp" line="357"/>
+        <location filename="../mainwindow.cpp" line="326"/>
+        <location filename="../mainwindow.cpp" line="339"/>
+        <location filename="../mainwindow.cpp" line="352"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="343"/>
+        <location filename="../mainwindow.cpp" line="338"/>
         <source>Add MIDI LFO</source>
         <translation>Přidat MIDI LFO</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="356"/>
+        <location filename="../mainwindow.cpp" line="351"/>
         <source>Add Step Sequencer</source>
         <translation>Přidat krokový sekvencer</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="647"/>
+        <location filename="../mainwindow.cpp" line="642"/>
         <source>QMidiArp XML files</source>
         <translation>Soubory QMidiArp XML</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="648"/>
+        <location filename="../mainwindow.cpp" line="643"/>
         <source>Old QMidiArp files</source>
         <translation>Soubory textové soubory QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="667"/>
-        <location filename="../mainwindow.cpp" line="823"/>
+        <location filename="../mainwindow.cpp" line="662"/>
+        <location filename="../mainwindow.cpp" line="821"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Nepodařilo se číst ze souboru &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="685"/>
+        <location filename="../mainwindow.cpp" line="680"/>
         <source>This is not a valid xml file for </source>
         <translation>Toto není platný soubor XML pro </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>The QMidiArp text file was imported. If you save this file, it will be saved using the newer xml format under the name
  &apos;%1&apos;.</source>
         <translation>Textový soubor QMidiArp byl zaveden. Při novém ukládání bude tento uložen v novém formátu xml pod názvem
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="936"/>
+        <location filename="../mainwindow.cpp" line="934"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Nepodařilo se zapsat do souboru &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1042"/>
+        <location filename="../mainwindow.cpp" line="1041"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Nepojmenovaný soubor byl změněn.
 Uložit změny?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1044"/>
+        <location filename="../mainwindow.cpp" line="1043"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Soubor &apos;%1&apos; byl změněn.
 Uložit změny?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1048"/>
+        <location filename="../mainwindow.cpp" line="1047"/>
         <source>Save changes</source>
         <translation>Uložit změny</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1178"/>
+        <location filename="../mainwindow.cpp" line="1177"/>
         <source>Could not read from resource file</source>
         <translation>Nepodařilo se číst ze zdrojového souboru</translation>
     </message>
@@ -824,12 +802,12 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Start</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="173"/>
+        <location filename="../mainwindow.cpp" line="168"/>
         <source>&amp;Use incoming MIDI Clock</source>
         <translation>&amp;Použít příchozí signál hodin MIDI</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="196"/>
+        <location filename="../mainwindow.cpp" line="191"/>
         <source>&amp;Event Log</source>
         <translation>&amp;Zápis událostí</translation>
     </message>
@@ -839,33 +817,33 @@ Uložit změny?</translation>
         <translation type="obsolete">Strg+L</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="204"/>
+        <location filename="../mainwindow.cpp" line="199"/>
         <source>&amp;Settings</source>
         <translation>&amp;Nastavení</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="206"/>
+        <location filename="../mainwindow.cpp" line="201"/>
         <source>Ctrl+P</source>
         <comment>View|Settings</comment>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="243"/>
+        <location filename="../mainwindow.cpp" line="238"/>
         <source>&amp;About Qt...</source>
         <translation>&amp;O Qt...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="316"/>
+        <location filename="../mainwindow.cpp" line="311"/>
         <source>About %1</source>
         <translation>O %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="321"/>
+        <location filename="../mainwindow.cpp" line="316"/>
         <source>About Qt</source>
         <translation>O Qt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="330"/>
+        <location filename="../mainwindow.cpp" line="325"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>Přidat MIDI arpeggiator</translation>
     </message>
@@ -878,59 +856,59 @@ Uložit změny?</translation>
         <translation type="obsolete">&quot;%1&quot; löschen?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="139"/>
-        <location filename="../mainwindow.cpp" line="646"/>
+        <location filename="../mainwindow.cpp" line="134"/>
+        <location filename="../mainwindow.cpp" line="641"/>
         <source>Open arpeggiator file</source>
         <translation>Otevřít soubor s arpeggiatorem</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="168"/>
+        <location filename="../mainwindow.cpp" line="163"/>
         <source>Tempo of internal clock</source>
         <translation>Tempo vnitřních hodin</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="683"/>
+        <location filename="../mainwindow.cpp" line="678"/>
         <source>Not a QMidiArp xml file.</source>
         <translation>Není souborem XML QMidiArp.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1020"/>
+        <location filename="../mainwindow.cpp" line="1019"/>
         <source>Save arpeggiator</source>
         <translation>Uložit arpeggiator</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1020"/>
+        <location filename="../mainwindow.cpp" line="1019"/>
         <source>QMidiArp files</source>
         <translation>Soubory QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1223"/>
+        <location filename="../mainwindow.cpp" line="1222"/>
         <source>Could not write to resource file</source>
         <translation>Nepodařilo se zapsat do zdrojového souboru</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="116"/>
+        <location filename="../mainwindow.cpp" line="111"/>
         <source>&amp;New Arp...</source>
         <translation>&amp;Nový arpeggiator...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="118"/>
+        <location filename="../mainwindow.cpp" line="113"/>
         <source>Add new arpeggiator to tab bar</source>
         <translation>Přidat nový arpeggiator do pruhu s kartami</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="123"/>
+        <location filename="../mainwindow.cpp" line="118"/>
         <source>Add new LFO to tab bar</source>
         <translation>Přidat nový LFO do pruhu s kartami</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="117"/>
+        <location filename="../mainwindow.cpp" line="112"/>
         <source>Ctrl+A</source>
         <comment>Module|New Arp</comment>
         <translation>Ctrl+A</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="122"/>
+        <location filename="../mainwindow.cpp" line="117"/>
         <source>Ctrl+L</source>
         <comment>Module|New LFO</comment>
         <translation>Ctrl+L</translation>
@@ -946,12 +924,12 @@ Uložit změny?</translation>
         <translation type="obsolete">Strg+Del</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="211"/>
+        <location filename="../mainwindow.cpp" line="206"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="212"/>
+        <location filename="../mainwindow.cpp" line="207"/>
         <source>&amp;View</source>
         <translation>&amp;Pohled</translation>
     </message>
@@ -960,14 +938,58 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Modul</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="214"/>
+        <location filename="../mainwindow.cpp" line="209"/>
         <source>&amp;Help</source>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="241"/>
+        <location filename="../mainwindow.cpp" line="236"/>
         <source>&amp;About %1...</source>
         <translation>&amp;O %1...</translation>
+    </message>
+</context>
+<context>
+    <name>ManageBox</name>
+    <message>
+        <location filename="../managebox.cpp" line="53"/>
+        <location filename="../managebox.cpp" line="56"/>
+        <source>&amp;Clone...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="58"/>
+        <source>Duplicate this Module in muted state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="63"/>
+        <source>&amp;Rename...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="64"/>
+        <source>Rename this Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="69"/>
+        <source>&amp;Delete...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="70"/>
+        <source>Delete this Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="90"/>
+        <source>Delete &quot;%1&quot;?</source>
+        <translation type="unfinished">Smazat &quot;%1&quot;?</translation>
+    </message>
+    <message>
+        <location filename="../managebox.cpp" line="109"/>
+        <source>New Name</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -988,27 +1010,27 @@ Uložit změny?</translation>
         <translation>Ovladače MIDI - </translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="117"/>
+        <location filename="../midicctable.cpp" line="128"/>
         <source>Control</source>
         <translation>Ovládání</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="121"/>
+        <location filename="../midicctable.cpp" line="132"/>
         <source>CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="125"/>
+        <location filename="../midicctable.cpp" line="136"/>
         <source>Ch</source>
         <translation>Kanál</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="129"/>
+        <location filename="../midicctable.cpp" line="140"/>
         <source>min</source>
         <translation>Min</translation>
     </message>
     <message>
-        <location filename="../midicctable.cpp" line="133"/>
+        <location filename="../midicctable.cpp" line="144"/>
         <source>max</source>
         <translation>Max</translation>
     </message>
@@ -1074,17 +1096,17 @@ Uložit změny?</translation>
 <context>
     <name>SeqWidget</name>
     <message>
-        <location filename="../seqwidget.cpp" line="122"/>
+        <location filename="../seqwidget.cpp" line="91"/>
         <source>Transpose the sequence following incoming notes</source>
         <translation>Převést sekvenci skrz příchozí noty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="192"/>
+        <location filename="../seqwidget.cpp" line="161"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="194"/>
+        <location filename="../seqwidget.cpp" line="163"/>
         <source>&amp;Mute</source>
         <translation>&amp;Ztlumit</translation>
     </message>
@@ -1097,72 +1119,67 @@ Uložit změny?</translation>
         <translation type="obsolete">Zrušit &amp;učení se MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="58"/>
-        <source>Duplicate this Sequencer in muted state</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../seqwidget.cpp" line="82"/>
+        <location filename="../seqwidget.cpp" line="51"/>
         <source>Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="86"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Full</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="86"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Upper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="86"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Mid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="86"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Lower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="124"/>
+        <location filename="../seqwidget.cpp" line="93"/>
         <source>&amp;Note Off</source>
         <translation>&amp;Nota vypnuta</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="128"/>
+        <location filename="../seqwidget.cpp" line="97"/>
         <source>Stop output when Note is released</source>
         <translation>Zastavit výstup, když je nota vydána</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="136"/>
+        <location filename="../seqwidget.cpp" line="105"/>
         <source>&amp;Restart</source>
         <translation>&amp;Spustit znovu</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="140"/>
+        <location filename="../seqwidget.cpp" line="109"/>
         <source>Restart sequence when a new note is received</source>
         <translation>Spustit sekvenci znovu, když je nota přijata</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="142"/>
+        <location filename="../seqwidget.cpp" line="111"/>
         <source>&amp;Trigger</source>
         <translation>&amp;Spoušť</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="146"/>
+        <location filename="../seqwidget.cpp" line="115"/>
         <source>Retrigger sequence when a new note is received</source>
         <translation>Spustit sekvenci znovu, když je přijata nová nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="148"/>
+        <location filename="../seqwidget.cpp" line="117"/>
         <source>&amp;Loop</source>
         <translation>&amp;Smyčka</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="152"/>
+        <location filename="../seqwidget.cpp" line="121"/>
         <source>Play sequence as loop instead of a single run</source>
         <translation>Přehrávat sekvenci ve smyčce namísto jednoho přehrání</translation>
     </message>
@@ -1171,38 +1188,38 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Zapomenutí nastavení MIDI</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="239"/>
+        <location filename="../seqwidget.cpp" line="208"/>
         <source>Sequence</source>
         <translation>Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="250"/>
+        <location filename="../seqwidget.cpp" line="219"/>
         <source>&amp;Sequence</source>
         <translation>&amp;Sekvence</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="256"/>
+        <location filename="../seqwidget.cpp" line="225"/>
         <source>Preset Number</source>
         <translation>Číslo přednastavení</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="261"/>
-        <location filename="../seqwidget.cpp" line="262"/>
+        <location filename="../seqwidget.cpp" line="230"/>
+        <location filename="../seqwidget.cpp" line="231"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Nahrát</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="263"/>
+        <location filename="../seqwidget.cpp" line="232"/>
         <source>Record step by step</source>
         <translation>Příchozí noty nahrávat krok za krokem</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="281"/>
+        <location filename="../seqwidget.cpp" line="250"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Rozlišení (not za dobu): Počet not zahraných za čtvrťový takt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="294"/>
+        <location filename="../seqwidget.cpp" line="263"/>
         <source>Length of Sequence in beats</source>
         <translation>Délka sekvence ve čtvrťových taktech</translation>
     </message>
@@ -1211,19 +1228,17 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Kopírovat do nové vlny</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="307"/>
+        <location filename="../seqwidget.cpp" line="276"/>
         <source>Veloc&amp;ity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="922"/>
         <source>Delete &quot;%1&quot;?</source>
-        <translation>Smazat &quot;%1&quot;?</translation>
+        <translation type="obsolete">Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="941"/>
         <source>New Name</source>
-        <translation>Nový název</translation>
+        <translation type="obsolete">Nový název</translation>
     </message>
     <message>
         <source>&amp;Copy to new wave</source>
@@ -1234,57 +1249,48 @@ Uložit změny?</translation>
         <translation type="obsolete">An&amp;schlag</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="314"/>
+        <location filename="../seqwidget.cpp" line="283"/>
         <source>N&amp;ote Length</source>
         <translation>Délka n&amp;oty</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="130"/>
+        <location filename="../seqwidget.cpp" line="99"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Rychlost</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="57"/>
-        <source>&amp;Clone...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../seqwidget.cpp" line="63"/>
         <source>&amp;Rename...</source>
-        <translation>Pře&amp;jmenovat...</translation>
+        <translation type="obsolete">Pře&amp;jmenovat...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="64"/>
         <source>Rename this Sequencer</source>
-        <translation>Přejmenovat tento sekvencer</translation>
+        <translation type="obsolete">Přejmenovat tento sekvencer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="69"/>
         <source>&amp;Delete...</source>
-        <translation>S&amp;mazat...</translation>
+        <translation type="obsolete">S&amp;mazat...</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="70"/>
         <source>Delete this Sequencer</source>
-        <translation>Smazat tento sekvencer</translation>
+        <translation type="obsolete">Smazat tento sekvencer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="116"/>
+        <location filename="../seqwidget.cpp" line="85"/>
         <source>Input</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="118"/>
+        <location filename="../seqwidget.cpp" line="87"/>
         <source>&amp;Note</source>
         <translation>&amp;Nota</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="134"/>
+        <location filename="../seqwidget.cpp" line="103"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>Nastavit rychlost sekvence na rychlost příchozích not</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="161"/>
+        <location filename="../seqwidget.cpp" line="130"/>
         <source>&amp;Channel</source>
         <translation>&amp;Каnál</translation>
     </message>
@@ -1293,7 +1299,7 @@ Uložit změny?</translation>
         <translation type="obsolete">&amp;Notenlänge</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="320"/>
+        <location filename="../seqwidget.cpp" line="289"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Převést</translation>
     </message>
@@ -1306,12 +1312,12 @@ Uložit změny?</translation>
         <translation type="obsolete">Nummer des gesendeten MIDI Controllers</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="200"/>
+        <location filename="../seqwidget.cpp" line="169"/>
         <source>&amp;Port</source>
         <translation>&amp;Přípojka</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="206"/>
+        <location filename="../seqwidget.cpp" line="175"/>
         <source>C&amp;hannel</source>
         <translation>&amp;Kanál</translation>
     </message>
@@ -1320,7 +1326,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Welle</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="243"/>
+        <location filename="../seqwidget.cpp" line="212"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Pravé tlačítko myši: ztlumení jednotlivých bodů, levé tlačítko myši: kreslení tvaru vlny</translation>
     </message>
@@ -1341,7 +1347,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Frequenz (Zyklen pro beat): Anzahl der erzeugten Wellenzyklen pro Vierteltakt</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="271"/>
+        <location filename="../seqwidget.cpp" line="240"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Rozlišení</translation>
     </message>
@@ -1350,7 +1356,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Auflösung (Signale/beat): Anzahl der pro Vierteltakt erzeugten MIDI Signale</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="287"/>
+        <location filename="../seqwidget.cpp" line="256"/>
         <source>&amp;Length</source>
         <translation>&amp;Délka</translation>
     </message>
@@ -1387,7 +1393,7 @@ Uložit změny?</translation>
         <translation type="obsolete">Rechteck</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="710"/>
+        <location filename="../seqwidget.cpp" line="679"/>
         <source>Custom</source>
         <translation>Vlastní</translation>
     </message>
