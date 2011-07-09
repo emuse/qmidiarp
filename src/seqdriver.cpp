@@ -161,7 +161,7 @@ void SeqDriver::run()
                 else if (useJackSync) {
                     if (jackSync->isRunning()) {
 
-                        jPos = jackSync->get_pos();
+                        jPos = jackSync->getCurrentPos();
                         if (jPos.beats_per_minute > 0)
                             tempo = jPos.beats_per_minute;
 
@@ -239,14 +239,14 @@ void SeqDriver::initTempo()
 {
     if (useJackSync) {
         if (jackSync->isRunning()) {
-            jPos = jackSync->get_pos();
+            jPos = jackSync->getCurrentPos();
             if (jPos.beats_per_minute > 0)
                 tempo = jPos.beats_per_minute;
             else
                 tempo = internalTempo;
 
-            jackOffsetTick = (uint64_t)jpos.frame * TPQN
-                    * tempo / (jpos.frame_rate * 60);
+            jackOffsetTick = (uint64_t)jPos.frame * TPQN
+                    * tempo / (jPos.frame_rate * 60);
             clockRatio = 60e9/TPQN/tempo;
         }
     }

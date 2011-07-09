@@ -74,6 +74,7 @@ class SeqDriver : public QThread, public DriverBase {
         int queue_id;
         bool startQueue;
         bool modified;
+        bool midi_controllable;
         bool threadAbort;
 
         bool sendLogEvents;
@@ -135,6 +136,7 @@ class SeqDriver : public QThread, public DriverBase {
         void setQueueStatus(bool run);
         void setTempo(int bpm);
         void setUseMidiClock(bool on);
+        void setMidiControllable(bool on);
         void setUseJackTransport(bool on);
         void setSendLogEvents(bool on);
         void jackShutdown();

@@ -156,9 +156,9 @@ void JackSync::jackTrCheckState()
     }
 }
 
-bool JackSync::is_stopped()
+jack_transport_state_t JackSync::getState()
 {
-    return jack_transport_query(jack_handle, &current_pos) == JackTransportStopped;
+    return jack_transport_query(jack_handle, &currentPos);
 }
 
 void JackSync::setJackRunning(bool on)
