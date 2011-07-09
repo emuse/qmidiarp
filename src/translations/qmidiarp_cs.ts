@@ -954,42 +954,42 @@ Uložit změny?</translation>
         <location filename="../managebox.cpp" line="53"/>
         <location filename="../managebox.cpp" line="56"/>
         <source>&amp;Clone...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Klonovat...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="58"/>
         <source>Duplicate this Module in muted state</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdvojit tento modul ve ztlumeném stavu</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="63"/>
         <source>&amp;Rename...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Přejmenovat...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="64"/>
         <source>Rename this Module</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejmenovat tento modul</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="69"/>
         <source>&amp;Delete...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Smazat...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="70"/>
         <source>Delete this Module</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat tento modul</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="90"/>
         <source>Delete &quot;%1&quot;?</source>
-        <translation type="unfinished">Smazat &quot;%1&quot;?</translation>
+        <translation>Smazat &quot;%1&quot;?</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="109"/>
         <source>New Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nový název</translation>
     </message>
 </context>
 <context>
@@ -1040,17 +1040,17 @@ Uložit změny?</translation>
     <message>
         <location filename="../midicontrol.cpp" line="44"/>
         <source>Cancel MIDI &amp;Learning</source>
-        <translation type="unfinished">Zrušit &amp;učení se MIDI</translation>
+        <translation>Zrušit &amp;učení se MIDI</translation>
     </message>
     <message>
         <location filename="../midicontrol.cpp" line="133"/>
         <source>MIDI &amp;Learn</source>
-        <translation type="unfinished">&amp;Učení se MIDI</translation>
+        <translation>&amp;Učení se MIDI</translation>
     </message>
     <message>
         <location filename="../midicontrol.cpp" line="138"/>
         <source>MIDI &amp;Forget</source>
-        <translation type="unfinished">&amp;Zapomenutí nastavení MIDI</translation>
+        <translation>&amp;Zapomenutí nastavení MIDI</translation>
     </message>
 </context>
 <context>
@@ -1073,7 +1073,7 @@ Uložit změny?</translation>
     <message>
         <location filename="../passwidget.cpp" line="69"/>
         <source>&amp;Add new modules in muted state</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Přidat nové moduly ve ztlumeném stavu</translation>
     </message>
     <message>
         <location filename="../passwidget.cpp" line="89"/>
@@ -1121,27 +1121,27 @@ Uložit změny?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="51"/>
         <source>Display</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Full</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Plný</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Upper</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Horní</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Mid</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Střední</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="55"/>
         <source>&amp;Lower</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Dolní</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="93"/>
