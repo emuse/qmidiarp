@@ -962,42 +962,42 @@ Die Änderungen speichern?</translation>
         <location filename="../managebox.cpp" line="53"/>
         <location filename="../managebox.cpp" line="56"/>
         <source>&amp;Clone...</source>
-        <translation type="unfinished">&amp;Duplizieren...</translation>
+        <translation>&amp;Duplizieren...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="58"/>
         <source>Duplicate this Module in muted state</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Modul in stummem Zustand duplizieren</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="63"/>
         <source>&amp;Rename...</source>
-        <translation type="unfinished">&amp;Umbenennen...</translation>
+        <translation>&amp;Umbenennen...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="64"/>
         <source>Rename this Module</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Modul umbenennen</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="69"/>
         <source>&amp;Delete...</source>
-        <translation type="unfinished">&amp;Löschen...</translation>
+        <translation>&amp;Löschen...</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="70"/>
         <source>Delete this Module</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieses Modul löschen</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="90"/>
         <source>Delete &quot;%1&quot;?</source>
-        <translation type="unfinished">&quot;%1&quot; löschen?</translation>
+        <translation>&quot;%1&quot; löschen?</translation>
     </message>
     <message>
         <location filename="../managebox.cpp" line="109"/>
         <source>New Name</source>
-        <translation type="unfinished">Neuer Name</translation>
+        <translation>Neuer Name</translation>
     </message>
 </context>
 <context>
@@ -1048,17 +1048,17 @@ Die Änderungen speichern?</translation>
     <message>
         <location filename="../midicontrol.cpp" line="44"/>
         <source>Cancel MIDI &amp;Learning</source>
-        <translation type="unfinished">MIDI-Lernen &amp;Abbrechen</translation>
+        <translation>MIDI-Lernen &amp;Abbrechen</translation>
     </message>
     <message>
         <location filename="../midicontrol.cpp" line="133"/>
         <source>MIDI &amp;Learn</source>
-        <translation type="unfinished">&amp;Lerne von MIDI</translation>
+        <translation>&amp;Lerne von MIDI</translation>
     </message>
     <message>
         <location filename="../midicontrol.cpp" line="138"/>
         <source>MIDI &amp;Forget</source>
-        <translation type="unfinished">MIDI-Steuerungen &amp;vergessen</translation>
+        <translation>MIDI-Steuerungen &amp;vergessen</translation>
     </message>
 </context>
 <context>
