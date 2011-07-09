@@ -53,8 +53,8 @@ class PassWidget : public QDialog
     ~PassWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);
-    QCheckBox *cbuttonCheck, *compactStyleCheck;
-    bool compactStyle;
+    QCheckBox *cbuttonCheck, *compactStyleCheck, *mutedAddCheck;
+    bool compactStyle, mutedAdd;
 
   signals:
     void compactLayoutToggle(bool);
@@ -64,6 +64,7 @@ class PassWidget : public QDialog
     void updatePortUnmatched(int);
     void updateControlSetting(bool);
     void updateCompactStyle(bool);
+    void updateMutedAdd(bool);
 };
 
 #endif

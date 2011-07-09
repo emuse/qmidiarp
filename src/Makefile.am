@@ -11,6 +11,7 @@ nodist_qmidiarp_SOURCES = \
 	arpwidget_moc.cpp \
 	lfowidget_moc.cpp \
 	seqwidget_moc.cpp \
+	managebox_moc.cpp \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
 	logwidget_moc.cpp \
@@ -18,6 +19,7 @@ nodist_qmidiarp_SOURCES = \
 	midilfo_moc.cpp \
 	midiseq_moc.cpp \
 	midicctable_moc.cpp \
+	midicontrol_moc.cpp \
 	passwidget_moc.cpp \
 	jacksync_moc.cpp \
 	seqdriver_moc.cpp \
@@ -31,6 +33,7 @@ qmidiarp_SOURCES = \
 	arpwidget.cpp arpwidget.h \
 	lfowidget.cpp lfowidget.h \
 	seqwidget.cpp seqwidget.h \
+	managebox.cpp managebox.h \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
 	logwidget.cpp logwidget.h \
@@ -39,6 +42,7 @@ qmidiarp_SOURCES = \
 	midilfo.cpp midilfo.h \
 	midiseq.cpp midiseq.h \
 	midicctable.cpp midicctable.h \
+	midicontrol.cpp midicontrol.h \
 	midievent.h \
 	passwidget.cpp passwidget.h \
 	jacksync.cpp jacksync.h \
@@ -47,6 +51,7 @@ qmidiarp_SOURCES = \
 
 qmidiarp_LDADD = $(QT_LIBS)
 
+if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
 translations = \
 	translations/qmidiarp_cs.ts \
@@ -60,9 +65,11 @@ translations_DATA = \
 	translations/qmidiarp_es.qm \
 	translations/qmidiarp_fr.qm
 
+TRANSLATION_DEFS = -DTRANSLATIONSDIR=\"$(translationsdir)\"
+endif
 
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -Wall -Wextra -D_REENTRANT -DTRANSLATIONSDIR=\"$(translationsdir)\" @DEFS@
+DEFS = -Wall -Wextra -D_REENTRANT $(TRANSLATION_DEFS) @DEFS@
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations)
@@ -76,6 +83,7 @@ SUFFIXES = _moc.cpp
 .h_moc.cpp: $(qmidiarp_SOURCES)
 	$(MOC) $< -o $@
 
+if ENABLE_TRANSLATIONS
 # rule for translation file updates
 $(translations): $(qmidiarp_SOURCES)
 	$(LUPDATE) -verbose $(qmidiarp_SOURCES) -ts $@
@@ -83,4 +91,4 @@ $(translations): $(qmidiarp_SOURCES)
 # rule to generate binary translation files
 .ts.qm: $(translations)
 	$(LRELEASE) -verbose $< -qm $@
-
+endif

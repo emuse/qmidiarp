@@ -29,11 +29,13 @@
 #include "driverbase.h"         // temp include to check driverbase.h for synthax errors
 
 
-JackSync::JackSync()
+JackSync::JackSync(void (* p_tr_state_cb)(bool j_tr_state, void * context),
+                    void * p_cb_context)
 {
     transportState = JackTransportStopped;
-    j_frame_time = 0;
     out_port_count = 0;
+    cbContext = p_cb_context;
+    trStateCb = p_tr_state_cb;
  }
 
 JackSync::~JackSync()
@@ -58,9 +60,9 @@ int JackSync::initJack(int out_port_count)
 
     jack_on_shutdown(jack_handle, jack_shutdown, (void *)this);
 
-    jack_set_sync_callback(jack_handle, sync_callback, (void *)this);
+    jack_set_process_callback(jack_handle, process_callback, (void *)this);
 
-    qWarning("jack sync callback registered");
+    qWarning("jack process callback registered");
 
     // register JACK MIDI input port
     if ((in_port = jack_port_register(jack_handle, "in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0)) == 0) {
@@ -118,30 +120,31 @@ void JackSync::jack_shutdown(void *arg)
     emit rd->j_shutdown();
 }
 
-int JackSync::sync_callback(jack_transport_state_t state,
-                            jack_position_t *pos, void *arg)
+int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 {
-    JackSync *rd;
-
-    rd = (JackSync *)arg;
-
-    return(rd->jack_sync(state));
+    ((JackSync *)arg)->jackTrCheckState();
+    return(0);
 }
 
-int JackSync::jack_sync(jack_transport_state_t state)
+void JackSync::jackTrCheckState()
 {
+    int state = getState();
 
+    if (transportState == state) return;
+
+    transportState = state;
     switch (state){
         case JackTransportStopped:
+            trStateCb(false, cbContext);
             qWarning( "[JackTransportStopped]" );
         break;
 
         case JackTransportRolling:
+            trStateCb(true, cbContext);
             qWarning( "[JackTransportRolling]" );
         break;
 
         case JackTransportStarting:
-            emit j_tr_state(true);
             qWarning( "[JackTransportStarting]" );
         break;
 
@@ -151,19 +154,6 @@ int JackSync::jack_sync(jack_transport_state_t state)
         default:
         break;
     }
-    if (transportState != state)
-        transportState = state;
-
-    bool ready = true;
-    return(ready);
-}
-
-jack_position_t JackSync::get_pos()
-{
-    jack_transport_state_t state = jack_transport_query(jack_handle, &current_pos);
-    if (transportState != state)
-        transportState = state;
-    return(current_pos);
 }
 
 bool JackSync::is_stopped()
@@ -174,4 +164,9 @@ bool JackSync::is_stopped()
 void JackSync::setJackRunning(bool on)
 {
     jackRunning = on;
+}
+
+jack_position_t JackSync::getCurrentPos()
+{
+    return currentPos;
 }

@@ -36,7 +36,7 @@
 #include "midievent.h"
 
 /*!
- * @brief Creates a QWidget with three sliders controlling the arpeggiator groove.
+ * @brief Creates a QWidget displaying a log of received MIDI events from SeqDriver.
  *
  * The LogWidget is instantiated by MainWindow on program start. It is
  * embedded in a DockWindow and shown/hidden by a MainWindow menu entry and
@@ -62,6 +62,9 @@ class LogWidget : public QWidget
     ~LogWidget();
     QCheckBox *enableLog;
     QCheckBox *logMidiClock;
+
+  signals:
+    void sendLogEvents(bool on);
 
   public slots:
     void logMidiToggle(bool on);

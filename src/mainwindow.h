@@ -48,8 +48,8 @@ static const char ABOUTMSG[] =
             "(C) 2009-2011 Frank Kober<br/>"
             "(C) 2009 Guido Scholz</br></p>"
             "<p>For getting support please type <b>man qmidiarp</b> or go to<br/>"
-            "<a href=\"http://sourceforge.net/projects/qmidiarp\">"
-            "http://sourceforge.net/projects/qmidiarp</a></p>"
+            "<a href=\"http://qmidiarp.sourceforge.net\">"
+            "http://qmidiarp.sourceforge.net</a></p>"
             APP_NAME " is licensed under the GPL.</b></p></html>";
 
 /*!
@@ -158,7 +158,14 @@ class MainWindow : public QMainWindow
 * @param name Name attribute of this arpeggiator module
 */
     void addSeq(const QString&);
-
+/*!
+* @brief This function wraps the given widget in a QDockWidget and adds
+* it to the list in Engine.
+*
+* @param *moduleWidget The QWidget to be embedded
+*
+*/
+    void appendDock(QWidget *moduleWidget, const QString& name, int count);
 /*!
 * @brief This function reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
@@ -421,6 +428,13 @@ class MainWindow : public QMainWindow
 * @param index The Engine::MidiSeqList index of the sequencer to remove
 */
     void removeSeq(int index);
+/*!
+* @brief This function duplicates and adds a MidiSeq to the Engine.
+*
+* @param ID List ID of the module to copy
+*/
+    void cloneLfo(int ID);
+    void cloneSeq(int ID);
     void helpAbout();
     void helpAboutQt();
 /*! @brief Slot for tempo spinBox changes.
@@ -493,6 +507,9 @@ class MainWindow : public QMainWindow
  * @param fd UNIX signal number
 */
     void signalAction(int);
+
+    void ctb_update_orientation(Qt::Orientation orient);
+    void ftb_update_orientation(Qt::Orientation orient);
 };
 
 #endif

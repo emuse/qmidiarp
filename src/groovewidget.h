@@ -33,6 +33,7 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include "slider.h"
+#include "midicontrol.h"
 
 /*!
  * @brief Creates a QWidget with three sliders controlling the arpeggiator groove.
@@ -54,6 +55,7 @@ class GrooveWidget : public QWidget
   public:
     GrooveWidget(QWidget* parent=0);
     ~GrooveWidget();
+    MidiControl *midiControl;
 
   signals:
     void newGrooveVelocity(int);

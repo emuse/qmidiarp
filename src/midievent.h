@@ -39,6 +39,7 @@ typedef struct {
 
 Q_DECLARE_METATYPE (MidiEvent)
 
+
 /*! @brief Sequencer event type enum in analogy to the ALSA snd_seq_event_types */
 enum midi_event_type {
     EV_SYSTEM = 0,
@@ -84,4 +85,5 @@ enum midi_event_type {
 
     EV_NONE = 255
 };
+
 #endif

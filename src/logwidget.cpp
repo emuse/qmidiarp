@@ -135,6 +135,7 @@ void LogWidget::appendEvent(MidiEvent ev, int tick) {
 void LogWidget::enableLogToggle(bool on)
 {
     logActive = on;
+    emit sendLogEvents(on);
 }
 
 void LogWidget::logMidiToggle(bool on)

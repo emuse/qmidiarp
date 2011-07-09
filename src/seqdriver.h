@@ -76,6 +76,8 @@ class SeqDriver : public QThread, public DriverBase {
         bool modified;
         bool threadAbort;
 
+        bool sendLogEvents;
+
         double tickToDelta(int tick);
         int deltaToTick (double curtime);
         double aTimeToDelta(snd_seq_real_time_t* atime);
@@ -97,6 +99,8 @@ class SeqDriver : public QThread, public DriverBase {
         double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, realTime;
         snd_seq_real_time_t tmpTime;
+
+        static void tr_state_cb(bool tr_state, void * context);
 
     public:
         bool forwardUnmatched, queueStatus;
@@ -120,6 +124,8 @@ class SeqDriver : public QThread, public DriverBase {
         void run();
 
    signals:
+        // TODO: move to engine class
+        //void controlEvent(int ccnumber, int channel, int value);
         void jackShutdown(bool); //boolean is passed to main toolbar
                                 //jackSync button
 
@@ -130,6 +136,7 @@ class SeqDriver : public QThread, public DriverBase {
         void setTempo(int bpm);
         void setUseMidiClock(bool on);
         void setUseJackTransport(bool on);
+        void setSendLogEvents(bool on);
         void jackShutdown();
 };
 

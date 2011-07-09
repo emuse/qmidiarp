@@ -36,6 +36,7 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
     mouseY = 0;
+    xMax = LFOSCR_HMARG;
     currentIndex = 0;
     isMuted = false;
 }
@@ -63,19 +64,16 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int notestreak_thick = 2;
     int ofs;
     int x, x1;
-    int maxOctave = 1;
-    int minOctave = 0;
-    int beatRes = 1.0;
+    int beatRes = 1;
     int beatDiv = 0;
-    int noctaves = 2;
     l2 = 0;
 
     //Grid
     if (p_data.isEmpty()) return;
-    nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
-    beatRes = (p_data.count() - 1) / nsteps;
-    beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
-    npoints = beatRes * nsteps;
+    npoints = p_data.count() - 1;
+    nsteps = p_data.at(npoints).tick / TPQN;
+    beatRes = npoints / nsteps;
+    beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
     xscale = (w - 2 * LFOSCR_HMARG) / nsteps;
     yscale = h - 2 * LFOSCR_VMARG;
 
@@ -103,7 +101,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(180, 100, 100));
         }
         x = l1 * xscale;
-            p.drawLine(LFOSCR_HMARG + x, LFOSCR_VMARG,
+        p.drawLine(LFOSCR_HMARG + x, LFOSCR_VMARG,
                 LFOSCR_HMARG + x, h-LFOSCR_VMARG);
 
         if (l1 < nsteps) {
@@ -123,17 +121,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
                             h - LFOSCR_VMARG);
             }
         }
-    }
-
-    //Horizontal separators and numbers
-    p.setPen(QColor(180, 120, 40));
-    noctaves = maxOctave - minOctave + 1;
-    for (l1 = 0; l1 < noctaves + 2; l1++) {
-        ypos = yscale * l1 / noctaves + LFOSCR_VMARG;
-        p.drawLine(LFOSCR_HMARG, ypos, w - LFOSCR_HMARG, ypos);
-        p.drawText(1,
-                yscale * (l1) / noctaves + LFOSCR_VMARG + 4,
-                QString::number((noctaves - l1) * 128 / noctaves));
+        xMax = LFOSCR_HMARG + x;
     }
 
     //Draw function
@@ -165,6 +153,16 @@ void LfoScreen::paintEvent(QPaintEvent*)
     xpos = LFOSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
+
+    //Horizontal separators and numbers
+    p.setPen(QColor(180, 120, 40));
+    for (l1 = 0; l1 < 3; l1++) {
+        ypos = yscale * l1 / 2 + LFOSCR_VMARG;
+        p.drawLine(LFOSCR_HMARG, ypos, xMax, ypos);
+        p.drawText(1, yscale * (l1) + LFOSCR_VMARG + 4,
+                QString::number(128 * (1 - l1)));
+    }
+
 }
 
 
@@ -192,10 +190,10 @@ void LfoScreen::mouseMoveEvent(QMouseEvent *event)
     mouseY = event->y();
     bool cl = false;
 
-    mouseX = clip(mouseX, LFOSCR_HMARG, w - LFOSCR_HMARG, &cl);
+    mouseX = clip(mouseX, LFOSCR_HMARG, xMax, &cl);
     mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
     emit mouseMoved(((double)mouseX - LFOSCR_HMARG) /
-                            ((double)w - 2 * LFOSCR_HMARG + .2),
+                            ((double)xMax - LFOSCR_HMARG + .2),
                 1. - ((double)mouseY - LFOSCR_VMARG) /
                 (h - 2 * LFOSCR_VMARG), event->buttons());
 }
@@ -206,11 +204,11 @@ void LfoScreen::mousePressEvent(QMouseEvent *event)
     mouseY = event->y();
     bool cl = false;
 
-    mouseX = clip(mouseX, LFOSCR_HMARG, w - LFOSCR_HMARG, &cl);
+    mouseX = clip(mouseX, LFOSCR_HMARG, xMax, &cl);
     mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
 
     emit mousePressed(((double)mouseX - LFOSCR_HMARG) /
-                            ((double)w - 2 * LFOSCR_HMARG + .2),
+                            ((double)xMax - LFOSCR_HMARG + .2),
                 1. - ((double)mouseY - LFOSCR_VMARG) /
                 (h - 2 * LFOSCR_VMARG), event->buttons());
 }

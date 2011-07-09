@@ -31,7 +31,7 @@ MidiLfo::MidiLfo()
     queueTempo = 100.0;
     amp = 0;
     offs = 0;
-    freq = 4;
+    freq = 32;
     size = 1;
     res = 16;
     old_res = 0;
@@ -144,83 +144,85 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     int tempval;
     bool cl = false;
     int npoints = size * res;
+    QVector<Sample> tmpdata;
     //res: number of events per beat
     //size: size of waveform in beats
 
-    data.clear();
+    tmpdata.clear();
 
     switch(waveFormIndex) {
         case 0: //sine
             for (l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((-cos((double)(l1 * 6.28 /
-                res * freq / 4)) + 1) * amp / 2 + offs, 0, 127, &cl);
+                res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
             }
         break;
         case 1: //sawtooth up
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(val * amp / res / 4
+                sample.value = clip(val * amp / res / 32
                 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 2: //triangle
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                tempval = val - res * 2;
+                tempval = val - res * 16;
                 if (tempval < 0 ) tempval = -tempval;
-                sample.value = clip((res * 2 - tempval) * amp
-                        / res / 2 + offs, 0, 127, &cl);
+                sample.value = clip((res * 16 - tempval) * amp
+                        / res / 16 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt += step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 3: //sawtooth down
             val = 0;
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip((res * 4 - val)
-                        * amp / res / 4 + offs, 0, 127, &cl);
+                sample.value = clip((res * 32 - val)
+                        * amp / res / 32 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt+=step;
                 val += freq;
-                val %= res * 4;
+                val %= res * 32;
             }
         break;
         case 4: //square
             for (l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(amp * ((l1 * freq / 2
+                sample.value = clip(amp * ((l1 * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
-                data.append(sample);
+                tmpdata.append(sample);
                 lt+=step;
             }
         break;
         case 5: //custom
             lt = step * customWave.count();
-            data = customWave;
+            tmpdata = customWave;
         break;
         default:
         break;
     }
     sample.value = -1;
     sample.tick = lt;
-    data.append(sample);
+    tmpdata.append(sample);
+    data = tmpdata;
     *p_data = data;
 }
 
@@ -321,6 +323,7 @@ void MidiLfo::resizeAll()
     customWave.resize(size * res);
     muteMask.resize(size * res);
     for (l1 = 0; l1 < customWave.count(); l1++) {
+        if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
         sample = customWave.at(l1 % os);
         sample.tick = lt;
         sample.muted = muteMask.at(l1);

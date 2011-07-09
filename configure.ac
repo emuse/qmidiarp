@@ -65,6 +65,10 @@ if test "x$MOC" = "xno" ; then
     [cannot find 'moc', please install the Qt4 development tools package.])
 fi
 
+enable_translations=false
+AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test x$enable_translations = xtrue])
+
+AM_COND_IF([ENABLE_TRANSLATIONS],[
 dnl check for lupdate
 AC_PATH_PROGS(LUPDATE, lupdate-qt4 lupdate, no, [$PATH:$QTDIR/bin])
 if test "x$LUPDATE" = "xno" ; then
@@ -78,6 +82,7 @@ if test "x$LRELEASE" = "xno" ; then
   AC_MSG_ERROR(
     [cannot find 'lrelease', please install the Qt4 development tools package.])
 fi
+], [AC_MSG_NOTICE([transaltions are disabled])])
 
 # Checks for header files.
 AC_HEADER_STDC

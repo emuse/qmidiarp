@@ -65,6 +65,12 @@ PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
             SLOT(updateCompactStyle(bool)));
     compactStyle = false;
 
+    mutedAddCheck = new QCheckBox(this);
+    mutedAddCheck->setText(tr("&Add new modules in muted state"));
+    QObject::connect(mutedAddCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateMutedAdd(bool)));
+    mutedAdd = false;
+
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -74,6 +80,7 @@ PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
     passWidgetLayout->addLayout(portBoxLayout);
     passWidgetLayout->addWidget(cbuttonCheck);
     passWidgetLayout->addWidget(compactStyleCheck);
+    passWidgetLayout->addWidget(mutedAddCheck);
     passWidgetLayout->addWidget(buttonBox);
     passWidgetLayout->addStretch();
 
@@ -117,4 +124,9 @@ void PassWidget::updateCompactStyle(bool on)
 {
     compactStyle = on;
     engine->setCompactStyle(on);
+}
+
+void PassWidget::updateMutedAdd(bool on)
+{
+    mutedAdd = on;
 }

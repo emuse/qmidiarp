@@ -93,6 +93,7 @@ SeqDriver::SeqDriver(
     startQueue = false;
     useJackSync = false;
     useMidiClock = false;
+    sendLogEvents = false;
 
     internalTempo = 120;
     initTempo();
@@ -148,7 +149,6 @@ void SeqDriver::run()
                     fallback = true;
                 } */
             }
-
             if (((inEv.type == EV_ECHO) || startQueue || fallback) && queueStatus) {
                 startQueue = false;
                 fallback = false;
@@ -161,13 +161,11 @@ void SeqDriver::run()
                 else if (useJackSync) {
                     if (jackSync->isRunning()) {
 
-                        if (jackSync->is_stopped()) setQueueStatus(false);
-
                         jPos = jackSync->get_pos();
                         if (jPos.beats_per_minute > 0)
                             tempo = jPos.beats_per_minute;
 
-                        m_current_tick = (double)jPos.frame * TPQN
+                        m_current_tick = (long)jPos.frame * TPQN
                                 / jPos.frame_rate * tempo / 60.
                                 - jackOffsetTick;
                         calcClockRatio();
@@ -177,6 +175,10 @@ void SeqDriver::run()
                     clockRatio = 60e9/TPQN/tempo;
                     m_current_tick = deltaToTick(aTimeToDelta(&realTime));
                 }
+
+                // Restart ALSA queue if initial jack position is such that ticks would be negative
+                // this cannot actually happen because m_current_tick us unsigned...
+                //if (m_current_tick < 0) setQueueStatus(true);
 
                 tick_callback((inEv.data));
             }
@@ -238,14 +240,13 @@ void SeqDriver::initTempo()
     if (useJackSync) {
         if (jackSync->isRunning()) {
             jPos = jackSync->get_pos();
-            // qtractor for instance doesn't set tempo atm...
             if (jPos.beats_per_minute > 0)
                 tempo = jPos.beats_per_minute;
             else
                 tempo = internalTempo;
 
-            jackOffsetTick = (double)jPos.frame * TPQN
-                    / jPos.frame_rate * tempo / 60;
+            jackOffsetTick = (uint64_t)jpos.frame * TPQN
+                    * tempo / (jpos.frame_rate * 60);
             clockRatio = 60e9/TPQN/tempo;
         }
     }
@@ -369,10 +370,8 @@ void SeqDriver::setQueueStatus(bool run)
 void SeqDriver::setUseJackTransport(bool on)
 {
     if (on) {
-        jackSync = new JackSync();
+        jackSync = new JackSync(tr_state_cb, this);
         jackSync->setParent(this);
-        connect(jackSync, SIGNAL(j_tr_state(bool)),
-                this, SLOT(setQueueStatus(bool)));
         connect(jackSync, SIGNAL(j_shutdown()),
                 this, SLOT(jackShutdown()));
         useJackSync = true;
@@ -457,3 +456,19 @@ int SeqDriver::getAlsaClientId()
     return clientid;
 }
 
+void SeqDriver::setMidiControllable(bool on)
+{
+    midi_controllable = on;
+    modified = true;
+}
+
+void SeqDriver::setSendLogEvents(bool on)
+{
+    sendLogEvents = on;
+    modified = true;
+}
+
+void SeqDriver::tr_state_cb(bool on, void *context)
+{
+    ((SeqDriver  *)context)->setQueueStatus(on);
+}

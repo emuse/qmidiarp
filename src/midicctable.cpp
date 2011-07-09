@@ -74,41 +74,52 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->clear();
 
-    for (l1 = 0; l1 < engine->arpWidgetCount(); l1++) {
-        ccList = engine->arpWidget(l1)->ccList;
+    ccList = engine->grooveWidget->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->arpWidget(l1)->ccList.count(); l2++) {
+    for (l2 = 0; l2 < engine->grooveWidget->midiControl->ccList.count(); l2++) {
+
+        midiCCTable->setVerticalHeaderItem(nrows,
+                new QTableWidgetItem("Groove"));
+
+        fillControlRow(nrows, ccList.at(l2), -1);
+        nrows++;
+    }
+
+    for (l1 = 0; l1 < engine->arpWidgetCount(); l1++) {
+        ccList = engine->arpWidget(l1)->midiControl->ccList;
+
+        for (l2 = 0; l2 < engine->arpWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->arpWidget(l1)->name));
+                    new QTableWidgetItem(engine->arpWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->arpWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->arpWidget(l1)->manageBox->ID);
             nrows++;
         }
     }
 
     for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++) {
-        ccList = engine->lfoWidget(l1)->ccList;
+        ccList = engine->lfoWidget(l1)->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->lfoWidget(l1)->ccList.count(); l2++) {
+        for (l2 = 0; l2 < engine->lfoWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->lfoWidget(l1)->name));
+                    new QTableWidgetItem(engine->lfoWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->lfoWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->lfoWidget(l1)->manageBox->ID);
             nrows++;
         }
     }
 
     for (l1 = 0; l1 < engine->seqWidgetCount(); l1++) {
-        ccList = engine->seqWidget(l1)->ccList;
+        ccList = engine->seqWidget(l1)->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->seqWidget(l1)->ccList.count(); l2++) {
+        for (l2 = 0; l2 < engine->seqWidget(l1)->midiControl->ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->seqWidget(l1)->name));
+                    new QTableWidgetItem(engine->seqWidget(l1)->manageBox->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->seqWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->seqWidget(l1)->manageBox->ID);
             nrows++;
         }
     }
@@ -148,12 +159,14 @@ void MidiCCTable::apply()
     int l1;
     QChar moduleType;
 
+    engine->grooveWidget->midiControl->ccList.clear();
+
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++)
-            engine->arpWidget(l1)->ccList.clear();
+            engine->arpWidget(l1)->midiControl->ccList.clear();
     for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++)
-            engine->lfoWidget(l1)->ccList.clear();
+            engine->lfoWidget(l1)->midiControl->ccList.clear();
     for (l1 = 0; l1 < engine->seqWidgetCount(); l1++)
-            engine->seqWidget(l1)->ccList.clear();
+            engine->seqWidget(l1)->midiControl->ccList.clear();
 
     for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
         ccnumber = midiCCTable->item(l1, 1)->text().toInt();
@@ -165,16 +178,20 @@ void MidiCCTable::apply()
         moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
 
         switch (moduleType.toLatin1()) {
+            case 'G':
+                    engine->grooveWidget->midiControl
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            break;
             case 'A':
-                    engine->arpWidget(moduleID)
+                    engine->arpWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'L':
-                    engine->lfoWidget(moduleID)
+                    engine->lfoWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'S':
-                    engine->seqWidget(moduleID)
+                    engine->seqWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
         }

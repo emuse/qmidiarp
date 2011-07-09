@@ -35,6 +35,7 @@
 #include "lfowidget.h"
 #include "midiseq.h"
 #include "seqwidget.h"
+#include "groovewidget.h"
 
 /*!
  * @brief Manages created module components in lists. Instantiates SeqDriver.
@@ -83,10 +84,11 @@ class Engine : public QWidget  {
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;
     bool status;
+    GrooveWidget *grooveWidget;
     SeqDriver *seqDriver;
 
   public:
-    Engine(int p_portCount, QWidget* parent=0);
+    Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget* parent=0);
     ~Engine();
     int getPortCount();
     bool isModified();

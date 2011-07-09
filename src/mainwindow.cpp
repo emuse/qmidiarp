@@ -74,7 +74,17 @@ MainWindow::MainWindow(int p_portCount)
     filename = "";
     lastDir = QDir::homePath();
 
-    engine = new Engine(p_portCount, this);
+    grooveWidget = new GrooveWidget(this);
+    grooveWindow = new QDockWidget(tr("Groove"), this);
+    grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    grooveWindow->setWidget(grooveWidget);;
+    grooveWindow->setObjectName("grooveWidget");
+    grooveWindow->setVisible(true);
+    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+
+    engine = new Engine(grooveWidget, p_portCount, this);
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -86,28 +96,15 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-
     qRegisterMetaType<MidiEvent>("MidiEvent");
     connect(engine, SIGNAL(midiEventReceived(MidiEvent, int)),
             logWidget, SLOT(appendEvent(MidiEvent, int)));
 
-    passWidget = new PassWidget(engine, p_portCount, this);
+    // FIXME: this signal should be connected to engine, not to seqdriver
+    connect(logWidget, SIGNAL(sendLogEvents(bool)),
+            engine->seqDriver, SLOT(setSendLogEvents(bool)));
 
-    grooveWidget = new GrooveWidget(this);
-    grooveWindow = new QDockWidget(tr("Groove"), this);
-    grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
-            | QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    grooveWindow->setWidget(grooveWidget);;
-    grooveWindow->setObjectName("grooveWidget");
-    grooveWindow->setVisible(true);
-    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
-    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            engine, SLOT(setGrooveTick(int)));
-    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            engine, SLOT(setGrooveVelocity(int)));
-    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            engine, SLOT(setGrooveLength(int)));
+    passWidget = new PassWidget(engine, p_portCount, this);
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -246,6 +243,8 @@ MainWindow::MainWindow(int p_portCount)
     fileToolBar->addAction(fileSaveAsAction);
     fileToolBar->setObjectName("fileToolBar");
     fileToolBar->setMaximumHeight(30);
+    connect(fileToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
+            SLOT(ftb_update_orientation(Qt::Orientation)));
 
     controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
     controlToolBar->addAction(viewLogAction);
@@ -261,6 +260,8 @@ MainWindow::MainWindow(int p_portCount)
     controlToolBar->addAction(jackSyncAction);
     controlToolBar->setObjectName("controlToolBar");
     controlToolBar->setMaximumHeight(30);
+    connect(controlToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
+            SLOT(ctb_update_orientation(Qt::Orientation)));
 
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(viewMenu);
@@ -274,6 +275,7 @@ MainWindow::MainWindow(int p_portCount)
     setWindowIcon(QPixmap(qmidiarp2_xpm));
     QWidget *centWidget = new QWidget(this);
     setCentralWidget(centWidget);
+    setDockNestingEnabled(true);
     updateWindowTitle();
 
     if (checkRcFile())
@@ -357,20 +359,19 @@ void MainWindow::addArp(const QString& name)
     MidiArp *midiWorker = new MidiArp();
     engine->addMidiArp(midiWorker);
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
-    // passing compactStyle property was necessary because stylesheet
-    // seems to have no effect on layout spacing/margin
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
                     QString&, int)));
-    connect(moduleWidget, SIGNAL(moduleRemove(int)),
+    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
@@ -381,88 +382,157 @@ void MainWindow::addArp(const QString& name)
             moduleWidget->screen, SLOT(setGrooveLength(int)));
 
     widgetID = engine->arpWidgetCount();
-    moduleWidget->name = name;
-    moduleWidget->ID = widgetID;
+    moduleWidget->manageBox->name = name;
+    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->midiControl->ID = widgetID;
 
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
 
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
-    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
-    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-
     count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
-    engine->addModuleWindow(moduleWindow);
-    moduleWindow->show();
+    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->midiControl->parentDockID = count;
+    appendDock(moduleWidget, name, count);
+
     checkIfFirstModule();
 }
 
 void MainWindow::addLfo(const QString& name)
 {
-    int count, widgetID;
+    int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
     engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget, SLOT(updateScreen(int)));
-    connect(moduleWidget, SIGNAL(moduleRemove(int)),
+    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = engine->lfoWidgetCount();
-    moduleWidget->name = name;
-    moduleWidget->ID = widgetID;
+    moduleWidget->manageBox->name = name;
+    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->midiControl->ID = widgetID;
 
     engine->addLfoWidget(moduleWidget);
-
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
-    moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
-            | QDockWidget::DockWidgetFloatable);
-    moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
-    addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
-
     count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
-    engine->addModuleWindow(moduleWindow);
+    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->midiControl->parentDockID = count;
+    appendDock(moduleWidget, name, count);
+
     checkIfFirstModule();
 }
 
 void MainWindow::addSeq(const QString& name)
 {
-    int count, widgetID;
+    int widgetID, count;
     MidiSeq *midiWorker = new MidiSeq();
     engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle, this);
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
     connect(midiWorker, SIGNAL(nextStep(int)),
             moduleWidget->screen, SLOT(updateScreen(int)));
-    connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget, SIGNAL(setMidiLearn(int, int, int)),
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
     connect(midiWorker, SIGNAL(noteEvent(int, int)),
             moduleWidget, SLOT(processNote(int, int)));
 
     widgetID = engine->seqWidgetCount();
-    moduleWidget->name = name;
-    moduleWidget->ID = widgetID;
+    moduleWidget->manageBox->name = name;
+    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->midiControl->ID = widgetID;
 
     engine->addSeqWidget(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->midiControl->parentDockID = count;
+    appendDock(moduleWidget, name, count);
 
+    checkIfFirstModule();
+}
+
+void MainWindow::cloneLfo(int ID)
+{
+    int widgetID, count;
+    MidiLfo *midiWorker = new MidiLfo();
+    engine->addMidiLfo(midiWorker);
+    LfoWidget *moduleWidget = new LfoWidget(midiWorker,
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget, SLOT(updateScreen(int)));
+    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
+            this, SLOT(removeLfo(int)));
+    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
+            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            engine, SLOT(setMidiLearn(int, int, int)));
+
+    widgetID = engine->lfoWidgetCount();
+    moduleWidget->manageBox->name = engine->lfoWidget(ID)->manageBox->name + "_0";
+    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->midiControl->ID = widgetID;
+
+    moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
+
+    engine->addLfoWidget(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->midiControl->parentDockID = count;
+    appendDock(moduleWidget, moduleWidget->manageBox->name, count);
+
+    checkIfFirstModule();
+}
+
+void MainWindow::cloneSeq(int ID)
+{
+    int widgetID, count;
+    QString name;
+    MidiSeq *midiWorker = new MidiSeq();
+
+    engine->addMidiSeq(midiWorker);
+    SeqWidget *moduleWidget = new SeqWidget(midiWorker,
+            engine->getPortCount(), passWidget->compactStyle,
+            passWidget->mutedAdd, this);
+    connect(midiWorker, SIGNAL(nextStep(int)),
+            moduleWidget->screen, SLOT(updateScreen(int)));
+    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
+            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            engine, SLOT(setMidiLearn(int, int, int)));
+    connect(midiWorker, SIGNAL(noteEvent(int, int)),
+            moduleWidget, SLOT(processNote(int, int)));
+
+    widgetID = engine->seqWidgetCount();
+    moduleWidget->manageBox->name = engine->seqWidget(ID)->manageBox->name + "_0";
+    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->midiControl->ID = widgetID;
+
+    moduleWidget->copyParamsFrom(engine->seqWidget(ID));
+
+    engine->addSeqWidget(moduleWidget);
+    count = engine->moduleWindowCount();
+    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->midiControl->parentDockID = count;
+    appendDock(moduleWidget, moduleWidget->manageBox->name, count);
+}
+
+void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
+{
     QDockWidget *moduleWindow = new QDockWidget(name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -471,12 +541,8 @@ void MainWindow::addSeq(const QString& name)
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
-
-    checkIfFirstModule();
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)
@@ -490,7 +556,7 @@ void MainWindow::removeArp(int index)
     int parentDockID;
     ArpWidget *arpWidget = engine->arpWidget(index);
 
-    parentDockID = arpWidget->parentDockID;
+    parentDockID = arpWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
     engine->removeMidiArp(arpWidget->getMidiWorker());
@@ -506,7 +572,7 @@ void MainWindow::removeLfo(int index)
     int parentDockID;
     LfoWidget *lfoWidget = engine->lfoWidget(index);
 
-    parentDockID = lfoWidget->parentDockID;
+    parentDockID = lfoWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
     engine->removeMidiLfo(lfoWidget->getMidiWorker());
@@ -522,7 +588,7 @@ void MainWindow::removeSeq(int index)
     int parentDockID;
     SeqWidget *seqWidget = engine->seqWidget(index);
 
-    parentDockID = seqWidget->parentDockID;
+    parentDockID = seqWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
 
     engine->removeMidiSeq(seqWidget->getMidiWorker());
@@ -673,6 +739,9 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     grooveWidget->grooveVelocity->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "length")
                     grooveWidget->grooveLength->setValue(xml.readElementText().toInt());
+                else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+                    grooveWidget->midiControl->readData(xml);
+                }
                 else skipXmlElement(xml);
             }
         }
@@ -896,6 +965,7 @@ bool MainWindow::saveFile()
                 QString::number(engine->grooveVelocity));
             xml.writeTextElement("length",
                 QString::number(engine->grooveLength));
+            grooveWidget->midiControl->writeData(xml);
         xml.writeEndElement();
 
     xml.writeEndElement();
@@ -1120,6 +1190,8 @@ void MainWindow::readRcFile()
             }
             else if ((value.at(0) == "#CompactStyle"))
                 passWidget->compactStyleCheck->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#MutedAdd"))
+                passWidget->mutedAddCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#EnableLog"))
                 logWidget->enableLog->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LogMidiClock"))
@@ -1158,6 +1230,8 @@ void MainWindow::writeRcFile()
 
     writeText << "#CompactStyle%";
     writeText << passWidget->compactStyle << endl;
+    writeText << "#MutedAdd%";
+    writeText << passWidget->mutedAdd << endl;
     writeText << "#EnableLog%";
     writeText << logWidget->enableLog->isChecked() << endl;
     writeText << "#LogMidiClock%";
@@ -1326,5 +1400,30 @@ void MainWindow::signalAction(int fd)
         default:
             qWarning("Unexpected signal received: %d", message);
             break;
+    }
+}
+
+void MainWindow::ctb_update_orientation(Qt::Orientation orient)
+{
+    if (orient == Qt::Vertical) {
+        controlToolBar->setMinimumHeight(controlToolBar->iconSize().height() * 15);
+        if (fileToolBar->orientation() == Qt::Vertical)
+            fileToolBar->setMinimumWidth(controlToolBar->minimumWidth());
+    }
+    else {
+        controlToolBar->setMinimumHeight(0);
+        if (fileToolBar->orientation() == Qt::Vertical)
+            fileToolBar->setMinimumHeight(controlToolBar->minimumHeight());
+    }
+
+}
+
+void MainWindow::ftb_update_orientation(Qt::Orientation orient)
+{
+    if (orient == Qt::Vertical) {
+        fileToolBar->setMinimumHeight(fileToolBar->iconSize().height() * 7);
+    }
+    else {
+        fileToolBar->setMinimumHeight(0);
     }
 }

@@ -75,6 +75,7 @@ class SeqScreen : public QWidget
     ~SeqScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
+    int baseOctave, nOctaves;
 
   signals:
     void mousePressed(double, double, int);

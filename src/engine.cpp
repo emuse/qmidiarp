@@ -29,8 +29,17 @@
 #include "engine.h"
 
 
-Engine::Engine(int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
+Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
 {
+    grooveWidget = p_grooveWidget;
+    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
+            this, SLOT(setGrooveTick(int)));
+    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
+            this, SLOT(setGrooveVelocity(int)));
+    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
+            this, SLOT(setGrooveLength(int)));
+    connect(grooveWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
 
     seqDriver = new SeqDriver(portCount, this, this, midi_event_received_callback, tick_callback);
@@ -267,24 +276,24 @@ void Engine::updateIDs(int curID)
 {
     int l1, tempDockID;
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->ID = l1;
-        tempDockID = arpWidget(l1)->parentDockID;
+        arpWidget(l1)->manageBox->ID = l1;
+        tempDockID = arpWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            arpWidget(l1)->parentDockID = tempDockID - 1;
+            arpWidget(l1)->manageBox->parentDockID = tempDockID - 1;
             }
     }
     for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->ID = l1;
-        tempDockID = lfoWidget(l1)->parentDockID;
+        lfoWidget(l1)->manageBox->ID = l1;
+        tempDockID = lfoWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            lfoWidget(l1)->parentDockID = tempDockID - 1;
+            lfoWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->ID = l1;
-        tempDockID = seqWidget(l1)->parentDockID;
+        seqWidget(l1)->manageBox->ID = l1;
+        tempDockID = seqWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
-            seqWidget(l1)->parentDockID = tempDockID - 1;
+            seqWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
 }
@@ -609,8 +618,36 @@ void Engine::handleController(int ccnumber, int channel, int value)
     int min, max, sval;
     QVector<MidiCC> cclist;
     if (!midiLearnFlag) {
+        cclist = grooveWidget->midiControl->ccList;
+        for (int l2 = 0; l2 < cclist.count(); l2++) {
+            min = cclist.at(l2).min;
+            max = cclist.at(l2).max;
+            sval = min + ((double)value * (max - min) / 127);
+            if ((ccnumber == cclist.at(l2).ccnumber) &&
+                (channel == cclist.at(l2).channel)) {
+                switch (cclist.at(l2).ID) {
+                    case 0:
+                            grooveWidget->grooveTick->setValue(sval);
+                            return;
+                    break;
+
+                    case 1:
+                            grooveWidget->grooveVelocity->setValue(sval);
+                            return;
+                    break;
+
+                    case 2:
+                            grooveWidget->grooveLength->setValue(sval);
+                            return;
+                    break;
+
+                    default:
+                    break;
+                }
+            }
+        }
         for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
-            cclist = arpWidget(l1)->ccList;
+            cclist = arpWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -624,12 +661,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         arpWidget(l1)->muteOut->setChecked(!m);
                                         return;
                                     }
-                        case 1:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                arpWidget(l1)->selectPatternPreset(sval);
-                                return;
-                        break;
                                 }
                                 else {
                                     if (value == max) {
@@ -640,6 +671,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
+                        case 1:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                arpWidget(l1)->selectPatternPreset(sval);
+                                return;
+                        break;
                         default:
                         break;
                     }
@@ -648,7 +685,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
 
         for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
-            cclist = lfoWidget(l1)->ccList;
+            cclist = lfoWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -715,6 +752,20 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
+                        case 6:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->resBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateRes(sval);
+                                return;
+                        break;
+                        case 7:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                lfoWidget(l1)->sizeBox->setCurrentIndex(sval);
+                                lfoWidget(l1)->updateSize(sval);
+                                return;
+                        break;
 
                         default:
                         break;
@@ -724,7 +775,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
 
         for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
-            cclist = seqWidget(l1)->ccList;
+            cclist = seqWidget(l1)->midiControl->ccList;
             for (int l2 = 0; l2 < cclist.count(); l2++) {
                 min = cclist.at(l2).min;
                 max = cclist.at(l2).max;
@@ -778,6 +829,20 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     }
                                 }
                         break;
+                        case 4:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->resBox->setCurrentIndex(sval);
+                                seqWidget(l1)->updateRes(sval);
+                                return;
+                        break;
+                        case 5:
+                                sval = min + ((double)value * (max - min)
+                                        / 127);
+                                seqWidget(l1)->sizeBox->setCurrentIndex(sval);
+                                seqWidget(l1)->updateSize(sval);
+                                return;
+                        break;
 
                         default:
                         break;
@@ -787,17 +852,23 @@ void Engine::handleController(int ccnumber, int channel, int value)
         }
     }
     else {
+        if (midiLearnWindowID == -1) {
+            grooveWidget->midiControl->appendMidiCC(midiLearnID,
+                    ccnumber, channel, -100, 100);
+            midiLearnFlag = false;
+            return;
+            }
         int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
-            arpWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
-            lfoWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            lfoWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
         if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
-            seqWidget(midiLearnModuleID)->appendMidiCC(midiLearnID,
+            seqWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
                     ccnumber, channel, min, 127);
         }
 

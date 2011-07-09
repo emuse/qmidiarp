@@ -39,22 +39,31 @@
 
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
 {
+    QStringList midiCCNames;
+    midiCCNames << "Tick" << "Velocity" << "Length" << "unknown";
+    midiControl = new MidiControl(midiCCNames);
+    midiControl->ID = -1;
+    midiControl->parentDockID = -1;
+
     QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
 
     grooveTick = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal,
             tr("&Shift"), this);
     connect(grooveTick, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveTick(int)));
+    midiControl->addMidiLearnMenu(grooveTick, 0);
 
     grooveVelocity = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal,
             tr("&Velocity"), this);
     connect(grooveVelocity, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveVelocity(int)));
+    midiControl->addMidiLearnMenu(grooveVelocity, 1);
 
     grooveLength = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal,
             tr("&Length"), this);
     connect(grooveLength, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveLength(int)));
+    midiControl->addMidiLearnMenu(grooveLength, 2);
 
     GrooveWidgetLayout->addWidget(grooveTick);
     GrooveWidgetLayout->addWidget(grooveVelocity);
