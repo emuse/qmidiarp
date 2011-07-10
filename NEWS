@@ -1,4 +1,4 @@
-qmidiarp-0.4.2 (2011-07-??)
+qmidiarp-0.4.2 (2011-07-10)
 
 New Features
   o LFO wave lengths up to 32 bars for very low frequencies
@@ -10,8 +10,9 @@ New Features
   o Nested arrangement of modules allows more flexible layouts
 
 Fixed Bugs
-  o Jack Transport sync arbitrarily stopping with only arp modules
-  o Instability with ALSA clock with only Seq and LFO modules
+  o 0.4.1-patch had been available for the following two:
+    o Jack Transport sync arbitrarily stopping with only arp modules
+    o Instability with ALSA clock with only Seq and LFO modules
   o Faster response to Jack Transport state changes
   o Incorrect response to two Seq sliders
 
