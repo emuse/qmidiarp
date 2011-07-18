@@ -32,7 +32,7 @@
 
 SeqDriver::SeqDriver(
     int p_portCount,
-    QWidget *parent,
+    QThread *parent,
     void * callback_context,
     void (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig))

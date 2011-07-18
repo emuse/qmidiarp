@@ -25,7 +25,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QWidget>
+#include <QThread>
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
@@ -49,7 +49,7 @@
  * MidiCCList.
  *
  */
-class Engine : public QWidget  {
+class Engine : public QThread  {
 
   Q_OBJECT
 

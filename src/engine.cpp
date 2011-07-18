@@ -29,7 +29,7 @@
 #include "engine.h"
 
 
-Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
+Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QThread(parent), modified(false)
 {
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
@@ -360,9 +360,6 @@ void Engine::setModified(bool m)
  * They currently call different seqDriver backend functions, which
  * can eventually (hopefully) get a jackDriver equivalent, so that
  * switching between the driver backends can be done from here.
- * Note that these function have been in the SeqDriver thread before, and
- * that they are now in the main (GUI) thread. This is why there are
- * dropouts when moving windows.
  */
 
 int Engine::getPortCount()
