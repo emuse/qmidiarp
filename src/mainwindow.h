@@ -466,6 +466,12 @@ class MainWindow : public QMainWindow
 * @see jackSyncToggle
 */
     void jackSyncToggle(bool on);
+/*! @brief Slot for the JackSync::j_shutdown() signal.
+* This function switches the sync to internal clock operation and
+* deactivates the Jack Transport Action.
+* @see jackSyncToggle
+*/
+    void jackShutdown();
 /*! @brief Slot for "Midi Controllers" menu action. This function displays
  * the MidiCC Dialog window.
 */

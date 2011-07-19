@@ -31,6 +31,7 @@
 
 
 SeqDriver::SeqDriver(
+    JackSync *p_jackSync,
     int p_portCount,
     QThread *parent,
     void * callback_context,
@@ -39,6 +40,7 @@ SeqDriver::SeqDriver(
     : QThread(parent)
     , DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
     , modified(false)
+    , jackSync(p_jackSync)
 {
     int err;
     char buf[16];
@@ -159,17 +161,14 @@ void SeqDriver::run()
                     calcClockRatio();
                 }
                 else if (useJackSync) {
-                    if (jackSync->isRunning()) {
+                    jPos = jackSync->getCurrentPos();
+                    if (jPos.beats_per_minute > 0)
+                        tempo = jPos.beats_per_minute;
 
-                        jPos = jackSync->getCurrentPos();
-                        if (jPos.beats_per_minute > 0)
-                            tempo = jPos.beats_per_minute;
-
-                        m_current_tick = (long)jPos.frame * TPQN
-                                / jPos.frame_rate * tempo / 60.
-                                - jackOffsetTick;
-                        calcClockRatio();
-                    }
+                    m_current_tick = (long)jPos.frame * TPQN
+                            / jPos.frame_rate * tempo / 60.
+                            - jackOffsetTick;
+                    calcClockRatio();
                 }
                 else {
                     clockRatio = 60e9/TPQN/tempo;
@@ -238,17 +237,15 @@ void SeqDriver::run()
 void SeqDriver::initTempo()
 {
     if (useJackSync) {
-        if (jackSync->isRunning()) {
-            jPos = jackSync->getCurrentPos();
-            if (jPos.beats_per_minute > 0)
-                tempo = jPos.beats_per_minute;
-            else
-                tempo = internalTempo;
+        jPos = jackSync->getCurrentPos();
+        if (jPos.beats_per_minute > 0)
+            tempo = jPos.beats_per_minute;
+        else
+            tempo = internalTempo;
 
-            jackOffsetTick = (uint64_t)jPos.frame * TPQN
-                    * tempo / (jPos.frame_rate * 60);
-            clockRatio = 60e9/TPQN/tempo;
-        }
+        jackOffsetTick = (uint64_t)jPos.frame * TPQN
+                * tempo / (jPos.frame_rate * 60);
+        clockRatio = 60e9/TPQN/tempo;
     }
     else {
         tempo = internalTempo;
@@ -369,35 +366,7 @@ void SeqDriver::setQueueStatus(bool run)
 
 void SeqDriver::setUseJackTransport(bool on)
 {
-    if (on) {
-        jackSync = new JackSync(tr_state_cb, this);
-        jackSync->setParent(this);
-        connect(jackSync, SIGNAL(j_shutdown()),
-                this, SLOT(jackShutdown()));
-        useJackSync = true;
-
-        if (jackSync->initJack(portCount)) {
-            emit jackShutdown(false);
-            return;
-        }
-        else if (jackSync->activateJack()) {
-            emit jackShutdown(false);
-            return;
-        }
-    }
-    else {
-        if (useJackSync) {
-            jackSync->deactivateJack();
-            delete jackSync;
-            useJackSync = false;
-        }
-    }
-}
-
-void SeqDriver::jackShutdown()
-{
-    setQueueStatus(false);
-    emit jackShutdown(false);
+    useJackSync = on;
 }
 
 void SeqDriver::setUseMidiClock(bool on)
@@ -466,9 +435,4 @@ void SeqDriver::setSendLogEvents(bool on)
 {
     sendLogEvents = on;
     modified = true;
-}
-
-void SeqDriver::tr_state_cb(bool on, void *context)
-{
-    ((SeqDriver  *)context)->setQueueStatus(on);
 }

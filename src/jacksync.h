@@ -59,7 +59,7 @@ class JackSync : public QObject
 
 
   public:
-    JackSync(void (* p_tr_state_cb)(bool j_tr_state, void * context),
+    JackSync(int p_portCount, void (* p_tr_state_cb)(bool j_tr_state, void * context),
             void * p_cb_context);
     ~JackSync();
 

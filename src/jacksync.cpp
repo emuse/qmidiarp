@@ -29,13 +29,21 @@
 #include "driverbase.h"         // temp include to check driverbase.h for synthax errors
 
 
-JackSync::JackSync(void (* p_tr_state_cb)(bool j_tr_state, void * context),
+JackSync::JackSync(int p_portCount, void (* p_tr_state_cb)(bool j_tr_state, void * context),
                     void * p_cb_context)
 {
     transportState = JackTransportStopped;
-    out_port_count = 0;
+    out_port_count = p_portCount;
     cbContext = p_cb_context;
     trStateCb = p_tr_state_cb;
+
+/** Initialize and activate Jack with out_port_count ports */
+    if (initJack(out_port_count)) {
+        emit j_shutdown();
+    }
+    else if (activateJack()) {
+        emit j_shutdown();
+    }
  }
 
 JackSync::~JackSync()

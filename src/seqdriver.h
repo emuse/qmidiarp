@@ -101,7 +101,6 @@ class SeqDriver : public QThread, public DriverBase {
         snd_seq_real_time_t delta, realTime;
         snd_seq_real_time_t tmpTime;
 
-        static void tr_state_cb(bool tr_state, void * context);
 
     public:
         bool forwardUnmatched, queueStatus;
@@ -112,6 +111,7 @@ class SeqDriver : public QThread, public DriverBase {
 
     public:
         SeqDriver(
+            JackSync *p_jackSync,
             int p_portCount,
             QThread* parent,
             void * callback_context,
@@ -127,8 +127,6 @@ class SeqDriver : public QThread, public DriverBase {
    signals:
         // TODO: move to engine class
         //void controlEvent(int ccnumber, int channel, int value);
-        void jackShutdown(bool); //boolean is passed to main toolbar
-                                //jackSync button
 
    public slots:
         void setForwardUnmatched(bool on);
@@ -139,7 +137,6 @@ class SeqDriver : public QThread, public DriverBase {
         void setMidiControllable(bool on);
         void setUseJackTransport(bool on);
         void setSendLogEvents(bool on);
-        void jackShutdown();
 };
 
 #endif

@@ -42,7 +42,15 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
             this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
 
-    seqDriver = new SeqDriver(portCount, this, this, midi_event_received_callback, tick_callback);
+    // JackSync instance was created in SeqDriver before, it is now done here.
+    // JackSync will become JackDriver at a later stage.
+    jackSync = new JackSync(portCount, tr_state_cb, this);
+    jackSync->setParent(this);
+
+
+    // A pointer to jackSync therefore has to be passed to seqDriver for sync
+    // Actually only the jack_position_t JackSync::getCurrentPos() function is needed
+    seqDriver = new SeqDriver(jackSync, portCount, this, this, midi_event_received_callback, tick_callback);
 
 
     midiLearnFlag = false;
@@ -58,8 +66,12 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
     resetTicks(0);
 }
 
-Engine::~Engine(){
+Engine::~Engine()
+{
+    jackSync->deactivateJack();
+    delete jackSync;
 }
+
 //Arp handling
 void Engine::addMidiArp(MidiArp *midiArp)
 {
@@ -921,4 +933,9 @@ void Engine::setTempo(int bpm)
 {
     seqDriver->setTempo(bpm);
     modified = true;
+}
+
+void Engine::tr_state_cb(bool on, void *context)
+{
+    ((Engine  *)context)->setStatus(on);
 }

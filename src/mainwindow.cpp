@@ -178,8 +178,8 @@ MainWindow::MainWindow(int p_portCount)
     jackSyncAction->setDisabled(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(engine->seqDriver, SIGNAL(jackShutdown(bool)),
-            jackSyncAction, SLOT(setChecked(bool)));
+    connect(engine->jackSync, SIGNAL(j_shutdown()), this,
+            SLOT(jackShutdown()));
 
 
     updateTransportStatus(false);
@@ -1109,6 +1109,13 @@ void MainWindow::jackSyncToggle(bool on)
     if (on) midiClockAction->setChecked(false);
     setGUIforExtSync(on);
     engine->seqDriver->setUseJackTransport(on);
+}
+
+void MainWindow::jackShutdown()
+{
+    engine->setStatus(false);
+    jackSyncAction->setChecked(false);
+    jackSyncAction->setDisabled(true);
 }
 
 void MainWindow::setGUIforExtSync(bool on)

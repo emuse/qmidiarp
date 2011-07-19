@@ -29,6 +29,7 @@
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
+#include "jacksync.h"
 #include "midiarp.h"
 #include "arpwidget.h"
 #include "midilfo.h"
@@ -79,6 +80,7 @@ class Engine : public QThread  {
 
     static void midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
+    static void tr_state_cb(bool tr_state, void * context);
 
   public:
     int grooveTick, grooveVelocity, grooveLength;
@@ -86,6 +88,7 @@ class Engine : public QThread  {
     bool status;
     GrooveWidget *grooveWidget;
     SeqDriver *seqDriver;
+    JackSync *jackSync;
 
   public:
     Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget* parent=0);
