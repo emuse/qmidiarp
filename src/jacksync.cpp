@@ -312,6 +312,8 @@ bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
     if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
     echoTickQueue.append(echo_tick);
     lastSchedTick = echo_tick;
+    if (echo_from_trig) tick_callback(true);
+
     return true;
 
 }
