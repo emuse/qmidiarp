@@ -50,6 +50,8 @@ JackSync::JackSync(
     else if (activateJack()) {
         emit j_shutdown();
     }
+
+    jSampleRate = jack_get_sample_rate(jack_handle);
     setTransportStatus(false);
 }
 
@@ -145,8 +147,8 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     int cur_tempo = rd->tempo;
     uint64_t cur_j_frame = rd->curJFrame;
 
-    int nexttick = 0;
-    int tmptick = 0;
+    uint nexttick = 0;
+    uint tmptick = 0;
     int idx = 0;
     int evport;
 
@@ -165,6 +167,7 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     unsigned char* buffer;
     jack_midi_event_t in_event;
     jack_nframes_t event_index = 0;
+    jack_nframes_t j_sample_rate = rd->jSampleRate;
     void *in_buf = jack_port_get_buffer(rd->in_port, nframes);
     void *out_buf[out_port_count];
     for (l1 = 0; l1 < out_port_count; l1++) {
@@ -193,7 +196,7 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
             }
 
             if ((((uint64_t)nframes * cur_j_frame + i) * TPQN * cur_tempo)
-                   >= nexttick * 48000L * 60) {
+                   >= (uint64_t)nexttick * j_sample_rate * 60) {
                 outEv = rd->evQueue.takeAt(idx);
                 evport = rd->evPortQueue.takeAt(idx);
                 rd->evTickQueue.removeAt(idx);

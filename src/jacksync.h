@@ -83,6 +83,7 @@ class JackSync : public DriverBase
     void j_shutdown();
 
   public:
+    jack_nframes_t jSampleRate;
     bool isRunning() { return jackRunning; }
     int initJack(int out_port_count);
     int activateJack();
