@@ -25,11 +25,14 @@
 #ifndef JACKSYNC_H
 #define JACKSYNC_H
 
-#include <QObject>
+#include <QQueue>
+#include <QThread>
 #include <jack/jack.h>
 #include <jack/transport.h>
+#include <jack/midiport.h>
 
 #include "main.h"
+#include "driverbase.h"
 
 /*!
  * The JackSync class is a QObject providing access to the transport status
@@ -39,7 +42,7 @@
  *
  * @brief QObject class providing access to jack transport status.
  */
-class JackSync : public QObject
+class JackSync : public DriverBase
 {
     Q_OBJECT
 
@@ -49,18 +52,28 @@ class JackSync : public QObject
     void update_ports();
 
     jack_port_t * in_port;
-    int out_port_count;
     jack_port_t * out_ports[MAX_PORTS];
 
     bool jackRunning;
     int transportState;
+    uint lastSchedTick;
+    uint jackOffsetTick;
+    uint64_t curJFrame;
+    QQueue<uint> echoTickQueue;
+    QQueue<MidiEvent> evQueue;
+    QQueue<uint> evTickQueue;
+    QQueue<uint> evPortQueue;
     jack_client_t *jack_handle;
     jack_position_t currentPos;
+    void handleEchoes();
 
 
   public:
-    JackSync(int p_portCount, void (* p_tr_state_cb)(bool j_tr_state, void * context),
-            void * p_cb_context);
+    JackSync(int p_portCount,
+            void * callback_context,
+            void (* p_tr_state_cb)(bool j_tr_state, void * context),
+            void (* midi_event_received_callback)(void * context, MidiEvent ev),
+            void (* tick_callback)(void * context, bool echo_from_trig));
     ~JackSync();
 
     void (* trStateCb)(bool j_tr_state, void * context);
@@ -77,9 +90,13 @@ class JackSync : public QObject
 
     void setJackRunning(bool on);
 
+    void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0);
     jack_transport_state_t getState();
     void jackTrCheckState();
     jack_position_t getCurrentPos();
+    bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
+    void setTransportStatus(bool run);
+    int getClientId() {return 0; }
 };
 
 

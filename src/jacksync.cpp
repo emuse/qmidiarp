@@ -26,25 +26,32 @@
 #include "jacksync.h"
 #include "config.h"
 #include <stdio.h>
-#include "driverbase.h"         // temp include to check driverbase.h for synthax errors
 
 
-JackSync::JackSync(int p_portCount, void (* p_tr_state_cb)(bool j_tr_state, void * context),
-                    void * p_cb_context)
+JackSync::JackSync(
+    int p_portCount,
+    void * callback_context,
+    void (* p_tr_state_cb)(bool j_tr_state, void * context),
+    void (* midi_event_received_callback)(void * context, MidiEvent ev),
+    void (* tick_callback)(void * context, bool echo_from_trig))
+    : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
     transportState = JackTransportStopped;
-    out_port_count = p_portCount;
-    cbContext = p_cb_context;
+    portCount = p_portCount;
+    cbContext = callback_context;
     trStateCb = p_tr_state_cb;
 
+    internalTempo = 120;
+
 /** Initialize and activate Jack with out_port_count ports */
-    if (initJack(out_port_count)) {
+    if (initJack(portCount)) {
         emit j_shutdown();
     }
     else if (activateJack()) {
         emit j_shutdown();
     }
- }
+    setTransportStatus(false);
+}
 
 JackSync::~JackSync()
 {
@@ -72,6 +79,8 @@ int JackSync::initJack(int out_port_count)
 
     qWarning("jack process callback registered");
 
+    if (!out_port_count) return(0);
+
     // register JACK MIDI input port
     if ((in_port = jack_port_register(jack_handle, "in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0)) == 0) {
         qCritical("Failed to register JACK MIDI input port.");
@@ -79,16 +88,14 @@ int JackSync::initJack(int out_port_count)
     }
 
     // register JACK MIDI output ports
-    while (out_port_count-- > 0)
+    for (int l1 = 0; l1 < out_port_count; l1++)
     {
-      snprintf(buf, sizeof(buf), "out %d", JackSync::out_port_count + 1);
-      if ((out_ports[JackSync::out_port_count] = jack_port_register(jack_handle, buf, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0)) == 0)
+      snprintf(buf, sizeof(buf), "out %d", l1 + 1);
+      if ((out_ports[l1] = jack_port_register(jack_handle, buf, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0)) == 0)
       {
         qCritical("Failed to register JACK MIDI output port.");
         return 1;
       }
-
-      JackSync::out_port_count++;
     }
 
     return(0);
@@ -130,7 +137,105 @@ void JackSync::jack_shutdown(void *arg)
 
 int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 {
-    ((JackSync *)arg)->jackTrCheckState();
+    uint i;
+    int l1, size;
+
+    JackSync *rd = (JackSync *) arg;
+    int out_port_count = rd->portCount;
+    int cur_tempo = rd->tempo;
+    uint64_t cur_j_frame = rd->curJFrame;
+
+    int nexttick = 0;
+    int tmptick = 0;
+    int idx = 0;
+    int evport;
+
+    MidiEvent inEv;
+    inEv.type = 0;
+    inEv.data = 0;
+    inEv.channel = 0;
+    inEv.value = 0;
+    MidiEvent outEv;
+    outEv.channel = 0;
+
+    rd->jackTrCheckState();
+
+    if (!out_port_count) return (0);
+
+    unsigned char* buffer;
+    jack_midi_event_t in_event;
+    jack_nframes_t event_index = 0;
+    void *in_buf = jack_port_get_buffer(rd->in_port, nframes);
+    void *out_buf[out_port_count];
+    for (l1 = 0; l1 < out_port_count; l1++) {
+        out_buf[l1] = jack_port_get_buffer(rd->out_ports[l1], nframes);
+    }
+    for (l1 = 0; l1 < out_port_count; l1++) {
+        jack_midi_clear_buffer(out_buf[l1]);
+    }
+
+    jack_nframes_t event_count = jack_midi_get_event_count(in_buf);
+    jack_midi_event_get(&in_event, in_buf, 0);
+
+    for(i = 0; i < nframes; i++) {
+
+        /** MIDI Output queue first **/
+        size = rd->evTickQueue.size();
+        if (size) { /** If we have events, find earliest event tick **/
+            idx = 0;
+            nexttick = rd->evTickQueue.head();
+            for (l1 = 0; l1 < size; l1++) {
+                tmptick = rd->evTickQueue.at(l1);
+                if (nexttick > tmptick) {
+                    idx = l1;
+                    nexttick = tmptick;
+                }
+            }
+
+            if ((((uint64_t)nframes * cur_j_frame + i) * TPQN * cur_tempo)
+                   >= nexttick * 48000L * 60) {
+                outEv = rd->evQueue.takeAt(idx);
+                evport = rd->evPortQueue.takeAt(idx);
+                rd->evTickQueue.removeAt(idx);
+
+                buffer = jack_midi_event_reserve(out_buf[evport], i, 3);
+
+                buffer[2] = outEv.value;        /** velocity / value **/
+                buffer[1] = outEv.data;         /** note / controller **/
+                if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
+                if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
+                buffer[0] += outEv.channel;
+            }
+        }
+
+        /** MIDI Input handling **/
+
+        if((in_event.time == i) && (event_index < event_count)) {
+
+            if( ((*(in_event.buffer) & 0xf0)) == 0x90 ) {
+                inEv.type = EV_NOTEON;
+                inEv.value = *(in_event.buffer + 2);
+            }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0x80 ) {
+                inEv.type = EV_NOTEON;
+                inEv.value = 0;
+            }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0xb0 ) {
+                inEv.type = EV_CONTROLLER;
+                inEv.value = *(in_event.buffer + 2);
+            }
+            else inEv.type = EV_NONE;
+
+            inEv.data = *(in_event.buffer + 1);
+            inEv.channel = (*(in_event.buffer)) & 0x0f;
+            rd->midi_event_received(inEv);
+
+            event_index++;
+            if(event_index < event_count)
+                jack_midi_event_get(&in_event, in_buf, event_index);
+        }
+    }
+    rd->handleEchoes();
     return(0);
 }
 
@@ -177,4 +282,80 @@ void JackSync::setJackRunning(bool on)
 jack_position_t JackSync::getCurrentPos()
 {
     return currentPos;
+}
+
+void JackSync::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
+{
+  //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
+    evQueue.append(ev);
+    evTickQueue.append(n_tick);
+    evPortQueue.append(outport);
+
+    if ((ev.type == EV_NOTEON) && (ev.value)) {
+            ev.value = 0;
+            evQueue.append(ev);
+            evTickQueue.append(n_tick + duration);
+            evPortQueue.append(outport);
+    }
+
+}
+
+bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
+{
+    if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
+    echoTickQueue.append(echo_tick);
+    lastSchedTick = echo_tick;
+    return true;
+
+}
+
+void JackSync::handleEchoes()
+{
+    if (!transportState) return;
+
+    int l1;
+    int size = echoTickQueue.size();
+    int nexttick, tmptick, idx;
+
+
+    m_current_tick = ((long)currentPos.frame * TPQN * tempo
+            / (currentPos.frame_rate * 60)) - jackOffsetTick;
+    curJFrame++;
+       if (size) {
+            idx = 0;
+            nexttick = echoTickQueue.head();
+            for (l1 = 0; l1 < size; l1++) {
+                tmptick = echoTickQueue.at(l1);
+                if (nexttick > tmptick) {
+                    idx = l1;
+                    nexttick = tmptick;
+                }
+            }
+        if (m_current_tick >= echoTickQueue.at(idx)) {
+            echoTickQueue.removeAt(idx);
+            tick_callback(false);
+        }
+    }
+}
+
+void JackSync::setTransportStatus(bool on)
+{
+    jack_position_t jpos = getCurrentPos();
+    if (jpos.beats_per_minute > 0.01)
+        tempo = (int)jpos.beats_per_minute;
+    else
+        tempo = internalTempo;
+
+    jackOffsetTick = (long)jpos.frame * TPQN
+        * tempo / (jpos.frame_rate * 60);
+
+    m_current_tick = 0;
+    curJFrame = 0;
+    lastSchedTick = 0;
+    echoTickQueue.clear();
+    evQueue.clear();
+    evTickQueue.clear();
+    evPortQueue.clear();
+    requestEchoAt(0);
+    queueStatus = on;
 }

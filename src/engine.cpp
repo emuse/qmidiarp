@@ -31,6 +31,8 @@
 
 Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QThread(parent), modified(false)
 {
+    JMT = false; // Jack MIDI test version
+
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -42,16 +44,16 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
             this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
 
-    // JackSync instance was created in SeqDriver before, it is now done here.
+    if (JMT) {
     // JackSync will become JackDriver at a later stage.
-    jackSync = new JackSync(portCount, tr_state_cb, this);
-    jackSync->setParent(this);
-
-
-    // A pointer to jackSync therefore has to be passed to seqDriver for sync
-    // Actually only the jack_position_t JackSync::getCurrentPos() function is needed
-    seqDriver = new SeqDriver(jackSync, portCount, this, this, midi_event_received_callback, tick_callback);
-
+        seqDriver = new JackSync(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
+    }
+    else {
+    // In case of ALSA MIDI with Jack Transport sync, JackSync is instantiated with 0 ports
+    // a pointer to jackSync has to be passed to seqDriver
+        jackSync = new JackSync(0,  this, tr_state_cb, midi_event_received_callback, tick_callback);
+        seqDriver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
+    }
 
     midiLearnFlag = false;
     midiControllable = true;
@@ -68,8 +70,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
 
 Engine::~Engine()
 {
-    jackSync->deactivateJack();
-    delete jackSync;
+    delete seqDriver;
 }
 
 //Arp handling
@@ -348,14 +349,12 @@ bool Engine::isModified()
             break;
         }
 
-    return modified || seqDriver->isModified()
-                    || arpmodified || lfomodified || seqmodified;
+    return modified || arpmodified || lfomodified || seqmodified;
 }
 
 void Engine::setModified(bool m)
 {
     modified = m;
-    seqDriver->setModified(m);
 
     for (int l1 = 0; l1 < arpWidgetCount(); l1++)
         arpWidget(l1)->setModified(m);
@@ -381,7 +380,7 @@ int Engine::getPortCount()
 
 int Engine::getClientId()
 {
-    return seqDriver->getAlsaClientId();
+    return seqDriver->getClientId();
 }
 
 void Engine::setStatus(bool on)
@@ -394,7 +393,7 @@ void Engine::setStatus(bool on)
         }
         status = on;
         resetTicks(0);
-        seqDriver->setQueueStatus(on);
+        seqDriver->setTransportStatus(on);
     }
 }
 

@@ -77,6 +77,7 @@ class Engine : public QThread  {
     QVector<Sample> lfoData;
     Sample seqSample;
 
+    bool JMT;
 
     static void midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
@@ -87,8 +88,8 @@ class Engine : public QThread  {
     bool midiControllable;
     bool status;
     GrooveWidget *grooveWidget;
-    SeqDriver *seqDriver;
     JackSync *jackSync;
+    DriverBase *seqDriver;
 
   public:
     Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget* parent=0);
@@ -159,7 +160,6 @@ class Engine : public QThread  {
     void setGrooveVelocity(int grooveVelocity);
     void setGrooveLength(int grooveLength);
     void sendGroove();
-
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
