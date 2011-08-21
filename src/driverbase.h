@@ -27,9 +27,16 @@
 #ifndef DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED
 #define DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED
 
-class DriverBase
+#include <QThread>
+
+class DriverBase : public QThread
 {
 public:
+
+    bool useMidiClock, useJackSync;
+    bool forwardUnmatched, queueStatus;
+    int portUnmatched;
+
     virtual void resetTick(unsigned int tick = 0)
     {
         m_current_tick = tick;
@@ -53,8 +60,38 @@ public:
         m_tpm = ticks_per_minute;
     }
 
+    virtual void setUseJackTransport(bool on)
+    {
+        useJackSync = on;
+    }
+
+    virtual void setUseMidiClock(bool on)
+    {
+        useMidiClock = on;
+    }
+
+    virtual void setForwardUnmatched(bool on)
+    {
+        forwardUnmatched = on;
+    }
+
+    virtual void setPortUnmatched(int id)
+    {
+        portUnmatched = id;
+    }
+    virtual void setTempo(int bpm)
+    {
+        tempo = bpm;
+        internalTempo = bpm;
+    }
+
     // duration is in ticks and is valid only for note on events
-    virtual void sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration = 0) = 0;
+    virtual void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0) = 0;
+    virtual bool requestEchoAt(int echoTick, bool echo_from_trig = 0) = 0;
+
+
+    virtual void setTransportStatus(bool run) = 0;
+    virtual int getClientId() = 0;
 
 protected:
     DriverBase(
@@ -109,6 +146,8 @@ protected:
     unsigned int m_current_tick;
     unsigned int m_next_tick;
     uint64_t m_tpm;             // ticks per minute
+    int tempo, internalTempo;
+    int portCount;
 };
 
 #endif // #ifndef DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED

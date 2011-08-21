@@ -61,23 +61,18 @@
  * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
  * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
  */
-class SeqDriver : public QThread, public DriverBase {
+class SeqDriver : public DriverBase {
 
     Q_OBJECT
 
     private:
-        int portCount;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
         int portid_in;
         int queue_id;
         bool startQueue;
-        bool modified;
-        bool midi_controllable;
         bool threadAbort;
-
-        bool sendLogEvents;
 
         double tickToDelta(int tick);
         int deltaToTick (double curtime);
@@ -87,15 +82,12 @@ class SeqDriver : public QThread, public DriverBase {
 
         void initTempo();
 
-        void sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration = 0);
-
         JackSync *jackSync;
         jack_position_t jPos;
 
         int midiTick;
         int lastSchedTick;
         int jackOffsetTick;
-        int tempo, internalTempo;
 
         double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, realTime;
@@ -103,25 +95,19 @@ class SeqDriver : public QThread, public DriverBase {
 
 
     public:
-        bool forwardUnmatched, queueStatus;
-        int portUnmatched;
-        bool useMidiClock, useJackSync;
-        void sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
+        void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0);
         bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
 
     public:
         SeqDriver(
             JackSync *p_jackSync,
             int p_portCount,
-            QThread* parent,
             void * callback_context,
             void (* midi_event_received_callback)(void * context, MidiEvent ev),
             void (* tick_callback)(void * context, bool echo_from_trig));
         ~SeqDriver();
         void getTime();
-        bool isModified();
-        void setModified(bool);
-        int getAlsaClientId();
+        int getClientId(); /** overloaded over DriverBase */
         void run();
 
    signals:
@@ -129,14 +115,9 @@ class SeqDriver : public QThread, public DriverBase {
         //void controlEvent(int ccnumber, int channel, int value);
 
    public slots:
-        void setForwardUnmatched(bool on);
-        void setPortUnmatched(int id);
-        void setQueueStatus(bool run);
-        void setTempo(int bpm);
-        void setUseMidiClock(bool on);
-        void setMidiControllable(bool on);
-        void setUseJackTransport(bool on);
-        void setSendLogEvents(bool on);
+        void setTransportStatus(bool run); /** is pure in DriverBase */
+        void setTempo(int bpm); /** overloaded over DriverBase */
+        void setUseMidiClock(bool on); /** overloaded over DriverBase */
 };
 
 #endif

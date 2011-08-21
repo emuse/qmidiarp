@@ -33,13 +33,10 @@
 SeqDriver::SeqDriver(
     JackSync *p_jackSync,
     int p_portCount,
-    QThread *parent,
     void * callback_context,
     void (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig))
-    : QThread(parent)
-    , DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
-    , modified(false)
+    : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
     , jackSync(p_jackSync)
 {
     int err;
@@ -95,7 +92,6 @@ SeqDriver::SeqDriver(
     startQueue = false;
     useJackSync = false;
     useMidiClock = false;
-    sendLogEvents = false;
 
     internalTempo = 120;
     initTempo();
@@ -204,10 +200,10 @@ void SeqDriver::run()
 
                 if (useMidiClock){
                     if (inEv.type == EV_START) {
-                        setQueueStatus(true);
+                        setTransportStatus(true);
                     }
                     if (inEv.type == EV_STOP) {
-                        setQueueStatus(false);
+                        setTransportStatus(false);
                     }
                     unmatched = true;
                 }
@@ -256,13 +252,9 @@ void SeqDriver::initTempo()
     }
 }
 
-void SeqDriver::sendMidiEvent(MidiEvent ev, unsigned int outport, unsigned int duration)
+void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, unsigned outport, unsigned length)
 {
-  qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u)", ev.type, ev.channel, ev.data, ev.value, outport, duration);
-}
-
-void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, int outport, int length)
-{
+  //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);
 
@@ -298,18 +290,6 @@ bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
     return true;
 }
 
-void SeqDriver::setForwardUnmatched(bool on)
-{
-    forwardUnmatched = on;
-    modified = true;
-}
-
-void SeqDriver::setPortUnmatched(int id)
-{
-    portUnmatched = id;
-    modified = true;
-}
-
 void SeqDriver::setTempo(int bpm)
 {
     tempo = bpm;
@@ -330,7 +310,7 @@ void SeqDriver::getTime()
     snd_seq_queue_status_free(status);
 }
 
-void SeqDriver::setQueueStatus(bool run)
+void SeqDriver::setTransportStatus(bool run)
 {
     if (run) {
         queueStatus = true;
@@ -364,26 +344,11 @@ void SeqDriver::setQueueStatus(bool run)
     }
 }
 
-void SeqDriver::setUseJackTransport(bool on)
-{
-    useJackSync = on;
-}
-
 void SeqDriver::setUseMidiClock(bool on)
 {
     clockRatio = 60e9/TPQN/tempo;
-    setQueueStatus(false);
+    setTransportStatus(false);
     useMidiClock = on;
-}
-
-void SeqDriver::setModified(bool m)
-{
-    modified = m;
-}
-
-bool SeqDriver::isModified()
-{
-    return modified;
 }
 
 double SeqDriver::tickToDelta(int tick)
@@ -420,19 +385,7 @@ void SeqDriver::calcClockRatio()
     }
 }
 
-int SeqDriver::getAlsaClientId()
+int SeqDriver::getClientId()
 {
     return clientid;
-}
-
-void SeqDriver::setMidiControllable(bool on)
-{
-    midi_controllable = on;
-    modified = true;
-}
-
-void SeqDriver::setSendLogEvents(bool on)
-{
-    sendLogEvents = on;
-    modified = true;
 }
