@@ -69,10 +69,11 @@ static const char FILEEXT[] = ".qmax";
 
 int MainWindow::sigpipe[2];
 
-MainWindow::MainWindow(int p_portCount)
+MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 {
     filename = "";
     lastDir = QDir::homePath();
+    alsaMidi = p_alsamidi;
 
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
@@ -84,7 +85,7 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
 
-    engine = new Engine(grooveWidget, p_portCount, this);
+    engine = new Engine(grooveWidget, p_portCount, alsaMidi, this);
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -100,9 +101,8 @@ MainWindow::MainWindow(int p_portCount)
     connect(engine, SIGNAL(midiEventReceived(MidiEvent, int)),
             logWidget, SLOT(appendEvent(MidiEvent, int)));
 
-    // FIXME: this signal should be connected to engine, not to seqdriver
     connect(logWidget, SIGNAL(sendLogEvents(bool)),
-            engine->seqDriver, SLOT(setSendLogEvents(bool)));
+            engine, SLOT(setSendLogEvents(bool)));
 
     passWidget = new PassWidget(engine, p_portCount, this);
 
@@ -174,13 +174,12 @@ MainWindow::MainWindow(int p_portCount)
     jackSyncAction = new QAction(QIcon(jacktr_xpm),
             tr("&Connect to Jack Transport"), this);
     jackSyncAction->setCheckable(true);
-    jackSyncAction->setChecked(false);
-    jackSyncAction->setDisabled(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(engine->jackSync, SIGNAL(j_shutdown()), this,
+    connect(engine->seqDriver, SIGNAL(j_shutdown()), this,
             SLOT(jackShutdown()));
-
+    jackSyncAction->setChecked(!alsaMidi);
+    jackSyncAction->setDisabled(true);
 
     updateTransportStatus(false);
 
@@ -602,7 +601,7 @@ void MainWindow::removeSeq(int index)
 void MainWindow::clear()
 {
     updateTransportStatus(false);
-    jackSyncToggle(false);
+    if (alsaMidi) jackSyncToggle(false);
 
     while (engine->midiArpCount()) {
         removeArp(engine->midiArpCount() - 1);
@@ -717,10 +716,14 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "midiControlEnabled")
                     passWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "midiClockEnabled")
-                        midiClockAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "jackSyncEnabled")
-                        jackSyncAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "midiClockEnabled") {
+                        bool tmp = xml.readElementText().toInt();
+                        if (alsaMidi) midiClockAction->setChecked(tmp);
+                    }
+                else if (xml.name() == "jackSyncEnabled") {
+                        bool tmp = xml.readElementText().toInt();
+                        if (alsaMidi) jackSyncAction->setChecked(tmp);
+                    }
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
                 else if (xml.name() == "forwardPort")
@@ -1099,7 +1102,7 @@ void MainWindow::resetTransport()
 
 void MainWindow::midiClockToggle(bool on)
 {
-    if (on) jackSyncAction->setChecked(false);
+    if (on && alsaMidi) jackSyncAction->setChecked(false);
     engine->seqDriver->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
@@ -1122,11 +1125,13 @@ void MainWindow::setGUIforExtSync(bool on)
 {
     runAction->setDisabled(on);
     tempoSpin->setDisabled(on);
+    /*
     addArpAction->setDisabled(on);
     addLfoAction->setDisabled(on);
     addSeqAction->setDisabled(on);
     fileOpenAction->setDisabled(on);
     fileRecentlyOpenedFiles->setDisabled(on);
+    * */
 }
 
 bool MainWindow::checkRcFile()
@@ -1327,15 +1332,17 @@ void MainWindow::checkIfLastModule()
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
         jackSyncAction->setDisabled(true);
-        jackSyncAction->setChecked(false);
+        if (alsaMidi) jackSyncAction->setChecked(false);
     }
 }
 
 void MainWindow::checkIfFirstModule()
 {
     if (engine->moduleWindowCount() == 1) {
-        midiClockAction->setEnabled(true);
-        jackSyncAction->setEnabled(true);
+        if (alsaMidi) {
+            midiClockAction->setEnabled(true);
+            jackSyncAction->setEnabled(true);
+        }
         runAction->setEnabled(!(midiClockAction->isChecked()
                                 || jackSyncAction->isChecked()));
     }

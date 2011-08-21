@@ -68,6 +68,7 @@ class MainWindow : public QMainWindow
 
   private:
     static int sigpipe[2];
+    bool alsaMidi;
     QSpinBox *tempoSpin;
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
@@ -320,7 +321,7 @@ class MainWindow : public QMainWindow
 /*!
 * @param p_portCount Number of registered ALSA output ports
 */
-    MainWindow(int p_portCount);
+    MainWindow(int p_portCount, bool p_alsamidi);
     ~MainWindow();
 /*!
 * @brief This function opens a QMidiArp XML session file for reading

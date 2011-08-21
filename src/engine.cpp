@@ -29,10 +29,8 @@
 #include "engine.h"
 
 
-Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QThread(parent), modified(false)
+Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
-    JMT = false; // Jack MIDI test version
-
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -44,7 +42,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
             this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
 
-    if (JMT) {
+    if (!p_alsamidi) {
     // JackSync will become JackDriver at a later stage.
         seqDriver = new JackSync(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
     }

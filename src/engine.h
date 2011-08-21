@@ -77,8 +77,6 @@ class Engine : public QThread  {
     QVector<Sample> lfoData;
     Sample seqSample;
 
-    bool JMT;
-
     static void midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
     static void tr_state_cb(bool tr_state, void * context);
@@ -92,7 +90,7 @@ class Engine : public QThread  {
     DriverBase *seqDriver;
 
   public:
-    Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget* parent=0);
+    Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
     ~Engine();
     int getPortCount();
     bool isModified();
