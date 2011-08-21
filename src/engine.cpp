@@ -934,5 +934,7 @@ void Engine::setTempo(int bpm)
 
 void Engine::tr_state_cb(bool on, void *context)
 {
-    ((Engine  *)context)->setStatus(on);
+    if (((Engine  *)context)->driver->useJackSync) {
+        ((Engine  *)context)->setStatus(on);
+    }
 }
