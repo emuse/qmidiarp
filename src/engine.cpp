@@ -62,6 +62,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     gotSeqKbdTrig = false;
     schedDelayTicks = 2;
     status = false;
+    sendLogEvents = false;
 
     resetTicks(0);
 }
@@ -932,9 +933,14 @@ void Engine::setTempo(int bpm)
     modified = true;
 }
 
+void Engine::setSendLogEvents(bool on)
+{
+    sendLogEvents = on;
+}
+
 void Engine::tr_state_cb(bool on, void *context)
 {
-    if (((Engine  *)context)->driver->useJackSync) {
+    if (((Engine  *)context)->seqDriver->useJackSync) {
         ((Engine  *)context)->setStatus(on);
     }
 }

@@ -76,6 +76,7 @@ class Engine : public QThread  {
     int nextArpTick[20], nextMinArpTick;
     QVector<Sample> lfoData;
     Sample seqSample;
+    bool sendLogEvents;
 
     static void midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
@@ -158,6 +159,7 @@ class Engine : public QThread  {
     void setGrooveVelocity(int grooveVelocity);
     void setGrooveLength(int grooveLength);
     void sendGroove();
+    void setSendLogEvents(bool on);
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
