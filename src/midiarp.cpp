@@ -129,7 +129,6 @@ MidiArp::MidiArp()
 }
 
 MidiArp::~MidiArp(){
-    wait();
 }
 
 void MidiArp::setMuted(bool on)
@@ -518,14 +517,7 @@ bool MidiArp::wantTrigByKbd()
 void MidiArp::prepareCurrentNote(int askedTick)
 {
     currentTick = askedTick;
-    start(Priority(6));
-    wait();
-}
-
-void MidiArp::run()
-{
     int l1 = 0;
-    mutex.lock();
     updateNotes();
     returnTick = currentNoteTick;
     returnNote.clear();
@@ -540,7 +532,6 @@ void MidiArp::run()
     returnLength = currentLength;
     returnIsNew = newCurrent;
     newCurrent = false;
-    mutex.unlock();
 }
 
 void MidiArp::updateNotes()

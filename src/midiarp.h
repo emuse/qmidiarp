@@ -26,7 +26,7 @@
 #define MIDIARP_H
 
 #include <QMutex>
-#include <QObject>
+#include <QWidget>
 #include <QString>
 #include <QThread>
 #include <QTimer>
@@ -56,7 +56,7 @@
  * therefore be added or removed from the buffer as SeqDriver transfers
  * them to this class.
  */
-class MidiArp : public QThread  {
+class MidiArp : public QWidget  {
 
   Q_OBJECT
 
