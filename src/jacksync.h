@@ -72,7 +72,7 @@ class JackSync : public DriverBase
     JackSync(int p_portCount,
             void * callback_context,
             void (* p_tr_state_cb)(bool j_tr_state, void * context),
-            void (* midi_event_received_callback)(void * context, MidiEvent ev),
+            bool (* midi_event_received_callback)(void * context, MidiEvent ev),
             void (* tick_callback)(void * context, bool echo_from_trig));
     ~JackSync();
 

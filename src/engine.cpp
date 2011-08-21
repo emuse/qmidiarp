@@ -537,9 +537,9 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 }
 
-void Engine::midi_event_received_callback(void * context, MidiEvent ev)
+bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
 {
-  ((Engine *)context)->eventCallback(ev);
+  return ((Engine *)context)->eventCallback(ev);
 }
 
 bool Engine::eventCallback(MidiEvent inEv)

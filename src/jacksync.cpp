@@ -32,7 +32,7 @@ JackSync::JackSync(
     int p_portCount,
     void * callback_context,
     void (* p_tr_state_cb)(bool j_tr_state, void * context),
-    void (* midi_event_received_callback)(void * context, MidiEvent ev),
+    bool (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig))
     : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
@@ -146,6 +146,7 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     int out_port_count = rd->portCount;
     int cur_tempo = rd->tempo;
     uint64_t cur_j_frame = rd->curJFrame;
+    bool forward_unmatched = rd->forwardUnmatched;
 
     uint nexttick = 0;
     uint tmptick = 0;
@@ -231,7 +232,10 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 
             inEv.data = *(in_event.buffer + 1);
             inEv.channel = (*(in_event.buffer)) & 0x0f;
-            rd->midi_event_received(inEv);
+            bool unmatched = rd->midi_event_received(inEv);
+            if (unmatched && forward_unmatched) {
+                rd->sendMidiEvent(inEv, 0, rd->portUnmatched);
+            }
 
             event_index++;
             if(event_index < event_count)

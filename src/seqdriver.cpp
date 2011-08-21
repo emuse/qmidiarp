@@ -34,7 +34,7 @@ SeqDriver::SeqDriver(
     JackSync *p_jackSync,
     int p_portCount,
     void * callback_context,
-    void (* midi_event_received_callback)(void * context, MidiEvent ev),
+    bool (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig))
     : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
     , jackSync(p_jackSync)
@@ -210,12 +210,8 @@ void SeqDriver::run()
 
                 getTime();
                 m_current_tick = deltaToTick(aTimeToDelta(&tmpTime));
-                /* TODO: restablish unmatched return value by handleEvent
-                 *       forwarding doesn't work at the moment     */
 
-                midi_event_received(inEv);
-
-                unmatched = false;
+                unmatched = midi_event_received(inEv);
 
                 if (forwardUnmatched && unmatched) {
                     snd_seq_ev_set_subs(evIn);

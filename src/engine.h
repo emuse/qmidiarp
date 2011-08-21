@@ -78,7 +78,7 @@ class Engine : public QThread  {
     Sample seqSample;
     bool sendLogEvents;
 
-    static void midi_event_received_callback(void * context, MidiEvent ev);
+    static bool midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
     static void tr_state_cb(bool tr_state, void * context);
 
