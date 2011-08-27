@@ -153,7 +153,6 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     uint tmptick = 0;
     uint idx = 0;
     int evport;
-    uint n_sent = 0;
 
     MidiEvent inEv;
     inEv.type = 0;
@@ -211,12 +210,8 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
                 if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
                 if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
                 buffer[0] += outEv.channel;
-                n_sent++;
             }
         }
-    }
-
-    for(i = 0; i < nframes; i++) {
 
         /** MIDI Input handling **/
         if((in_event.time == i) && (event_index < event_count)) {
@@ -247,21 +242,23 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
             }
             else if( ((*(in_event.buffer)) & 0xf0) == 0xe0 ) {
                 inEv.type = EV_PITCHBEND;
-                inEv.value = *(in_event.buffer + 2);
+                inEv.value = *(in_event.buffer + 2) * 128;
+                inEv.value += *(in_event.buffer + 1);
+                inEv.value -= 8192;
             }
             else inEv.type = EV_NONE;
 
             inEv.data = *(in_event.buffer + 1);
-            if (inEv.type == EV_PITCHBEND) inEv.value = (inEv.value*128 + inEv.data);
             inEv.channel = (*(in_event.buffer)) & 0x0f;
             bool unmatched = rd->midi_event_received(inEv);
 
-            if (unmatched && forward_unmatched && (n_sent < nframes)) {
-                buffer = jack_midi_event_reserve(out_buf[port_unmatched], n_sent, in_event.size);
-                for (l2 = 0; l2 < in_event.size; l2++) {
-                    buffer[l2] = *(in_event.buffer + l2);
+            if (unmatched && forward_unmatched) {
+                buffer = jack_midi_event_reserve(out_buf[port_unmatched], i, in_event.size);
+                if (buffer) {
+                    for (l2 = 0; l2 < in_event.size; l2++) {
+                        buffer[l2] = *(in_event.buffer + l2);
+                    }
                 }
-                n_sent++;
             }
 
             event_index++;
