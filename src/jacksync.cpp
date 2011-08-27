@@ -214,7 +214,7 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
         }
 
         /** MIDI Input handling **/
-        if((in_event.time == i) && (event_index < event_count)) {
+        while ((in_event.time == i) && (event_index < event_count)) {
 
             if( ((*(in_event.buffer) & 0xf0)) == 0x90 ) {
                 inEv.type = EV_NOTEON;
