@@ -86,6 +86,7 @@ class Engine : public QThread  {
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;
     bool status;
+    bool ready;
     GrooveWidget *grooveWidget;
     JackSync *jackSync;
     DriverBase *seqDriver;

@@ -31,6 +31,7 @@
 
 Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
+    ready = false;
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -65,6 +66,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     sendLogEvents = false;
 
     resetTicks(0);
+    ready = true;
 }
 
 Engine::~Engine()
@@ -385,6 +387,7 @@ int Engine::getClientId()
 void Engine::setStatus(bool on)
 {
     if (moduleWindowCount()) {
+        qWarning("moduleWindowCount() %d",moduleWindowCount());
         if (!on) {
             for (int l1 = 0; l1 < midiArpCount(); l1++) {
                 midiArp(l1)->clearNoteBuffer();
@@ -942,7 +945,9 @@ void Engine::setSendLogEvents(bool on)
 
 void Engine::tr_state_cb(bool on, void *context)
 {
-    if (((Engine  *)context)->seqDriver->useJackSync) {
-        ((Engine  *)context)->setStatus(on);
+    if  (((Engine  *)context)->ready) {
+        if (((Engine  *)context)->seqDriver->useJackSync) {
+           ((Engine  *)context)->setStatus(on);
+        }
     }
 }
