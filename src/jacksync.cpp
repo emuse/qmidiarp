@@ -229,13 +229,30 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
                 inEv.type = EV_NOTEON;
                 inEv.value = 0;
             }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0xa0 ) {
+                inEv.type = EV_KEYPRESS;
+                inEv.value = *(in_event.buffer + 2);
+            }
             else if( ((*(in_event.buffer)) & 0xf0) == 0xb0 ) {
                 inEv.type = EV_CONTROLLER;
+                inEv.value = *(in_event.buffer + 2);
+            }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0xc0 ) {
+                inEv.type = EV_PGMCHANGE;
+                inEv.value = *(in_event.buffer + 1);
+            }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0xd0 ) {
+                inEv.type = EV_CHANPRESS;
+                inEv.value = *(in_event.buffer + 1);
+            }
+            else if( ((*(in_event.buffer)) & 0xf0) == 0xe0 ) {
+                inEv.type = EV_PITCHBEND;
                 inEv.value = *(in_event.buffer + 2);
             }
             else inEv.type = EV_NONE;
 
             inEv.data = *(in_event.buffer + 1);
+            if (inEv.type == EV_PITCHBEND) inEv.value = (inEv.value*128 + inEv.data);
             inEv.channel = (*(in_event.buffer)) & 0x0f;
             bool unmatched = rd->midi_event_received(inEv);
 
