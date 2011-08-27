@@ -223,6 +223,7 @@ class MidiSeq : public QObject  {
  */
     bool toggleMutePoint(double);
     void setCurrentIndex(int ix);
+    int getCurrentIndex() {return currentIndex; }
 
   signals:
     void nextStep(int currentIndex);

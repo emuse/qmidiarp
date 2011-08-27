@@ -398,9 +398,9 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
     } while (lastMouseLoc != loc);
 }
 
-void MidiLfo::resetFramePtr()
+void MidiLfo::setFramePtr(int idx)
 {
-    frameptr = 0;
+    frameptr = idx;
 }
 
 void MidiLfo::record(int value)

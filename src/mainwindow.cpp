@@ -356,7 +356,6 @@ void MainWindow::addArp(const QString& name)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
-    engine->addMidiArp(midiWorker);
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -385,6 +384,7 @@ void MainWindow::addArp(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiArp(midiWorker);
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
 
@@ -400,7 +400,6 @@ void MainWindow::addLfo(const QString& name)
 {
     int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
-    engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -419,6 +418,7 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
@@ -432,7 +432,6 @@ void MainWindow::addSeq(const QString& name)
 {
     int widgetID, count;
     MidiSeq *midiWorker = new MidiSeq();
-    engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -452,6 +451,7 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
@@ -465,7 +465,6 @@ void MainWindow::cloneLfo(int ID)
 {
     int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
-    engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -486,13 +485,14 @@ void MainWindow::cloneLfo(int ID)
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
 
+    engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
-    checkIfFirstModule();
+    midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
 }
 
 void MainWindow::cloneSeq(int ID)
@@ -501,7 +501,6 @@ void MainWindow::cloneSeq(int ID)
     QString name;
     MidiSeq *midiWorker = new MidiSeq();
 
-    engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -523,11 +522,14 @@ void MainWindow::cloneSeq(int ID)
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
 
+    engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
+
+    midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
 }
 
 void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)

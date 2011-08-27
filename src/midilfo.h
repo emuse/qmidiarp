@@ -180,11 +180,12 @@ class MidiLfo : public QObject  {
  * while in calculated waveform mode. (MidiLfo::waveFormIndex 1 ... 4).
  */
     void copyToCustom();
-/*! @brief This function resets the MidiLfo::frameptr to zero.
+/*! @brief This function sets the MidiLfo::frameptr to the given value.
  *
- * It is called when the ALSA queue starts.
+ * It is called when the Transport starts.
+ * @param idx Index to which the frameptr is set
  */
-    void resetFramePtr();
+    void setFramePtr(int idx);
 /**
  * @brief This function checks whether an ALSA event is eligible for this
  * module.
@@ -227,6 +228,7 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::setMutePoint
  */
     bool toggleMutePoint(double mouseX);
+    int getFramePtr() { return frameptr;}
 
   signals:
     void nextStep(int frameptr);

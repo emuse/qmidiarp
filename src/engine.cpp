@@ -433,6 +433,7 @@ void Engine::echoCallback(bool echo_from_trig)
                 midiLfo(l1)->getNextFrame(&lfoData);
                 frame_nticks = lfoData.last().tick;
                 outport = midiLfo(l1)->portOut;
+                if (nextLfoTick[l1] < (tick - frame_nticks)) nextLfoTick[l1] = tick;
                 if (!midiLfo(l1)->isMuted) {
                     l2 = 0;
                     while (lfoData.at(l2).value > -1) {
@@ -473,6 +474,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiSeq(l1)->notelength;
                     seqtransp = midiSeq(l1)->transp;
                     outport = midiSeq(l1)->portOut;
+                    if (nextSeqTick[l1] < tick - frame_nticks) nextSeqTick[l1] = tick;
                     if (!midiSeq(l1)->isMuted) {
                         if (!seqSample.muted) {
                             outEv.data = seqSample.value + seqtransp;
@@ -892,7 +894,7 @@ void Engine::resetTicks(int curtick)
         midiArp(l1)->initArpTick(0);
     }
     for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        midiLfo(l1)->resetFramePtr();
+        midiLfo(l1)->setFramePtr(0);
     }
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
         midiSeq(l1)->setCurrentIndex(0);
