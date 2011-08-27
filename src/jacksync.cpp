@@ -344,16 +344,16 @@ bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 void JackSync::handleEchoes()
 {
+    curJFrame++;
+
     if (!transportState) return;
 
     int l1;
     int size = echoTickQueue.size();
     int nexttick, tmptick, idx;
 
-
     m_current_tick = ((long)currentPos.frame * TPQN * tempo
             / (currentPos.frame_rate * 60)) - jackOffsetTick;
-    curJFrame++;
        if (size) {
             idx = 0;
             nexttick = echoTickQueue.head();
@@ -383,12 +383,15 @@ void JackSync::setTransportStatus(bool on)
         * tempo / (jpos.frame_rate * 60);
 
     m_current_tick = 0;
-    curJFrame = 0;
-    lastSchedTick = 0;
-    echoTickQueue.clear();
-    evQueue.clear();
-    evTickQueue.clear();
-    evPortQueue.clear();
-    requestEchoAt(0);
-    queueStatus = on;
+
+    if (on) {
+        curJFrame = 0;
+        lastSchedTick = 0;
+        echoTickQueue.clear();
+        evQueue.clear();
+        evTickQueue.clear();
+        evPortQueue.clear();
+        requestEchoAt(0);
+        queueStatus = on;
+    }
 }
