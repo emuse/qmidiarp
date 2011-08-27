@@ -151,9 +151,7 @@ bool MidiArp::wantEvent(MidiEvent event) {
 
 void MidiArp::handleNoteOn(int note, int velocity, int tick)
 {
-    mutex.lock();
     int bufPtr, index;
-
     if (!getPressedNoteCount()) {
         purgeLatchBuffer();
         if (restartByKbd) advancePatternIndex(true);
@@ -182,7 +180,6 @@ void MidiArp::handleNoteOn(int note, int velocity, int tick)
 
     if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
     copyNoteBuffer();
-    mutex.unlock();
 }
 
 void MidiArp::handleNoteOff(int note, int tick, int keep_rel)
@@ -558,7 +555,6 @@ void MidiArp::foldReleaseTicks(int tick)
 {
     int bufPtr, l2;
 
-    mutex.lock();
     bufPtr = (noteBufPtr) ? 0 : 1;
 
     for (l2 = 0; l2 < noteCount; l2++) {
@@ -566,7 +562,6 @@ void MidiArp::foldReleaseTicks(int tick)
     }
 
     copyNoteBuffer();
-    mutex.unlock();
 }
 
 void MidiArp::initArpTick(int tick)
@@ -583,7 +578,6 @@ void MidiArp::initArpTick(int tick)
 
 void MidiArp::updatePattern(const QString& p_pattern)
 {
-    mutex.lock();
     int l1;
     QChar c;
 
@@ -611,7 +605,6 @@ void MidiArp::updatePattern(const QString& p_pattern)
     patternIndex = 0;
     grooveIndex = 0;
     noteOfs = 0;
-    mutex.unlock();
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange)
@@ -631,14 +624,12 @@ int MidiArp::clip(int value, int min, int max, bool *outOfRange)
 
 void MidiArp::newRandomValues()
 {
-    mutex.lock();
     randomTick = (double)randomTickAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomVelocity = (double)randomVelocityAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomLength = (double)randomLengthAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
-    mutex.unlock();
 }
 
 void MidiArp::updateRandomTickAmp(int val)
@@ -735,9 +726,7 @@ void MidiArp::purgeLatchBuffer()
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {
-    mutex.lock();
     grooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
-    mutex.unlock();
 }
