@@ -387,7 +387,6 @@ int Engine::getClientId()
 void Engine::setStatus(bool on)
 {
     if (moduleWindowCount()) {
-        qWarning("moduleWindowCount() %d",moduleWindowCount());
         if (!on) {
             for (int l1 = 0; l1 < midiArpCount(); l1++) {
                 midiArp(l1)->clearNoteBuffer();
