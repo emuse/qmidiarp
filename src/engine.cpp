@@ -552,7 +552,7 @@ bool Engine::eventCallback(MidiEvent inEv)
     int tick = seqDriver->getCurrentTick();
 
     /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
-    emit midiEventReceived(inEv, tick);
+    if (sendLogEvents) emit midiEventReceived(inEv, tick);
 
     if (inEv.type == EV_CONTROLLER) {
 
