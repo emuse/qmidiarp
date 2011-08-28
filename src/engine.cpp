@@ -639,17 +639,14 @@ void Engine::handleController(int ccnumber, int channel, int value)
                 switch (cclist.at(l2).ID) {
                     case 0:
                             grooveWidget->grooveTick->setValue(sval);
-                            return;
                     break;
 
                     case 1:
                             grooveWidget->grooveVelocity->setValue(sval);
-                            return;
                     break;
 
                     case 2:
                             grooveWidget->grooveLength->setValue(sval);
-                            return;
                     break;
 
                     default:
@@ -670,7 +667,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = arpWidget(l1)->muteOut->isChecked();
                                         arpWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -686,7 +682,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 arpWidget(l1)->selectPatternPreset(sval);
-                                return;
                         break;
                         default:
                         break;
@@ -707,7 +702,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = lfoWidget(l1)->muteOut->isChecked();
                                         lfoWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -724,34 +718,29 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->amplitude->setValue(sval);
-                                return;
                         break;
 
                         case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->offset->setValue(sval);
-                                return;
                         break;
                         case 3:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateWaveForm(sval);
-                                return;
                         break;
                         case 4:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->freqBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateFreq(sval);
-                                return;
                         break;
                         case 5: if (min == max) {
                                     if (value == max) {
                                         m = lfoWidget(l1)->recordAction->isChecked();
                                         lfoWidget(l1)->recordAction->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -768,14 +757,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         / 127);
                                 lfoWidget(l1)->resBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateRes(sval);
-                                return;
                         break;
                         case 7:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->sizeBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateSize(sval);
-                                return;
                         break;
 
                         default:
@@ -797,7 +784,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = seqWidget(l1)->muteOut->isChecked();
                                         seqWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -814,14 +800,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->velocity->setValue(sval);
-                                return;
                         break;
 
                         case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->notelength->setValue(sval);
-                                return;
                         break;
 
                         case 3: if (min == max) {
@@ -845,14 +829,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         / 127);
                                 seqWidget(l1)->resBox->setCurrentIndex(sval);
                                 seqWidget(l1)->updateRes(sval);
-                                return;
                         break;
                         case 5:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->sizeBox->setCurrentIndex(sval);
                                 seqWidget(l1)->updateSize(sval);
-                                return;
                         break;
 
                         default:
