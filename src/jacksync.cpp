@@ -144,6 +144,10 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
 
     JackSync *rd = (JackSync *) arg;
     uint out_port_count = rd->portCount;
+    rd->jackTrCheckState();
+
+    if (!out_port_count) return (0);
+
     int cur_tempo = rd->tempo;
     uint64_t cur_j_frame = rd->curJFrame;
     bool forward_unmatched = rd->forwardUnmatched;
@@ -163,9 +167,6 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     MidiEvent outEv;
     outEv.channel = 0;
 
-    rd->jackTrCheckState();
-
-    if (!out_port_count) return (0);
 
     unsigned char* buffer;
     jack_midi_event_t in_event;
