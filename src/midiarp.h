@@ -255,6 +255,7 @@ class MidiArp : public QWidget  {
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
     int returnIsNew;
+    int nextTick;
 
   public:
     MidiArp();

@@ -346,6 +346,7 @@ class SeqWidget : public QWidget
     void setMuted(bool on);
 
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
+    int getNextTick() { return midiWorker->nextTick; }
 };
 
 #endif

@@ -71,9 +71,9 @@ class Engine : public QThread  {
     bool gotArpKbdTrig;
     bool gotSeqKbdTrig;
     int  schedDelayTicks;
-    int nextLfoTick[20], nextMinLfoTick;
-    int nextSeqTick[20], nextMinSeqTick;
-    int nextArpTick[20], nextMinArpTick;
+    int nextMinLfoTick;
+    int nextMinSeqTick;
+    int nextMinArpTick;
     QVector<Sample> lfoData;
     Sample seqSample;
     bool sendLogEvents;

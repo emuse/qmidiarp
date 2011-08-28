@@ -485,6 +485,8 @@ void MainWindow::cloneLfo(int ID)
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
 
+    midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
+    midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
     engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
@@ -492,7 +494,6 @@ void MainWindow::cloneLfo(int ID)
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
-    midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
 }
 
 void MainWindow::cloneSeq(int ID)
@@ -522,6 +523,8 @@ void MainWindow::cloneSeq(int ID)
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
 
+    midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
+    midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
     engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
@@ -529,7 +532,6 @@ void MainWindow::cloneSeq(int ID)
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
-    midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
 }
 
 void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)

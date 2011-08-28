@@ -102,6 +102,7 @@ MidiArp::MidiArp()
     newNext = false;
     currentNoteTick = 0;
     nextNoteTick = 0;
+    nextTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;

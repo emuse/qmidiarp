@@ -428,34 +428,33 @@ void Engine::echoCallback(bool echo_from_trig)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
         for (l1 = 0; l1 < midiLfoCount(); l1++) {
-            if ((tick + 8) >= nextLfoTick[l1]) {
+            if ((tick + 8) >= midiLfo(l1)->nextTick) {
                 outEv.type = EV_CONTROLLER;
                 outEv.data = midiLfo(l1)->ccnumber;
                 outEv.channel = midiLfo(l1)->channelOut;
                 midiLfo(l1)->getNextFrame(&lfoData);
                 frame_nticks = lfoData.last().tick;
                 outport = midiLfo(l1)->portOut;
-                if (nextLfoTick[l1] < (tick - frame_nticks)) nextLfoTick[l1] = tick;
                 if (!midiLfo(l1)->isMuted) {
                     l2 = 0;
                     while (lfoData.at(l2).value > -1) {
                         if (!lfoData.at(l2).muted) {
                             outEv.value = lfoData.at(l2).value;
-                            seqDriver->sendMidiEvent(outEv, nextLfoTick[l1] + lfoData.at(l2).tick
+                            seqDriver->sendMidiEvent(outEv, midiLfo(l1)->nextTick + lfoData.at(l2).tick
                                 , outport);
                         }
                         l2++;
                     }
                 }
-                nextLfoTick[l1] += frame_nticks;
+                midiLfo(l1)->nextTick += frame_nticks;
                 /** round-up to current resolution (quantize) */
-                nextLfoTick[l1]/= frame_nticks;
-                nextLfoTick[l1]*= frame_nticks;
+                midiLfo(l1)->nextTick/= frame_nticks;
+                midiLfo(l1)->nextTick*= frame_nticks;
             }
             if (!l1)
-                nextMinLfoTick = nextLfoTick[l1];
-            else if (nextLfoTick[l1] < nextMinLfoTick)
-                nextMinLfoTick = nextLfoTick[l1];
+                nextMinLfoTick = midiLfo(l1)->nextTick;
+            else if (midiLfo(l1)->nextTick < nextMinLfoTick)
+                nextMinLfoTick = midiLfo(l1)->nextTick;
         }
         if (midiLfoCount()) seqDriver->requestEchoAt(nextMinLfoTick);
     }
@@ -467,7 +466,7 @@ void Engine::echoCallback(bool echo_from_trig)
             if ((gotSeqKbdTrig && echo_from_trig && midiSeq(l1)->wantTrigByKbd())
                     || (!gotSeqKbdTrig && !echo_from_trig)) {
                 gotSeqKbdTrig = false;
-                if ((tick + 8) >= nextSeqTick[l1]) {
+                if ((tick + 8) >= midiSeq(l1)->nextTick) {
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
@@ -476,25 +475,24 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiSeq(l1)->notelength;
                     seqtransp = midiSeq(l1)->transp;
                     outport = midiSeq(l1)->portOut;
-                    if (nextSeqTick[l1] < tick - frame_nticks) nextSeqTick[l1] = tick;
                     if (!midiSeq(l1)->isMuted) {
                         if (!seqSample.muted) {
                             outEv.data = seqSample.value + seqtransp;
-                            seqDriver->sendMidiEvent(outEv, nextSeqTick[l1], outport, length);
+                            seqDriver->sendMidiEvent(outEv, midiSeq(l1)->nextTick, outport, length);
                         }
                     }
-                    nextSeqTick[l1]+=frame_nticks;
+                    midiSeq(l1)->nextTick+=frame_nticks;
                     if (!midiSeq(l1)->trigByKbd) {
                         /** round-up to current resolution (quantize) */
-                        nextSeqTick[l1]/=frame_nticks;
-                        nextSeqTick[l1]*=frame_nticks;
+                        midiSeq(l1)->nextTick/=frame_nticks;
+                        midiSeq(l1)->nextTick*=frame_nticks;
                     }
                 }
             }
             if (!l1)
-                nextMinSeqTick = nextSeqTick[l1];
-            else if (nextSeqTick[l1] < nextMinSeqTick)
-                nextMinSeqTick = nextSeqTick[l1];
+                nextMinSeqTick = midiSeq(l1)->nextTick;
+            else if (midiSeq(l1)->nextTick < nextMinSeqTick)
+                nextMinSeqTick = midiSeq(l1)->nextTick;
         }
         if (midiSeqCount()) seqDriver->requestEchoAt(nextMinSeqTick, 0);
     }
@@ -505,7 +503,7 @@ void Engine::echoCallback(bool echo_from_trig)
             if ((gotArpKbdTrig && echo_from_trig && midiArp(l1)->wantTrigByKbd())
                     || (!gotArpKbdTrig && !echo_from_trig)) {
                 gotArpKbdTrig = false;
-                if ((tick + 8) >= nextArpTick[l1]) {
+                if ((tick + 8) >= midiArp(l1)->nextTick) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArp(l1)->channelOut;
                     midiArp(l1)->newRandomValues();
@@ -527,13 +525,13 @@ void Engine::echoCallback(bool echo_from_trig)
                             }
                         }
                     }
-                    nextArpTick[l1] = midiArp(l1)->getNextNoteTick();
+                    midiArp(l1)->nextTick = midiArp(l1)->getNextNoteTick();
                 }
             }
             if (!l1)
-                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
-            else if (nextArpTick[l1] < nextMinArpTick + schedDelayTicks)
-                nextMinArpTick = nextArpTick[l1] - schedDelayTicks;
+                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
+            else if (midiArp(l1)->nextTick < nextMinArpTick + schedDelayTicks)
+                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
@@ -592,7 +590,7 @@ bool Engine::eventCallback(MidiEvent inEv)
 
                 if (inEv.value && midiSeq(l1)->wantTrigByKbd()) {
                     nextMinSeqTick = tick;
-                    nextSeqTick[l1] = nextMinSeqTick + schedDelayTicks;
+                    midiSeq(l1)->nextTick = nextMinSeqTick + schedDelayTicks;
                     gotSeqKbdTrig = true;
                     seqDriver->requestEchoAt(nextMinSeqTick, true);
                 }
@@ -607,7 +605,7 @@ bool Engine::eventCallback(MidiEvent inEv)
 
                     if (midiArp(l1)->wantTrigByKbd()) {
                         nextMinArpTick = tick;
-                        nextArpTick[l1] = nextMinArpTick + schedDelayTicks;
+                        midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
                         gotArpKbdTrig = true;
                         seqDriver->requestEchoAt(nextMinArpTick, true);
                     }
@@ -894,17 +892,15 @@ void Engine::resetTicks(int curtick)
     for (l1 = 0; l1 < midiArpCount(); l1++) {
         midiArp(l1)->foldReleaseTicks(curtick);
         midiArp(l1)->initArpTick(0);
+        midiArp(l1)->nextTick = 0;
     }
     for (l1 = 0; l1 < midiLfoCount(); l1++) {
         midiLfo(l1)->setFramePtr(0);
+        midiLfo(l1)->nextTick = 0;
     }
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
         midiSeq(l1)->setCurrentIndex(0);
-    }
-    for (l1 = 0; l1 < 20; l1++) {
-        nextArpTick[l1] = 0;
-        nextLfoTick[l1] = 0;
-        nextSeqTick[l1] = 0;
+        midiSeq(l1)->nextTick = 0;
     }
     nextMinLfoTick = 0;
     nextMinSeqTick = 0;

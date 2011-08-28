@@ -53,6 +53,7 @@ MidiSeq::MidiSeq()
     channelOut = 0;
     waveFormIndex = 0;
     currentIndex = 0;
+    nextTick = 0;
     isMuted = false;
     int lt = 0;
     int l1 = 0;

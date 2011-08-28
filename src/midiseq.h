@@ -96,6 +96,7 @@ class MidiSeq : public QObject  {
     int vel, transp, notelength;
     int size, res, waveFormIndex;
     int currentRecStep;
+    int nextTick;
     int nOctaves;
     int baseOctave;
     QVector<Sample> customWave;

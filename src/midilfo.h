@@ -110,6 +110,7 @@ class MidiLfo : public QObject  {
                                     @par 4: Square
                                     @par 5: Use Custom Wave */
     int cwmin;                  /*!< The minimum of MidiLfo::customWave */
+    int nextTick;
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
 

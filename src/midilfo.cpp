@@ -63,6 +63,7 @@ MidiLfo::MidiLfo()
     lastMouseLoc = 0;
     lastMouseY = 0;
     frameptr = 0;
+    nextTick = 0;
 }
 
 MidiLfo::~MidiLfo(){
