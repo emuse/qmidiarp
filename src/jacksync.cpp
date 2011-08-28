@@ -153,7 +153,8 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     uint tmptick = 0;
     uint idx = 0;
     int evport;
-
+    uint64_t ev_jframe, ev_sample;
+    uint ev_inframe;
     MidiEvent inEv;
     inEv.type = 0;
     inEv.data = 0;
@@ -196,14 +197,15 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
                     nexttick = tmptick;
                 }
             }
-
-            if ((((uint64_t)nframes * cur_j_frame + i) * TPQN * cur_tempo)
-                   >= (uint64_t)nexttick * j_sample_rate * 60) {
+            ev_sample = (uint64_t)j_sample_rate * 60 * nexttick / (TPQN * cur_tempo);
+            ev_jframe = ev_sample / nframes;
+            ev_inframe = ev_sample % nframes;
+            if ((ev_jframe <= cur_j_frame) && (ev_inframe <= i)) {
                 outEv = rd->evQueue.takeAt(idx);
                 evport = rd->evPortQueue.takeAt(idx);
                 rd->evTickQueue.removeAt(idx);
 
-                buffer = jack_midi_event_reserve(out_buf[evport], i, 3);
+                buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe, 3);
 
                 buffer[2] = outEv.value;        /** velocity / value **/
                 buffer[1] = outEv.data;         /** note / controller **/
@@ -328,7 +330,6 @@ void JackSync::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigne
             evTickQueue.append(n_tick + duration);
             evPortQueue.append(outport);
     }
-
 }
 
 bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
