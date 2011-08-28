@@ -435,6 +435,7 @@ void Engine::echoCallback(bool echo_from_trig)
                 midiLfo(l1)->getNextFrame(&lfoData);
                 frame_nticks = lfoData.last().tick;
                 outport = midiLfo(l1)->portOut;
+                if (midiLfo(l1)->nextTick < (tick - frame_nticks)) midiLfo(l1)->nextTick = tick;
                 if (!midiLfo(l1)->isMuted) {
                     l2 = 0;
                     while (lfoData.at(l2).value > -1) {
@@ -475,6 +476,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiSeq(l1)->notelength;
                     seqtransp = midiSeq(l1)->transp;
                     outport = midiSeq(l1)->portOut;
+                    if (midiSeq(l1)->nextTick < (tick - frame_nticks)) midiSeq(l1)->nextTick = tick;
                     if (!midiSeq(l1)->isMuted) {
                         if (!seqSample.muted) {
                             outEv.data = seqSample.value + seqtransp;
