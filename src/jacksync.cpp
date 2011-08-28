@@ -205,8 +205,11 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
                 outEv = rd->evQueue.takeAt(idx);
                 evport = rd->evPortQueue.takeAt(idx);
                 rd->evTickQueue.removeAt(idx);
-
-                buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe, 3);
+                int k = 0;
+                do {
+                    buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe + k, 3);
+                    k++;
+                } while (buffer == NULL);
 
                 buffer[2] = outEv.value;        /** velocity / value **/
                 buffer[1] = outEv.data;         /** note / controller **/
