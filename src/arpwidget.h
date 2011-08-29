@@ -174,6 +174,8 @@ class ArpWidget : public QWidget
 */
     void setModified(bool);
 
+    int getNextTick() { return midiWorker->nextTick; }
+
 /* SIGNALS */
   signals:
 /*! @brief Emitted to MainWindow::updatePatternPresets saving and deploying modified preset

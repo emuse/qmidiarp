@@ -117,7 +117,7 @@ void PassWidget::setPortUnmatched(int id)
 
 void PassWidget::updateControlSetting(bool on)
 {
-    engine->seqDriver->setMidiControllable(on);
+    engine->setMidiControllable(on);
 }
 
 void PassWidget::updateCompactStyle(bool on)

@@ -68,6 +68,7 @@ class MainWindow : public QMainWindow
 
   private:
     static int sigpipe[2];
+    bool alsaMidi;
     QSpinBox *tempoSpin;
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
@@ -279,11 +280,11 @@ class MainWindow : public QMainWindow
 */
     void setGUIforExtSync(bool on);
 /*!
-* @brief This function restarts the Queue if it is running and does
+* @brief This function restarts the transport position if rolling and does
 * nothing if it is stopped
 *
 */
-    void resetQueue();
+    void resetTransport();
 
 /*! @brief Handler for system signals (SIGUSR1, SIGINT...).
  * This function writes a message to the pipe and leaves as soon as possible
@@ -320,7 +321,7 @@ class MainWindow : public QMainWindow
 /*!
 * @param p_portCount Number of registered ALSA output ports
 */
-    MainWindow(int p_portCount);
+    MainWindow(int p_portCount, bool p_alsamidi);
     ~MainWindow();
 /*!
 * @brief This function opens a QMidiArp XML session file for reading
@@ -347,7 +348,6 @@ class MainWindow : public QMainWindow
 /* SIGNALS */
   signals:
     void newTempo(int);
-    void runQueue(bool);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -449,7 +449,7 @@ class MainWindow : public QMainWindow
 * @param on True to set Queue to running state or to restart
 *
 */
-    void updateRunQueue(bool on);
+    void updateTransportStatus(bool on);
 /*! @brief Slot for midiClock ToolButton.
 * This function toggles SeqDriver between MIDI Clock and internal clock
 * operation.
@@ -467,6 +467,12 @@ class MainWindow : public QMainWindow
 * @see jackSyncToggle
 */
     void jackSyncToggle(bool on);
+/*! @brief Slot for the JackSync::j_shutdown() signal.
+* This function switches the sync to internal clock operation and
+* deactivates the Jack Transport Action.
+* @see jackSyncToggle
+*/
+    void jackShutdown();
 /*! @brief Slot for "Midi Controllers" menu action. This function displays
  * the MidiCC Dialog window.
 */

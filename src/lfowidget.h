@@ -353,6 +353,9 @@ class LfoWidget : public QWidget
 *
 */
     void setMuted(bool on);
+
+    int getFramePtr() { return midiWorker->getFramePtr(); }
+    int getNextTick() { return midiWorker->nextTick; }
 };
 
 #endif

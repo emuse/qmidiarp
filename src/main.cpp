@@ -55,9 +55,11 @@ int main(int argc, char *argv[])
     int getopt_return;
     int option_index;
     int portCount = 2;
+    bool alsamidi = true;
+
     QTextStream out(stdout);
 
-    while ((getopt_return = getopt_long(argc, argv, "vhp:", options,
+    while ((getopt_return = getopt_long(argc, argv, "vhajp:", options,
                     &option_index)) >= 0) {
         switch(getopt_return) {
             case 'v':
@@ -73,11 +75,22 @@ int main(int argc, char *argv[])
                     "Print application version" << endl;
                 out << "  -h, --help               "
                     "Print this message" << endl;
+                out << "  -a, --alsa               "
+                    "Use ALSA MIDI interface (default)" << endl;
+                out << "  -j, --jack               "
+                    "Use JACK MIDI interface" << endl;
                 out << QString("  -p, --portCount <num>    "
                         "Number of output ports [%1]").arg(portCount) << endl;
                 out.flush();
                 exit(EXIT_SUCCESS);
 
+            case 'a':
+                alsamidi = true;
+                break;
+
+            case 'j':
+                alsamidi = false;
+                break;
             case 'p':
                 portCount = atoi(optarg);
                 if (portCount > MAX_PORTS)
@@ -106,7 +119,7 @@ int main(int argc, char *argv[])
         app.installTranslator(&qmidiarpTr);
 #endif
 
-    MainWindow* qmidiarp = new MainWindow(portCount);
+    MainWindow* qmidiarp = new MainWindow(portCount, alsamidi);
     if (optind < argc) {
         QFileInfo fi(argv[optind]);
         if (fi.exists())

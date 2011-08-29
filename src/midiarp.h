@@ -26,7 +26,7 @@
 #define MIDIARP_H
 
 #include <QMutex>
-#include <QObject>
+#include <QWidget>
 #include <QString>
 #include <QThread>
 #include <QTimer>
@@ -56,7 +56,7 @@
  * therefore be added or removed from the buffer as SeqDriver transfers
  * them to this class.
  */
-class MidiArp : public QThread  {
+class MidiArp : public QWidget  {
 
   Q_OBJECT
 
@@ -71,7 +71,6 @@ class MidiArp : public QThread  {
     bool newCurrent, newNext, chordMode;
     int grooveTick, grooveVelocity, grooveLength, grooveIndex;
     int randomTick, randomVelocity, randomLength;
-    double queueTempo;
     double stepWidth, len, vel;
 
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
@@ -256,6 +255,7 @@ class MidiArp : public QThread  {
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
     int returnIsNew;
+    int nextTick;
 
   public:
     MidiArp();
@@ -266,7 +266,6 @@ class MidiArp : public QThread  {
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
     void updateAttackTime(int);
-    void updateQueueTempo(int);
     void updateReleaseTime(int);
 /*! @brief This function sets MidiArp::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.

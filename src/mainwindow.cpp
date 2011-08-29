@@ -69,10 +69,11 @@ static const char FILEEXT[] = ".qmax";
 
 int MainWindow::sigpipe[2];
 
-MainWindow::MainWindow(int p_portCount)
+MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 {
     filename = "";
     lastDir = QDir::homePath();
+    alsaMidi = p_alsamidi;
 
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
@@ -84,7 +85,7 @@ MainWindow::MainWindow(int p_portCount)
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
 
-    engine = new Engine(grooveWidget, p_portCount, this);
+    engine = new Engine(grooveWidget, p_portCount, alsaMidi, this);
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -97,16 +98,13 @@ MainWindow::MainWindow(int p_portCount)
     logWindow->setObjectName("logWidget");
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
     qRegisterMetaType<MidiEvent>("MidiEvent");
-    connect(engine->seqDriver, SIGNAL(midiEvent(MidiEvent)),
-            logWidget, SLOT(appendEvent(MidiEvent)));
+    connect(engine, SIGNAL(midiEventReceived(MidiEvent, int)),
+            logWidget, SLOT(appendEvent(MidiEvent, int)));
 
     connect(logWidget, SIGNAL(sendLogEvents(bool)),
-            engine->seqDriver, SLOT(setSendLogEvents(bool)));
+            engine, SLOT(setSendLogEvents(bool)));
 
     passWidget = new PassWidget(engine, p_portCount, this);
-
-    connect(this, SIGNAL(runQueue(bool)),
-            engine->seqDriver, SLOT(setQueueStatus(bool)));
 
     addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -151,7 +149,7 @@ MainWindow::MainWindow(int p_portCount)
     connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     runAction = new QAction(QIcon(play_xpm), tr("&Run with internal clock"), this);
-    connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateRunQueue(bool)));
+    connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateTransportStatus(bool)));
     runAction->setCheckable(true);
     runAction->setChecked(false);
     runAction->setDisabled(true);
@@ -176,15 +174,14 @@ MainWindow::MainWindow(int p_portCount)
     jackSyncAction = new QAction(QIcon(jacktr_xpm),
             tr("&Connect to Jack Transport"), this);
     jackSyncAction->setCheckable(true);
-    jackSyncAction->setChecked(false);
-    jackSyncAction->setDisabled(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(engine->seqDriver, SIGNAL(jackShutdown(bool)),
-            jackSyncAction, SLOT(setChecked(bool)));
+    connect(engine->seqDriver, SIGNAL(j_shutdown()), this,
+            SLOT(jackShutdown()));
+    jackSyncAction->setChecked(!alsaMidi);
+    jackSyncAction->setDisabled(true);
 
-
-    updateRunQueue(false);
+    updateTransportStatus(false);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setIcon(QIcon(eventlog_xpm));
@@ -298,12 +295,12 @@ void MainWindow::updateWindowTitle()
     if (filename.isEmpty())
         setWindowTitle(QString("%1 (%2)")
                 .arg(APP_NAME)
-                .arg(engine->getAlsaClientId()));
+                .arg(engine->getClientId()));
     else
         setWindowTitle(QString("%1 - %2  (%3)")
                 .arg(filename)
                 .arg(APP_NAME)
-                .arg(engine->getAlsaClientId()));
+                .arg(engine->getClientId()));
 }
 
 void MainWindow::helpAbout()
@@ -359,7 +356,6 @@ void MainWindow::addArp(const QString& name)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
-    engine->addMidiArp(midiWorker);
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -388,6 +384,7 @@ void MainWindow::addArp(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiArp(midiWorker);
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
 
@@ -403,7 +400,6 @@ void MainWindow::addLfo(const QString& name)
 {
     int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
-    engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -422,6 +418,7 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
@@ -435,7 +432,6 @@ void MainWindow::addSeq(const QString& name)
 {
     int widgetID, count;
     MidiSeq *midiWorker = new MidiSeq();
-    engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -455,6 +451,7 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
@@ -468,7 +465,6 @@ void MainWindow::cloneLfo(int ID)
 {
     int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
-    engine->addMidiLfo(midiWorker);
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -489,13 +485,15 @@ void MainWindow::cloneLfo(int ID)
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
 
+    midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
+    midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
+    engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
-    checkIfFirstModule();
 }
 
 void MainWindow::cloneSeq(int ID)
@@ -504,7 +502,6 @@ void MainWindow::cloneSeq(int ID)
     QString name;
     MidiSeq *midiWorker = new MidiSeq();
 
-    engine->addMidiSeq(midiWorker);
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
@@ -526,11 +523,15 @@ void MainWindow::cloneSeq(int ID)
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
 
+    midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
+    midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
+    engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
+
 }
 
 void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
@@ -603,8 +604,8 @@ void MainWindow::removeSeq(int index)
 
 void MainWindow::clear()
 {
-    updateRunQueue(false);
-    jackSyncToggle(false);
+    updateTransportStatus(false);
+    if (alsaMidi) jackSyncToggle(false);
 
     while (engine->midiArpCount()) {
         removeArp(engine->midiArpCount() - 1);
@@ -719,10 +720,14 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "midiControlEnabled")
                     passWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "midiClockEnabled")
-                        midiClockAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "jackSyncEnabled")
-                        jackSyncAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "midiClockEnabled") {
+                        bool tmp = xml.readElementText().toInt();
+                        if (alsaMidi) midiClockAction->setChecked(tmp);
+                    }
+                else if (xml.name() == "jackSyncEnabled") {
+                        bool tmp = xml.readElementText().toInt();
+                        if (alsaMidi) jackSyncAction->setChecked(tmp);
+                    }
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
                 else if (xml.name() == "forwardPort")
@@ -951,9 +956,9 @@ bool MainWindow::saveFile()
             xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
-                QString::number((int)engine->seqDriver->use_midiclock));
+                QString::number((int)engine->seqDriver->useMidiClock));
             xml.writeTextElement("jackSyncEnabled",
-                QString::number((int)engine->seqDriver->use_jacksync));
+                QString::number((int)engine->seqDriver->useJackSync));
             xml.writeTextElement("forwardUnmatched",
                 QString::number((int)engine->seqDriver->forwardUnmatched));
             xml.writeTextElement("forwardPort",
@@ -1085,24 +1090,23 @@ bool MainWindow::isModified()
 
 void MainWindow::updateTempo(int p_tempo)
 {
-    engine->seqDriver->setQueueTempo(p_tempo);
-    engine->setModified(true);
+    engine->setTempo(p_tempo);
 }
 
-void MainWindow::updateRunQueue(bool on)
+void MainWindow::updateTransportStatus(bool on)
 {
-    emit(runQueue(on));
+    engine->setStatus(on);
     tempoSpin->setDisabled(on);
 }
 
-void MainWindow::resetQueue()
+void MainWindow::resetTransport()
 {
-    engine->seqDriver->setQueueStatus(engine->seqDriver->runArp);
+    engine->setStatus(engine->status);
 }
 
 void MainWindow::midiClockToggle(bool on)
 {
-    if (on) jackSyncAction->setChecked(false);
+    if (on && alsaMidi) jackSyncAction->setChecked(false);
     engine->seqDriver->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
@@ -1114,15 +1118,24 @@ void MainWindow::jackSyncToggle(bool on)
     engine->seqDriver->setUseJackTransport(on);
 }
 
+void MainWindow::jackShutdown()
+{
+    engine->setStatus(false);
+    jackSyncAction->setChecked(false);
+    jackSyncAction->setDisabled(true);
+}
+
 void MainWindow::setGUIforExtSync(bool on)
 {
     runAction->setDisabled(on);
     tempoSpin->setDisabled(on);
+    /*
     addArpAction->setDisabled(on);
     addLfoAction->setDisabled(on);
     addSeqAction->setDisabled(on);
     fileOpenAction->setDisabled(on);
     fileRecentlyOpenedFiles->setDisabled(on);
+    * */
 }
 
 bool MainWindow::checkRcFile()
@@ -1323,15 +1336,17 @@ void MainWindow::checkIfLastModule()
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
         jackSyncAction->setDisabled(true);
-        jackSyncAction->setChecked(false);
+        if (alsaMidi) jackSyncAction->setChecked(false);
     }
 }
 
 void MainWindow::checkIfFirstModule()
 {
     if (engine->moduleWindowCount() == 1) {
-        midiClockAction->setEnabled(true);
-        jackSyncAction->setEnabled(true);
+        if (alsaMidi) {
+            midiClockAction->setEnabled(true);
+            jackSyncAction->setEnabled(true);
+        }
         runAction->setEnabled(!(midiClockAction->isChecked()
                                 || jackSyncAction->isChecked()));
     }

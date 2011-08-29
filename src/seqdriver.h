@@ -34,6 +34,7 @@
 #include "midilfo.h"
 #include "midiseq.h"
 #include "main.h"
+#include "driverbase.h"
 
 /*! @brief ALSA sequencer backend QThread class. Also creates JackSync
  *
@@ -60,37 +61,18 @@
  * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
  * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
  */
-class SeqDriver : public QThread {
+class SeqDriver : public DriverBase {
 
     Q_OBJECT
 
     private:
-        int portCount;
-        QList<MidiArp *> *midiArpList;
-        QList<MidiLfo *> *midiLfoList;
-        QList<MidiSeq *> *midiSeqList;
         snd_seq_t *seq_handle;
         int clientid;
         int portid_out[MAX_PORTS];
-        int lfoMinPacketSize;
-        int seqMinPacketSize;
         int portid_in;
         int queue_id;
         bool startQueue;
-        bool modified;
-        bool midi_controllable;
         bool threadAbort;
-        bool gotArpKbdTrig;
-        bool gotSeqKbdTrig;
-        bool sendLogEvents;
-        int tick, jack_offset_tick, schedDelayTicks;
-        int lastSchedTick;
-        int nextLfoTick[20], nextMinLfoTick;
-        int nextSeqTick[20], nextMinSeqTick;
-        int nextArpTick[20], nextMinArpTick;
-        int tempo, internal_tempo;
-        QVector<Sample> lfoData;
-        Sample seqSample;
 
         double tickToDelta(int tick);
         int deltaToTick (double curtime);
@@ -98,58 +80,44 @@ class SeqDriver : public QThread {
         const snd_seq_real_time_t* deltaToATime(double curtime);
         void calcClockRatio();
 
-        void schedEvent(MidiEvent outEv, int n_tick, int outport, int length = 0);
-        bool requestEchoAt(int echoTick, int infotag = 1);
-        bool handleEvent(MidiEvent inEv);
-        void handleEcho(MidiEvent inEv);
-        void resetTicks();
+        void initTempo();
 
         JackSync *jackSync;
+        jack_position_t jPos;
 
         int midiTick;
-        double m_ratio;         /* duration of one tick, in nanoseconds; based on current tempo */
-        snd_seq_real_time_t delta, real_time;
-        snd_seq_real_time_t tmptime;
+        int lastSchedTick;
+        int jackOffsetTick;
 
-        static void tr_state_cb(bool tr_state, void * context);
+        double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
+        snd_seq_real_time_t delta, realTime;
+        snd_seq_real_time_t tmpTime;
 
-    public:
-        bool forwardUnmatched, runQueueIfArp, runArp;
-        int portUnmatched;
-        bool use_midiclock, use_jacksync, trigByKbd;
 
     public:
-/*! @param p_midiArpList List of pointers to each MidiArp worker
- *  @param p_midiLfoList List of pointers to each MidiLfo worker
- *  @param p_midiSeqList List of pointers to each MidiSeq worker
- *  @param parent QWidget ID of the parent Widget
- */
-        SeqDriver(QList<MidiArp*> *p_midiArpList,
-                QList<MidiLfo *> *p_midiLfoList,
-                QList<MidiSeq *> *p_midiSeqList, int p_portCount, QWidget* parent=0);
+        void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0);
+        bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
+
+    public:
+        SeqDriver(
+            JackSync *p_jackSync,
+            int p_portCount,
+            void * callback_context,
+            bool (* midi_event_received_callback)(void * context, MidiEvent ev),
+            void (* tick_callback)(void * context, bool echo_from_trig));
         ~SeqDriver();
         void getTime();
-        bool isModified();
-        void setModified(bool);
-        int getAlsaClientId();
+        int getClientId(); /** overloaded over DriverBase */
         void run();
 
    signals:
-        void midiEvent(MidiEvent ev);
-        void controlEvent(int ccnumber, int channel, int value);
-        void jackShutdown(bool); //boolean is passed to main toolbar
-                                //jackSync button
+        // TODO: move to engine class
+        //void controlEvent(int ccnumber, int channel, int value);
 
    public slots:
-        void setForwardUnmatched(bool on);
-        void setPortUnmatched(int id);
-        void setQueueStatus(bool run);
-        void setQueueTempo(int bpm);
-        void setUseMidiClock(bool on);
-        void setMidiControllable(bool on);
-        void setUseJackTransport(bool on);
-        void setSendLogEvents(bool on);
-        void jackShutdown();
+        void setTransportStatus(bool run); /** is pure in DriverBase */
+        void setTempo(int bpm); /** overloaded over DriverBase */
+        void setUseMidiClock(bool on); /** overloaded over DriverBase */
 };
 
 #endif

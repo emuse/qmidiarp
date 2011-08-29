@@ -110,6 +110,7 @@ class MidiLfo : public QObject  {
                                     @par 4: Square
                                     @par 5: Use Custom Wave */
     int cwmin;                  /*!< The minimum of MidiLfo::customWave */
+    int nextTick;
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
 
@@ -180,11 +181,12 @@ class MidiLfo : public QObject  {
  * while in calculated waveform mode. (MidiLfo::waveFormIndex 1 ... 4).
  */
     void copyToCustom();
-/*! @brief This function resets the MidiLfo::frameptr to zero.
+/*! @brief This function sets the MidiLfo::frameptr to the given value.
  *
- * It is called when the ALSA queue starts.
+ * It is called when the Transport starts.
+ * @param idx Index to which the frameptr is set
  */
-    void resetFramePtr();
+    void setFramePtr(int idx);
 /**
  * @brief This function checks whether an ALSA event is eligible for this
  * module.
@@ -227,6 +229,7 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::setMutePoint
  */
     bool toggleMutePoint(double mouseX);
+    int getFramePtr() { return frameptr;}
 
   signals:
     void nextStep(int frameptr);

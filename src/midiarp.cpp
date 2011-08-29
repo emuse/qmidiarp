@@ -26,10 +26,59 @@
 #include <cstdio>
 #include <QString>
 #include "midiarp.h"
+#include "lockfree.h"
 
+// this class must be implemented in such way
+// so that its copy (= operator) is realtime safe
+class MidiEngine
+{
+public:
+    int foo;
+};
 
 MidiArp::MidiArp()
 {
+    // this simulates access from the two threads
+    // lock congestion is simulated by attempt to update
+    // when LockedData destructor is not called
+    {
+        LockFreeStore<MidiEngine> store; // store for the two instances of MidiEngine
+        const MidiEngine * rdata(store); // pointer to the read-only store, to be used from the seq/jack driver thread
+
+        // write to the writable store
+        {
+            LockedData<MidiEngine> ldata(store); // lock the writable store, destructor will unlock it
+            ldata->foo = 1;                       // write access the writable store (lock obtained)
+            qWarning("gui: %d", ldata->foo);      // read access to the writable store (lock obtained)
+        } // ldata gets out of the scope and its destructor is called. this results in unlock of the writable store
+
+        // attempt update the read-only store and report whether the update succeeded
+        // should succeed because the writable store is not locked
+        qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+        // print the data in the read-only store
+        qWarning("seq: %d", rdata->foo);
+
+        // write to the writable store
+        {
+            LockedData<MidiEngine> ldata(store);
+            ldata->foo = 2;
+            qWarning("gui: %d", ldata->foo);
+
+            // attempt update the read-only store and report whether the update succeeded
+            // should fail because the writable store is locked
+            qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+            qWarning("seq: %d (data locked by gui)", rdata->foo);
+        }
+
+        // print the data in the read-only store before the update
+        qWarning("seq: %d (before update)", rdata->foo);
+        // attempt update the read-only store and report whether the update succeeded
+        // should succeed because the writable store is not locked
+        qWarning("update %s", store.try_lockfree_update() ? "complete" : "not complete (gui thread locked)");
+        // print the data in the read-only store after the update
+        qWarning("seq: %d (after update)", rdata->foo);
+    }
+
     for (int l1 = 0; l1 < 2; l1++) {
         rangeIn[l1] = (l1) ? 127 : 0;
         indexIn[l1] = (l1) ? 127 : 0;
@@ -53,6 +102,7 @@ MidiArp::MidiArp()
     newNext = false;
     currentNoteTick = 0;
     nextNoteTick = 0;
+    nextTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;
@@ -70,7 +120,6 @@ MidiArp::MidiArp()
     isMuted = false;
     attack_time = 0.0;
     release_time = 0.0;
-    queueTempo = 100.0;
     sustain = false;
     sustainBuffer.clear();
     latch_mode = false;
@@ -81,7 +130,6 @@ MidiArp::MidiArp()
 }
 
 MidiArp::~MidiArp(){
-    wait();
 }
 
 void MidiArp::setMuted(bool on)
@@ -104,9 +152,7 @@ bool MidiArp::wantEvent(MidiEvent event) {
 
 void MidiArp::handleNoteOn(int note, int velocity, int tick)
 {
-    mutex.lock();
     int bufPtr, index;
-
     if (!getPressedNoteCount()) {
         purgeLatchBuffer();
         if (restartByKbd) advancePatternIndex(true);
@@ -135,7 +181,6 @@ void MidiArp::handleNoteOn(int note, int velocity, int tick)
 
     if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
     copyNoteBuffer();
-    mutex.unlock();
 }
 
 void MidiArp::handleNoteOff(int note, int tick, int keep_rel)
@@ -349,8 +394,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
             releasefn = 1.0 - (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / release_time / (double)TPQN
-                    * 60 / queueTempo;
+                    / (release_time * (double)TPQN * 2);
 
             if (releasefn < 0.0) releasefn = 0.0;
         }
@@ -360,8 +404,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             if (!notes[noteBufPtr][3][noteIndex[l1]]) {
                 attackfn = (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
-                    / attack_time / (double)TPQN
-                    * 60 / queueTempo;
+                    / (attack_time * (double)TPQN * 2);
 
                 if (attackfn > 1.0) attackfn = 1.0;
                 old_attackfn[noteIndex[l1]] = attackfn;
@@ -472,14 +515,7 @@ bool MidiArp::wantTrigByKbd()
 void MidiArp::prepareCurrentNote(int askedTick)
 {
     currentTick = askedTick;
-    start(Priority(6));
-    wait();
-}
-
-void MidiArp::run()
-{
     int l1 = 0;
-    mutex.lock();
     updateNotes();
     returnTick = currentNoteTick;
     returnNote.clear();
@@ -494,7 +530,6 @@ void MidiArp::run()
     returnLength = currentLength;
     returnIsNew = newCurrent;
     newCurrent = false;
-    mutex.unlock();
 }
 
 void MidiArp::updateNotes()
@@ -521,7 +556,6 @@ void MidiArp::foldReleaseTicks(int tick)
 {
     int bufPtr, l2;
 
-    mutex.lock();
     bufPtr = (noteBufPtr) ? 0 : 1;
 
     for (l2 = 0; l2 < noteCount; l2++) {
@@ -529,7 +563,6 @@ void MidiArp::foldReleaseTicks(int tick)
     }
 
     copyNoteBuffer();
-    mutex.unlock();
 }
 
 void MidiArp::initArpTick(int tick)
@@ -546,7 +579,6 @@ void MidiArp::initArpTick(int tick)
 
 void MidiArp::updatePattern(const QString& p_pattern)
 {
-    mutex.lock();
     int l1;
     QChar c;
 
@@ -574,7 +606,6 @@ void MidiArp::updatePattern(const QString& p_pattern)
     patternIndex = 0;
     grooveIndex = 0;
     noteOfs = 0;
-    mutex.unlock();
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange)
@@ -594,14 +625,12 @@ int MidiArp::clip(int value, int min, int max, bool *outOfRange)
 
 void MidiArp::newRandomValues()
 {
-    mutex.lock();
     randomTick = (double)randomTickAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomVelocity = (double)randomVelocityAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
     randomLength = (double)randomLengthAmp * (0.5 - (double)random()
             / (double)RAND_MAX);
-    mutex.unlock();
 }
 
 void MidiArp::updateRandomTickAmp(int val)
@@ -627,11 +656,6 @@ void MidiArp::updateAttackTime(int val)
 void MidiArp::updateReleaseTime(int val)
 {
     release_time = (double)val;
-}
-
-void MidiArp::updateQueueTempo(int val)
-{
-    queueTempo = (double)val;
 }
 
 void MidiArp::updateTriggerMode(int val)
@@ -703,9 +727,7 @@ void MidiArp::purgeLatchBuffer()
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {
-    mutex.lock();
     grooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
-    mutex.unlock();
 }

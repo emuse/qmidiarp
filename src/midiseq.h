@@ -96,6 +96,7 @@ class MidiSeq : public QObject  {
     int vel, transp, notelength;
     int size, res, waveFormIndex;
     int currentRecStep;
+    int nextTick;
     int nOctaves;
     int baseOctave;
     QVector<Sample> customWave;
@@ -223,6 +224,7 @@ class MidiSeq : public QObject  {
  */
     bool toggleMutePoint(double);
     void setCurrentIndex(int ix);
+    int getCurrentIndex() {return currentIndex; }
 
   signals:
     void nextStep(int currentIndex);

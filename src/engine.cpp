@@ -1,6 +1,6 @@
 /**
  * @file engine.cpp
- * @brief Implements the Engine module management class
+ * @brief Implementation of the Engine class
  *
  * @section LICENSE
  *
@@ -29,8 +29,9 @@
 #include "engine.h"
 
 
-Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) : QWidget(parent), modified(false)
+Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
+    ready = false;
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -41,17 +42,38 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget *parent) :
     connect(grooveWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             this, SLOT(setMidiLearn(int, int, int)));
     portCount = p_portCount;
-    seqDriver = new SeqDriver(&midiArpList, &midiLfoList, &midiSeqList, portCount, this);
-    connect(seqDriver, SIGNAL(controlEvent(int, int, int)),
-            this, SLOT(handleController(int, int, int)));
+
+    if (!p_alsamidi) {
+    // JackSync will become JackDriver at a later stage.
+        seqDriver = new JackSync(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
+    }
+    else {
+    // In case of ALSA MIDI with Jack Transport sync, JackSync is instantiated with 0 ports
+    // a pointer to jackSync has to be passed to seqDriver
+        jackSync = new JackSync(0,  this, tr_state_cb, midi_event_received_callback, tick_callback);
+        seqDriver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
+    }
+
     midiLearnFlag = false;
+    midiControllable = true;
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
+    gotArpKbdTrig = false;
+    gotSeqKbdTrig = false;
+    schedDelayTicks = 2;
+    status = false;
+    sendLogEvents = false;
+
+    resetTicks(0);
+    ready = true;
 }
 
-Engine::~Engine(){
+Engine::~Engine()
+{
+    delete seqDriver;
 }
+
 //Arp handling
 void Engine::addMidiArp(MidiArp *midiArp)
 {
@@ -66,8 +88,8 @@ void Engine::addArpWidget(ArpWidget *arpWidget)
 
 void Engine::removeMidiArp(MidiArp *midiArp)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiArpList.indexOf(midiArp);
     if (i != -1)
@@ -134,7 +156,7 @@ void Engine::setGrooveLength(int val)
 void Engine::sendGroove()
 {
     for (int l1 = 0; l1 < midiArpList.count(); l1++) {
-        midiArpList.at(l1)->newGrooveValues(grooveTick, grooveVelocity,
+        midiArp(l1)->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
 }
@@ -154,8 +176,8 @@ void Engine::addLfoWidget(LfoWidget *lfoWidget)
 
 void Engine::removeMidiLfo(MidiLfo *midiLfo)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiLfoList.indexOf(midiLfo);
     if (i != -1)
@@ -204,8 +226,8 @@ void Engine::addSeqWidget(SeqWidget *seqWidget)
 
 void Engine::removeMidiSeq(MidiSeq *midiSeq)
 {
-    if (seqDriver->runArp && (moduleWindowCount() < 1)) {
-        seqDriver->setQueueStatus(false);
+    if (status && (moduleWindowCount() < 1)) {
+        setStatus(false);
     }
     int i = midiSeqList.indexOf(midiSeq);
     if (i != -1)
@@ -292,6 +314,19 @@ void Engine::updateIDs(int curID)
 
 //general
 
+void Engine::setCompactStyle(bool on)
+{
+    int l1;
+    if (on) {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindow(l1)->setStyleSheet(COMPACT_STYLE);
+    }
+    else {
+        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+            moduleWindow(l1)->setStyleSheet("");
+    }
+}
+
 bool Engine::isModified()
 {
     bool arpmodified = false;
@@ -315,14 +350,12 @@ bool Engine::isModified()
             break;
         }
 
-    return modified || seqDriver->isModified()
-                    || arpmodified || lfomodified || seqmodified;
+    return modified || arpmodified || lfomodified || seqmodified;
 }
 
 void Engine::setModified(bool m)
 {
     modified = m;
-    seqDriver->setModified(m);
 
     for (int l1 = 0; l1 < arpWidgetCount(); l1++)
         arpWidget(l1)->setModified(m);
@@ -334,20 +367,260 @@ void Engine::setModified(bool m)
         seqWidget(l1)->setModified(m);
 }
 
+/* All following functions are the core engine of QMidiArp. They need to
+ * be made realtime-safe.
+ * They currently call different seqDriver backend functions, which
+ * can eventually (hopefully) get a jackDriver equivalent, so that
+ * switching between the driver backends can be done from here.
+ */
+
 int Engine::getPortCount()
 {
     return(portCount);
 }
 
-void Engine::runQueue(bool on)
+int Engine::getClientId()
 {
-    if (midiArpList.count() > 0)
-        seqDriver->setQueueStatus(on);
+    return seqDriver->getClientId();
 }
 
-int Engine::getAlsaClientId()
+void Engine::setStatus(bool on)
 {
-    return seqDriver->getAlsaClientId();
+    if (moduleWindowCount()) {
+        if (!on) {
+            for (int l1 = 0; l1 < midiArpCount(); l1++) {
+                midiArp(l1)->clearNoteBuffer();
+            }
+        }
+        status = on;
+        resetTicks(0);
+        seqDriver->setTransportStatus(on);
+    }
+}
+
+void Engine::tick_callback(void * context, bool echo_from_trig)
+{
+  ((Engine *)context)->echoCallback(echo_from_trig);
+}
+
+void Engine::echoCallback(bool echo_from_trig)
+{
+    int l1, l2;
+    QVector<int> note, velocity;
+    int tick = seqDriver->getCurrentTick();
+    int note_tick = 0;
+    int length;
+    int outport;
+    int seqtransp;
+    bool isNew;
+    MidiEvent outEv;
+    int frame_nticks = 0;
+
+    note.clear();
+    velocity.clear();
+
+        //~ printf("       tick %d     ",tick);
+        //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
+        //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
+        //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
+
+    //LFO data request and queueing
+    //add 8 ticks to startoff condition to cope with initial sync imperfections
+    if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
+        for (l1 = 0; l1 < midiLfoCount(); l1++) {
+            if ((tick + 8) >= midiLfo(l1)->nextTick) {
+                outEv.type = EV_CONTROLLER;
+                outEv.data = midiLfo(l1)->ccnumber;
+                outEv.channel = midiLfo(l1)->channelOut;
+                midiLfo(l1)->getNextFrame(&lfoData);
+                frame_nticks = lfoData.last().tick;
+                outport = midiLfo(l1)->portOut;
+                if (midiLfo(l1)->nextTick < (tick - frame_nticks)) midiLfo(l1)->nextTick = tick;
+                if (!midiLfo(l1)->isMuted) {
+                    l2 = 0;
+                    while (lfoData.at(l2).value > -1) {
+                        if (!lfoData.at(l2).muted) {
+                            outEv.value = lfoData.at(l2).value;
+                            seqDriver->sendMidiEvent(outEv, midiLfo(l1)->nextTick + lfoData.at(l2).tick
+                                , outport);
+                        }
+                        l2++;
+                    }
+                }
+                midiLfo(l1)->nextTick += frame_nticks;
+                /** round-up to current resolution (quantize) */
+                midiLfo(l1)->nextTick/= frame_nticks;
+                midiLfo(l1)->nextTick*= frame_nticks;
+            }
+            if (!l1)
+                nextMinLfoTick = midiLfo(l1)->nextTick;
+            else if (midiLfo(l1)->nextTick < nextMinLfoTick)
+                nextMinLfoTick = midiLfo(l1)->nextTick;
+        }
+        if (midiLfoCount()) seqDriver->requestEchoAt(nextMinLfoTick);
+    }
+
+    //Seq notes data request and queueing
+    //add 8 ticks to startoff condition to cope with initial sync imperfections
+    if (((tick + 8) >= nextMinSeqTick) && (midiSeqCount())) {
+        for (l1 = 0; l1 < midiSeqCount(); l1++) {
+            if ((gotSeqKbdTrig && echo_from_trig && midiSeq(l1)->wantTrigByKbd())
+                    || (!gotSeqKbdTrig && !echo_from_trig)) {
+                gotSeqKbdTrig = false;
+                if ((tick + 8) >= midiSeq(l1)->nextTick) {
+                    outEv.type = EV_NOTEON;
+                    outEv.value = midiSeq(l1)->vel;
+                    outEv.channel = midiSeq(l1)->channelOut;
+                    midiSeq(l1)->getNextNote(&seqSample);
+                    frame_nticks = TPQN / midiSeq(l1)->res;
+                    length = midiSeq(l1)->notelength;
+                    seqtransp = midiSeq(l1)->transp;
+                    outport = midiSeq(l1)->portOut;
+                    if (midiSeq(l1)->nextTick < (tick - frame_nticks)) midiSeq(l1)->nextTick = tick;
+                    if (!midiSeq(l1)->isMuted) {
+                        if (!seqSample.muted) {
+                            outEv.data = seqSample.value + seqtransp;
+                            seqDriver->sendMidiEvent(outEv, midiSeq(l1)->nextTick, outport, length);
+                        }
+                    }
+                    midiSeq(l1)->nextTick+=frame_nticks;
+                    if (!midiSeq(l1)->trigByKbd) {
+                        /** round-up to current resolution (quantize) */
+                        midiSeq(l1)->nextTick/=frame_nticks;
+                        midiSeq(l1)->nextTick*=frame_nticks;
+                    }
+                }
+            }
+            if (!l1)
+                nextMinSeqTick = midiSeq(l1)->nextTick;
+            else if (midiSeq(l1)->nextTick < nextMinSeqTick)
+                nextMinSeqTick = midiSeq(l1)->nextTick;
+        }
+        if (midiSeqCount()) seqDriver->requestEchoAt(nextMinSeqTick, 0);
+    }
+
+    //Arp Note queueing
+    if ((tick + 8) >= nextMinArpTick) {
+        for (l1 = 0; l1 < midiArpCount(); l1++) {
+            if ((gotArpKbdTrig && echo_from_trig && midiArp(l1)->wantTrigByKbd())
+                    || (!gotArpKbdTrig && !echo_from_trig)) {
+                gotArpKbdTrig = false;
+                if ((tick + 8) >= midiArp(l1)->nextTick) {
+                    outEv.type = EV_NOTEON;
+                    outEv.channel = midiArp(l1)->channelOut;
+                    midiArp(l1)->newRandomValues();
+                    midiArp(l1)->prepareCurrentNote(tick + schedDelayTicks);
+                    note = midiArp(l1)->returnNote;
+                    velocity = midiArp(l1)->returnVelocity;
+                    note_tick = midiArp(l1)->returnTick;
+                    length = midiArp(l1)->returnLength * 4;
+                    outport = midiArp(l1)->portOut;
+                    isNew = midiArp(l1)->returnIsNew;
+                    if (!velocity.isEmpty()) {
+                        if (isNew && velocity.at(0)) {
+                            l2 = 0;
+                            while(note.at(l2) >= 0) {
+                                outEv.data = note.at(l2);
+                                outEv.value = velocity.at(l2);
+                                seqDriver->sendMidiEvent(outEv, note_tick, outport, length);
+                                l2++;
+                            }
+                        }
+                    }
+                    midiArp(l1)->nextTick = midiArp(l1)->getNextNoteTick();
+                }
+            }
+            if (!l1)
+                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
+            else if (midiArp(l1)->nextTick < nextMinArpTick + schedDelayTicks)
+                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
+        }
+
+        if (0 > nextMinArpTick) nextMinArpTick = 0;
+        if (midiArpCount()) seqDriver->requestEchoAt(nextMinArpTick, 0);
+    }
+}
+
+bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
+{
+  return ((Engine *)context)->eventCallback(ev);
+}
+
+bool Engine::eventCallback(MidiEvent inEv)
+{
+    bool unmatched;
+    int l1;
+    unmatched = true;
+    int tick = seqDriver->getCurrentTick();
+
+    /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
+    if (sendLogEvents) emit midiEventReceived(inEv, tick);
+
+    if (inEv.type == EV_CONTROLLER) {
+
+        if (inEv.data == CT_FOOTSW) {
+            for (l1 = 0; l1 < midiArpCount(); l1++) {
+                if (midiArp(l1)->wantEvent(inEv)) {
+                    midiArp(l1)->setSustain((inEv.value == 127), tick);
+                    unmatched = false;
+                }
+            }
+        }
+        else {
+            //Does any LFO want to record this?
+            for (l1 = 0; l1 < midiLfoCount(); l1++) {
+                if (midiLfo(l1)->wantEvent(inEv)) {
+                    midiLfo(l1)->record(inEv.value);
+                    unmatched = false;
+                }
+            }
+            if (midiControllable) {
+                handleController(inEv.data, inEv.channel, inEv.value);
+                unmatched = false;
+            }
+        }
+        return unmatched;
+    }
+
+    if (inEv.type == EV_NOTEON) {
+
+        for (l1 = 0; l1 < midiSeqCount(); l1++) {
+            if (midiSeq(l1)->wantEvent(inEv)) {
+                unmatched = false;
+
+                midiSeq(l1)->handleNote(inEv.data, inEv.value, tick);
+
+                if (inEv.value && midiSeq(l1)->wantTrigByKbd()) {
+                    nextMinSeqTick = tick;
+                    midiSeq(l1)->nextTick = nextMinSeqTick + schedDelayTicks;
+                    gotSeqKbdTrig = true;
+                    seqDriver->requestEchoAt(nextMinSeqTick, true);
+                }
+            }
+        }
+        for (l1 = 0; l1 < midiArpCount(); l1++) {
+            if (midiArp(l1)->wantEvent(inEv)) {
+                unmatched = false;
+                if (inEv.value) {
+
+                    midiArp(l1)->handleNoteOn(inEv.data, inEv.value, tick);
+
+                    if (midiArp(l1)->wantTrigByKbd()) {
+                        nextMinArpTick = tick;
+                        midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
+                        gotArpKbdTrig = true;
+                        seqDriver->requestEchoAt(nextMinArpTick, true);
+                    }
+                }
+                else {
+                    midiArp(l1)->handleNoteOff(inEv.data, tick, 1);
+                }
+            }
+        }
+        return unmatched;
+    }
+
+    return unmatched;
 }
 
 void Engine::handleController(int ccnumber, int channel, int value)
@@ -366,17 +639,14 @@ void Engine::handleController(int ccnumber, int channel, int value)
                 switch (cclist.at(l2).ID) {
                     case 0:
                             grooveWidget->grooveTick->setValue(sval);
-                            return;
                     break;
 
                     case 1:
                             grooveWidget->grooveVelocity->setValue(sval);
-                            return;
                     break;
 
                     case 2:
                             grooveWidget->grooveLength->setValue(sval);
-                            return;
                     break;
 
                     default:
@@ -397,7 +667,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = arpWidget(l1)->muteOut->isChecked();
                                         arpWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -413,7 +682,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 arpWidget(l1)->selectPatternPreset(sval);
-                                return;
                         break;
                         default:
                         break;
@@ -434,7 +702,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = lfoWidget(l1)->muteOut->isChecked();
                                         lfoWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -451,34 +718,29 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->amplitude->setValue(sval);
-                                return;
                         break;
 
                         case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->offset->setValue(sval);
-                                return;
                         break;
                         case 3:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateWaveForm(sval);
-                                return;
                         break;
                         case 4:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->freqBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateFreq(sval);
-                                return;
                         break;
                         case 5: if (min == max) {
                                     if (value == max) {
                                         m = lfoWidget(l1)->recordAction->isChecked();
                                         lfoWidget(l1)->recordAction->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -495,14 +757,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         / 127);
                                 lfoWidget(l1)->resBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateRes(sval);
-                                return;
                         break;
                         case 7:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 lfoWidget(l1)->sizeBox->setCurrentIndex(sval);
                                 lfoWidget(l1)->updateSize(sval);
-                                return;
                         break;
 
                         default:
@@ -524,7 +784,6 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                     if (value == max) {
                                         m = seqWidget(l1)->muteOut->isChecked();
                                         seqWidget(l1)->muteOut->setChecked(!m);
-                                        return;
                                     }
                                 }
                                 else {
@@ -541,14 +800,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->velocity->setValue(sval);
-                                return;
                         break;
 
                         case 2:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->notelength->setValue(sval);
-                                return;
                         break;
 
                         case 3: if (min == max) {
@@ -572,14 +829,12 @@ void Engine::handleController(int ccnumber, int channel, int value)
                                         / 127);
                                 seqWidget(l1)->resBox->setCurrentIndex(sval);
                                 seqWidget(l1)->updateRes(sval);
-                                return;
                         break;
                         case 5:
                                 sval = min + ((double)value * (max - min)
                                         / 127);
                                 seqWidget(l1)->sizeBox->setCurrentIndex(sval);
                                 seqWidget(l1)->updateSize(sval);
-                                return;
                         break;
 
                         default:
@@ -614,6 +869,34 @@ void Engine::handleController(int ccnumber, int channel, int value)
     }
 }
 
+void Engine::resetTicks(int curtick)
+{
+    int l1;
+
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        midiArp(l1)->foldReleaseTicks(curtick);
+        midiArp(l1)->initArpTick(0);
+        midiArp(l1)->nextTick = 0;
+    }
+    for (l1 = 0; l1 < midiLfoCount(); l1++) {
+        midiLfo(l1)->setFramePtr(0);
+        midiLfo(l1)->nextTick = 0;
+    }
+    for (l1 = 0; l1 < midiSeqCount(); l1++) {
+        midiSeq(l1)->setCurrentIndex(0);
+        midiSeq(l1)->nextTick = 0;
+    }
+    nextMinLfoTick = 0;
+    nextMinSeqTick = 0;
+    nextMinArpTick = 0;
+}
+
+void Engine::setMidiControllable(bool on)
+{
+    midiControllable = on;
+    modified = true;
+}
+
 void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 {
     if (0 > controlID) {
@@ -628,15 +911,22 @@ void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
     }
 }
 
-void Engine::setCompactStyle(bool on)
+void Engine::setTempo(int bpm)
 {
-    int l1;
-    if (on) {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
-            moduleWindowList.at(l1)->setStyleSheet(COMPACT_STYLE);
-    }
-    else {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
-            moduleWindowList.at(l1)->setStyleSheet("");
+    seqDriver->setTempo(bpm);
+    modified = true;
+}
+
+void Engine::setSendLogEvents(bool on)
+{
+    sendLogEvents = on;
+}
+
+void Engine::tr_state_cb(bool on, void *context)
+{
+    if  (((Engine  *)context)->ready) {
+        if (((Engine  *)context)->seqDriver->useJackSync) {
+           ((Engine  *)context)->setStatus(on);
+        }
     }
 }

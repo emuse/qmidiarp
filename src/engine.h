@@ -1,6 +1,6 @@
 /**
  * @file engine.h
- * @brief Member definitions for the Engine module management class.
+ * @brief Header file for the Engine class
  *
  * @section LICENSE
  *
@@ -25,10 +25,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QWidget>
+#include <QThread>
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
+#include "jacksync.h"
 #include "midiarp.h"
 #include "arpwidget.h"
 #include "midilfo.h"
@@ -49,7 +50,7 @@
  * MidiCCList.
  *
  */
-class Engine : public QWidget  {
+class Engine : public QThread  {
 
   Q_OBJECT
 
@@ -63,17 +64,35 @@ class Engine : public QWidget  {
     QList<SeqWidget *> seqWidgetList;
     int portCount;
     bool modified;
-    int mute_ccnumber, midiLearnID, midiLearnWindowID, midiLearnModuleID;
-    bool midi_mutable, midiLearnFlag;
+    int midiLearnID, midiLearnWindowID, midiLearnModuleID;
+    bool midiLearnFlag;
+
+    //From SeqDriver
+    bool gotArpKbdTrig;
+    bool gotSeqKbdTrig;
+    int  schedDelayTicks;
+    int nextMinLfoTick;
+    int nextMinSeqTick;
+    int nextMinArpTick;
+    QVector<Sample> lfoData;
+    Sample seqSample;
+    bool sendLogEvents;
+
+    static bool midi_event_received_callback(void * context, MidiEvent ev);
+    static void tick_callback(void * context, bool echo_from_trig);
+    static void tr_state_cb(bool tr_state, void * context);
 
   public:
     int grooveTick, grooveVelocity, grooveLength;
+    bool midiControllable;
+    bool status;
+    bool ready;
+    GrooveWidget *grooveWidget;
+    JackSync *jackSync;
+    DriverBase *seqDriver;
 
   public:
-    GrooveWidget *grooveWidget;
-    SeqDriver *seqDriver;
-
-    Engine(GrooveWidget *p_grooveWidget, int p_portCount, QWidget* parent=0);
+    Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
     ~Engine();
     int getPortCount();
     bool isModified();
@@ -111,10 +130,20 @@ class Engine : public QWidget  {
     int seqWidgetCount();
     MidiSeq *midiSeq(int index);
     SeqWidget *seqWidget(int index);
-    int getAlsaClientId();
+    int getClientId();
+    void setTempo(int bpm);
+
+  signals:
+/**
+ * @brief This signal is connected to the LogWidget::appendEvent() slot
+ *
+ * @param ev MidiEvent received by Engine
+ * @param tick Set to the tick value at which the event was received
+ */
+    void midiEventReceived(MidiEvent ev, int tick);
 
   public slots:
-    void runQueue(bool);
+    void setStatus(bool);
 /**
  * @brief This function is used to set the modified flag, which is queried before
  * loading a new session file or quitting qmidiarp.
@@ -125,11 +154,16 @@ class Engine : public QWidget  {
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void handleController(int ccnumber, int channel, int value);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
+    void setMidiControllable(bool on);
     void setCompactStyle(bool on);
     void setGrooveTick(int grooveTick);
     void setGrooveVelocity(int grooveVelocity);
     void setGrooveLength(int grooveLength);
     void sendGroove();
+    void setSendLogEvents(bool on);
+    bool eventCallback(MidiEvent inEv);
+    void echoCallback(bool echo_from_trig);
+    void resetTicks(int curtick);
 };
 
 #endif

@@ -26,14 +26,12 @@
 #define LOGWIDGET_H
 
 #include <QBoxLayout>
+#include <QDateTime>
 #include <QString>
 #include <QLabel>
 #include <QSlider>
-#include <QComboBox>
 #include <QCheckBox>
-#include <QSpinBox>
 #include <QTextEdit>
-#include <QDateTime>
 
 #include "midievent.h"
 
@@ -71,7 +69,7 @@ class LogWidget : public QWidget
   public slots:
     void logMidiToggle(bool on);
     void enableLogToggle(bool on);
-    void appendEvent(MidiEvent ev);
+    void appendEvent(MidiEvent ev, int tick);
     void appendText(const QString&);
     void clear();
 };

@@ -65,7 +65,7 @@ if test "x$MOC" = "xno" ; then
     [cannot find 'moc', please install the Qt4 development tools package.])
 fi
 
-enable_translations=true
+enable_translations=false
 AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test x$enable_translations = xtrue])
 
 AM_COND_IF([ENABLE_TRANSLATIONS],[
