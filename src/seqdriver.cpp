@@ -385,3 +385,14 @@ int SeqDriver::getClientId()
 {
     return clientid;
 }
+
+void SeqDriver::setUseJackTransport(bool on)
+{
+    if (on) {
+        jackSync->callJack(0);
+    }
+    else {
+        jackSync->callJack(-1);
+    }
+    useJackSync = on;
+}

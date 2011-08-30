@@ -114,6 +114,7 @@ class SeqDriver : public DriverBase {
         void setTransportStatus(bool run); /** is pure in DriverBase */
         void setTempo(int bpm); /** overloaded over DriverBase */
         void setUseMidiClock(bool on); /** overloaded over DriverBase */
+        void setUseJackTransport(bool on); /** overloaded over DriverBase */
 };
 
 #endif

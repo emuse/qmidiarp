@@ -40,19 +40,35 @@ JackDriver::JackDriver(
     portCount = p_portCount;
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
+    jackRunning = false;
 
     internalTempo = 120;
 
-/** Initialize and activate Jack with out_port_count ports */
-    if (initJack(portCount)) {
-        emit j_shutdown();
+/** Initialize and activate Jack with out_port_count ports if we use
+ *  JACK driver backend, i.e. portCount > 0 */
+    if (portCount) {
+        callJack(portCount);
+        jSampleRate = jack_get_sample_rate(jack_handle);
+        setTransportStatus(false);
     }
-    else if (activateJack()) {
-        emit j_shutdown();
+}
+void JackDriver::callJack(int port_count)
+{
+    if (port_count == -1 && jackRunning) {
+        deactivateJack();
+        if (jack_handle != 0) {
+            jack_client_close(jack_handle);
+            jack_handle = 0;
+        }
     }
-
-    jSampleRate = jack_get_sample_rate(jack_handle);
-    setTransportStatus(false);
+    else {
+        if (initJack(port_count)) {
+            emit j_shutdown();
+        }
+        else if (activateJack()) {
+            emit j_shutdown();
+        }
+    }
 }
 
 JackDriver::~JackDriver()
