@@ -110,10 +110,6 @@ class SeqDriver : public DriverBase {
         int getClientId(); /** overloaded over DriverBase */
         void run();
 
-   signals:
-        // TODO: move to engine class
-        //void controlEvent(int ccnumber, int channel, int value);
-
    public slots:
         void setTransportStatus(bool run); /** is pure in DriverBase */
         void setTempo(int bpm); /** overloaded over DriverBase */

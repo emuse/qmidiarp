@@ -176,8 +176,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     jackSyncAction->setCheckable(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(engine->driver, SIGNAL(j_shutdown()), this,
-            SLOT(jackShutdown()));
+    if (alsaMidi) {
+        connect(engine->jackSync, SIGNAL(j_shutdown()), this,
+                SLOT(jackShutdown()));
+    }
+    else {
+        connect(engine->driver, SIGNAL(j_shutdown()), this,
+                SLOT(jackShutdown()));
+    }
     jackSyncAction->setChecked(!alsaMidi);
     jackSyncAction->setDisabled(true);
 
