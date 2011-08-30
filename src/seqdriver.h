@@ -29,18 +29,18 @@
 #include <QThread>
 #include <alsa/asoundlib.h>
 
-#include "jacksync.h"
+#include "jackdriver.h"
 #include "midiarp.h"
 #include "midilfo.h"
 #include "midiseq.h"
 #include "main.h"
 #include "driverbase.h"
 
-/*! @brief ALSA sequencer backend QThread class. Also creates JackSync
+/*! @brief ALSA sequencer backend QThread class. Also creates JackDriver
  *
  * SeqDriver is created by Engine at the moment of program start. Its
  * constructor registers ALSA seq input port and the requested number of
- * output ports. I also creates a JackSync instance whose ports are only
+ * output ports. I also creates a JackDriver instance whose ports are only
  * created when the SeqDriver::setUseJackTransport member is called.
  * Pointers to the MIDI workers MidiLfo, MidiSeq are passed to SeqDriver
  * as arguments.
@@ -82,7 +82,7 @@ class SeqDriver : public DriverBase {
 
         void initTempo();
 
-        JackSync *jackSync;
+        JackDriver *jackSync;
         jack_position_t jPos;
 
         int midiTick;
@@ -100,7 +100,7 @@ class SeqDriver : public DriverBase {
 
     public:
         SeqDriver(
-            JackSync *p_jackSync,
+            JackDriver *p_jackSync,
             int p_portCount,
             void * callback_context,
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),

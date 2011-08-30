@@ -29,7 +29,7 @@
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
-#include "jacksync.h"
+#include "jackdriver.h"
 #include "midiarp.h"
 #include "arpwidget.h"
 #include "midilfo.h"
@@ -88,8 +88,8 @@ class Engine : public QThread  {
     bool status;
     bool ready;
     GrooveWidget *grooveWidget;
-    JackSync *jackSync;
-    DriverBase *seqDriver;
+    JackDriver *jackSync;
+    DriverBase *driver;
 
   public:
     Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);

@@ -1,6 +1,6 @@
 /*!
- * @file jacksync.cpp
- * @brief Implements the JackSync QObject class.
+ * @file jackdriver.cpp
+ * @brief Implements the JackDriver QObject class.
  *
  * @section LICENSE
  *
@@ -23,12 +23,12 @@
  *
  */
 
-#include "jacksync.h"
+#include "jackdriver.h"
 #include "config.h"
 #include <stdio.h>
 
 
-JackSync::JackSync(
+JackDriver::JackDriver(
     int p_portCount,
     void * callback_context,
     void (* p_tr_state_cb)(bool j_tr_state, void * context),
@@ -55,7 +55,7 @@ JackSync::JackSync(
     setTransportStatus(false);
 }
 
-JackSync::~JackSync()
+JackDriver::~JackDriver()
 {
     if (jackRunning) {
         deactivateJack();
@@ -66,7 +66,7 @@ JackSync::~JackSync()
     }
 }
 
-int JackSync::initJack(int out_port_count)
+int JackDriver::initJack(int out_port_count)
 {
     char buf[16];
 
@@ -103,7 +103,7 @@ int JackSync::initJack(int out_port_count)
     return(0);
 }
 
-int JackSync::activateJack()
+int JackDriver::activateJack()
 {
     if (jack_activate(jack_handle)) {
         qWarning("cannot activate client");
@@ -115,7 +115,7 @@ int JackSync::activateJack()
     return(0);
 }
 
-int JackSync::deactivateJack()
+int JackDriver::deactivateJack()
 {
     if (jackRunning) {
         if (jack_deactivate(jack_handle)) {
@@ -128,21 +128,21 @@ int JackSync::deactivateJack()
     return(0);
 }
 
-void JackSync::jack_shutdown(void *arg)
+void JackDriver::jack_shutdown(void *arg)
 {
-    JackSync *rd = (JackSync *) arg;
+    JackDriver *rd = (JackDriver *) arg;
     rd->setJackRunning(false);
 
     qWarning("JACK shut down. JACK sync Disabled.");
     emit rd->j_shutdown();
 }
 
-int JackSync::process_callback(jack_nframes_t nframes, void *arg)
+int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 {
     uint i;
     uint l1, l2, size;
 
-    JackSync *rd = (JackSync *) arg;
+    JackDriver *rd = (JackDriver *) arg;
     uint out_port_count = rd->portCount;
     rd->jackTrCheckState();
 
@@ -276,7 +276,7 @@ int JackSync::process_callback(jack_nframes_t nframes, void *arg)
     return(0);
 }
 
-void JackSync::jackTrCheckState()
+void JackDriver::jackTrCheckState()
 {
     int state = getState();
 
@@ -306,22 +306,22 @@ void JackSync::jackTrCheckState()
     }
 }
 
-jack_transport_state_t JackSync::getState()
+jack_transport_state_t JackDriver::getState()
 {
     return jack_transport_query(jack_handle, &currentPos);
 }
 
-void JackSync::setJackRunning(bool on)
+void JackDriver::setJackRunning(bool on)
 {
     jackRunning = on;
 }
 
-jack_position_t JackSync::getCurrentPos()
+jack_position_t JackDriver::getCurrentPos()
 {
     return currentPos;
 }
 
-void JackSync::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
+void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
 {
   //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
     evQueue.append(ev);
@@ -336,7 +336,7 @@ void JackSync::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigne
     }
 }
 
-bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
+bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 {
     if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
     echoTickQueue.append(echo_tick);
@@ -347,7 +347,7 @@ bool JackSync::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 }
 
-void JackSync::handleEchoes()
+void JackDriver::handleEchoes()
 {
     curJFrame++;
 
@@ -376,7 +376,7 @@ void JackSync::handleEchoes()
     }
 }
 
-void JackSync::setTransportStatus(bool on)
+void JackDriver::setTransportStatus(bool on)
 {
     jack_position_t jpos = getCurrentPos();
     if (jpos.beats_per_minute > 0.01)

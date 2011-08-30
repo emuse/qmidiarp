@@ -44,14 +44,13 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     portCount = p_portCount;
 
     if (!p_alsamidi) {
-    // JackSync will become JackDriver at a later stage.
-        seqDriver = new JackSync(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
+        driver = new JackDriver(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
     }
     else {
-    // In case of ALSA MIDI with Jack Transport sync, JackSync is instantiated with 0 ports
-    // a pointer to jackSync has to be passed to seqDriver
-        jackSync = new JackSync(0,  this, tr_state_cb, midi_event_received_callback, tick_callback);
-        seqDriver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
+    // In case of ALSA MIDI with Jack Transport sync, JackDriver is instantiated with 0 ports
+    // a pointer to jackSync has to be passed to driver
+        jackSync = new JackDriver(0,  this, tr_state_cb, midi_event_received_callback, tick_callback);
+        driver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
     }
 
     midiLearnFlag = false;
@@ -71,7 +70,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
 
 Engine::~Engine()
 {
-    delete seqDriver;
+    delete driver;
 }
 
 //Arp handling
@@ -369,7 +368,7 @@ void Engine::setModified(bool m)
 
 /* All following functions are the core engine of QMidiArp. They need to
  * be made realtime-safe.
- * They currently call different seqDriver backend functions, which
+ * They currently call different driver backend functions, which
  * can eventually (hopefully) get a jackDriver equivalent, so that
  * switching between the driver backends can be done from here.
  */
@@ -381,7 +380,7 @@ int Engine::getPortCount()
 
 int Engine::getClientId()
 {
-    return seqDriver->getClientId();
+    return driver->getClientId();
 }
 
 void Engine::setStatus(bool on)
@@ -394,7 +393,7 @@ void Engine::setStatus(bool on)
         }
         status = on;
         resetTicks(0);
-        seqDriver->setTransportStatus(on);
+        driver->setTransportStatus(on);
     }
 }
 
@@ -407,7 +406,7 @@ void Engine::echoCallback(bool echo_from_trig)
 {
     int l1, l2;
     QVector<int> note, velocity;
-    int tick = seqDriver->getCurrentTick();
+    int tick = driver->getCurrentTick();
     int note_tick = 0;
     int length;
     int outport;
@@ -441,7 +440,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     while (lfoData.at(l2).value > -1) {
                         if (!lfoData.at(l2).muted) {
                             outEv.value = lfoData.at(l2).value;
-                            seqDriver->sendMidiEvent(outEv, midiLfo(l1)->nextTick + lfoData.at(l2).tick
+                            driver->sendMidiEvent(outEv, midiLfo(l1)->nextTick + lfoData.at(l2).tick
                                 , outport);
                         }
                         l2++;
@@ -457,7 +456,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (midiLfo(l1)->nextTick < nextMinLfoTick)
                 nextMinLfoTick = midiLfo(l1)->nextTick;
         }
-        if (midiLfoCount()) seqDriver->requestEchoAt(nextMinLfoTick);
+        if (midiLfoCount()) driver->requestEchoAt(nextMinLfoTick);
     }
 
     //Seq notes data request and queueing
@@ -480,7 +479,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     if (!midiSeq(l1)->isMuted) {
                         if (!seqSample.muted) {
                             outEv.data = seqSample.value + seqtransp;
-                            seqDriver->sendMidiEvent(outEv, midiSeq(l1)->nextTick, outport, length);
+                            driver->sendMidiEvent(outEv, midiSeq(l1)->nextTick, outport, length);
                         }
                     }
                     midiSeq(l1)->nextTick+=frame_nticks;
@@ -496,7 +495,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (midiSeq(l1)->nextTick < nextMinSeqTick)
                 nextMinSeqTick = midiSeq(l1)->nextTick;
         }
-        if (midiSeqCount()) seqDriver->requestEchoAt(nextMinSeqTick, 0);
+        if (midiSeqCount()) driver->requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
@@ -522,7 +521,7 @@ void Engine::echoCallback(bool echo_from_trig)
                             while(note.at(l2) >= 0) {
                                 outEv.data = note.at(l2);
                                 outEv.value = velocity.at(l2);
-                                seqDriver->sendMidiEvent(outEv, note_tick, outport, length);
+                                driver->sendMidiEvent(outEv, note_tick, outport, length);
                                 l2++;
                             }
                         }
@@ -537,7 +536,7 @@ void Engine::echoCallback(bool echo_from_trig)
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
-        if (midiArpCount()) seqDriver->requestEchoAt(nextMinArpTick, 0);
+        if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
 }
 
@@ -551,7 +550,7 @@ bool Engine::eventCallback(MidiEvent inEv)
     bool unmatched;
     int l1;
     unmatched = true;
-    int tick = seqDriver->getCurrentTick();
+    int tick = driver->getCurrentTick();
 
     /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
     if (sendLogEvents) emit midiEventReceived(inEv, tick);
@@ -594,7 +593,7 @@ bool Engine::eventCallback(MidiEvent inEv)
                     nextMinSeqTick = tick;
                     midiSeq(l1)->nextTick = nextMinSeqTick + schedDelayTicks;
                     gotSeqKbdTrig = true;
-                    seqDriver->requestEchoAt(nextMinSeqTick, true);
+                    driver->requestEchoAt(nextMinSeqTick, true);
                 }
             }
         }
@@ -609,7 +608,7 @@ bool Engine::eventCallback(MidiEvent inEv)
                         nextMinArpTick = tick;
                         midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
                         gotArpKbdTrig = true;
-                        seqDriver->requestEchoAt(nextMinArpTick, true);
+                        driver->requestEchoAt(nextMinArpTick, true);
                     }
                 }
                 else {
@@ -913,7 +912,7 @@ void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
 
 void Engine::setTempo(int bpm)
 {
-    seqDriver->setTempo(bpm);
+    driver->setTempo(bpm);
     modified = true;
 }
 
@@ -925,7 +924,7 @@ void Engine::setSendLogEvents(bool on)
 void Engine::tr_state_cb(bool on, void *context)
 {
     if  (((Engine  *)context)->ready) {
-        if (((Engine  *)context)->seqDriver->useJackSync) {
+        if (((Engine  *)context)->driver->useJackSync) {
            ((Engine  *)context)->setStatus(on);
         }
     }

@@ -176,7 +176,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     jackSyncAction->setCheckable(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    connect(engine->seqDriver, SIGNAL(j_shutdown()), this,
+    connect(engine->driver, SIGNAL(j_shutdown()), this,
             SLOT(jackShutdown()));
     jackSyncAction->setChecked(!alsaMidi);
     jackSyncAction->setDisabled(true);
@@ -860,13 +860,13 @@ void MainWindow::openTextFile(const QString& fn)
     qs2 = qs.section(' ', 0, 0);
 
     grooveWidget->grooveTick->setValue(qs2.toInt());
-    //  engine->seqDriver->setGrooveTick(qs2.toInt());
+    //  engine->driver->setGrooveTick(qs2.toInt());
     qs2 = qs.section(' ', 1, 1);
     grooveWidget->grooveVelocity->setValue(qs2.toInt());
-    //  engine->seqDriver->setGrooveVelocity(qs2.toInt());
+    //  engine->driver->setGrooveVelocity(qs2.toInt());
     qs2 = qs.section(' ', 2, 2);
     grooveWidget->grooveLength->setValue(qs2.toInt());
-    //  engine->seqDriver->setGrooveLength(qs2.toInt());
+    //  engine->driver->setGrooveLength(qs2.toInt());
 
     while (!loadText.atEnd()) {
         qs = loadText.readLine();
@@ -956,13 +956,13 @@ bool MainWindow::saveFile()
             xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
-                QString::number((int)engine->seqDriver->useMidiClock));
+                QString::number((int)engine->driver->useMidiClock));
             xml.writeTextElement("jackSyncEnabled",
-                QString::number((int)engine->seqDriver->useJackSync));
+                QString::number((int)engine->driver->useJackSync));
             xml.writeTextElement("forwardUnmatched",
-                QString::number((int)engine->seqDriver->forwardUnmatched));
+                QString::number((int)engine->driver->forwardUnmatched));
             xml.writeTextElement("forwardPort",
-                QString::number(engine->seqDriver->portUnmatched));
+                QString::number(engine->driver->portUnmatched));
         xml.writeEndElement();
 
         xml.writeStartElement("groove");
@@ -1107,7 +1107,7 @@ void MainWindow::resetTransport()
 void MainWindow::midiClockToggle(bool on)
 {
     if (on && alsaMidi) jackSyncAction->setChecked(false);
-    engine->seqDriver->setUseMidiClock(on);
+    engine->driver->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
 
@@ -1115,7 +1115,7 @@ void MainWindow::jackSyncToggle(bool on)
 {
     if (on) midiClockAction->setChecked(false);
     setGUIforExtSync(on);
-    engine->seqDriver->setUseJackTransport(on);
+    engine->driver->setUseJackTransport(on);
 }
 
 void MainWindow::jackShutdown()

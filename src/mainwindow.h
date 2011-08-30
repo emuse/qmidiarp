@@ -461,13 +461,13 @@ class MainWindow : public QMainWindow
 /*! @brief Slot for jackSync ToolButton.
 * This function toggles SeqDriver between Jack Transport and internal
 * clock operation.
-* @param on True sets seqDriver to JACK Transport operation, false
+* @param on True sets driver to JACK Transport operation, false
 * returns to internal clock.
 *
 * @see jackSyncToggle
 */
     void jackSyncToggle(bool on);
-/*! @brief Slot for the JackSync::j_shutdown() signal.
+/*! @brief Slot for the JackDriver::j_shutdown() signal.
 * This function switches the sync to internal clock operation and
 * deactivates the Jack Transport Action.
 * @see jackSyncToggle

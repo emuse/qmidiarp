@@ -1,6 +1,6 @@
 /*!
- * @file jacksync.h
- * @brief Headers for the JackSync QObject class.
+ * @file jackdriver.h
+ * @brief Headers for the JackDriver QObject class.
  *
  * @section LICENSE
  *
@@ -35,14 +35,14 @@
 #include "driverbase.h"
 
 /*!
- * The JackSync class is a QObject providing access to the transport status
+ * The JackDriver class is a QObject providing access to the transport status
  * of the Jack Audio Connection Kit (JACK) transport system. It provides
  * functions to register and initialise a jack client and to read the
  * current frame position of a transport master.
  *
  * @brief QObject class providing access to jack transport status.
  */
-class JackSync : public DriverBase
+class JackDriver : public DriverBase
 {
     Q_OBJECT
 
@@ -69,12 +69,12 @@ class JackSync : public DriverBase
 
 
   public:
-    JackSync(int p_portCount,
+    JackDriver(int p_portCount,
             void * callback_context,
             void (* p_tr_state_cb)(bool j_tr_state, void * context),
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),
             void (* tick_callback)(void * context, bool echo_from_trig));
-    ~JackSync();
+    ~JackDriver();
 
     void (* trStateCb)(bool j_tr_state, void * context);
     void * cbContext;

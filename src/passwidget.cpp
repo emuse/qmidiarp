@@ -95,13 +95,13 @@ PassWidget::~PassWidget()
 
 void PassWidget::updateForward(bool on)
 {
-    engine->seqDriver->setForwardUnmatched(on);
+    engine->driver->setForwardUnmatched(on);
     portUnmatchedSpin->setDisabled(!on);
 }
 
 void PassWidget::updatePortUnmatched(int id)
 {
-    engine->seqDriver->setPortUnmatched(id);
+    engine->driver->setPortUnmatched(id);
 }
 
 void PassWidget::setForward(bool on)

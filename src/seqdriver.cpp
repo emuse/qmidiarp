@@ -31,7 +31,7 @@
 
 
 SeqDriver::SeqDriver(
-    JackSync *p_jackSync,
+    JackDriver *p_jackSync,
     int p_portCount,
     void * callback_context,
     bool (* midi_event_received_callback)(void * context, MidiEvent ev),
