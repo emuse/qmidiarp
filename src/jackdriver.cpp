@@ -61,7 +61,7 @@ void JackDriver::callJack(int port_count)
             jack_handle = 0;
         }
     }
-    else {
+    else if (port_count != -1) {
         if (initJack(port_count)) {
             emit j_shutdown();
         }
