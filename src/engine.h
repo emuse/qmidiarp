@@ -39,15 +39,16 @@
 #include "groovewidget.h"
 
 /*!
- * @brief Manages created module components in lists. Instantiates SeqDriver.
+ * @brief Core Engine Thread. Instantiates SeqDriver and JackDriver.
  *
  * For each module type there is a QList for each of
  * its components (for example MidiArp and ArpWidget). In parallel there is
  * a common list for all modules containing their DockWidgets.
- * Engine also instantiates the SeqDriver MIDI backend and handles MIDI
- * controller events through signaling by SeqDriver. Controllers are
- * dispatched to the modules as requiered by their MIDI Learn
- * MidiCCList.
+ * Engine also instantiates the MIDI Driver backend and processes MIDI
+ * events coming in and going out. It dispatches incoming events to the
+ * worker modules and schedules resulting events back to the driver.
+ * Controller events are dispatched to the modules as requiered by their
+ * MIDI Learn MidiCCList.
  *
  */
 class Engine : public QThread  {

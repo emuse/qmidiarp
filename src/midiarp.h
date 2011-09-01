@@ -35,12 +35,12 @@
 
  /*!
  * @brief MIDI worker class for the Arpeggiator Module. Implements the
- * functions providing note arpeggiation as a QThread.
+ * functions providing note arpeggiation as a QWidget.
  *
  * The parameters of MidiArp are controlled by the ArpWidget class.
- * A pointer to MidiArp is passed to the SeqDriver thread, which calls
+ * A pointer to MidiArp is passed to the Engine, which calls
  * the MidiArp::prepareCurrentNote member as a function of the position of
- * the ALSA queue. MidiArp will then call its
+ * the Driver queue. MidiArp will then call its
  * internal MidiArp::getNote function which produces an array of notes
  * stored in its internal output buffer. The notes in the array depend
  * on the active MidiArp::pattern, envelope, random and groove settings.
@@ -48,12 +48,12 @@
  * (tick and length), note values and velocity values. MidiArp::getNote
  * also advances the pattern index and emits the MidiArp::nextStep signal
  * to update the cursor position in the graphical ArpScreen display part
- * of ArpWidget. SeqDriver then
- * accesses this output buffer and sends it to the ALSA queue. SeqDriver
+ * of ArpWidget. Engine then
+ * accesses this output buffer and sends it to the Driver queue. Engine
  * also calls MidiArp::handleNoteOn and MidiArp::handleNoteOff. These members
  * manage the arpeggiator input note buffer
- * also part of this class. Notes received on the ALSA input port will
- * therefore be added or removed from the buffer as SeqDriver transfers
+ * also part of this class. Notes received on the MIDI input port will
+ * therefore be added or removed from the buffer as Engine transfers
  * them to this class.
  */
 class MidiArp : public QWidget  {
@@ -136,7 +136,7 @@ class MidiArp : public QWidget  {
  * @brief This function updates the current note arrays with new values
  * obtained from MidiArp::getNote
  *
- * It is called by MidiArp::run and calls MidiArp::getNote if the given
+ * It is called by Engine::echoCallback() and calls MidiArp::getNote if the given
  * timing is ahead of the last timing information. It then transfers the
  * MidiArp::nextNote and MidiArp::nextVelocity arrays into
  * MidiArp::currentNote and MidiArp::currentVelocity.
@@ -168,7 +168,7 @@ class MidiArp : public QWidget  {
  */
     void prepareNextNote(int askedTick);
 /**
- * @brief This function returns the number of notes present at the ALSA
+ * @brief This function returns the number of notes present at the MIDI
  * input port.
  *
  * This is the number of notes currently pressed on the keyboard. Note
@@ -176,11 +176,11 @@ class MidiArp : public QWidget  {
  * number, since it can contain notes in release state or in the
  * MidiArp::latchBuffer.
  *
- * @return Number of notes present at the ALSA input port.
+ * @return Number of notes present at the MIDI input port.
  */
     int getPressedNoteCount();
 /**
- * @brief This function returns the number of notes present at the ALSA
+ * @brief This function returns the number of notes present at the MIDI
  * input port.
  *
  * This is the number of notes currently pressed on the keyboard. Note
@@ -188,7 +188,7 @@ class MidiArp : public QWidget  {
  * number, since it can contain notes in release state or in the
  * MidiArp::latchBuffer.
  *
- * @return Number of notes present at the ALSA input port.
+ * @return Number of notes present at the MIDI input port.
  */
     void removeNote(int *noteptr, int tick, int keep_rel);
 /**
@@ -268,13 +268,13 @@ class MidiArp : public QWidget  {
     void updateAttackTime(int);
     void updateReleaseTime(int);
 /*! @brief This function sets MidiArp::isMuted, which is checked by
- * SeqDriver and which suppresses data output globally if set to True.
+ * Engine and which suppresses data output globally if set to True.
  *
- * @param on Set to True to suppress data output to ALSA
+ * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
 /**
- * @brief This function checks whether an ALSA event is eligible for this
+ * @brief This function checks whether a MIDI event is eligible for this
  * module.
  *
  * Its response depends on the input filter settings, i.e. note range,
@@ -297,7 +297,7 @@ class MidiArp : public QWidget  {
 /**
  * @brief This function does the actions related to a newly received note.
  *
- * It is called by SeqDriver when a new note is received on the ALSA input port.
+ * It is called by Engine when a new note is received on the MIDI input port.
  * The MidiArp::latchBuffer is purged if the note was played stakato.
  * Depending on the trigger settings, the Arp's timing is reset to
  * that of the note tick and/or the pattern index is reset. The note with
@@ -312,9 +312,9 @@ class MidiArp : public QWidget  {
     void handleNoteOn(int note, int velocity, int tick);
 /**
  * @brief This function does the actions related to a note release detected
- * on the ALSA input port.
+ * on the MIDI input port.
  *
- * It is called by SeqDriver when a NOTE_OFF event is received. The function
+ * It is called by Engine when a NOTE_OFF event is received. The function
  * will go through checks regarding MidiArp::latchMode and MidiArp::sustain
  * and add the note to the respective MidiArp::latchBuffer and/or
  * MidiArp::sustainBuffer if required. If not, the note is either tagged
@@ -332,14 +332,14 @@ class MidiArp : public QWidget  {
  * @brief This function represents the external interface to the
  * core of the arpeggiator engine.
  *
- * It is called by SeqDriver when a previously scheduled SND_SEQ_ECHO
- * event is received on the ALSA port.
+ * It is called by Engine when a previously scheduled echo
+ * event is received from the driver.
  * It starts the MidiArp::run thread. In the thread, MidiArp::getNote
  * is called, which does the note processing depending on the
  * MidiArp::pattern and
  * leading to new data in MidiArp::returnNote, MidiArp::returnVelocity,
- * MidiArp::returnLength. SeqDriver then accesses this data directly
- * and outputs it to the ALSA queue.
+ * MidiArp::returnLength. Engine then accesses this data directly
+ * and outputs it to the Driver's queue.
  *
  * @param askedTick the timing of the note(s) to be output
  *
@@ -349,10 +349,10 @@ class MidiArp : public QWidget  {
  * @brief This function returns the timing of the next note to be
  * calculated and played out in internal ticks.
  *
- * It is called by SeqDriver immediately after accessing the current note
+ * It is called by Engine immediately after accessing the current note
  * data. This next note timing information is used to
  * schedule a so called echo event which will trigger the next call to
- * prepareCurrentNote followed by an output of note data to the ALSA
+ * prepareCurrentNote followed by an output of note data to the Driver's
  * queue.
  *
  * @return The timing of the next coming note in internal ticks.
@@ -362,7 +362,7 @@ class MidiArp : public QWidget  {
  * @brief This function resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.
  *
- * It is called by SeqDriver when the ALSA queue is started, or when
+ * It is called by Engine when the transport is started, or when
  * a stakato note is received while MidiArp::restartByKbd is set.
  *
  * @param currentTick The timing in internal ticks, relative to which
@@ -401,7 +401,7 @@ class MidiArp : public QWidget  {
  */
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
- /*! @brief Set by SeqDriver when MidiCC #64 is received.
+ /*! @brief Set by Engine when MidiCC #64 is received.
   *
   * Will cause notes remaining in MidiArp::sustainBuffer until
   * set to false.
@@ -422,16 +422,6 @@ class MidiArp : public QWidget  {
     void purgeSustainBuffer(int sustick);
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
     void clearNoteBuffer();
-/**
- * @brief This is the thread main function, which calls
- * MidiArp::updateNotes().
- *
- * It then copies the newly calculated MidiArp::currentNote
- * and MidiArp::currentVelocity arrays into the return
- * members, which can then be accessed
- * by the SeqDriver::run thread.
- */
-    void run();
 
   signals:
 /**

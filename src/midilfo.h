@@ -29,7 +29,6 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-#include <alsa/asoundlib.h>
 #include <main.h>
 
 #ifndef SAMPLE_H
@@ -49,9 +48,9 @@
  * for controller data as a QObject.
  *
  * The parameters of MidiLfo are controlled by the LfoWidget class.
- * A pointer to MidiLfo is passed to the SeqDriver thread, which calls
+ * A pointer to MidiLfo is passed to the Engine, which calls
  * the MidiLfo::getNextFrame member as a function of the position of
- * the ALSA queue. MidiLfo will return an array of controller values
+ * the Driver's queue. MidiLfo will return an array of controller values
  * representing a frame of its internal MidiLfo::data buffer. This frame
  * has size 1 except for resolution higher than 16th notes.
  * The MidiLfo::data buffer is populated by the MidiLfo::getData function
@@ -66,7 +65,7 @@ class MidiLfo : public QObject  {
   Q_OBJECT
 
   private:
-    double queueTempo;  /*!< current tempo of the ALSA queue, not in use here */
+    double queueTempo;  /*!< current tempo of the transport, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
@@ -93,8 +92,8 @@ class MidiLfo : public QObject  {
     void updateCustomWaveOffset(int cwoffs);
 
   public:
-    int portOut;    /*!< ALSA output port number */
-    int channelOut; /*!< ALSA output channel */
+    int portOut;    /*!< MIDI output port number */
+    int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
     int old_res;
     int ccnumber;   /*!< MIDI Controller CC number to output */
@@ -126,9 +125,9 @@ class MidiLfo : public QObject  {
     void updateQueueTempo(int);
     void record(int value);
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
- * SeqDriver and which suppresses data output globally if set to True.
+ * Engine and which suppresses data output globally if set to True.
  *
- * @param on Set to True to suppress data output to ALSA
+ * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool on);
 /*! @brief This function sets the (controller) value of one point of the
@@ -188,7 +187,7 @@ class MidiLfo : public QObject  {
  */
     void setFramePtr(int idx);
 /**
- * @brief This function checks whether an ALSA event is eligible for this
+ * @brief This function checks whether a MIDI event is eligible for this
  * module.
  *
  * Its response depends on the input filter settings, i.e. note,

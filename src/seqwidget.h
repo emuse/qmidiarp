@@ -99,7 +99,7 @@ class SeqWidget : public QWidget
  * instance.
  *
  * @param p_midiWorker Associated MidiSeq Object
- * @param portCount Number of available ALSA MIDI output ports
+ * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow

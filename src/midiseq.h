@@ -50,7 +50,7 @@
  * The parameters of MidiSeq are controlled by the SeqWidget class.
  * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
  * the MidiSeq::getNextNote member as a function of the position of
- * the ALSA queue. MidiSeq will return a note from its internal
+ * the Driver's queue. MidiSeq will return a note from its internal
  * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
  * MidiSeq::getData function at each modification done via
  * the SeqWidget. It is modified by drawing a sequence of notes on the
@@ -114,7 +114,7 @@ class MidiSeq : public QObject  {
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.
  *
- * @param on Set to True to suppress data output to ALSA
+ * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
 /**
@@ -130,7 +130,7 @@ class MidiSeq : public QObject  {
 /**
  * @brief This function does the actions related to a newly received note.
  *
- * It is called by SeqDriver when a new note is received on the ALSA input port.
+ * It is called by SeqDriver when a new note is received on the MIDI input port.
 
  * @param note The note value of the received note
  * @param velocity The note velocity
@@ -185,7 +185,7 @@ class MidiSeq : public QObject  {
     void setRecordedNote(int note);
 
 /**
- * @brief This function checks whether an ALSA event is eligible for this
+ * @brief This function checks whether an MIDI event is eligible for this
  * module.
  *
  * Its response depends on the input filter settings, i.e. note,

@@ -40,17 +40,14 @@
  *
  * SeqDriver is created by Engine at the moment of program start. Its
  * constructor registers ALSA seq input port and the requested number of
- * output ports. I also creates a JackDriver instance whose ports are only
- * created when the SeqDriver::setUseJackTransport member is called.
- * Pointers to the MIDI workers MidiLfo, MidiSeq are passed to SeqDriver
- * as arguments.
+ * output ports. It is called with a portless JackDriver instance.
  * The SeqDriver::run() thread is the ALSA sequencer "callback" process
  * handling all incoming and outgoing sequencer events.
  * When the SeqDriver::setQueueStatus() member is called with True argument,
  * a so called "echo event" is scheduled with zero time. Echo events go back
  * to the callback process and allow output and reception of sequencer
  * events depending on the ALSA queue timing. Depending on the event types,
- * the MIDI worker interfaces are called in series and return their
+ * the Engine and its modules are called in series and return their
  * data to be output to the queue. After the data output, a new echo
  * event is requested for the next MIDI event to be output, which will
  * again call the SeqDriver::run() thread, and so on.

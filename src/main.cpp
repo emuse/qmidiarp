@@ -3,7 +3,7 @@
  *
  *      Handles commandline arguments and options before MainWindow
  *      construction.
- *   @mainpage A MIDI Arpeggiator, LFO and Step Sequencer for ALSA
+ *   @mainpage A MIDI Arpeggiator, LFO and Step Sequencer
  *   @section Description
  *      This attempts to give an overview of the architecture of this
  *      software.

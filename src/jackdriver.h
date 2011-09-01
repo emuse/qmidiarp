@@ -35,12 +35,14 @@
 #include "driverbase.h"
 
 /*!
- * The JackDriver class is a QObject providing access to the transport status
+ * The JackDriver class is a QObject providing access to the MIDI interface
  * of the Jack Audio Connection Kit (JACK) transport system. It provides
  * functions to register and initialise a jack client and to read the
- * current frame position of a transport master.
+ * current frame position of a transport master. It establishes input and
+ * output ports if requested and implements a sequencer queue based on
+ * QQueue objects.
  *
- * @brief QObject class providing access to jack transport status.
+ * @brief QObject class implementing a JACK MIDI and transport interface.
  */
 class JackDriver : public DriverBase
 {

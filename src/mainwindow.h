@@ -263,7 +263,7 @@ class MainWindow : public QMainWindow
 *
 * It removes all module components, i.e. the Midi workers, UI widgets
 * and DockWidgets. It disconnects jack transport and stops the
-* ALSA Queue if running.
+* transport if running.
 */
     void clear();
 /*!
@@ -319,7 +319,7 @@ class MainWindow : public QMainWindow
 /* PUBLIC MEMBERS */
   public:
 /*!
-* @param p_portCount Number of registered ALSA output ports
+* @param p_portCount Number of registered MIDI output ports
 */
     MainWindow(int p_portCount, bool p_alsamidi);
     ~MainWindow();
