@@ -66,6 +66,7 @@ class GrooveWidget : public QWidget
     void updateGrooveVelocity(int);
     void updateGrooveTick(int);
     void updateGrooveLength(int);
+    void handleController(int ccnumber, int channel, int value);
 };
 
 #endif

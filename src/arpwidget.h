@@ -243,6 +243,7 @@ class ArpWidget : public QWidget
 *
 */
     void setMuted(bool on);
+    void handleController(int ccnumber, int channel, int value);
 };
 
 #endif

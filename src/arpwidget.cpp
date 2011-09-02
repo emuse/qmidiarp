@@ -920,3 +920,42 @@ void ArpWidget::setModified(bool m)
     modified = m;
     midiControl->setModified(m);
 }
+
+void ArpWidget::handleController(int ccnumber, int channel, int value)
+{
+    bool m;
+    int min, max, sval;
+    QVector<MidiCC> cclist= midiControl->ccList;
+
+    for (int l2 = 0; l2 < cclist.count(); l2++) {
+        min = cclist.at(l2).min;
+        max = cclist.at(l2).max;
+
+        if ((ccnumber == cclist.at(l2).ccnumber) &&
+            (channel == cclist.at(l2).channel)) {
+            switch (cclist.at(l2).ID) {
+                case 0: if (min == max) {
+                            if (value == max) {
+                                m = muteOut->isChecked();
+                                muteOut->setChecked(!m);
+                            }
+                        }
+                        else {
+                            if (value == max) {
+                                muteOut->setChecked(false);
+                            }
+                            if (value == min) {
+                                muteOut->setChecked(true);
+                            }
+                        }
+                break;
+                case 1:
+                        sval = min + ((double)value * (max - min) / 127);
+                        selectPatternPreset(sval);
+                break;
+                default:
+                break;
+            }
+        }
+    }
+}

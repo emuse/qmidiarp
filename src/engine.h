@@ -153,7 +153,8 @@ class Engine : public QThread  {
  */
     void setModified(bool);
     void updatePatternPresets(const QString& n, const QString& p, int index);
-    void handleController(int ccnumber, int channel, int value);
+    void sendController(int ccnumber, int channel, int value);
+    void learnController(int ccnumber, int channel);
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
     void setMidiControllable(bool on);
     void setCompactStyle(bool on);

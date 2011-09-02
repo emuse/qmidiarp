@@ -861,3 +861,84 @@ QVector<Sample> LfoWidget::getCustomWave()
 {
     return midiWorker->customWave;
 }
+
+void LfoWidget::handleController(int ccnumber, int channel, int value)
+{
+    bool m;
+    int min, max, sval;
+    QVector<MidiCC> cclist= midiControl->ccList;
+
+    for (int l2 = 0; l2 < cclist.count(); l2++) {
+        min = cclist.at(l2).min;
+        max = cclist.at(l2).max;
+        if ((ccnumber == cclist.at(l2).ccnumber) &&
+            (channel == cclist.at(l2).channel)) {
+            switch (cclist.at(l2).ID) {
+                case 0: if (min == max) {
+                            if (value == max) {
+                                m = muteOut->isChecked();
+                                muteOut->setChecked(!m);
+                            }
+                        }
+                        else {
+                            if (value == max) {
+                                muteOut->setChecked(false);
+                            }
+                            if (value == min) {
+                                muteOut->setChecked(true);
+                            }
+                        }
+                break;
+
+                case 1:
+                        sval = min + ((double)value * (max - min)
+                                / 127);
+                        amplitude->setValue(sval);
+                break;
+
+                case 2:
+                        sval = min + ((double)value * (max - min) / 127);
+                        offset->setValue(sval);
+                break;
+                case 3:
+                        sval = min + ((double)value * (max - min) / 127);
+                        waveFormBox->setCurrentIndex(sval);
+                        updateWaveForm(sval);
+                break;
+                case 4:
+                        sval = min + ((double)value * (max - min) / 127);
+                        freqBox->setCurrentIndex(sval);
+                        updateFreq(sval);
+                break;
+                case 5: if (min == max) {
+                            if (value == max) {
+                                m = recordAction->isChecked();
+                                recordAction->setChecked(!m);
+                            }
+                        }
+                        else {
+                            if (value == max) {
+                                recordAction->setChecked(true);
+                            }
+                            if (value == min) {
+                                recordAction->setChecked(false);
+                            }
+                        }
+                break;
+                case 6:
+                        sval = min + ((double)value * (max - min) / 127);
+                        resBox->setCurrentIndex(sval);
+                        updateRes(sval);
+                break;
+                case 7:
+                        sval = min + ((double)value * (max - min) / 127);
+                        sizeBox->setCurrentIndex(sval);
+                        updateSize(sval);
+                break;
+
+                default:
+                break;
+            }
+        }
+    }
+}

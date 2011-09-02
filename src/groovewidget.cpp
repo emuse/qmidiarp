@@ -90,4 +90,33 @@ void GrooveWidget::updateGrooveLength(int val)
 {
     emit(newGrooveLength(val));
 }
+void GrooveWidget::handleController(int ccnumber, int channel, int value)
+{
+    int min, max, sval;
+    QVector<MidiCC> cclist= midiControl->ccList;
 
+    for (int l2 = 0; l2 < cclist.count(); l2++) {
+        min = cclist.at(l2).min;
+        max = cclist.at(l2).max;
+        sval = min + ((double)value * (max - min) / 127);
+        if ((ccnumber == cclist.at(l2).ccnumber) &&
+            (channel == cclist.at(l2).channel)) {
+            switch (cclist.at(l2).ID) {
+                case 0:
+                        grooveTick->setValue(sval);
+                break;
+
+                case 1:
+                        grooveVelocity->setValue(sval);
+                break;
+
+                case 2:
+                        grooveLength->setValue(sval);
+                break;
+
+                default:
+                break;
+            }
+        }
+    }
+}

@@ -574,7 +574,10 @@ bool Engine::eventCallback(MidiEvent inEv)
                 }
             }
             if (midiControllable) {
-                handleController(inEv.data, inEv.channel, inEv.value);
+                if (!midiLearnFlag)
+                    sendController(inEv.data, inEv.channel, inEv.value);
+                else
+                    learnController(inEv.data, inEv.channel);
                 unmatched = false;
             }
         }
@@ -622,250 +625,43 @@ bool Engine::eventCallback(MidiEvent inEv)
     return unmatched;
 }
 
-void Engine::handleController(int ccnumber, int channel, int value)
+void Engine::sendController(int ccnumber, int channel, int value)
 {
-    bool m;
-    int min, max, sval;
-    QVector<MidiCC> cclist;
-    if (!midiLearnFlag) {
-        cclist = grooveWidget->midiControl->ccList;
-        for (int l2 = 0; l2 < cclist.count(); l2++) {
-            min = cclist.at(l2).min;
-            max = cclist.at(l2).max;
-            sval = min + ((double)value * (max - min) / 127);
-            if ((ccnumber == cclist.at(l2).ccnumber) &&
-                (channel == cclist.at(l2).channel)) {
-                switch (cclist.at(l2).ID) {
-                    case 0:
-                            grooveWidget->grooveTick->setValue(sval);
-                    break;
+    int l1;
 
-                    case 1:
-                            grooveWidget->grooveVelocity->setValue(sval);
-                    break;
+    grooveWidget->handleController(ccnumber, channel, value);
 
-                    case 2:
-                            grooveWidget->grooveLength->setValue(sval);
-                    break;
+    for (l1 = 0; l1 < arpWidgetCount(); l1++)
+        arpWidget(l1)->handleController(ccnumber, channel, value);
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++)
+        lfoWidget(l1)->handleController(ccnumber, channel, value);
+    for (l1 = 0; l1 < seqWidgetCount(); l1++)
+        seqWidget(l1)->handleController(ccnumber, channel, value);
+}
 
-                    default:
-                    break;
-                }
-            }
-        }
-        for (int l1 = 0; l1 < arpWidgetCount(); l1++) {
-            cclist = arpWidget(l1)->midiControl->ccList;
-            for (int l2 = 0; l2 < cclist.count(); l2++) {
-                min = cclist.at(l2).min;
-                max = cclist.at(l2).max;
-
-                if ((ccnumber == cclist.at(l2).ccnumber) &&
-                    (channel == cclist.at(l2).channel)) {
-                    switch (cclist.at(l2).ID) {
-                        case 0: if (min == max) {
-                                    if (value == max) {
-                                        m = arpWidget(l1)->muteOut->isChecked();
-                                        arpWidget(l1)->muteOut->setChecked(!m);
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        arpWidget(l1)->muteOut->setChecked(false);
-                                    }
-                                    if (value == min) {
-                                        arpWidget(l1)->muteOut->setChecked(true);
-                                    }
-                                }
-                        break;
-                        case 1:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                arpWidget(l1)->selectPatternPreset(sval);
-                        break;
-                        default:
-                        break;
-                    }
-                }
-            }
-        }
-
-        for (int l1 = 0; l1 < lfoWidgetCount(); l1++) {
-            cclist = lfoWidget(l1)->midiControl->ccList;
-            for (int l2 = 0; l2 < cclist.count(); l2++) {
-                min = cclist.at(l2).min;
-                max = cclist.at(l2).max;
-                if ((ccnumber == cclist.at(l2).ccnumber) &&
-                    (channel == cclist.at(l2).channel)) {
-                    switch (cclist.at(l2).ID) {
-                        case 0: if (min == max) {
-                                    if (value == max) {
-                                        m = lfoWidget(l1)->muteOut->isChecked();
-                                        lfoWidget(l1)->muteOut->setChecked(!m);
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        lfoWidget(l1)->muteOut->setChecked(false);
-                                    }
-                                    if (value == min) {
-                                        lfoWidget(l1)->muteOut->setChecked(true);
-                                    }
-                                }
-                        break;
-
-                        case 1:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->amplitude->setValue(sval);
-                        break;
-
-                        case 2:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->offset->setValue(sval);
-                        break;
-                        case 3:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->waveFormBox->setCurrentIndex(sval);
-                                lfoWidget(l1)->updateWaveForm(sval);
-                        break;
-                        case 4:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->freqBox->setCurrentIndex(sval);
-                                lfoWidget(l1)->updateFreq(sval);
-                        break;
-                        case 5: if (min == max) {
-                                    if (value == max) {
-                                        m = lfoWidget(l1)->recordAction->isChecked();
-                                        lfoWidget(l1)->recordAction->setChecked(!m);
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        lfoWidget(l1)->recordAction->setChecked(true);
-                                    }
-                                    if (value == min) {
-                                        lfoWidget(l1)->recordAction->setChecked(false);
-                                    }
-                                }
-                        break;
-                        case 6:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->resBox->setCurrentIndex(sval);
-                                lfoWidget(l1)->updateRes(sval);
-                        break;
-                        case 7:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                lfoWidget(l1)->sizeBox->setCurrentIndex(sval);
-                                lfoWidget(l1)->updateSize(sval);
-                        break;
-
-                        default:
-                        break;
-                    }
-                }
-            }
-        }
-
-        for (int l1 = 0; l1 < seqWidgetCount(); l1++) {
-            cclist = seqWidget(l1)->midiControl->ccList;
-            for (int l2 = 0; l2 < cclist.count(); l2++) {
-                min = cclist.at(l2).min;
-                max = cclist.at(l2).max;
-                if ((ccnumber == cclist.at(l2).ccnumber) &&
-                    (channel == cclist.at(l2).channel)) {
-                    switch (cclist.at(l2).ID) {
-                        case 0: if (min == max) {
-                                    if (value == max) {
-                                        m = seqWidget(l1)->muteOut->isChecked();
-                                        seqWidget(l1)->muteOut->setChecked(!m);
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        seqWidget(l1)->muteOut->setChecked(false);
-                                    }
-                                    if (value == min) {
-                                        seqWidget(l1)->muteOut->setChecked(true);
-                                    }
-                                }
-                        break;
-
-                        case 1:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                seqWidget(l1)->velocity->setValue(sval);
-                        break;
-
-                        case 2:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                seqWidget(l1)->notelength->setValue(sval);
-                        break;
-
-                        case 3: if (min == max) {
-                                    if (value == max) {
-                                        m = seqWidget(l1)->recordAction->isChecked();
-                                        seqWidget(l1)->recordAction->setChecked(!m);
-                                        return;
-                                    }
-                                }
-                                else {
-                                    if (value == max) {
-                                        seqWidget(l1)->recordAction->setChecked(true);
-                                    }
-                                    if (value == min) {
-                                        seqWidget(l1)->recordAction->setChecked(false);
-                                    }
-                                }
-                        break;
-                        case 4:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                seqWidget(l1)->resBox->setCurrentIndex(sval);
-                                seqWidget(l1)->updateRes(sval);
-                        break;
-                        case 5:
-                                sval = min + ((double)value * (max - min)
-                                        / 127);
-                                seqWidget(l1)->sizeBox->setCurrentIndex(sval);
-                                seqWidget(l1)->updateSize(sval);
-                        break;
-
-                        default:
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    else {
-        if (midiLearnWindowID == -1) {
-            grooveWidget->midiControl->appendMidiCC(midiLearnID,
-                    ccnumber, channel, -100, 100);
-            midiLearnFlag = false;
-            return;
-            }
-        int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
-        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
-            arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
-                    ccnumber, channel, min, 127);
-        }
-        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
-            lfoWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
-                    ccnumber, channel, min, 127);
-        }
-        if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
-            seqWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
-                    ccnumber, channel, min, 127);
-        }
-
+void Engine::learnController(int ccnumber, int channel)
+{
+    if (midiLearnWindowID == -1) {
+        grooveWidget->midiControl->appendMidiCC(midiLearnID,
+                ccnumber, channel, -100, 100);
         midiLearnFlag = false;
+        return;
+        }
+    int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
+    if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
+        arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
+                ccnumber, channel, min, 127);
     }
+    if (moduleWindow(midiLearnWindowID)->objectName().startsWith("LFO")) {
+        lfoWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
+                ccnumber, channel, min, 127);
+    }
+    if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Seq")) {
+        seqWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
+                ccnumber, channel, min, 127);
+    }
+
+    midiLearnFlag = false;
 }
 
 void Engine::resetTicks(int curtick)

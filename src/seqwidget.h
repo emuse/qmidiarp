@@ -347,6 +347,7 @@ class SeqWidget : public QWidget
 
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
     int getNextTick() { return midiWorker->nextTick; }
+    void handleController(int ccnumber, int channel, int value);
 };
 
 #endif
