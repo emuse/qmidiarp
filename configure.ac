@@ -65,8 +65,13 @@ if test "x$MOC" = "xno" ; then
     [cannot find 'moc', please install the Qt4 development tools package.])
 fi
 
-enable_translations=false
-AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test x$enable_translations = xtrue])
+# Enable translations.
+AC_ARG_ENABLE(translations,
+  AC_HELP_STRING([--enable-translations], [enable translation file generation (default=no)]),
+  [ac_translations="$enableval"],
+  [ac_translations="no"])
+
+AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test "x$ac_translations" = "xyes"])
 
 AM_COND_IF([ENABLE_TRANSLATIONS],[
 dnl check for lupdate
@@ -82,7 +87,7 @@ if test "x$LRELEASE" = "xno" ; then
   AC_MSG_ERROR(
     [cannot find 'lrelease', please install the Qt4 development tools package.])
 fi
-], [AC_MSG_NOTICE([transaltions are disabled])])
+], [AC_MSG_NOTICE([translations are disabled])])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -111,3 +116,12 @@ AC_CONFIG_FILES([Makefile] [examples/Makefile] [src/Makefile])
 AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
 AC_CONFIG_FILES([man/de/Makefile])
 AC_OUTPUT
+
+echo
+if test "x$ac_translations" = "xno" ; then
+echo "Translation file generation disabled."
+echo "Use ./configure --enable-translations=yes to enable."
+else
+echo "Translation file generation enabled."
+fi
+echo
