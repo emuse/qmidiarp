@@ -47,6 +47,7 @@ static const char ABOUTMSG[] =
             "<p>(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/>"
             "(C) 2009-2011 Frank Kober<br/>"
             "(C) 2009 Guido Scholz</br></p>"
+            "(C) 2011 Nedko Arnaudov</br></p>"
             "<p>For getting support please type <b>man qmidiarp</b> or go to<br/>"
             "<a href=\"http://qmidiarp.sourceforge.net\">"
             "http://qmidiarp.sourceforge.net</a></p>"
