@@ -110,8 +110,6 @@ class MidiArp : public QWidget  {
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
 
-    QMutex mutex;
-
 
 /**
  * @brief This function resets all attributes the pattern
