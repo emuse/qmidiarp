@@ -133,14 +133,14 @@ int JackDriver::activateJack()
 
 int JackDriver::deactivateJack()
 {
-    if (jackRunning) {
-        if (jack_deactivate(jack_handle)) {
-            qWarning("cannot deactivate client");
-            return(1);
-        }
-        jackRunning = false;
-        qWarning("jack client deactivated");
+    if (!jackRunning) return(0);
+
+    if (jack_deactivate(jack_handle)) {
+        qWarning("cannot deactivate client");
+        return(1);
     }
+    jackRunning = false;
+    qWarning("jack client deactivated");
     return(0);
 }
 
@@ -345,10 +345,10 @@ void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsig
     evPortQueue.append(outport);
 
     if ((ev.type == EV_NOTEON) && (ev.value)) {
-            ev.value = 0;
-            evQueue.append(ev);
-            evTickQueue.append(n_tick + duration);
-            evPortQueue.append(outport);
+        ev.value = 0;
+        evQueue.append(ev);
+        evTickQueue.append(n_tick + duration);
+        evPortQueue.append(outport);
     }
 }
 
@@ -375,20 +375,22 @@ void JackDriver::handleEchoes()
 
     m_current_tick = ((long)currentPos.frame * TPQN * tempo
             / (currentPos.frame_rate * 60)) - jackOffsetTick;
-       if (size) {
-            idx = 0;
-            nexttick = echoTickQueue.head();
-            for (l1 = 0; l1 < size; l1++) {
-                tmptick = echoTickQueue.at(l1);
-                if (nexttick > tmptick) {
-                    idx = l1;
-                    nexttick = tmptick;
-                }
-            }
-        if (m_current_tick >= echoTickQueue.at(idx)) {
-            echoTickQueue.removeAt(idx);
-            tick_callback(false);
+
+    if (!size) return;
+
+    idx = 0;
+    nexttick = echoTickQueue.head();
+
+    for (l1 = 0; l1 < size; l1++) {
+        tmptick = echoTickQueue.at(l1);
+        if (nexttick > tmptick) {
+            idx = l1;
+            nexttick = tmptick;
         }
+    }
+    if (m_current_tick >= echoTickQueue.at(idx)) {
+        echoTickQueue.removeAt(idx);
+        tick_callback(false);
     }
 }
 

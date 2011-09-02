@@ -43,7 +43,7 @@
  * output ports. It is called with a portless JackDriver instance.
  * The SeqDriver::run() thread is the ALSA sequencer "callback" process
  * handling all incoming and outgoing sequencer events.
- * When the SeqDriver::setQueueStatus() member is called with True argument,
+ * When the SeqDriver::setTransportStatus() member is called with True argument,
  * a so called "echo event" is scheduled with zero time. Echo events go back
  * to the callback process and allow output and reception of sequencer
  * events depending on the ALSA queue timing. Depending on the event types,

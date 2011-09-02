@@ -171,10 +171,6 @@ void SeqDriver::run()
                     m_current_tick = deltaToTick(aTimeToDelta(&realTime));
                 }
 
-                // Restart ALSA queue if initial jack position is such that ticks would be negative
-                // this cannot actually happen because m_current_tick us unsigned...
-                //if (m_current_tick < 0) setQueueStatus(true);
-
                 tick_callback((inEv.data));
             }
             else {
