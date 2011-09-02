@@ -49,26 +49,6 @@
         <translation>Preset de motif</translation>
     </message>
     <message>
-        <source>Arp through chord</source>
-        <translation type="obsolete">Arpège dans l&apos;accord</translation>
-    </message>
-    <message>
-        <source>0..9  note played on keyboard, ascending order
-( ) chord mode on/off
-  + -  octave up/down
- &lt; . &gt; tempo up/reset/down
-  d h  note length up/down
-  / \  velocity up/down
-   p   pause</source>
-        <translation type="obsolete">0..9 note joué sur le clavier, ordre ascendant
-( ) mode accord act/désact
-+ - octave sup/inf
-&lt; ; &gt; accel/décel
-d h durée de note augm/dim
-/ \ vél augm/dim
- p pause</translation>
-    </message>
-    <message>
         <location filename="../arpwidget.cpp" line="286"/>
         <location filename="../arpwidget.cpp" line="765"/>
         <source>Random</source>
@@ -104,10 +84,6 @@ d h durée de note augm/dim
         <location filename="../arpwidget.cpp" line="791"/>
         <source>Envelope</source>
         <translation>Enveloppe</translation>
-    </message>
-    <message>
-        <source>Could not write to resource file</source>
-        <translation type="obsolete">Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="703"/>
@@ -150,22 +126,6 @@ d h durée de note augm/dim
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renommer...</translation>
-    </message>
-    <message>
-        <source>Rename this Arp</source>
-        <translation type="obsolete">Renommer cet arpégiateur</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Supprimer...</translation>
-    </message>
-    <message>
-        <source>Delete this Arp</source>
-        <translation type="obsolete">Supprimer cet arpégiateur</translation>
-    </message>
-    <message>
         <location filename="../arpwidget.cpp" line="66"/>
         <location filename="../arpwidget.cpp" line="399"/>
         <source>Note Filter</source>
@@ -180,18 +140,6 @@ d h durée de note augm/dim
         <location filename="../arpwidget.cpp" line="126"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Apprendre du MIDI</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Annuler l&apos;apprentissage</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Oublier les contrôleurs MIDI</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="138"/>
@@ -253,25 +201,17 @@ d h durée de note augm/dim
     <message>
         <location filename="../arpwidget.cpp" line="322"/>
         <source>&amp;Attack (beats)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="326"/>
         <source>&amp;Release (beats)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="395"/>
         <source>Note Filter - ACTIVE</source>
         <translation>Filtre - AKTIF</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">Supprimer &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nouveau nom</translation>
     </message>
 </context>
 <context>
@@ -326,30 +266,6 @@ d h durée de note augm/dim
         <translation></translation>
     </message>
     <message>
-        <source>&amp;Clone...</source>
-        <translation type="obsolete">&amp;Dupliquer...</translation>
-    </message>
-    <message>
-        <source>Duplicate this LFO in muted state</source>
-        <translation type="obsolete">Dupliquer ce LFO en état muet</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renommer...</translation>
-    </message>
-    <message>
-        <source>Rename this LFO</source>
-        <translation type="obsolete">Renommer ce LFO</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Supprimer...</translation>
-    </message>
-    <message>
-        <source>Delete this LFO</source>
-        <translation type="obsolete">Supprimer ce LFO</translation>
-    </message>
-    <message>
         <location filename="../lfowidget.cpp" line="60"/>
         <source>Input</source>
         <translation>Entrée</translation>
@@ -365,25 +281,9 @@ d h durée de note augm/dim
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Apprendre du MIDI</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Annuler l&apos;apprentissage</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Oublier les contrôleurs MIDI</translation>
-    </message>
-    <message>
         <location filename="../lfowidget.cpp" line="152"/>
         <source>Wave</source>
         <translation>Forme</translation>
-    </message>
-    <message>
-        <source>Right button to mute points, left button to draw custom wave</source>
-        <translation type="obsolete">Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="164"/>
@@ -394,26 +294,6 @@ d h durée de note augm/dim
         <location filename="../lfowidget.cpp" line="175"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
-    </message>
-    <message>
-        <source>&amp;Frequency (cycles/beat)</source>
-        <translation type="obsolete">Fré&amp;quence (cycles/beat)</translation>
-    </message>
-    <message>
-        <source>Frequency: Number of wave cycles produced every beat</source>
-        <translation type="obsolete">Fréquence: Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
-    </message>
-    <message>
-        <source>&amp;Resolution (events/beat)</source>
-        <translation type="obsolete">&amp;Résolution (points/beat)</translation>
-    </message>
-    <message>
-        <source>Resolution: Number of events produced every beat</source>
-        <translation type="obsolete">Résolution: Nomber d&apos;évênements produits à chaque quart de temps</translation>
-    </message>
-    <message>
-        <source>&amp;Length (beats)</source>
-        <translation type="obsolete">&amp;Longueur (beats)</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="156"/>
@@ -453,10 +333,6 @@ Molette pour changer l&apos;offset</translation>
         <location filename="../lfowidget.cpp" line="222"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
-    </message>
-    <message>
-        <source>&amp;Copy to custom wave</source>
-        <translation type="obsolete">&amp;Copier dans la forme d&apos;onde libre</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="228"/>
@@ -509,18 +385,6 @@ Molette pour changer l&apos;offset</translation>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">Supprimer &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nouveau nom</translation>
-    </message>
-    <message>
-        <source>&amp;MIDI CC#</source>
-        <translation type="obsolete">&amp;MIDI CC#</translation>
-    </message>
 </context>
 <context>
     <name>LogWidget</name>
@@ -542,7 +406,7 @@ Molette pour changer l&apos;offset</translation>
     <message>
         <location filename="../logwidget.cpp" line="109"/>
         <source>MIDI Clock, tick</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../logwidget.cpp" line="114"/>
@@ -573,10 +437,6 @@ Molette pour changer l&apos;offset</translation>
         <translation>Journal</translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation type="obsolete">Paramètres</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="79"/>
         <source>Groove</source>
         <translation>Groove</translation>
@@ -601,22 +461,6 @@ Molette pour changer l&apos;offset</translation>
         <location filename="../mainwindow.cpp" line="121"/>
         <source>Add new Sequencer to tab bar</source>
         <translation>Ajouter un nouveau séquenceur</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renommer...</translation>
-    </message>
-    <message>
-        <source>Rename this module</source>
-        <translation type="obsolete">Renommer ce module</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Supprimer...</translation>
-    </message>
-    <message>
-        <source>Delete this module</source>
-        <translation type="obsolete">Supprimer ce module</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="125"/>
@@ -801,10 +645,6 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Nouvel Arpège...</translation>
     </message>
     <message>
-        <source>&amp;Run</source>
-        <translation type="obsolete">&amp;Start/Stop</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="166"/>
         <source>&amp;Use incoming MIDI Clock</source>
         <translation>&amp;Utiliser MIDI Clock entrant</translation>
@@ -844,14 +684,6 @@ Enregistrer les modifications?</translation>
         <location filename="../mainwindow.cpp" line="328"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>Ajouter un arpège MIDI</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nouveau nom</translation>
-    </message>
-    <message>
-        <source>Remove &quot;%1&quot;?</source>
-        <translation type="obsolete">Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="132"/>
@@ -1059,18 +891,6 @@ Enregistrer les modifications?</translation>
         <source>Settings - </source>
         <translation>Paramètres - </translation>
     </message>
-    <message>
-        <source>&amp;Modules mutable by MIDI controller starting at CC#</source>
-        <translation type="obsolete">&amp;Rendre les modules &amp;muets par contrôleur MIDI commençant par CC#</translation>
-    </message>
-    <message>
-        <source>&amp;Arps mutable by MIDI CC starting at CC#</source>
-        <translation type="obsolete">&amp;Rendre les arpèges muet par CC MIDI commençant par CC#</translation>
-    </message>
-    <message>
-        <source>Incoming MIDI &amp;Clock rate (tpb)</source>
-        <translation type="obsolete">Cadence MIDI &amp;Clock entrant (tbp)</translation>
-    </message>
 </context>
 <context>
     <name>SeqWidget</name>
@@ -1088,18 +908,6 @@ Enregistrer les modifications?</translation>
         <location filename="../seqwidget.cpp" line="163"/>
         <source>&amp;Mute</source>
         <translation>M&amp;uet</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Apprendre du MIDI</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Annuler l&apos;apprentissage</translation>
-    </message>
-    <message>
-        <source>Duplicate this Sequencer in muted state</source>
-        <translation type="obsolete">Dupliquer ce séquenceur en état muet</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="51"/>
@@ -1167,10 +975,6 @@ Enregistrer les modifications?</translation>
         <translation>Jouer la séquence en boucle au lieu d&apos;un passage unique</translation>
     </message>
     <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Oublier les contrôleurs MIDI</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="208"/>
         <source>Sequence</source>
         <translation>Séquence</translation>
@@ -1207,29 +1011,9 @@ Enregistrer les modifications?</translation>
         <translation>Durée de la séquence en quarts de mesure</translation>
     </message>
     <message>
-        <source>C&amp;opy to new wave</source>
-        <translation type="obsolete">C&amp;opier dans la forme d&apos;onde libre</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="276"/>
         <source>Veloc&amp;ity</source>
         <translation>Véloc&amp;ité</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">Supprimer &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nouveau nom</translation>
-    </message>
-    <message>
-        <source>&amp;Copy to new wave</source>
-        <translation type="obsolete">&amp;Copier dans une nouvelle forme d&apos;onde</translation>
-    </message>
-    <message>
-        <source>Velo&amp;city</source>
-        <translation type="obsolete">Vélo&amp;cité</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="283"/>
@@ -1240,26 +1024,6 @@ Enregistrer les modifications?</translation>
         <location filename="../seqwidget.cpp" line="99"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
-    </message>
-    <message>
-        <source>&amp;Clone...</source>
-        <translation type="obsolete">&amp;Dupliquer...</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renommer...</translation>
-    </message>
-    <message>
-        <source>Rename this Sequencer</source>
-        <translation type="obsolete">Renommer ce séquenceur</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Supprimer...</translation>
-    </message>
-    <message>
-        <source>Delete this Sequencer</source>
-        <translation type="obsolete">Supprimer ce séquenceur</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="85"/>
@@ -1282,21 +1046,9 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <source>&amp;Note Length</source>
-        <translation type="obsolete">&amp;Durée des notes</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="289"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Transposer</translation>
-    </message>
-    <message>
-        <source>&amp;MIDI CC#</source>
-        <translation type="obsolete">&amp;MIDI CC#</translation>
-    </message>
-    <message>
-        <source>MIDI Controller number sent to output</source>
-        <translation type="obsolete">Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="169"/>
@@ -1309,29 +1061,9 @@ Enregistrer les modifications?</translation>
         <translation>Cana&amp;l</translation>
     </message>
     <message>
-        <source>Wave</source>
-        <translation type="obsolete">Forme</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="212"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
-    </message>
-    <message>
-        <source>&amp;Waveform</source>
-        <translation type="obsolete">Forme d&apos;&amp;onde</translation>
-    </message>
-    <message>
-        <source>Waveform Basis</source>
-        <translation type="obsolete">Base de la forme d&apos;onde</translation>
-    </message>
-    <message>
-        <source>&amp;Frequency</source>
-        <translation type="obsolete">&amp;Fréquence</translation>
-    </message>
-    <message>
-        <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
-        <translation type="obsolete">Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="240"/>
@@ -1339,37 +1071,9 @@ Enregistrer les modifications?</translation>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <source>Resolution (events/beat): Number of events produced every beat</source>
-        <translation type="obsolete">Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="256"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
-    </message>
-    <message>
-        <source>&amp;Copy to custom wave</source>
-        <translation type="obsolete">&amp;Copier dans la forme d&apos;onde libre</translation>
-    </message>
-    <message>
-        <source>&amp;Offset</source>
-        <translation type="obsolete">&amp;Décalage</translation>
-    </message>
-    <message>
-        <source>Sine</source>
-        <translation type="obsolete">Sinus</translation>
-    </message>
-    <message>
-        <source>Saw up</source>
-        <translation type="obsolete">Scie montant</translation>
-    </message>
-    <message>
-        <source>Saw down</source>
-        <translation type="obsolete">Scie descendant</translation>
-    </message>
-    <message>
-        <source>Square</source>
-        <translation type="obsolete">Créneau</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="679"/>

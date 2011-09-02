@@ -4,22 +4,6 @@
 <context>
     <name>ArpWidget</name>
     <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renombrar...</translation>
-    </message>
-    <message>
-        <source>Rename this Arp</source>
-        <translation type="obsolete">Renombrar este arpegiador</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Borrar...</translation>
-    </message>
-    <message>
-        <source>Delete this Arp</source>
-        <translation type="obsolete">Borrar este arpegiador</translation>
-    </message>
-    <message>
         <location filename="../arpwidget.cpp" line="58"/>
         <source>Input</source>
         <translation>Entrada</translation>
@@ -54,18 +38,6 @@
         <location filename="../arpwidget.cpp" line="126"/>
         <source>&amp;Mute</source>
         <translation>&amp;Silenciar</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Aprendizaje MIDI</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Cancelar aprendizaje MIDI</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Olvidar MIDI</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="132"/>
@@ -194,20 +166,12 @@
     <message>
         <location filename="../arpwidget.cpp" line="322"/>
         <source>&amp;Attack (beats)</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ataque (beats)</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="326"/>
         <source>&amp;Release (beats)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Attack (s)</source>
-        <translation type="obsolete">&amp;Ataque (s)</translation>
-    </message>
-    <message>
-        <source>&amp;Release (s)</source>
-        <translation type="obsolete">&amp;Liberación (es)</translation>
+        <translation>&amp;Liberación (beats)</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="395"/>
@@ -249,14 +213,6 @@
         <source>Remove &quot;%1&quot;?</source>
         <translation>¿Borrar &quot;%1&quot;?</translation>
     </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">¿Eliminar &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nuevo nombre</translation>
-    </message>
 </context>
 <context>
     <name>GrooveWidget</name>
@@ -279,22 +235,6 @@
 <context>
     <name>LfoWidget</name>
     <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renombrar...</translation>
-    </message>
-    <message>
-        <source>Rename this LFO</source>
-        <translation type="obsolete">Renombrar este LFO</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Borrar...</translation>
-    </message>
-    <message>
-        <source>Delete this LFO</source>
-        <translation type="obsolete">Borrar este LFO</translation>
-    </message>
-    <message>
         <location filename="../lfowidget.cpp" line="93"/>
         <source>Output</source>
         <translation>Salida</translation>
@@ -303,18 +243,6 @@
         <location filename="../lfowidget.cpp" line="95"/>
         <source>&amp;Mute</source>
         <translation>&amp;Silenciar</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Cancelar aprendizaje MIDI</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Aprendizaje MIDI</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Olvidar MIDI</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="62"/>
@@ -457,14 +385,6 @@ Rueda para cambiar desplazamiento</translation>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">¿Eliminar &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nuevo nombre</translation>
-    </message>
 </context>
 <context>
     <name>LogWidget</name>
@@ -484,13 +404,9 @@ Rueda para cambiar desplazamiento</translation>
         <translation>&amp;Limpiar</translation>
     </message>
     <message>
-        <source>MIDI Clock</source>
-        <translation type="obsolete">Reloj MIDI</translation>
-    </message>
-    <message>
         <location filename="../logwidget.cpp" line="109"/>
         <source>MIDI Clock, tick</source>
-        <translation type="unfinished"></translation>
+        <translation>Reloj MIDI, tick</translation>
     </message>
     <message>
         <location filename="../logwidget.cpp" line="114"/>
@@ -977,22 +893,6 @@ Save changes?</source>
 <context>
     <name>SeqWidget</name>
     <message>
-        <source>&amp;Rename...</source>
-        <translation type="obsolete">&amp;Renombrar...</translation>
-    </message>
-    <message>
-        <source>Rename this Sequencer</source>
-        <translation type="obsolete">Renombrar este secuenciador</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation type="obsolete">&amp;Borrar...</translation>
-    </message>
-    <message>
-        <source>Delete this Sequencer</source>
-        <translation type="obsolete">Borrar este secuenciador</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="85"/>
         <source>Input</source>
         <translation>Entrada</translation>
@@ -1031,10 +931,6 @@ Save changes?</source>
         <location filename="../seqwidget.cpp" line="163"/>
         <source>&amp;Mute</source>
         <translation>&amp;Silenciar</translation>
-    </message>
-    <message>
-        <source>Cancel MIDI &amp;Learning</source>
-        <translation type="obsolete">&amp;Cancelar aprendizaje MIDI</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="51"/>
@@ -1102,14 +998,6 @@ Save changes?</source>
         <translation>Reproducir la secuencia en bucle en lugar de una vez</translation>
     </message>
     <message>
-        <source>MIDI &amp;Learn</source>
-        <translation type="obsolete">&amp;Aprendizaje MIDI</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;Forget</source>
-        <translation type="obsolete">&amp;Olvidar MIDI</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="169"/>
         <source>&amp;Port</source>
         <translation>&amp;Puerto</translation>
@@ -1171,10 +1059,6 @@ Save changes?</source>
         <translation>Longitud de la secuencia en tiempos</translation>
     </message>
     <message>
-        <source>C&amp;opy to new wave</source>
-        <translation type="obsolete">C&amp;opiar a nueva onda</translation>
-    </message>
-    <message>
         <location filename="../seqwidget.cpp" line="276"/>
         <source>Veloc&amp;ity</source>
         <translation>&amp;Velocidad</translation>
@@ -1193,14 +1077,6 @@ Save changes?</source>
         <location filename="../seqwidget.cpp" line="679"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation type="obsolete">¿Eliminar &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation type="obsolete">Nuevo nombre</translation>
     </message>
 </context>
 </TS>
