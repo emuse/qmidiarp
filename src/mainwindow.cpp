@@ -646,15 +646,11 @@ void MainWindow::chooseFile()
 {
     QString fn =  QFileDialog::getOpenFileName(this,
             tr("Open arpeggiator file"), lastDir,
-            tr("QMidiArp XML files")  + " (*" + FILEEXT + ");;"
-            + tr("Old QMidiArp files") + " (*.qma)");
+            tr("QMidiArp XML files")  + " (*" + FILEEXT + ")");
     if (fn.isEmpty())
         return;
 
-    if (fn.endsWith(".qma"))
-        openTextFile(fn);
-
-    else if (fn.endsWith(FILEEXT))
+    if (fn.endsWith(FILEEXT))
         openFile(fn);
 }
 
@@ -816,110 +812,6 @@ void MainWindow::skipXmlElement(QXmlStreamReader& xml)
             }
         }
     }
-}
-
-void MainWindow::openTextFile(const QString& fn)
-{
-    QString line, qs, qs2;
-    bool midiclocktmp = false;
-    int c = 0;
-
-    lastDir = fn.left(fn.lastIndexOf('/'));
-
-    QFile f(fn);
-    if (!f.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(this, APP_NAME,
-                tr("Could not read from file '%1'.").arg(fn));
-        return;
-    }
-
-    clear();
-    filename = fn;
-
-    QTextStream loadText(&f);
-    qs = loadText.readLine();
-    if (qs == "Tempo")
-    {
-        qs = loadText.readLine();
-        tempoSpin->setValue(qs.toInt());
-        qs = loadText.readLine();
-    }
-    if (qs == "MIDI Control")
-    {
-        qs = loadText.readLine();
-        qs2 = qs.section(' ', 0, 0);
-        passWidget->cbuttonCheck->setChecked(qs2.toInt());
-        qs = loadText.readLine();
-    }
-    if (qs == "MIDI Clock")
-    {
-        qs = loadText.readLine();
-        qs2 = qs.section(' ', 0, 0);
-        midiclocktmp = qs2.toInt();
-        qs = loadText.readLine();
-    }
-    qs2 = qs.section(' ', 0, 0);
-    passWidget->setForward(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1);
-    passWidget->setPortUnmatched(qs2.toInt() + 1);
-    qs = loadText.readLine();
-    qs2 = qs.section(' ', 0, 0);
-
-    grooveWidget->grooveTick->setValue(qs2.toInt());
-    //  engine->driver->setGrooveTick(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1);
-    grooveWidget->grooveVelocity->setValue(qs2.toInt());
-    //  engine->driver->setGrooveVelocity(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2);
-    grooveWidget->grooveLength->setValue(qs2.toInt());
-    //  engine->driver->setGrooveLength(qs2.toInt());
-
-    while (!loadText.atEnd()) {
-        qs = loadText.readLine();
-        if (qs.startsWith("GUI"))
-            break;
-        if (qs.startsWith("Seq:"))
-            c = 1;
-        if (qs.startsWith("LFO:"))
-            c = 2;
-        if (qs.startsWith("Arp:"))
-            c = 3;
-
-        switch (c) {
-            case 1:
-                addSeq(qs);
-                engine->seqWidget(engine->midiSeqCount() - 1)->readDataText(loadText);
-            break;
-            case 2:
-                addLfo(qs);
-                engine->lfoWidget(engine->midiLfoCount() - 1)->readDataText(loadText);
-            break;
-            case 3:
-                addArp(qs);
-                engine->arpWidget(engine->midiArpCount() - 1)->readDataText(loadText);
-            break;
-            default:
-                qs = "Arp: " + qs;
-                addArp(qs);
-                engine->arpWidget(engine->midiArpCount() - 1)->readDataText(loadText);
-            break;
-        }
-    }
-
-    if (qs.startsWith("GUI")) {
-        qs = loadText.readLine();
-        QByteArray array = QByteArray::fromHex(qs.toLatin1());
-        restoreState(array);
-    }
-
-    midiClockAction->setChecked(midiclocktmp);
-
-    filename.append("x");
-    QMessageBox::warning(this, APP_NAME,
-            tr("The QMidiArp text file was imported. If you save this file, \
-it will be saved using the newer xml format under the name\n '%1'.").arg(filename));
-
-    updateWindowTitle();
 }
 
 void MainWindow::fileSave()

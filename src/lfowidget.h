@@ -153,13 +153,6 @@ class LfoWidget : public QWidget
 */
     void readData(QXmlStreamReader& xml);
 /*!
-* @brief This function reads all LFO parameters of this module from an old
-* QMidiArp .qma text stream.
-*
-* @param arpText QTextStream to read from
-*/
-    void readDataText(QTextStream& arpText);
-/*!
 * @brief This function writes all parameters of this LFO to an XML stream
 * passed by the caller, i.e. MainWindow.
 *

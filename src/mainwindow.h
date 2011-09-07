@@ -337,14 +337,6 @@ class MainWindow : public QMainWindow
 * @param fn File name to open including its absolute path
 */
     void openFile(const QString&);
-/*!
-* @brief This function opens and reads an old QMidiArp .qma text file.
-*
-* It displays a warning for conversion upon next MainWindow::fileSave.
-* It is called by MainWindow::fileOpen.
-* @param fn File name to open including its absolute path
-*/
-    void openTextFile(const QString&);
 
 /* SIGNALS */
   signals:

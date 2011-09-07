@@ -515,91 +515,6 @@ void LfoWidget::skipXmlElement(QXmlStreamReader& xml)
     }
 }
 
-void LfoWidget::readDataText(QTextStream& arpText)
-{
-    QString qs, qs2;
-    int l1, lt, wvtmp;
-    Sample sample;
-
-    qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0);
-    channelOut->setCurrentIndex(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1);
-    portOut->setCurrentIndex(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2);
-    ccnumberBox->setValue(qs2.toInt());
-    qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0);
-    freqBox->setCurrentIndex(qs2.toInt());
-    updateFreq(qs2.toInt());
-    qs2 = qs.section(' ', 1, 1);
-    resBox->setCurrentIndex(qs2.toInt());
-    updateRes(qs2.toInt());
-    qs2 = qs.section(' ', 2, 2);
-    sizeBox->setCurrentIndex(qs2.toInt());
-    updateSize(qs2.toInt());
-    qs2 = qs.section(' ', 3, 3);
-    amplitude->setValue(qs2.toInt());
-    qs2 = qs.section(' ', 4, 4);
-    offset->setValue(qs2.toInt());
-    qs = arpText.readLine();
-    if (qs == "MIDICC")
-    {
-        qs = arpText.readLine();
-        while (qs != "EOCC") {
-            qs2 = qs.section(' ', 0, 0);
-            int controlID = qs2.toInt();
-            qs2 = qs.section(' ', 1, 1);
-            int ccnumber = qs2.toInt();
-            qs2 = qs.section(' ', 2, 2);
-            int channel = qs2.toInt();
-            qs2 = qs.section(' ', 3, 3);
-            int min = qs2.toInt();
-            qs2 = qs.section(' ', 4, 4);
-            int max = qs2.toInt();
-            midiControl->appendMidiCC(controlID, ccnumber, channel, min, max);
-            qs = arpText.readLine();
-        }
-    qs = arpText.readLine();
-    }
-
-    wvtmp = qs.toInt();
-
-    // Read Mute Mask
-    int step = TPQN / midiWorker->res;
-    qs = arpText.readLine();
-    if (qs.isEmpty() || (qs == "EOP")) return;
-    qs2 = qs.section(' ', 0, 0);
-    midiWorker->muteMask.clear();
-    l1 = 0;
-    while (qs2 !="EOM") {
-        midiWorker->muteMask.append(qs2.toInt());
-        l1++;
-        if (!(l1%32)) qs = arpText.readLine();
-        qs2 = qs.section(' ', l1%32, l1%32);
-    }
-
-    // Read Custom Waveform
-    qs = arpText.readLine();
-    qs2 = qs.section(' ', 0, 0);
-    midiWorker->customWave.clear();
-    l1 = 0;
-    lt = 0;
-    while (qs2 !="EOW") {
-        sample.value=qs2.toInt();
-        sample.tick = lt;
-        sample.muted = midiWorker->muteMask.at(l1);
-        midiWorker->customWave.append(sample);
-        lt+=step;
-        l1++;
-        if (!(l1%16)) qs = arpText.readLine();
-        qs2 = qs.section(' ', l1%16, l1%16);
-    }
-    waveFormBox->setCurrentIndex(wvtmp);
-    updateWaveForm(wvtmp);
-    modified = false;
-}
-
 void LfoWidget::loadWaveForms()
 {
     waveForms << tr("Sine") << tr("Saw up") << tr("Triangle")
@@ -891,8 +806,7 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                 break;
 
                 case 1:
-                        sval = min + ((double)value * (max - min)
-                                / 127);
+                        sval = min + ((double)value * (max - min) / 127);
                         amplitude->setValue(sval);
                 break;
 
