@@ -80,7 +80,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
-    grooveWindow->setWidget(grooveWidget);;
+    grooveWindow->setWidget(grooveWidget);
     grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
@@ -378,13 +378,6 @@ void MainWindow::addArp(const QString& name)
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
-    connect(grooveWidget, SIGNAL(newGrooveTick(int)),
-            moduleWidget->screen, SLOT(setGrooveTick(int)));
-    connect(grooveWidget, SIGNAL(newGrooveVelocity(int)),
-            moduleWidget->screen, SLOT(setGrooveVelocity(int)));
-    connect(grooveWidget, SIGNAL(newGrooveLength(int)),
-            moduleWidget->screen, SLOT(setGrooveLength(int)));
-
     widgetID = engine->arpWidgetCount();
     moduleWidget->manageBox->name = name;
     moduleWidget->manageBox->ID = widgetID;
@@ -624,6 +617,8 @@ void MainWindow::clear()
     while (engine->midiSeqCount()) {
         removeSeq(engine->midiSeqCount() - 1);
     }
+
+    grooveWidget->midiControl->ccList.clear();
 }
 
 void MainWindow::fileNew()

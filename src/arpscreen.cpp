@@ -61,6 +61,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double curstep = 0.0;
     int nlines = 0;
     int notelen;
+    int dx = 0;
     int ypos, xpos;
     int octYoffset;
     int w = QWidget::width();
@@ -78,7 +79,10 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double minTempo = 1.0;
     int noctaves = 1;
     double vel =1.0;
-    //~ int grooveTmp = 0;
+    double v = 0;
+    int grv_cur_sft = 0;
+    int grv_cur_len = 0;
+    int grv_cur_vel = 0;
     int grooveIndex = 0;
     int chordIndex = 0;
     l2 = 0;
@@ -243,14 +247,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
     for (l1 = 0; l1 < patternLen; l1++)
     {
         c = a_pattern.at(l1);
-        //~ grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick ;
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
             if (!chordIndex)
             {
                 if (chordMode) chordIndex++;
-                curstep += stepWidth; // * (1.0 + 0.01 * (double)grooveTmp);
+                curstep += stepWidth;
                 grooveIndex++;
             }
         }
@@ -282,7 +285,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
                 case 'p':
                     if (!chordMode)
-                        curstep += stepWidth; // * (1.0 + 0.01 * (double)grooveTmp);
+                        curstep += stepWidth;
                         grooveIndex++;
                    break;
 
@@ -319,34 +322,33 @@ void ArpScreen::paintEvent(QPaintEvent*)
             }
         }
 
-        if (c.isDigit())
-        {
+        grv_cur_sft = ((grooveIndex % 2)) ? -grooveTick : grooveTick ;
+        grv_cur_len = ((grooveIndex % 2)) ? grooveLength : -grooveLength ;
+        grv_cur_vel = ((grooveIndex % 2)) ? grooveVelocity : -grooveVelocity ;
+
+        if (c.isDigit()) {
             octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
-            x = (curstep - stepWidth) * xscale;
-            if (nlines > 0)
-            {
+            x = (curstep - stepWidth + 0.005 * (double)grv_cur_sft * stepWidth) * xscale;
+            dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
+            v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
+
+            if (nlines > 0) {
                 pen.setWidth(notestreak_thick);
-                pen.setColor(QColor(80 + 60 * (vel - 0.8),
-                            160 + 40 * (vel - 0.8),
-                            80 + 60 * (vel - 0.8)));
+                pen.setColor(QColor(80 + 60 * v, 160 + 40 * v, 80 + 60 * v));
                 p.setPen(pen);
                 ypos = yscale - yscale * (nlines - 1 + octYoffset)
                             / (patternMaxIndex + 1) / noctaves
                             + ARPSCR_VMARG - 3 + notestreak_thick;
                 xpos = ARPSCR_HMARG + x + pen.width() / 2;
-                p.drawLine(xpos, ypos,
-                        xpos + notelen - pen.width(), ypos);
+                p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
                 // Cursor
                 if (grooveIndex == currentIndex) {
                     pen.setWidth(notestreak_thick * 2);
                     p.setPen(pen);
                     ypos = h - 2;
-                    xpos = ARPSCR_HMARG + x + pen.width() / 2;
-                    p.drawLine(xpos, ypos,
-                        xpos + notelen - pen.width(), ypos);
+                    p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
                 }
                 pen.setWidth(1);
-
             }
         }
     }
@@ -364,19 +366,10 @@ void ArpScreen::updateScreen(int p_index)
     update();
 }
 
-void ArpScreen::setGrooveTick(int tick)
+void ArpScreen::newGrooveValues(int tick, int vel, int length)
 {
     grooveTick = tick;
-    update();
-}
-void ArpScreen::setGrooveVelocity(int vel)
-{
     grooveVelocity = vel;
-    update();
-}
-
-void ArpScreen::setGrooveLength(int length)
-{
     grooveLength = length;
     update();
 }

@@ -154,8 +154,12 @@ void Engine::setGrooveLength(int val)
 
 void Engine::sendGroove()
 {
-    for (int l1 = 0; l1 < midiArpList.count(); l1++) {
+    int l1;
+
+    for (l1 = 0; l1 < midiArpList.count(); l1++) {
         midiArp(l1)->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+        arpWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
 }

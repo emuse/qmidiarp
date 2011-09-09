@@ -75,9 +75,7 @@ class ArpScreen : public QWidget
   public slots:
     void updateScreen(const QString&);
     void updateScreen(int p_index);
-    void setGrooveTick(int tick);
-    void setGrooveVelocity(int vel);
-    void setGrooveLength(int length);
+    void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
 };
 
