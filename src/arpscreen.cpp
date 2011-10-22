@@ -322,13 +322,13 @@ void ArpScreen::paintEvent(QPaintEvent*)
             }
         }
 
-        grv_cur_sft = ((grooveIndex % 2)) ? -grooveTick : grooveTick ;
+        grv_cur_sft = ((grooveIndex % 2)) ? 0 : grooveTick ;
         grv_cur_len = ((grooveIndex % 2)) ? grooveLength : -grooveLength ;
         grv_cur_vel = ((grooveIndex % 2)) ? grooveVelocity : -grooveVelocity ;
 
         if (c.isDigit()) {
             octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
-            x = (curstep - stepWidth + 0.005 * (double)grv_cur_sft * stepWidth) * xscale;
+            x = (curstep - stepWidth + 0.01 * (double)grv_cur_sft * stepWidth) * xscale;
             dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
             v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
 
