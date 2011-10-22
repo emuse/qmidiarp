@@ -218,23 +218,28 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
             ev_jframe = ev_sample / nframes;
             ev_inframe = ev_sample % nframes;
             if ((ev_jframe <= cur_j_frame) && (ev_inframe <= i)) {
+                //qWarning("nexttick %d, ev_frame %d, ev_inframe %d, cur_jframe %d", nexttick, ev_jframe, ev_inframe, cur_j_frame);
                 outEv = rd->evQueue.takeAt(idx);
                 evport = rd->evPortQueue.takeAt(idx);
                 rd->evTickQueue.removeAt(idx);
                 int k = 0;
-                do {
-                    buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe + k, 3);
-                    k++;
-                } while (buffer == NULL);
+                if ((ev_jframe) <= cur_j_frame) {
+                    do {
+                        if ((ev_jframe) < cur_j_frame) {
+                            ev_inframe = 0;
+                        }
+                        buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe + k, 3);
+                        k++;
+                    } while (buffer == NULL);
 
-                buffer[2] = outEv.value;        /** velocity / value **/
-                buffer[1] = outEv.data;         /** note / controller **/
-                if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
-                if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
-                buffer[0] += outEv.channel;
+                    buffer[2] = outEv.value;        /** velocity / value **/
+                    buffer[1] = outEv.data;         /** note / controller **/
+                    if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
+                    if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
+                    buffer[0] += outEv.channel;
+                }
             }
         }
-
         /** MIDI Input handling **/
         while ((in_event.time == i) && (event_index < event_count)) {
 
@@ -339,7 +344,7 @@ jack_position_t JackDriver::getCurrentPos()
 
 void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
 {
-  //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
+  //qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
     evQueue.append(ev);
     evTickQueue.append(n_tick);
     evPortQueue.append(outport);
@@ -415,6 +420,6 @@ void JackDriver::setTransportStatus(bool on)
         evTickQueue.clear();
         evPortQueue.clear();
         requestEchoAt(0);
-        queueStatus = on;
     }
+    queueStatus = on;
 }
