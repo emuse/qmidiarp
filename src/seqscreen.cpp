@@ -42,6 +42,9 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     recordMode = false;
     currentRecStep = false;
     currentIndex = 0;
+    grooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
     isMuted = false;
 }
 
@@ -170,8 +173,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     for (l1 = 0; l1 < npoints; l1++) {
-
-        x = l1 * xscale * nsteps / npoints;
+        x = (l1 + .01 * (double)grooveTick * (l1 % 2)) * nsteps * xscale / npoints;
         tmpval = p_data.at(l1).value;
         if ((tmpval >= 12 * baseOctave) && (tmpval < 12 * maxOctave)) {
             ypos = yscale - yscale
@@ -180,12 +182,11 @@ void SeqScreen::paintEvent(QPaintEvent*)
             xpos = SEQSCR_HMARG + x + pen.width() / 2;
             if (p_data.at(l1).muted) {
                 pen.setColor(QColor(5, 40, 100));
-                p.setPen(pen);
             }
             else {
                 pen.setColor(QColor(50, 130, 180));
-                p.setPen(pen);
             }
+            p.setPen(pen);
             p.drawLine(xpos, ypos,
                             xpos + (xscale / beatRes) - pen.width(), ypos);
         }
@@ -194,14 +195,13 @@ void SeqScreen::paintEvent(QPaintEvent*)
     pen.setWidth(2);
     pen.setColor(QColor(50, 160, 220));
     p.setPen(pen);
-    p.drawLine(SEQSCR_HMARG / 2, ypos,
-                        SEQSCR_HMARG *2 / 3, ypos);
+    p.drawLine(SEQSCR_HMARG / 2, ypos, SEQSCR_HMARG *2 / 3, ypos);
 
     // Cursor
     pen.setWidth(notestreak_thick);
     pen.setColor(QColor(50, 180, 220));
     p.setPen(pen);
-    x = currentIndex * xscale * (int)nsteps / npoints;
+    x = (currentIndex + .01 * (double)grooveTick * (currentIndex % 2))* xscale * (int)nsteps / npoints;
     xpos = SEQSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
@@ -217,6 +217,14 @@ void SeqScreen::updateScreen(const QVector<Sample>& data)
 void SeqScreen::updateScreen(int p_index)
 {
     currentIndex = p_index;
+    update();
+}
+
+void SeqScreen::newGrooveValues(int tick, int vel, int length)
+{
+    grooveTick = tick;
+    grooveVelocity = vel;
+    grooveLength = length;
     update();
 }
 

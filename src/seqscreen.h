@@ -60,6 +60,7 @@ class SeqScreen : public QWidget
   private:
     //QTimer *timer;
     QVector<Sample> p_data, data;
+    int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY;
     int w, h;
     bool recordMode;
@@ -88,6 +89,7 @@ class SeqScreen : public QWidget
     void mousePressEvent(QMouseEvent* event);
     void setRecordMode(bool on);
     void setCurrentRecStep(int currentRecStep);
+    void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
 };
 

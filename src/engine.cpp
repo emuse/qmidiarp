@@ -162,6 +162,12 @@ void Engine::sendGroove()
         arpWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
+    for (l1 = 0; l1 < midiSeqList.count(); l1++) {
+        midiSeq(l1)->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+        seqWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+    }
 }
 
 //LFO handling
@@ -414,7 +420,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int note_tick = 0;
     int length;
     int outport;
-    int seqtransp;
     bool isNew;
     MidiEvent outEv;
     int frame_nticks = 0;
@@ -474,23 +479,14 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    midiSeq(l1)->getNextNote(&seqSample);
-                    frame_nticks = TPQN / midiSeq(l1)->res;
+                    midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
-                    seqtransp = midiSeq(l1)->transp;
                     outport = midiSeq(l1)->portOut;
-                    if (midiSeq(l1)->nextTick < (tick - frame_nticks)) midiSeq(l1)->nextTick = tick;
                     if (!midiSeq(l1)->isMuted) {
                         if (!seqSample.muted) {
-                            outEv.data = seqSample.value + seqtransp;
-                            driver->sendMidiEvent(outEv, midiSeq(l1)->nextTick, outport, length);
+                            outEv.data = seqSample.value;
+                            driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                         }
-                    }
-                    midiSeq(l1)->nextTick+=frame_nticks;
-                    if (!midiSeq(l1)->trigByKbd) {
-                        /** round-up to current resolution (quantize) */
-                        midiSeq(l1)->nextTick/=frame_nticks;
-                        midiSeq(l1)->nextTick*=frame_nticks;
                     }
                 }
             }

@@ -54,6 +54,10 @@ MidiSeq::MidiSeq()
     waveFormIndex = 0;
     currentIndex = 0;
     nextTick = 0;
+    grooveTick = 0;
+    newGrooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
     isMuted = false;
     int lt = 0;
     int l1 = 0;
@@ -120,15 +124,41 @@ bool MidiSeq::wantTrigByKbd()
 }
 
 
-void MidiSeq::getNextNote(Sample *p_sample)
+void MidiSeq::getNextNote(Sample *p_sample, int tick)
 {
+    const int frame_nticks = TPQN / res;
     Sample sample;
+    int cur_grv_sft;
+
+    if (!currentIndex) grooveTick = newGrooveTick;
     sample = customWave.at(currentIndex);
     emit nextStep(currentIndex);
     currentIndex++;
     currentIndex %= (size * res);
     if (!enableLoop && !currentIndex) seqFinished = true;
     if (seqFinished) sample.muted = true;
+
+    if (nextTick < (tick - frame_nticks)) nextTick = tick;
+
+    sample.value+=transp;
+    sample.tick = nextTick;
+
+
+    cur_grv_sft = 0.01 * (grooveTick * frame_nticks);
+
+    /** pairwise application of new groove shift */
+    if (!(currentIndex % 2)) {
+        cur_grv_sft = -cur_grv_sft;
+        grooveTick = newGrooveTick;
+    }
+    nextTick += frame_nticks + cur_grv_sft;
+
+    if (!trigByKbd && !(currentIndex % 2)) {
+        /** round-up to current resolution (quantize) */
+        nextTick/=frame_nticks;
+        nextTick*=frame_nticks;
+    }
+
     *p_sample = sample;
 }
 
@@ -287,4 +317,14 @@ void MidiSeq::setCurrentIndex(int ix)
         seqFinished = false;
         noteCount = 0;
     }
+}
+
+void MidiSeq::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+        int p_grooveLength)
+{
+    // grooveTick is only updated on pair steps to keep quantization
+    // newGrooveTick stores the GUI value temporarily
+    newGrooveTick = p_grooveTick;
+    grooveVelocity = p_grooveVelocity;
+    grooveLength = p_grooveLength;
 }

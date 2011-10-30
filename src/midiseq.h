@@ -99,6 +99,7 @@ class MidiSeq : public QObject  {
     int nextTick;
     int nOctaves;
     int baseOctave;
+    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave;
     QVector<bool> muteMask;
 
@@ -210,7 +211,7 @@ class MidiSeq : public QObject  {
  *
  * @param p_sample reference to a Sample structure receiving the data point
  */
-    void getNextNote(Sample *p_sample);
+    void getNextNote(Sample *p_sample, int tick);
 /*! @brief This function toggles the mute state of one point of the
  * MidiSeq::muteMask array.
  *
@@ -223,6 +224,17 @@ class MidiSeq : public QObject  {
  * @see MidiSeq::setMutePoint
  */
     bool toggleMutePoint(double);
+/**
+ * @brief This function copies the new values transferred from the
+ * GrooveWidget into variables used by MidiArp::getNote.
+ *
+ * @param p_grooveTick Groove amount for timing displacements
+ * @param p_grooveVelocity Groove amount for velocity variations
+ * @param p_grooveLength Groove amount for note length variations
+ */
+    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+            int p_grooveLength);
+
     void setCurrentIndex(int ix);
     int getCurrentIndex() {return currentIndex; }
 
