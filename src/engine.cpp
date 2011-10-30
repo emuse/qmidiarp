@@ -585,7 +585,6 @@ bool Engine::eventCallback(MidiEvent inEv)
     }
 
     if (inEv.type == EV_NOTEON) {
-
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
             if (midiSeq(l1)->wantEvent(inEv)) {
                 unmatched = false;
@@ -603,25 +602,19 @@ bool Engine::eventCallback(MidiEvent inEv)
         for (l1 = 0; l1 < midiArpCount(); l1++) {
             if (midiArp(l1)->wantEvent(inEv)) {
                 unmatched = false;
-                if (inEv.value) {
 
-                    midiArp(l1)->handleNoteOn(inEv.data, inEv.value, tick);
+                midiArp(l1)->handleNote(inEv.data, inEv.value, tick, 1);
 
-                    if (midiArp(l1)->wantTrigByKbd()) {
-                        nextMinArpTick = tick;
-                        midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
-                        gotArpKbdTrig = true;
-                        driver->requestEchoAt(nextMinArpTick, true);
-                    }
-                }
-                else {
-                    midiArp(l1)->handleNoteOff(inEv.data, tick, 1);
+                if (inEv.value && midiArp(l1)->wantTrigByKbd()) {
+                    nextMinArpTick = tick;
+                    midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
+                    gotArpKbdTrig = true;
+                    driver->requestEchoAt(nextMinArpTick, true);
                 }
             }
         }
         return unmatched;
     }
-
     return unmatched;
 }
 

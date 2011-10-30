@@ -151,80 +151,80 @@ bool MidiArp::wantEvent(MidiEvent event) {
     return(true);
 }
 
-void MidiArp::handleNoteOn(int note, int velocity, int tick)
+void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
 {
     int bufPtr, index;
-    if (!getPressedNoteCount()) {
-        purgeLatchBuffer();
-        if (restartByKbd) advancePatternIndex(true);
-        if (trigByKbd) initArpTick(tick);
-    }
-    // modify buffer that is not accessed by arpeggio output
-    bufPtr = (noteBufPtr) ? 0 : 1;
 
-    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
-        index = noteCount;
-    else {
-        index = 0;
-        while (note > notes[bufPtr][0][index]) index++;
 
-        for (int l3 = 0; l3 < 4; l3++) {
-            for (int l2 = noteCount; l2 > index; l2--) {
-                notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 - 1];
+    if (velocity) {
+        // This is a NOTE ON event
+        if (!getPressedNoteCount()) {
+            purgeLatchBuffer();
+            if (restartByKbd) advancePatternIndex(true);
+            if (trigByKbd) initArpTick(tick);
+        }
+        // modify buffer that is not accessed by arpeggio output
+        bufPtr = (noteBufPtr) ? 0 : 1;
+
+        if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
+            index = noteCount;
+        else {
+            index = 0;
+            while (note > notes[bufPtr][0][index]) index++;
+
+            for (int l3 = 0; l3 < 4; l3++) {
+                for (int l2 = noteCount; l2 > index; l2--) {
+                    notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 - 1];
+                }
             }
         }
+        notes[bufPtr][0][index] = note;
+        notes[bufPtr][1][index] = velocity;
+        notes[bufPtr][2][index] = tick;
+        notes[bufPtr][3][index] = 0;
+        noteCount++;
+
+        if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
     }
-    notes[bufPtr][0][index] = note;
-    notes[bufPtr][1][index] = velocity;
-    notes[bufPtr][2][index] = tick;
-    notes[bufPtr][3][index] = 0;
-    noteCount++;
-
-    if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
-    copyNoteBuffer();
-}
-
-void MidiArp::handleNoteOff(int note, int tick, int keep_rel)
-{
-    int bufPtr, index;
-
-    // modify buffer that is not accessed by arpeggio output
-    bufPtr = (noteBufPtr) ? 0 : 1;
-    if (!noteCount) {
-        return;
-    }
-    if (sustain) {
-        sustainBuffer.append(note);
-        return;
-    }
-
-    if (latch_mode) {
-        latchBuffer.append(note);
-        if (latchBuffer.count() == noteCount) {
-            latchTimer->stop();
+    else {
+        // This is a NOTE OFF event
+        // modify buffer that is not accessed by arpeggio output
+        bufPtr = (noteBufPtr) ? 0 : 1;
+        if (!noteCount) {
+            return;
         }
-        else {
-            latchTimer->start(200);
+        if (sustain) {
+            sustainBuffer.append(note);
+            return;
         }
-        return;
-    }
 
-    if ((!keep_rel) || (!release_time)) {
-        //definitely remove from buffer
-        if (note == notes[bufPtr][0][noteCount - 1]) {
-            //note is on top of buffer: only decrement noteCount
-            noteCount--;
-            if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+        if (latch_mode) {
+            latchBuffer.append(note);
+            if (latchBuffer.count() == noteCount) {
+                latchTimer->stop();
+            }
+            else {
+                latchTimer->start(200);
+            }
+            return;
         }
-        else {
-            //note is not on top: take out the note and pull down all above
-            index = 0;
-            while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
-            deleteNoteAt(index, bufPtr);
-        }
-    }
-    else tagAsReleased(note, tick, bufPtr);
 
+        if ((!keep_rel) || (!release_time)) {
+            //definitely remove from buffer
+            if (note == notes[bufPtr][0][noteCount - 1]) {
+                //note is on top of buffer: only decrement noteCount
+                noteCount--;
+                if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+            }
+            else {
+                //note is not on top: take out the note and pull down all above
+                index = 0;
+                while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
+                deleteNoteAt(index, bufPtr);
+            }
+        }
+        else tagAsReleased(note, tick, bufPtr);
+    }
     copyNoteBuffer();
 }
 
