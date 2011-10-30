@@ -131,7 +131,7 @@ class MidiSeq : public QObject  {
 /**
  * @brief This function does the actions related to a newly received note.
  *
- * It is called by SeqDriver when a new note is received on the MIDI input port.
+ * It is called by Engine when a new note is received on the MIDI input port.
 
  * @param note The note value of the received note
  * @param velocity The note velocity
