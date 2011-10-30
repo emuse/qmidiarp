@@ -69,7 +69,7 @@ class MidiArp : public QWidget  {
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
     int currentLength, nextLength;
     bool newCurrent, newNext, chordMode;
-    int grooveTick, grooveVelocity, grooveLength, grooveIndex;
+    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     int randomTick, randomVelocity, randomLength;
     double stepWidth, len, vel;
 

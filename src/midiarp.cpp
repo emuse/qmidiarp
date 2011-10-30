@@ -114,6 +114,7 @@ MidiArp::MidiArp()
     randomVelocityAmp = 0;
     randomLengthAmp = 0;
     grooveTick = 0;
+    newGrooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
     repeatPatternThroughChord = 1;
@@ -432,9 +433,16 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     *length = clip(len * stepWidth * (double)TPQN
             * (1.0 + 0.005 * (double)(randomLength + grooveTmp)), 2,
             1000000,  &outOfRange);
-    grooveTmp = (grooveIndex % 2) ? -grooveTick : grooveTick;
-    arpTick += stepWidth * (double)TPQN
-        * (1.0 + 0.005 * (double)grooveTmp);
+
+    if (!grooveIndex) grooveTick = newGrooveTick;
+    grooveTmp = TPQN * stepWidth * grooveTick * 0.01;
+    /** pairwise application of new groove shift */
+    if (grooveIndex % 2) {
+        grooveTmp = -grooveTmp;
+        grooveTick = newGrooveTick;
+    }
+    arpTick += stepWidth * TPQN + grooveTmp;
+
     *tick = arpTick + clip(stepWidth * 0.25 * (double)randomTick, 0,
             1000, &outOfRange);
 
@@ -727,7 +735,7 @@ void MidiArp::purgeLatchBuffer()
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {
-    grooveTick = p_grooveTick;
+    newGrooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
 }
