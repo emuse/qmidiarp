@@ -71,6 +71,8 @@ class MidiLfo : public QObject  {
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int recValue;
     int lastSampleValue;
+    bool seqFinished;
+    int noteCount;
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -92,6 +94,11 @@ class MidiLfo : public QObject  {
     void updateCustomWaveOffset(int cwoffs);
 
   public:
+    bool enableNoteOff;
+    bool enableVelIn;
+    bool restartByKbd;
+    bool trigByKbd;
+    bool enableLoop;
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
@@ -197,6 +204,26 @@ class MidiLfo : public QObject  {
  * @return True if inEv is in the input range of the module
  */
     bool wantEvent(MidiEvent inEv);
+/**
+ * @brief This function checks whether this module is set to keyboard
+ * trigger mode.
+ *
+ * Its response depends on MidiSeq::restartByKbd and (TODO) whether there are notes
+ * pressed on the keyboard, i.e. whether the note was played stakato.
+ *
+ * @return True if the module accepts to be triggered
+ */
+    bool wantTrigByKbd();
+/**
+ * @brief This function does the actions related to a newly received note.
+ *
+ * It is called by Engine when a new note is received on the MIDI input port.
+
+ * @param note The note value of the received note
+ * @param velocity The note velocity
+ * @param tick The time the note was received in internal ticks
+ */
+    void handleNote(int note, int velocity, int tick);
 /*! @brief This function is the main calculator for the data contained
  * in a waveform.
  *
@@ -213,7 +240,7 @@ class MidiLfo : public QObject  {
  *
  * @param *p_data reference to an array the frame is copied to
  */
-    void getNextFrame(QVector<Sample> *p_data);
+    void getNextFrame(QVector<Sample> *p_data, int tick);
 /*! @brief This function toggles the mute state of one point of the
  * MidiLfo::muteMask array.
  *

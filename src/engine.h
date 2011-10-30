@@ -71,6 +71,7 @@ class Engine : public QThread  {
     //From SeqDriver
     bool gotArpKbdTrig;
     bool gotSeqKbdTrig;
+    bool gotLfoKbdTrig;
     int  schedDelayTicks;
     int nextMinLfoTick;
     int nextMinSeqTick;

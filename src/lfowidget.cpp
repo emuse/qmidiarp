@@ -59,6 +59,35 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
+    QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"),inBox);
+    enableNoteOff = new QCheckBox(this);
+    connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteOff(bool)));
+    enableNoteOffLabel->setBuddy(enableNoteOff);
+    enableNoteOff->setToolTip(tr("Stop output when Note is released"));
+
+    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
+    enableRestartByKbd = new QCheckBox(this);
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
+    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
+    enableRestartByKbd->setToolTip(tr("Restart sequence when a new note is received"));
+
+    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
+    enableTrigByKbd = new QCheckBox(this);
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
+    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
+    enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
+
+    QLabel *enableLoopLabel = new QLabel(tr("&Loop"),inBox);
+    enableLoop = new QCheckBox(this);
+    connect(enableLoop, SIGNAL(toggled(bool)), this, SLOT(updateEnableLoop(bool)));
+    enableLoopLabel->setBuddy(enableLoop);
+    enableLoop->setToolTip(tr("Play sequence as loop instead of a single run"));
+
+    enableNoteOff->setChecked(false);
+    enableRestartByKbd->setChecked(false);
+    enableTrigByKbd->setChecked(false);
+    enableLoop->setChecked(true);
+
     QLabel *ccnumberInLabel = new QLabel(tr("MIDI &CC#"), inBox);
     ccnumberInBox = new QSpinBox(inBox);
     ccnumberInLabel->setBuddy(ccnumberInBox);
@@ -80,8 +109,16 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     inBoxLayout->addWidget(ccnumberInLabel, 0, 0);
     inBoxLayout->addWidget(ccnumberInBox, 0, 1);
-    inBoxLayout->addWidget(chInLabel, 2, 0);
-    inBoxLayout->addWidget(chIn, 2, 1);
+    inBoxLayout->addWidget(enableNoteOffLabel, 1, 0);
+    inBoxLayout->addWidget(enableNoteOff, 1, 1);
+    inBoxLayout->addWidget(enableRestartByKbdLabel, 2, 0);
+    inBoxLayout->addWidget(enableRestartByKbd, 2, 1);
+    inBoxLayout->addWidget(enableTrigByKbdLabel, 3, 0);
+    inBoxLayout->addWidget(enableTrigByKbd, 3, 1);
+    inBoxLayout->addWidget(enableLoopLabel, 4, 0);
+    inBoxLayout->addWidget(enableLoop, 4, 1);
+    inBoxLayout->addWidget(chInLabel, 5, 0);
+    inBoxLayout->addWidget(chIn, 5, 1);
     if (compactStyle) {
         inBoxLayout->setSpacing(1);
         inBoxLayout->setMargin(2);
@@ -542,6 +579,29 @@ void LfoWidget::updateChIn(int val)
 void LfoWidget::updateCcnumberIn(int val)
 {
     midiWorker->ccnumberIn = val;
+    modified = true;
+}
+void LfoWidget::updateEnableNoteOff(bool on)
+{
+    midiWorker->enableNoteOff = on;
+    modified = true;
+}
+
+void LfoWidget::updateEnableRestartByKbd(bool on)
+{
+    midiWorker->restartByKbd = on;
+    modified = true;
+}
+
+void LfoWidget::updateEnableTrigByKbd(bool on)
+{
+    midiWorker->trigByKbd = on;
+    modified = true;
+}
+
+void LfoWidget::updateEnableLoop(bool on)
+{
+    midiWorker->enableLoop = on;
     modified = true;
 }
 

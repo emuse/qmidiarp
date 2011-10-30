@@ -28,6 +28,13 @@
 
 MidiLfo::MidiLfo()
 {
+    enableNoteOff = false;
+    trigByKbd = false;
+    restartByKbd = false;
+    enableLoop = false;
+    seqFinished = false;
+    noteCount = 0;
+
     queueTempo = 100.0;
     amp = 0;
     offs = 0;
@@ -74,7 +81,7 @@ void MidiLfo::setMuted(bool on)
     isMuted = on;
 }
 
-void MidiLfo::getNextFrame(QVector<Sample> *p_data)
+void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 {
     //this function is called by seqdriver and returns one sample
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
@@ -115,10 +122,12 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data)
             customWave.replace(index, sample);
         }
         sample.tick = lt;
+        if (seqFinished) sample.muted = true;
         frame.append(sample);
         lt+=step;
         l1++;
     } while ((l1 < framesize) & (l1 < npoints));
+
 
     lastSampleValue = recValue;
 
@@ -129,6 +138,17 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data)
 
     frameptr += l1;
     frameptr %= npoints;
+
+    if (nextTick < (tick - lt)) nextTick = tick;
+    nextTick += lt;
+
+    if (!enableLoop && !frameptr) seqFinished = true;
+
+    if (!trigByKbd && !(frameptr % 2)) {
+        /** round-up to current resolution (quantize) */
+        nextTick/=lt;
+        nextTick*=lt;
+    }
 
     *p_data = frame;
 }
@@ -402,6 +422,10 @@ void MidiLfo::setMutePoint(double mouseX, bool on)
 void MidiLfo::setFramePtr(int idx)
 {
     frameptr = idx;
+    if (!idx) {
+        seqFinished = false;
+        noteCount = 0;
+    }
 }
 
 void MidiLfo::record(int value)
@@ -410,10 +434,32 @@ void MidiLfo::record(int value)
     isRecording = true;
 }
 
+bool MidiLfo::wantTrigByKbd()
+{
+    bool on = (trigByKbd && (noteCount == 1));
+    return(on);
+}
+
 bool MidiLfo::wantEvent(MidiEvent inEv)
 {
-    if (!recordMode) return(false);
+    if (!recordMode && (inEv.type == EV_CONTROLLER)) return(false);
     if (inEv.channel != chIn) return(false);
-    if (inEv.data != ccnumberIn) return(false);
+    if ((inEv.type == EV_CONTROLLER) && (inEv.data != ccnumberIn)) return(false);
     return(true);
 }
+
+void MidiLfo::handleNote(int note, int velocity, int tick)
+{
+    if (velocity) {
+        /**This is a NOTE ON event*/
+        if (restartByKbd && !noteCount) setFramePtr(0);
+        seqFinished = false;
+        noteCount++;
+    }
+    else {
+        /**This is a NOTE OFF event*/
+        if (enableNoteOff && (noteCount == 1)) seqFinished = true;
+        if (noteCount) noteCount--;
+    }
+}
+

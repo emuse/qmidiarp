@@ -60,6 +60,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     grooveLength = 0;
     gotArpKbdTrig = false;
     gotSeqKbdTrig = false;
+    gotLfoKbdTrig = false;
     schedDelayTicks = 2;
     status = false;
     sendLogEvents = false;
@@ -422,7 +423,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int outport;
     bool isNew;
     MidiEvent outEv;
-    int frame_nticks = 0;
 
     note.clear();
     velocity.clear();
@@ -436,36 +436,34 @@ void Engine::echoCallback(bool echo_from_trig)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
         for (l1 = 0; l1 < midiLfoCount(); l1++) {
-            if ((tick + 8) >= midiLfo(l1)->nextTick) {
-                outEv.type = EV_CONTROLLER;
-                outEv.data = midiLfo(l1)->ccnumber;
-                outEv.channel = midiLfo(l1)->channelOut;
-                midiLfo(l1)->getNextFrame(&lfoData);
-                frame_nticks = lfoData.last().tick;
-                outport = midiLfo(l1)->portOut;
-                if (midiLfo(l1)->nextTick < (tick - frame_nticks)) midiLfo(l1)->nextTick = tick;
-                if (!midiLfo(l1)->isMuted) {
-                    l2 = 0;
-                    while (lfoData.at(l2).value > -1) {
-                        if (!lfoData.at(l2).muted) {
-                            outEv.value = lfoData.at(l2).value;
-                            driver->sendMidiEvent(outEv, midiLfo(l1)->nextTick + lfoData.at(l2).tick
-                                , outport);
+            if ((gotLfoKbdTrig && echo_from_trig && midiLfo(l1)->wantTrigByKbd())
+                    || (!gotLfoKbdTrig && !echo_from_trig)) {
+                gotLfoKbdTrig = false;
+                if ((tick + 8) >= midiLfo(l1)->nextTick) {
+                    outEv.type = EV_CONTROLLER;
+                    outEv.data = midiLfo(l1)->ccnumber;
+                    outEv.channel = midiLfo(l1)->channelOut;
+                    midiLfo(l1)->getNextFrame(&lfoData, tick);
+                    outport = midiLfo(l1)->portOut;
+                    if (!midiLfo(l1)->isMuted) {
+                        l2 = 0;
+                        while (lfoData.at(l2).value > -1) {
+                            if (!lfoData.at(l2).muted) {
+                                outEv.value = lfoData.at(l2).value;
+                                driver->sendMidiEvent(outEv, tick + lfoData.at(l2).tick
+                                    , outport);
+                            }
+                            l2++;
                         }
-                        l2++;
                     }
                 }
-                midiLfo(l1)->nextTick += frame_nticks;
-                /** round-up to current resolution (quantize) */
-                midiLfo(l1)->nextTick/= frame_nticks;
-                midiLfo(l1)->nextTick*= frame_nticks;
             }
             if (!l1)
                 nextMinLfoTick = midiLfo(l1)->nextTick;
             else if (midiLfo(l1)->nextTick < nextMinLfoTick)
                 nextMinLfoTick = midiLfo(l1)->nextTick;
         }
-        if (midiLfoCount()) driver->requestEchoAt(nextMinLfoTick);
+        if (midiLfoCount()) driver->requestEchoAt(nextMinLfoTick, 0);
     }
 
     //Seq notes data request and queueing
@@ -585,6 +583,20 @@ bool Engine::eventCallback(MidiEvent inEv)
     }
 
     if (inEv.type == EV_NOTEON) {
+        for (l1 = 0; l1 < midiLfoCount(); l1++) {
+            if (midiLfo(l1)->wantEvent(inEv)) {
+                unmatched = false;
+
+                midiLfo(l1)->handleNote(inEv.data, inEv.value, tick);
+
+                if (inEv.value && midiLfo(l1)->wantTrigByKbd()) {
+                    nextMinLfoTick = tick;
+                    midiLfo(l1)->nextTick = nextMinLfoTick + schedDelayTicks;
+                    gotLfoKbdTrig = true;
+                    driver->requestEchoAt(nextMinLfoTick, true);
+                }
+            }
+        }
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
             if (midiSeq(l1)->wantEvent(inEv)) {
                 unmatched = false;

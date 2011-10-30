@@ -131,6 +131,10 @@ class LfoWidget : public QWidget
     QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox;
     QCheckBox *muteOut;
+    QCheckBox *enableNoteOff;
+    QCheckBox *enableRestartByKbd;
+    QCheckBox *enableTrigByKbd;
+    QCheckBox *enableLoop;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QComboBox *waveFormBox, *freqBox;
@@ -204,6 +208,10 @@ class LfoWidget : public QWidget
     void updateCcnumberIn(int value);
     void updateScreen(int value);
     void setRecord(bool on);
+    void updateEnableNoteOff(bool on);
+    void updateEnableRestartByKbd(bool on);
+    void updateEnableTrigByKbd(bool on);
+    void updateEnableLoop(bool on);
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
