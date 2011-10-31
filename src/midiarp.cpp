@@ -90,6 +90,7 @@ MidiArp::MidiArp()
     noteCount = 0;
     restartByKbd = false;
     trigByKbd = false;
+    restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
@@ -160,7 +161,7 @@ void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
         // This is a NOTE ON event
         if (!getPressedNoteCount()) {
             purgeLatchBuffer();
-            if (restartByKbd) advancePatternIndex(true);
+            if (restartByKbd) restartFlag = true;
             if (trigByKbd) initArpTick(tick);
         }
         // modify buffer that is not accessed by arpeggio output
@@ -318,7 +319,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     tmpIndex[1] = -1;
     gotCC = false;
     pause = false;
-
+    if (restartFlag) advancePatternIndex(true);
 
     if (!patternIndex) initLoop();
     do {
@@ -460,6 +461,7 @@ bool MidiArp::advancePatternIndex(bool reset)
     }
     if ((patternIndex >= patternLen) || reset) {
         patternIndex = 0;
+        restartFlag = false;
         switch (repeatPatternThroughChord) {
             case 1:
                 noteOfs++;

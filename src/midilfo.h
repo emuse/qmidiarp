@@ -99,6 +99,7 @@ class MidiLfo : public QObject  {
     bool restartByKbd;
     bool trigByKbd;
     bool enableLoop;
+    bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;

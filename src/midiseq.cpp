@@ -37,6 +37,7 @@ MidiSeq::MidiSeq()
     enableLoop = false;
     currentRecStep = 0;
     seqFinished = false;
+    restartFlag = false;
     noteCount = 0;
 
     nOctaves = 4;
@@ -102,7 +103,7 @@ void MidiSeq::handleNote(int note, int velocity, int tick)
         if (velocity) {
             /**This is a NOTE ON event*/
             if (enableNoteIn) updateTranspose(note - 60);
-            if (restartByKbd && !noteCount) currentIndex = 0;
+            if (restartByKbd && !noteCount) restartFlag = true;
             if (enableVelIn) updateVelocity(velocity);
             seqFinished = false;
             noteCount++;
@@ -130,6 +131,7 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     Sample sample;
     int cur_grv_sft;
 
+    if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
     sample = customWave.at(currentIndex);
     emit nextStep(currentIndex);
@@ -315,7 +317,7 @@ void MidiSeq::setCurrentIndex(int ix)
     currentIndex=ix;
     if (!ix) {
         seqFinished = false;
-        noteCount = 0;
+        restartFlag = false;
     }
 }
 

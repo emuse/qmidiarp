@@ -33,6 +33,7 @@ MidiLfo::MidiLfo()
     restartByKbd = false;
     enableLoop = false;
     seqFinished = false;
+    restartFlag = false;
     noteCount = 0;
 
     queueTempo = 100.0;
@@ -102,6 +103,8 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     framesize = res / framelimit;
     l1 = 0;
     lt = 0;
+
+    if (restartFlag) setFramePtr(0);
 
     do {
         index = (l1 + frameptr) % npoints;
@@ -424,7 +427,7 @@ void MidiLfo::setFramePtr(int idx)
     frameptr = idx;
     if (!idx) {
         seqFinished = false;
-        noteCount = 0;
+        restartFlag = false;
     }
 }
 
@@ -452,7 +455,7 @@ void MidiLfo::handleNote(int note, int velocity, int tick)
 {
     if (velocity) {
         /**This is a NOTE ON event*/
-        if (restartByKbd && !noteCount) setFramePtr(0);
+        if (restartByKbd && !noteCount) restartFlag = true;
         seqFinished = false;
         noteCount++;
     }

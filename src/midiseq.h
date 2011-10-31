@@ -90,6 +90,7 @@ class MidiSeq : public QObject  {
     bool restartByKbd;
     bool trigByKbd;
     bool enableLoop;
+    bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     int portOut;        /**< Output port index */
     int channelOut;
     bool isMuted;
