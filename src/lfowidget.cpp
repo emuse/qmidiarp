@@ -805,6 +805,11 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 {
     int tmp;
 
+    enableNoteOff->setChecked(fromWidget->enableNoteOff->isChecked());
+    enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
+    enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
+    enableLoop->setChecked(fromWidget->enableLoop->isChecked());
+
     tmp = fromWidget->chIn->currentIndex();
     chIn->setCurrentIndex(tmp);
     updateChIn(tmp);
