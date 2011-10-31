@@ -72,6 +72,10 @@ MidiLfo::MidiLfo()
     lastMouseY = 0;
     frameptr = 0;
     nextTick = 0;
+    grooveTick = 0;
+    newGrooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
 }
 
 MidiLfo::~MidiLfo(){
@@ -105,6 +109,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     lt = 0;
 
     if (restartFlag) setFramePtr(0);
+    if (!frameptr) grooveTick = newGrooveTick;
 
     do {
         index = (l1 + frameptr) % npoints;
@@ -132,22 +137,32 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     } while ((l1 < framesize) & (l1 < npoints));
 
 
-    lastSampleValue = recValue;
-
-    sample.value = -1;
-    sample.tick = lt;
-    frame.append(sample);
     emit nextStep(frameptr);
 
     frameptr += l1;
     frameptr %= npoints;
 
+    int cur_grv_sft = 0.01 * (grooveTick * step);
+    /** pairwise application of new groove shift */
+    if (!(frameptr % 2)) {
+        cur_grv_sft = -cur_grv_sft;
+        grooveTick = newGrooveTick;
+    }
+    if (res > 16) cur_grv_sft = 0;
+
+    lastSampleValue = recValue;
+
+    sample.value = -1;
+    sample.tick = lt + cur_grv_sft;
+    frame.append(sample);
+
     if (nextTick < (tick - lt)) nextTick = tick;
-    nextTick += lt;
+
+    nextTick += lt + cur_grv_sft;
 
     if (!enableLoop && !frameptr) seqFinished = true;
 
-    if (!trigByKbd && !(frameptr % 2)) {
+    if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
         /** round-up to current resolution (quantize) */
         nextTick/=lt;
         nextTick*=lt;
@@ -464,5 +479,15 @@ void MidiLfo::handleNote(int note, int velocity, int tick)
         if (enableNoteOff && (noteCount == 1)) seqFinished = true;
         if (noteCount) noteCount--;
     }
+}
+
+void MidiLfo::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+        int p_grooveLength)
+{
+    // grooveTick is only updated on pair steps to keep quantization
+    // newGrooveTick stores the GUI value temporarily
+    newGrooveTick = p_grooveTick;
+    grooveVelocity = p_grooveVelocity;
+    grooveLength = p_grooveLength;
 }
 

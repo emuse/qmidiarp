@@ -169,6 +169,12 @@ void Engine::sendGroove()
         seqWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
                 grooveLength);
     }
+    for (l1 = 0; l1 < midiLfoList.count(); l1++) {
+        midiLfo(l1)->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+        lfoWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
+                grooveLength);
+    }
 }
 
 //LFO handling

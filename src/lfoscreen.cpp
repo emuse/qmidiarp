@@ -38,6 +38,9 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     mouseY = 0;
     xMax = LFOSCR_HMARG;
     currentIndex = 0;
+    grooveTick = 0;
+    grooveVelocity = 0;
+    grooveLength = 0;
     isMuted = false;
 }
 
@@ -66,6 +69,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int x, x1;
     int beatRes = 1;
     int beatDiv = 0;
+    int grooveTmp = 0;
     l2 = 0;
 
     //Grid
@@ -128,9 +132,10 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
+    grooveTmp = (beatRes < 32) ? grooveTick : 0;
     for (l1 = 0; l1 < npoints; l1++) {
 
-        x = l1 * xscale * nsteps / npoints;
+        x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * nsteps * xscale / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCR_VMARG;
         xpos = LFOSCR_HMARG + x + pen.width() / 2;
@@ -149,7 +154,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     pen.setWidth(notestreak_thick * 2);
     pen.setColor(QColor(200, 180, 70));
     p.setPen(pen);
-    x = currentIndex * xscale * (int)nsteps / npoints;
+    x = (currentIndex + .01 * (double)grooveTmp * (currentIndex % 2)) * xscale * (int)nsteps / npoints;
     xpos = LFOSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
@@ -238,6 +243,14 @@ int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
 void LfoScreen::setRecord(bool on)
 {
     recordMode = on;
+}
+
+void LfoScreen::newGrooveValues(int tick, int vel, int length)
+{
+    grooveTick = tick;
+    grooveVelocity = vel;
+    grooveLength = length;
+    update();
 }
 
 QSize LfoScreen::sizeHint() const

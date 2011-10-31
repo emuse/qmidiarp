@@ -62,6 +62,7 @@ class LfoScreen : public QWidget
   private:
     //QTimer *timer;
     QVector<Sample> p_data, data;
+    int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY, mouseW;
     int w, h;
     int xMax;
@@ -91,6 +92,7 @@ class LfoScreen : public QWidget
     void mousePressEvent(QMouseEvent* event);
     void setRecord(bool on);
     void wheelEvent(QWheelEvent* event);
+    void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
 };
 

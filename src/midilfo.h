@@ -118,6 +118,7 @@ class MidiLfo : public QObject  {
                                     @par 5: Use Custom Wave */
     int cwmin;                  /*!< The minimum of MidiLfo::customWave */
     int nextTick;
+    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
 
@@ -256,6 +257,16 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::setMutePoint
  */
     bool toggleMutePoint(double mouseX);
+/**
+ * @brief This function copies the new values transferred from the
+ * GrooveWidget into variables used by MidiArp::getNote.
+ *
+ * @param p_grooveTick Groove amount for timing displacements
+ * @param p_grooveVelocity Groove amount for velocity variations
+ * @param p_grooveLength Groove amount for note length variations
+ */
+    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+            int p_grooveLength);
     int getFramePtr() { return frameptr;}
 
   signals:
