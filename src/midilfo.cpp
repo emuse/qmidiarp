@@ -441,7 +441,7 @@ void MidiLfo::setFramePtr(int idx)
 {
     frameptr = idx;
     if (!idx) {
-        seqFinished = false;
+        seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
     }
 }
@@ -468,6 +468,9 @@ bool MidiLfo::wantEvent(MidiEvent inEv)
 
 void MidiLfo::handleNote(int note, int velocity, int tick)
 {
+    (void)note;
+    (void)tick;
+
     if (velocity) {
         /**This is a NOTE ON event*/
         if (restartByKbd && !noteCount) restartFlag = true;

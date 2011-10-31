@@ -97,6 +97,8 @@ bool MidiSeq::wantEvent(MidiEvent inEv) {
 
 void MidiSeq::handleNote(int note, int velocity, int tick)
 {
+    (void)tick;
+
     if (recordMode) recordNote(note);
 
     else {
@@ -316,7 +318,7 @@ void MidiSeq::setCurrentIndex(int ix)
 {
     currentIndex=ix;
     if (!ix) {
-        seqFinished = false;
+        seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
     }
 }
