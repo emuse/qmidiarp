@@ -450,7 +450,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         while (lfoData.at(l2).value > -1) {
                             if (!lfoData.at(l2).muted) {
                                 outEv.value = lfoData.at(l2).value;
-                                driver->sendMidiEvent(outEv, tick + lfoData.at(l2).tick
+                                driver->sendMidiEvent(outEv, nextMinLfoTick + lfoData.at(l2).tick
                                     , outport);
                             }
                             l2++;
@@ -463,7 +463,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (midiLfo(l1)->nextTick < nextMinLfoTick)
                 nextMinLfoTick = midiLfo(l1)->nextTick;
         }
-        if (midiLfoCount()) driver->requestEchoAt(nextMinLfoTick, 0);
+        driver->requestEchoAt(nextMinLfoTick, 0);
     }
 
     //Seq notes data request and queueing
@@ -493,7 +493,7 @@ void Engine::echoCallback(bool echo_from_trig)
             else if (midiSeq(l1)->nextTick < nextMinSeqTick)
                 nextMinSeqTick = midiSeq(l1)->nextTick;
         }
-        if (midiSeqCount()) driver->requestEchoAt(nextMinSeqTick, 0);
+        driver->requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
@@ -534,7 +534,7 @@ void Engine::echoCallback(bool echo_from_trig)
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
-        if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
+        driver->requestEchoAt(nextMinArpTick, 0);
     }
 }
 
