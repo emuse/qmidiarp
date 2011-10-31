@@ -351,6 +351,14 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
         xml.writeStartElement("input");
+            xml.writeTextElement("enableNoteOff", QString::number(
+                midiWorker->enableNoteOff));
+            xml.writeTextElement("restartByKbd", QString::number(
+                midiWorker->restartByKbd));
+            xml.writeTextElement("trigByKbd", QString::number(
+                midiWorker->trigByKbd));
+            xml.writeTextElement("enableLoop", QString::number(
+                midiWorker->enableLoop));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
             xml.writeTextElement("ccnumber", QString::number(
@@ -424,6 +432,14 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
+                if (xml.name() == "enableNoteOff")
+                    enableNoteOff->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "restartByKbd")
+                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigByKbd")
+                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableLoop")
+                    enableLoop->setChecked(xml.readElementText().toInt());
                 if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     chIn->setCurrentIndex(tmp);
