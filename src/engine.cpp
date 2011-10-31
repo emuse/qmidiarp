@@ -540,7 +540,7 @@ void Engine::echoCallback(bool echo_from_trig)
         }
 
         if (0 > nextMinArpTick) nextMinArpTick = 0;
-        driver->requestEchoAt(nextMinArpTick, 0);
+        if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
 }
 
