@@ -171,6 +171,7 @@ void MidiSeq::getData(QVector<Sample> *p_data)
     Sample sample;
     int lt = 0;
     int step = TPQN / res;
+    int npoints = res * size;
 
     //res: number of events per beat
     //size: size of waveform in beats
@@ -179,8 +180,8 @@ void MidiSeq::getData(QVector<Sample> *p_data)
 
     switch(waveFormIndex) {
         case 0: //custom
-            lt = step * customWave.count();
-            data = customWave;
+            lt = step * npoints;
+            data = customWave.mid(0, npoints);
         break;
         default:
         break;
@@ -260,21 +261,25 @@ void MidiSeq::resizeAll()
     int l1 = 0;
     int os;
     int step = TPQN / res;
+    int npoints = res * size;
     Sample sample;
 
-    currentIndex%=(res * size);
+    currentIndex%=npoints;
+    currentRecStep%=npoints;
+
     os = customWave.count();
-    customWave.resize(size * res);
-    muteMask.resize(size * res);
-    for (l1 = 0; l1 < customWave.count(); l1++) {
-        if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
-        sample = customWave.at(l1 % os);
-        sample.tick = lt;
-        sample.muted = muteMask.at(l1);
-        customWave.replace(l1, sample);
-        lt+=step;
+    if (os < npoints) {
+        customWave.resize(npoints);
+        muteMask.resize(npoints);
+        for (l1 = 0; l1 < npoints; l1++) {
+            if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
+            sample = customWave.at(l1 % os);
+            sample.tick = lt;
+            sample.muted = muteMask.at(l1);
+            customWave.replace(l1, sample);
+            lt+=step;
+        }
     }
-    currentRecStep %= (res * size);
 }
 
 void MidiSeq::copyToCustom()

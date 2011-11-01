@@ -252,8 +252,8 @@ void MidiLfo::getData(QVector<Sample> *p_data)
             }
         break;
         case 5: //custom
-            lt = step * customWave.count();
-            tmpdata = customWave;
+            lt = step * npoints;
+            tmpdata = customWave.mid(0, npoints);
         break;
         default:
         break;
@@ -355,19 +355,23 @@ void MidiLfo::resizeAll()
     int l1 = 0;
     int os;
     int step = TPQN / res;
+    int npoints = res * size;
     Sample sample;
 
-    frameptr%=(res * size);
+    frameptr%=npoints;
+
     os = customWave.count();
-    customWave.resize(size * res);
-    muteMask.resize(size * res);
-    for (l1 = 0; l1 < customWave.count(); l1++) {
-        if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
-        sample = customWave.at(l1 % os);
-        sample.tick = lt;
-        sample.muted = muteMask.at(l1);
-        customWave.replace(l1, sample);
-        lt+=step;
+    if (os < npoints) {
+        customWave.resize(npoints);
+        muteMask.resize(npoints);
+        for (l1 = 0; l1 < npoints; l1++) {
+            if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
+            sample = customWave.at(l1 % os);
+            sample.tick = lt;
+            sample.muted = muteMask.at(l1);
+            customWave.replace(l1, sample);
+            lt+=step;
+        }
     }
 }
 
