@@ -69,10 +69,13 @@ class MidiLfo : public QObject  {
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
+    bool reverse;       /*!< True when the play direction is backwards */
+    bool pingpong;       /*!< True when the play direction alternates */
+    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int recValue;
     int lastSampleValue;
-    bool seqFinished;
-    int noteCount;
+    bool seqFinished;   /*!< When True, all output events are muted, used when NOTE OFF is received */
+    int noteCount;      /*!< The number of keys currently pressed on keyboard */
 /**
  * @brief This function allows forcing an integer value within the
  * specified range (clip).
@@ -131,6 +134,7 @@ class MidiLfo : public QObject  {
     void updateOffset(int);
     void updateResolution(int);
     void updateSize(int);
+    void updateLoop(int);
     void updateQueueTempo(int);
     void record(int value);
 /*! @brief This function sets MidiLfo::isMuted, which is checked by

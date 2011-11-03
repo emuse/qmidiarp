@@ -116,13 +116,13 @@ class SeqWidget : public QWidget
     QComboBox *chIn;
     QComboBox *channelOut, *portOut;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
+    QComboBox *loopBox;
     QCheckBox *muteOut;
     QCheckBox *enableNoteIn;
     QCheckBox *enableNoteOff;
     QCheckBox *enableVelIn;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
-    QCheckBox *enableLoop;
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
@@ -221,6 +221,15 @@ class SeqWidget : public QWidget
 */
     void updateSize(int);
 /*!
+* @brief Slot for the SeqWidget::loopBox combobox. Sets the loop mode
+* of the sequencer.
+*
+* It sets MidiSeq::reverse, MidiSeq::pingpong and MidiSeq::enableLoop
+* @param val Combination index ranging from 0 to 5
+*
+*/
+    void updateLoop(int);
+/*!
 * @brief Slot for the SeqWidget::velocity slider. Sets the note velocity
 * of the sequencer.
 *
@@ -244,7 +253,6 @@ class SeqWidget : public QWidget
     void updateEnableNoteOff(bool on);
     void updateEnableRestartByKbd(bool on);
     void updateEnableTrigByKbd(bool on);
-    void updateEnableLoop(bool on);
     void setRecord(bool on);
     void setDispVert(int mode);
     void updateDispVert(int mode);

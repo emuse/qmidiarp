@@ -51,7 +51,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     int l1;
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
-                << "RecordToggle"<< "Resolution"<< "Size" << "unknown";
+                << "RecordToggle"<< "Resolution"<< "Size" << "LoopMode" << "unknown";
     midiControl = new MidiControl(midiCCNames);
 
     manageBox = new ManageBox("LFO:", true, this);
@@ -77,16 +77,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
     enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
 
-    QLabel *enableLoopLabel = new QLabel(tr("&Loop"),inBox);
-    enableLoop = new QCheckBox(this);
-    connect(enableLoop, SIGNAL(toggled(bool)), this, SLOT(updateEnableLoop(bool)));
-    enableLoopLabel->setBuddy(enableLoop);
-    enableLoop->setToolTip(tr("Play sequence as loop instead of a single run"));
-
     enableNoteOff->setChecked(false);
     enableRestartByKbd->setChecked(false);
     enableTrigByKbd->setChecked(false);
-    enableLoop->setChecked(true);
 
     QLabel *ccnumberInLabel = new QLabel(tr("MIDI &CC#"), inBox);
     ccnumberInBox = new QSpinBox(inBox);
@@ -115,10 +108,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     inBoxLayout->addWidget(enableRestartByKbd, 2, 1);
     inBoxLayout->addWidget(enableTrigByKbdLabel, 3, 0);
     inBoxLayout->addWidget(enableTrigByKbd, 3, 1);
-    inBoxLayout->addWidget(enableLoopLabel, 4, 0);
-    inBoxLayout->addWidget(enableLoop, 4, 1);
-    inBoxLayout->addWidget(chInLabel, 5, 0);
-    inBoxLayout->addWidget(chIn, 5, 1);
+    inBoxLayout->addWidget(chInLabel, 4, 0);
+    inBoxLayout->addWidget(chIn, 4, 1);
     if (compactStyle) {
         inBoxLayout->setSpacing(1);
         inBoxLayout->setMargin(2);
@@ -262,6 +253,18 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
             SLOT(updateSize(int)));
     midiControl->addMidiLearnMenu(sizeBox, 7);
 
+    loopBox = new QComboBox(waveBox);
+    names.clear();
+    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-";
+    loopBox->insertItems(0, names);
+    loopBox->setCurrentIndex(0);
+    loopBox->setToolTip(tr("Loop, bounce or play once going forward or backward"));
+    loopBox->setMinimumContentsLength(5);
+    connect(loopBox, SIGNAL(activated(int)), this,
+            SLOT(updateLoop(int)));
+    midiControl->addMidiLearnMenu(loopBox, 8);
+
+
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
     recordAction->setToolTip(tr("Record incoming controller"));
@@ -295,8 +298,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
-    paramBoxLayout->addWidget(recordButtonLabel, 0, 0);
-    paramBoxLayout->addWidget(recordButton, 0, 1);
+    paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
+    paramBoxLayout->addWidget(recordButtonLabel, 1, 0);
+    paramBoxLayout->addWidget(recordButton, 1, 1);
     paramBoxLayout->addWidget(waveFormBoxLabel, 0, 2);
     paramBoxLayout->addWidget(waveFormBox, 0, 3);
     paramBoxLayout->addWidget(freqBoxLabel, 1, 2);
@@ -357,8 +361,6 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->restartByKbd));
             xml.writeTextElement("trigByKbd", QString::number(
                 midiWorker->trigByKbd));
-            xml.writeTextElement("enableLoop", QString::number(
-                midiWorker->enableLoop));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
             xml.writeTextElement("ccnumber", QString::number(
@@ -377,6 +379,8 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
         xml.writeEndElement();
 
         xml.writeStartElement("waveParams");
+            xml.writeTextElement("loopmode", QString::number(
+                loopBox->currentIndex()));
             xml.writeTextElement("waveform", QString::number(
                 waveFormBox->currentIndex()));
             xml.writeTextElement("frequency", QString::number(
@@ -438,8 +442,6 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                     enableRestartByKbd->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "trigByKbd")
                     enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableLoop")
-                    enableLoop->setChecked(xml.readElementText().toInt());
                 if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     chIn->setCurrentIndex(tmp);
@@ -479,7 +481,12 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "waveform")
+                if (xml.name() == "loopmode") {
+                    tmp = xml.readElementText().toInt();
+                    loopBox->setCurrentIndex(tmp);
+                    updateLoop(tmp);
+                }
+                else if (xml.name() == "waveform")
                     wvtmp = xml.readElementText().toInt();
                 else if (xml.name() == "frequency") {
                     tmp = xml.readElementText().toInt();
@@ -615,12 +622,6 @@ void LfoWidget::updateEnableTrigByKbd(bool on)
     modified = true;
 }
 
-void LfoWidget::updateEnableLoop(bool on)
-{
-    midiWorker->enableLoop = on;
-    modified = true;
-}
-
 void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
@@ -669,6 +670,13 @@ void LfoWidget::updateSize(int val)
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateScreen(data);
+    modified = true;
+}
+
+void LfoWidget::updateLoop(int val)
+{
+    if (val > 5) return;
+    midiWorker->updateLoop(val);
     modified = true;
 }
 
@@ -808,7 +816,6 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
     enableNoteOff->setChecked(fromWidget->enableNoteOff->isChecked());
     enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
     enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
-    enableLoop->setChecked(fromWidget->enableLoop->isChecked());
 
     tmp = fromWidget->chIn->currentIndex();
     chIn->setCurrentIndex(tmp);
@@ -833,6 +840,9 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
     tmp = fromWidget->sizeBox->currentIndex();
     sizeBox->setCurrentIndex(tmp);
     updateSize(tmp);
+    tmp = fromWidget->loopBox->currentIndex();
+    loopBox->setCurrentIndex(tmp);
+    updateLoop(tmp);
     tmp = fromWidget->freqBox->currentIndex();
     freqBox->setCurrentIndex(tmp);
     updateFreq(tmp);
@@ -929,6 +939,11 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         sizeBox->setCurrentIndex(sval);
                         updateSize(sval);
+                break;
+                case 8:
+                        sval = min + ((double)value * (max - min) / 127);
+                        loopBox->setCurrentIndex(sval);
+                        updateLoop(sval);
                 break;
 
                 default:

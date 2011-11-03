@@ -42,7 +42,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     int l1;
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
-                << "RecordToggle" << "Resolution"<< "Size" << "unknown";
+                << "RecordToggle" << "Resolution"<< "Size" << "LoopMode" << "unknown";
     midiControl = new MidiControl(midiCCNames);
 
     manageBox = new ManageBox("Seq:", true, this);
@@ -114,18 +114,11 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
     enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
 
-    QLabel *enableLoopLabel = new QLabel(tr("&Loop"),inBox);
-    enableLoop = new QCheckBox(this);
-    connect(enableLoop, SIGNAL(toggled(bool)), this, SLOT(updateEnableLoop(bool)));
-    enableLoopLabel->setBuddy(enableLoop);
-    enableLoop->setToolTip(tr("Play sequence as loop instead of a single run"));
-
     enableNoteIn->setChecked(true);
     enableNoteOff->setChecked(false);
     enableVelIn->setChecked(true);
     enableRestartByKbd->setChecked(false);
     enableTrigByKbd->setChecked(false);
-    enableLoop->setChecked(true);
 
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QComboBox(inBox);
@@ -145,10 +138,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     inBoxLayout->addWidget(enableRestartByKbd, 3, 1);
     inBoxLayout->addWidget(enableTrigByKbdLabel, 4, 0);
     inBoxLayout->addWidget(enableTrigByKbd, 4, 1);
-    inBoxLayout->addWidget(enableLoopLabel, 5, 0);
-    inBoxLayout->addWidget(enableLoop, 5, 1);
-    inBoxLayout->addWidget(chInLabel, 6, 0);
-    inBoxLayout->addWidget(chIn, 6, 1);
+    inBoxLayout->addWidget(chInLabel, 5, 0);
+    inBoxLayout->addWidget(chIn, 5, 1);
     if (compactStyle) {
         inBoxLayout->setSpacing(1);
         inBoxLayout->setMargin(2);
@@ -227,6 +218,18 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 
+    loopBox = new QComboBox(seqBox);
+    QStringList names;
+    names.clear();
+    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-";
+    loopBox->insertItems(0, names);
+    loopBox->setCurrentIndex(0);
+    loopBox->setToolTip(tr("Loop, bounce or play once going forward or backward"));
+    loopBox->setMinimumContentsLength(5);
+    connect(loopBox, SIGNAL(activated(int)), this,
+            SLOT(updateLoop(int)));
+    midiControl->addMidiLearnMenu(loopBox, 6);
+
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
     recordAction->setToolTip(tr("Record step by step"));
@@ -241,7 +244,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
             seqBox);
     resBox = new QComboBox(seqBox);
     resBoxLabel->setBuddy(resBox);
-    QStringList names;
     names.clear();
     names << "1" << "2" << "4" << "8" << "16";
     resBox->insertItems(0, names);
@@ -302,15 +304,16 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
-    paramBoxLayout->addWidget(waveFormBoxLabel, 0, 0);
-    paramBoxLayout->addWidget(waveFormBox, 0, 1);
-    paramBoxLayout->addWidget(recordButtonLabel, 1, 0);
-    paramBoxLayout->addWidget(recordButton, 1, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 2, 0);
-    paramBoxLayout->addWidget(resBox, 2, 1);
-    paramBoxLayout->addWidget(sizeBoxLabel, 3, 0);
-    paramBoxLayout->addWidget(sizeBox, 3, 1);
-    paramBoxLayout->setRowStretch(4, 1);
+    paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
+    paramBoxLayout->addWidget(waveFormBoxLabel, 1, 0);
+    paramBoxLayout->addWidget(waveFormBox, 1, 1);
+    paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
+    paramBoxLayout->addWidget(recordButton, 2, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 3, 0);
+    paramBoxLayout->addWidget(resBox, 3, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 4, 0);
+    paramBoxLayout->addWidget(sizeBox, 4, 1);
+    paramBoxLayout->setRowStretch(5, 1);
 
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
@@ -368,8 +371,6 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->restartByKbd));
             xml.writeTextElement("trigByKbd", QString::number(
                 midiWorker->trigByKbd));
-            xml.writeTextElement("enableLoop", QString::number(
-                midiWorker->enableLoop));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
         xml.writeEndElement();
@@ -384,6 +385,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         xml.writeEndElement();
 
         xml.writeStartElement("seqParams");
+            xml.writeTextElement("loopmode", QString::number(
+                loopBox->currentIndex()));
             xml.writeTextElement("resolution", QString::number(
                 resBox->currentIndex()));
             xml.writeTextElement("size", QString::number(
@@ -457,8 +460,6 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     enableRestartByKbd->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "trigByKbd")
                     enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableLoop")
-                    enableLoop->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     chIn->setCurrentIndex(tmp);
@@ -494,6 +495,11 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
+                if (xml.name() == "loopmode") {
+                    tmp = xml.readElementText().toInt();
+                    loopBox->setCurrentIndex(tmp);
+                    updateLoop(tmp);
+                }
                 else if (xml.name() == "resolution") {
                     tmp = xml.readElementText().toInt();
                     resBox->setCurrentIndex(tmp);
@@ -644,12 +650,6 @@ void SeqWidget::updateEnableTrigByKbd(bool on)
     modified = true;
 }
 
-void SeqWidget::updateEnableLoop(bool on)
-{
-    midiWorker->enableLoop = on;
-    modified = true;
-}
-
 void SeqWidget::updateNoteLength(int val)
 {
     midiWorker->notelength = val + val;
@@ -694,6 +694,14 @@ void SeqWidget::updateSize(int val)
     screen->updateScreen(data);
     modified = true;
 }
+
+void SeqWidget::updateLoop(int val)
+{
+    if (val > 5) return;
+    midiWorker->updateLoop(val);
+    modified = true;
+}
+
 
 void SeqWidget::updateVelocity(int val)
 {
@@ -845,7 +853,6 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     enableVelIn->setChecked(fromWidget->enableVelIn->isChecked());
     enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
     enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
-    enableLoop->setChecked(fromWidget->enableLoop->isChecked());
 
     tmp = fromWidget->chIn->currentIndex();
     chIn->setCurrentIndex(tmp);
@@ -863,6 +870,9 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     tmp = fromWidget->sizeBox->currentIndex();
     sizeBox->setCurrentIndex(tmp);
     updateSize(tmp);
+    tmp = fromWidget->loopBox->currentIndex();
+    loopBox->setCurrentIndex(tmp);
+    updateLoop(tmp);
 
     tmp = fromWidget->velocity->value();
     updateVelocity(tmp);
@@ -950,6 +960,11 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         sizeBox->setCurrentIndex(sval);
                         updateSize(sval);
+                break;
+                case 6:
+                        sval = min + ((double)value * (max - min) / 127);
+                        loopBox->setCurrentIndex(sval);
+                        updateLoop(sval);
                 break;
 
                 default:

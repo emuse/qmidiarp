@@ -4,12 +4,18 @@ New Features
   o Groove functions now work for all modules, not only Arps
   o Effect of groove settings is displayed in the Arp/LFO/Seq screen
   o LFOs can be triggered and restarted by the keyboard
+  o When reducing the size of LFO waves or Sequences, the original data
+    is kept in memory and is also saved to the session file as a whole
+  o LFO and Seq play direction can now be chosen, and bouncing loops are
+    possible
+  o Triggered one-shot play of LFO and Seqs improved
   o JACK MIDI backend available when calling qmidiarp with -j option
 
 Fixed Bugs
-  o Rounding error led to desync when Arps were used with groove
+  o A rounding error led to desync when Arps were used with groove shift
   o MIDI controls for Groove did not initialize upon "New..."
-  o MIDI CCs assigned to multiple destinations stopped at the first
+  o MIDI Controllers assigned to multiple destinations stopped at the
+    first one encountered and ignored all others
 
 
 qmidiarp-0.4.2 (2011-07-10)

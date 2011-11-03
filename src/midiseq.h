@@ -67,6 +67,9 @@ class MidiSeq : public QObject  {
     double queueTempo;
     int lastMouseLoc;
     int currentIndex;
+    bool reverse;       /*!< True when the play direction is backwards */
+    bool pingpong;      /*!< True when the play direction alternates */
+    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int noteCount;
     bool recordMode;
     bool seqFinished;
@@ -109,6 +112,7 @@ class MidiSeq : public QObject  {
     ~MidiSeq();
     void updateWaveForm(int val);
     void updateVelocity(int);
+    void updateLoop(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
 

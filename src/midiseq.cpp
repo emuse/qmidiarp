@@ -34,10 +34,13 @@ MidiSeq::MidiSeq()
     recordMode = false;
     trigByKbd = false;
     restartByKbd = false;
-    enableLoop = false;
+    enableLoop = true;
     currentRecStep = 0;
     seqFinished = false;
+    reverse = false;
+    pingpong = false;
     restartFlag = false;
+    curLoopMode = 0;
     noteCount = 0;
 
     nOctaves = 4;
@@ -130,16 +133,37 @@ bool MidiSeq::wantTrigByKbd()
 void MidiSeq::getNextNote(Sample *p_sample, int tick)
 {
     const int frame_nticks = TPQN / res;
+    const int npoints = res * size;
     Sample sample;
     int cur_grv_sft;
 
     if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
     sample = customWave.at(currentIndex);
-    emit nextStep(currentIndex);
-    currentIndex++;
-    currentIndex %= (size * res);
-    if (!enableLoop && !currentIndex) seqFinished = true;
+    if (!seqFinished) emit nextStep(currentIndex);
+
+    if (reverse) {
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = npoints - 1;
+            if (!enableLoop) seqFinished = true;
+            if (pingpong) {
+                reverse = false;
+                currentIndex = 0;
+            }
+        }
+    }
+    else {
+        currentIndex++;
+        if (currentIndex == npoints) {
+            currentIndex = 0;
+            if (!enableLoop) seqFinished = true;
+            if (pingpong) {
+                reverse = true;
+                currentIndex = npoints - 1;
+            }
+        }
+    }
     if (seqFinished) sample.muted = true;
 
     if (nextTick < (tick - frame_nticks)) nextTick = tick;
@@ -170,8 +194,8 @@ void MidiSeq::getData(QVector<Sample> *p_data)
 {
     Sample sample;
     int lt = 0;
-    int step = TPQN / res;
-    int npoints = res * size;
+    const int step = TPQN / res;
+    const int npoints = res * size;
 
     //res: number of events per beat
     //size: size of waveform in beats
@@ -210,6 +234,14 @@ int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
 void MidiSeq::updateWaveForm(int val)
 {
     waveFormIndex = val;
+}
+
+void MidiSeq::updateLoop(int val)
+{
+    reverse = val&1;
+    pingpong = val&2;
+    enableLoop = !(val&4);
+    curLoopMode = val;
 }
 
 void MidiSeq::updateVelocity(int val)
@@ -322,9 +354,12 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
 void MidiSeq::setCurrentIndex(int ix)
 {
     currentIndex=ix;
+
     if (!ix) {
+        reverse = curLoopMode&1;
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
+        if (reverse) currentIndex = res * size - 1;
     }
 }
 

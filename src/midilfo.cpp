@@ -31,7 +31,8 @@ MidiLfo::MidiLfo()
     enableNoteOff = false;
     trigByKbd = false;
     restartByKbd = false;
-    enableLoop = false;
+    enableLoop = true;
+    curLoopMode = 0;
     seqFinished = false;
     restartFlag = false;
     noteCount = 0;
@@ -52,6 +53,8 @@ MidiLfo::MidiLfo()
     isMuted = false;
     recordMode = false;
     isRecording = false;
+    reverse = false;
+    pingpong = false;
     recValue = 0;
     int l1 = 0;
     int lt = 0;
@@ -94,8 +97,8 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 
     QVector<Sample> frame;
     Sample sample;
-    int step = TPQN / res;
-    int npoints = size * res;
+    const int step = TPQN / res;
+    const int npoints = size * res;
     int lt, l1;
     int framelimit;
     int framesize;
@@ -105,17 +108,23 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 
     if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
     framesize = res / framelimit;
-    l1 = 0;
-    lt = 0;
+    if (!framesize) framesize = 1;
 
     if (restartFlag) setFramePtr(0);
     if (!frameptr) grooveTick = newGrooveTick;
 
+    l1 = 0;
+    lt = 0;
     do {
-        index = (l1 + frameptr) % npoints;
+        if (reverse) {
+            index = (framesize - 1 - l1 + frameptr) % npoints;
+        }
+        else {
+            index = (l1 + frameptr) % npoints;
+        }
         sample = data.at(index);
         if (isRecording) {
-            if (!framesize) {
+            if (framesize < 2) {
                 sample.value = recValue;
             }
             else {
@@ -137,10 +146,30 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     } while ((l1 < framesize) & (l1 < npoints));
 
 
-    emit nextStep(frameptr);
+    if (!seqFinished) emit nextStep(frameptr);
 
-    frameptr += l1;
-    frameptr %= npoints;
+    if (reverse) {
+        frameptr-=l1;
+        if (frameptr < 0) {
+            if (!enableLoop) seqFinished = true;
+            frameptr = npoints - l1;
+            if (pingpong) {
+                reverse = false;
+                frameptr = 0;
+            }
+        }
+    }
+    else {
+        frameptr+=l1;
+        if (frameptr >= npoints) {
+            if (!enableLoop) seqFinished = true;
+            frameptr = 0;
+            if (pingpong) {
+                reverse = true;
+                frameptr = npoints - l1;
+            }
+        }
+    }
 
     int cur_grv_sft = 0.01 * (grooveTick * step);
     /** pairwise application of new groove shift */
@@ -160,8 +189,6 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 
     nextTick += lt + cur_grv_sft;
 
-    if (!enableLoop && !frameptr) seqFinished = true;
-
     if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
         /** round-up to current resolution (quantize) */
         nextTick/=lt;
@@ -176,13 +203,13 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     //this function returns the full LFO wave
 
     Sample sample;
+    const int step = TPQN / res;
+    const int npoints = size * res;
     int l1 = 0;
     int lt = 0;
-    int step = TPQN / res;
     int val = 0;
     int tempval;
     bool cl = false;
-    int npoints = size * res;
     QVector<Sample> tmpdata;
     //res: number of events per beat
     //size: size of waveform in beats
@@ -313,6 +340,14 @@ void MidiLfo::updateSize(int val)
     resizeAll();
 }
 
+void MidiLfo::updateLoop(int val)
+{
+    reverse = val&1;
+    pingpong = val&2;
+    enableLoop = !(val&4);
+    curLoopMode = val;
+}
+
 void MidiLfo::updateQueueTempo(int val)
 {
     queueTempo = (double)val;
@@ -354,8 +389,8 @@ void MidiLfo::resizeAll()
     int lt = 0;
     int l1 = 0;
     int os;
-    int step = TPQN / res;
-    int npoints = res * size;
+    const int step = TPQN / res;
+    const int npoints = res * size;
     Sample sample;
 
     frameptr%=npoints;
@@ -445,8 +480,10 @@ void MidiLfo::setFramePtr(int idx)
 {
     frameptr = idx;
     if (!idx) {
+        reverse = curLoopMode&1;
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
+        if (reverse) frameptr = res * size - 1;
     }
 }
 

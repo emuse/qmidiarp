@@ -130,11 +130,11 @@ class LfoWidget : public QWidget
     QSpinBox  *ccnumberBox;
     QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox;
+    QComboBox *loopBox;
     QCheckBox *muteOut;
     QCheckBox *enableNoteOff;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
-    QCheckBox *enableLoop;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QComboBox *waveFormBox, *freqBox;
@@ -211,7 +211,6 @@ class LfoWidget : public QWidget
     void updateEnableNoteOff(bool on);
     void updateEnableRestartByKbd(bool on);
     void updateEnableTrigByKbd(bool on);
-    void updateEnableLoop(bool on);
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
@@ -238,6 +237,15 @@ class LfoWidget : public QWidget
 *
 */
     void updateSize(int);
+/*!
+* @brief Slot for the LfoWidget::loopBox combobox. Sets the loop mode
+* of the LFO.
+*
+* It sets MidiLfo::reverse, MidiLfo::pingpong and MidiLfo::enableLoop
+* @param val Combination index ranging from 0 to 5
+*
+*/
+    void updateLoop(int);
 /*!
 * @brief Slot for the LfoWidget::ccnumberBox spinbox setting the output
 * controller CC number of this module.
