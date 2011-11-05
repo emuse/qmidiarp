@@ -378,7 +378,7 @@ void JackDriver::handleEchoes()
     int size = echoTickQueue.size();
     int nexttick, tmptick, idx;
 
-    m_current_tick = ((long)currentPos.frame * TPQN * tempo
+    m_current_tick = ((uint64_t)currentPos.frame * TPQN * tempo
             / (currentPos.frame_rate * 60)) - jackOffsetTick;
 
     if (!size) return;
