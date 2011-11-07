@@ -24,7 +24,6 @@
  */
 
 #include "jackdriver.h"
-#include "config.h"
 #include <stdio.h>
 
 
@@ -86,10 +85,23 @@ int JackDriver::initJack(int out_port_count)
 {
     char buf[16];
 
+#ifdef JACK_SESSION
+       if (global_jack_session_uuid.isEmpty() || !out_port_count) {
+           if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
+            qCritical("jack server not running?");
+               return 1;
+           }
+       }
+       else if ((jack_handle = jack_client_open(PACKAGE, JackSessionID, NULL, global_jack_session_uuid.data())) == 0) {
+        qCritical("jack server not running?");
+           return 1;
+       }
+#else
     if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
         qCritical("jack server not running?");
         return 1;
     }
+#endif
 
     jack_on_shutdown(jack_handle, jack_shutdown, (void *)this);
 
@@ -115,6 +127,11 @@ int JackDriver::initJack(int out_port_count)
         return 1;
       }
     }
+
+#ifdef JACK_SESSION
+    jack_set_session_callback(jack_handle, session_callback, (void *)this);
+    qWarning("Session callback registered");
+#endif
 
     return(0);
 }
@@ -296,6 +313,36 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     rd->handleEchoes();
     return(0);
 }
+
+#ifdef JACK_SESSION
+void JackDriver::session_callback(jack_session_event_t *event, void *arg )
+{
+    JackDriver *rd = (JackDriver *) arg;
+    rd->jsEv = event;
+    rd->jack_session_event();
+}
+
+bool JackDriver::jack_session_event()
+{
+    jsFilename = jsEv->session_dir;
+    jsFilename += "file.qmax";
+
+    QString cmd = PACKAGE "-j ${SESSION_DIR}js_saved.qmax --jack_session_uuid ";
+    cmd += jsEv->client_uuid;
+    emit jsEvent(0);
+
+    jsEv->command_line = strdup(cmd.toAscii());
+
+    jack_session_reply(jack_handle, jsEv);
+
+    if(jsEv->type == JackSessionSaveAndQuit) emit jsEvent(1);
+
+    jack_session_event_free(jsEv);
+
+    return false;
+}
+#endif
+
 
 void JackDriver::jackTrCheckState()
 {

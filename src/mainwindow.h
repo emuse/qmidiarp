@@ -42,6 +42,11 @@
 #include "groovewidget.h"
 #include "config.h"
 
+#ifdef JACK_SESSION
+#include <jack/session.h>
+#endif
+
+
 static const char ABOUTMSG[] =
             "<html> <p><b><big>" APP_NAME " " PACKAGE_VERSION "</big></b></p>"
             "<p>(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/>"
@@ -500,7 +505,8 @@ class MainWindow : public QMainWindow
 * It is called by the constructor MainWindow::MainWindow
 * @see recentFileActivated, addRecentlyOpenedFile
 */
-    void setupRecentFilesMenu();/*! @brief Slot to give response to an incoming pipe message (Ladish L1).
+    void setupRecentFilesMenu();
+/*! @brief Slot to give response to an incoming pipe message (Ladish L1).
  *
  * This function calls fileSave upon reception of SIGUSR1 and close upon
  * reception of SIGINT.
@@ -508,6 +514,11 @@ class MainWindow : public QMainWindow
 */
     void signalAction(int);
 
+/*! @brief Slot to give response to an incoming Jack Session event.
+ *
+ * @param ev Type of the event (internal to QMidiarp)
+*/
+    void jsAction(int ev);
     void ctb_update_orientation(Qt::Orientation orient);
     void ftb_update_orientation(Qt::Orientation orient);
 };

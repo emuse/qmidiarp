@@ -86,6 +86,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
 
     engine = new Engine(grooveWidget, p_portCount, alsaMidi, this);
+    if (!alsaMidi) connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -1311,6 +1312,22 @@ void MainWindow::signalAction(int fd)
         default:
             qWarning("Unexpected signal received: %d", message);
             break;
+    }
+}
+
+void MainWindow::jsAction(int evtype)
+{
+    if (!evtype) {
+        filename = engine->driver->jsFilename;
+        qWarning("JACK Session request to save");
+        lastDir = filename.left(filename.lastIndexOf('/'));
+        updateWindowTitle();
+        bool result = saveFile();
+        if (result) qWarning("Warning: JACK Session File save failed");
+    }
+    else if (evtype == 1)
+    {
+        close();
     }
 }
 

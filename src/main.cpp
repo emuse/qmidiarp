@@ -46,9 +46,14 @@
 static struct option options[] = {
     {"version", 0, 0, 'v'},
     {"help", 0, 0, 'h'},
+    {"alsa", 0, 0, 'a'},
+    {"jack", 0, 0, 'j'},
+    {"jack_session_uuid", required_argument, 0, 'U' },
     {"portCount", 1, 0, 'p'},
     {0, 0, 0, 0}
 };
+
+QString global_jack_session_uuid = "";
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +64,7 @@ int main(int argc, char *argv[])
 
     QTextStream out(stdout);
 
-    while ((getopt_return = getopt_long(argc, argv, "vhajp:", options,
+    while ((getopt_return = getopt_long(argc, argv, "vhajUp:", options,
                     &option_index)) >= 0) {
         switch(getopt_return) {
             case 'v':
@@ -90,6 +95,9 @@ int main(int argc, char *argv[])
 
             case 'j':
                 alsamidi = false;
+                break;
+            case 'U':
+                global_jack_session_uuid = QString(optarg);
                 break;
             case 'p':
                 portCount = atoi(optarg);

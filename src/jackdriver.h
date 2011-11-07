@@ -27,9 +27,14 @@
 
 #include <QQueue>
 #include <QThread>
+#include "config.h"
 #include <jack/jack.h>
 #include <jack/transport.h>
 #include <jack/midiport.h>
+
+#ifdef JACK_SESSION
+#include <jack/session.h>
+#endif
 
 #include "main.h"
 #include "driverbase.h"
@@ -51,6 +56,7 @@ class JackDriver : public DriverBase
   private:
     static int process_callback(jack_nframes_t nframes, void *arg);
     static void jack_shutdown(void *arg);
+    static void session_callback(jack_session_event_t *ev, void *arg);
     void update_ports();
 
     jack_port_t * in_port;
@@ -69,6 +75,12 @@ class JackDriver : public DriverBase
     jack_position_t currentPos;
     void handleEchoes();
 
+#ifdef JACK_SESSION
+  public:
+    jack_session_event_t *jsEv;
+    bool jack_session_event();
+#endif
+
 
   public:
     JackDriver(int p_portCount,
@@ -83,6 +95,7 @@ class JackDriver : public DriverBase
 
   signals:
     void j_shutdown();
+    void jsEvent(int type);
 
   public:
     jack_nframes_t jSampleRate;

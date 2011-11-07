@@ -26,6 +26,8 @@
 
 #include "midievent.h"
 
+extern QString global_jack_session_uuid;
+
 
 #define CT_FOOTSW       0x40
 

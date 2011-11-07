@@ -36,6 +36,7 @@ public:
     bool useMidiClock, useJackSync;
     bool forwardUnmatched, queueStatus;
     int portUnmatched;
+    QString jsFilename;
 
     virtual void resetTick(unsigned int tick = 0)
     {
