@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     int option_index;
     int portCount = 2;
     bool alsamidi = false;
+    QString s;
 
     QTextStream out(stdout);
 
@@ -68,7 +69,11 @@ int main(int argc, char *argv[])
                     &option_index)) >= 0) {
         switch(getopt_return) {
             case 'v':
-                out << ABOUTMSG;
+                s = QString(ABOUTMSG);
+                s.replace(QString("<br/>"), QString("\n"));
+                s.replace(QString("</p>"), QString("\n"));
+                s.remove(QRegExp("<[^>]*>"));
+                out << s;
                 out.flush();
                 exit(EXIT_SUCCESS);
 

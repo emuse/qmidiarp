@@ -9,13 +9,18 @@ New Features
   o LFO and Seq play direction can now be chosen, and bouncing loops are
     possible
   o Triggered one-shot play of LFO and Seqs improved
-  o JACK MIDI backend available when calling qmidiarp with -j option
+  o JACK MIDI backend available. This is now default, use the -a option
+    for getting the ALSA backend
+  o JACK Session support when using JACK MIDI backend
 
 Fixed Bugs
   o A rounding error led to desync when Arps were used with groove shift
   o MIDI controls for Groove did not initialize upon "New..."
   o MIDI Controllers assigned to multiple destinations stopped at the
     first one encountered and ignored all others
+
+General Changes
+  o JACK MIDI is now the default backend, -a option enables ALSA backend
 
 
 qmidiarp-0.4.2 (2011-07-10)

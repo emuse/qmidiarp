@@ -49,10 +49,10 @@
 
 static const char ABOUTMSG[] =
             "<html> <p><b><big>" APP_NAME " " PACKAGE_VERSION "</big></b></p>"
-            "<p>(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/>"
-            "(C) 2009-2011 Frank Kober<br/>"
+            "<p>(C) 2009-2011 Frank Kober<br/>"
+            "(C) 2011 Nedko Arnaudov<br/>"
             "(C) 2009 Guido Scholz<br/>"
-            "(C) 2011 Nedko Arnaudov</br></p>"
+            "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/></p>"
             "<p>For getting support please type <b>man qmidiarp</b> or go to<br/>"
             "<a href=\"http://qmidiarp.sourceforge.net\">"
             "http://qmidiarp.sourceforge.net</a></p>"
