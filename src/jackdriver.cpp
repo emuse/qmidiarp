@@ -325,9 +325,9 @@ void JackDriver::session_callback(jack_session_event_t *event, void *arg )
 bool JackDriver::jack_session_event()
 {
     jsFilename = jsEv->session_dir;
-    jsFilename += "js_saved.qmax";
+    jsFilename += JSFILENAME;
 
-    QString cmd = PACKAGE " ${SESSION_DIR}js_saved.qmax --jack_session_uuid ";
+    QString cmd = PACKAGE " ${SESSION_DIR}" JSFILENAME " --jack_session_uuid ";
     cmd += jsEv->client_uuid;
     emit jsEvent(0);
 

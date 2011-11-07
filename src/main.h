@@ -40,6 +40,8 @@ extern QString global_jack_session_uuid;
 #define MAXCHORD          33
 
 #define QMARCNAME ".qmidiarprc"
+#define JSFILENAME "js_saved.qmax"
+
 #define COMPACT_STYLE "QLabel { font: 7pt; } \
     QComboBox { font: 7pt; max-height: 15px;} \
     QToolButton { max-height: 20px;} \
