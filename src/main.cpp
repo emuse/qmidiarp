@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     int getopt_return;
     int option_index;
     int portCount = 2;
-    bool alsamidi = true;
+    bool alsamidi = false;
 
     QTextStream out(stdout);
 
@@ -81,9 +81,9 @@ int main(int argc, char *argv[])
                 out << "  -h, --help               "
                     "Print this message" << endl;
                 out << "  -a, --alsa               "
-                    "Use ALSA MIDI interface (default)" << endl;
+                    "Use ALSA MIDI interface" << endl;
                 out << "  -j, --jack               "
-                    "Use JACK MIDI interface" << endl;
+                    "Use JACK MIDI interface (default)" << endl;
                 out << QString("  -p, --portCount <num>    "
                         "Number of output ports [%1]").arg(portCount) << endl;
                 out.flush();
