@@ -38,6 +38,7 @@ public:
 
 MidiArp::MidiArp()
 {
+    /*
     // this simulates access from the two threads
     // lock congestion is simulated by attempt to update
     // when LockedData destructor is not called
@@ -78,7 +79,7 @@ MidiArp::MidiArp()
         // print the data in the read-only store after the update
         qWarning("seq: %d (after update)", rdata->foo);
     }
-
+*/
     for (int l1 = 0; l1 < 2; l1++) {
         rangeIn[l1] = (l1) ? 127 : 0;
         indexIn[l1] = (l1) ? 127 : 0;
