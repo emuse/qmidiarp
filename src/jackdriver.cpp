@@ -329,6 +329,7 @@ bool JackDriver::jack_session_event()
 
     QString cmd = PACKAGE " ${SESSION_DIR}" JSFILENAME " --jack_session_uuid ";
     cmd += jsEv->client_uuid;
+    cmd += " --portCount "+QString::number(portCount);
     emit jsEvent(0);
 
     jsEv->command_line = strdup(cmd.toAscii());
