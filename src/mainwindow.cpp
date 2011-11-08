@@ -1323,7 +1323,7 @@ void MainWindow::jsAction(int evtype)
         lastDir = filename.left(filename.lastIndexOf('/'));
         updateWindowTitle();
         bool result = saveFile();
-        if (result) qWarning("Warning: JACK Session File save failed");
+        if (!result) qWarning("Warning: JACK Session File save failed");
     }
     else if (evtype == 1)
     {
