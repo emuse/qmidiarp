@@ -56,7 +56,9 @@ class JackDriver : public DriverBase
   private:
     static int process_callback(jack_nframes_t nframes, void *arg);
     static void jack_shutdown(void *arg);
+#ifdef JACK_SESSION
     static void session_callback(jack_session_event_t *ev, void *arg);
+#endif
     void update_ports();
 
     jack_port_t * in_port;
