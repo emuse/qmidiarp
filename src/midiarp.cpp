@@ -89,6 +89,7 @@ MidiArp::MidiArp()
     channelOut = 0;
     noteBufPtr = 0;
     noteCount = 0;
+    releaseNoteCount = 0;
     restartByKbd = false;
     trigByKbd = false;
     restartFlag = false;
@@ -163,7 +164,18 @@ void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
         if (!getPressedNoteCount()) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
-            if (trigByKbd) initArpTick(tick);
+            if (trigByKbd) {
+                initArpTick(tick);
+                // if we have been triggered, remove pending release notes
+                if (release_time > 0) {
+                    for (int l1 = 0; l1 < noteCount; l1++) {
+                        if (notes[noteBufPtr][3][l1])
+                            removeNote(&notes[noteBufPtr][0][l1], -1, 0);
+                            releaseNoteCount--;
+                    }
+                }
+
+            }
         }
         // modify buffer that is not accessed by arpeggio output
         bufPtr = (noteBufPtr) ? 0 : 1;
@@ -292,6 +304,7 @@ void MidiArp::tagAsReleased(int note, int tick, int bufPtr)
         notes[bufPtr][3][l1] = 1;
         notes[bufPtr][2][l1] = tick;
     }
+    releaseNoteCount++;
 }
 
 void MidiArp::copyNoteBuffer()
@@ -420,13 +433,13 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 * vel * (1.0 + 0.005 * (double)(randomVelocity + grooveTmp))
                 * releasefn * attackfn, 0, 127, &outOfRange);
 
-        if ((notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1]))
-
+        if ((notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1])) {
             removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
-
-        else
-
+            releaseNoteCount--;
+        }
+        else {
             l1++;
+        }
 
     } while ((tmpIndex[l1] >= 0) && (l1 < MAXCHORD - 1) && (l1 < noteCount));
 
@@ -694,11 +707,12 @@ void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
     latchBuffer.clear();
+    releaseNoteCount = 0;
 }
 
 int MidiArp::getPressedNoteCount()
 {
-    int c = noteCount - latchBuffer.count();
+    int c = noteCount - latchBuffer.count() - releaseNoteCount;
     return(c);
 }
 

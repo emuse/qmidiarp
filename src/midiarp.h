@@ -110,7 +110,7 @@ class MidiArp : public QWidget  {
     int patternLen;     /*!< Length of the arp text pattern */
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
-
+    int releaseNoteCount; /*!< The number of notes currently in release stage */
 
 /**
  * @brief This function resets all attributes the pattern
