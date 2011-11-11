@@ -52,7 +52,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     QSignalMapper *dispSignalMapper = new QSignalMapper(this);
     QLabel *dispLabel[4];
-    QString dispText[4] = {tr("&Full"), tr("&Upper"), tr("&Mid"), tr("&Lower")};
+    QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
+    QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
     QGridLayout *dispBoxLayout = new QGridLayout;
 
     for (int l1 = 0; l1 < 4; l1++) {
@@ -62,8 +63,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
         dispSignalMapper->setMapping(dispVert[l1], l1);
         dispVert[l1]->setAutoExclusive(true);
         dispLabel[l1]->setBuddy(dispVert[l1]);
-        dispBoxLayout->addWidget(dispLabel[l1], l1, 0);
-        dispBoxLayout->addWidget(dispVert[l1], l1, 1);
+        dispVert[l1]->setToolTip(dispToolTip[l1]);
+        dispBoxLayout->addWidget(dispLabel[l1], 0, l1);
+        dispBoxLayout->addWidget(dispVert[l1], 1, l1);
     }
 
     dispVert[0]->setChecked(true);
