@@ -21,6 +21,7 @@ Fixed Bugs
 
 General Changes
   o JACK MIDI is now the default backend, -a option enables ALSA backend
+  o Obsolete .qma text file import removed
 
 
 qmidiarp-0.4.2 (2011-07-10)
