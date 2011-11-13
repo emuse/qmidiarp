@@ -40,7 +40,8 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     baseOctave = 3;
     nOctaves= 4;
     recordMode = false;
-    currentRecStep = false;
+    currentRecStep = 0;
+    loopMarker = 0;
     currentIndex = 0;
     grooveTick = 0;
     grooveVelocity = 0;
@@ -201,11 +202,30 @@ void SeqScreen::paintEvent(QPaintEvent*)
     pen.setWidth(notestreak_thick);
     pen.setColor(QColor(50, 180, 220));
     p.setPen(pen);
-    x = (currentIndex + .01 * (double)grooveTick * (currentIndex % 2))* xscale * (int)nsteps / npoints;
+    x = (currentIndex + .01 * (double)grooveTick * (currentIndex % 2))
+        * xscale * (int)nsteps / npoints;
     xpos = SEQSCR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
                     xpos + (xscale / beatRes) - pen.width(), h - 2);
-
+    // Loop Marker
+    if (loopMarker) {
+        QPolygon trg;
+        pen.setWidth(2);
+        pen.setColor(QColor(80, 250, 120));
+        p.setPen(pen);
+        x = (abs(loopMarker) + .01 * (double)grooveTick
+            * (currentIndex % 2))* xscale * (int)nsteps / npoints;
+        xpos = SEQSCR_HMARG + x + pen.width() / 2;
+        ypos = h - SEQSCR_VMARG;
+        tmpval = SEQSCR_VMARG / 2;
+        trg << QPoint(xpos, ypos);
+        if (loopMarker > 0)
+            trg << QPoint(xpos - tmpval, ypos + tmpval);
+        else
+            trg << QPoint(xpos + tmpval, ypos + tmpval);
+        trg << QPoint(xpos, h);
+        p.drawPolygon(trg, Qt::WindingFill);
+    }
 }
 
 void SeqScreen::updateScreen(const QVector<Sample>& data)
@@ -253,10 +273,6 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < SEQSCR_HMARG)|| (mouseX >= w - SEQSCR_HMARG))
-        return;
-    if ((mouseY <= SEQSCR_VMARG)|| (mouseY > h - SEQSCR_VMARG))
-        return;
     emit mousePressed(((double)mouseX - SEQSCR_HMARG) /
                             (w - 2 * SEQSCR_HMARG),
                 1. - ((double)mouseY - SEQSCR_VMARG) /
@@ -271,6 +287,12 @@ void SeqScreen::setRecordMode(bool on)
 void SeqScreen::setCurrentRecStep(int recStep)
 {
     currentRecStep = recStep;
+}
+
+void SeqScreen::setLoopMarker(int pos)
+{
+    loopMarker = pos;
+    update();
 }
 
 QSize SeqScreen::sizeHint() const

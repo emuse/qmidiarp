@@ -419,6 +419,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         }
         xml.writeStartElement("sequence");
             xml.writeTextElement("data", tempArray.toHex());
+            xml.writeTextElement("loopmarker", QString::number(
+                getLoopMarker()));
         xml.writeEndElement();
 
         midiControl->writeData(xml);
@@ -562,6 +564,11 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                         midiWorker->customWave.append(sample);
                         lt+=step;
                     }
+                }
+                else if (xml.name() == "loopmarker") {
+                    tmp = xml.readElementText().toInt();
+                    midiWorker->loopMarker = tmp;
+                    screen->setLoopMarker(tmp);
                 }
                 else skipXmlElement(xml);
             }
@@ -754,6 +761,14 @@ void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 
 void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
 {
+    if (mouseY < 0) {
+        if (mouseX < 0) mouseX = 0;
+        if (buttons == 2) mouseX = - mouseX;
+        midiWorker->setLoopMarker(mouseX);
+        screen->setLoopMarker(midiWorker->loopMarker);
+        modified = true;
+        return;
+    }
     if (buttons == 2) {
         lastMute = midiWorker->toggleMutePoint(mouseX);
     } else {
@@ -889,6 +904,9 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
         midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
     }
+    tmp = fromWidget->getLoopMarker();
+    midiWorker->loopMarker = tmp;
+    screen->setLoopMarker(tmp);
     midiControl->setCcList(fromWidget->midiControl->ccList);
     muteOut->setChecked(true);
     updateWaveForm(0);

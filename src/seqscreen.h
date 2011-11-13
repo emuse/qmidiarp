@@ -36,8 +36,8 @@
 #include "midiseq.h"
 
 #define SEQSCR_MIN_W   180
-#define SEQSCR_MIN_H   212
-#define SEQSCR_VMARG    10
+#define SEQSCR_MIN_H   216
+#define SEQSCR_VMARG    14
 #define SEQSCR_HMARG    20
 
 /*! @brief Drawing widget for visualization of sequences using QPainter
@@ -66,7 +66,9 @@ class SeqScreen : public QWidget
     bool recordMode;
     int currentRecStep;
     int currentIndex;
+    int loopMarker;
     bool isMuted;
+    QPointF trg[3];
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -89,6 +91,7 @@ class SeqScreen : public QWidget
     void mousePressEvent(QMouseEvent* event);
     void setRecordMode(bool on);
     void setCurrentRecStep(int currentRecStep);
+    void setLoopMarker(int pos);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
 };

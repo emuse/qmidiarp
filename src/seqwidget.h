@@ -347,6 +347,7 @@ class SeqWidget : public QWidget
     void setMuted(bool on);
 
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
+    int getLoopMarker() { return midiWorker->loopMarker; }
     int getNextTick() { return midiWorker->nextTick; }
     void handleController(int ccnumber, int channel, int value);
 };

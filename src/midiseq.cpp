@@ -136,6 +136,7 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     const int npoints = res * size;
     Sample sample;
     int cur_grv_sft;
+    int pivot;
 
     if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
@@ -144,23 +145,25 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
 
     if (reverse) {
         currentIndex--;
-        if (currentIndex < 0) {
+        pivot = (loopMarker < 0) ? -loopMarker : 0;
+        if ((currentIndex == pivot - 1) || (currentIndex == -1)) {
             currentIndex = npoints - 1;
             if (!enableLoop) seqFinished = true;
             if (pingpong) {
                 reverse = false;
-                currentIndex = 0;
+                currentIndex = pivot;
             }
         }
     }
     else {
         currentIndex++;
-        if (currentIndex == npoints) {
+        pivot = (loopMarker > 0) ? loopMarker : npoints;
+        if (currentIndex == pivot || (currentIndex == npoints)) {
             currentIndex = 0;
             if (!enableLoop) seqFinished = true;
             if (pingpong) {
                 reverse = true;
-                currentIndex = npoints - 1;
+                currentIndex = pivot - 1;
             }
         }
     }
@@ -272,6 +275,14 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
     setRecordedNote(12 * (mouseY * nOctaves + baseOctave));
 }
 
+void MidiSeq::setLoopMarker(double mouseX)
+{
+    const int npoints = res * size;
+    if (mouseX > 0) loopMarker = mouseX * (double)npoints + .5;
+    else loopMarker = mouseX * (double)npoints - .5;
+    if (abs(loopMarker) >= npoints) loopMarker = 0;
+}
+
 void MidiSeq::setRecordMode(int on)
 {
     recordMode = on;
@@ -292,8 +303,8 @@ void MidiSeq::resizeAll()
     int lt = 0;
     int l1 = 0;
     int os;
-    int step = TPQN / res;
-    int npoints = res * size;
+    const int step = TPQN / res;
+    const int npoints = res * size;
     Sample sample;
 
     currentIndex%=npoints;
