@@ -8,6 +8,11 @@ New Features
     is kept in memory and is also saved to the session file as a whole
   o LFO and Seq play direction can now be chosen, and bouncing loops are
     possible
+  o New user positionable loop marker in Seq module. The marker is
+    placed by left or right mouse click on the bottom cursor line of the
+    sequencer and represents an additional return/loop point. It can be
+    removed again by clicking in the bottom left or right area of the
+    Seq screen.
   o Triggered one-shot play of LFO and Seqs improved
   o JACK MIDI backend available. This is now default, use the -a option
     for getting the ALSA backend
