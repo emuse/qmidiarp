@@ -145,26 +145,45 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
 
     if (reverse) {
         currentIndex--;
-        pivot = (loopMarker < 0) ? -loopMarker : 0;
-        if ((currentIndex == pivot - 1) || (currentIndex == -1)) {
-            currentIndex = npoints - 1;
-            if (!enableLoop) seqFinished = true;
+        pivot = abs(loopMarker);
+        if (currentIndex == -1) {
             if (pingpong) {
                 reverse = false;
-                currentIndex = pivot;
+                currentIndex = 0;
             }
+            else currentIndex = npoints - 1;
+        }
+        else if (currentIndex == pivot - 1) {
+            if (!enableLoop) seqFinished = true;
+            if (loopMarker < 0) pingpong = true;
+            if (loopMarker > 0) pingpong = false;
+            if (pingpong) {
+                reverse = false;
+                if (pivot) currentIndex = pivot; else currentIndex = 0;
+            }
+            else currentIndex = npoints - 1;
         }
     }
     else {
         currentIndex++;
-        pivot = (loopMarker > 0) ? loopMarker : npoints;
-        if (currentIndex == pivot || (currentIndex == npoints)) {
-            currentIndex = 0;
+        pivot = abs(loopMarker);
+        if (!pivot) pivot = npoints;
+        if (currentIndex == npoints) {
+            if (pingpong) {
+                reverse = true;
+                currentIndex = npoints - 1;
+            }
+            else currentIndex = 0;
+        }
+        else if ((currentIndex == pivot)) {
             if (!enableLoop) seqFinished = true;
+            if (loopMarker > 0) pingpong = true;
+            if (loopMarker < 0) pingpong = false;
             if (pingpong) {
                 reverse = true;
                 currentIndex = pivot - 1;
             }
+            else currentIndex = 0;
         }
     }
     if (seqFinished) sample.muted = true;
