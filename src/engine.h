@@ -67,6 +67,7 @@ class Engine : public QThread  {
     bool modified;
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midiLearnFlag;
+    bool useMidiClock;
 
     //From SeqDriver
     bool gotArpKbdTrig;
@@ -164,6 +165,7 @@ class Engine : public QThread  {
     void setGrooveLength(int grooveLength);
     void sendGroove();
     void setSendLogEvents(bool on);
+    void setUseMidiClock(bool on);
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);

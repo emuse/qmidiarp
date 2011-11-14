@@ -92,6 +92,7 @@ SeqDriver::SeqDriver(
     startQueue = false;
     useJackSync = false;
     useMidiClock = false;
+    midiTick = 0;
 
     internalTempo = 120;
     initTempo();
@@ -114,7 +115,6 @@ void SeqDriver::run()
 {
     snd_seq_event_t *evIn;
     bool unmatched = true;
-    bool fallback = false;
     MidiEvent inEv;
     int pollr = 0;
 
@@ -140,16 +140,9 @@ void SeqDriver::run()
             if ((inEv.type == EV_CLOCK)&& useMidiClock) {
                 midiTick++;
                 m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
-/*                if ((m_current_tick > nextMinLfoTick) && (midiLfoList->count())) {
-                    fallback = true;
-                }
-                if ((m_current_tick > nextMinSeqTick) && (midiSeqList->count())) {
-                    fallback = true;
-                } */
             }
-            if (((inEv.type == EV_ECHO) || startQueue || fallback) && queueStatus) {
+            if (((inEv.type == EV_ECHO) || startQueue) && queueStatus) {
                 startQueue = false;
-                fallback = false;
                 unmatched = false;
                 realTime = evIn->time.time;
                 if (useMidiClock) {
@@ -194,15 +187,6 @@ void SeqDriver::run()
                     inEv.data = evIn->data.control.param;
                 }
 
-                if (useMidiClock){
-                    if (inEv.type == EV_START) {
-                        setTransportStatus(true);
-                    }
-                    if (inEv.type == EV_STOP) {
-                        setTransportStatus(false);
-                    }
-                    unmatched = true;
-                }
 
                 getTime();
                 m_current_tick = deltaToTick(aTimeToDelta(&tmpTime));
@@ -271,7 +255,6 @@ bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
     if ((echo_tick == lastSchedTick) && (echo_tick)) return false;
 
     lastSchedTick = echo_tick;
-
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);
     ev.type = SND_SEQ_EVENT_ECHO;
@@ -339,7 +322,6 @@ void SeqDriver::setTransportStatus(bool run)
 void SeqDriver::setUseMidiClock(bool on)
 {
     clockRatio = 60e9/TPQN/tempo;
-    setTransportStatus(false);
     useMidiClock = on;
 }
 

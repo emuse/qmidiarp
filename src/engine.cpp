@@ -64,6 +64,7 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     schedDelayTicks = 2;
     status = false;
     sendLogEvents = false;
+    useMidiClock = false;
 
     resetTicks(0);
     ready = true;
@@ -559,6 +560,16 @@ bool Engine::eventCallback(MidiEvent inEv)
     /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
     if (sendLogEvents) emit midiEventReceived(inEv, tick);
 
+    if (useMidiClock){
+        if (inEv.type == EV_START) {
+            setStatus(true);
+        }
+        if (inEv.type == EV_STOP) {
+            setStatus(false);
+        }
+        unmatched = false;
+    }
+
     if (inEv.type == EV_CONTROLLER) {
 
         if (inEv.data == CT_FOOTSW) {
@@ -701,6 +712,13 @@ void Engine::setMidiControllable(bool on)
 {
     midiControllable = on;
     modified = true;
+}
+
+void Engine::setUseMidiClock(bool on)
+{
+    setStatus(false);
+    driver->setUseMidiClock(on);
+    useMidiClock = on;
 }
 
 void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)

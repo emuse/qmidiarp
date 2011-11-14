@@ -1001,7 +1001,7 @@ void MainWindow::resetTransport()
 void MainWindow::midiClockToggle(bool on)
 {
     if (on && alsaMidi) jackSyncAction->setChecked(false);
-    engine->driver->setUseMidiClock(on);
+    engine->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
 

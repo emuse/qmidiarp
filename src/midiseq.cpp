@@ -159,7 +159,7 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
             if (loopMarker > 0) pingpong = false;
             if (pingpong) {
                 reverse = false;
-                if (pivot) currentIndex = pivot; else currentIndex = 0;
+                currentIndex = pivot;
             }
             else currentIndex = npoints - 1;
         }
