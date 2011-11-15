@@ -93,6 +93,7 @@ SeqDriver::SeqDriver(
     useJackSync = false;
     useMidiClock = false;
     midiTick = 0;
+    lastRatioTick = 0;
 
     internalTempo = 120;
     initTempo();
@@ -147,7 +148,10 @@ void SeqDriver::run()
                 realTime = evIn->time.time;
                 if (useMidiClock) {
                     m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
-                    calcClockRatio();
+                    if (midiTick > lastRatioTick + 3 || !midiTick) {
+                        calcClockRatio();
+                        lastRatioTick = midiTick;
+                    }
                 }
                 else if (useJackSync) {
                     jPos = jackSync->getCurrentPos();
@@ -180,16 +184,16 @@ void SeqDriver::run()
                         inEv.value = 0;
                         inEv.type = EV_NOTEON;
                     }
+                getTime();
+                m_current_tick = deltaToTick(aTimeToDelta(&tmpTime));
                 }
                 else inEv.value = evIn->data.control.value;
 
                 if (inEv.type == EV_CONTROLLER) {
                     inEv.data = evIn->data.control.param;
-                }
-
-
                 getTime();
                 m_current_tick = deltaToTick(aTimeToDelta(&tmpTime));
+                }
 
                 unmatched = midi_event_received(inEv);
 
@@ -225,6 +229,7 @@ void SeqDriver::initTempo()
     }
     if (useMidiClock) {
         midiTick = 0;
+        lastRatioTick = 0;
     }
 }
 
@@ -332,7 +337,7 @@ double SeqDriver::tickToDelta(int tick)
 
 int SeqDriver::deltaToTick(double curtime)
 {
-    return (int)(curtime / clockRatio + .5);
+    return (int)(curtime / clockRatio);
 }
 
 double SeqDriver::aTimeToDelta(snd_seq_real_time_t* atime)
@@ -357,6 +362,8 @@ void SeqDriver::calcClockRatio()
     if ((clockRatio == 0) || (clockRatio > 60e9 / tempo)) {
         clockRatio = old_clock_ratio;
     }
+    clockRatio += old_clock_ratio;
+    clockRatio *= .5;
 }
 
 int SeqDriver::getClientId()

@@ -83,6 +83,7 @@ class SeqDriver : public DriverBase {
         jack_position_t jPos;
 
         int midiTick;
+        int lastRatioTick;
         int lastSchedTick;
         int jackOffsetTick;
 
