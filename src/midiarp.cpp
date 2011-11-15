@@ -26,6 +26,8 @@
 #include <cstdio>
 #include <QString>
 #include "midiarp.h"
+
+/*
 #include "lockfree.h"
 
 // this class must be implemented in such way
@@ -35,6 +37,7 @@ class MidiEngine
 public:
     int foo;
 };
+*/
 
 MidiArp::MidiArp()
 {

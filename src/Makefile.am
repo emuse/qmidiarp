@@ -44,6 +44,7 @@ qmidiarp_SOURCES = \
 	midicctable.cpp midicctable.h \
 	midicontrol.cpp midicontrol.h \
 	midievent.h \
+	driverbase.h \
 	passwidget.cpp passwidget.h \
 	jackdriver.cpp jackdriver.h \
 	seqdriver.cpp seqdriver.h \
