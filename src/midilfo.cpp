@@ -114,7 +114,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     if (!frameptr) grooveTick = newGrooveTick;
 
     l1 = 0;
-    lt = 0;
+    lt = nextTick;
     do {
         if (reverse) {
             index = (framesize - 1 - l1 + frameptr) % npoints;
@@ -181,18 +181,16 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 
     lastSampleValue = recValue;
 
-    sample.value = -1;
-    sample.tick = lt + cur_grv_sft;
-    frame.append(sample);
-
+    nextTick = lt + cur_grv_sft;
     if (nextTick < (tick - lt)) nextTick = tick;
-
-    nextTick += lt + cur_grv_sft;
+    sample.value = -1;
+    sample.tick = nextTick;
+    frame.append(sample);
 
     if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
         /** round-up to current resolution (quantize) */
-        nextTick/=lt;
-        nextTick*=lt;
+        nextTick/= (step * framesize);
+        nextTick*= (step * framesize);
     }
 
     *p_data = frame;

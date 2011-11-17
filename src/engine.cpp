@@ -457,7 +457,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         while (lfoData.at(l2).value > -1) {
                             if (!lfoData.at(l2).muted) {
                                 outEv.value = lfoData.at(l2).value;
-                                driver->sendMidiEvent(outEv, nextMinLfoTick + lfoData.at(l2).tick
+                                driver->sendMidiEvent(outEv, lfoData.at(l2).tick
                                     , outport);
                             }
                             l2++;
