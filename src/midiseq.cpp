@@ -131,11 +131,11 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     if (!currentIndex) grooveTick = newGrooveTick;
     if (!seqFinished) emit nextStep(currentIndex);
 
+    sample = customWave.at(currentIndex);
     advancePatternIndex();
 
     if (nextTick < (tick - frame_nticks)) nextTick = tick;
 
-    sample = customWave.at(currentIndex);
     sample.value+=transp;
     sample.tick = nextTick;
     if (seqFinished) sample.muted = true;
