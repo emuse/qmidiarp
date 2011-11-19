@@ -30,6 +30,7 @@ MidiLfo::MidiLfo()
 {
     enableNoteOff = false;
     trigByKbd = false;
+    gotKbdTrig = false;
     restartByKbd = false;
     enableLoop = true;
     curLoopMode = 0;
@@ -105,6 +106,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     int index;
 
     frame.clear();
+    gotKbdTrig = false;
 
     if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
     framesize = res / framelimit;
@@ -491,36 +493,32 @@ void MidiLfo::record(int value)
     isRecording = true;
 }
 
-bool MidiLfo::wantTrigByKbd()
+bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
 {
-    bool on = (trigByKbd && (noteCount == 1));
-    return(on);
-}
 
-bool MidiLfo::wantEvent(MidiEvent inEv)
-{
-    if (!recordMode && (inEv.type == EV_CONTROLLER)) return(false);
-    if (inEv.channel != chIn) return(false);
-    if ((inEv.type == EV_CONTROLLER) && (inEv.data != ccnumberIn)) return(false);
-    return(true);
-}
+    if (!recordMode && (inEv.type == EV_CONTROLLER)) return(true);
+    if (inEv.channel != chIn) return(true);
+    if ((inEv.type == EV_CONTROLLER) && (inEv.data != ccnumberIn)) return(true);
 
-void MidiLfo::handleNote(int note, int velocity, int tick)
-{
-    (void)note;
-    (void)tick;
+    if ((inEv.type == EV_CONTROLLER) && recordMode) record(inEv.value);
+    else if (inEv.type != EV_NOTEON) return (true);
 
-    if (velocity) {
-        /**This is a NOTE ON event*/
+    if (inEv.value) {
+        /*This is a NOTE ON event*/
         if (restartByKbd && !noteCount) restartFlag = true;
         seqFinished = false;
         noteCount++;
-    }
+        if ((trigByKbd && (noteCount == 1))) {
+            nextTick = tick + 2; //schedDelayTicks;
+            gotKbdTrig = true;
+        }
+     }
     else {
-        /**This is a NOTE OFF event*/
+        /*This is a NOTE OFF event*/
         if (enableNoteOff && (noteCount == 1)) seqFinished = true;
         if (noteCount) noteCount--;
     }
+    return(false);
 }
 
 void MidiLfo::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

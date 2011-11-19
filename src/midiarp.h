@@ -65,7 +65,7 @@ class MidiArp : public QWidget  {
                                 @see MidiArp::updateNotes */
     int nextVelocity[MAXCHORD]; /*!< Holds the associated velocities to be output next
                                     @see MidiArp::updateNotes, MidiArp::nextNote */
-    int currentNoteTick, nextNoteTick, currentTick, arpTick;
+    int currentNoteTick, currentTick, arpTick;
     int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
     int currentLength, nextLength;
     bool newCurrent, newNext, chordMode;
@@ -157,16 +157,6 @@ class MidiArp : public QWidget  {
  */
     void getNote(int *tick, int note[], int velocity[], int *length);
 /**
- * @brief This function is currently not in use.
- *
- * It transfers the content of the MidiArp::nextNote array to
- * MidiArp::returnNote, MidiArp::returnVelocity and MidiArp::returnTick.
- *
- * @param askedTick The timing value in ticks, for which the next note
- * information is queried.
- */
-    void prepareNextNote(int askedTick);
-/**
  * @brief This function returns the number of notes present at the MIDI
  * input port.
  *
@@ -241,6 +231,7 @@ class MidiArp : public QWidget  {
     bool isMuted;   /*!< Mute state set by ArpWidget */
     bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
+    bool gotKbdTrig;
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
@@ -273,27 +264,6 @@ class MidiArp : public QWidget  {
  */
     void setMuted(bool);
 /**
- * @brief This function checks whether a MIDI event is eligible for this
- * module.
- *
- * Its response depends on the input filter settings, i.e. note range,
- * velocity range and channel.
- *
- * @param inEv MidiEvent event to check
- * @return True if inEv is in the input range of the module
- */
-    bool wantEvent(MidiEvent event);
-/**
- * @brief This function checks whether this module is set to keyboard
- * trigger mode.
- *
- * Its response depends on MidiArp::trigByKbd and whether there are notes
- * pressed on the keyboard, i.e. whether the note was played stakato.
- *
- * @return True if the module accepts to be triggered
- */
-    bool wantTrigByKbd();
-/**
  * @brief This function does the actions related to a note on or off
  * event detected on the MIDI input port.
  *
@@ -317,7 +287,7 @@ class MidiArp : public QWidget  {
  * kept in the buffer along with the release tick and tagged as a
  * released note. 0 otherwise for definite removal from the buffer.
  */
-    void handleNote(int note, int velocity, int tick, int keep_rel = 0);
+    bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
 /**
  * @brief This function represents the external interface to the
  * core of the arpeggiator engine.
@@ -335,19 +305,6 @@ class MidiArp : public QWidget  {
  *
  */
     void prepareCurrentNote(int askedTick);
-/**
- * @brief This function returns the timing of the next note to be
- * calculated and played out in internal ticks.
- *
- * It is called by Engine immediately after accessing the current note
- * data. This next note timing information is used to
- * schedule a so called echo event which will trigger the next call to
- * prepareCurrentNote followed by an output of note data to the Driver's
- * queue.
- *
- * @return The timing of the next coming note in internal ticks.
- */
-    int getNextNoteTick();
 /**
  * @brief This function resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.

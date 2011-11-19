@@ -35,6 +35,7 @@ MidiSeq::MidiSeq()
     trigByKbd = false;
     restartByKbd = false;
     enableLoop = true;
+    gotKbdTrig = false;
     currentRecStep = 0;
     seqFinished = false;
     reverse = false;
@@ -86,49 +87,39 @@ void MidiSeq::setMuted(bool on)
     isMuted = on;
 }
 
-bool MidiSeq::wantEvent(MidiEvent inEv) {
-
-    if ((inEv.type != EV_NOTEON) && (inEv.type != EV_CONTROLLER)) return(false);
-
-    if (inEv.channel != chIn) return(false);
-
-    if ((inEv.type == EV_NOTEON)) {
-        if ((inEv.data < 36) || (inEv.data >= 84)) return(false);
-    }
-    return(true);
-}
-
-void MidiSeq::handleNote(int note, int velocity, int tick)
+bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
 {
-    (void)tick;
+    if (inEv.type != EV_NOTEON) return(true);
+    if (inEv.channel != chIn) return(true);
+    if ((inEv.data < 36) || (inEv.data >= 84)) return(true);
 
-    if (recordMode) recordNote(note);
-
+    if (inEv.value) {
+        /*This is a NOTE ON event*/
+        if (recordMode) {
+            recordNote(inEv.data);
+            emit noteEvent(inEv.data, inEv.value);
+            return(false);
+        }
+        if (enableNoteIn) updateTranspose(inEv.data - 60);
+        if (restartByKbd && !noteCount) restartFlag = true;
+        if (enableVelIn) updateVelocity(inEv.value);
+        seqFinished = false;
+        noteCount++;
+        if ((trigByKbd && (noteCount == 1))) {
+            nextTick = tick + 2; //schedDelayTicks;
+            gotKbdTrig = true;
+        }
+        emit noteEvent(inEv.data, inEv.value);
+    }
     else {
-        if (velocity) {
-            /**This is a NOTE ON event*/
-            if (enableNoteIn) updateTranspose(note - 60);
-            if (restartByKbd && !noteCount) restartFlag = true;
-            if (enableVelIn) updateVelocity(velocity);
-            seqFinished = false;
-            noteCount++;
-        }
-        else {
-            /**This is a NOTE OFF event*/
-            if (enableNoteOff && (noteCount == 1)) seqFinished = true;
-            if (noteCount) noteCount--;
-        }
+        /*This is a NOTE OFF event*/
+        if (enableNoteOff && (noteCount == 1)) seqFinished = true;
+        if (noteCount) noteCount--;
     }
 
-    if (velocity) emit noteEvent(note, velocity);
+    if (inEv.value)
+    return(false);
 }
-
-bool MidiSeq::wantTrigByKbd()
-{
-    bool on = (trigByKbd && (noteCount == 1));
-    return(on);
-}
-
 
 void MidiSeq::getNextNote(Sample *p_sample, int tick)
 {
@@ -138,6 +129,7 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     int cur_grv_sft;
     int pivot;
 
+    gotKbdTrig = false;
     if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
     sample = customWave.at(currentIndex);

@@ -70,10 +70,7 @@ class Engine : public QThread  {
     bool useMidiClock;
 
     //From SeqDriver
-    bool gotArpKbdTrig;
-    bool gotSeqKbdTrig;
-    bool gotLfoKbdTrig;
-    int  schedDelayTicks;
+    int schedDelayTicks;
     int nextMinLfoTick;
     int nextMinSeqTick;
     int nextMinArpTick;

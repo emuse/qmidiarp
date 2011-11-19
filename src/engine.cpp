@@ -58,9 +58,6 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
-    gotArpKbdTrig = false;
-    gotSeqKbdTrig = false;
-    gotLfoKbdTrig = false;
     schedDelayTicks = 2;
     status = false;
     sendLogEvents = false;
@@ -443,9 +440,8 @@ void Engine::echoCallback(bool echo_from_trig)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
         for (l1 = 0; l1 < midiLfoCount(); l1++) {
-            if ((gotLfoKbdTrig && echo_from_trig && midiLfo(l1)->wantTrigByKbd())
-                    || (!gotLfoKbdTrig && !echo_from_trig)) {
-                gotLfoKbdTrig = false;
+            if ((echo_from_trig && midiLfo(l1)->gotKbdTrig)
+                    || (!midiLfo(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiLfo(l1)->nextTick) {
                     outEv.type = EV_CONTROLLER;
                     outEv.data = midiLfo(l1)->ccnumber;
@@ -477,9 +473,8 @@ void Engine::echoCallback(bool echo_from_trig)
     //add 8 ticks to startoff condition to cope with initial sync imperfections
     if (((tick + 8) >= nextMinSeqTick) && (midiSeqCount())) {
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
-            if ((gotSeqKbdTrig && echo_from_trig && midiSeq(l1)->wantTrigByKbd())
-                    || (!gotSeqKbdTrig && !echo_from_trig)) {
-                gotSeqKbdTrig = false;
+            if ((echo_from_trig && midiSeq(l1)->gotKbdTrig)
+                    || (!midiSeq(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiSeq(l1)->nextTick) {
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
@@ -487,11 +482,9 @@ void Engine::echoCallback(bool echo_from_trig)
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
                     outport = midiSeq(l1)->portOut;
-                    if (!midiSeq(l1)->isMuted) {
-                        if (!seqSample.muted) {
-                            outEv.data = seqSample.value;
-                            driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
-                        }
+                    if ((!midiSeq(l1)->isMuted) && (!seqSample.muted)) {
+                        outEv.data = seqSample.value;
+                        driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                     }
                 }
             }
@@ -506,9 +499,8 @@ void Engine::echoCallback(bool echo_from_trig)
     //Arp Note queueing
     if ((tick + 8) >= nextMinArpTick) {
         for (l1 = 0; l1 < midiArpCount(); l1++) {
-            if ((gotArpKbdTrig && echo_from_trig && midiArp(l1)->wantTrigByKbd())
-                    || (!gotArpKbdTrig && !echo_from_trig)) {
-                gotArpKbdTrig = false;
+            if ((echo_from_trig && midiArp(l1)->gotKbdTrig)
+                    || (!midiArp(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiArp(l1)->nextTick) {
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArp(l1)->channelOut;
@@ -531,7 +523,6 @@ void Engine::echoCallback(bool echo_from_trig)
                             }
                         }
                     }
-                    midiArp(l1)->nextTick = midiArp(l1)->getNextNoteTick();
                 }
             }
             if (!l1)
@@ -563,87 +554,46 @@ bool Engine::eventCallback(MidiEvent inEv)
     if (useMidiClock){
         if (inEv.type == EV_START) {
             setStatus(true);
+            return(false);
         }
         if (inEv.type == EV_STOP) {
             setStatus(false);
+            return(false);
         }
-        unmatched = false;
+    }
+
+    for (l1 = 0; l1 < midiLfoCount(); l1++) {
+        unmatched = midiLfo(l1)->handleEvent(inEv, tick);
+        if (midiLfo(l1)->gotKbdTrig) {
+            nextMinLfoTick = midiLfo(l1)->nextTick;
+            driver->requestEchoAt(nextMinLfoTick, true);
+        }
+    }
+    for (l1 = 0; l1 < midiSeqCount(); l1++) {
+        unmatched = midiSeq(l1)->handleEvent(inEv, tick);
+        if (midiSeq(l1)->gotKbdTrig) {
+            nextMinSeqTick = midiSeq(l1)->nextTick;
+            driver->requestEchoAt(nextMinSeqTick, true);
+        }
+    }
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        unmatched = midiArp(l1)->handleEvent(inEv, tick, 1);
+        if (midiArp(l1)->gotKbdTrig) {
+            nextMinArpTick = midiArp(l1)->nextTick;
+            driver->requestEchoAt(nextMinArpTick, true);
+        }
     }
 
     if (inEv.type == EV_CONTROLLER) {
-
-        if (inEv.data == CT_FOOTSW) {
-            for (l1 = 0; l1 < midiArpCount(); l1++) {
-                if (midiArp(l1)->wantEvent(inEv)) {
-                    midiArp(l1)->setSustain((inEv.value == 127), tick);
-                    unmatched = false;
-                }
-            }
+        if (midiControllable) {
+            if (!midiLearnFlag)
+                sendController(inEv.data, inEv.channel, inEv.value);
+            else
+                learnController(inEv.data, inEv.channel);
+            unmatched = false;
         }
-        else {
-            //Does any LFO want to record this?
-            for (l1 = 0; l1 < midiLfoCount(); l1++) {
-                if (midiLfo(l1)->wantEvent(inEv)) {
-                    midiLfo(l1)->record(inEv.value);
-                    unmatched = false;
-                }
-            }
-            if (midiControllable) {
-                if (!midiLearnFlag)
-                    sendController(inEv.data, inEv.channel, inEv.value);
-                else
-                    learnController(inEv.data, inEv.channel);
-                unmatched = false;
-            }
-        }
-        return unmatched;
     }
 
-    if (inEv.type == EV_NOTEON) {
-        for (l1 = 0; l1 < midiLfoCount(); l1++) {
-            if (midiLfo(l1)->wantEvent(inEv)) {
-                unmatched = false;
-
-                midiLfo(l1)->handleNote(inEv.data, inEv.value, tick);
-
-                if (inEv.value && midiLfo(l1)->wantTrigByKbd()) {
-                    nextMinLfoTick = tick;
-                    midiLfo(l1)->nextTick = nextMinLfoTick + schedDelayTicks;
-                    gotLfoKbdTrig = true;
-                    driver->requestEchoAt(nextMinLfoTick, true);
-                }
-            }
-        }
-        for (l1 = 0; l1 < midiSeqCount(); l1++) {
-            if (midiSeq(l1)->wantEvent(inEv)) {
-                unmatched = false;
-
-                midiSeq(l1)->handleNote(inEv.data, inEv.value, tick);
-
-                if (inEv.value && midiSeq(l1)->wantTrigByKbd()) {
-                    nextMinSeqTick = tick;
-                    midiSeq(l1)->nextTick = nextMinSeqTick + schedDelayTicks;
-                    gotSeqKbdTrig = true;
-                    driver->requestEchoAt(nextMinSeqTick, true);
-                }
-            }
-        }
-        for (l1 = 0; l1 < midiArpCount(); l1++) {
-            if (midiArp(l1)->wantEvent(inEv)) {
-                unmatched = false;
-
-                midiArp(l1)->handleNote(inEv.data, inEv.value, tick, 1);
-
-                if (inEv.value && midiArp(l1)->wantTrigByKbd()) {
-                    nextMinArpTick = tick;
-                    midiArp(l1)->nextTick = nextMinArpTick + schedDelayTicks;
-                    gotArpKbdTrig = true;
-                    driver->requestEchoAt(nextMinArpTick, true);
-                }
-            }
-        }
-        return unmatched;
-    }
     return unmatched;
 }
 

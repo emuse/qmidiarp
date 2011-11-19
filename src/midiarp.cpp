@@ -95,6 +95,7 @@ MidiArp::MidiArp()
     releaseNoteCount = 0;
     restartByKbd = false;
     trigByKbd = false;
+    gotKbdTrig = false;
     restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
     len = 0.5;       // note length
@@ -107,7 +108,6 @@ MidiArp::MidiArp()
     newCurrent = false;
     newNext = false;
     currentNoteTick = 0;
-    nextNoteTick = 0;
     nextTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
@@ -144,25 +144,23 @@ void MidiArp::setMuted(bool on)
     isMuted = on;
 }
 
-bool MidiArp::wantEvent(MidiEvent event) {
-
-    if (event.channel != chIn) return(false);
-    if ((event.type == EV_CONTROLLER) && (event.data != CT_FOOTSW)) return(false);
-    if (event.type == EV_NOTEON) {
-        if (((event.data < indexIn[0]) || (event.data > indexIn[1]))
-            || ((event.value < rangeIn[0]) || (event.value > rangeIn[1]))) {
-            return(false);
-        }
-    }
-    return(true);
-}
-
-void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
+bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 {
     int bufPtr, index;
 
+    if (inEv.channel != chIn) return(true);
+    if ((inEv.type == EV_CONTROLLER) && (inEv.data == CT_FOOTSW)) {
+        setSustain((inEv.value == 127), tick);
+        return(false);
+    }
 
-    if (velocity) {
+    if (inEv.type != EV_NOTEON) return(true);
+    if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
+        || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
+        return(false);
+    }
+
+    if (inEv.value) {
         // This is a NOTE ON event
         if (!getPressedNoteCount()) {
             purgeLatchBuffer();
@@ -183,11 +181,11 @@ void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
         // modify buffer that is not accessed by arpeggio output
         bufPtr = (noteBufPtr) ? 0 : 1;
 
-        if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
+        if (!noteCount || (inEv.data > notes[bufPtr][0][noteCount - 1]))
             index = noteCount;
         else {
             index = 0;
-            while (note > notes[bufPtr][0][index]) index++;
+            while (inEv.data > notes[bufPtr][0][index]) index++;
 
             for (int l3 = 0; l3 < 4; l3++) {
                 for (int l2 = noteCount; l2 > index; l2--) {
@@ -195,40 +193,44 @@ void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
                 }
             }
         }
-        notes[bufPtr][0][index] = note;
-        notes[bufPtr][1][index] = velocity;
+        notes[bufPtr][0][index] = inEv.data;
+        notes[bufPtr][1][index] = inEv.value;
         notes[bufPtr][2][index] = tick;
         notes[bufPtr][3][index] = 0;
         noteCount++;
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+        if ((trigByKbd && (noteCount == 1))) {
+            nextTick = tick + 2; //schedDelayTicks;
+            gotKbdTrig = true;
+        }
     }
     else {
         // This is a NOTE OFF event
         // modify buffer that is not accessed by arpeggio output
         bufPtr = (noteBufPtr) ? 0 : 1;
         if (!noteCount) {
-            return;
+            return(false);
         }
         if (sustain) {
-            sustainBuffer.append(note);
-            return;
+            sustainBuffer.append(inEv.data);
+            return(false);
         }
 
         if (latch_mode) {
-            latchBuffer.append(note);
+            latchBuffer.append(inEv.data);
             if (latchBuffer.count() == noteCount) {
                 latchTimer->stop();
             }
             else {
                 latchTimer->start(200);
             }
-            return;
+            return(false);
         }
 
         if ((!keep_rel) || (!release_time)) {
             //definitely remove from buffer
-            if (note == notes[bufPtr][0][noteCount - 1]) {
+            if (inEv.data == notes[bufPtr][0][noteCount - 1]) {
                 //note is on top of buffer: only decrement noteCount
                 noteCount--;
                 if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
@@ -236,13 +238,14 @@ void MidiArp::handleNote(int note, int velocity, int tick, int keep_rel)
             else {
                 //note is not on top: take out the note and pull down all above
                 index = 0;
-                while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
+                while ((index < noteCount) && (inEv.data > notes[bufPtr][0][index])) index++;
                 deleteNoteAt(index, bufPtr);
             }
         }
-        else tagAsReleased(note, tick, bufPtr);
+        else tagAsReleased(inEv.data, tick, bufPtr);
     }
     copyNoteBuffer();
+    return(false);
 }
 
 void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
@@ -510,37 +513,9 @@ void MidiArp::initLoop()
     grooveIndex = 0;
 }
 
-void MidiArp::prepareNextNote(int askedTick)
-{
-    int l1 = 0;
-    returnNote.clear();
-    returnVelocity.clear();
-
-    nextNoteTick = askedTick;
-    while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) {
-        returnNote.append(nextNote[l1]);
-        returnVelocity.append(nextVelocity[l1]);
-        l1++;
-    }
-    returnNote.append(-1); // mark end of chord
-    returnLength = nextLength;
-    returnIsNew = newNext;
-    newNext = false;
-}
-
-int MidiArp::getNextNoteTick()
-{
-    return(nextNoteTick);
-}
-
-bool MidiArp::wantTrigByKbd()
-{
-    bool on = ((getPressedNoteCount() == 1) && trigByKbd);
-    return(on);
-}
-
 void MidiArp::prepareCurrentNote(int askedTick)
 {
+    gotKbdTrig = false;
     currentTick = askedTick;
     int l1 = 0;
     updateNotes();
@@ -565,8 +540,8 @@ void MidiArp::updateNotes()
 
     //allow 8 ticks of tolerance for echo tick for external sync
     if ((currentTick + 8) >= currentNoteTick) {
-        currentNoteTick = nextNoteTick;
-        getNote(&nextNoteTick, nextNote, nextVelocity, &nextLength);
+        currentNoteTick = nextTick;
+        getNote(&nextTick, nextNote, nextVelocity, &nextLength);
         while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) {
             currentNote[l1] = nextNote[l1];
             currentVelocity[l1] = nextVelocity[l1];
@@ -597,7 +572,7 @@ void MidiArp::initArpTick(int tick)
     arpTick = tick;
     currentVelocity[0] = 0;
     currentNoteTick = tick;
-    nextNoteTick  = tick;
+    nextTick  = tick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;
@@ -687,23 +662,8 @@ void MidiArp::updateReleaseTime(int val)
 
 void MidiArp::updateTriggerMode(int val)
 {
-    switch (val) {
-        case 0:
-            trigByKbd = false;
-            restartByKbd = false;
-        break;
-        case 1:
-            trigByKbd = false;
-            restartByKbd = true;
-        break;
-        case 2:
-            trigByKbd = true;
-            restartByKbd = true;
-        break;
-        default:
-            trigByKbd = false;
-            restartByKbd = false;
-    }
+    trigByKbd = val&2;
+    restartByKbd = val&1 || val&2;
 }
 
 void MidiArp::clearNoteBuffer()

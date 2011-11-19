@@ -102,6 +102,7 @@ class MidiLfo : public QObject  {
     bool restartByKbd;
     bool trigByKbd;
     bool enableLoop;
+    bool gotKbdTrig;
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
@@ -200,36 +201,15 @@ class MidiLfo : public QObject  {
  */
     void setFramePtr(int idx);
 /**
- * @brief This function checks whether a MIDI event is eligible for this
- * module.
+ * @brief This function does the actions related to a newly received event.
  *
- * Its response depends on the input filter settings, i.e. note,
- * velocity and channel.
- *
- * @param inEv MidiEvent to check
+ * It is called by Engine when a new event is received on the MIDI input port.
+
+ * @param inEv MidiEvent to check and process or not
+ * @param tick The time the event was received in internal ticks
  * @return True if inEv is in the input range of the module
  */
-    bool wantEvent(MidiEvent inEv);
-/**
- * @brief This function checks whether this module is set to keyboard
- * trigger mode.
- *
- * Its response depends on MidiSeq::restartByKbd and (TODO) whether there are notes
- * pressed on the keyboard, i.e. whether the note was played stakato.
- *
- * @return True if the module accepts to be triggered
- */
-    bool wantTrigByKbd();
-/**
- * @brief This function does the actions related to a newly received note.
- *
- * It is called by Engine when a new note is received on the MIDI input port.
-
- * @param note The note value of the received note
- * @param velocity The note velocity
- * @param tick The time the note was received in internal ticks
- */
-    void handleNote(int note, int velocity, int tick);
+    bool handleEvent(MidiEvent inEv, int tick);
 /*! @brief This function is the main calculator for the data contained
  * in a waveform.
  *
