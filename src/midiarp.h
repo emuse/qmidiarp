@@ -264,28 +264,13 @@ class MidiArp : public QWidget  {
  */
     void setMuted(bool);
 /**
- * @brief This function does the actions related to a note on or off
- * event detected on the MIDI input port.
+ * @brief This function does the actions related to a newly received event.
  *
- * It is called by Engine when a NOTE ON or OFF event is received.
- * In case of NOTE ON, depending on the trigger settings, the Arp's timing
- * is reset to that of the note tick and/or the pattern index is reset.
- * The note with its attributes will then be inserted in the MidiArp::notes
- * buffer, which is sorted in accending note value order, and
- * MidiArp::copyNoteBuffer is called. The MidiArp::latchBuffer is purged
- * if the note was played stakato. In case of NOTE OFF, the function
- * will go through checks regarding MidiArp::latchMode and MidiArp::sustain
- * and add the note from the respective MidiArp::latchBuffer and/or
- * MidiArp::sustainBuffer if required. If not, the note is either tagged
- * as released (provided MidiArp::release_time is set) or removed from
- * the buffer. The latter depends on the keep_rel argument.
- *
- * @param note The note value of the received note
- * @param velocity The note velocity
- * @param tick The time the note was released in internal ticks
- * @param keep_rel Set this flag to 1 if the note is released and to be
- * kept in the buffer along with the release tick and tagged as a
- * released note. 0 otherwise for definite removal from the buffer.
+ * It is called by Engine when a new event is received on the MIDI input port.
+
+ * @param inEv MidiEvent to check and process or not
+ * @param tick The time the event was received in internal ticks
+ * @return True if inEv is in not the input range of the module (event is unmatched)
  */
     bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
 /**

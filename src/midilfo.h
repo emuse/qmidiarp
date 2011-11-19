@@ -207,7 +207,7 @@ class MidiLfo : public QObject  {
 
  * @param inEv MidiEvent to check and process or not
  * @param tick The time the event was received in internal ticks
- * @return True if inEv is in the input range of the module
+ * @return True if inEv is in not the input range of the module (event is unmatched)
  */
     bool handleEvent(MidiEvent inEv, int tick);
 /*! @brief This function is the main calculator for the data contained
