@@ -84,6 +84,13 @@ class MidiSeq : public QObject  {
  * @return The value clipped within the range
  */
     int clip(int value, int min, int max, bool *outOfRange);
+/**
+ * @brief This function calulates the next MidiSeq::currentIndex as a
+ * function of the current value, play direction, loop marker position
+ * and orientation. It is called by MidiSeq::getNextNote() so that upon
+ * every new output note, the sequence pointer advances.
+ */
+    void advancePatternIndex();
 
   public:
     int chIn;           /**< Channel of input events */

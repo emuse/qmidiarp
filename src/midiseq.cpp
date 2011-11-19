@@ -117,27 +117,55 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
         if (noteCount) noteCount--;
     }
 
-    if (inEv.value)
     return(false);
 }
 
 void MidiSeq::getNextNote(Sample *p_sample, int tick)
 {
     const int frame_nticks = TPQN / res;
-    const int npoints = res * size;
     Sample sample;
     int cur_grv_sft;
-    int pivot;
 
     gotKbdTrig = false;
     if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
-    sample = customWave.at(currentIndex);
     if (!seqFinished) emit nextStep(currentIndex);
+
+    advancePatternIndex();
+
+    if (nextTick < (tick - frame_nticks)) nextTick = tick;
+
+    sample = customWave.at(currentIndex);
+    sample.value+=transp;
+    sample.tick = nextTick;
+    if (seqFinished) sample.muted = true;
+
+
+    cur_grv_sft = 0.01 * (grooveTick * frame_nticks);
+
+    /* pairwise application of new groove shift */
+    if (!(currentIndex % 2)) {
+        cur_grv_sft = -cur_grv_sft;
+        grooveTick = newGrooveTick;
+    }
+    nextTick += frame_nticks + cur_grv_sft;
+
+    if (!trigByKbd && !(currentIndex % 2)) {
+        /* round-up to current resolution (quantize) */
+        nextTick/=frame_nticks;
+        nextTick*=frame_nticks;
+    }
+
+    *p_sample = sample;
+}
+
+void MidiSeq::advancePatternIndex()
+{
+    const int npoints = res * size;
+    int pivot = abs(loopMarker);
 
     if (reverse) {
         currentIndex--;
-        pivot = abs(loopMarker);
         if (currentIndex == -1) {
             if (pingpong) {
                 reverse = false;
@@ -158,7 +186,6 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     }
     else {
         currentIndex++;
-        pivot = abs(loopMarker);
         if (!pivot) pivot = npoints;
         if (currentIndex == npoints) {
             if (pingpong) {
@@ -178,30 +205,6 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
             else currentIndex = 0;
         }
     }
-    if (seqFinished) sample.muted = true;
-
-    if (nextTick < (tick - frame_nticks)) nextTick = tick;
-
-    sample.value+=transp;
-    sample.tick = nextTick;
-
-
-    cur_grv_sft = 0.01 * (grooveTick * frame_nticks);
-
-    /** pairwise application of new groove shift */
-    if (!(currentIndex % 2)) {
-        cur_grv_sft = -cur_grv_sft;
-        grooveTick = newGrooveTick;
-    }
-    nextTick += frame_nticks + cur_grv_sft;
-
-    if (!trigByKbd && !(currentIndex % 2)) {
-        /** round-up to current resolution (quantize) */
-        nextTick/=frame_nticks;
-        nextTick*=frame_nticks;
-    }
-
-    *p_sample = sample;
 }
 
 void MidiSeq::getData(QVector<Sample> *p_data)
