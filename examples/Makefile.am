@@ -2,5 +2,5 @@
 
 examplesdatadir = $(pkgdatadir)/examples
 dist_examplesdata_DATA = \
-		demo.qma demo_up_down.qma old_arp.qma demo_seqlfo.qmax \
+		demo.qmax demo_up_down.qmax old_arp.qmax demo_seqlfo.qmax \
 		demo_seqlfo2.qmax
