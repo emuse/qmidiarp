@@ -35,7 +35,6 @@ JackDriver::JackDriver(
     void (* tick_callback)(void * context, bool echo_from_trig))
     : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
-    transportState = JackTransportStopped;
     portCount = p_portCount;
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
@@ -47,8 +46,12 @@ JackDriver::JackDriver(
  *  JACK driver backend, i.e. portCount > 0 */
     if (portCount) {
         callJack(portCount);
+        transportState = getState();
         jSampleRate = jack_get_sample_rate(jack_handle);
         setTransportStatus(false);
+    }
+    else {
+        transportState = JackTransportStopped;
     }
 }
 void JackDriver::callJack(int port_count)
@@ -455,7 +458,7 @@ void JackDriver::setTransportStatus(bool on)
     else
         tempo = internalTempo;
 
-    jackOffsetTick = (long)jpos.frame * TPQN
+    jackOffsetTick = (uint64_t)jpos.frame * TPQN
         * tempo / (jpos.frame_rate * 60);
 
     m_current_tick = 0;
