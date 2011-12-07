@@ -313,7 +313,7 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                 jack_midi_event_get(&in_event, in_buf, event_index);
         }
     }
-    rd->handleEchoes();
+    rd->handleEchoes(nframes);
     return(0);
 }
 
@@ -350,6 +350,8 @@ bool JackDriver::jack_session_event()
 
 void JackDriver::jackTrCheckState()
 {
+    if (!useJackSync) return;
+
     int state = getState();
 
     if (transportState == state) return;
@@ -419,19 +421,24 @@ bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 }
 
-void JackDriver::handleEchoes()
+void JackDriver::handleEchoes(int nframes)
 {
     curJFrame++;
 
-    if (!transportState) return;
+    if (!queueStatus) return;
 
     int l1;
     int size = echoTickQueue.size();
     int nexttick, tmptick, idx;
 
-    m_current_tick = ((uint64_t)currentPos.frame * TPQN * tempo
+    if (useJackSync) {
+        m_current_tick = ((uint64_t)currentPos.frame * TPQN * tempo
             / (currentPos.frame_rate * 60)) - jackOffsetTick;
-
+    }
+    else {
+        m_current_tick = (uint64_t)curJFrame * TPQN * tempo * nframes
+            / (jSampleRate * 60);
+    }
     if (!size) return;
 
     idx = 0;
@@ -453,6 +460,7 @@ void JackDriver::handleEchoes()
 void JackDriver::setTransportStatus(bool on)
 {
     jack_position_t jpos = getCurrentPos();
+    if (useJackSync) {
     if (jpos.beats_per_minute > 0.01)
         tempo = (int)jpos.beats_per_minute;
     else
@@ -460,6 +468,10 @@ void JackDriver::setTransportStatus(bool on)
 
     jackOffsetTick = (uint64_t)jpos.frame * TPQN
         * tempo / (jpos.frame_rate * 60);
+    }
+    else {
+        tempo = internalTempo;
+    }
 
     m_current_tick = 0;
 
@@ -471,6 +483,11 @@ void JackDriver::setTransportStatus(bool on)
         evTickQueue.clear();
         evPortQueue.clear();
         requestEchoAt(0);
+        qWarning("Internal Transport started");
     }
+    else {
+        qWarning("Internal Transport stopped");
+    }
+
     queueStatus = on;
 }

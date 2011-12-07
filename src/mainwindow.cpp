@@ -185,7 +185,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         connect(engine->driver, SIGNAL(j_shutdown()), this,
                 SLOT(jackShutdown()));
     }
-    jackSyncAction->setChecked(!alsaMidi);
+    jackSyncAction->setChecked(false);
     jackSyncAction->setDisabled(true);
 
     updateTransportStatus(false);
@@ -605,7 +605,7 @@ void MainWindow::removeSeq(int index)
 void MainWindow::clear()
 {
     updateTransportStatus(false);
-    if (alsaMidi) jackSyncToggle(false);
+    jackSyncToggle(false);
 
     while (engine->midiArpCount()) {
         removeArp(engine->midiArpCount() - 1);
@@ -724,7 +724,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     }
                 else if (xml.name() == "jackSyncEnabled") {
                         bool tmp = xml.readElementText().toInt();
-                        if (alsaMidi) jackSyncAction->setChecked(tmp);
+                        jackSyncAction->setChecked(tmp);
                     }
                 else if (xml.name() == "forwardUnmatched")
                     passWidget->setForward(xml.readElementText().toInt());
@@ -1000,7 +1000,7 @@ void MainWindow::resetTransport()
 
 void MainWindow::midiClockToggle(bool on)
 {
-    if (on && alsaMidi) jackSyncAction->setChecked(false);
+    if (on) jackSyncAction->setChecked(false);
     engine->setUseMidiClock(on);
     setGUIforExtSync(on);
 }
@@ -1230,17 +1230,15 @@ void MainWindow::checkIfLastModule()
         midiClockAction->setDisabled(true);
         midiClockAction->setChecked(false);
         jackSyncAction->setDisabled(true);
-        if (alsaMidi) jackSyncAction->setChecked(false);
+        jackSyncAction->setChecked(false);
     }
 }
 
 void MainWindow::checkIfFirstModule()
 {
     if (engine->moduleWindowCount() == 1) {
-        if (alsaMidi) {
-            midiClockAction->setEnabled(true);
-            jackSyncAction->setEnabled(true);
-        }
+        if (alsaMidi) midiClockAction->setEnabled(true);
+        jackSyncAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()
                                 || jackSyncAction->isChecked()));
     }

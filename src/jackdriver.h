@@ -75,7 +75,7 @@ class JackDriver : public DriverBase
     QQueue<uint> evPortQueue;
     jack_client_t *jack_handle;
     jack_position_t currentPos;
-    void handleEchoes();
+    void handleEchoes(int nframes);
 
 #ifdef JACK_SESSION
   public:
