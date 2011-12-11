@@ -661,6 +661,7 @@ void LfoWidget::updateRes(int val)
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
+    newCustomOffset();
     modified = true;
 }
 
@@ -670,6 +671,7 @@ void LfoWidget::updateSize(int val)
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateScreen(data);
+    newCustomOffset();
     modified = true;
 }
 
@@ -708,7 +710,9 @@ void LfoWidget::newCustomOffset()
 {
     int min = 127;
     int value;
-    for (int l1 = 0; l1 < data.count() - 1; l1++) {
+    const int npoints = sizeBox->currentText().toInt()
+                        * resBox->currentText().toInt();
+    for (int l1 = 0; l1 < npoints; l1++) {
         value = data.at(l1).value;
         if (value < min) min = value;
     }

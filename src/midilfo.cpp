@@ -422,7 +422,7 @@ void MidiLfo::copyToCustom()
 void MidiLfo::updateCustomWaveOffset(int cwoffs)
 {
     Sample sample;
-    const int count = customWave.count();
+    const int count = res * size;
     int l1 = 0;
     bool cl = false;
 
