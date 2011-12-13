@@ -747,6 +747,7 @@ void SeqWidget::copyToCustom()
 
 void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
+    if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1)) return;
     if (buttons == 2) {
         midiWorker->setMutePoint(mouseX, lastMute);
     }
@@ -769,6 +770,9 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
         modified = true;
         return;
     }
+
+    if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1)) return;
+
     if (buttons == 2) {
         lastMute = midiWorker->toggleMutePoint(mouseX);
     } else {
