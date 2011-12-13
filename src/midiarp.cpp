@@ -157,7 +157,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     if (inEv.type != EV_NOTEON) return(true);
     if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
         || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
-        return(false);
+        return(true);
     }
 
     if (inEv.value) {
