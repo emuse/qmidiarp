@@ -67,8 +67,10 @@ class MidiSeq : public QObject  {
     double queueTempo;
     int lastMouseLoc;
     int currentIndex;
-    bool reverse;       /*!< True when the play direction is backwards */
-    bool pingpong;      /*!< True when the play direction alternates */
+    bool backward;       /*!< True when the sequence should start backward */
+    bool reverse;       /*!< True when the current play direction is backwards */
+    bool pingpong;      /*!< True when the play direction should alternate */
+    bool reflect;      /*!< True when the current play direction will change at the next reflect point */
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int noteCount;
     bool recordMode;
