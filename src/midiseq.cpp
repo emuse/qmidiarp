@@ -163,21 +163,23 @@ void MidiSeq::advancePatternIndex()
 {
     const int npoints = res * size;
     int pivot = abs(loopMarker);
+    if (!pivot) reflect = pingpong;
 
     if (reverse) {
         currentIndex--;
+        if (!pivot) pivot = npoints;
         if (currentIndex == -1) {
-            if (pingpong) {
+            if (reflect  || !backward) {
                 reverse = false;
                 currentIndex = 0;
             }
-            else currentIndex = npoints - 1;
+            else currentIndex = pivot - 1;
         }
         else if (currentIndex == pivot - 1) {
             if (!enableLoop) seqFinished = true;
-            if (loopMarker < 0) pingpong = true;
-            if (loopMarker > 0) pingpong = false;
-            if (pingpong) {
+            if (loopMarker < 0) reflect = true;
+            if (loopMarker > 0) reflect = false;
+            if (reflect) {
                 reverse = false;
                 currentIndex = pivot;
             }
@@ -188,7 +190,7 @@ void MidiSeq::advancePatternIndex()
         currentIndex++;
         if (!pivot) pivot = npoints;
         if (currentIndex == npoints) {
-            if (pingpong) {
+            if (reflect || backward) {
                 reverse = true;
                 currentIndex = npoints - 1;
             }
@@ -196,9 +198,9 @@ void MidiSeq::advancePatternIndex()
         }
         else if ((currentIndex == pivot)) {
             if (!enableLoop) seqFinished = true;
-            if (loopMarker > 0) pingpong = true;
-            if (loopMarker < 0) pingpong = false;
-            if (pingpong) {
+            if (loopMarker > 0) reflect = true;
+            if (loopMarker < 0) reflect = false;
+            if (reflect) {
                 reverse = true;
                 currentIndex = pivot - 1;
             }
@@ -255,7 +257,7 @@ void MidiSeq::updateWaveForm(int val)
 
 void MidiSeq::updateLoop(int val)
 {
-    reverse = val&1;
+    backward = val&1;
     pingpong = val&2;
     enableLoop = !(val&4);
     curLoopMode = val;
@@ -381,10 +383,16 @@ void MidiSeq::setCurrentIndex(int ix)
     currentIndex=ix;
 
     if (!ix) {
-        reverse = curLoopMode&1;
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
-        if (reverse) currentIndex = res * size - 1;
+        if (backward) {
+            reverse = true;
+            if (loopMarker) currentIndex = abs(loopMarker) - 1;
+            else currentIndex = res * size - 1;
+        }
+        else reverse = false;
+
+        reflect = pingpong;
     }
 }
 
