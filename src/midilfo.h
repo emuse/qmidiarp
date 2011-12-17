@@ -69,8 +69,10 @@ class MidiLfo : public QObject  {
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
-    bool reverse;       /*!< True when the play direction is backwards */
-    bool pingpong;       /*!< True when the play direction alternates */
+    bool backward;       /*!< True when the sequence should start backward */
+    bool reverse;       /*!< True when the current play direction is backwards */
+    bool pingpong;      /*!< True when the play direction should alternate */
+    bool reflect;      /*!< True when the current play direction will change at the next reflect point */
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int recValue;
     int lastSampleValue;

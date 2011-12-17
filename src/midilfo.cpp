@@ -56,6 +56,8 @@ MidiLfo::MidiLfo()
     isRecording = false;
     reverse = false;
     pingpong = false;
+    backward = false;
+    reflect = false;
     recValue = 0;
     int l1 = 0;
     int lt = 0;
@@ -147,15 +149,16 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         l1++;
     } while ((l1 < framesize) & (l1 < npoints));
 
-
     if (!seqFinished) emit nextStep(frameptr);
+
+    reflect = pingpong;
 
     if (reverse) {
         frameptr-=l1;
         if (frameptr < 0) {
             if (!enableLoop) seqFinished = true;
             frameptr = npoints - l1;
-            if (pingpong) {
+            if (reflect  || !backward) {
                 reverse = false;
                 frameptr = 0;
             }
@@ -166,12 +169,14 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         if (frameptr >= npoints) {
             if (!enableLoop) seqFinished = true;
             frameptr = 0;
-            if (pingpong) {
+            if (reflect || backward) {
                 reverse = true;
                 frameptr = npoints - l1;
             }
         }
     }
+
+    if (seqFinished) frameptr = 0;
 
     int cur_grv_sft = 0.01 * (grooveTick * step);
     /** pairwise application of new groove shift */
@@ -342,7 +347,7 @@ void MidiLfo::updateSize(int val)
 
 void MidiLfo::updateLoop(int val)
 {
-    reverse = val&1;
+    backward = val&1;
     pingpong = val&2;
     enableLoop = !(val&4);
     curLoopMode = val;
