@@ -115,9 +115,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 break;
 
             case '>':
-                stepWidth /= 2.0;
+                stepWidth *= .5;
                 if (stepWidth < minTempo)
-                    minTempo /= 2.0;
+                    minTempo *= .5;
                 break;
 
             case '<':
@@ -162,7 +162,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 break;
 
             case 'h':
-                notelen /= 2;
+                notelen *= .5;
                 break;
 
             default:
@@ -272,7 +272,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case '>':
-                    stepWidth /= 2.0;
+                    stepWidth *= .5;
                     break;
 
                 case '<':
@@ -314,7 +314,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case 'h':
-                    notelen /= 2;
+                    notelen *= .5;
                     break;
 
                 default:

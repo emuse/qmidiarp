@@ -75,7 +75,7 @@ class MidiArp : public QWidget  {
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int randomTick, randomVelocity, randomLength;
     double stepWidth, len, vel;
-
+    double minStepWidth; /*!< Holds the minimum step width of the pattern for quantization purposes*/
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
     QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
     QTimer *latchTimer;         /*!< Is started when a note is released and causes MidiArp::purgeLatchBuffer after

@@ -380,7 +380,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                         octave=0;
                         break;
                     case '>':
-                        stepWidth /= 2.0;
+                        stepWidth *= .5;
                         break;
                     case '<':
                         stepWidth *= 2.0;
@@ -395,10 +395,10 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                         vel -= 0.2;
                         break;
                     case 'd':
-                        len *= 2;
+                        len *= 2.0;
                         break;
                     case 'h':
-                        len /= 2;
+                        len *= .5;
                         break;
                 }
             }
@@ -406,7 +406,6 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     } while (advancePatternIndex(false) && (gotCC || chordMode));
 
     l1 = 0;
-
     if (noteCount) do {
         noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0;
         note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
@@ -463,6 +462,12 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         grooveTick = newGrooveTick;
     }
     arpTick += stepWidth * TPQN + grooveTmp;
+
+    if (!trigByKbd && !(grooveIndex % 2) && !grooveTick) {
+        /** round-up to current resolution (quantize) */
+        arpTick/= (TPQN * minStepWidth);
+        arpTick*= (TPQN * minStepWidth);
+    }
 
     *tick = arpTick + clip(stepWidth * 0.25 * (double)randomTick, 0,
             1000, &outOfRange);
@@ -586,6 +591,8 @@ void MidiArp::updatePattern(const QString& p_pattern)
     pattern = p_pattern;
     patternLen = pattern.length();
     patternMaxIndex = 0;
+    minStepWidth = 1.0;
+
     if (patternLen)
     {
         c = (pattern.at(patternLen - 1));
@@ -603,7 +610,10 @@ void MidiArp::updatePattern(const QString& p_pattern)
         if (c.isDigit() && (c.digitValue() > patternMaxIndex)) {
             patternMaxIndex = c.digitValue();
         }
+        if (c == '>') minStepWidth *= .5;
+        if (c == '<') minStepWidth *= 2.;
     }
+
     patternIndex = 0;
     grooveIndex = 0;
     noteOfs = 0;
