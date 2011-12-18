@@ -349,6 +349,7 @@ class SeqWidget : public QWidget
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
     int getLoopMarker() { return midiWorker->loopMarker; }
     int getNextTick() { return midiWorker->nextTick; }
+    bool getReverse() { return midiWorker->reverse; }
     void handleController(int ccnumber, int channel, int value);
 };
 

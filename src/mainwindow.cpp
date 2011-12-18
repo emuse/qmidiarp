@@ -474,7 +474,7 @@ void MainWindow::cloneLfo(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
-
+    midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
     midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
     midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
     engine->addMidiLfo(midiWorker);
@@ -508,7 +508,7 @@ void MainWindow::cloneSeq(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
-
+    midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
     midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
     midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
     engine->addMidiSeq(midiWorker);

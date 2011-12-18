@@ -364,6 +364,7 @@ class LfoWidget : public QWidget
 
     int getFramePtr() { return midiWorker->getFramePtr(); }
     int getNextTick() { return midiWorker->nextTick; }
+    bool getReverse() { return midiWorker->reverse; }
     void handleController(int ccnumber, int channel, int value);
 };
 

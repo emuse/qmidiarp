@@ -70,7 +70,6 @@ class MidiLfo : public QObject  {
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
     int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     bool backward;       /*!< True when the sequence should start backward */
-    bool reverse;       /*!< True when the current play direction is backwards */
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
@@ -106,6 +105,7 @@ class MidiLfo : public QObject  {
     bool enableLoop;
     bool gotKbdTrig;
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
+    bool reverse;       /*!< True when the current play direction is backwards */
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
