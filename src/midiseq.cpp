@@ -199,7 +199,7 @@ void MidiSeq::advancePatternIndex()
                 reverse = true;
                 currentIndex = npoints - 1;
             }
-            else currentIndex = 0;
+            else currentIndex = pivot;
         }
         else if ((currentIndex == pivot)) {
             if (!enableLoop) seqFinished = true;
