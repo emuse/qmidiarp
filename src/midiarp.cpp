@@ -98,6 +98,7 @@ MidiArp::MidiArp()
     gotKbdTrig = false;
     restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
+    minStepWidth = 1.0;
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
     noteIndex[0] = 0;
