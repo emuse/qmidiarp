@@ -254,9 +254,6 @@ class MidiLfo : public QObject  {
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
     int getFramePtr() { return frameptr;}
-
-  signals:
-    void nextStep(int frameptr);
 };
 
 #endif

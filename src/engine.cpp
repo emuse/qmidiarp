@@ -446,6 +446,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_CONTROLLER;
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
+                    lfoWidget(l1)->screen->updateScreen(lfoWidget(l1)->getFramePtr());
                     midiLfo(l1)->getNextFrame(&lfoData, tick);
                     outport = midiLfo(l1)->portOut;
                     if (!midiLfo(l1)->isMuted) {
@@ -479,6 +480,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
+                    seqWidget(l1)->screen->updateScreen(seqWidget(l1)->getCurrentIndex());
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
                     outport = midiSeq(l1)->portOut;
@@ -512,6 +514,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
                     isNew = midiArp(l1)->returnIsNew;
+                    arpWidget(l1)->screen->updateScreen(arpWidget(l1)->getGrooveIndex());
                     if (!velocity.isEmpty()) {
                         if (isNew && velocity.at(0)) {
                             l2 = 0;
@@ -571,6 +574,9 @@ bool Engine::eventCallback(MidiEvent inEv)
     }
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
         unmatched = midiSeq(l1)->handleEvent(inEv, tick);
+        if (inEv.type == EV_NOTEON && !unmatched && inEv.value) {
+            seqWidget(l1)->processNote(inEv.data, inEv.value);
+        }
         if (midiSeq(l1)->gotKbdTrig) {
             nextMinSeqTick = midiSeq(l1)->nextTick;
             driver->requestEchoAt(nextMinSeqTick, true);

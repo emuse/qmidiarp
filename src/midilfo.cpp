@@ -149,8 +149,6 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         l1++;
     } while ((l1 < framesize) & (l1 < npoints));
 
-    if (!seqFinished) emit nextStep(frameptr);
-
     reflect = pingpong;
 
     if (reverse) {
@@ -176,8 +174,6 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         }
     }
 
-    if (seqFinished) frameptr = 0;
-
     int cur_grv_sft = 0.01 * (grooveTick * step);
     /** pairwise application of new groove shift */
     if (!(frameptr % 2)) {
@@ -199,6 +195,8 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         nextTick/= (step * framesize);
         nextTick*= (step * framesize);
     }
+
+    if (seqFinished) frameptr = 0;
 
     *p_data = frame;
 }

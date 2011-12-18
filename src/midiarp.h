@@ -70,7 +70,9 @@ class MidiArp : public QWidget  {
     int currentLength, nextLength;
     bool newCurrent, newNext, chordMode;
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
-    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
+    int patternIndex; /*!< Holds the current position within the pattern text*/
+    int grooveIndex; /*!< Holds the current position within the sequence*/
+    int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int randomTick, randomVelocity, randomLength;
     double stepWidth, len, vel;
 
@@ -80,7 +82,7 @@ class MidiArp : public QWidget  {
                                     a delay of 200ms except when another released note is detected before. */
 
     bool sustain, latch_mode;
-    int octave, noteIndex[MAXCHORD], patternIndex;
+    int octave, noteIndex[MAXCHORD];
  /*! @brief The input note buffer array of the Arpeggiator, which has
   * two array copies.
   *
@@ -355,20 +357,12 @@ class MidiArp : public QWidget  {
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
     void clearNoteBuffer();
 
-  signals:
-/**
- * @brief Emitted to ArpScreen::update at every arpeggio step.
- *
- * It causes update of the cursor position and pattern display.
- * @param patternIndex The current index position in the MidiArp::pattern.
- */
-    void nextStep(int patternIndex);
-
   public slots:
  /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
   */
     void purgeLatchBuffer();
+    int getGrooveIndex() { return grooveIndex; }
 
 };
 

@@ -237,6 +237,7 @@ class ArpWidget : public QWidget
 */
     void setMuted(bool on);
     void handleController(int ccnumber, int channel, int value);
+    int getGrooveIndex() { return midiWorker->getGrooveIndex(); }
 };
 
 #endif

@@ -471,7 +471,6 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         velocity[0] = 0;
     }
     grooveIndex++;
-    emit nextStep(grooveIndex);
 }
 
 bool MidiArp::advancePatternIndex(bool reset)

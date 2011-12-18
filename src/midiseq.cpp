@@ -40,6 +40,8 @@ MidiSeq::MidiSeq()
     seqFinished = false;
     reverse = false;
     pingpong = false;
+    backward = false;
+    reflect = false;
     restartFlag = false;
     curLoopMode = 0;
     noteCount = 0;
@@ -97,7 +99,6 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
         /*This is a NOTE ON event*/
         if (recordMode) {
             recordNote(inEv.data);
-            emit noteEvent(inEv.data, inEv.value);
             return(false);
         }
         if (enableNoteIn) updateTranspose(inEv.data - 60);
@@ -109,7 +110,6 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
         }
-        emit noteEvent(inEv.data, inEv.value);
     }
     else {
         /*This is a NOTE OFF event*/
@@ -129,7 +129,6 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     gotKbdTrig = false;
     if (restartFlag) setCurrentIndex(0);
     if (!currentIndex) grooveTick = newGrooveTick;
-    if (!seqFinished) emit nextStep(currentIndex);
 
     sample = customWave.at(currentIndex);
     advancePatternIndex();
@@ -138,7 +137,6 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
 
     sample.value+=transp;
     sample.tick = nextTick;
-    if (seqFinished) sample.muted = true;
 
 
     cur_grv_sft = 0.01 * (grooveTick * frame_nticks);
@@ -156,6 +154,11 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
         nextTick*=frame_nticks;
     }
 
+    if (seqFinished) {
+        sample.muted = true;
+        currentIndex = 0;
+    }
+
     *p_sample = sample;
 }
 
@@ -163,12 +166,13 @@ void MidiSeq::advancePatternIndex()
 {
     const int npoints = res * size;
     int pivot = abs(loopMarker);
-    if (!pivot) reflect = pingpong;
+    reflect = pingpong;
 
     if (reverse) {
         currentIndex--;
         if (!pivot) pivot = npoints;
         if (currentIndex == -1) {
+            if (!enableLoop) seqFinished = true;
             if (reflect  || !backward) {
                 reverse = false;
                 currentIndex = 0;
@@ -190,6 +194,7 @@ void MidiSeq::advancePatternIndex()
         currentIndex++;
         if (!pivot) pivot = npoints;
         if (currentIndex == npoints) {
+            if (!enableLoop) seqFinished = true;
             if (reflect || backward) {
                 reverse = true;
                 currentIndex = npoints - 1;

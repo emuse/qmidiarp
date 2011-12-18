@@ -246,10 +246,6 @@ class MidiSeq : public QObject  {
     void setCurrentIndex(int ix);
     int getCurrentIndex() {return currentIndex; }
 
-  signals:
-    void nextStep(int currentIndex);
-    void noteEvent(int note, int velocity);
-
 };
 
 #endif

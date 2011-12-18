@@ -366,8 +366,6 @@ void MainWindow::addArp(const QString& name)
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    connect(midiWorker, SIGNAL(nextStep(int)),
-            moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
@@ -403,8 +401,6 @@ void MainWindow::addLfo(const QString& name)
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    connect(midiWorker, SIGNAL(nextStep(int)),
-            moduleWidget, SLOT(updateScreen(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -435,16 +431,12 @@ void MainWindow::addSeq(const QString& name)
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    connect(midiWorker, SIGNAL(nextStep(int)),
-            moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
-    connect(midiWorker, SIGNAL(noteEvent(int, int)),
-            moduleWidget, SLOT(processNote(int, int)));
 
     widgetID = engine->seqWidgetCount();
     moduleWidget->manageBox->name = name;
@@ -468,8 +460,6 @@ void MainWindow::cloneLfo(int ID)
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    connect(midiWorker, SIGNAL(nextStep(int)),
-            moduleWidget, SLOT(updateScreen(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -505,16 +495,12 @@ void MainWindow::cloneSeq(int ID)
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, this);
-    connect(midiWorker, SIGNAL(nextStep(int)),
-            moduleWidget->screen, SLOT(updateScreen(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
             this, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
-    connect(midiWorker, SIGNAL(noteEvent(int, int)),
-            moduleWidget, SLOT(processNote(int, int)));
 
     widgetID = engine->seqWidgetCount();
     moduleWidget->manageBox->name = engine->seqWidget(ID)->manageBox->name + "_0";
