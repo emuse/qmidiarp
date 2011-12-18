@@ -158,7 +158,6 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
         sample.muted = true;
         currentIndex = 0;
     }
-
     *p_sample = sample;
 }
 
@@ -192,7 +191,6 @@ void MidiSeq::advancePatternIndex()
     }
     else {
         currentIndex++;
-        if (!pivot) pivot = npoints;
         if (currentIndex == npoints) {
             if (!enableLoop) seqFinished = true;
             if (reflect || backward) {
@@ -202,6 +200,7 @@ void MidiSeq::advancePatternIndex()
             else currentIndex = pivot;
         }
         else if ((currentIndex == pivot)) {
+            if (!pivot) pivot = npoints;
             if (!enableLoop) seqFinished = true;
             if (loopMarker > 0) reflect = true;
             if (loopMarker < 0) reflect = false;
