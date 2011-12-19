@@ -457,15 +457,15 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 
     if (!grooveIndex) grooveTick = newGrooveTick;
     grooveTmp = TPQN * stepWidth * grooveTick * 0.01;
-    /** pairwise application of new groove shift */
+    /* pairwise application of new groove shift */
     if (grooveIndex % 2) {
         grooveTmp = -grooveTmp;
         grooveTick = newGrooveTick;
     }
     arpTick += stepWidth * TPQN + grooveTmp;
 
-    if (!trigByKbd && !(grooveIndex % 2) && !grooveTick) {
-        /** round-up to current resolution (quantize) */
+    if (!trigByKbd && !grooveIndex && !grooveTick) {
+        /* round-up to current resolution (quantize) */
         arpTick/= (TPQN * minStepWidth);
         arpTick*= (TPQN * minStepWidth);
     }
