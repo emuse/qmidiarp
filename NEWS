@@ -1,3 +1,20 @@
+qmidiarp-0.4.4 (2011-12-??)
+
+New Features
+  o JACK MIDI backend doesn't require Jack Transport anymore
+
+Improvements
+  o Better usability of the sequencer loop marker
+  o Improved LFO offset slider behavior
+  o Quantization to the minimum stepwidth in Arp modules active when
+    changes in Arp patterns occur
+
+Fixed Bugs
+  o Crash on startup in JACK MIDI mode on certain systems
+  o When cloning modules, the current play direction wasn't copied
+  o Typo in english manpage
+
+
 qmidiarp-0.4.3 (2011-11-20)
 
 New Features
