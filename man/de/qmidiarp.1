@@ -46,11 +46,8 @@ QMidiArp benutzt den Qt4 Toolkit.
 
 .SS "Allgemeine Funktion"
 Wenn keine Startoptionen angegeben werden, startet QMidiArp als JACK MIDI
-client mit einem MIDI-Eingang und zwei MIDI-Ausgängen. In diesem Fall ist
-QMidiArp ein JACK-Transport Mitläufer, der von einer Transport-Master
-Anwendung abhängt, zum Beispiel Qtractor. Wird QMidiArp durch die -a
-Option als ALSA client gestartet, kann er wahlweise auch mit internem
-Timing, d.h. ohne Transportmaster laufen.
+client mit einem MIDI-Eingang und zwei MIDI-Ausgängen. Durch die -a
+Option wird QMidiArp als ALSA client gestartet.
 
 Ein neuer Arpeggiator, Sequenzer oder LFO wird erzeugt durch Klicken auf
 .B Modul-->Neuer Arp..., Modul-->Neuer Sequenzer...,
@@ -102,7 +99,7 @@ Tempo wird jedoch bei laufendem Sequenzer gemessen, sodaß ab dem
 zweiten Start die Synchronisation funktioniert, auch wenn das
 ursprüngliche Tempo nicht übereinstimmt.
 
-.SS "JACK Transport Client-Betrieb" (nur mit ALSA MIDI nötig)
+.SS "JACK Transport Client-Betrieb"
 Wird das
 .B Jack Transport Connect
 Icon angeklickt, so versucht QMidiArp eine Verbindung mit einem laufenden

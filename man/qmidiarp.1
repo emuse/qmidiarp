@@ -48,11 +48,8 @@ QMidiArp is based on the Qt4 toolkit.
 
 .SS "General Operation"
 When no commandline options are given, QMidiArp starts as a JACK MIDI
-client with an input port and two output ports. It will act as a JACK
-transport slave and therefore depend on a transport master running
-along with QMidiArp, for instance Qtractor. As ALSA client, QMidiArp can
-also run with its own clock. For starting QMidiArp as an
-ALSA client, use the -a option.
+client with an input port and two output ports. For starting QMidiArp as
+an ALSA client, use the -a option.
 A new arpeggiator or LFO module can be created by
 clicking one of the
 .B Add Arp..., Add LFO...
@@ -98,7 +95,7 @@ QMidiArp's own clock start and stop functions as well as adding or
 loading new setups are disabled. They are enabled again by
 unchecking the MIDI clock button.
 
-.SS "JACK Transport Client Operation (Always with JACK MIDI)"
+.SS "JACK Transport Client Operation"
 When the
 .B Jack Transport Connect
 button is pressed, QMidiArp will try to connect to a running Jack server

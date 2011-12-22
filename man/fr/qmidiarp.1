@@ -51,10 +51,7 @@ QMidiArp utilise les bibliothèques du kit Qt4.
 .SS "Fonctionnement Général"
 Si aucune option est spécifiée au démarrage, QMidiArp utilise devient un
 client JACK MIDI et cré un port d'entrée ainsi que deux ports de sortie.
-Dans ce cas, QMidiArp est un esclave JACK Transport et nécessite un
-programme maître, par exemple Qtractor, comme maître d'horologe. Si l'on
-démarre QMidiArp avec l'option -a, le système MIDI est ALSA, et QMidiArp
-peut utiliser son horologe interne sans dépendre d'une source externe.
+Si l'on démarre QMidiArp avec l'option -a, le système MIDI est ALSA.
 En cliquant sur les boutons
 .B Nouvel Arpège..., Nouveau LFO...
 ou
@@ -92,8 +89,7 @@ en mode MIDI Clock, les fonctions internes de start/stop ainsi que
 l'ajout ou le chargement de fichiers sont desactivées. Elles sont
 réactivées en cliquant sur le bouton MIDI Clock à nouveau.
 
-.SS "Fonctionnement en tant que client JACK Transport" (par défaut avec
-JACK MIDI)
+.SS "Fonctionnement en tant que client JACK Transport"
 Lorsqu'on appuye sur le bouton
 .B Connecter à Jack Transport,
 QMidiArp essaiera de se connecter à un serveur JACK en marche. Il
