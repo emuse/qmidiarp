@@ -213,8 +213,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
         pen.setWidth(2);
         pen.setColor(QColor(80, 250, 120));
         p.setPen(pen);
-        x = (abs(loopMarker) + .01 * (double)grooveTick
-            * (currentIndex % 2))* xscale * (int)nsteps / npoints;
+        x = abs(loopMarker) * xscale * (int)nsteps / npoints;
         xpos = SEQSCR_HMARG + x + pen.width() / 2;
         ypos = h - SEQSCR_VMARG;
         tmpval = SEQSCR_VMARG / 2;
