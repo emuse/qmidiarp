@@ -45,6 +45,7 @@ MidiSeq::MidiSeq()
     restartFlag = false;
     curLoopMode = 0;
     noteCount = 0;
+    loopMarker = 0;
 
     nOctaves = 4;
     baseOctave = 3;
