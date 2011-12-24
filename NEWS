@@ -1,4 +1,4 @@
-qmidiarp-0.4.4 (2011-12-??)
+qmidiarp-0.4.4 (2011-12-24)
 
 New Features
   o JACK MIDI backend doesn't require Jack Transport anymore
@@ -12,6 +12,7 @@ Improvements
 Fixed Bugs
   o Crash on startup in JACK MIDI mode on certain systems
   o When cloning modules, the current play direction wasn't copied
+  o Unmatched MIDI event forwarding didn't work with Arp modules
   o Typo in english manpage
 
 
