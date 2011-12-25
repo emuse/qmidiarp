@@ -375,6 +375,7 @@ void SeqDriver::setUseJackTransport(bool on)
 {
     if (on) {
         jackSync->callJack(0);
+        jackSync->useJackSync = true;
     }
     else {
         jackSync->callJack(-1);
