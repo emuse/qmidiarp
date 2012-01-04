@@ -39,6 +39,8 @@ JackDriver::JackDriver(
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
     jackRunning = false;
+    portUnmatched = 0;
+    forwardUnmatched = false;
 
     internalTempo = 120;
 
