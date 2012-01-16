@@ -22,7 +22,6 @@
  *      MA 02110-1301, USA.
  *
  */
-#include <QBoxLayout>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -35,6 +34,7 @@
 #include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
+#include <QStyle>
 #include <QTableWidget>
 #include <QTextStream>
 #include <QXmlStreamReader>
@@ -279,8 +279,10 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     addToolBar(controlToolBar);
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
-    QWidget *centWidget = new QWidget(this);
-    setCentralWidget(centWidget);
+
+    globStore = new GlobStore(engine, this);
+
+    setCentralWidget(globStore);
     setDockNestingEnabled(true);
     updateWindowTitle();
 
@@ -382,6 +384,14 @@ void MainWindow::addArp(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+
     engine->addMidiArp(midiWorker);
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
@@ -414,6 +424,14 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+
     engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
@@ -442,6 +460,14 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->manageBox->name = name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
+
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
 
     engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
@@ -474,6 +500,9 @@ void MainWindow::cloneLfo(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
     midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
     midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
     midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
@@ -508,6 +537,9 @@ void MainWindow::cloneSeq(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
     midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
     midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
     midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
@@ -532,6 +564,8 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
+    globStore->timeMode->addItem(name);
+
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)
@@ -547,6 +581,8 @@ void MainWindow::removeArp(int index)
 
     parentDockID = arpWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->timeMode->removeItem(globStore->timeMode->findText(
+                            arpWidget->manageBox->name));
 
     engine->removeMidiArp(arpWidget->getMidiWorker());
     engine->removeArpWidget(arpWidget);
@@ -563,6 +599,8 @@ void MainWindow::removeLfo(int index)
 
     parentDockID = lfoWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->timeMode->removeItem(globStore->timeMode->findText(
+                            lfoWidget->manageBox->name));
 
     engine->removeMidiLfo(lfoWidget->getMidiWorker());
     engine->removeLfoWidget(lfoWidget);
@@ -579,6 +617,8 @@ void MainWindow::removeSeq(int index)
 
     parentDockID = seqWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->timeMode->removeItem(globStore->timeMode->findText(
+                            seqWidget->manageBox->name));
 
     engine->removeMidiSeq(seqWidget->getMidiWorker());
     engine->removeSeqWidget(seqWidget);
@@ -606,6 +646,10 @@ void MainWindow::clear()
     }
 
     grooveWidget->midiControl->ccList.clear();
+
+    for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
+        globStore->remove(l1);
+    }
 }
 
 void MainWindow::fileNew()
@@ -742,6 +786,9 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
 
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
 {
+    int count = 0;
+
+
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())
@@ -750,16 +797,34 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             addArp("Arp:" + xml.attributes().value("name").toString());
             engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->arpWidget(0)->parStore->list.count(); l1++) {
+                    globStore->add();
+                }
+            }
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             addLfo("LFO:" + xml.attributes().value("name").toString());
             engine->lfoWidget(engine->midiLfoCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->lfoWidget(0)->parStore->list.count(); l1++) {
+                    globStore->add();
+                }
+            }
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             addSeq("Seq:" + xml.attributes().value("name").toString());
             engine->seqWidget(engine->midiSeqCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->seqWidget(0)->parStore->list.count(); l1++) {
+                    globStore->add();
+                }
+            }
         }
         else skipXmlElement(xml);
     }

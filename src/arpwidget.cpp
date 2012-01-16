@@ -48,6 +48,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
+
+    parStore = new ParStore();
+
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "PresetSwitch" << "unknown";
     midiControl = new MidiControl(midiCCNames);
@@ -847,6 +850,54 @@ void ArpWidget::setModified(bool m)
 {
     modified = m;
     midiControl->setModified(m);
+}
+
+void ArpWidget::storeParams(int ix, bool empty)
+{
+    parStore->temp.empty = empty;
+    parStore->temp.muteOut = muteOut->isChecked();
+    parStore->temp.chIn = chIn->currentIndex();
+    parStore->temp.channelOut = channelOut->currentIndex();
+    parStore->temp.portOut = portOut->currentIndex();
+    parStore->temp.indexIn0 = indexIn[0]->value();
+    parStore->temp.indexIn1 = indexIn[1]->value();
+    parStore->temp.rangeIn0 = rangeIn[0]->value();
+    parStore->temp.rangeIn1 = rangeIn[1]->value();
+    parStore->temp.attack = attackTime->value();
+    parStore->temp.release = releaseTime->value();
+    parStore->temp.rndTick = randomTick->value();
+    parStore->temp.rndLen = randomLength->value();
+    parStore->temp.rndVel = randomVelocity->value();
+    parStore->temp.pattern = patternText->text();
+    parStore->temp.repeatMode = repeatPatternThroughChord->currentIndex();
+    parStore->tempToList(ix);
+}
+
+void ArpWidget::restoreParams(int ix)
+{
+    if (parStore->list.at(ix).empty) return;
+    patternText->setText(parStore->list.at(ix).pattern);
+    repeatPatternThroughChord->setCurrentIndex(parStore->list.at(ix).repeatMode);
+    updateRepeatPattern(parStore->list.at(ix).repeatMode);
+    indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
+    indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
+    rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
+    rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
+    attackTime->setValue(parStore->list.at(ix).attack);
+    releaseTime->setValue(parStore->list.at(ix).release);
+    randomTick->setValue(parStore->list.at(ix).rndTick);
+    randomLength->setValue(parStore->list.at(ix).rndLen);
+    randomVelocity->setValue(parStore->list.at(ix).rndVel);
+
+    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+    updateChIn(parStore->list.at(ix).chIn);
+    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+    updateChannelOut(parStore->list.at(ix).channelOut);
+    setPortOut(parStore->list.at(ix).portOut);
+    updatePortOut(parStore->list.at(ix).portOut);
+
+    midiWorker->advancePatternIndex(true);
 }
 
 void ArpWidget::handleController(int ccnumber, int channel, int value)

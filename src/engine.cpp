@@ -63,6 +63,13 @@ Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, Q
     sendLogEvents = false;
     useMidiClock = false;
 
+    globRestoreRequest = -1;
+    globRestoreModIx = 0;
+    // we happen to need this QSignal for triggering global parameter restores from
+    // within the echo callback. Direct calls to the module widgets were shown to
+    // cause frequent segfaults
+    connect(this, SIGNAL(globRestoreSig(int)), this, SLOT(globRestore(int)));
+
     resetTicks(0);
     ready = true;
 }
@@ -425,6 +432,7 @@ void Engine::echoCallback(bool echo_from_trig)
     int note_tick = 0;
     int length;
     int outport;
+    int frameptr;
     bool isNew;
     MidiEvent outEv;
 
@@ -446,7 +454,8 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_CONTROLLER;
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
-                    lfoWidget(l1)->screen->updateScreen(lfoWidget(l1)->getFramePtr());
+                    frameptr = lfoWidget(l1)->getFramePtr();
+                    lfoWidget(l1)->screen->updateScreen(frameptr);
                     midiLfo(l1)->getNextFrame(&lfoData, tick);
                     outport = midiLfo(l1)->portOut;
                     if (!midiLfo(l1)->isMuted) {
@@ -460,6 +469,12 @@ void Engine::echoCallback(bool echo_from_trig)
                             l2++;
                         }
                     }
+                }
+            }
+            if (globRestoreRequest >= 0) {
+                if ((globRestoreModType == 'L') && (l1 == globRestoreModIx)) {
+                    frameptr = lfoWidget(l1)->getFramePtr();
+                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
                 }
             }
             if (!l1)
@@ -488,6 +503,12 @@ void Engine::echoCallback(bool echo_from_trig)
                         outEv.data = seqSample.value;
                         driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                     }
+                }
+            }
+            if (globRestoreRequest >= 0) {
+                if ((globRestoreModType == 'S') && (l1 == globRestoreModIx)) {
+                    frameptr = seqWidget(l1)->getCurrentIndex();
+                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
                 }
             }
             if (!l1)
@@ -526,6 +547,12 @@ void Engine::echoCallback(bool echo_from_trig)
                             }
                         }
                     }
+                }
+            }
+            if (globRestoreRequest >= 0) {
+                if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)) {
+                    frameptr = arpWidget(l1)->getGrooveIndex();
+                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
                 }
             }
             if (!l1)
@@ -707,6 +734,73 @@ void Engine::tr_state_cb(bool on, void *context)
     if  (((Engine  *)context)->ready) {
         if (((Engine  *)context)->driver->useJackSync) {
            ((Engine  *)context)->setStatus(on);
+        }
+    }
+}
+
+void Engine::globStore(int ix)
+{
+    int l1;
+
+    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+        arpWidget(l1)->storeParams(ix);
+    }
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+        lfoWidget(l1)->storeParams(ix);
+    }
+    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+        seqWidget(l1)->storeParams(ix);
+    }
+}
+
+void Engine::requestGlobRestore(int ix)
+{
+    if (status == false) {
+        globRestore(ix);
+    }
+    else {
+        globRestoreRequest = ix;
+    }
+}
+
+void Engine::globRestore(int ix)
+{
+    int l1;
+    qWarning("Restoring from index %d", ix);
+    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+        arpWidget(l1)->restoreParams(ix);
+    }
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+        lfoWidget(l1)->restoreParams(ix);
+    }
+    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+        seqWidget(l1)->restoreParams(ix);
+    }
+    globRestoreRequest = -1;
+}
+
+void Engine::updateGlobRestoreTimeMode(const QString& name)
+{
+    int l1;
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        if (arpWidget(l1)->manageBox->name == name) {
+            globRestoreModIx = l1;
+            globRestoreModType = 'A';
+           return;
+        }
+    }
+    for (l1 = 0; l1 < midiLfoCount(); l1++) {
+        if (lfoWidget(l1)->manageBox->name == name) {
+            globRestoreModIx = l1;
+            globRestoreModType = 'L';
+            return;
+        }
+    }
+    for (l1 = 0; l1 < midiSeqCount(); l1++) {
+        if (seqWidget(l1)->manageBox->name == name) {
+            globRestoreModIx = l1;
+            globRestoreModType = 'S';
+            return;
         }
     }
 }

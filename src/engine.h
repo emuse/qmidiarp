@@ -68,6 +68,9 @@ class Engine : public QThread  {
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midiLearnFlag;
     bool useMidiClock;
+    int globRestoreRequest;
+    int globRestoreModIx;
+    QChar globRestoreModType;
 
     //From SeqDriver
     int schedDelayTicks;
@@ -133,6 +136,10 @@ class Engine : public QThread  {
     int getClientId();
     void setTempo(int bpm);
 
+    void globStore(int ix);
+    void requestGlobRestore(int ix);
+    void updateGlobRestoreTimeMode(const QString& name);
+
   signals:
 /**
  * @brief This signal is connected to the LogWidget::appendEvent() slot
@@ -141,6 +148,7 @@ class Engine : public QThread  {
  * @param tick Set to the tick value at which the event was received
  */
     void midiEventReceived(MidiEvent ev, int tick);
+    void globRestoreSig(int ix);
 
   public slots:
     void setStatus(bool);
@@ -166,6 +174,7 @@ class Engine : public QThread  {
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
+    void globRestore(int ix);
 };
 
 #endif

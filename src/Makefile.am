@@ -14,6 +14,7 @@ nodist_qmidiarp_SOURCES = \
 	managebox_moc.cpp \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
+	globstore_moc.cpp \
 	logwidget_moc.cpp \
 	midiarp_moc.cpp \
 	midilfo_moc.cpp \
@@ -21,6 +22,7 @@ nodist_qmidiarp_SOURCES = \
 	midicctable_moc.cpp \
 	midicontrol_moc.cpp \
 	passwidget_moc.cpp \
+	parstore_moc.cpp \
 	jackdriver_moc.cpp \
 	seqdriver_moc.cpp \
 	slider_moc.cpp
@@ -36,6 +38,7 @@ qmidiarp_SOURCES = \
 	managebox.cpp managebox.h \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
+	globstore.cpp globstore.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
 	midiarp.cpp midiarp.h \
@@ -45,6 +48,7 @@ qmidiarp_SOURCES = \
 	midicontrol.cpp midicontrol.h \
 	midievent.h \
 	driverbase.h \
+	parstore.cpp parstore.h \
 	passwidget.cpp passwidget.h \
 	jackdriver.cpp jackdriver.h \
 	seqdriver.cpp seqdriver.h \

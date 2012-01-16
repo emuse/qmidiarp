@@ -28,7 +28,9 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QBoxLayout>
 #include <QCloseEvent>
+#include <QComboBox>
 #include <QDockWidget>
 #include <QMessageBox>
 #include <QMainWindow>
@@ -39,6 +41,7 @@
 #include "engine.h"
 #include "midicctable.h"
 #include "passwidget.h"
+#include "globstore.h"
 #include "groovewidget.h"
 #include "config.h"
 
@@ -79,6 +82,7 @@ class MainWindow : public QMainWindow
     PassWidget *passWidget;
     GrooveWidget *grooveWidget;
     LogWidget *logWidget;
+    GlobStore *globStore;
     Engine *engine;
     MidiCCTable *midiCCTable;
     QString lastDir, filename;
@@ -131,7 +135,6 @@ class MainWindow : public QMainWindow
 *
 */
     bool isModified();
-
 /*!
 * @brief This function creates and adds a new MidiArp to Engine.
 *
@@ -428,12 +431,18 @@ class MainWindow : public QMainWindow
 */
     void removeSeq(int index);
 /*!
-* @brief This function duplicates and adds a MidiSeq to the Engine.
+* @brief This function duplicates and adds a MidiLfo to the Engine.
 *
 * @param ID List ID of the module to copy
 */
     void cloneLfo(int ID);
+/*!
+* @brief This function duplicates and adds a MidiSeq to the Engine.
+*
+* @param ID List ID of the module to copy
+*/
     void cloneSeq(int ID);
+
     void helpAbout();
     void helpAboutQt();
 /*! @brief Slot for tempo spinBox changes.

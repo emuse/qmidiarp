@@ -40,6 +40,7 @@
 #include "lfoscreen.h"
 #include "midicontrol.h"
 #include "managebox.h"
+#include "parstore.h"
 
 /*! This array holds the currently available resolution values.
  */
@@ -120,6 +121,7 @@ class LfoWidget : public QWidget
             bool mutedAdd = false, QWidget* parent=0);
     ~LfoWidget();
 
+    ParStore *parStore;
     MidiControl *midiControl;
     LfoScreen *screen;
     ManageBox *manageBox;
@@ -163,6 +165,20 @@ class LfoWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void storeParams(int ix, bool empty = false);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void restoreParams(int ix);
 /*!
 * @brief This function copies all LFO module GUI parameters from
 * fromWidget

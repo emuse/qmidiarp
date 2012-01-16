@@ -183,17 +183,6 @@ class MidiArp : public QWidget  {
  */
     void removeNote(int *noteptr, int tick, int keep_rel);
 /**
- * @brief This function calculates the index of the next arpeggio
- * step and revolves it if necessary.
- *
- * The next step depends on the MidiArp::repeatPatternThrough chord mode.
- * The pattern index can be simply reset to zero if the reset flag is
- * set to True.
- * @param reset Set to True in order to set the pattern index to zero
- * @return True if the pattern index is now zero
- */
-    bool advancePatternIndex(bool reset);
-/**
  * @brief This function removes a note inside the MidiArp::notes input
  * note buffer.
  *
@@ -265,6 +254,17 @@ class MidiArp : public QWidget  {
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
+/**
+ * @brief This function calculates the index of the next arpeggio
+ * step and revolves it if necessary.
+ *
+ * The next step depends on the MidiArp::repeatPatternThrough chord mode.
+ * The pattern index can be simply reset to zero if the reset flag is
+ * set to True.
+ * @param reset Set to True in order to set the pattern index to zero
+ * @return True if the pattern index is now zero
+ */
+    bool advancePatternIndex(bool reset);
 /**
  * @brief This function does the actions related to a newly received event.
  *
