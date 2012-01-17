@@ -128,6 +128,7 @@ void GlobStore::add()
         widgetList.last()->layout()->itemAt(0)->widget()->setEnabled(true);
     }
     widgetList.append(globWidget);
+    updateTimeMode(0);
 
 }
 
