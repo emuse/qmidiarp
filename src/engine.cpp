@@ -551,7 +551,7 @@ void Engine::echoCallback(bool echo_from_trig)
             }
             if (globRestoreRequest >= 0) {
                 if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)) {
-                    frameptr = arpWidget(l1)->getGrooveIndex();
+                    frameptr = arpWidget(l1)->getGrooveIndex() - 1;
                     if (!frameptr) emit globRestoreSig(globRestoreRequest);
                 }
             }

@@ -30,7 +30,7 @@ ParStore::ParStore()
     // when temp.empty is true, restoring from that set is ignored
     temp.empty = false;
     temp.muteOut = false;
-    temp.res = 0;
+    temp.res = 1;
     temp.size = 0;
     temp.loopMode = 0;
     temp.waveForm = 0;
@@ -110,7 +110,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("dispVertical", QString::number(list.at(ix).dispVertical));
             xml.writeTextElement("transp", QString::number(list.at(ix).transp));
             xml.writeTextElement("indexIn0", QString::number(list.at(ix).indexIn0));
-            xml.writeTextElement("indexIn1", QString::number(list.at(ix).indexIn0));
+            xml.writeTextElement("indexIn1", QString::number(list.at(ix).indexIn1));
             xml.writeTextElement("rangeIn0", QString::number(list.at(ix).rangeIn0));
             xml.writeTextElement("rangeIn1", QString::number(list.at(ix).rangeIn1));
             xml.writeTextElement("attack", QString::number(list.at(ix).attack));
