@@ -457,6 +457,8 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
 
         midiControl->writeData(xml);
 
+        parStore->writeData(xml);
+
     xml.writeEndElement();
 }
 
@@ -555,6 +557,9 @@ void ArpWidget::readData(QXmlStreamReader& xml)
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
             midiControl->readData(xml);
+        }
+        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+            parStore->readData(xml);
         }
         else skipXmlElement(xml);
     }
