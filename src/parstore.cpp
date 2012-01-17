@@ -88,7 +88,6 @@ void ParStore::writeData(QXmlStreamWriter& xml)
     xml.writeStartElement("globalStores");
 
     for (int ix = 0; ix < list.size(); ix++) {
-        qWarning("Writing globalStore %d", ix);
         xml.writeStartElement("parStore");
         xml.writeAttribute("ID", QString::number(ix));
             xml.writeTextElement("empty", QString::number(list.at(ix).empty));
@@ -263,7 +262,6 @@ void ParStore::readData(QXmlStreamReader& xml)
             }
             tempToList(ix);
             ix++;
-            qWarning("Global storage appended to List");
         }
     }
 }

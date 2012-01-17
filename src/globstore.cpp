@@ -54,8 +54,20 @@ GlobStore::GlobStore(Engine *p_engine, QWidget *parent)
     rowLayout = new QHBoxLayout();
     rowLayout->addLayout(timeModeLayout);
 
+    QAction* removeStoreAction = new QAction(tr("&Remove"), this);
+    QToolButton *removeStoreButton = new QToolButton(this);
+    removeStoreButton->setDefaultAction(removeStoreAction);
+    removeStoreButton->setFixedSize(20, 60);
+    removeStoreButton->setArrowType (Qt::ArrowType(3));
+    connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(remove()));
+
+    QVBoxLayout *rmStoreLayout = new QVBoxLayout();
+    rmStoreLayout->addWidget(removeStoreButton);
+    rmStoreLayout->addStretch();
+
     QHBoxLayout *centLayout = new QHBoxLayout();
     centLayout->addLayout(rowLayout);
+    centLayout->addLayout(rmStoreLayout);
     centLayout->addStretch();
     add();
 
@@ -69,10 +81,8 @@ GlobStore::~GlobStore()
 
 void GlobStore::store(int ix)
 {
-    qWarning("Storing to index %d", ix);
     engine->globStore(ix);
     if (ix >= (widgetList.count() - 1)) {
-        qWarning("Adding store/restore group %d", ix);
         add();
     }
 }
@@ -80,7 +90,6 @@ void GlobStore::store(int ix)
 void GlobStore::restore(int ix)
 {
     if (ix < (widgetList.count() - 1)) {
-        qWarning("Requesting restore from index %d", ix);
         engine->requestGlobRestore(ix);
     }
 }
@@ -94,6 +103,7 @@ void GlobStore::add()
     restoreAction->setText(QString::number(widgetList.count() + 1));
     //restoreButton->setStyleSheet("QToolButton { font: 22pt; background-color: rgba(50, 255, 50, 50%); }");
     restoreAction->setFont(QFont("Helvetica", 22));
+    restoreAction->setDisabled(true);
     connect(restoreAction, SIGNAL(triggered()), restoreSignalMapper, SLOT(map()));
     restoreSignalMapper->setMapping(restoreAction, widgetList.count());
 
@@ -114,13 +124,24 @@ void GlobStore::add()
     globWidget->setLayout(globLayout);
 
     rowLayout->addWidget(globWidget);
+    if (widgetList.count()) {
+        widgetList.last()->layout()->itemAt(0)->widget()->setEnabled(true);
+    }
     widgetList.append(globWidget);
+
 }
 
 void GlobStore::remove(int ix)
 {
-    QWidget* globWidget = widgetList.takeAt(ix);
-    delete globWidget;
+    if (ix == -1) ix = widgetList.count() - 1;
+    if (ix < 0) return;
+
+    engine->removeParStores(ix - 1);
+    if (widgetList.count() > 1) {
+        QWidget* globWidget = widgetList.takeAt(ix);
+        delete globWidget;
+    }
+    widgetList.last()->layout()->itemAt(0)->widget()->setDisabled(true);
 }
 
 void GlobStore::updateTimeMode(int ix)

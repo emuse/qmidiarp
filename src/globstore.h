@@ -66,15 +66,16 @@ class GlobStore : public QGroupBox
 *  storage and retrieval buttons
 */
     void add();
+
+  public slots:
 /*!
 * @brief This function removes the group of global parameter
 *  storage and retrieval buttons at index ix
 *
-* @param ix integer specifying the index at which the group is removed
+* @param ix Index at which the group is removed, if ix is -1, the last
+* group is removed
 */
-    void remove(int ix);
-
-  public slots:
+    void remove(int ix = -1);
 /*!
 * @brief This function causes all module widgets to store their current
 * parameters in a global parameter store list setup in each module widget.

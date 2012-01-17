@@ -175,6 +175,7 @@ class Engine : public QThread  {
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
     void globRestore(int ix);
+    void removeParStores(int ix);
 };
 
 #endif

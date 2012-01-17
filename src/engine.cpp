@@ -766,7 +766,6 @@ void Engine::requestGlobRestore(int ix)
 void Engine::globRestore(int ix)
 {
     int l1;
-    qWarning("Restoring from index %d", ix);
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->restoreParams(ix);
     }
@@ -777,6 +776,20 @@ void Engine::globRestore(int ix)
         seqWidget(l1)->restoreParams(ix);
     }
     globRestoreRequest = -1;
+}
+
+void Engine::removeParStores(int ix)
+{
+    int l1;
+    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+        arpWidget(l1)->parStore->list.removeAt(ix);
+    }
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+        lfoWidget(l1)->parStore->list.removeAt(ix);
+    }
+    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+        seqWidget(l1)->parStore->list.removeAt(ix);
+    }
 }
 
 void Engine::updateGlobRestoreTimeMode(const QString& name)
