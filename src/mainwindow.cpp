@@ -670,6 +670,7 @@ void MainWindow::clear()
     for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
         globStore->remove(l1);
     }
+    globStore->setDispState(0, 0);
 }
 
 void MainWindow::fileNew()
