@@ -1,3 +1,10 @@
+qmidiarp-0.4.5 (2012-01-21)
+
+Fixed Bugs
+  o JACK Transport start with ALSA backend was broken in 0.4.4
+  o Event forwarding port index was uninitialized in JACK MIDI backend
+
+
 qmidiarp-0.4.4 (2011-12-24)
 
 New Features
