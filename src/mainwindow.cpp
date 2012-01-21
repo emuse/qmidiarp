@@ -217,7 +217,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
-    QAction* viewGlobAction = new QAction(tr("&Global Store"), this);
+    viewGlobAction = new QAction(tr("&Global Store"), this);
     viewGlobAction->setCheckable(true);
     viewGlobAction->setIcon(QIcon(globtog_xpm));
     viewGlobAction->setShortcut(QKeySequence(tr("Ctrl+$",
@@ -1180,6 +1180,8 @@ void MainWindow::readRcFile()
                 logWidget->logMidiClock->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#GUIState"))
                 restoreState(QByteArray::fromHex(value.at(1).toUtf8()));
+            else if ((value.at(0) == "#GlobStoreVisible"))
+                viewGlobAction->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LastDir"))
                 lastDir = value.at(1);
             else if ((value.at(0) == "#RecentFile"))
@@ -1220,6 +1222,8 @@ void MainWindow::writeRcFile()
     writeText << logWidget->logMidiClock->isChecked() << endl;
     writeText << "#GUIState%";
     writeText << saveState().toHex() << endl;
+    writeText << "#GlobStoreVisible%";
+    writeText << viewGlobAction->isChecked() << endl;
 
     writeText << "#LastDir%";
     writeText << lastDir << endl;
