@@ -37,6 +37,7 @@
 #include "midiseq.h"
 #include "seqwidget.h"
 #include "groovewidget.h"
+#include "globstore.h"
 
 /*!
  * @brief Core Engine Thread. Instantiates SeqDriver and JackDriver.
@@ -90,12 +91,13 @@ class Engine : public QThread  {
     bool midiControllable;
     bool status;
     bool ready;
+    GlobStore *globStoreWidget;
     GrooveWidget *grooveWidget;
     JackDriver *jackSync;
     DriverBase *driver;
 
   public:
-    Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
+    Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
     ~Engine();
     int getPortCount();
     bool isModified();
@@ -136,10 +138,6 @@ class Engine : public QThread  {
     int getClientId();
     void setTempo(int bpm);
 
-    void globStore(int ix);
-    void requestGlobRestore(int ix);
-    void updateGlobRestoreTimeMode(const QString& name);
-
   signals:
 /**
  * @brief This signal is connected to the LogWidget::appendEvent() slot
@@ -149,6 +147,7 @@ class Engine : public QThread  {
  */
     void midiEventReceived(MidiEvent ev, int tick);
     void globRestoreSig(int ix);
+    void indicPercent(int p);
 
   public slots:
     void setStatus(bool);
@@ -174,8 +173,13 @@ class Engine : public QThread  {
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
+
     void globRestore(int ix);
     void removeParStores(int ix);
+    void globStore(int ix);
+    void requestGlobRestore(int ix);
+    void updateGlobRestoreTimeMode(const QString& name);
+
 };
 
 #endif

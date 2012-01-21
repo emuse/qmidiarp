@@ -15,6 +15,7 @@ nodist_qmidiarp_SOURCES = \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
 	globstore_moc.cpp \
+	indicator_moc.cpp \
 	logwidget_moc.cpp \
 	midiarp_moc.cpp \
 	midilfo_moc.cpp \
@@ -39,6 +40,7 @@ qmidiarp_SOURCES = \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
 	globstore.cpp globstore.h \
+	indicator.cpp indicator.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
 	midiarp.cpp midiarp.h \

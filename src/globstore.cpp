@@ -22,16 +22,16 @@
  *      MA 02110-1301, USA.
  *
  */
+#include <QAction>
 #include <QLabel>
 #include <QToolButton>
 
 #include "globstore.h"
 #include "pixmaps/filesave.xpm"
 
-GlobStore::GlobStore(Engine *p_engine, QWidget *parent)
+GlobStore::GlobStore(QWidget *parent)
             : QGroupBox(tr("Global Storage"), parent)
 {
-    engine = p_engine;
 
     storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
@@ -45,9 +45,19 @@ GlobStore::GlobStore(Engine *p_engine, QWidget *parent)
     connect(timeMode, SIGNAL(activated(int)),
              this, SLOT(updateTimeMode(int)));
 
+    QWidget *indicatorBox = new QWidget(this);
+    QHBoxLayout *indicatorLayout = new QHBoxLayout;
+    indicator = new Indicator(30, this);
+    indicatorBox->setMinimumHeight(40);
+    indicatorLayout->addWidget(indicator);
+    indicatorLayout->setMargin(2);
+    indicatorLayout->setSpacing(1);
+    indicatorBox->setLayout(indicatorLayout);
+
     QVBoxLayout *timeModeLayout = new QVBoxLayout();
     timeModeLayout->addWidget(timeModeLabel);
     timeModeLayout->addWidget(timeMode);
+    timeModeLayout->addWidget(indicatorBox);
     timeModeLayout->setSpacing(0);
     timeModeLayout->addStretch();
 
@@ -81,7 +91,7 @@ GlobStore::~GlobStore()
 
 void GlobStore::store(int ix)
 {
-    engine->globStore(ix);
+    emit globStore(ix);
     if (ix >= (widgetList.count() - 1)) {
         add();
     }
@@ -90,7 +100,7 @@ void GlobStore::store(int ix)
 void GlobStore::restore(int ix)
 {
     if (ix < (widgetList.count() - 1)) {
-        engine->requestGlobRestore(ix);
+        emit requestGlobRestore(ix);
     }
 }
 
@@ -137,7 +147,7 @@ void GlobStore::remove(int ix)
     if (ix == -1) ix = widgetList.count() - 1;
     if (ix < 0) return;
 
-    engine->removeParStores(ix - 1);
+    emit removeParStores(ix - 1);
     if (widgetList.count() > 1) {
         QWidget* globWidget = widgetList.takeAt(ix);
         delete globWidget;
@@ -148,5 +158,5 @@ void GlobStore::remove(int ix)
 void GlobStore::updateTimeMode(int ix)
 {
     (void)ix;
-    engine->updateGlobRestoreTimeMode(timeMode->currentText());
+    emit updateGlobRestoreTimeMode(timeMode->currentText());
 }

@@ -84,9 +84,19 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+    globStore = new GlobStore(this);
 
-    engine = new Engine(grooveWidget, p_portCount, alsaMidi, this);
+    engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (!alsaMidi) connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
+
+    connect(globStore, SIGNAL(globStore(int)), engine,
+            SLOT(globStore(int)));
+    connect(globStore, SIGNAL(requestGlobRestore(int)), engine,
+            SLOT(requestGlobRestore(int)));
+    connect(globStore, SIGNAL(updateGlobRestoreTimeMode(const QString&)), engine,
+            SLOT(updateGlobRestoreTimeMode(const QString&)));
+    connect(globStore, SIGNAL(removeParStores(int)), engine,
+            SLOT(removeParStores(int)));
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -280,7 +290,6 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
 
-    globStore = new GlobStore(engine, this);
 
     setCentralWidget(globStore);
     setDockNestingEnabled(true);

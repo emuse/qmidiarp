@@ -29,9 +29,10 @@
 #include "engine.h"
 
 
-Engine::Engine(GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
+Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
     ready = false;
+    globStoreWidget = p_globStore;
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -433,6 +434,7 @@ void Engine::echoCallback(bool echo_from_trig)
     int length;
     int outport;
     int frameptr;
+    int percent;
     bool isNew;
     MidiEvent outEv;
 
@@ -469,12 +471,13 @@ void Engine::echoCallback(bool echo_from_trig)
                             l2++;
                         }
                     }
-                }
-            }
-            if (globRestoreRequest >= 0) {
-                if ((globRestoreModType == 'L') && (l1 == globRestoreModIx)) {
-                    frameptr = lfoWidget(l1)->getFramePtr();
-                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
+                    if ((globRestoreModType == 'L') && (l1 == globRestoreModIx)
+                            ) {
+                        frameptr = midiLfo(l1)->getFramePtr();
+                        percent = frameptr * 100 / ((midiLfo(l1)->res * midiLfo(l1)->size));
+                        globStoreWidget->indicator->updatePercent(percent);
+                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                    }
                 }
             }
             if (!l1)
@@ -503,12 +506,13 @@ void Engine::echoCallback(bool echo_from_trig)
                         outEv.data = seqSample.value;
                         driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                     }
-                }
-            }
-            if (globRestoreRequest >= 0) {
-                if ((globRestoreModType == 'S') && (l1 == globRestoreModIx)) {
-                    frameptr = seqWidget(l1)->getCurrentIndex();
-                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
+                    if ((globRestoreModType == 'S') && (l1 == globRestoreModIx)
+                            ) {
+                        frameptr = midiSeq(l1)->getCurrentIndex();
+                        percent = frameptr * 100 / ((midiSeq(l1)->res * midiSeq(l1)->size));
+                        globStoreWidget->indicator->updatePercent(percent);
+                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                    }
                 }
             }
             if (!l1)
@@ -547,12 +551,14 @@ void Engine::echoCallback(bool echo_from_trig)
                             }
                         }
                     }
-                }
-            }
-            if (globRestoreRequest >= 0) {
-                if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)) {
-                    frameptr = arpWidget(l1)->getGrooveIndex() - 1;
-                    if (!frameptr) emit globRestoreSig(globRestoreRequest);
+                    if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)
+                            ) {
+                        frameptr = midiArp(l1)->getGrooveIndex() - 1;
+                        //TODO: Need number of pattern steps in Arps
+                        percent = frameptr;
+                        globStoreWidget->indicator->updatePercent(percent);
+                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                    }
                 }
             }
             if (!l1)
@@ -741,7 +747,7 @@ void Engine::tr_state_cb(bool on, void *context)
 void Engine::globStore(int ix)
 {
     int l1;
-
+    qWarning("storing to index %d", ix);
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->storeParams(ix);
     }

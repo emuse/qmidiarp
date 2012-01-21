@@ -28,10 +28,12 @@
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QGroupBox>
 #include <QList>
 #include <QSignalMapper>
+#include <QString>
 
-#include "engine.h"
+#include "indicator.h"
 
 /*!
  * The GlobStore class is a small QGroupBox UI that allows storing
@@ -48,17 +50,16 @@ class GlobStore : public QGroupBox
   Q_OBJECT
 
   private:
-    Engine *engine;
-
     QSignalMapper *storeSignalMapper;
     QSignalMapper *restoreSignalMapper;
     QHBoxLayout* rowLayout;
 
   public:
-    GlobStore(Engine* engine, QWidget* parent=0);
+    GlobStore(QWidget* parent=0);
     ~GlobStore();
 
     QComboBox *timeMode;
+    Indicator *indicator;
     QList<QWidget*> widgetList;
 
 /*!
@@ -66,6 +67,13 @@ class GlobStore : public QGroupBox
 *  storage and retrieval buttons
 */
     void add();
+
+  signals:
+
+  void globStore(int);
+  void requestGlobRestore(int);
+  void updateGlobRestoreTimeMode(const QString&);
+  void removeParStores(int);
 
   public slots:
 /*!
