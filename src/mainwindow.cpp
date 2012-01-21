@@ -54,6 +54,7 @@
 #include "pixmaps/seqadd.xpm"
 #include "pixmaps/settings.xpm"
 #include "pixmaps/eventlog.xpm"
+#include "pixmaps/globtog.xpm"
 #include "pixmaps/groovetog.xpm"
 #include "pixmaps/play.xpm"
 #include "pixmaps/midiclock.xpm"
@@ -216,6 +217,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
+    QAction* viewGlobAction = new QAction(tr("&Global Store"), this);
+    viewGlobAction->setCheckable(true);
+    viewGlobAction->setIcon(QIcon(globtog_xpm));
+    viewGlobAction->setShortcut(QKeySequence(tr("Ctrl+$",
+                    "View|GlobalStore")));
+    connect(viewGlobAction, SIGNAL(toggled(bool)), globStore, SLOT(setVisible(bool)));
+    viewGlobAction->setChecked(true);
+
     QMenuBar *menuBar = new QMenuBar;
     QMenu *fileMenu = new QMenu(tr("&File"), this);
     QMenu *viewMenu = new QMenu(tr("&View"), this);
@@ -239,6 +248,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
+    viewMenu->addAction(viewGlobAction);
     viewMenu->addAction(tr("&MIDI Controllers..."),
             this, SLOT(showMidiCCDialog()));
 
@@ -265,6 +275,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
     controlToolBar->addAction(viewLogAction);
     controlToolBar->addAction(viewGrooveAction);
+    controlToolBar->addAction(viewGlobAction);
     controlToolBar->addSeparator();
     controlToolBar->addAction(addArpAction);
     controlToolBar->addAction(addLfoAction);

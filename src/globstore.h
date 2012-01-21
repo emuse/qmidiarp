@@ -25,6 +25,7 @@
 #ifndef GLOBSTORE_H
 #define GLOBSTORE_H
 
+#include <QAction>
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QDialogButtonBox>
