@@ -32,7 +32,7 @@
 GlobStore::GlobStore(QWidget *parent)
             : QGroupBox(tr("Global Storage"), parent)
 {
-
+    activeStore = 0;
     storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(store(int)));
@@ -100,6 +100,7 @@ void GlobStore::store(int ix)
 void GlobStore::restore(int ix)
 {
     if (ix < (widgetList.count() - 1)) {
+        setDispState(ix, 2);
         emit requestGlobRestore(ix);
     }
 }
@@ -159,4 +160,19 @@ void GlobStore::updateTimeMode(int ix)
 {
     (void)ix;
     emit updateGlobRestoreTimeMode(timeMode->currentText());
+}
+
+void GlobStore::setDispState(int ix, int selected)
+{
+    if (selected == 1) {
+        widgetList.at(activeStore)->layout()->itemAt(0)->widget()->
+        setStyleSheet("QToolButton {  }");
+        widgetList.at(ix)->layout()->itemAt(0)->widget()->
+        setStyleSheet("QToolButton { background-color: rgba(50, 255, 50, 20%); }");
+        activeStore = ix;
+    }
+    else if (selected == 2) {
+        widgetList.at(ix)->layout()->itemAt(0)->widget()->
+        setStyleSheet("QToolButton { background-color: rgba(255, 255, 50, 20%); }");
+    }
 }

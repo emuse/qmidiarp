@@ -54,6 +54,7 @@ class GlobStore : public QGroupBox
     QSignalMapper *storeSignalMapper;
     QSignalMapper *restoreSignalMapper;
     QHBoxLayout* rowLayout;
+    int activeStore;
 
   public:
     GlobStore(QWidget* parent=0);
@@ -110,6 +111,7 @@ class GlobStore : public QGroupBox
 * @param ix Index in the module window store list, i.e. the dockWidget list
 */
     void updateTimeMode(int ix);
+    void setDispState(int ix, int selected);
 };
 
 #endif

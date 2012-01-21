@@ -781,6 +781,7 @@ void Engine::globRestore(int ix)
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
         seqWidget(l1)->restoreParams(ix);
     }
+    globStoreWidget->setDispState(ix, 1);
     globRestoreRequest = -1;
 }
 
