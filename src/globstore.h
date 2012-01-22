@@ -61,9 +61,12 @@ class GlobStore : public QGroupBox
     GlobStore(QWidget* parent=0);
     ~GlobStore();
 
-    QComboBox *timeMode;
+    QComboBox *timeModuleBox;
+    QComboBox *timeModeBox;
+    QComboBox *switchAtBeatBox;
     Indicator *indicator;
     QList<QWidget*> widgetList;
+    int switchAtBeat;
 
 /*!
 * @brief This function creates and adds a new group of global parameter
@@ -111,7 +114,9 @@ class GlobStore : public QGroupBox
 *
 * @param ix Index in the module window store list, i.e. the dockWidget list
 */
-    void updateTimeMode(int ix);
+    void updateTimeModule(int ix);
+    void updateTimeModeBox(int ix);
+    void updateSwitchAtBeat(int ix);
     void setDispState(int ix, int selected);
 };
 

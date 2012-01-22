@@ -63,6 +63,9 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     status = false;
     sendLogEvents = false;
     useMidiClock = false;
+    currentTick = 0;
+    switchTick = 0;
+    requestTick = 0;
 
     globRestoreRequest = -1;
     globRestoreModIx = 0;
@@ -438,6 +441,8 @@ void Engine::echoCallback(bool echo_from_trig)
     bool isNew;
     MidiEvent outEv;
 
+    currentTick = tick;
+
     note.clear();
     velocity.clear();
 
@@ -472,7 +477,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         }
                     }
                     if ((globRestoreModType == 'L') && (l1 == globRestoreModIx)
-                            ) {
+                            && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiLfo(l1)->getFramePtr();
                         percent = frameptr * 100 / ((midiLfo(l1)->res * midiLfo(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
@@ -507,7 +512,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                     }
                     if ((globRestoreModType == 'S') && (l1 == globRestoreModIx)
-                            ) {
+                          && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiSeq(l1)->getCurrentIndex();
                         percent = frameptr * 100 / ((midiSeq(l1)->res * midiSeq(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
@@ -552,7 +557,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         }
                     }
                     if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)
-                            ) {
+                            && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
                         //TODO: Need number of pattern steps in Arps
                         percent = frameptr;
@@ -570,6 +575,14 @@ void Engine::echoCallback(bool echo_from_trig)
         if (0 > nextMinArpTick) nextMinArpTick = 0;
         if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
+
+    if ((globRestoreRequest >= 0)
+            && (globStoreWidget->timeModeBox->currentIndex())) {
+        percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
+        globStoreWidget->indicator->updatePercent(percent);
+        if (currentTick >= switchTick) emit globRestoreSig(globRestoreRequest);
+    }
+
 }
 
 bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
@@ -747,7 +760,6 @@ void Engine::tr_state_cb(bool on, void *context)
 void Engine::globStore(int ix)
 {
     int l1;
-    qWarning("storing to index %d", ix);
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->storeParams(ix);
     }
@@ -766,6 +778,11 @@ void Engine::requestGlobRestore(int ix)
     }
     else {
         globRestoreRequest = ix;
+        if (globStoreWidget->timeModeBox->currentIndex()) {
+            requestTick = currentTick;
+            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox->currentIndex()
+            + currentTick / TPQN);
+        }
     }
 }
 

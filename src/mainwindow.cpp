@@ -584,7 +584,7 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
-    globStore->timeMode->addItem(name);
+    globStore->timeModuleBox->addItem(name);
 
 }
 
@@ -601,7 +601,7 @@ void MainWindow::removeArp(int index)
 
     parentDockID = arpWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeMode->removeItem(globStore->timeMode->findText(
+    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
                             arpWidget->manageBox->name));
 
     engine->removeMidiArp(arpWidget->getMidiWorker());
@@ -619,7 +619,7 @@ void MainWindow::removeLfo(int index)
 
     parentDockID = lfoWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeMode->removeItem(globStore->timeMode->findText(
+    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
                             lfoWidget->manageBox->name));
 
     engine->removeMidiLfo(lfoWidget->getMidiWorker());
@@ -637,7 +637,7 @@ void MainWindow::removeSeq(int index)
 
     parentDockID = seqWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeMode->removeItem(globStore->timeMode->findText(
+    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
                             seqWidget->manageBox->name));
 
     engine->removeMidiSeq(seqWidget->getMidiWorker());

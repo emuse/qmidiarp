@@ -32,8 +32,11 @@
 GlobStore::GlobStore(QWidget *parent)
             : QGroupBox(tr("Global Storage"), parent)
 {
+    int l1;
     activeStore = 0;
     currentRequest = 0;
+    switchAtBeat = 0;
+
     storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(store(int)));
@@ -41,10 +44,23 @@ GlobStore::GlobStore(QWidget *parent)
     connect(restoreSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(restore(int)));
 
-    QLabel *timeModeLabel = new QLabel(tr("Switch time"));
-    timeMode = new QComboBox(this);
-    connect(timeMode, SIGNAL(activated(int)),
-             this, SLOT(updateTimeMode(int)));
+    timeModeBox = new QComboBox(this);
+    timeModeBox->addItem(tr("End of"));
+    timeModeBox->addItem(tr("After"));
+    connect(timeModeBox, SIGNAL(activated(int)),
+             this, SLOT(updateTimeModeBox(int)));
+
+    switchAtBeatBox = new QComboBox(this);
+    for (l1 = 0; l1 < 16; l1++) {
+        switchAtBeatBox->addItem(QString::number(l1 + 1)+" beats");
+    }
+    switchAtBeatBox->hide();
+    connect(switchAtBeatBox, SIGNAL(activated(int)),
+             this, SLOT(updateSwitchAtBeat(int)));
+
+    timeModuleBox = new QComboBox(this);
+    connect(timeModuleBox, SIGNAL(activated(int)),
+             this, SLOT(updateTimeModule(int)));
 
     QWidget *indicatorBox = new QWidget(this);
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
@@ -56,8 +72,9 @@ GlobStore::GlobStore(QWidget *parent)
     indicatorBox->setLayout(indicatorLayout);
 
     QVBoxLayout *timeModeLayout = new QVBoxLayout();
-    timeModeLayout->addWidget(timeModeLabel);
-    timeModeLayout->addWidget(timeMode);
+    timeModeLayout->addWidget(timeModeBox);
+    timeModeLayout->addWidget(timeModuleBox);
+    timeModeLayout->addWidget(switchAtBeatBox);
     timeModeLayout->addWidget(indicatorBox);
     timeModeLayout->setSpacing(0);
     timeModeLayout->addStretch();
@@ -140,7 +157,7 @@ void GlobStore::add()
         widgetList.last()->layout()->itemAt(0)->widget()->setEnabled(true);
     }
     widgetList.append(globWidget);
-    updateTimeMode(0);
+    updateTimeModule(0);
 
 }
 
@@ -157,10 +174,27 @@ void GlobStore::remove(int ix)
     widgetList.last()->layout()->itemAt(0)->widget()->setDisabled(true);
 }
 
-void GlobStore::updateTimeMode(int ix)
+void GlobStore::updateTimeModule(int ix)
 {
     (void)ix;
-    emit updateGlobRestoreTimeMode(timeMode->currentText());
+    emit updateGlobRestoreTimeMode(timeModuleBox->currentText());
+}
+
+void GlobStore::updateTimeModeBox(int ix)
+{
+    if (ix == 0) {
+        switchAtBeatBox->hide();
+        timeModuleBox->show();
+    }
+    else if (ix == 1) {
+        timeModuleBox->hide();
+        switchAtBeatBox->show();
+    }
+}
+
+void GlobStore::updateSwitchAtBeat(int ix)
+{
+    switchAtBeat = ix;
 }
 
 void GlobStore::setDispState(int ix, int selected)
