@@ -816,7 +816,7 @@ void Engine::removeParStores(int ix)
     }
 }
 
-void Engine::updateGlobRestoreTimeMode(const QString& name)
+void Engine::updateGlobRestoreTimeModule(const QString& name)
 {
     int l1;
     for (l1 = 0; l1 < midiArpCount(); l1++) {

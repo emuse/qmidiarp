@@ -176,12 +176,44 @@ class Engine : public QThread  {
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
-
+/*!
+* @brief causes all modules to restore their current parameters from their
+* ParStore::list at index ix
+*
+* @param ix ParStore::list index from which all module parameters are to be restored
+*/
     void globRestore(int ix);
+/*!
+* @brief causes all modules to remove their entries in the ParStore::list
+* at index ix
+*
+* @param ix ParStore::list index at which module parameters are to be removed
+*/
     void removeParStores(int ix);
+/*!
+* @brief causes all modules to store their current parameters in their
+* ParStore::list at index ix
+*
+* @param ix ParStore::list index at which all module parameters are to be stored
+*/
     void globStore(int ix);
+/*!
+* @brief causes Engine to call Engine::globRestore() when the timing and
+* restore type conditions are met
+* @param ix ParStore::list index from which all module parameters are to be restored
+*/
     void requestGlobRestore(int ix);
-    void updateGlobRestoreTimeMode(const QString& name);
+/*!
+* @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
+*
+* Makes the module with name name trigger global store switches when its cursor
+* reaches the end. It determines the type (Arp, LFO, Seq) and the index of the selected
+* module the module storage lists and stores these in local variables.
+*
+* @param name QString containing the name of the module to become
+* switch trigger
+*/
+    void updateGlobRestoreTimeModule(const QString& name);
 
 };
 

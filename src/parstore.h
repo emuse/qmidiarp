@@ -94,26 +94,35 @@ class ParStore : public QObject
         int rndVel;
         QString pattern;
     };
-    TempStore temp;
-    QList<TempStore> list;
+    TempStore temp; /**< Structure to which all module parameters are copied
+                        before being appended to the TempStore::list*/
+    QList<TempStore> list; /**< List of TempStore::temp structures for
+                        parameter storage*/
 
+/*!
+* @brief stores all module parameters to TempStore::temp and stores temp
+* in TempStore::list at index ix. If the given index is greater than the list size,
+* temp is appended to TempStore::list.
+*
+* @param ix index at which the parameters are stored.
+*/
     void tempToList(int ix);
 /*!
-* @brief This function reads all parameters of this LFO from an XML stream
+* @brief reads the ParStore::list from an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to read from
 */
     void readData(QXmlStreamReader& xml);
 /*!
-* @brief This function writes all parameters of this LFO to an XML stream
+* @brief writes the ParStore::list to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function allows ignoring one XML element in the XML stream
+* @brief allows ignoring one XML element in the XML stream
 * passed by the caller.
 *
 * It also advances the stream read-in. It is used to

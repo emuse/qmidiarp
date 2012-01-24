@@ -177,7 +177,7 @@ void GlobStore::remove(int ix)
 void GlobStore::updateTimeModule(int ix)
 {
     (void)ix;
-    emit updateGlobRestoreTimeMode(timeModuleBox->currentText());
+    emit updateGlobRestoreTimeModule(timeModuleBox->currentText());
 }
 
 void GlobStore::updateTimeModeBox(int ix)
@@ -189,6 +189,7 @@ void GlobStore::updateTimeModeBox(int ix)
     else if (ix == 1) {
         timeModuleBox->hide();
         switchAtBeatBox->show();
+        indicator->updatePercent(0);
     }
 }
 
