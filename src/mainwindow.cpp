@@ -94,8 +94,10 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
             SLOT(globStore(int)));
     connect(globStore, SIGNAL(requestGlobRestore(int)), engine,
             SLOT(requestGlobRestore(int)));
-    connect(globStore, SIGNAL(updateGlobRestoreTimeModule(const QString&)), engine,
-            SLOT(updateGlobRestoreTimeModule(const QString&)));
+    connect(globStore, SIGNAL(requestSingleRestore(int, int)), engine,
+            SLOT(requestSingleRestore(int, int)));
+    connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
+            SLOT(updateGlobRestoreTimeModule(int)));
     connect(globStore, SIGNAL(removeParStores(int)), engine,
             SLOT(removeParStores(int)));
 
@@ -419,6 +421,7 @@ void MainWindow::addArp(const QString& name)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -457,6 +460,7 @@ void MainWindow::addLfo(const QString& name)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -494,6 +498,7 @@ void MainWindow::addSeq(const QString& name)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -531,6 +536,7 @@ void MainWindow::cloneLfo(int ID)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
 }
@@ -560,7 +566,7 @@ void MainWindow::cloneSeq(int ID)
     for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
-    midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
+    midiWorker->reverse = engine->seqWidget(ID)->getReverse();
     midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
     midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
     engine->addMidiSeq(midiWorker);
@@ -568,6 +574,7 @@ void MainWindow::cloneSeq(int ID)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
 }
@@ -584,7 +591,7 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
-    globStore->timeModuleBox->addItem(name);
+    globStore->addModule(name);
 
 }
 
@@ -601,8 +608,7 @@ void MainWindow::removeArp(int index)
 
     parentDockID = arpWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
-                            arpWidget->manageBox->name));
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiArp(arpWidget->getMidiWorker());
     engine->removeArpWidget(arpWidget);
@@ -619,8 +625,7 @@ void MainWindow::removeLfo(int index)
 
     parentDockID = lfoWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
-                            lfoWidget->manageBox->name));
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiLfo(lfoWidget->getMidiWorker());
     engine->removeLfoWidget(lfoWidget);
@@ -637,8 +642,7 @@ void MainWindow::removeSeq(int index)
 
     parentDockID = seqWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->timeModuleBox->removeItem(globStore->timeModuleBox->findText(
-                            seqWidget->manageBox->name));
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiSeq(seqWidget->getMidiWorker());
     engine->removeSeqWidget(seqWidget);
@@ -668,7 +672,7 @@ void MainWindow::clear()
     grooveWidget->midiControl->ccList.clear();
 
     for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
-        globStore->remove(l1);
+        globStore->removeLocation(l1);
     }
     globStore->setDispState(0, 0);
 }
@@ -821,7 +825,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->arpWidget(0)->parStore->list.count(); l1++) {
-                    globStore->add();
+                    globStore->addLocation();
                 }
             }
         }
@@ -832,7 +836,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->lfoWidget(0)->parStore->list.count(); l1++) {
-                    globStore->add();
+                    globStore->addLocation();
                 }
             }
         }
@@ -843,7 +847,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->seqWidget(0)->parStore->list.count(); l1++) {
-                    globStore->add();
+                    globStore->addLocation();
                 }
             }
         }

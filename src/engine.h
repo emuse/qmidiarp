@@ -70,8 +70,12 @@ class Engine : public QThread  {
     bool midiLearnFlag;
     bool useMidiClock;
     int globRestoreRequest;
-    int globRestoreModIx;
-    QChar globRestoreModType;
+    int restoreModIx;
+    QChar restoreModType;
+    int restoreModWindowIndex;
+    int singleRestoreRequest;
+    QChar singleRestoreModType;
+    int singleRestoreModule;
 
     //From SeqDriver
     int schedDelayTicks;
@@ -150,6 +154,7 @@ class Engine : public QThread  {
  */
     void midiEventReceived(MidiEvent ev, int tick);
     void globRestoreSig(int ix);
+    void singleRestoreSig(int ix);
     void indicPercent(int p);
 
   public slots:
@@ -184,6 +189,14 @@ class Engine : public QThread  {
 */
     void globRestore(int ix);
 /*!
+* @brief causes the module of type Engine::restoreModType at position
+* Engine::restoreModIx in the moduleWidgetList to restore its current
+* parameters from its ParStore::list at index ix
+*
+* @param ix ParStore::list index from which all module parameters are to be restored
+*/
+    void singleRestore(int ix);
+/*!
 * @brief causes all modules to remove their entries in the ParStore::list
 * at index ix
 *
@@ -204,16 +217,24 @@ class Engine : public QThread  {
 */
     void requestGlobRestore(int ix);
 /*!
+* @brief causes Engine to call Engine::singleRestore() when the timing and
+* restore type conditions are met
+* @param windowIndex Engine::moduleWindowList index of the module which should
+* restore its parameters
+* @param ix ParStore::list index from which all module parameters are to be restored
+*/
+    void requestSingleRestore(int windowIndex, int ix);
+/*!
 * @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
 *
-* Makes the module with name name trigger global store switches when its cursor
+* Makes the module with index windowIndex trigger global store switches when its cursor
 * reaches the end. It determines the type (Arp, LFO, Seq) and the index of the selected
 * module the module storage lists and stores these in local variables.
 *
-* @param name QString containing the name of the module to become
-* switch trigger
+* @param windowIndex Engine::moduleWindowList index of the module to become switch
+* trigger when its cursor reaches the end of the pattern
 */
-    void updateGlobRestoreTimeModule(const QString& name);
+    void updateGlobRestoreTimeModule(int windowIndex);
 
 };
 

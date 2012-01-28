@@ -68,11 +68,16 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     requestTick = 0;
 
     globRestoreRequest = -1;
-    globRestoreModIx = 0;
+    singleRestoreRequest = -1;
+    restoreModIx = 0;
+    restoreModType = 'X';
+    restoreModWindowIndex = -1;
+
     // we happen to need this QSignal for triggering global parameter restores from
     // within the echo callback. Direct calls to the module widgets were shown to
     // cause frequent segfaults
     connect(this, SIGNAL(globRestoreSig(int)), this, SLOT(globRestore(int)));
+    connect(this, SIGNAL(singleRestoreSig(int)), this, SLOT(singleRestore(int)));
 
     resetTicks(0);
     ready = true;
@@ -316,13 +321,15 @@ void Engine::updateIDs(int curID)
     int l1, tempDockID;
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->manageBox->ID = l1;
+        arpWidget(l1)->setProperty("widgetID", l1);
         tempDockID = arpWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
             arpWidget(l1)->manageBox->parentDockID = tempDockID - 1;
-            }
+        }
     }
     for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
         lfoWidget(l1)->manageBox->ID = l1;
+        lfoWidget(l1)->setProperty("widgetID", l1);
         tempDockID = lfoWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
             lfoWidget(l1)->manageBox->parentDockID = tempDockID - 1;
@@ -330,6 +337,7 @@ void Engine::updateIDs(int curID)
     }
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
         seqWidget(l1)->manageBox->ID = l1;
+        seqWidget(l1)->setProperty("widgetID", l1);
         tempDockID = seqWidget(l1)->manageBox->parentDockID;
         if (tempDockID > curID) {
             seqWidget(l1)->manageBox->parentDockID = tempDockID - 1;
@@ -476,12 +484,13 @@ void Engine::echoCallback(bool echo_from_trig)
                             l2++;
                         }
                     }
-                    if ((globRestoreModType == 'L') && (l1 == globRestoreModIx)
+                    if ((restoreModType == 'L') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiLfo(l1)->getFramePtr();
                         percent = frameptr * 100 / ((midiLfo(l1)->res * midiLfo(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
                     }
                 }
             }
@@ -511,12 +520,13 @@ void Engine::echoCallback(bool echo_from_trig)
                         outEv.data = seqSample.value;
                         driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
                     }
-                    if ((globRestoreModType == 'S') && (l1 == globRestoreModIx)
+                    if ((restoreModType == 'S') && (l1 == restoreModIx)
                           && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiSeq(l1)->getCurrentIndex();
                         percent = frameptr * 100 / ((midiSeq(l1)->res * midiSeq(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
                     }
                 }
             }
@@ -556,13 +566,14 @@ void Engine::echoCallback(bool echo_from_trig)
                             }
                         }
                     }
-                    if ((globRestoreModType == 'A') && (l1 == globRestoreModIx)
+                    if ((restoreModType == 'A') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
                         //TODO: Need number of pattern steps in Arps
                         percent = frameptr;
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
+                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
                     }
                 }
             }
@@ -780,8 +791,27 @@ void Engine::requestGlobRestore(int ix)
         globRestoreRequest = ix;
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
-            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox->currentIndex()
-            + currentTick / TPQN);
+            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
+            ->currentIndex() + currentTick / TPQN);
+        }
+    }
+}
+
+void Engine::requestSingleRestore(int windowIndex, int ix)
+{
+    restoreModIx = moduleWindowList.at(windowIndex)->widget()->property("widgetID").toInt();
+    restoreModType = moduleWindowList.at(windowIndex)->objectName().at(0);
+    restoreModWindowIndex = windowIndex;
+
+    if (status == false) {
+        singleRestore(ix);
+    }
+    else {
+        singleRestoreRequest = ix;
+        if (globStoreWidget->timeModeBox->currentIndex()) {
+            requestTick = currentTick;
+            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
+                ->currentIndex() + currentTick / TPQN);
         }
     }
 }
@@ -798,8 +828,25 @@ void Engine::globRestore(int ix)
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
         seqWidget(l1)->restoreParams(ix);
     }
+
     globStoreWidget->setDispState(ix, 1);
     globRestoreRequest = -1;
+}
+
+void Engine::singleRestore(int ix)
+{
+    if (restoreModType == 'A') {
+        arpWidget(restoreModIx)->restoreParams(ix);
+    }
+    else if (restoreModType == 'L') {
+        lfoWidget(restoreModIx)->restoreParams(ix);
+    }
+    else if (restoreModType == 'S') {
+        seqWidget(restoreModIx)->restoreParams(ix);
+    }
+
+    globStoreWidget->setDispState(ix, 1, restoreModWindowIndex);
+    singleRestoreRequest = -1;
 }
 
 void Engine::removeParStores(int ix)
@@ -816,28 +863,11 @@ void Engine::removeParStores(int ix)
     }
 }
 
-void Engine::updateGlobRestoreTimeModule(const QString& name)
+void Engine::updateGlobRestoreTimeModule(int windowIndex)
 {
-    int l1;
-    for (l1 = 0; l1 < midiArpCount(); l1++) {
-        if (arpWidget(l1)->manageBox->name == name) {
-            globRestoreModIx = l1;
-            globRestoreModType = 'A';
-           return;
-        }
-    }
-    for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        if (lfoWidget(l1)->manageBox->name == name) {
-            globRestoreModIx = l1;
-            globRestoreModType = 'L';
-            return;
-        }
-    }
-    for (l1 = 0; l1 < midiSeqCount(); l1++) {
-        if (seqWidget(l1)->manageBox->name == name) {
-            globRestoreModIx = l1;
-            globRestoreModType = 'S';
-            return;
-        }
-    }
+    restoreModType = globStoreWidget->timeModuleBox
+                        ->itemText(windowIndex).at(0);
+
+    restoreModIx = moduleWindowList.at(windowIndex)->widget()
+                        ->property("widgetID").toInt();
 }

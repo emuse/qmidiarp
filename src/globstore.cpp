@@ -39,10 +39,10 @@ GlobStore::GlobStore(QWidget *parent)
 
     storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(store(int)));
+             this, SLOT(storeAll(int)));
     restoreSignalMapper = new QSignalMapper(this);
     connect(restoreSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(restore(int)));
+             this, SLOT(restoreAll(int)));
 
     timeModeBox = new QComboBox(this);
     timeModeBox->addItem(tr("End of"));
@@ -64,14 +64,15 @@ GlobStore::GlobStore(QWidget *parent)
 
     QWidget *indicatorBox = new QWidget(this);
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
-    indicator = new Indicator(30, this);
-    indicatorBox->setMinimumHeight(40);
+    indicator = new Indicator(20, this);
+    indicatorBox->setMinimumHeight(30);
+    indicatorBox->setMinimumWidth(30);
     indicatorLayout->addWidget(indicator);
     indicatorLayout->setMargin(2);
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
-    QVBoxLayout *timeModeLayout = new QVBoxLayout();
+    QHBoxLayout *timeModeLayout = new QHBoxLayout();
     timeModeLayout->addWidget(timeModeBox);
     timeModeLayout->addWidget(timeModuleBox);
     timeModeLayout->addWidget(switchAtBeatBox);
@@ -79,25 +80,44 @@ GlobStore::GlobStore(QWidget *parent)
     timeModeLayout->setSpacing(0);
     timeModeLayout->addStretch();
 
-    rowLayout = new QHBoxLayout();
-    rowLayout->addLayout(timeModeLayout);
+    QHBoxLayout *upperRowLayout = new QHBoxLayout();
+    upperRowLayout->addLayout(timeModeLayout);
+    upperRowLayout->addStretch();
 
     QAction* removeStoreAction = new QAction(tr("&Remove"), this);
     QToolButton *removeStoreButton = new QToolButton(this);
     removeStoreButton->setDefaultAction(removeStoreAction);
-    removeStoreButton->setFixedSize(20, 60);
-    removeStoreButton->setArrowType (Qt::ArrowType(3));
-    connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(remove()));
+    removeStoreButton->setFixedSize(60, 20);
+    removeStoreButton->setArrowType (Qt::ArrowType(1));
+    connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(removeLocation()));
 
-    QVBoxLayout *rmStoreLayout = new QVBoxLayout();
-    rmStoreLayout->addWidget(removeStoreButton);
-    rmStoreLayout->addStretch();
+    QToolButton *toolButton = new QToolButton(this);
+    toolButton->setText("Global");
+    toolButton->setMinimumSize(QSize(60,30));
 
-    QHBoxLayout *centLayout = new QHBoxLayout();
-    centLayout->addLayout(rowLayout);
-    centLayout->addLayout(rmStoreLayout);
-    centLayout->addStretch();
-    add();
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    buttonLayout->addWidget(toolButton);
+
+    QVBoxLayout *columnLayout = new QVBoxLayout;
+    columnLayout->addLayout(buttonLayout);
+    columnLayout->addWidget(removeStoreButton);
+    columnLayout->addStretch();
+
+    indivButtonLayout = new QHBoxLayout;
+    indivButtonLayout->setSpacing(0);
+    indivButtonLayout->setMargin(0);
+    indivButtonLayout->addLayout(columnLayout);
+    indivButtonLayout->setSizeConstraint(QLayout::SetFixedSize);
+
+    QHBoxLayout *secondRowLayout = new QHBoxLayout;
+    secondRowLayout->addLayout(indivButtonLayout);
+    secondRowLayout->addStretch();
+
+    QVBoxLayout *centLayout = new QVBoxLayout();
+    centLayout->addLayout(upperRowLayout);
+    centLayout->addLayout(secondRowLayout);
+
+    addLocation();
 
     setStyleSheet("QGroupBox { font: 8pt; }");
     setLayout(centLayout);
@@ -107,15 +127,15 @@ GlobStore::~GlobStore()
 {
 }
 
-void GlobStore::store(int ix)
+void GlobStore::storeAll(int ix)
 {
     emit globStore(ix);
     if (ix >= (widgetList.count() - 1)) {
-        add();
+        addLocation();
     }
 }
 
-void GlobStore::restore(int ix)
+void GlobStore::restoreAll(int ix)
 {
     if (ix < (widgetList.count() - 1)) {
         setDispState(ix, 2);
@@ -123,45 +143,56 @@ void GlobStore::restore(int ix)
     }
 }
 
-void GlobStore::add()
+void GlobStore::addLocation()
 {
-    QAction* restoreAction = new QAction(tr("&Restore"), this);
-    QToolButton *restoreButton = new QToolButton(this);
-    restoreButton->setDefaultAction(restoreAction);
-    restoreButton->setFixedSize(40, 40);
-    restoreAction->setText(QString::number(widgetList.count() + 1));
-    //restoreButton->setStyleSheet("QToolButton { font: 22pt; background-color: rgba(50, 255, 50, 50%); }");
-    restoreAction->setFont(QFont("Helvetica", 22));
-    restoreAction->setDisabled(true);
-    connect(restoreAction, SIGNAL(triggered()), restoreSignalMapper, SLOT(map()));
-    restoreSignalMapper->setMapping(restoreAction, widgetList.count());
-
     QAction* storeAction = new QAction(tr("&Store"), this);
     QToolButton *storeButton = new QToolButton(this);
     storeButton->setDefaultAction(storeAction);
-    storeButton->setFixedSize(40, 15);
+    storeButton->setFixedSize(15, 30);
     storeAction->setIcon(QIcon(filesave_xpm));
     connect(storeAction, SIGNAL(triggered()), storeSignalMapper, SLOT(map()));
     storeSignalMapper->setMapping(storeAction, widgetList.count());
 
+    QAction* restoreAction = new QAction(tr("&Restore"), this);
+    QToolButton *restoreButton = new QToolButton(this);
+    restoreButton->setDefaultAction(restoreAction);
+    restoreButton->setFixedSize(45, 30);
+    restoreAction->setText(QString::number(widgetList.count() + 1));
+    restoreAction->setFont(QFont("Helvetica", 20));
+    restoreAction->setDisabled(true);
+    connect(restoreAction, SIGNAL(triggered()), restoreSignalMapper, SLOT(map()));
+    restoreSignalMapper->setMapping(restoreAction, widgetList.count());
+
     QWidget* globWidget = new QWidget(this);
-    QVBoxLayout* globLayout = new QVBoxLayout;
+    QHBoxLayout* globLayout = new QHBoxLayout;
     globLayout->setSpacing(0);
-    globLayout->addWidget(restoreButton);
+    globLayout->setMargin(0);
     globLayout->addWidget(storeButton);
-    globLayout->addStretch();
+    globLayout->addWidget(restoreButton);
     globWidget->setLayout(globLayout);
 
-    rowLayout->addWidget(globWidget);
+    indivButtonLayout->itemAt(0)->layout()->itemAt(0)->layout()->addWidget(globWidget);
+
+    for (int l1 = 0; l1 < timeModuleBox->count(); l1++) {
+        QToolButton *toolButton = new QToolButton(this);
+        toolButton->setText(QString::number(widgetList.count()));
+        toolButton->setMinimumSize(QSize(100, 30));
+        toolButton->setObjectName(QString::number(l1));
+        toolButton->setProperty("index", widgetList.count());
+        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+
+        indivButtonLayout->itemAt(l1 + 1)
+            ->layout()->itemAt(0)->layout()->addWidget(toolButton);
+    }
+
     if (widgetList.count()) {
-        widgetList.last()->layout()->itemAt(0)->widget()->setEnabled(true);
+        widgetList.last()->layout()->itemAt(1)->widget()->setEnabled(true);
     }
     widgetList.append(globWidget);
     updateTimeModule(0);
-
 }
 
-void GlobStore::remove(int ix)
+void GlobStore::removeLocation(int ix)
 {
     if (ix == -1) ix = widgetList.count() - 1;
     if (ix < 0) return;
@@ -170,14 +201,18 @@ void GlobStore::remove(int ix)
     if (widgetList.count() > 1) {
         QWidget* globWidget = widgetList.takeAt(ix);
         delete globWidget;
+        for (int l1 = 1; l1 <= timeModuleBox->count(); l1++) {
+            delete indivButtonLayout->itemAt(l1)->layout()->itemAt(0)
+                    ->layout()->itemAt(ix)->widget();
+        }
     }
-    widgetList.last()->layout()->itemAt(0)->widget()->setDisabled(true);
+    widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
 }
 
 void GlobStore::updateTimeModule(int ix)
 {
     (void)ix;
-    emit updateGlobRestoreTimeModule(timeModuleBox->currentText());
+    emit updateGlobRestoreTimeModule(timeModuleBox->currentIndex());
 }
 
 void GlobStore::updateTimeModeBox(int ix)
@@ -198,27 +233,118 @@ void GlobStore::updateSwitchAtBeat(int ix)
     switchAtBeat = ix;
 }
 
-void GlobStore::setDispState(int ix, int selected)
+void GlobStore::setDispState(int ix, int selected, int windowIndex)
 {
-    if (selected == 1) {
-        widgetList.at(activeStore)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton {  }");
-        widgetList.at(ix)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton { background-color: rgba(50, 255, 50, 20%); }");
-        activeStore = ix;
-    }
-    else if (selected == 2) {
-        widgetList.at(currentRequest)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton {  }");
-        widgetList.at(ix)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton { background-color: rgba(255, 255, 50, 20%); }");
-        currentRequest = ix;
+    int start, end;
+    int l1;
+
+    if (windowIndex < 0) {
+        start = 0;
+        end = timeModuleBox->count();
+        if (selected == 1) {
+            for (l1 = start; l1 <= end; l1++) {
+                setBGColorAt(l1, activeStore + 1, 0);
+                setBGColorAt(l1, ix + 1, 1);
+            }
+            activeStore = ix;
+        }
+        else if (selected == 2) {
+            for (l1 = start; l1 <= end; l1++) {
+                setBGColorAt(l1, currentRequest + 1, 0);
+                setBGColorAt(l1, ix + 1, 2);
+            }
+            currentRequest = ix;
+        }
+        else {
+        }
     }
     else {
-        widgetList.at(currentRequest)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton {  }");
-        widgetList.at(activeStore)->layout()->itemAt(0)->widget()->
-        setStyleSheet("QToolButton {  }");
+        for (l1 = 1; l1 <= widgetList.count(); l1++) {
+            setBGColorAt(windowIndex + 1, l1 - 1, 0);
+        }
+        setBGColorAt(windowIndex + 1, ix + 1, selected);
     }
+}
+
+void GlobStore::setBGColorAt(int column, int row, int color)
+{
+    QString styleSheet;
+
+    if (color == 1)         //green
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
+    else if (color == 2)    //yellow
+        styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
+    else                    //no color
+        styleSheet = "QToolButton { }";
+
+    indivButtonLayout->itemAt(column)->layout()->itemAt(0)->layout()
+                ->itemAt(row)->widget()->setStyleSheet(styleSheet);
+}
+
+void GlobStore::addModule(const QString& name)
+{
+    timeModuleBox->addItem(name);
+
+    QToolButton *toolButton = new QToolButton(this);
+    toolButton->setText(name);
+    toolButton->setMinimumSize(QSize(100,30));
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    buttonLayout->addWidget(toolButton);
+
+
+    for (int l1 = 0; l1 < widgetList.size() - 1; l1++) {
+        QToolButton *toolButton = new QToolButton(this);
+        toolButton->setText(QString::number(l1 + 1));
+        toolButton->setMinimumSize(QSize(100, 30));
+        toolButton->setObjectName(QString::number(timeModuleBox->count() - 1));
+        toolButton->setProperty("index", l1 + 1);
+        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+
+        buttonLayout->addWidget(toolButton);
+    }
+
+    QVBoxLayout *columnLayout = new QVBoxLayout;
+    columnLayout->addLayout(buttonLayout);
+    columnLayout->addStretch();
+
+    indivButtonLayout->addLayout(columnLayout);
+}
+
+void GlobStore::removeModule(int ix)
+{
+    int l1, l2;
+    if (ix < 0) return;
+
+    timeModuleBox->removeItem(ix);
+    timeModuleBox->setCurrentIndex(0);
+    updateTimeModule(0);
+
+    for (l1 = 0; l1 < widgetList.size(); l1++) {
+        delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
+                ->layout()->takeAt(0)->widget();
+    }
+    delete indivButtonLayout->takeAt(ix + 1)->layout();
+
+    // decrement button indices to fill gap of removed module
+    for (l2 = ix; l2 < timeModuleBox->count() + 1; l2++) {
+        for (l1 = 1; l1 < widgetList.size(); l1++) {
+            indivButtonLayout->itemAt(l2)->layout()->itemAt(0)
+                    ->layout()->itemAt(l1)->widget()
+                        ->setObjectName(QString::number(l2 - 1));
+        }
+    }
+}
+
+void GlobStore::mapRestoreSignal()
+{
+    int moduleID = sender()->objectName().toInt();
+    int ix = sender()->property("index").toInt();
+
+    setDispState(ix - 1, 2, moduleID);
+    emit requestSingleRestore(moduleID, ix - 1);
+
+    timeModuleBox->setCurrentIndex(moduleID);
+    // qWarning("sending single restore module %d index %d", moduleID, ix - 1);
 
 }
