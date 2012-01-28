@@ -236,21 +236,22 @@ void GlobStore::updateSwitchAtBeat(int ix)
 void GlobStore::setDispState(int ix, int selected, int windowIndex)
 {
     int start, end;
-    int l1;
+    int l1, l2;
 
     if (windowIndex < 0) {
         start = 0;
         end = timeModuleBox->count();
         if (selected == 1) {
             for (l1 = start; l1 <= end; l1++) {
-                setBGColorAt(l1, activeStore + 1, 0);
-                setBGColorAt(l1, ix + 1, 1);
+                for (l2 = 0; l2 < widgetList.count(); l2++) {
+                    setBGColorAt(l1, l2, (l2 == ix + 1));
+                }
             }
             activeStore = ix;
         }
         else if (selected == 2) {
             for (l1 = start; l1 <= end; l1++) {
-                setBGColorAt(l1, currentRequest + 1, 0);
+                if (currentRequest != activeStore) setBGColorAt(l1, currentRequest + 1, 0);
                 setBGColorAt(l1, ix + 1, 2);
             }
             currentRequest = ix;
@@ -259,7 +260,7 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
         }
     }
     else {
-        for (l1 = 1; l1 <= widgetList.count(); l1++) {
+        if (selected == 1) for (l1 = 1; l1 <= widgetList.count(); l1++) {
             setBGColorAt(windowIndex + 1, l1 - 1, 0);
         }
         setBGColorAt(windowIndex + 1, ix + 1, selected);
