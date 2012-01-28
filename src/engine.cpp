@@ -447,6 +447,10 @@ void Engine::echoCallback(bool echo_from_trig)
     int frameptr;
     int percent;
     bool isNew;
+    bool doGlobRestore = false;
+    bool doSingleRestore = false;
+    bool globRestoreFlag = (globRestoreRequest >= 0);
+    bool singleRestoreFlag = (singleRestoreRequest >= 0);
     MidiEvent outEv;
 
     currentTick = tick;
@@ -489,8 +493,14 @@ void Engine::echoCallback(bool echo_from_trig)
                         frameptr = midiLfo(l1)->getFramePtr();
                         percent = frameptr * 100 / ((midiLfo(l1)->res * midiLfo(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
-                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
+                        if (!frameptr && globRestoreFlag) {
+                            doGlobRestore = true;
+                            globRestoreFlag = false;
+                        }
+                        else if (!frameptr && singleRestoreFlag) {
+                            doSingleRestore = true;
+                            singleRestoreFlag = false;
+                        }
                     }
                 }
             }
@@ -525,8 +535,14 @@ void Engine::echoCallback(bool echo_from_trig)
                         frameptr = midiSeq(l1)->getCurrentIndex();
                         percent = frameptr * 100 / ((midiSeq(l1)->res * midiSeq(l1)->size));
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
-                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
+                        if (!frameptr && globRestoreFlag) {
+                            doGlobRestore = true;
+                            globRestoreFlag = false;
+                        }
+                        else if (!frameptr && singleRestoreFlag) {
+                            doSingleRestore = true;
+                            singleRestoreFlag = false;
+                        }
                     }
                 }
             }
@@ -572,8 +588,14 @@ void Engine::echoCallback(bool echo_from_trig)
                         //TODO: Need number of pattern steps in Arps
                         percent = frameptr;
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && (globRestoreRequest >= 0)) emit globRestoreSig(globRestoreRequest);
-                        if (!frameptr && (singleRestoreRequest >= 0)) emit singleRestoreSig(singleRestoreRequest);
+                        if (!frameptr && globRestoreFlag) {
+                            doGlobRestore = true;
+                            globRestoreFlag = false;
+                        }
+                        else if (!frameptr && singleRestoreFlag) {
+                            doSingleRestore = true;
+                            singleRestoreFlag = false;
+                        }
                     }
                 }
             }
@@ -587,13 +609,18 @@ void Engine::echoCallback(bool echo_from_trig)
         if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
 
-    if ((globRestoreRequest >= 0)
+    if ((globRestoreFlag || singleRestoreFlag)
             && (globStoreWidget->timeModeBox->currentIndex())) {
         percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
         globStoreWidget->indicator->updatePercent(percent);
-        if (currentTick >= switchTick) emit globRestoreSig(globRestoreRequest);
+        if (currentTick >= switchTick) {
+            doGlobRestore = globRestoreFlag;
+            doSingleRestore = singleRestoreFlag;
+        }
     }
 
+    if (doGlobRestore) emit globRestoreSig(globRestoreRequest);
+    if (doSingleRestore) emit singleRestoreSig(singleRestoreRequest);
 }
 
 bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
