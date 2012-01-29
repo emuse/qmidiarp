@@ -56,7 +56,9 @@ class GlobStore : public QGroupBox
     QSignalMapper *restoreSignalMapper;
     QHBoxLayout* indivButtonLayout;
     int activeStore;
+    int activeSingleStore[2];
     int currentRequest;
+    int currentSingleRequest[2];
 
   public:
     GlobStore(QWidget* parent=0);

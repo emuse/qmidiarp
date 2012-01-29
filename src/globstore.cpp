@@ -34,7 +34,11 @@ GlobStore::GlobStore(QWidget *parent)
 {
     int l1;
     activeStore = 0;
+    activeSingleStore[0] = 0;
+    activeSingleStore[1] = 0;
     currentRequest = 0;
+    currentSingleRequest[0] = 0;
+    currentSingleRequest[1] = 0;
     switchAtBeat = 0;
 
     storeSignalMapper = new QSignalMapper(this);
@@ -260,10 +264,23 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
         }
     }
     else {
-        if (selected == 1) for (l1 = 1; l1 <= widgetList.count(); l1++) {
-            setBGColorAt(windowIndex + 1, l1 - 1, 0);
+        if (selected == 1) {
+            for (l1 = 1; l1 <= widgetList.count(); l1++) {
+                setBGColorAt(windowIndex + 1, l1 - 1, 0);
+            }
+            setBGColorAt(windowIndex + 1, ix + 1, 1);
+            activeSingleStore[0] = windowIndex;
+            activeSingleStore[1] = ix;
         }
-        setBGColorAt(windowIndex + 1, ix + 1, selected);
+        else if (selected == 2) {
+            if ((currentSingleRequest[0] != activeSingleStore[0]) ||
+                (currentSingleRequest[1] != activeSingleStore[1])) {
+                setBGColorAt(currentSingleRequest[0] + 1, currentSingleRequest[1] + 1, 0);
+            }
+            setBGColorAt(windowIndex + 1, ix + 1, 2);
+            currentSingleRequest[0] = windowIndex;
+            currentSingleRequest[1] = ix;
+        }
     }
 }
 
