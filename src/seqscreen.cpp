@@ -65,7 +65,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
     int l1, l2;
     double nsteps = 0.0;
     int beat = 4;
-    int npoints = 0;
     int tmpval = 0;
     int ypos, xpos, xscale, yscale;
     w = QWidget::width();
@@ -84,7 +83,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
     nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
     beatRes = (p_data.count() - 1) / nsteps;
     beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
-    npoints = beatRes * nsteps;
+    int npoints = beatRes * nsteps;
     xscale = (w - 2 * SEQSCR_HMARG) / nsteps;
     yscale = h - 2 * SEQSCR_VMARG;
 

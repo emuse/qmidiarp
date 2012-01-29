@@ -40,6 +40,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
+
+    parStore = new ParStore();
+
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
                 << "RecordToggle" << "Resolution"<< "Size" << "LoopMode" << "unknown";
@@ -425,6 +428,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
         midiControl->writeData(xml);
 
+        parStore->writeData(xml);
+
     xml.writeEndElement();
 }
 
@@ -575,6 +580,9 @@ void SeqWidget::readData(QXmlStreamReader& xml)
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
             midiControl->readData(xml);
+        }
+        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+            parStore->readData(xml);
         }
         else skipXmlElement(xml);
     }
@@ -863,6 +871,61 @@ void SeqWidget::updateDispVert(int mode)
     screen->baseOctave = baseoct;
     screen->update();
     modified = true;
+}
+
+void SeqWidget::storeParams(int ix, bool empty)
+{
+    parStore->temp.empty = empty;
+    parStore->temp.muteOut = muteOut->isChecked();
+    parStore->temp.chIn = chIn->currentIndex();
+    parStore->temp.channelOut = channelOut->currentIndex();
+    parStore->temp.portOut = portOut->currentIndex();
+    parStore->temp.res = resBox->currentIndex();
+    parStore->temp.size = sizeBox->currentIndex();
+    parStore->temp.loopMode = loopBox->currentIndex();
+    parStore->temp.notelen = notelength->value();
+    parStore->temp.transp = transpose->value();
+    parStore->temp.vel = velocity->value();
+    parStore->temp.dispVertical = dispVertical;
+    parStore->temp.loopMode = loopBox->currentIndex();
+    parStore->temp.wave = getCustomWave();
+    parStore->temp.muteMask = midiWorker->muteMask;
+    parStore->temp.loopMarker = getLoopMarker();
+
+    parStore->tempToList(ix);
+}
+
+void SeqWidget::restoreParams(int ix)
+{
+    if (parStore->list.at(ix).empty) return;
+    midiWorker->customWave = parStore->list.at(ix).wave;
+    midiWorker->muteMask = parStore->list.at(ix).muteMask;
+    sizeBox->setCurrentIndex(parStore->list.at(ix).size);
+    midiWorker->size = sizeBox->currentText().toInt();
+    midiWorker->res = seqResValues[parStore->list.at(ix).res];
+    midiWorker->resizeAll();
+    midiWorker->loopMarker = parStore->list.at(ix).loopMarker;
+    screen->setLoopMarker(parStore->list.at(ix).loopMarker);
+
+    resBox->setCurrentIndex(parStore->list.at(ix).res);
+    waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
+    loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
+    notelength->setValue(parStore->list.at(ix).notelen);
+    transpose->setValue(parStore->list.at(ix).transp);
+    velocity->setValue(parStore->list.at(ix).vel);
+    setDispVert(parStore->list.at(ix).dispVertical);
+
+    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+    updateChIn(parStore->list.at(ix).chIn);
+    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+    updateChannelOut(parStore->list.at(ix).channelOut);
+    setPortOut(parStore->list.at(ix).portOut);
+    updatePortOut(parStore->list.at(ix).portOut);
+    updateLoop(parStore->list.at(ix).loopMode);
+
+    updateWaveForm(parStore->list.at(ix).waveForm);
+    midiWorker->setCurrentIndex(0);
 }
 
 void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)

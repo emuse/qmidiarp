@@ -49,6 +49,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
+
+    parStore = new ParStore();
+
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
                 << "RecordToggle"<< "Resolution"<< "Size" << "LoopMode" << "unknown";
@@ -417,6 +420,8 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
         midiControl->writeData(xml);
 
+        parStore->writeData(xml);
+
     xml.writeEndElement();
 }
 
@@ -550,6 +555,9 @@ void LfoWidget::readData(QXmlStreamReader& xml)
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
             midiControl->readData(xml);
+        }
+        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+            parStore->readData(xml);
         }
         else skipXmlElement(xml);
     }
@@ -811,6 +819,61 @@ void LfoWidget::setModified(bool m)
 {
     modified = m;
     midiControl->setModified(m);
+}
+
+void LfoWidget::storeParams(int ix, bool empty)
+{
+    parStore->temp.empty = empty;
+    parStore->temp.muteOut = muteOut->isChecked();
+    parStore->temp.chIn = chIn->currentIndex();
+    parStore->temp.ccnumberIn = ccnumberInBox->value();
+    parStore->temp.ccnumber = ccnumberBox->value();
+    parStore->temp.channelOut = channelOut->currentIndex();
+    parStore->temp.portOut = portOut->currentIndex();
+    parStore->temp.res = resBox->currentIndex();
+    parStore->temp.size = sizeBox->currentIndex();
+    parStore->temp.loopMode = loopBox->currentIndex();
+    parStore->temp.freq = freqBox->currentIndex();
+    parStore->temp.ampl = amplitude->value();
+    parStore->temp.offs = offset->value();
+    parStore->temp.waveForm = waveFormBox->currentIndex();
+
+    parStore->temp.wave = getCustomWave();
+    parStore->temp.muteMask = midiWorker->muteMask;
+
+    parStore->tempToList(ix);
+}
+
+void LfoWidget::restoreParams(int ix)
+{
+    if (parStore->list.at(ix).empty) return;
+    midiWorker->customWave = parStore->list.at(ix).wave;
+    midiWorker->muteMask = parStore->list.at(ix).muteMask;
+    sizeBox->setCurrentIndex(parStore->list.at(ix).size);
+    midiWorker->updateSize(sizeBox->currentText().toInt());
+
+    midiWorker->updateResolution(lfoResValues[parStore->list.at(ix).res]);
+    midiWorker->updateWaveForm(parStore->list.at(ix).waveForm);
+    midiWorker->updateFrequency(lfoFreqValues[parStore->list.at(ix).freq]);
+    freqBox->setCurrentIndex(parStore->list.at(ix).freq);
+    resBox->setCurrentIndex(parStore->list.at(ix).res);
+    waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
+    loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
+
+    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+    updateChIn(parStore->list.at(ix).chIn);
+    ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
+    ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
+    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+    updateChannelOut(parStore->list.at(ix).channelOut);
+    setPortOut(parStore->list.at(ix).portOut);
+    updatePortOut(parStore->list.at(ix).portOut);
+    updateLoop(parStore->list.at(ix).loopMode);
+    updateWaveForm(parStore->list.at(ix).waveForm);
+    offset->setValue(parStore->list.at(ix).offs);
+    amplitude->setValue(parStore->list.at(ix).ampl);
+    midiWorker->setFramePtr(0);
 }
 
 void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)

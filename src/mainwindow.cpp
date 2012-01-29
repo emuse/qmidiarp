@@ -22,7 +22,6 @@
  *      MA 02110-1301, USA.
  *
  */
-#include <QBoxLayout>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -35,6 +34,7 @@
 #include <QSocketNotifier>
 #include <QStringList>
 #include <QSpinBox>
+#include <QStyle>
 #include <QTableWidget>
 #include <QTextStream>
 #include <QXmlStreamReader>
@@ -54,6 +54,7 @@
 #include "pixmaps/seqadd.xpm"
 #include "pixmaps/settings.xpm"
 #include "pixmaps/eventlog.xpm"
+#include "pixmaps/globtog.xpm"
 #include "pixmaps/groovetog.xpm"
 #include "pixmaps/play.xpm"
 #include "pixmaps/midiclock.xpm"
@@ -84,9 +85,21 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+    globStore = new GlobStore(this);
 
-    engine = new Engine(grooveWidget, p_portCount, alsaMidi, this);
+    engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (!alsaMidi) connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
+
+    connect(globStore, SIGNAL(globStore(int)), engine,
+            SLOT(globStore(int)));
+    connect(globStore, SIGNAL(requestGlobRestore(int)), engine,
+            SLOT(requestGlobRestore(int)));
+    connect(globStore, SIGNAL(requestSingleRestore(int, int)), engine,
+            SLOT(requestSingleRestore(int, int)));
+    connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
+            SLOT(updateGlobRestoreTimeModule(int)));
+    connect(globStore, SIGNAL(removeParStores(int)), engine,
+            SLOT(removeParStores(int)));
 
     midiCCTable = new MidiCCTable(engine, this);
 
@@ -206,6 +219,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
+    viewGlobAction = new QAction(tr("&Global Store"), this);
+    viewGlobAction->setCheckable(true);
+    viewGlobAction->setIcon(QIcon(globtog_xpm));
+    viewGlobAction->setShortcut(QKeySequence(tr("Ctrl+$",
+                    "View|GlobalStore")));
+    connect(viewGlobAction, SIGNAL(toggled(bool)), globStore, SLOT(setVisible(bool)));
+    viewGlobAction->setChecked(true);
+
     QMenuBar *menuBar = new QMenuBar;
     QMenu *fileMenu = new QMenu(tr("&File"), this);
     QMenu *viewMenu = new QMenu(tr("&View"), this);
@@ -229,6 +250,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
+    viewMenu->addAction(viewGlobAction);
     viewMenu->addAction(tr("&MIDI Controllers..."),
             this, SLOT(showMidiCCDialog()));
 
@@ -255,6 +277,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
     controlToolBar->addAction(viewLogAction);
     controlToolBar->addAction(viewGrooveAction);
+    controlToolBar->addAction(viewGlobAction);
     controlToolBar->addSeparator();
     controlToolBar->addAction(addArpAction);
     controlToolBar->addAction(addLfoAction);
@@ -279,8 +302,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     addToolBar(controlToolBar);
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
-    QWidget *centWidget = new QWidget(this);
-    setCentralWidget(centWidget);
+
+
+    setCentralWidget(globStore);
     setDockNestingEnabled(true);
     updateWindowTitle();
 
@@ -382,6 +406,14 @@ void MainWindow::addArp(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+
     engine->addMidiArp(midiWorker);
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
@@ -389,6 +421,7 @@ void MainWindow::addArp(const QString& name)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -414,11 +447,20 @@ void MainWindow::addLfo(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+
     engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -443,11 +485,20 @@ void MainWindow::addSeq(const QString& name)
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
+    // if the module is added at a time when global stores are already
+    // present we fill up the new global parameter storage list with dummies
+    // and tag them empty
+    // TODO: this should not be done when module is created from a file
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+
     engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
 
     checkIfFirstModule();
@@ -474,6 +525,9 @@ void MainWindow::cloneLfo(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
     midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
     midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
     midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
@@ -482,6 +536,7 @@ void MainWindow::cloneLfo(int ID)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
 }
@@ -508,7 +563,10 @@ void MainWindow::cloneSeq(int ID)
     moduleWidget->midiControl->ID = widgetID;
 
     moduleWidget->copyParamsFrom(engine->seqWidget(ID));
-    midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
+    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+        moduleWidget->storeParams(l1, true);
+    }
+    midiWorker->reverse = engine->seqWidget(ID)->getReverse();
     midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
     midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
     engine->addMidiSeq(midiWorker);
@@ -516,6 +574,7 @@ void MainWindow::cloneSeq(int ID)
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
+    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, moduleWidget->manageBox->name, count);
 
 }
@@ -532,6 +591,8 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
+    globStore->addModule(name);
+
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)
@@ -547,6 +608,7 @@ void MainWindow::removeArp(int index)
 
     parentDockID = arpWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiArp(arpWidget->getMidiWorker());
     engine->removeArpWidget(arpWidget);
@@ -563,6 +625,7 @@ void MainWindow::removeLfo(int index)
 
     parentDockID = lfoWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiLfo(lfoWidget->getMidiWorker());
     engine->removeLfoWidget(lfoWidget);
@@ -579,6 +642,7 @@ void MainWindow::removeSeq(int index)
 
     parentDockID = seqWidget->manageBox->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
+    globStore->removeModule(parentDockID);
 
     engine->removeMidiSeq(seqWidget->getMidiWorker());
     engine->removeSeqWidget(seqWidget);
@@ -606,6 +670,11 @@ void MainWindow::clear()
     }
 
     grooveWidget->midiControl->ccList.clear();
+
+    for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
+        globStore->removeLocation(l1);
+    }
+    globStore->setDispState(0, 0);
 }
 
 void MainWindow::fileNew()
@@ -742,6 +811,9 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
 
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
 {
+    int count = 0;
+
+
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())
@@ -750,16 +822,34 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             addArp("Arp:" + xml.attributes().value("name").toString());
             engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->arpWidget(0)->parStore->list.count(); l1++) {
+                    globStore->addLocation();
+                }
+            }
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             addLfo("LFO:" + xml.attributes().value("name").toString());
             engine->lfoWidget(engine->midiLfoCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->lfoWidget(0)->parStore->list.count(); l1++) {
+                    globStore->addLocation();
+                }
+            }
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             addSeq("Seq:" + xml.attributes().value("name").toString());
             engine->seqWidget(engine->midiSeqCount() - 1)
                     ->readData(xml);
+            count++;
+            if (count == 1) {
+                for (int l1 = 0; l1 < engine->seqWidget(0)->parStore->list.count(); l1++) {
+                    globStore->addLocation();
+                }
+            }
         }
         else skipXmlElement(xml);
     }
@@ -1094,6 +1184,8 @@ void MainWindow::readRcFile()
                 logWidget->logMidiClock->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#GUIState"))
                 restoreState(QByteArray::fromHex(value.at(1).toUtf8()));
+            else if ((value.at(0) == "#GlobStoreVisible"))
+                viewGlobAction->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LastDir"))
                 lastDir = value.at(1);
             else if ((value.at(0) == "#RecentFile"))
@@ -1134,6 +1226,8 @@ void MainWindow::writeRcFile()
     writeText << logWidget->logMidiClock->isChecked() << endl;
     writeText << "#GUIState%";
     writeText << saveState().toHex() << endl;
+    writeText << "#GlobStoreVisible%";
+    writeText << viewGlobAction->isChecked() << endl;
 
     writeText << "#LastDir%";
     writeText << lastDir << endl;

@@ -43,6 +43,7 @@
 #include "arpscreen.h"
 #include "midicontrol.h"
 #include "managebox.h"
+#include "parstore.h"
 
 /*! @brief GUI class associated with and controlling a MidiArp worker
  *
@@ -108,6 +109,7 @@ class ArpWidget : public QWidget
             bool mutedAdd = false, QWidget* parent=0);
     ~ArpWidget();
 
+    ParStore *parStore;
     MidiControl *midiControl;
     ArpScreen *screen;
     ManageBox *manageBox;
@@ -134,6 +136,20 @@ class ArpWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void storeParams(int ix, bool empty = false);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void restoreParams(int ix);
 /*!
 * @brief This function returns the MidiArp instance associated with this GUI
 * Widget.
