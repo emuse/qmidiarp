@@ -657,6 +657,11 @@ void MainWindow::clear()
     updateTransportStatus(false);
     jackSyncToggle(false);
 
+    for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
+        globStore->removeLocation(l1);
+    }
+    globStore->setDispState(0, 0);
+
     while (engine->midiArpCount()) {
         removeArp(engine->midiArpCount() - 1);
     }
@@ -671,10 +676,6 @@ void MainWindow::clear()
 
     grooveWidget->midiControl->ccList.clear();
 
-    for (int l1 = globStore->widgetList.count() - 1; l1 > 0; l1--) {
-        globStore->removeLocation(l1);
-    }
-    globStore->setDispState(0, 0);
 }
 
 void MainWindow::fileNew()

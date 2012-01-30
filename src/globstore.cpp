@@ -133,6 +133,7 @@ GlobStore::~GlobStore()
 
 void GlobStore::storeAll(int ix)
 {
+    if (!timeModuleBox->count()) return;
     emit globStore(ix);
     if (ix >= (widgetList.count() - 1)) {
         addLocation();
@@ -336,7 +337,7 @@ void GlobStore::removeModule(int ix)
 
     timeModuleBox->removeItem(ix);
     timeModuleBox->setCurrentIndex(0);
-    updateTimeModule(0);
+    if (ix > 0) updateTimeModule(0);
 
     for (l1 = 0; l1 < widgetList.size(); l1++) {
         delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
