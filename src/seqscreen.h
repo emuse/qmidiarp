@@ -58,7 +58,7 @@ class SeqScreen : public QWidget
   Q_OBJECT
 
   private:
-    //QTimer *timer;
+    QTimer *timer;
     QVector<Sample> p_data, data;
     int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY;

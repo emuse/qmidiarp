@@ -39,6 +39,9 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
     grooveVelocity = 0;
     grooveLength = 0;
     isMuted = false;
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 ArpScreen::~ArpScreen()
@@ -371,7 +374,7 @@ void ArpScreen::newGrooveValues(int tick, int vel, int length)
     grooveTick = tick;
     grooveVelocity = vel;
     grooveLength = length;
-    update();
+    if (!timer->isActive()) timer->start(50);
 }
 
 void ArpScreen::setMuted(bool on)

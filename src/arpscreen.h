@@ -57,6 +57,7 @@ class ArpScreen : public QWidget
   Q_OBJECT
 
   private:
+    QTimer *timer;
     int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
     QString a_pattern;

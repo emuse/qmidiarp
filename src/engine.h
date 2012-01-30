@@ -144,6 +144,7 @@ class Engine : public QThread  {
     SeqWidget *seqWidget(int index);
     int getClientId();
     void setTempo(int bpm);
+    void sendGroove();
 
   signals:
 /**
@@ -175,7 +176,6 @@ class Engine : public QThread  {
     void setGrooveTick(int grooveTick);
     void setGrooveVelocity(int grooveVelocity);
     void setGrooveLength(int grooveLength);
-    void sendGroove();
     void setSendLogEvents(bool on);
     void setUseMidiClock(bool on);
     bool eventCallback(MidiEvent inEv);
