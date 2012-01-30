@@ -337,7 +337,7 @@ void GlobStore::removeModule(int ix)
 
     timeModuleBox->removeItem(ix);
     timeModuleBox->setCurrentIndex(0);
-    if (ix > 0) updateTimeModule(0);
+    if (timeModuleBox->count()) updateTimeModule(0);
 
     for (l1 = 0; l1 < widgetList.size(); l1++) {
         delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
@@ -353,6 +353,11 @@ void GlobStore::removeModule(int ix)
                         ->setObjectName(QString::number(l2 - 1));
         }
     }
+
+    if (!timeModuleBox->count())
+        while (widgetList.count() > 1) {
+            removeLocation(-1);
+        }
 }
 
 void GlobStore::mapRestoreSignal()
