@@ -46,7 +46,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
                 << "RecordToggle" << "Resolution"<< "Size" << "LoopMode" << "unknown";
-    midiControl = new MidiControl(midiCCNames);
+    midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("Seq:", true, this);
 
@@ -160,7 +160,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu(muteOut, 0);
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
@@ -233,7 +233,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     loopBox->setMinimumContentsLength(5);
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
-    midiControl->addMidiLearnMenu(loopBox, 6);
+    midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
@@ -243,7 +243,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    midiControl->addMidiLearnMenu(recordButton, 3);
+    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);
@@ -258,7 +258,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    midiControl->addMidiLearnMenu(resBox, 4);
+    midiControl->addMidiLearnMenu("Resolution", resBox, 4);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
     sizeBox = new QComboBox(seqBox);
@@ -271,7 +271,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    midiControl->addMidiLearnMenu(sizeBox, 5);
+    midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 
     //temporarily hide these elements until multiple patterns are implemented
     waveFormBox->setEnabled(false);
@@ -283,14 +283,14 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
             tr("Veloc&ity"), seqBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
-    midiControl->addMidiLearnMenu(velocity, 1);
+    midiControl->addMidiLearnMenu("Velocity", velocity, 1);
 
 
     notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
-    midiControl->addMidiLearnMenu(notelength, 2);
+    midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);

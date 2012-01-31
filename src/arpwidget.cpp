@@ -53,7 +53,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
 
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "PresetSwitch" << "unknown";
-    midiControl = new MidiControl(midiCCNames);
+    midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("Arp:", false, this);
 
@@ -130,7 +130,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu(muteOut, 0);
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
@@ -202,7 +202,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
-    midiControl->addMidiLearnMenu(patternPresetBox, 1);
+    midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames;

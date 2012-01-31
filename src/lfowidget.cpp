@@ -55,7 +55,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     QStringList midiCCNames;
     midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
                 << "RecordToggle"<< "Resolution"<< "Size" << "LoopMode" << "unknown";
-    midiControl = new MidiControl(midiCCNames);
+    midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("LFO:", true, this);
 
@@ -127,7 +127,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     muteOut = new QCheckBox(this);
     connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu(muteOut, 0);
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
 
     QLabel *ccnumberLabel = new QLabel(tr("MIDI &CC#"), portBox);
@@ -207,7 +207,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-    midiControl->addMidiLearnMenu(waveFormBox, 3);
+    midiControl->addMidiLearnMenu("WaveForm", waveFormBox, 3);
 
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
@@ -225,7 +225,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     freqBox->setMinimumContentsLength(3);
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
-    midiControl->addMidiLearnMenu(freqBox, 4);
+    midiControl->addMidiLearnMenu("Frequency", freqBox, 4);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             waveBox);
@@ -240,7 +240,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    midiControl->addMidiLearnMenu(resBox, 6);
+    midiControl->addMidiLearnMenu("Resolution", resBox, 6);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
     sizeBox = new QComboBox(waveBox);
@@ -254,7 +254,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    midiControl->addMidiLearnMenu(sizeBox, 7);
+    midiControl->addMidiLearnMenu("Size", sizeBox, 7);
 
     loopBox = new QComboBox(waveBox);
     names.clear();
@@ -265,7 +265,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     loopBox->setMinimumContentsLength(5);
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
-    midiControl->addMidiLearnMenu(loopBox, 8);
+    midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
 
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
@@ -276,20 +276,20 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    midiControl->addMidiLearnMenu(recordButton, 5);
+    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 5);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), waveBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
-    midiControl->addMidiLearnMenu(amplitude, 1);
+    midiControl->addMidiLearnMenu("Amplitude", amplitude, 1);
 
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), waveBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
-    midiControl->addMidiLearnMenu(offset, 2);
+    midiControl->addMidiLearnMenu("Offset", offset, 2);
 
     QVBoxLayout* sliderLayout = new QVBoxLayout;
     sliderLayout->addWidget(amplitude);

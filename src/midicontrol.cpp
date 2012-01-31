@@ -26,11 +26,11 @@
 #include <QStringList>
 #include "midicontrol.h"
 
-MidiControl::MidiControl(const QStringList &p_names)
+MidiControl::MidiControl(QWidget *parent)
 {
+    setParent(parent);
     ID = 0;
     parentDockID = 0;
-    names = p_names;
     // QSignalMappers allow identifying signal senders for MIDI learn/forget
     learnSignalMapper = new QSignalMapper(this);
     connect(learnSignalMapper, SIGNAL(mapped(int)),
@@ -56,7 +56,7 @@ void MidiControl::appendMidiCC(int controlID, int ccnumber, int channel, int min
 {
     MidiCC midiCC;
     int l1 = 0;
-    midiCC.name = names.at(controlID);
+    midiCC.name = names[controlID];
     midiCC.ID = controlID;
     midiCC.ccnumber = ccnumber;
     midiCC.channel = channel;
@@ -111,7 +111,7 @@ void MidiControl::removeMidiCC(int controlID, int ccnumber, int channel)
 void MidiControl::midiLearn(int controlID)
 {
     emit setMidiLearn(parentDockID, ID, controlID);
-    qWarning("Requesting Midi Learn for %s", qPrintable(names.at(controlID)));
+    qWarning("Requesting Midi Learn for %s", qPrintable(names[controlID]));
     cancelMidiLearnAction->setEnabled(true);
 }
 
@@ -127,7 +127,7 @@ void MidiControl::midiLearnCancel()
     cancelMidiLearnAction->setEnabled(false);
 }
 
-void MidiControl::addMidiLearnMenu(QWidget *widget, int count)
+void MidiControl::addMidiLearnMenu(const QString &name, QWidget *widget, int count)
 {
     widget->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
     QAction *learnAction = new QAction(tr("MIDI &Learn"), this);
@@ -141,6 +141,7 @@ void MidiControl::addMidiLearnMenu(QWidget *widget, int count)
     forgetSignalMapper->setMapping(forgetAction, count);
 
     widget->addAction(cancelMidiLearnAction);
+    names[count] = name;
 }
 
 void MidiControl::readData(QXmlStreamReader& xml)
