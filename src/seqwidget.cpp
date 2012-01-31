@@ -25,7 +25,6 @@
 #include <QLabel>
 #include <QBoxLayout>
 #include <QGridLayout>
-#include <QStringList>
 #include <QGroupBox>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -43,9 +42,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     parStore = new ParStore();
 
-    QStringList midiCCNames;
-    midiCCNames << "MuteToggle" << "Velocity" << "NoteLength"
-                << "RecordToggle" << "Resolution"<< "Size" << "LoopMode" << "unknown";
     midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("Seq:", true, this);

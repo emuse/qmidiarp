@@ -30,7 +30,6 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
-#include <QStringList>
 #include <QGroupBox>
 
 #include "groovewidget.h"
@@ -39,8 +38,6 @@
 
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
 {
-    QStringList midiCCNames;
-    midiCCNames << "Tick" << "Velocity" << "Length" << "unknown";
     midiControl = new MidiControl(this);
     midiControl->ID = -1;
     midiControl->parentDockID = -1;

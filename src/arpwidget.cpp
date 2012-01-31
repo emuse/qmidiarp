@@ -23,7 +23,6 @@
  */
 
 #include <QBoxLayout>
-#include <QStringList>
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
@@ -51,8 +50,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
 
     parStore = new ParStore();
 
-    QStringList midiCCNames;
-    midiCCNames << "MuteToggle" << "PresetSwitch" << "unknown";
     midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("Arp:", false, this);

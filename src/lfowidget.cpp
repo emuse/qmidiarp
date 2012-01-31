@@ -27,7 +27,6 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QMessageBox>
-#include <QStringList>
 
 #include "midilfo.h"
 #include "lfowidget.h"
@@ -52,9 +51,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     parStore = new ParStore();
 
-    QStringList midiCCNames;
-    midiCCNames << "MuteToggle" << "Amplitude" << "Offset" << "WaveForm" << "Frequency"
-                << "RecordToggle"<< "Resolution"<< "Size" << "LoopMode" << "unknown";
     midiControl = new MidiControl(this);
 
     manageBox = new ManageBox("LFO:", true, this);
