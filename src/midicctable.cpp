@@ -74,6 +74,17 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->clear();
 
+    ccList = engine->globStoreWidget->midiControl->ccList;
+
+    for (l2 = 0; l2 < engine->globStoreWidget->midiControl->ccList.count(); l2++) {
+
+        midiCCTable->setVerticalHeaderItem(nrows,
+                new QTableWidgetItem("Param Store"));
+
+        fillControlRow(nrows, ccList.at(l2), -1);
+        nrows++;
+    }
+
     ccList = engine->grooveWidget->midiControl->ccList;
 
     for (l2 = 0; l2 < engine->grooveWidget->midiControl->ccList.count(); l2++) {
@@ -126,7 +137,7 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->setHorizontalHeaderItem(0,
             new QTableWidgetItem(tr("Control")));
-    midiCCTable->setColumnWidth(0, 80);
+    midiCCTable->setColumnWidth(0, 100);
 
     midiCCTable->setHorizontalHeaderItem(1,
             new QTableWidgetItem(tr("CC#")));
@@ -138,11 +149,11 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->setHorizontalHeaderItem(3,
             new QTableWidgetItem(tr("min")));
-    midiCCTable->setColumnWidth(3, 30);
+    midiCCTable->setColumnWidth(3, 40);
 
     midiCCTable->setHorizontalHeaderItem(4,
             new QTableWidgetItem(tr("max")));
-    midiCCTable->setColumnWidth(4, 30);
+    midiCCTable->setColumnWidth(4, 40);
 
     midiCCTable->setRowCount(nrows);
 }
@@ -159,6 +170,7 @@ void MidiCCTable::apply()
     int l1;
     QChar moduleType;
 
+    engine->globStoreWidget->midiControl->ccList.clear();
     engine->grooveWidget->midiControl->ccList.clear();
 
     for (l1 = 0; l1 < engine->arpWidgetCount(); l1++)
@@ -178,6 +190,10 @@ void MidiCCTable::apply()
         moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
 
         switch (moduleType.toLatin1()) {
+            case 'P':
+                    engine->globStoreWidget->midiControl
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            break;
             case 'G':
                     engine->grooveWidget->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);

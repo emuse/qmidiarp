@@ -27,7 +27,7 @@
 
 #include <QAction>
 #include <QSignalMapper>
-#include <QString>
+#include <QStringList>
 #include <QVector>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -61,7 +61,6 @@ class MidiControl : public QWidget
   private:
     QAction *cancelMidiLearnAction;
     QSignalMapper *learnSignalMapper, *forgetSignalMapper;
-    QString names[20];
     bool modified;
 /*!
 * @brief This function allows ignoring one XML element in the XML stream
@@ -77,6 +76,7 @@ class MidiControl : public QWidget
   public:
     MidiControl(QWidget *parent);
     ~MidiControl();
+    QStringList names;
     int ID;
     int parentDockID;
     QVector<MidiCC> ccList;     /**< Contains MIDI controller - GUI element bindings */
@@ -102,6 +102,7 @@ class MidiControl : public QWidget
 * @param count Internal identifier of the controllable QWidget
 */
     void addMidiLearnMenu(const QString &name, QWidget *widget, int count = 0);
+    void changeMapping(QWidget *widget, int ix);
 
   signals:
 /*! @brief Emitted to Engine::setMidiLearn to listen for incoming events.

@@ -45,6 +45,7 @@ MidiControl::MidiControl(QWidget *parent)
     connect(cancelMidiLearnAction, SIGNAL(triggered()), this, SLOT(midiLearnCancel()));
     cancelMidiLearnAction->setEnabled(false);
     ccList.clear();
+    for (int l1 = 0; l1 < 20; l1++) names << "";
     modified = false;
 }
 
@@ -70,8 +71,8 @@ void MidiControl::appendMidiCC(int controlID, int ccnumber, int channel, int min
 
     if (ccList.count() == l1) {
         ccList.append(midiCC);
-        qWarning("MIDI Controller %d appended for %s"
-        , ccnumber, qPrintable(midiCC.name));
+        qWarning("MIDI Controller %d appended for %s (internal ID %d)"
+        , ccnumber, qPrintable(midiCC.name), controlID);
     }
     else {
         qWarning("MIDI Controller %d already attributed to %s"
@@ -142,6 +143,24 @@ void MidiControl::addMidiLearnMenu(const QString &name, QWidget *widget, int cou
 
     widget->addAction(cancelMidiLearnAction);
     names[count] = name;
+}
+
+void MidiControl::changeMapping(QWidget *widget, int ix)
+{
+    if (widget->actions().isEmpty()) return;
+
+    learnSignalMapper->setMapping(widget->actions().at(0), ix);
+    forgetSignalMapper->setMapping(widget->actions().at(1), ix);
+
+    // Existing controller mappings are updated as well
+    int oldID = widget->objectName().toInt();
+    for (int l1 = 0; l1 < ccList.count(); l1++) {
+        if (ccList.at(l1).ID == oldID + 1) {
+            MidiCC midicc = ccList.at(l1);
+            midicc.ID = ix;
+            ccList.replace(l1, midicc);
+        }
+    }
 }
 
 void MidiControl::readData(QXmlStreamReader& xml)

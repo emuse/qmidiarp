@@ -33,6 +33,11 @@ GlobStore::GlobStore(QWidget *parent)
             : QGroupBox(tr("Global Storage"), parent)
 {
     int l1;
+
+    midiControl = new MidiControl(this);
+    midiControl->ID = -2;
+    midiControl->parentDockID = -2;
+
     activeStore = 0;
     activeSingleStore[0] = 0;
     activeSingleStore[1] = 0;
@@ -98,6 +103,7 @@ GlobStore::GlobStore(QWidget *parent)
     QToolButton *toolButton = new QToolButton(this);
     toolButton->setText("Global");
     toolButton->setMinimumSize(QSize(60,30));
+    midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget(toolButton);
@@ -143,7 +149,6 @@ void GlobStore::storeAll(int ix)
 void GlobStore::restoreAll(int ix)
 {
     if (ix < (widgetList.count() - 1)) {
-        setDispState(ix, 2);
         emit requestGlobRestore(ix);
     }
 }
@@ -304,9 +309,13 @@ void GlobStore::addModule(const QString& name)
 {
     timeModuleBox->addItem(name);
 
+    int count = timeModuleBox->count();
+
     QToolButton *toolButton = new QToolButton(this);
     toolButton->setText(name);
+    toolButton->setObjectName(QString::number(count - 1));
     toolButton->setMinimumSize(QSize(100,30));
+    midiControl->addMidiLearnMenu("Restore_"+name, toolButton, count);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget(toolButton);
@@ -316,7 +325,7 @@ void GlobStore::addModule(const QString& name)
         QToolButton *toolButton = new QToolButton(this);
         toolButton->setText(QString::number(l1 + 1));
         toolButton->setMinimumSize(QSize(100, 30));
-        toolButton->setObjectName(QString::number(timeModuleBox->count() - 1));
+        toolButton->setObjectName(QString::number(count - 1));
         toolButton->setProperty("index", l1 + 1);
         connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 
@@ -339,18 +348,24 @@ void GlobStore::removeModule(int ix)
     timeModuleBox->setCurrentIndex(0);
     if (timeModuleBox->count()) updateTimeModule(0);
 
+    midiControl->removeMidiCC(ix + 1, 0, -1);
+    midiControl->names.removeAt(ix + 1);
+
     for (l1 = 0; l1 < widgetList.size(); l1++) {
         delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
                 ->layout()->takeAt(0)->widget();
     }
     delete indivButtonLayout->takeAt(ix + 1)->layout();
 
-    // decrement button indices to fill gap of removed module
-    for (l2 = ix; l2 < timeModuleBox->count() + 1; l2++) {
-        for (l1 = 1; l1 < widgetList.size(); l1++) {
-            indivButtonLayout->itemAt(l2)->layout()->itemAt(0)
-                    ->layout()->itemAt(l1)->widget()
-                        ->setObjectName(QString::number(l2 - 1));
+    // decrement button indices and midiControl indices
+    // to fill gap of removed module
+    for (l2 = ix + 1; l2 < timeModuleBox->count() + 1; l2++) {
+        for (l1 = 0; l1 < widgetList.size(); l1++) {
+            QWidget *toolButton = indivButtonLayout->itemAt(l2)
+            ->layout()->itemAt(0)->layout()->itemAt(l1)->widget();
+
+            if (!l1) midiControl->changeMapping(toolButton, l2);
+            toolButton->setObjectName(QString::number(l2 - 1));
         }
     }
 
@@ -365,10 +380,30 @@ void GlobStore::mapRestoreSignal()
     int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
 
-    setDispState(ix - 1, 2, moduleID);
     emit requestSingleRestore(moduleID, ix - 1);
 
     timeModuleBox->setCurrentIndex(moduleID);
-    // qWarning("sending single restore module %d index %d", moduleID, ix - 1);
 
+}
+
+void GlobStore::handleController(int ccnumber, int channel, int value)
+{
+    if (value >= widgetList.count() - 1) return;
+
+    QVector<MidiCC> cclist= midiControl->ccList;
+
+    for (int l2 = 0; l2 < cclist.count(); l2++) {
+        if ((ccnumber == cclist.at(l2).ccnumber) &&
+            (channel == cclist.at(l2).channel)) {
+
+            if (!cclist.at(l2).ID) {
+                emit requestGlobRestore(value);
+            }
+            else {
+                if (cclist.at(l2).ID > timeModuleBox->count()) return;
+                emit requestSingleRestore(cclist.at(l2).ID - 1, value);
+                timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
+            }
+        }
+    }
 }

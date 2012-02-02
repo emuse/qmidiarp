@@ -747,6 +747,8 @@ void MainWindow::openFile(const QString& fn)
                     readFilePartModules(xml);
                 else if (xml.isStartElement() && (xml.name() == "GUI"))
                     readFilePartGUI(xml);
+                else if (xml.isStartElement() && (xml.name() == "globalstorage"))
+                    readFilePartGlobStore(xml);
                 else skipXmlElement(xml);
             }
         }
@@ -870,6 +872,19 @@ void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
     }
 }
 
+void MainWindow::readFilePartGlobStore(QXmlStreamReader& xml)
+{
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+        if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            globStore->midiControl->readData(xml);
+        }
+        else skipXmlElement(xml);
+    }
+}
+
 void MainWindow::skipXmlElement(QXmlStreamReader& xml)
 {
     if (xml.isStartElement()) {
@@ -972,6 +987,10 @@ bool MainWindow::saveFile()
 
     xml.writeStartElement("GUI");
         xml.writeTextElement("windowState", saveState().toHex());
+    xml.writeEndElement();
+
+    xml.writeStartElement("globalstorage");
+        globStore->midiControl->writeData(xml);
     xml.writeEndElement();
 
     xml.writeEndElement();

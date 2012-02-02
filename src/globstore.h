@@ -36,6 +36,7 @@
 #include <QString>
 
 #include "indicator.h"
+#include "midicontrol.h"
 
 /*!
  * The GlobStore class is a small QGroupBox UI that allows storing
@@ -63,7 +64,7 @@ class GlobStore : public QGroupBox
   public:
     GlobStore(QWidget* parent=0);
     ~GlobStore();
-
+    MidiControl *midiControl;
     QComboBox *timeModuleBox;
     QComboBox *timeModeBox;
     QComboBox *switchAtBeatBox;
@@ -88,6 +89,7 @@ class GlobStore : public QGroupBox
 * @param moduleWindow Index index in the Engine::moduleWindowList of the module to remove
 */
     void removeModule(int moduleWindowIndex);
+    void handleController(int ccnumber, int channel, int value);
 
   signals:
 

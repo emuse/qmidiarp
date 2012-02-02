@@ -33,6 +33,9 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
 {
     ready = false;
     globStoreWidget = p_globStore;
+    connect(globStoreWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            this, SLOT(setMidiLearn(int, int, int)));
+
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
             this, SLOT(setGrooveTick(int)));
@@ -692,6 +695,7 @@ void Engine::sendController(int ccnumber, int channel, int value)
     int l1;
 
     grooveWidget->handleController(ccnumber, channel, value);
+    globStoreWidget->handleController(ccnumber, channel, value);
 
     for (l1 = 0; l1 < arpWidgetCount(); l1++)
         arpWidget(l1)->handleController(ccnumber, channel, value);
@@ -709,6 +713,14 @@ void Engine::learnController(int ccnumber, int channel)
         midiLearnFlag = false;
         return;
         }
+
+    if (midiLearnWindowID == -2) {
+        globStoreWidget->midiControl->appendMidiCC(midiLearnID,
+                ccnumber, channel, 0, 127);
+        midiLearnFlag = false;
+        return;
+        }
+
     int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
     if (moduleWindow(midiLearnWindowID)->objectName().startsWith("Arp")) {
         arpWidget(midiLearnModuleID)->midiControl->appendMidiCC(midiLearnID,
@@ -816,6 +828,7 @@ void Engine::requestGlobRestore(int ix)
     }
     else {
         globRestoreRequest = ix;
+        globStoreWidget->setDispState(ix, 2);
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
             switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
@@ -835,6 +848,7 @@ void Engine::requestSingleRestore(int windowIndex, int ix)
     }
     else {
         singleRestoreRequest = ix;
+        globStoreWidget->setDispState(ix, 2, windowIndex);
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
             switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
