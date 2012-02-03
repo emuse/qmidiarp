@@ -494,7 +494,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     if ((restoreModType == 'L') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiLfo(l1)->getFramePtr();
-                        percent = frameptr * 100 / ((midiLfo(l1)->res * midiLfo(l1)->size));
+                        percent = frameptr * 100 / (midiLfo(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && globRestoreFlag) {
                             doGlobRestore = true;
@@ -536,7 +536,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     if ((restoreModType == 'S') && (l1 == restoreModIx)
                           && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiSeq(l1)->getCurrentIndex();
-                        percent = frameptr * 100 / ((midiSeq(l1)->res * midiSeq(l1)->size));
+                        percent = frameptr * 100 / (midiSeq(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && globRestoreFlag) {
                             doGlobRestore = true;

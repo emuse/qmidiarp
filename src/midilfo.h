@@ -115,6 +115,7 @@ class MidiLfo : public QObject  {
     int freq, amp, offs, ccnumberIn, chIn;
     int size;       /*!< Size of the waveform in quarter notes */
     int res;        /*!< Resolution of the waveform in ticks per quarter note */
+    int nPoints;        /*!< Number of steps to be played out */
     int waveFormIndex;          /*!< Index of the waveform to produce
                                     @par 0: Sine
                                     @par 1: Sawtooth Up

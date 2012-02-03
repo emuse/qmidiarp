@@ -56,6 +56,7 @@ MidiSeq::MidiSeq()
     transp = 0;
     size = 4;
     res = 4;
+    nPoints = 16;
     notelength = 74;
     portOut = 0;
     channelOut = 0;
@@ -302,6 +303,8 @@ void MidiSeq::setLoopMarker(double mouseX)
     if (mouseX > 0) loopMarker = mouseX * (double)npoints + .5;
     else loopMarker = mouseX * (double)npoints - .5;
     if (abs(loopMarker) >= npoints) loopMarker = 0;
+    if (!loopMarker) nPoints = npoints;
+    else nPoints = abs(loopMarker);
 }
 
 void MidiSeq::setRecordMode(int on)
@@ -344,6 +347,8 @@ void MidiSeq::resizeAll()
             lt+=step;
         }
     }
+
+    if (!loopMarker) nPoints = npoints;
 }
 
 void MidiSeq::copyToCustom()

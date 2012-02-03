@@ -44,6 +44,7 @@ MidiLfo::MidiLfo()
     freq = 32;
     size = 1;
     res = 16;
+    nPoints = 16;
     old_res = 0;
     ccnumber = 74;
     portOut = 0;

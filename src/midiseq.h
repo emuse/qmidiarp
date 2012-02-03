@@ -111,6 +111,7 @@ class MidiSeq : public QObject  {
     int size, res, waveFormIndex;
     int currentRecStep;
     int loopMarker;
+    int nPoints;        /*!< Number of steps to be played out */
     int nextTick;
     int nOctaves;
     int baseOctave;
