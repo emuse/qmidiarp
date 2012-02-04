@@ -103,16 +103,6 @@ class GlobStore : public QGroupBox
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
-/*!
-* @brief This function allows ignoring one XML element in the XML stream
-* passed by the caller.
-*
-* It advances the stream read-in. It is used to
-* ignore unknown elements for both-ways-compatibility
-*
-* @param xml Reference to QXmlStreamReader containing the open XML stream
-*/
-    void skipXmlElement(QXmlStreamReader& xml);
     void handleController(int ccnumber, int channel, int value);
 
   signals:

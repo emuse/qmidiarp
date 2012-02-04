@@ -62,16 +62,6 @@ class MidiControl : public QWidget
     QAction *cancelMidiLearnAction;
     QSignalMapper *learnSignalMapper, *forgetSignalMapper;
     bool modified;
-/*!
-* @brief This function allows ignoring one XML element in the XML stream
-* passed by the caller.
-*
-* It also advances the stream read-in. It is used to
-* ignore unknown elements for both-ways-compatibility
-*
-* @param xml reference to QXmlStreamReader containing the open XML stream
-*/
-    void skipXmlElement(QXmlStreamReader& xml);
 
   public:
     MidiControl(QWidget *parent);

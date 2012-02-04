@@ -81,16 +81,6 @@ class ArpWidget : public QWidget
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
-/*!
-* @brief This function allows ignoring one XML element in the XML stream
-* passed by the caller.
-*
-* It also advances the stream read-in. It is used to
-* ignore unknown elements for both-ways-compatibility
-*
-* @param xml reference to QXmlStreamReader containing the open XML stream
-*/
-    void skipXmlElement(QXmlStreamReader& xml);
     void loadPatternPresets();
 
 /* PUBLIC MEMBERS */

@@ -306,17 +306,6 @@ class MainWindow : public QMainWindow
  * @return True if installation succeeded.
 */
     bool installSignalHandlers();
-/*!
-* @brief This function allows ignoring one XML element in the XML stream
-* passed by the caller.
-*
-* It advances the stream read-in. It is used to
-* ignore unknown elements for both-ways-compatibility
-*
-* @param xml Reference to QXmlStreamReader containing the open XML stream
-*/
-    void skipXmlElement(QXmlStreamReader& xml);
-
 
   protected:
 /*!

@@ -27,6 +27,7 @@
 #include <QToolButton>
 
 #include "globstore.h"
+#include "main.h"
 #include "pixmaps/filesave.xpm"
 
 GlobStore::GlobStore(QWidget *parent)
@@ -425,23 +426,6 @@ void GlobStore::writeData(QXmlStreamWriter& xml)
 
         midiControl->writeData(xml);
     xml.writeEndElement();
-}
-
-void GlobStore::skipXmlElement(QXmlStreamReader& xml)
-{
-    if (xml.isStartElement()) {
-        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
-        while (!xml.atEnd()) {
-            xml.readNext();
-
-            if (xml.isEndElement())
-                break;
-
-            if (xml.isStartElement()) {
-                skipXmlElement(xml);
-            }
-        }
-    }
 }
 
 void GlobStore::handleController(int ccnumber, int channel, int value)

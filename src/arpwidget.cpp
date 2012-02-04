@@ -563,23 +563,6 @@ void ArpWidget::readData(QXmlStreamReader& xml)
     modified = false;
 }
 
-void ArpWidget::skipXmlElement(QXmlStreamReader& xml)
-{
-    if (xml.isStartElement()) {
-        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
-        while (!xml.atEnd()) {
-            xml.readNext();
-
-            if (xml.isEndElement())
-                break;
-
-            if (xml.isStartElement()) {
-                skipXmlElement(xml);
-            }
-        }
-    }
-}
-
 void ArpWidget::setChIn(int value)
 {
     chIn->setCurrentIndex(value);
