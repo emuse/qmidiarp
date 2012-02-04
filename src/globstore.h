@@ -89,6 +89,30 @@ class GlobStore : public QGroupBox
 * @param moduleWindow Index index in the Engine::moduleWindowList of the module to remove
 */
     void removeModule(int moduleWindowIndex);
+/*!
+* @brief This function reads all parameters of this Object from an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to read from
+*/
+    void readData(QXmlStreamReader& xml);
+/*!
+* @brief This function writes all parameters of this Object to an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to write to
+*/
+    void writeData(QXmlStreamWriter& xml);
+/*!
+* @brief This function allows ignoring one XML element in the XML stream
+* passed by the caller.
+*
+* It advances the stream read-in. It is used to
+* ignore unknown elements for both-ways-compatibility
+*
+* @param xml Reference to QXmlStreamReader containing the open XML stream
+*/
+    void skipXmlElement(QXmlStreamReader& xml);
     void handleController(int ccnumber, int channel, int value);
 
   signals:

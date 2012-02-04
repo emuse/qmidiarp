@@ -204,13 +204,6 @@ class MainWindow : public QMainWindow
 */
     void readFilePartGUI(QXmlStreamReader& xml);
 /*!
-* @brief This function reads the GlobStore settings block
-* from the XML session stream passed by the caller.
-*
-* @param xml Reference to QXmlStreamReader containing the XML stream
-*/
-    void readFilePartGlobStore(QXmlStreamReader& xml);
-/*!
 * @brief This function prepends a filename at the beginning of the recently
 * opened files list.
 *

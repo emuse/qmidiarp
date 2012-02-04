@@ -199,7 +199,6 @@ void GlobStore::addLocation()
         widgetList.last()->layout()->itemAt(1)->widget()->setEnabled(true);
     }
     widgetList.append(globWidget);
-    updateTimeModule(0);
 }
 
 void GlobStore::removeLocation(int ix)
@@ -209,14 +208,14 @@ void GlobStore::removeLocation(int ix)
 
     emit removeParStores(ix - 1);
     if (widgetList.count() > 1) {
-        QWidget* globWidget = widgetList.takeAt(ix);
-        delete globWidget;
+        delete widgetList.takeAt(ix);
         for (int l1 = 1; l1 <= timeModuleBox->count(); l1++) {
             delete indivButtonLayout->itemAt(l1)->layout()->itemAt(0)
                     ->layout()->itemAt(ix)->widget();
         }
     }
     widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
+    updateTimeModule(0);
 }
 
 void GlobStore::updateTimeModule(int ix)
@@ -344,12 +343,13 @@ void GlobStore::removeModule(int ix)
     int l1, l2;
     if (ix < 0) return;
 
-    timeModuleBox->removeItem(ix);
     timeModuleBox->setCurrentIndex(0);
     if (timeModuleBox->count()) updateTimeModule(0);
+    timeModuleBox->removeItem(ix);
 
     midiControl->removeMidiCC(ix + 1, 0, -1);
     midiControl->names.removeAt(ix + 1);
+    midiControl->names.append("");
 
     for (l1 = 0; l1 < widgetList.size(); l1++) {
         delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
@@ -384,6 +384,64 @@ void GlobStore::mapRestoreSignal()
 
     timeModuleBox->setCurrentIndex(moduleID);
 
+}
+void GlobStore::readData(QXmlStreamReader& xml)
+{
+    int tmp;
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+        if (xml.name() == "timeMode") {
+            tmp =xml.readElementText().toInt();
+            timeModeBox->setCurrentIndex(tmp);
+            updateTimeModeBox(tmp);
+        }
+        else if (xml.name() == "switchAtBeat") {
+            tmp =xml.readElementText().toInt();
+            switchAtBeatBox->setCurrentIndex(tmp);
+            updateSwitchAtBeat(tmp);
+        }
+        else if (xml.name() == "timeModule") {
+            tmp =xml.readElementText().toInt();
+            timeModuleBox->setCurrentIndex(tmp);
+            updateTimeModule(tmp);
+        }
+        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            midiControl->readData(xml);
+        }
+        else skipXmlElement(xml);
+    }
+}
+void GlobStore::writeData(QXmlStreamWriter& xml)
+{
+    xml.writeStartElement("globalstorage");
+        xml.writeTextElement("timeMode",
+            QString::number(timeModuleBox->currentIndex()));
+        xml.writeTextElement("switchAtBeat",
+            QString::number(switchAtBeatBox->currentIndex()));
+        xml.writeTextElement("timeModule",
+            QString::number(timeModeBox->currentIndex()));
+
+        midiControl->writeData(xml);
+    xml.writeEndElement();
+}
+
+void GlobStore::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
 }
 
 void GlobStore::handleController(int ccnumber, int channel, int value)
