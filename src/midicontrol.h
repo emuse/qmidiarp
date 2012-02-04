@@ -175,14 +175,14 @@ class MidiControl : public QWidget
 */
     void midiLearnCancel();
 /*!
-* @brief This function reads all parameters of this LFO from an XML stream
+* @brief This function reads all parameters of this Object from an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to read from
 */
     void readData(QXmlStreamReader& xml);
 /*!
-* @brief This function writes all parameters of this LFO to an XML stream
+* @brief This function writes all parameters of this Object to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
