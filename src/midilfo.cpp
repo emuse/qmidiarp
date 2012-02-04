@@ -412,6 +412,7 @@ void MidiLfo::resizeAll()
             lt+=step;
         }
     }
+    nPoints = npoints;
 }
 
 void MidiLfo::copyToCustom()
