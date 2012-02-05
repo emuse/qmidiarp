@@ -74,8 +74,6 @@ class ArpWidget : public QWidget
     QToolButton *latchModeButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
     QAction *latchModeAction;
-    QAction *deleteAction, *renameAction;
-    QAction *cancelMidiLearnAction;
     MidiArp *midiWorker;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
