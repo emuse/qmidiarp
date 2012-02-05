@@ -419,11 +419,11 @@ void GlobStore::writeData(QXmlStreamWriter& xml)
 {
     xml.writeStartElement("globalstorage");
         xml.writeTextElement("timeMode",
-            QString::number(timeModuleBox->currentIndex()));
+            QString::number(timeModeBox->currentIndex()));
         xml.writeTextElement("switchAtBeat",
             QString::number(switchAtBeatBox->currentIndex()));
         xml.writeTextElement("timeModule",
-            QString::number(timeModeBox->currentIndex()));
+            QString::number(timeModuleBox->currentIndex()));
 
         midiControl->writeData(xml);
     xml.writeEndElement();
