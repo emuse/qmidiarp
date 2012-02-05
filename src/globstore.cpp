@@ -337,6 +337,7 @@ void GlobStore::addModule(const QString& name)
     columnLayout->addStretch();
 
     indivButtonLayout->addLayout(columnLayout);
+    updateTimeModule(timeModuleBox->currentIndex());
 }
 
 void GlobStore::removeModule(int ix)
