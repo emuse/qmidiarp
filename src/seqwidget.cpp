@@ -570,6 +570,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     tmp = xml.readElementText().toInt();
                     midiWorker->loopMarker = tmp;
                     screen->setLoopMarker(tmp);
+                    if (tmp) midiWorker->nPoints = abs(tmp);
                 }
                 else skipXmlElement(xml);
             }
