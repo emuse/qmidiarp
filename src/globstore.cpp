@@ -141,10 +141,10 @@ GlobStore::~GlobStore()
 void GlobStore::storeAll(int ix)
 {
     if (!timeModuleBox->count()) return;
-    emit globStore(ix);
     if (ix >= (widgetList.count() - 1)) {
         addLocation();
     }
+    emit globStore(ix);
 }
 
 void GlobStore::restoreAll(int ix)

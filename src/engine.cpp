@@ -819,6 +819,7 @@ void Engine::globStore(int ix)
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
         seqWidget(l1)->storeParams(ix);
     }
+    globStoreWidget->setDispState(ix, 1);
 }
 
 void Engine::requestGlobRestore(int ix)
