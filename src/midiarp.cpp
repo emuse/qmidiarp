@@ -628,8 +628,8 @@ void MidiArp::updatePattern(const QString& p_pattern)
         if (c.isDigit()) {
             if (!chordindex) {
                 nsteps += stepwd;
+                npoints++;
                 if (chordmd) chordindex++;
-                else npoints++;
             }
             if (c.digitValue() > patternMaxIndex)
                 patternMaxIndex = c.digitValue();
@@ -662,6 +662,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
             case 'p':
                 if (!chordmd)
                     nsteps += stepwd;
+                    npoints++;
                 break;
 
             case '+':

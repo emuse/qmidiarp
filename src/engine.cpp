@@ -588,8 +588,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     if ((restoreModType == 'A') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
-                        //TODO: Need number of pattern steps in Arps
-                        percent = frameptr;
+                        percent = frameptr * 100 / (midiArp(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && globRestoreFlag) {
                             doGlobRestore = true;
