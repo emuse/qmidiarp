@@ -586,8 +586,10 @@ void ArpWidget::updateText(const QString& newtext)
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    screen->updateScreen(newtext);
     midiWorker->updatePattern(newtext);
+    screen->updateScreen(newtext, midiWorker->minOctave,
+                            midiWorker->maxOctave, midiWorker->minStepWidth,
+                            midiWorker->nSteps, midiWorker->patternMaxIndex);
     modified = true;
 }
 

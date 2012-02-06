@@ -75,7 +75,6 @@ class MidiArp : public QWidget  {
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int randomTick, randomVelocity, randomLength;
     double stepWidth, len, vel;
-    double minStepWidth; /*!< Holds the minimum step width of the pattern for quantization purposes*/
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
     QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
     QTimer *latchTimer;         /*!< Is started when a note is released and causes MidiArp::purgeLatchBuffer after
@@ -110,7 +109,6 @@ class MidiArp : public QWidget  {
     int noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
     int noteCount;      /*!< The number of notes in the MidiArp::notes buffer */
     int patternLen;     /*!< Length of the arp text pattern */
-    int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
     int releaseNoteCount; /*!< The number of notes currently in release stage */
 
@@ -229,7 +227,14 @@ class MidiArp : public QWidget  {
     int randomTickAmp; /*!< Amplitude of timing randomization, set by ArpWidget */
     int randomVelocityAmp; /*!< Amplitude of velocity randomization, set by ArpWidget */
     int randomLengthAmp; /*!< Amplitude of length randomization, set by ArpWidget */
+
     QString pattern; /*!< Holds the the arpeggio pattern text */
+    int maxOctave;      /*!< Maximum octave shift found in the pattern */
+    int minOctave;      /*!< Minimum octave shift found in the pattern */
+    double minStepWidth; /*!< Minimum step width of the pattern for quantization purposes*/
+    double nSteps;      /*!< Musical length of the pattern in beats */
+    int nPoints;        /*!< Number of steps to be played out */
+    int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
 
     QVector<int> returnNote; /*!< Holds the notes of the currently active arpeggio step */
     QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */

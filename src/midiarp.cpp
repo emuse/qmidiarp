@@ -99,6 +99,10 @@ MidiArp::MidiArp()
     restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
     minStepWidth = 1.0;
+    maxOctave = 0;
+    minOctave = 0;
+    nSteps = 0;
+    nPoints = 1;
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
     noteIndex[0] = 0;
@@ -593,12 +597,20 @@ void MidiArp::updatePattern(const QString& p_pattern)
     patternLen = pattern.length();
     patternMaxIndex = 0;
     minStepWidth = 1.0;
+    minOctave = 0;
+    maxOctave = 0;
 
-    if (patternLen)
-    {
+    double stepwd = 1.0;
+    double nsteps = 0.;
+    int chordindex = 0;
+    bool chordmd = false;
+    int oct = 0;
+    int npoints = 0;
+
+    // strip off trailing control tokens
+    if (patternLen) {
         c = (pattern.at(patternLen - 1));
-        while (!c.isDigit() && (c != 'p') && (c != ')'))
-        {
+        while (!c.isDigit() && (c != 'p') && (c != ')')) {
             pattern = pattern.left(patternLen - 1);
             patternLen--;
             if (patternLen < 1) break;
@@ -606,18 +618,79 @@ void MidiArp::updatePattern(const QString& p_pattern)
         }
     }
 
+    // determine some useful properties of the arp pattern,
+    // number of octaves, step width and number of steps in beats and
+    // number of points
+
     for (l1 = 0; l1 < patternLen; l1++) {
         c = pattern.at(l1);
-        if (c.isDigit() && (c.digitValue() > patternMaxIndex)) {
-            patternMaxIndex = c.digitValue();
+
+        if (c.isDigit()) {
+            if (!chordindex) {
+                nsteps += stepwd;
+                if (chordmd) chordindex++;
+                else npoints++;
+            }
+            if (c.digitValue() > patternMaxIndex)
+                patternMaxIndex = c.digitValue();
         }
-        if (c == '>') minStepWidth *= .5;
-        if (c == '<') minStepWidth *= 2.;
+        switch(c.toAscii()) {
+            case '(':
+                chordmd = true;
+                chordindex = 0;
+                break;
+
+            case ')':
+                chordmd = false;
+                chordindex = 0;
+                break;
+
+            case '>':
+                stepwd *= .5;
+                if (stepwd < minStepWidth)
+                    minStepWidth *= .5;
+                break;
+
+            case '<':
+                stepwd *= 2.0;
+                break;
+
+            case '.':
+                stepwd = 1.0;
+                break;
+
+            case 'p':
+                if (!chordmd)
+                    nsteps += stepwd;
+                break;
+
+            case '+':
+                oct++;
+                if (oct > maxOctave)
+                    maxOctave++;
+                break;
+
+            case '-':
+                oct--;
+                if (oct < minOctave)
+                    minOctave--;
+                break;
+
+            case '=':
+                oct=0;
+                break;
+
+            default:
+                ;
+        }
+
     }
 
     patternIndex = 0;
     grooveIndex = 0;
     noteOfs = 0;
+    nSteps = nsteps;
+    nPoints = npoints;
 }
 
 int MidiArp::clip(int value, int min, int max, bool *outOfRange)

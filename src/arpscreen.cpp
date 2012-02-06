@@ -34,11 +34,19 @@
 ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
-    a_pattern=" ";
+    pattern=" ";
     grooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
+
+    // These parameters are transferred by ArpWidget upon each pattern change
+    maxOctave = 0;
+    minOctave = 0;
+    nSteps = 1.0;
+    minStepWidth = 1.0;
+    patternMaxIndex = 0;
     isMuted = false;
+
     timer = new QTimer(this);
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -59,8 +67,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     int l1, l2;
     int beat = 4;
-    double nsteps = 0.0;
-    double stepWidth = 1.0;
+    double stepwd = 1.0;
     double curstep = 0.0;
     int nlines = 0;
     int notelen;
@@ -74,105 +81,18 @@ void ArpScreen::paintEvent(QPaintEvent*)
     double len;
     int xscale, yscale, ofs;
     int x, x1;
-    int patternMaxIndex, patternLen;
-    bool chordMode = false;
+    int patternLen = pattern.length();
+    bool chordmd = false;
     int octave = 0;
-    int maxOctave = 0;
-    int minOctave = 0;
-    double minTempo = 1.0;
-    int noctaves = 1;
     double vel =1.0;
     double v = 0;
     int grv_cur_sft = 0;
     int grv_cur_len = 0;
     int grv_cur_vel = 0;
     int grooveIndex = 0;
-    int chordIndex = 0;
+    int chordindex = 0;
     l2 = 0;
     QChar c;
-
-    patternLen = a_pattern.length();
-    patternMaxIndex = 0;
-
-    for (l1 = 0; l1 < patternLen; l1++)
-    {
-        c = a_pattern.at(l1);
-
-        if (c.isDigit()) {
-            if (!chordIndex) {
-                nsteps += stepWidth;
-                if (chordMode) chordIndex++;
-            }
-            if (c.digitValue() > patternMaxIndex)
-                patternMaxIndex = c.digitValue();
-        }
-        switch(c.toAscii()) {
-            case '(':
-                chordMode = true;
-                chordIndex = 0;
-                break;
-
-            case ')':
-                chordMode = false;
-                chordIndex = 0;
-                break;
-
-            case '>':
-                stepWidth *= .5;
-                if (stepWidth < minTempo)
-                    minTempo *= .5;
-                break;
-
-            case '<':
-                stepWidth *= 2.0;
-                break;
-
-            case '.':
-                stepWidth = 1.0;
-                break;
-
-            case 'p':
-                if (!chordMode)
-                    nsteps += stepWidth;
-                break;
-
-            case '+':
-                octave++;
-                if (octave > maxOctave)
-                    maxOctave++;
-                break;
-
-            case '-':
-                octave--;
-                if (octave < minOctave)
-                    minOctave--;
-                break;
-
-            case '=':
-                octave=0;
-                break;
-
-            case '/':
-                vel += 0.2;
-                break;
-
-            case '\\':
-                vel -= 0.2;
-                break;
-
-            case 'd':
-                notelen *= 2;
-                break;
-
-            case 'h':
-                notelen *= .5;
-                break;
-
-            default:
-                ;
-        }
-
-    }
 
 
     //Green Filled Frame
@@ -187,12 +107,12 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.drawRect(0, 0, w - 1, h - 1);
 
     //Grid
-    len = nsteps;
+    len = nSteps;
     xscale = (w - 2 * ARPSCR_HMARG) / len;
     yscale = h - 2 * ARPSCR_VMARG;
 
     //Beat separators
-    for (l1 = 0; l1 < nsteps + 1; l1++) {
+    for (l1 = 0; l1 < nSteps + 1; l1++) {
 
         if (l1 < 10) {
             ofs = w / len * .5 - 4 + ARPSCR_HMARG;
@@ -208,7 +128,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         p.drawLine(ARPSCR_HMARG + x, ARPSCR_VMARG,
                 ARPSCR_HMARG + x, h-ARPSCR_VMARG);
 
-        if (l1 < nsteps) {
+        if (l1 < nSteps) {
 
             //Beat numbers
             p.drawText(ofs + x, ARPSCR_VMARG, QString::number(l1+1));
@@ -216,8 +136,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
             // Beat divisor separators
             p.setPen(QColor(40, 100, 40));
 
-            for (l2 = 1; l2 < 1.0/minTempo; l2++) {
-                x1 = x + l2 * xscale * minTempo;
+            for (l2 = 1; l2 < 1.0/minStepWidth; l2++) {
+                x1 = x + l2 * xscale * minStepWidth;
                 if (x1 < xscale*len)
                     p.drawLine(ARPSCR_HMARG + x1,
                             ARPSCR_VMARG, ARPSCR_HMARG + x1,
@@ -228,7 +148,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
     //Octave separators and numbers
     p.setPen(QColor(40, 120, 40));
-    noctaves = maxOctave - minOctave + 1;
+    int noctaves = maxOctave - minOctave + 1;
     for (l1 = 0; l1 < noctaves + 1; l1++) {
         ypos = yscale * l1 / noctaves + ARPSCR_VMARG;
         p.drawLine(ARPSCR_HMARG, ypos, w - ARPSCR_HMARG, ypos);
@@ -240,23 +160,23 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //Draw arpTicks
     curstep= 0.0;
     notelen = xscale/8;
-    stepWidth = 1.0;
+    stepwd = 1.0;
     vel = 0.8;
     octave = 0;
-    chordMode = false;
-    chordIndex = 0;
+    chordmd = false;
+    chordindex = 0;
 
 
     for (l1 = 0; l1 < patternLen; l1++)
     {
-        c = a_pattern.at(l1);
+        c = pattern.at(l1);
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
-            if (!chordIndex)
+            if (!chordindex)
             {
-                if (chordMode) chordIndex++;
-                curstep += stepWidth;
+                if (chordmd) chordindex++;
+                curstep += stepwd;
                 grooveIndex++;
             }
         }
@@ -265,30 +185,30 @@ void ArpScreen::paintEvent(QPaintEvent*)
             switch (c.toAscii())
             {
                 case '(':
-                    chordMode = true;
-                    chordIndex = 0;
+                    chordmd = true;
+                    chordindex = 0;
                     break;
 
                 case ')':
-                    chordMode = false;
-                    chordIndex = 0;
+                    chordmd = false;
+                    chordindex = 0;
                     break;
 
                 case '>':
-                    stepWidth *= .5;
+                    stepwd *= .5;
                     break;
 
                 case '<':
-                    stepWidth *= 2.0;
+                    stepwd *= 2.0;
                     break;
 
                 case '.':
-                    stepWidth = 1.0;
+                    stepwd = 1.0;
                     break;
 
                 case 'p':
-                    if (!chordMode)
-                        curstep += stepWidth;
+                    if (!chordmd)
+                        curstep += stepwd;
                         grooveIndex++;
                    break;
 
@@ -331,7 +251,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
         if (c.isDigit()) {
             octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
-            x = (curstep - stepWidth + 0.01 * (double)grv_cur_sft * stepWidth) * xscale;
+            x = (curstep - stepwd + 0.01 * (double)grv_cur_sft * stepwd) * xscale;
             dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
             v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
 
@@ -357,9 +277,17 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }
 }
 
-void ArpScreen::updateScreen(const QString& pattern)
+void ArpScreen::updateScreen(const QString& p_pattern, int p_minOctave,
+                                int p_maxOctave, double p_minStepWidth,
+                                double p_nSteps, int p_patternMaxIndex)
 {
-    a_pattern = pattern;
+    pattern = p_pattern;
+    minStepWidth = p_minStepWidth;
+    maxOctave = p_maxOctave;
+    minOctave = p_minOctave;
+    nSteps = p_nSteps;
+    patternMaxIndex = p_patternMaxIndex;
+
     update();
 }
 

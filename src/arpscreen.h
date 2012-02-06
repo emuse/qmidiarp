@@ -60,7 +60,6 @@ class ArpScreen : public QWidget
     QTimer *timer;
     int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
-    QString a_pattern;
     int pattern_updated, currentIndex;
     bool isMuted;
 
@@ -72,9 +71,16 @@ class ArpScreen : public QWidget
     ~ArpScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
+    int maxOctave;
+    int minOctave;
+    double minStepWidth;
+    double nSteps;
+    int patternMaxIndex;
 
   public slots:
-    void updateScreen(const QString&);
+    void updateScreen(const QString& pattern, int p_minOct, int p_maxOct,
+                            double p_minStepWidth, double p_nSteps,
+                            int p_patternMaxIndex);
     void updateScreen(int p_index);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
