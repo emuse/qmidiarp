@@ -70,8 +70,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     switchTick = 0;
     requestTick = 0;
 
-    globRestoreRequest = -1;
-    singleRestoreRequest = -1;
+    restoreRequest = -1;
     restoreModIx = 0;
     restoreModType = 'X';
     restoreModWindowIndex = -1;
@@ -79,8 +78,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     // we happen to need this QSignal for triggering global parameter restores from
     // within the echo callback. Direct calls to the module widgets were shown to
     // cause frequent segfaults
-    connect(this, SIGNAL(globRestoreSig(int)), this, SLOT(globRestore(int)));
-    connect(this, SIGNAL(singleRestoreSig(int)), this, SLOT(singleRestore(int)));
+    connect(this, SIGNAL(restoreSig(int)), this, SLOT(restore(int)));
 
     resetTicks(0);
     ready = true;
@@ -450,10 +448,8 @@ void Engine::echoCallback(bool echo_from_trig)
     int frameptr;
     int percent;
     bool isNew;
-    bool doGlobRestore = false;
-    bool doSingleRestore = false;
-    bool globRestoreFlag = (globRestoreRequest >= 0);
-    bool singleRestoreFlag = (singleRestoreRequest >= 0);
+    bool doRestore = false;
+    bool restoreFlag = (restoreRequest >= 0);
     MidiEvent outEv;
 
     currentTick = tick;
@@ -496,13 +492,9 @@ void Engine::echoCallback(bool echo_from_trig)
                         frameptr = midiLfo(l1)->getFramePtr();
                         percent = frameptr * 100 / (midiLfo(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && globRestoreFlag) {
-                            doGlobRestore = true;
-                            globRestoreFlag = false;
-                        }
-                        else if (!frameptr && singleRestoreFlag) {
-                            doSingleRestore = true;
-                            singleRestoreFlag = false;
+                        if (!frameptr && restoreFlag) {
+                            doRestore = true;
+                            restoreFlag = false;
                         }
                     }
                 }
@@ -538,13 +530,9 @@ void Engine::echoCallback(bool echo_from_trig)
                         frameptr = midiSeq(l1)->getCurrentIndex();
                         percent = frameptr * 100 / (midiSeq(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && globRestoreFlag) {
-                            doGlobRestore = true;
-                            globRestoreFlag = false;
-                        }
-                        else if (!frameptr && singleRestoreFlag) {
-                            doSingleRestore = true;
-                            singleRestoreFlag = false;
+                        if (!frameptr && restoreFlag) {
+                            doRestore = true;
+                            restoreFlag = false;
                         }
                     }
                 }
@@ -590,13 +578,9 @@ void Engine::echoCallback(bool echo_from_trig)
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
                         percent = frameptr * 100 / (midiArp(l1)->nPoints);
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && globRestoreFlag) {
-                            doGlobRestore = true;
-                            globRestoreFlag = false;
-                        }
-                        else if (!frameptr && singleRestoreFlag) {
-                            doSingleRestore = true;
-                            singleRestoreFlag = false;
+                        if (!frameptr && restoreFlag) {
+                            doRestore = true;
+                            restoreFlag = false;
                         }
                     }
                 }
@@ -611,18 +595,16 @@ void Engine::echoCallback(bool echo_from_trig)
         if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
 
-    if ((globRestoreFlag || singleRestoreFlag)
+    if (restoreFlag
             && (globStoreWidget->timeModeBox->currentIndex())) {
         percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
         globStoreWidget->indicator->updatePercent(percent);
         if (currentTick >= switchTick) {
-            doGlobRestore = globRestoreFlag;
-            doSingleRestore = singleRestoreFlag;
+            doRestore = restoreFlag;
         }
     }
 
-    if (doGlobRestore) emit globRestoreSig(globRestoreRequest);
-    if (doSingleRestore) emit singleRestoreSig(singleRestoreRequest);
+    if (doRestore) emit restoreSig(restoreRequest);
 }
 
 bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
@@ -821,33 +803,18 @@ void Engine::globStore(int ix)
     globStoreWidget->setDispState(ix, 1);
 }
 
-void Engine::requestGlobRestore(int ix)
+void Engine::requestRestore(int windowIndex, int ix)
 {
-    if (status == false) {
-        globRestore(ix);
-    }
-    else {
-        globRestoreRequest = ix;
-        globStoreWidget->setDispState(ix, 2);
-        if (globStoreWidget->timeModeBox->currentIndex()) {
-            requestTick = currentTick;
-            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
-            ->currentIndex() + currentTick / TPQN);
-        }
-    }
-}
+//        restoreModIx = moduleWindowList.at(windowIndex)->widget()->property("widgetID").toInt();
+//        restoreModType = moduleWindowList.at(windowIndex)->objectName().at(0);
 
-void Engine::requestSingleRestore(int windowIndex, int ix)
-{
-    restoreModIx = moduleWindowList.at(windowIndex)->widget()->property("widgetID").toInt();
-    restoreModType = moduleWindowList.at(windowIndex)->objectName().at(0);
     restoreModWindowIndex = windowIndex;
 
     if (status == false) {
-        singleRestore(ix);
+        restore(ix);
     }
     else {
-        singleRestoreRequest = ix;
+        restoreRequest = ix;
         globStoreWidget->setDispState(ix, 2, windowIndex);
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
@@ -857,37 +824,34 @@ void Engine::requestSingleRestore(int windowIndex, int ix)
     }
 }
 
-void Engine::globRestore(int ix)
+void Engine::restore(int ix)
 {
-    int l1;
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->restoreParams(ix);
+    if (restoreModWindowIndex < 0) {
+        int l1;
+        for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+            arpWidget(l1)->restoreParams(ix);
+        }
+        for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+            lfoWidget(l1)->restoreParams(ix);
+        }
+        for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+            seqWidget(l1)->restoreParams(ix);
+        }
     }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->restoreParams(ix);
-    }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->restoreParams(ix);
-    }
-
-    globStoreWidget->setDispState(ix, 1);
-    globRestoreRequest = -1;
-}
-
-void Engine::singleRestore(int ix)
-{
-    if (restoreModType == 'A') {
-        arpWidget(restoreModIx)->restoreParams(ix);
-    }
-    else if (restoreModType == 'L') {
-        lfoWidget(restoreModIx)->restoreParams(ix);
-    }
-    else if (restoreModType == 'S') {
-        seqWidget(restoreModIx)->restoreParams(ix);
+    else {
+        if (restoreModType == 'A') {
+            arpWidget(restoreModIx)->restoreParams(ix);
+        }
+        else if (restoreModType == 'L') {
+            lfoWidget(restoreModIx)->restoreParams(ix);
+        }
+        else if (restoreModType == 'S') {
+            seqWidget(restoreModIx)->restoreParams(ix);
+        }
     }
 
     globStoreWidget->setDispState(ix, 1, restoreModWindowIndex);
-    singleRestoreRequest = -1;
+    restoreRequest = -1;
 }
 
 void Engine::removeParStores(int ix)

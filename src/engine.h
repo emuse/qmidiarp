@@ -69,13 +69,11 @@ class Engine : public QThread  {
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midiLearnFlag;
     bool useMidiClock;
-    int globRestoreRequest;
     int restoreModIx;
     QChar restoreModType;
     int restoreModWindowIndex;
-    int singleRestoreRequest;
-    QChar singleRestoreModType;
-    int singleRestoreModule;
+    int restoreRequest;
+    int restoreModule;
 
     //From SeqDriver
     int schedDelayTicks;
@@ -154,8 +152,7 @@ class Engine : public QThread  {
  * @param tick Set to the tick value at which the event was received
  */
     void midiEventReceived(MidiEvent ev, int tick);
-    void globRestoreSig(int ix);
-    void singleRestoreSig(int ix);
+    void restoreSig(int ix);
     void indicPercent(int p);
 
   public slots:
@@ -182,20 +179,14 @@ class Engine : public QThread  {
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
 /*!
-* @brief causes all modules to restore their current parameters from their
-* ParStore::list at index ix
-*
-* @param ix ParStore::list index from which all module parameters are to be restored
-*/
-    void globRestore(int ix);
-/*!
 * @brief causes the module of type Engine::restoreModType at position
 * Engine::restoreModIx in the moduleWidgetList to restore its current
-* parameters from its ParStore::list at index ix
+* parameters from its ParStore::list at index ix. If Engine::restoreModType
+* is set to -1, all modules are called for restore.
 *
 * @param ix ParStore::list index from which all module parameters are to be restored
 */
-    void singleRestore(int ix);
+    void restore(int ix);
 /*!
 * @brief causes all modules to remove their entries in the ParStore::list
 * at index ix
@@ -211,19 +202,13 @@ class Engine : public QThread  {
 */
     void globStore(int ix);
 /*!
-* @brief causes Engine to call Engine::globRestore() when the timing and
-* restore type conditions are met
-* @param ix ParStore::list index from which all module parameters are to be restored
-*/
-    void requestGlobRestore(int ix);
-/*!
-* @brief causes Engine to call Engine::singleRestore() when the timing and
+* @brief causes Engine to call Engine::restore() when the timing and
 * restore type conditions are met
 * @param windowIndex Engine::moduleWindowList index of the module which should
-* restore its parameters
+* restore its parameters. If windowIndex is set to -1, all modules are called
 * @param ix ParStore::list index from which all module parameters are to be restored
 */
-    void requestSingleRestore(int windowIndex, int ix);
+    void requestRestore(int windowIndex, int ix);
 /*!
 * @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
 *

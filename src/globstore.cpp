@@ -22,7 +22,6 @@
  *      MA 02110-1301, USA.
  *
  */
-#include <QAction>
 #include <QLabel>
 #include <QToolButton>
 
@@ -39,20 +38,15 @@ GlobStore::GlobStore(QWidget *parent)
     midiControl->ID = -2;
     midiControl->parentDockID = -2;
 
-    activeStore = 0;
-    activeSingleStore[0] = 0;
-    activeSingleStore[1] = 0;
-    currentRequest = 0;
-    currentSingleRequest[0] = 0;
-    currentSingleRequest[1] = 0;
+    activeStore[0] = 0;
+    activeStore[1] = 0;
+    currentRequest[0] = 0;
+    currentRequest[1] = 0;
     switchAtBeat = 0;
 
     storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(storeAll(int)));
-    restoreSignalMapper = new QSignalMapper(this);
-    connect(restoreSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(restoreAll(int)));
 
     timeModeBox = new QComboBox(this);
     timeModeBox->addItem(tr("End of"));
@@ -147,13 +141,6 @@ void GlobStore::storeAll(int ix)
     emit globStore(ix);
 }
 
-void GlobStore::restoreAll(int ix)
-{
-    if (ix < (widgetList.count() - 1)) {
-        emit requestGlobRestore(ix);
-    }
-}
-
 void GlobStore::addLocation()
 {
     QAction* storeAction = new QAction(tr("&Store"), this);
@@ -171,8 +158,9 @@ void GlobStore::addLocation()
     restoreAction->setText(QString::number(widgetList.count() + 1));
     restoreAction->setFont(QFont("Helvetica", 20));
     restoreAction->setDisabled(true);
-    connect(restoreAction, SIGNAL(triggered()), restoreSignalMapper, SLOT(map()));
-    restoreSignalMapper->setMapping(restoreAction, widgetList.count());
+    restoreAction->setObjectName("-1");
+    restoreAction->setProperty("index", widgetList.count() + 1);
+    connect(restoreAction, SIGNAL(triggered()), this, SLOT(mapRestoreSignal()));
 
     QWidget* globWidget = new QWidget(this);
     QHBoxLayout* globLayout = new QHBoxLayout;
@@ -251,42 +239,32 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
     if (windowIndex < 0) {
         start = 0;
         end = timeModuleBox->count();
-        if (selected == 1) {
-            for (l1 = start; l1 <= end; l1++) {
-                for (l2 = 0; l2 < widgetList.count(); l2++) {
-                    setBGColorAt(l1, l2, (l2 == ix + 1));
-                }
-            }
-            activeStore = ix;
-        }
-        else if (selected == 2) {
-            for (l1 = start; l1 <= end; l1++) {
-                if (currentRequest != activeStore) setBGColorAt(l1, currentRequest + 1, 0);
-                setBGColorAt(l1, ix + 1, 2);
-            }
-            currentRequest = ix;
-        }
-        else {
-        }
     }
     else {
-        if (selected == 1) {
-            for (l1 = 1; l1 <= widgetList.count(); l1++) {
-                setBGColorAt(windowIndex + 1, l1 - 1, 0);
+        start = windowIndex + 1;
+        end = start;
+    }
+
+    if (selected == 1) {
+        for (l1 = start; l1 <= end; l1++) {
+            for (l2 = 1; l2 <= widgetList.count(); l2++) {
+                setBGColorAt(l1, l2 - 1, 0);
             }
-            setBGColorAt(windowIndex + 1, ix + 1, 1);
-            activeSingleStore[0] = windowIndex;
-            activeSingleStore[1] = ix;
+            setBGColorAt(l1, ix + 1, 1);
         }
-        else if (selected == 2) {
-            if ((currentSingleRequest[0] != activeSingleStore[0]) ||
-                (currentSingleRequest[1] != activeSingleStore[1])) {
-                setBGColorAt(currentSingleRequest[0] + 1, currentSingleRequest[1] + 1, 0);
-            }
-            setBGColorAt(windowIndex + 1, ix + 1, 2);
-            currentSingleRequest[0] = windowIndex;
-            currentSingleRequest[1] = ix;
+        activeStore[0] = windowIndex;
+        activeStore[1] = ix;
+    }
+    else if (selected == 2) {
+        if ((currentRequest[0] != activeStore[0]) ||
+            (currentRequest[1] != activeStore[1])) {
+            setBGColorAt(currentRequest[0] + 1, currentRequest[1] + 1, 0);
         }
+        for (l1 = start; l1 <= end; l1++) {
+            setBGColorAt(l1, ix + 1, 2);
+        }
+        currentRequest[0] = windowIndex;
+        currentRequest[1] = ix;
     }
 }
 
@@ -382,11 +360,13 @@ void GlobStore::mapRestoreSignal()
     int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
 
-    emit requestSingleRestore(moduleID, ix - 1);
-
-    timeModuleBox->setCurrentIndex(moduleID);
-
+    if (moduleID >= 0) {
+        timeModuleBox->setCurrentIndex(moduleID);
+        updateTimeModule(moduleID);
+    }
+    emit requestRestore(moduleID, ix - 1);
 }
+
 void GlobStore::readData(QXmlStreamReader& xml)
 {
     int tmp;
@@ -415,6 +395,7 @@ void GlobStore::readData(QXmlStreamReader& xml)
         else skipXmlElement(xml);
     }
 }
+
 void GlobStore::writeData(QXmlStreamWriter& xml)
 {
     xml.writeStartElement("globalstorage");
@@ -438,15 +419,9 @@ void GlobStore::handleController(int ccnumber, int channel, int value)
     for (int l2 = 0; l2 < cclist.count(); l2++) {
         if ((ccnumber == cclist.at(l2).ccnumber) &&
             (channel == cclist.at(l2).channel)) {
-
-            if (!cclist.at(l2).ID) {
-                emit requestGlobRestore(value);
-            }
-            else {
-                if (cclist.at(l2).ID > timeModuleBox->count()) return;
-                emit requestSingleRestore(cclist.at(l2).ID - 1, value);
-                timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
-            }
+            if (cclist.at(l2).ID > timeModuleBox->count()) return;
+            emit requestRestore(cclist.at(l2).ID - 1, value);
+            timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
         }
     }
 }

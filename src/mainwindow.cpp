@@ -92,10 +92,8 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     connect(globStore, SIGNAL(globStore(int)), engine,
             SLOT(globStore(int)));
-    connect(globStore, SIGNAL(requestGlobRestore(int)), engine,
-            SLOT(requestGlobRestore(int)));
-    connect(globStore, SIGNAL(requestSingleRestore(int, int)), engine,
-            SLOT(requestSingleRestore(int, int)));
+    connect(globStore, SIGNAL(requestRestore(int, int)), engine,
+            SLOT(requestRestore(int, int)));
     connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
             SLOT(updateGlobRestoreTimeModule(int)));
     connect(globStore, SIGNAL(removeParStores(int)), engine,

@@ -54,12 +54,9 @@ class GlobStore : public QGroupBox
 
   private:
     QSignalMapper *storeSignalMapper;
-    QSignalMapper *restoreSignalMapper;
     QHBoxLayout* indivButtonLayout;
-    int activeStore;
-    int activeSingleStore[2];
-    int currentRequest;
-    int currentSingleRequest[2];
+    int activeStore[2];
+    int currentRequest[2];
 
   public:
     GlobStore(QWidget* parent=0);
@@ -114,25 +111,16 @@ class GlobStore : public QGroupBox
 */
   void globStore(int ix);
 /*!
-* @brief emitted to Engine::requestSingleRestore(int)
+* @brief emitted to Engine::requestRestore(int)
 *
 * Causes the module with moduleID in the DockWidget to restore its
 * parameters from its ParStore::list at index ix
 *
 * @param moduleWidget moduleID in the DockWidget which should restore its
-* parameters
+* parameters. If ix = -1, all modules are called
 * @param ix ParStore::list index from which the parameters are restored
 */
-  void requestSingleRestore(int moduleID, int ix);
-/*!
-* @brief emitted to Engine::requestGlobRestore(int)
-*
-* Causes all modules to restore their parameters from their
-* ParStore::list at index ix
-*
-* @param ix ParStore::list index from which the parameters are restored
-*/
-  void requestGlobRestore(int ix);
+  void requestRestore(int moduleID, int ix);
 /*!
 * @brief emitted to Engine, which will make the
 * module at index windowIndex in the Engine::moduleWindowList trigger
@@ -165,13 +153,6 @@ class GlobStore : public QGroupBox
 * @param ix Index in the module store lists
 */
     void storeAll(int ix);
-/*!
-* @brief causes all module widgets to set their parameters
-* to those found at index ix in their global parameter store lists
-*
-* @param ix Index in the module store lists
-*/
-    void restoreAll(int ix);
 /*!
 * @brief emits the GlobStore::updateGlobRestoreTimeModule() signal to
 * Engine::updateGlobRestoreTimeModule()
@@ -212,7 +193,7 @@ class GlobStore : public QGroupBox
 * @param ix Storage index of the storage button to act on
 * @param selected Color state to attribute to the button, 1 = green, 2 = yellow
 * @param windowIndex Engine::ModuleWindowList index the button to colorize
-* is attributed to (if not specified, all buttons for index ix are colorized
+* is attributed to. If set to -1 (default), all buttons for index ix are colorized
 */
     void setDispState(int ix, int selected, int windowIndex = -1);
     void setBGColorAt(int column, int row, int color);
