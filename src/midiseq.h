@@ -162,18 +162,30 @@ class MidiSeq : public QObject  {
  */
     void setCustomWavePoint(double mouseX, double mouseY);
 /*! @brief This function sets the MidiSeq::loopMarker member variable
+ * used as a supplemental return point within the sequence.
+ *
+ * @param ix Absolute pattern index position of the marker. NOTE:
+ * If ix is negative, the
+ * marker acts to the left, whereas it acts to the right when mouseX is
+ * positive. If ix is zero, the loopMarker will be removed.
+ * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint(),
+ * MidiSeq::setLoopMarkerMouse()
+ */
+    void setLoopMarker(int ix);
+/*! @brief This function sets the MidiSeq::loopMarker member variable
  * used as a supplemental return point within the sequence. It is called
  *  by SeqWidget::mousePressed().
  * The normalized mouse coordinates are scaled to the waveform size and
- * resolution.
+ * resolution and then MidiSeq::setLoopMarker() is called
  *
  * @param mouseX Normalized horizontal location of the mouse on the
  * SeqScreen (0.0 ... 1.0). If the mouseX parameter is negative, the
  * marker acts to the left, whereas it acts to the right when mouseX is
  * positive. If mouseX is zero, the loopMarker will be removed.
- * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint()
+ * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint(),
+ * MidiSeq::setLoopMarker()
  */
-    void setLoopMarker(double mouseX);
+    void setLoopMarkerMouse(double mouseX);
 /*! @brief This function sets the mute state of one point of the
  * MidiSeq::muteMask array to the given state.
  *

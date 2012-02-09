@@ -297,11 +297,17 @@ void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
     setRecordedNote(12 * (mouseY * nOctaves + baseOctave));
 }
 
-void MidiSeq::setLoopMarker(double mouseX)
+void MidiSeq::setLoopMarkerMouse(double mouseX)
 {
     const int npoints = res * size;
-    if (mouseX > 0) loopMarker = mouseX * (double)npoints + .5;
-    else loopMarker = mouseX * (double)npoints - .5;
+    if (mouseX > 0) setLoopMarker(mouseX * (double)npoints + .5);
+    else setLoopMarker(mouseX * (double)npoints - .5);
+}
+
+void MidiSeq::setLoopMarker(int ix)
+{
+    const int npoints = res * size;
+    loopMarker = ix;
     if (abs(loopMarker) >= npoints) loopMarker = 0;
     if (!loopMarker) nPoints = npoints;
     else nPoints = abs(loopMarker);

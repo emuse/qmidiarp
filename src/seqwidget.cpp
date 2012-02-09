@@ -568,9 +568,8 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 }
                 else if (xml.name() == "loopmarker") {
                     tmp = xml.readElementText().toInt();
-                    midiWorker->loopMarker = tmp;
+                    midiWorker->setLoopMarker(tmp);
                     screen->setLoopMarker(tmp);
-                    if (tmp) midiWorker->nPoints = abs(tmp);
                 }
                 else skipXmlElement(xml);
             }
@@ -753,7 +752,7 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
     if (mouseY < 0) {
         if (mouseX < 0) mouseX = 0;
         if (buttons == 2) mouseX = - mouseX;
-        midiWorker->setLoopMarker(mouseX);
+        midiWorker->setLoopMarkerMouse(mouseX);
         screen->setLoopMarker(midiWorker->loopMarker);
         modified = true;
         return;
@@ -884,7 +883,7 @@ void SeqWidget::restoreParams(int ix)
     midiWorker->size = sizeBox->currentText().toInt();
     midiWorker->res = seqResValues[parStore->list.at(ix).res];
     midiWorker->resizeAll();
-    midiWorker->loopMarker = parStore->list.at(ix).loopMarker;
+    midiWorker->setLoopMarker(parStore->list.at(ix).loopMarker);
     screen->setLoopMarker(parStore->list.at(ix).loopMarker);
 
     resBox->setCurrentIndex(parStore->list.at(ix).res);
@@ -952,7 +951,7 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
         midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
     }
     tmp = fromWidget->getLoopMarker();
-    midiWorker->loopMarker = tmp;
+    midiWorker->setLoopMarker(tmp);
     screen->setLoopMarker(tmp);
     midiControl->setCcList(fromWidget->midiControl->ccList);
     muteOut->setChecked(true);
