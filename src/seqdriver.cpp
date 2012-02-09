@@ -126,7 +126,7 @@ void SeqDriver::run()
     pfds = (struct pollfd *) alloca(nfds * sizeof(struct pollfd));
     snd_seq_poll_descriptors(seq_handle, pfds, nfds, POLLIN);
 
-    while ((poll >= 0) && (!threadAbort)) {
+    while (((long)poll >= 0) && (!threadAbort)) {
 
         pollr = poll(pfds, nfds, 200);
         while (pollr > 0) {
