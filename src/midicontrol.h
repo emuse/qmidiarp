@@ -100,7 +100,7 @@ class MidiControl : public QWidget
  *  @param ID SeqWidget::ID of the module receiving the MIDI controller
  *  @param controlID ID of the GUI element to be assigned to the controller
  *  */
-    void setMidiLearn(int parentDockID, int ID, int controlID);
+    void setMidiLearn(int parentdockid, int id, int controlID);
 /*! @brief Forwarded context menu action by signalMapper to call MIDI-Learn/Forget functions.
  *  @param controlID ID of the GUI element requesting the MIDI controller
  *  */

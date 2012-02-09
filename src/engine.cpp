@@ -595,8 +595,7 @@ void Engine::echoCallback(bool echo_from_trig)
         if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
 
-    if (restoreFlag
-            && (globStoreWidget->timeModeBox->currentIndex())) {
+    if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
         percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
         globStoreWidget->indicator->updatePercent(percent);
         if (currentTick >= switchTick) {
@@ -805,9 +804,6 @@ void Engine::globStore(int ix)
 
 void Engine::requestRestore(int windowIndex, int ix)
 {
-//        restoreModIx = moduleWindowList.at(windowIndex)->widget()->property("widgetID").toInt();
-//        restoreModType = moduleWindowList.at(windowIndex)->objectName().at(0);
-
     restoreModWindowIndex = windowIndex;
 
     if (status == false) {
