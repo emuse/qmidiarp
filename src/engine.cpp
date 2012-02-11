@@ -75,10 +75,14 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreModType = 'X';
     restoreModWindowIndex = -1;
 
-    // we happen to need this QSignal for triggering global parameter restores from
-    // within the echo callback. Direct calls to the module widgets were shown to
-    // cause frequent segfaults
+    // we happen to need these QSignals for triggering display updates
+    // and global parameter restores from within the echo callback.
+    // Direct calls to the module widgets were shown to
+    // cause frequent segfaults.
     connect(this, SIGNAL(restoreSig(int)), this, SLOT(restore(int)));
+    connect(this, SIGNAL(indicPercentSig(int)), this, SLOT(indicPercent(int)));
+    connect(this, SIGNAL(updateCursorSig(QChar, int, int))
+            , this, SLOT(updateCursor(QChar, int, int)));
 
     resetTicks(0);
     ready = true;
@@ -473,7 +477,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
                     frameptr = lfoWidget(l1)->getFramePtr();
-                    lfoWidget(l1)->screen->updateScreen(frameptr);
+                    emit updateCursorSig('L', l1, frameptr);
                     midiLfo(l1)->getNextFrame(&lfoData, tick);
                     outport = midiLfo(l1)->portOut;
                     if (!midiLfo(l1)->isMuted) {
@@ -491,7 +495,7 @@ void Engine::echoCallback(bool echo_from_trig)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiLfo(l1)->getFramePtr();
                         percent = frameptr * 100 / (midiLfo(l1)->nPoints);
-                        globStoreWidget->indicator->updatePercent(percent);
+                        emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
                             doRestore = true;
                             restoreFlag = false;
@@ -517,7 +521,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    seqWidget(l1)->screen->updateScreen(seqWidget(l1)->getCurrentIndex());
+                    emit updateCursorSig('S', l1, seqWidget(l1)->getCurrentIndex());
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
                     outport = midiSeq(l1)->portOut;
@@ -529,7 +533,7 @@ void Engine::echoCallback(bool echo_from_trig)
                           && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiSeq(l1)->getCurrentIndex();
                         percent = frameptr * 100 / (midiSeq(l1)->nPoints);
-                        globStoreWidget->indicator->updatePercent(percent);
+                        emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
                             doRestore = true;
                             restoreFlag = false;
@@ -561,7 +565,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
                     isNew = midiArp(l1)->returnIsNew;
-                    arpWidget(l1)->screen->updateScreen(arpWidget(l1)->getGrooveIndex());
+                    emit updateCursorSig('A', l1, arpWidget(l1)->getGrooveIndex());
                     if (!velocity.isEmpty()) {
                         if (isNew && velocity.at(0)) {
                             l2 = 0;
@@ -577,7 +581,7 @@ void Engine::echoCallback(bool echo_from_trig)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
                         percent = frameptr * 100 / (midiArp(l1)->nPoints);
-                        globStoreWidget->indicator->updatePercent(percent);
+                        emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
                             doRestore = true;
                             restoreFlag = false;
@@ -787,6 +791,30 @@ void Engine::tr_state_cb(bool on, void *context)
     }
 }
 
+void Engine::indicPercent(int p)
+{
+    globStoreWidget->indicator->updatePercent(p);
+}
+
+void Engine::updateCursor(QChar modtype, int ix, int pos)
+{
+    switch (modtype.toLatin1()) {
+
+        case 'S':
+            seqWidget(ix)->screen->updateScreen(pos);
+        break;
+
+        case 'L':
+            lfoWidget(ix)->screen->updateScreen(pos);
+        break;
+
+        case 'A':
+            arpWidget(ix)->screen->updateScreen(pos);
+        break;
+
+        default: ;
+    }
+}
 void Engine::globStore(int ix)
 {
     int l1;

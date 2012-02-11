@@ -153,7 +153,8 @@ class Engine : public QThread  {
  */
     void midiEventReceived(MidiEvent ev, int tick);
     void restoreSig(int ix);
-    void indicPercent(int p);
+    void indicPercentSig(int p);
+    void updateCursorSig(QChar modtype, int ix, int pos);
 
   public slots:
     void setStatus(bool);
@@ -178,6 +179,8 @@ class Engine : public QThread  {
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
+    void indicPercent(int p);
+    void updateCursor(QChar modtype, int ix, int pos);
 /*!
 * @brief causes the module of type Engine::restoreModType at position
 * Engine::restoreModIx in the moduleWidgetList to restore its current
