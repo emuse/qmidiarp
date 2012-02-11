@@ -88,7 +88,7 @@ class MainWindow : public QMainWindow
     QString lastDir, filename;
     QStringList patternNames, patternPresets;
     QStringList recentFiles;
-    QDockWidget *logWindow, *grooveWindow, *passWindow;
+    QDockWidget *logWindow, *grooveWindow, *passWindow, *globStoreWindow;
 
     QToolBar *controlToolBar, *fileToolBar;
     QAction *runAction, *addArpAction;
@@ -96,7 +96,6 @@ class MainWindow : public QMainWindow
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
     QAction *midiClockAction, *jackSyncAction;
-    QAction *viewGlobAction;
     QMenu* fileRecentlyOpenedFiles;
 
 /*!
