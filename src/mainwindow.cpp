@@ -84,8 +84,15 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     grooveWindow->setWidget(grooveWidget);
     grooveWindow->setObjectName("grooveWidget");
     grooveWindow->setVisible(true);
-    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+
     globStore = new GlobStore(this);
+    globStoreWindow = new QDockWidget(tr("Global Store"), this);
+    globStoreWindow->setFeatures(QDockWidget::DockWidgetClosable
+            | QDockWidget::DockWidgetMovable
+            | QDockWidget::DockWidgetFloatable);
+    globStoreWindow->setWidget(globStore);
+    globStoreWindow->setObjectName("globStore");
+    globStoreWindow->setVisible(true);
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (!alsaMidi) connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
@@ -108,13 +115,16 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
             | QDockWidget::DockWidgetFloatable);
     logWindow->setWidget(logWidget);
     logWindow->setObjectName("logWidget");
-    addDockWidget(Qt::BottomDockWidgetArea, logWindow);
     qRegisterMetaType<MidiEvent>("MidiEvent");
     connect(engine, SIGNAL(midiEventReceived(MidiEvent, int)),
             logWidget, SLOT(appendEvent(MidiEvent, int)));
 
     connect(logWidget, SIGNAL(sendLogEvents(bool)),
             engine, SLOT(setSendLogEvents(bool)));
+
+    addDockWidget(Qt::BottomDockWidgetArea, globStoreWindow);
+    addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
+    addDockWidget(Qt::BottomDockWidgetArea, logWindow);
 
     passWidget = new PassWidget(engine, p_portCount, this);
 
@@ -217,13 +227,11 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
-    viewGlobAction = new QAction(tr("&Global Store"), this);
-    viewGlobAction->setCheckable(true);
+    QAction* viewGlobAction = globStoreWindow->toggleViewAction();
     viewGlobAction->setIcon(QIcon(globtog_xpm));
+    viewGrooveAction->setText(tr("&Global Store"));
     viewGlobAction->setShortcut(QKeySequence(tr("Ctrl+$",
                     "View|GlobalStore")));
-    connect(viewGlobAction, SIGNAL(toggled(bool)), globStore, SLOT(setVisible(bool)));
-    viewGlobAction->setChecked(true);
 
     QMenuBar *menuBar = new QMenuBar;
     QMenu *fileMenu = new QMenu(tr("&File"), this);
@@ -301,8 +309,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     setWindowIcon(QPixmap(qmidiarp2_xpm));
 
-
-    setCentralWidget(globStore);
+    setCentralWidget(new QWidget(this));
     setDockNestingEnabled(true);
     updateWindowTitle();
 
@@ -1170,8 +1177,6 @@ void MainWindow::readRcFile()
                 logWidget->logMidiClock->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#GUIState"))
                 restoreState(QByteArray::fromHex(value.at(1).toUtf8()));
-            else if ((value.at(0) == "#GlobStoreVisible"))
-                viewGlobAction->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LastDir"))
                 lastDir = value.at(1);
             else if ((value.at(0) == "#RecentFile"))
@@ -1212,8 +1217,6 @@ void MainWindow::writeRcFile()
     writeText << logWidget->logMidiClock->isChecked() << endl;
     writeText << "#GUIState%";
     writeText << saveState().toHex() << endl;
-    writeText << "#GlobStoreVisible%";
-    writeText << viewGlobAction->isChecked() << endl;
 
     writeText << "#LastDir%";
     writeText << lastDir << endl;

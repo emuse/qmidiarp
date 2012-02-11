@@ -47,7 +47,7 @@
 
  * @brief Global Parameter Storage UI. Instantiated by MainWindow.
  */
-class GlobStore : public QGroupBox
+class GlobStore : public QWidget
 
 {
   Q_OBJECT

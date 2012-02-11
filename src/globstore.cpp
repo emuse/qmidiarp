@@ -30,7 +30,7 @@
 #include "pixmaps/filesave.xpm"
 
 GlobStore::GlobStore(QWidget *parent)
-            : QGroupBox(tr("Global Storage"), parent)
+            : QWidget(parent)
 {
     int l1;
 
@@ -124,7 +124,6 @@ GlobStore::GlobStore(QWidget *parent)
 
     addLocation();
 
-    setStyleSheet("QGroupBox { font: 8pt; }");
     setLayout(centLayout);
 }
 
