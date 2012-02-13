@@ -74,6 +74,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreModIx = 0;
     restoreModType = 'X';
     restoreModWindowIndex = -1;
+    restoreTick = -1;
 
     // we happen to need these QSignals for triggering display updates
     // and global parameter restores from within the echo callback.
@@ -452,7 +453,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int frameptr;
     int percent;
     bool isNew;
-    bool doRestore = false;
     bool restoreFlag = (restoreRequest >= 0);
     MidiEvent outEv;
 
@@ -497,7 +497,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         percent = frameptr * 100 / (midiLfo(l1)->nPoints);
                         emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
-                            doRestore = true;
+                            restoreTick = lfoData.last().tick;
                             restoreFlag = false;
                         }
                     }
@@ -535,7 +535,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         percent = frameptr * 100 / (midiSeq(l1)->nPoints);
                         emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
-                            doRestore = true;
+                            restoreTick = midiSeq(l1)->nextTick;
                             restoreFlag = false;
                         }
                     }
@@ -583,7 +583,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         percent = frameptr * 100 / (midiArp(l1)->nPoints);
                         emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
-                            doRestore = true;
+                            restoreTick = note_tick;
                             restoreFlag = false;
                         }
                     }
@@ -601,13 +601,19 @@ void Engine::echoCallback(bool echo_from_trig)
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
         percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
-        globStoreWidget->indicator->updatePercent(percent);
+        emit indicPercentSig(percent);
         if (currentTick >= switchTick) {
-            doRestore = restoreFlag;
+            restoreTick = currentTick;
         }
     }
 
-    if (doRestore) emit restoreSig(restoreRequest);
+    if ((restoreTick > -1)
+        && (!midiArpCount() || (nextMinArpTick + schedDelayTicks >= restoreTick))
+        && (!midiLfoCount() || (nextMinLfoTick >= restoreTick))
+        && (!midiSeqCount() || (nextMinSeqTick >= restoreTick))) {
+        restoreTick = -1;
+        emit restoreSig(restoreRequest);
+    }
 }
 
 bool Engine::midi_event_received_callback(void * context, MidiEvent ev)

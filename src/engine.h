@@ -74,6 +74,7 @@ class Engine : public QThread  {
     int restoreModWindowIndex;
     int restoreRequest;
     int restoreModule;
+    int restoreTick;
 
     //From SeqDriver
     int schedDelayTicks;
