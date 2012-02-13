@@ -45,6 +45,14 @@
     };
 #endif
 
+/*! @brief This array holds the currently available LFO resolution values.
+ */
+const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
+
+/*! @brief This array holds the currently available Seq resolution values.
+ */
+const int seqResValues[5] = {1, 2, 4, 8, 16};
+
 /*!
  * @brief Provides a parameter storage for QMidiArp module widgets.
  *

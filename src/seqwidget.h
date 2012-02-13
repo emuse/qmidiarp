@@ -43,9 +43,6 @@
 #include "managebox.h"
 #include "parstore.h"
 
-/*! @brief This array holds the currently available resolution values.
- */
-const int seqResValues[5] = {1, 2, 4, 8, 16};
 
 /*!
  * @brief GUI class associated with and controlling a MidiSeq worker

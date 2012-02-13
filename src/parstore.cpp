@@ -40,7 +40,7 @@ ParStore::ParStore()
     temp.wave.clear();
     temp.muteMask.clear();
     /* LFO Modules */
-    temp.ccnumber = 0;
+    temp.ccnumber = -1;
     temp.ccnumberIn = 0;
     temp.freq = 0;
     temp.ampl = 0;
@@ -148,6 +148,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
 void ParStore::readData(QXmlStreamReader& xml)
 {
     int ix = 0;
+    int step = 0;
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -244,7 +245,12 @@ void ParStore::readData(QXmlStreamReader& xml)
                             temp.wave.clear();
                             QByteArray tmpArray =
                                     QByteArray::fromHex(xml.readElementText().toLatin1());
-                            int step = TPQN / temp.res;
+
+                            if (temp.ccnumberIn >= 0)
+                                step = TPQN / lfoResValues[temp.res];
+                            else
+                                step = TPQN / seqResValues[temp.res];
+
                             int lt = 0;
                             Sample sample;
                             for (int l1 = 0; l1 < tmpArray.count(); l1++) {

@@ -42,9 +42,6 @@
 #include "managebox.h"
 #include "parstore.h"
 
-/*! This array holds the currently available resolution values.
- */
-const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
 /*! This array holds the currently available frequency values.
  */
 const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};
