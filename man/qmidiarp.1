@@ -49,7 +49,7 @@ QMidiArp is based on the Qt4 toolkit.
 .SS "General Operation"
 When no commandline options are given, QMidiArp starts as a JACK MIDI
 client with an input port and two output ports. For starting QMidiArp as
-an ALSA client, use the -a option.
+an ALSA client, use the \-a option.
 A new arpeggiator or LFO module can be created by
 clicking one of the
 .B Add Arp..., Add LFO...
@@ -434,11 +434,11 @@ modules in parallel to the Seq module, and by sending to the same
 channel and port as the Seq module.
 
 .SS "Settings"
-The Settings window allows to configure if and to which port incoming
+The Settings window allows one to configure if and to which port incoming
 events that do not match any module's input filter are forwarded (
 .B unmatched
 events). It also
-allows to set whether incoming controller events are recognized for
+allows one to set whether incoming controller events are recognized for
 muting and controlling
 the modules separately. If this option is set, QMidiArp will recognize
 MIDI control events that can be attributed to different parameters (see
