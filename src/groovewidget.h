@@ -32,6 +32,8 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include "slider.h"
 #include "midicontrol.h"
 
@@ -56,6 +58,21 @@ class GrooveWidget : public QWidget
     GrooveWidget(QWidget* parent=0);
     ~GrooveWidget();
     MidiControl *midiControl;
+
+/*!
+* @brief This function reads all parameters of this module from an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to read from
+*/
+    void readData(QXmlStreamReader& xml);
+/*!
+* @brief This function writes all parameters of this module to an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to write to
+*/
+    void writeData(QXmlStreamWriter& xml);
 
   signals:
     void newGrooveVelocity(int);

@@ -34,6 +34,7 @@
 
 #include "groovewidget.h"
 #include "slider.h"
+#include "main.h"
 
 
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
@@ -116,4 +117,35 @@ void GrooveWidget::handleController(int ccnumber, int channel, int value)
             }
         }
     }
+}
+void GrooveWidget::readData(QXmlStreamReader& xml)
+{
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isEndElement())
+            break;
+        if (xml.name() == "tick")
+            grooveTick->setValue(xml.readElementText().toInt());
+        else if (xml.name() == "velocity")
+            grooveVelocity->setValue(xml.readElementText().toInt());
+        else if (xml.name() == "length")
+            grooveLength->setValue(xml.readElementText().toInt());
+        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            midiControl->readData(xml);
+        }
+        else skipXmlElement(xml);
+    }
+}
+
+void GrooveWidget::writeData(QXmlStreamWriter& xml)
+{
+    xml.writeStartElement("groove");
+        xml.writeTextElement("tick",
+            QString::number(grooveTick->value()));
+        xml.writeTextElement("velocity",
+            QString::number(grooveVelocity->value()));
+        xml.writeTextElement("length",
+            QString::number(grooveLength->value()));
+        midiControl->writeData(xml);
+    xml.writeEndElement();
 }

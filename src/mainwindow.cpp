@@ -796,23 +796,8 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "groove")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "tick")
-                    grooveWidget->grooveTick->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "velocity")
-                    grooveWidget->grooveVelocity->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "length")
-                    grooveWidget->grooveLength->setValue(xml.readElementText().toInt());
-                else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-                    grooveWidget->midiControl->readData(xml);
-                }
-                else skipXmlElement(xml);
-            }
-        }
+        else if (xml.isStartElement() && (xml.name() == "groove"))
+            grooveWidget->readData(xml);
         else skipXmlElement(xml);
     }
 }
@@ -917,24 +902,16 @@ bool MainWindow::saveFile()
             xml.writeTextElement("midiControlEnabled",
                 QString::number((int)passWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
-                QString::number((int)engine->driver->useMidiClock));
+                QString::number((int)midiClockAction->isChecked()));
             xml.writeTextElement("jackSyncEnabled",
-                QString::number((int)engine->driver->useJackSync));
+                QString::number((int)jackSyncAction->isChecked()));
             xml.writeTextElement("forwardUnmatched",
-                QString::number((int)engine->driver->forwardUnmatched));
+                QString::number((int)passWidget->forwardCheck->isChecked()));
             xml.writeTextElement("forwardPort",
-                QString::number(engine->driver->portUnmatched));
+                QString::number(passWidget->portUnmatchedSpin->currentIndex()));
         xml.writeEndElement();
 
-        xml.writeStartElement("groove");
-            xml.writeTextElement("tick",
-                QString::number(engine->grooveTick));
-            xml.writeTextElement("velocity",
-                QString::number(engine->grooveVelocity));
-            xml.writeTextElement("length",
-                QString::number(engine->grooveLength));
-            grooveWidget->midiControl->writeData(xml);
-        xml.writeEndElement();
+        grooveWidget->writeData(xml);
 
     xml.writeEndElement();
 
@@ -1092,13 +1069,6 @@ void MainWindow::setGUIforExtSync(bool on)
 {
     runAction->setDisabled(on);
     tempoSpin->setDisabled(on);
-    /*
-    addArpAction->setDisabled(on);
-    addLfoAction->setDisabled(on);
-    addSeqAction->setDisabled(on);
-    fileOpenAction->setDisabled(on);
-    fileRecentlyOpenedFiles->setDisabled(on);
-    * */
 }
 
 bool MainWindow::checkRcFile()

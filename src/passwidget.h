@@ -45,8 +45,6 @@ class PassWidget : public QDialog
 
   private:
     Engine *engine;
-    QCheckBox *forwardCheck;
-    QComboBox *portUnmatchedSpin;
 
   public:
     PassWidget(Engine* engine, int p_portcount, QWidget* parent=0);
@@ -54,6 +52,8 @@ class PassWidget : public QDialog
     void setForward(bool on);
     void setPortUnmatched(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck, *mutedAddCheck;
+    QCheckBox *forwardCheck;
+    QComboBox *portUnmatchedSpin;
     bool compactStyle, mutedAdd;
 
   signals:
