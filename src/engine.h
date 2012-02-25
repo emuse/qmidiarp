@@ -82,7 +82,6 @@ class Engine : public QThread  {
     int nextMinSeqTick;
     int nextMinArpTick;
     int currentTick;
-    int switchTick;
     int requestTick;
     QVector<Sample> lfoData;
     Sample seqSample;

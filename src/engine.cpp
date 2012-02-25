@@ -67,7 +67,6 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     sendLogEvents = false;
     useMidiClock = false;
     currentTick = 0;
-    switchTick = 0;
     requestTick = 0;
 
     restoreRequest = -1;
@@ -600,11 +599,8 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
-        percent = 100 * (currentTick - requestTick) / (switchTick - requestTick);
+        percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
         emit indicPercentSig(percent);
-        if (currentTick >= switchTick) {
-            restoreTick = currentTick;
-        }
     }
 
     if ((restoreTick > -1)
@@ -612,6 +608,7 @@ void Engine::echoCallback(bool echo_from_trig)
         && (!midiLfoCount() || (nextMinLfoTick >= restoreTick))
         && (!midiSeqCount() || (nextMinSeqTick >= restoreTick))) {
         restoreTick = -1;
+        restoreFlag = false;
         emit restoreSig(restoreRequest);
     }
 }
@@ -848,7 +845,7 @@ void Engine::requestRestore(int windowIndex, int ix)
         globStoreWidget->setDispState(ix, 2, windowIndex);
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
-            switchTick = TPQN * (1 + globStoreWidget->switchAtBeatBox
+            restoreTick = TPQN * (2 + globStoreWidget->switchAtBeatBox
                 ->currentIndex() + currentTick / TPQN);
         }
     }
