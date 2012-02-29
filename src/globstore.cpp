@@ -411,15 +411,19 @@ void GlobStore::writeData(QXmlStreamWriter& xml)
 
 void GlobStore::handleController(int ccnumber, int channel, int value)
 {
-    if (value >= widgetList.count() - 1) return;
-
     QVector<MidiCC> cclist= midiControl->ccList;
-
+    int sval, min, max;
+    
     for (int l2 = 0; l2 < cclist.count(); l2++) {
         if ((ccnumber == cclist.at(l2).ccnumber) &&
             (channel == cclist.at(l2).channel)) {
             if (cclist.at(l2).ID > timeModuleBox->count()) return;
-            emit requestRestore(cclist.at(l2).ID - 1, value);
+            min = cclist.at(l2).min;
+            max = cclist.at(l2).max;
+            sval = min + ((double)value * (max - min) / 127);
+            if (sval >= widgetList.count() - 1) return;
+            qWarning("sval %d", sval);
+            emit requestRestore(cclist.at(l2).ID - 1, sval);
             timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
         }
     }
