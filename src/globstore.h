@@ -39,7 +39,7 @@
 #include "midicontrol.h"
 
 /*!
- * The GlobStore class is a small QGroupBox UI that allows storing
+ * The GlobStore class is a small QWidget UI that allows storing
  * and restoring global parameters of all modules for QMidiArp.
  * It is instantiated by MainWindow.
  * It is shown in the bottom part of the MainWindow and is the central

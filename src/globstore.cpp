@@ -63,6 +63,7 @@ GlobStore::GlobStore(QWidget *parent)
              this, SLOT(updateSwitchAtBeat(int)));
 
     timeModuleBox = new QComboBox(this);
+    timeModuleBox->setCurrentIndex(0);
     connect(timeModuleBox, SIGNAL(activated(int)),
              this, SLOT(updateTimeModule(int)));
 
@@ -422,7 +423,6 @@ void GlobStore::handleController(int ccnumber, int channel, int value)
             max = cclist.at(l2).max;
             sval = min + ((double)value * (max - min) / 127);
             if (sval >= widgetList.count() - 1) return;
-            qWarning("sval %d", sval);
             emit requestRestore(cclist.at(l2).ID - 1, sval);
             timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
         }
