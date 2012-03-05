@@ -212,7 +212,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
 
     triggerMode = new QComboBox(patternBox);
     QStringList triggerModeNames;
-    triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger");
+    triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger")
+                        << tr("Kbd restart legato") << tr("Kbd trigger legato");
     triggerMode->insertItems(0, triggerModeNames);
     triggerMode->setToolTip(tr("Trigger Mode"));
     connect(triggerMode, SIGNAL(currentIndexChanged(int)), this,

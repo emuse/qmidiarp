@@ -115,11 +115,18 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
     enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
 
+    QLabel *enableTrigLegatoLabel = new QLabel(tr("&Legato"),inBox);
+    enableTrigLegato = new QCheckBox(this);
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(updateTrigLegato(bool)));
+    enableTrigLegatoLabel->setBuddy(enableTrigLegato);
+    enableTrigLegato->setToolTip(tr("Retrigger / restart upon new legato note as well"));
+
     enableNoteIn->setChecked(true);
     enableNoteOff->setChecked(false);
     enableVelIn->setChecked(true);
     enableRestartByKbd->setChecked(false);
     enableTrigByKbd->setChecked(false);
+    enableTrigLegato->setChecked(false);
 
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QComboBox(inBox);
@@ -139,8 +146,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     inBoxLayout->addWidget(enableRestartByKbd, 3, 1);
     inBoxLayout->addWidget(enableTrigByKbdLabel, 4, 0);
     inBoxLayout->addWidget(enableTrigByKbd, 4, 1);
-    inBoxLayout->addWidget(chInLabel, 5, 0);
-    inBoxLayout->addWidget(chIn, 5, 1);
+    inBoxLayout->addWidget(enableTrigLegatoLabel, 5, 0);
+    inBoxLayout->addWidget(enableTrigLegato, 5, 1);
+    inBoxLayout->addWidget(chInLabel, 6, 0);
+    inBoxLayout->addWidget(chIn, 6, 1);
     if (compactStyle) {
         inBoxLayout->setSpacing(1);
         inBoxLayout->setMargin(2);
@@ -372,6 +381,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->restartByKbd));
             xml.writeTextElement("trigByKbd", QString::number(
                 midiWorker->trigByKbd));
+            xml.writeTextElement("trigLegato", QString::number(
+                midiWorker->trigLegato));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
         xml.writeEndElement();
@@ -465,6 +476,8 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     enableRestartByKbd->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "trigByKbd")
                     enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigLegato")
+                    enableTrigLegato->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     chIn->setCurrentIndex(tmp);
@@ -643,6 +656,12 @@ void SeqWidget::updateEnableRestartByKbd(bool on)
 void SeqWidget::updateEnableTrigByKbd(bool on)
 {
     midiWorker->trigByKbd = on;
+    modified = true;
+}
+
+void SeqWidget::updateTrigLegato(bool on)
+{
+    midiWorker->trigLegato = on;
     modified = true;
 }
 

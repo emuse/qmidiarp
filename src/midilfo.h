@@ -102,6 +102,7 @@ class MidiLfo : public QObject  {
     bool enableVelIn;
     bool restartByKbd;
     bool trigByKbd;
+    bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
     bool enableLoop;
     bool gotKbdTrig;
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */

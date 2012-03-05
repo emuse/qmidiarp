@@ -220,7 +220,8 @@ class MidiArp : public QWidget  {
     bool isMuted;   /*!< Mute state set by ArpWidget */
     bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
-    bool gotKbdTrig;
+    bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
+    bool gotKbdTrig; /*!< Is set when a keyboard trigger is activated by a note */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
@@ -241,7 +242,7 @@ class MidiArp : public QWidget  {
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
     int returnIsNew;
-    int nextTick;
+    int nextTick; /*!< Holds the next tick at which note events will be played out */
 
   public:
     MidiArp();

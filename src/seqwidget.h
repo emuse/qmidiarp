@@ -112,6 +112,7 @@ class SeqWidget : public QWidget
     QCheckBox *enableVelIn;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
+    QCheckBox *enableTrigLegato;
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
@@ -256,6 +257,7 @@ class SeqWidget : public QWidget
     void updateEnableNoteOff(bool on);
     void updateEnableRestartByKbd(bool on);
     void updateEnableTrigByKbd(bool on);
+    void updateTrigLegato(bool on);
     void setRecord(bool on);
     void setDispVert(int mode);
     void updateDispVert(int mode);

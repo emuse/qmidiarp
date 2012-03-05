@@ -124,6 +124,7 @@ class LfoWidget : public QWidget
     QCheckBox *enableNoteOff;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
+    QCheckBox *enableTrigLegato;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QComboBox *waveFormBox, *freqBox;
@@ -214,6 +215,7 @@ class LfoWidget : public QWidget
     void updateEnableNoteOff(bool on);
     void updateEnableRestartByKbd(bool on);
     void updateEnableTrigByKbd(bool on);
+    void updateTrigLegato(bool on);
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform

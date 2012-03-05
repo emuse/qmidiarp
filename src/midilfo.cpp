@@ -32,6 +32,7 @@ MidiLfo::MidiLfo()
     trigByKbd = false;
     gotKbdTrig = false;
     restartByKbd = false;
+    trigLegato = false;
     enableLoop = true;
     curLoopMode = 0;
     seqFinished = false;
@@ -510,10 +511,10 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
 
     if (inEv.value) {
         /*This is a NOTE ON event*/
-        if (restartByKbd && !noteCount) restartFlag = true;
+        if (restartByKbd && (!noteCount || trigLegato)) restartFlag = true;
         seqFinished = false;
         noteCount++;
-        if ((trigByKbd && (noteCount == 1))) {
+        if (trigByKbd && ((noteCount == 1) || trigLegato)) {
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
         }

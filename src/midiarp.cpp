@@ -95,6 +95,7 @@ MidiArp::MidiArp()
     releaseNoteCount = 0;
     restartByKbd = false;
     trigByKbd = false;
+    trigLegato = false;
     gotKbdTrig = false;
     restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
@@ -167,7 +168,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 
     if (inEv.value) {
         // This is a NOTE ON event
-        if (!getPressedNoteCount()) {
+        if (!getPressedNoteCount() || trigLegato) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
             if (trigByKbd) {
@@ -205,7 +206,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         noteCount++;
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
-        if ((trigByKbd && (noteCount == 1))) {
+        if (trigByKbd && ((noteCount == 1) || trigLegato)) {
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
         }
@@ -746,8 +747,9 @@ void MidiArp::updateReleaseTime(int val)
 
 void MidiArp::updateTriggerMode(int val)
 {
-    trigByKbd = val&2;
-    restartByKbd = val&1 || val&2;
+    trigByKbd = ((val == 2) || (val == 4));
+    restartByKbd = (val > 0);
+    trigLegato = (val > 2);
 }
 
 void MidiArp::clearNoteBuffer()

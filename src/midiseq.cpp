@@ -34,6 +34,7 @@ MidiSeq::MidiSeq()
     recordMode = false;
     trigByKbd = false;
     restartByKbd = false;
+    trigLegato = false;
     enableLoop = true;
     gotKbdTrig = false;
     currentRecStep = 0;
@@ -104,11 +105,11 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
             return(false);
         }
         if (enableNoteIn) updateTranspose(inEv.data - 60);
-        if (restartByKbd && !noteCount) restartFlag = true;
+        if (restartByKbd && (!noteCount || trigLegato)) restartFlag = true;
         if (enableVelIn) updateVelocity(inEv.value);
         seqFinished = false;
         noteCount++;
-        if ((trigByKbd && (noteCount == 1))) {
+        if (trigByKbd && ((noteCount == 1) || trigLegato)) {
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
         }
