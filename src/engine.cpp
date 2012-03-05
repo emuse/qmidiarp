@@ -475,7 +475,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_CONTROLLER;
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
-                    frameptr = lfoWidget(l1)->getFramePtr();
+                    frameptr = midiLfo(l1)->getFramePtr();
                     emit updateCursorSig('L', l1, frameptr);
                     midiLfo(l1)->getNextFrame(&lfoData, tick);
                     outport = midiLfo(l1)->portOut;
@@ -520,7 +520,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    emit updateCursorSig('S', l1, seqWidget(l1)->getCurrentIndex());
+                    emit updateCursorSig('S', l1, midiSeq(l1)->getCurrentIndex());
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
                     outport = midiSeq(l1)->portOut;
@@ -564,7 +564,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
                     isNew = midiArp(l1)->returnIsNew;
-                    emit updateCursorSig('A', l1, arpWidget(l1)->getGrooveIndex());
+                    emit updateCursorSig('A', l1, midiArp(l1)->getGrooveIndex());
                     if (!velocity.isEmpty()) {
                         if (isNew && velocity.at(0)) {
                             l2 = 0;
