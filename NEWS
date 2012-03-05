@@ -1,3 +1,21 @@
+qmidiarp-0.5.0 (2012-03-??)
+
+New Features
+  o New global storage handler allows storing and switching of parameters
+    and patterns between different storage locations. The restore switch
+    can be triggered after a specified module reaches its pattern end or
+    after a full number of beats. Switch can be done for a specific
+    module only or for all modules globally.
+  o Storage switches can be done by MIDI controller. The controller value
+    specifies the storage location.
+  o A new Legato option permits module triggering also by notes played
+    legato.
+
+Fixed Bugs
+  o Fixed the ALSA backend which had become unstable in version 0.4.5
+    by some direct function calls across threads.
+
+
 qmidiarp-0.4.5 (2012-01-21)
 
 Fixed Bugs
