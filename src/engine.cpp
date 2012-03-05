@@ -808,7 +808,7 @@ void Engine::updateCursor(QChar modtype, int ix, int pos)
         break;
 
         case 'L':
-            lfoWidget(ix)->screen->updateScreen(pos);
+            lfoWidget(ix)->updateScreen(pos);
         break;
 
         case 'A':
