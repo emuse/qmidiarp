@@ -388,7 +388,7 @@ void MainWindow::seqNew()
     }
 }
 
-void MainWindow::addArp(const QString& name)
+void MainWindow::addArp(const QString& name, bool fromfile)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
@@ -414,8 +414,7 @@ void MainWindow::addArp(const QString& name)
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
     // and tag them empty
-    // TODO: this should not be done when module is created from a file
-    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+    if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
 
@@ -432,7 +431,7 @@ void MainWindow::addArp(const QString& name)
     checkIfFirstModule();
 }
 
-void MainWindow::addLfo(const QString& name)
+void MainWindow::addLfo(const QString& name, bool fromfile)
 {
     int widgetID, count;
     MidiLfo *midiWorker = new MidiLfo();
@@ -455,8 +454,7 @@ void MainWindow::addLfo(const QString& name)
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
     // and tag them empty
-    // TODO: this should not be done when module is created from a file
-    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+    if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
 
@@ -471,7 +469,7 @@ void MainWindow::addLfo(const QString& name)
     checkIfFirstModule();
 }
 
-void MainWindow::addSeq(const QString& name)
+void MainWindow::addSeq(const QString& name, bool fromfile)
 {
     int widgetID, count;
     MidiSeq *midiWorker = new MidiSeq();
@@ -493,8 +491,7 @@ void MainWindow::addSeq(const QString& name)
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
     // and tag them empty
-    // TODO: this should not be done when module is created from a file
-    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
+    if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
 
@@ -812,7 +809,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
         if (xml.isEndElement())
             break;
         if (xml.isStartElement() && (xml.name() == "Arp")) {
-            addArp("Arp:" + xml.attributes().value("name").toString());
+            addArp("Arp:" + xml.attributes().value("name").toString(), true);
             engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml);
             count++;
@@ -823,7 +820,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             }
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
-            addLfo("LFO:" + xml.attributes().value("name").toString());
+            addLfo("LFO:" + xml.attributes().value("name").toString(), true);
             engine->lfoWidget(engine->midiLfoCount() - 1)
                     ->readData(xml);
             count++;
@@ -834,7 +831,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             }
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
-            addSeq("Seq:" + xml.attributes().value("name").toString());
+            addSeq("Seq:" + xml.attributes().value("name").toString(), true);
             engine->seqWidget(engine->midiSeqCount() - 1)
                     ->readData(xml);
             count++;

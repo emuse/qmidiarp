@@ -144,8 +144,9 @@ class MainWindow : public QMainWindow
 * Engine::MidiArpList.
 *
 * @param name Name attribute of the created arpeggiator module
+* @param fromfile Set to True if module is added by a file read
 */
-    void addArp(const QString&);
+    void addArp(const QString&, bool fromfile = false);
 /*!
 * @brief This function creates and adds a new MidiLfo to Engine.
 *
@@ -155,8 +156,9 @@ class MainWindow : public QMainWindow
 * Engine::MidiLfoList.
 *
 * @param name Name attribute of this LFO module
+* @param fromfile Set to True if module is added by a file read
 */
-    void addLfo(const QString&);
+    void addLfo(const QString&, bool fromfile = false);
 /*!
 * @brief This function creates and adds a new MidiSeq to Engine.
 *
@@ -166,8 +168,9 @@ class MainWindow : public QMainWindow
 * Engine::MidiSeqList.
 *
 * @param name Name attribute of this arpeggiator module
+* @param fromfile Set to True if module is added by a file read
 */
-    void addSeq(const QString&);
+    void addSeq(const QString&, bool fromfile = false);
 /*!
 * @brief This function wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
