@@ -12,8 +12,10 @@ New Features
     legato.
 
 Fixed Bugs
-  o Fixed the ALSA backend which had become unstable in version 0.4.5
-    by some direct function calls across threads.
+  o ALSA backend had become unstable in version 0.4.5 by some direct
+    function calls across threads.
+  o LFO waveform display didn't get updated during recording
+  o LFO recording caused restarting/triggering when it shouldn't
 
 
 qmidiarp-0.4.5 (2012-01-21)
