@@ -4,7 +4,7 @@
  *
  * @section LICENSE
  *
- *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009, 2010, 2011, 2012 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -223,8 +223,6 @@ void MidiSeq::getData(QVector<Sample> *p_data)
     const int step = TPQN / res;
     const int npoints = res * size;
 
-    //res: number of events per beat
-    //size: size of waveform in beats
     QVector<Sample> data;
     data.clear();
 

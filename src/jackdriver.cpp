@@ -4,7 +4,7 @@
  *
  * @section LICENSE
  *
- *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009, 2010, 2011, 2012 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ JackDriver::JackDriver(
 
     internalTempo = 120;
 
-/** Initialize and activate Jack with out_port_count ports if we use
+/* Initialize and activate Jack with out_port_count ports if we use
  *  JACK driver backend, i.e. portCount > 0 */
     if (portCount) {
         callJack(portCount);
@@ -224,9 +224,9 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 
     for(i = 0; i < nframes; i++) {
 
-        /** MIDI Output queue first **/
+        /* MIDI Output queue first **/
         size = rd->evTickQueue.size();
-        if (size) { /** If we have events, find earliest event tick **/
+        if (size) { /* If we have events, find earliest event tick **/
             idx = 0;
             nexttick = rd->evTickQueue.head();
             for (l1 = 0; l1 < size; l1++) {
@@ -254,15 +254,15 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                         k++;
                     } while (buffer == NULL);
 
-                    buffer[2] = outEv.value;        /** velocity / value **/
-                    buffer[1] = outEv.data;         /** note / controller **/
+                    buffer[2] = outEv.value;        /* velocity / value **/
+                    buffer[1] = outEv.data;         /* note / controller **/
                     if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
                     if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
                     buffer[0] += outEv.channel;
                 }
             }
         }
-        /** MIDI Input handling **/
+        /* MIDI Input handling **/
         while ((in_event.time == i) && (event_index < event_count)) {
 
             if( ((*(in_event.buffer) & 0xf0)) == 0x90 ) {

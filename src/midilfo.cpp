@@ -4,7 +4,7 @@
  *
  * @section LICENSE
  *
- *      Copyright 2009, 2010, 2011 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009, 2010, 2011, 2012 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -69,10 +69,10 @@ MidiLfo::MidiLfo()
     customWave.clear();
     cwmin = 0;
     for (l1 = 0; l1 < size * res; l1++) {
-            sample.tick = lt;
-            sample.muted = false;
-            customWave.append(sample);
-            lt+=step;
+        sample.tick = lt;
+        sample.muted = false;
+        customWave.append(sample);
+        lt+=step;
     }
     muteMask.fill(false, size * res);
     data.clear();
@@ -96,7 +96,7 @@ void MidiLfo::setMuted(bool on)
 
 void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 {
-    //this function is called by seqdriver and returns one sample
+    //this function is called by engine and returns one sample
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
     //The FRAMELIMIT avoids excessive cursor updating
 
@@ -134,10 +134,10 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
                 sample.value = recValue;
             }
             else {
-            /** We do linear interpolation of points within frames if
+            /* We do linear interpolation of points within frames if
              * framesize is > 0 to get a smooth recording at high resolutions
              * interpolation is linear between lastSampleValue and current recValue
-             * */
+             */
                 sample.value = lastSampleValue
                             + (double)(recValue - lastSampleValue) / res * framelimit
                             * ((double)l1 + .5);
@@ -177,7 +177,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     }
 
     int cur_grv_sft = 0.01 * (grooveTick * step);
-    /** pairwise application of new groove shift */
+    /* pairwise application of new groove shift */
     if (!(frameptr % 2)) {
         cur_grv_sft = -cur_grv_sft;
         grooveTick = newGrooveTick;
@@ -193,7 +193,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     frame.append(sample);
 
     if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
-        /** round-up to current resolution (quantize) */
+        /* round-up to current resolution (quantize) */
         nextTick/= (step * framesize);
         nextTick*= (step * framesize);
     }
@@ -216,8 +216,6 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     int tempval;
     bool cl = false;
     QVector<Sample> tmpdata;
-    //res: number of events per beat
-    //size: size of waveform in beats
 
     tmpdata.clear();
 
@@ -510,7 +508,7 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
         record(inEv.value);
         return (false);
     }
-    else if (inEv.type != EV_NOTEON) return (true);
+    if (inEv.type != EV_NOTEON) return (true);
 
     if (inEv.value) {
         /*This is a NOTE ON event*/
