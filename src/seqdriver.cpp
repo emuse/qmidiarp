@@ -43,7 +43,7 @@ SeqDriver::SeqDriver(
     char buf[16];
     int l1;
 
-    /** Register ALSA client */
+    /* Register ALSA client */
     err = snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
     if (err < 0) {
         qWarning("Error opening ALSA sequencer (%s).", snd_strerror(err));
@@ -53,7 +53,7 @@ SeqDriver::SeqDriver(
     snd_seq_set_client_name(seq_handle, PACKAGE);
     clientid = snd_seq_client_id(seq_handle);
 
-    /** Register ALSA input port */
+    /* Register ALSA input port */
     portid_in = snd_seq_create_simple_port(seq_handle, "in",
                     SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
                     SND_SEQ_PORT_TYPE_APPLICATION);
@@ -63,11 +63,11 @@ SeqDriver::SeqDriver(
         exit(1);
     }
 
-    /** Setup ALSA sequencer queue */
+    /* Setup ALSA sequencer queue */
     snd_seq_set_client_pool_output(seq_handle, SEQPOOL);
     queue_id = snd_seq_alloc_queue(seq_handle);
 
-    /** Register ALSA output ports */
+    /* Register ALSA output ports */
     portCount = p_portCount;
     for (l1 = 0; l1 < portCount; l1++) {
         snprintf(buf, sizeof(buf), "out %d", l1 + 1);
