@@ -157,8 +157,10 @@ class MainWindow : public QMainWindow
 *
 * @param name Name attribute of this LFO module
 * @param fromfile Set to True if module is added by a file read
+* @param clonefrom Set to the ID to clone this module from,
+* -1 for a new module (default)
 */
-    void addLfo(const QString&, bool fromfile = false);
+    void addLfo(const QString&, bool fromfile = false, int clonefrom = -1);
 /*!
 * @brief This function creates and adds a new MidiSeq to Engine.
 *
@@ -169,8 +171,10 @@ class MainWindow : public QMainWindow
 *
 * @param name Name attribute of this arpeggiator module
 * @param fromfile Set to True if module is added by a file read
+* @param clonefrom Set to the ID to clone this module from,
+* -1 for a new module (default)
 */
-    void addSeq(const QString&, bool fromfile = false);
+    void addSeq(const QString&, bool fromfile = false, int clonefrom = -1);
 /*!
 * @brief This function wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.

@@ -431,9 +431,11 @@ void MainWindow::addArp(const QString& name, bool fromfile)
     checkIfFirstModule();
 }
 
-void MainWindow::addLfo(const QString& name, bool fromfile)
+void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom)
 {
     int widgetID, count;
+    QString name;
+
     MidiLfo *midiWorker = new MidiLfo();
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
@@ -447,6 +449,12 @@ void MainWindow::addLfo(const QString& name, bool fromfile)
             engine, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = engine->lfoWidgetCount();
+    if (clonefrom >= 0) {
+        name = engine->lfoWidget(clonefrom)->manageBox->name + "_0";
+        moduleWidget->copyParamsFrom(engine->lfoWidget(clonefrom));
+    }
+    else name = p_name;
+
     moduleWidget->manageBox->name = name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
@@ -456,6 +464,12 @@ void MainWindow::addLfo(const QString& name, bool fromfile)
     // and tag them empty
     if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
+    }
+
+    if (clonefrom >= 0) {
+        midiWorker->reverse = engine->lfoWidget(clonefrom)->getReverse();
+        midiWorker->setFramePtr(engine->lfoWidget(clonefrom)->getFramePtr());
+        midiWorker->nextTick = engine->lfoWidget(clonefrom)->getNextTick();
     }
 
     engine->addMidiLfo(midiWorker);
@@ -469,9 +483,11 @@ void MainWindow::addLfo(const QString& name, bool fromfile)
     checkIfFirstModule();
 }
 
-void MainWindow::addSeq(const QString& name, bool fromfile)
+void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
 {
     int widgetID, count;
+    QString name;
+    
     MidiSeq *midiWorker = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
@@ -484,6 +500,12 @@ void MainWindow::addSeq(const QString& name, bool fromfile)
             engine, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = engine->seqWidgetCount();
+    if (clonefrom >= 0) {
+        name = engine->seqWidget(clonefrom)->manageBox->name + "_0";
+        moduleWidget->copyParamsFrom(engine->seqWidget(clonefrom));
+    }
+    else name = p_name;
+    
     moduleWidget->manageBox->name = name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
@@ -493,6 +515,12 @@ void MainWindow::addSeq(const QString& name, bool fromfile)
     // and tag them empty
     if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
+    }
+    
+    if (clonefrom >= 0) {
+        midiWorker->reverse = engine->seqWidget(clonefrom)->getReverse();
+        midiWorker->setCurrentIndex(engine->seqWidget(clonefrom)->getCurrentIndex());
+        midiWorker->nextTick = engine->seqWidget(clonefrom)->getNextTick();
     }
 
     engine->addMidiSeq(midiWorker);
@@ -508,77 +536,12 @@ void MainWindow::addSeq(const QString& name, bool fromfile)
 
 void MainWindow::cloneLfo(int ID)
 {
-    int widgetID, count;
-    MidiLfo *midiWorker = new MidiLfo();
-    LfoWidget *moduleWidget = new LfoWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, this);
-    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
-            this, SLOT(removeLfo(int)));
-    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
-            this, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            engine, SLOT(setMidiLearn(int, int, int)));
-
-    widgetID = engine->lfoWidgetCount();
-    moduleWidget->manageBox->name = engine->lfoWidget(ID)->manageBox->name + "_0";
-    moduleWidget->manageBox->ID = widgetID;
-    moduleWidget->midiControl->ID = widgetID;
-
-    moduleWidget->copyParamsFrom(engine->lfoWidget(ID));
-    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
-        moduleWidget->storeParams(l1, true);
-    }
-    midiWorker->reverse = engine->lfoWidget(ID)->getReverse();
-    midiWorker->setFramePtr(engine->lfoWidget(ID)->getFramePtr());
-    midiWorker->nextTick = engine->lfoWidget(ID)->getNextTick();
-    engine->addMidiLfo(midiWorker);
-    engine->addLfoWidget(moduleWidget);
-    count = engine->moduleWindowCount();
-    moduleWidget->manageBox->parentDockID = count;
-    moduleWidget->midiControl->parentDockID = count;
-    moduleWidget->setProperty("widgetID", widgetID);
-    appendDock(moduleWidget, moduleWidget->manageBox->name, count);
-
+    addLfo("", false, ID);
 }
 
 void MainWindow::cloneSeq(int ID)
 {
-    int widgetID, count;
-    QString name;
-    MidiSeq *midiWorker = new MidiSeq();
-
-    SeqWidget *moduleWidget = new SeqWidget(midiWorker,
-            engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, this);
-    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
-    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
-            this, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            engine, SLOT(setMidiLearn(int, int, int)));
-
-    widgetID = engine->seqWidgetCount();
-    moduleWidget->manageBox->name = engine->seqWidget(ID)->manageBox->name + "_0";
-    moduleWidget->manageBox->ID = widgetID;
-    moduleWidget->midiControl->ID = widgetID;
-
-    moduleWidget->copyParamsFrom(engine->seqWidget(ID));
-    for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
-        moduleWidget->storeParams(l1, true);
-    }
-    midiWorker->reverse = engine->seqWidget(ID)->getReverse();
-    midiWorker->setCurrentIndex(engine->seqWidget(ID)->getCurrentIndex());
-    midiWorker->nextTick = engine->seqWidget(ID)->getNextTick();
-    engine->addMidiSeq(midiWorker);
-    engine->addSeqWidget(moduleWidget);
-    count = engine->moduleWindowCount();
-    moduleWidget->manageBox->parentDockID = count;
-    moduleWidget->midiControl->parentDockID = count;
-    moduleWidget->setProperty("widgetID", widgetID);
-    appendDock(moduleWidget, moduleWidget->manageBox->name, count);
-
+    addSeq("", false, ID);
 }
 
 void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
