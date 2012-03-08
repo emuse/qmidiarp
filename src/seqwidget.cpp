@@ -935,6 +935,7 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     enableVelIn->setChecked(fromWidget->enableVelIn->isChecked());
     enableRestartByKbd->setChecked(fromWidget->enableRestartByKbd->isChecked());
     enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
+    enableTrigLegato->setChecked(fromWidget->enableTrigLegato->isChecked());
 
     tmp = fromWidget->chIn->currentIndex();
     chIn->setCurrentIndex(tmp);
