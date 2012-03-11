@@ -159,7 +159,7 @@ class Engine : public QThread  {
   public slots:
     void setStatus(bool);
 /**
- * @brief This function is used to set the modified flag, which is queried before
+ * @brief Sets the modified flag, which is queried before
  * loading a new session file or quitting qmidiarp.
  *
  * @param m Set to True if parameter modifications are present
@@ -168,6 +168,17 @@ class Engine : public QThread  {
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void sendController(int ccnumber, int channel, int value);
     void learnController(int ccnumber, int channel);
+/**
+ * @brief Slot for MidiControl::setMidiLearn(). Sets Engine into MIDI Learn status for
+ * moduleID and controlID.
+ * 
+ * Engine will then wait for an incoming controller event and trigger the
+ * attribution by calling MidiControl::appendMidiCC().
+ * 
+ * @param moduleWindowID dockWidget ID of the module
+ * @param moduleID ID of the module (index in the moduleWidgetList)
+ * @param controlID ID of the controllable widget requesting MIDI learn
+ */
     void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
     void setMidiControllable(bool on);
     void setCompactStyle(bool on);
