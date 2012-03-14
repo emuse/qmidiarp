@@ -506,6 +506,57 @@ alors que
 .B Cancel
 annule les changements.
 
+.SS Stockage Global
+Une autre fenêtre à disposition permet le stockage et le rappel de la
+plupart des paramêtres de tous les modules en commun. Dans cette
+fenêtre, chaque module et ses emplacements de stockage apparaissent
+dans une colonne, la première colonne étant attribuée à la gestion
+commune de tous les modules. En cliquant sur le petit bouton
+.B Sauver
+on enregistre les paramètres de tous les modules dans
+l'emplacement représenté par les boutons dans la ligne, et un nouvel
+emplacement vide apparaît. Les paramètres dans ces emplacements
+peuvent être rappellés pour chaque module individuellement par les
+boutons dans les colonnes des modules, ou globalement pour tous les
+modules en cliquant sur le bouton numéroté à gauche. Un emplacement
+peut être supprimé en cliquant sur le bouton "flêche" en bas de du
+tableau.
+Au cas où l'on ajoute un nouveau module quand les autres modules possèdent
+déjà leurs emplacements de stockage, les stockages du nouveau module
+sont d'abord vides. Ils peuvent être remplis en appuyant à nouveau sur
+.B Sauver.
+.PP
+Quand le séquenceur
+de QMidiArp est en marche, la commutation des paramètres dépend des
+séléctions faites dans la première ligne de la fenêtre.
+.PP
+.B Fin de
+produit des commutations de paramètres à chaque fois que le module
+sélectionné dans le deuxième menu combo atteint la fin de son motif.
+Si dans cette configuration, on clique sur l'un des boutons individuels,
+le module concerné commandera la commutation à la fin de
+.I son
+motif.
+.PP
+.B Après
+produit des commutations après le nombre fixe de quart de temps (beats)
+sélectionnés dans le deuxième menu combo.
+.PP
+La commutation peut être commandée par contrôleur MIDI attribué par
+le menu de contexte du bouton de chaque module dans la première ligne.
+Notez que c'est la
+.I valeur
+du contrôleur MIDI qui sélectionne l'emplacement à rappeller, et qu'on
+doit éventuellement ajuster son échelle dans l'
+.B Editeur de contrôles.
+pour adapter la plage de valeurs.
+Avec le panneaux du
+.B Stockage Global
+QMidiArp devient un séquenceur Live simple mais pratique. Mais on peut
+cacher la fenêtre avec l'entrée du menu
+.B Affichage
+ou avec le bouton correspondant dans la barre d'outils principale.
+
 .SS "Journal"
 La fenêtre du
 .B Journal

@@ -502,6 +502,52 @@ quits the control editor without applying changes, and only if
 .B OK
 is pressed, the edited control list becomes active.
 
+.SS Global Storage
+There is another dock window available for storing and restoring most of
+the parameters of all modules at once. In this window, each module and
+its storages appear as a column, the first column representing switches
+for all modules globally. When the small
+.B Store
+button on the left is clicked, all modules will store their parameters
+in a location given by the current row, and the next available storage
+location appears. Module storages can be recalled by clicking on the
+buttons of each individual module or globally (numbered buttons in the
+first column). Storage locations can be removed again by clicking on
+the "arrow" button on the bottom of the list.
+When a new module is added at a time when storage locations already
+exist for other modules, the storage locations for the new module will
+be empty and can be filled by using
+.B Store
+again at this location.
+.PP
+When QMidiArp is running, the switch behavior will depend
+on the selection made in the comboboxes in the first row of the window.
+.PP
+.B End of
+will cause parameter switches to occur when the module in the second
+combobox reaches its pattern end. When individual switches are done
+the module in the column of the clicked module determines the switch
+time.
+.PP
+.B After
+will do parameter switches at the end of the number of beats selected
+in the second combobox after the restore button is clicked.
+.PP
+The switch can be done by MIDI controller assigned by the MIDI Learn
+context menu of the top button of each column. Note that it is the the
+controller value that corresponds to the storage location, and that
+you may want to adjust the range of controllers to your needs using the
+.B MIDI Control Editor
+With the
+.B Global Storage
+handler, QMidiArp can act as a simple but handy live sequencer tool.
+But the
+.B Golbal Storage
+button in the
+.B View
+menu and in the main toolbar toggles visibility of the Global Storage
+window.
+
 .SS "Event Log"
 The
 .B Event Log
