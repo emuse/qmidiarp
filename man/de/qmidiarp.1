@@ -25,7 +25,7 @@ qmidiarp \- MIDI Arpeggiator, Sequenzer und LFO
 .SH BESCHREIBUNG
 QMidiArp
 ist ein erweiterter Arpeggiator, Stepsequenzer und MIDI LFO. Er kann
-beliebig viele Module parallel ausführen. QMidiArp läuft je nach option
+beliebig viele Module parallel ausführen. QMidiArp läuft je nach Option
 entweder mit JACK MIDI oder ALSA MIDI.
 Die Arpeggiatormodule erzeugen Sequenzen in Abhängigkeit von den Noten,
 die üblicherweise von einem MIDI-Keyboard oder einem Sequenzer an deren
@@ -546,10 +546,10 @@ für alle Module gemeinsam. Wenn man auf den kleinen
 Kopf in der ersten Spalte klickt, speichern alle Module ihre
 Parameter ab, dargestellt als Reihe von Schaltern. Es erscheint
 außerdem ein neuer leerer Speicherplatz.
-Die Parameter an diesem Platz können dann durch Betätigen dieser
-Schalter aktiviert werden für jedes Modul einzeln, oder für alle Module
+Die Parameter an dem gespeicherten Platz können dann durch Betätigen dieser
+Schalter aktiviert werden, für jedes Modul einzeln, oder für alle Module
 gemeinsam mit dem numerierten Knopf in der ersten Spalte. Ein
-Speicherplatz kann wieder gelöscht werden durch klicken des Knopfes "Pfeil"
+Speicherplatz kann wieder gelöscht werden durch Klicken des Knopfes "Pfeil"
 am Ende der Liste.
 Wird ein neues Modul hinzugefügt, wenn schon Speicherplätze für die anderen
 Module existieren, so sind die Plätze des neuen Moduls zunächst leer. Sie
@@ -562,7 +562,7 @@ Auswahl in den Comboboxen der ersten Zeile des Fensters ab.
 .PP
 .B Ende von
 veranlaßt die Umschaltung dann, wenn dasjenige Modul sein Sequenzende
-erreicht, daß in der zweiten Combobox ausgewählt ist. Wird in diesem
+erreicht, das in der zweiten Combobox ausgewählt ist. Wird in diesem
 Zustand ein individuelles Modul umgeschaltet, so tritt dieses an die
 Stelle des Zeitgebers, d.h. es schaltet am Ende
 .I seiner
@@ -574,18 +574,18 @@ gewählt ist, passiert das Umschalten nach der festen Anzahl von
 kompletten Vierteltakten (Beats), die in der zweiten Combobox gewählt
 ist.
 .PP
-Das Schalten kann über MIDI controller geschehen, der durch die
+Das Schalten kann über einen MIDI Controller geschehen, der durch die
 .I MIDI Lernen
 Context Menus der oberen Knöpfe zugewiesen wird. Hierbei beachten, daß
 der Controller
 .I Wert
-dem Speicherplatzzuweisung entspricht, und daß die Skalierung des
+der Speicherplatzzuweisung entspricht, und daß die Skalierung des
 Controllers eventuell über den
 .B Steuerungs-Editor
 angepaßt werden muß.
 .PP
 Mit dem globalen Speicher wird QMidiArp zum einfachen aber
-praktischer Live Sequenzer. Der Eintrag
+praktischen Live Sequenzer. Der Eintrag
 .B Golbaler Speicher
 im
 .B Ansicht
