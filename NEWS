@@ -12,7 +12,7 @@ New Features
     legato.
 
 Fixed Bugs
-  o ALSA backend had become unstable in version 0.4.5 by some direct
+  o ALSA backend had become unstable in version 0.4.4 by some direct
     function calls across threads.
   o LFO waveform display didn't get updated during recording
   o LFO recording caused restarting/triggering when it shouldn't
