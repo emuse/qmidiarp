@@ -62,7 +62,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="215"/>
         <source>No trigger</source>
-        <translation>Přehrát</translation>
+        <translation>Žádné spuštění</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="215"/>
@@ -72,17 +72,17 @@
     <message>
         <location filename="../arpwidget.cpp" line="216"/>
         <source>Kbd restart legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit legato znovu</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="216"/>
         <source>Kbd trigger legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit legato</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="218"/>
         <source>Trigger Mode</source>
-        <translation>Zůstat stát na nové staccato notě</translation>
+        <translation>Režim spuštění klavírem</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="225"/>
@@ -229,27 +229,27 @@
     <message>
         <location filename="../globstore.cpp" line="52"/>
         <source>End of</source>
-        <translation type="unfinished"></translation>
+        <translation>Konec</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="53"/>
         <source>After</source>
-        <translation type="unfinished"></translation>
+        <translation>Po</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="92"/>
         <source>&amp;Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Odstranit</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="146"/>
         <source>&amp;Store</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Uložit</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="154"/>
         <source>&amp;Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Obnovit</translation>
     </message>
 </context>
 <context>
@@ -311,12 +311,12 @@
     <message>
         <location filename="../lfowidget.cpp" line="79"/>
         <source>&amp;Legato</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Legato</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="83"/>
         <source>Retrigger / restart upon new legato note as well</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit/Spustit znovu i na notách s legatem</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="96"/>
@@ -535,7 +535,7 @@ Kolečko myši: změna posunu</translation>
     <message>
         <location filename="../mainwindow.cpp" line="89"/>
         <source>Global Store</source>
-        <translation type="unfinished"></translation>
+        <translation>Celkové uložení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="136"/>
@@ -639,13 +639,13 @@ Kolečko myši: změna posunu</translation>
     <message>
         <location filename="../mainwindow.cpp" line="232"/>
         <source>&amp;Global Store</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce&amp;lkové uložení</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="233"/>
         <source>Ctrl+$</source>
         <comment>View|GlobalStore</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+$</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="239"/>
@@ -1181,12 +1181,12 @@ Uložit změny?</translation>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Legato</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Legato</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="122"/>
         <source>Retrigger / restart upon new legato note as well</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit/Spustit znovu i na notách s legatem</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="131"/>
