@@ -46,9 +46,11 @@ void Indicator::paintEvent(QPaintEvent*)
 {
     QPainter p(this);
     QPen pen;
-    pen.setWidth(1);
+    pen.setWidth(2);
     pen.setColor(QColor(0, 0, 0));
+    p.setBrush((QColor(200, 160, 0)));
     p.setPen(pen);
+    p.setRenderHint(QPainter::Antialiasing, true);
     QRectF r(5.0, 5.0, p_size, p_size);
     p.drawPie(r, 90 * 16, p_angle);
 }
