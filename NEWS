@@ -1,4 +1,4 @@
-qmidiarp-0.5.0 (2012-03-??)
+qmidiarp-0.5.0 (2012-03-24)
 
 New Features
   o New global storage handler allows storing and switching of parameters
@@ -16,6 +16,7 @@ Fixed Bugs
     function calls across threads.
   o LFO waveform display didn't get updated during recording
   o LFO recording caused restarting/triggering when it shouldn't
+  o Seq cloning led to crashes under certain conditions
 
 
 qmidiarp-0.4.5 (2012-01-21)
