@@ -115,7 +115,7 @@ class JackDriver : public DriverBase
     bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
     void setTransportStatus(bool run);
     int getClientId() {return 0; }
-    void callJack(int port_count);
+    bool callJack(int portcount);
 };
 
 

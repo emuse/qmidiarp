@@ -373,12 +373,22 @@ int SeqDriver::getClientId()
 
 void SeqDriver::setUseJackTransport(bool on)
 {
+    bool failed = true;
+
     if (on) {
-        jackSync->callJack(0);
-        jackSync->useJackSync = true;
+        failed = callJack(0);
+        if (!failed) {
+            jackSync->useJackSync = true;
+            useJackSync = true;
+        }
     }
     else {
         jackSync->callJack(-1);
+        useJackSync = false;
     }
-    useJackSync = on;
+}
+
+bool SeqDriver::callJack(int portcount)
+{
+    return jackSync->callJack(portcount);
 }

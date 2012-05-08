@@ -47,16 +47,13 @@ JackDriver::JackDriver(
 /* Initialize and activate Jack with out_port_count ports if we use
  *  JACK driver backend, i.e. portCount > 0 */
     if (portCount) {
-        callJack(portCount);
-        transportState = getState();
-        jSampleRate = jack_get_sample_rate(jack_handle);
         setTransportStatus(false);
     }
     else {
         transportState = JackTransportStopped;
     }
 }
-void JackDriver::callJack(int port_count)
+bool JackDriver::callJack(int port_count)
 {
     if (port_count == -1 && jackRunning) {
         deactivateJack();
@@ -68,11 +65,16 @@ void JackDriver::callJack(int port_count)
     else if (port_count != -1) {
         if (initJack(port_count)) {
             emit j_shutdown();
+            return true;
         }
         else if (activateJack()) {
             emit j_shutdown();
+            return true;
         }
+        transportState = getState();
+        jSampleRate = jack_get_sample_rate(jack_handle);
     }
+    return false;
 }
 
 JackDriver::~JackDriver()

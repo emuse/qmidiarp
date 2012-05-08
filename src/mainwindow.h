@@ -332,6 +332,8 @@ class MainWindow : public QMainWindow
 */
     MainWindow(int p_portCount, bool p_alsamidi);
     ~MainWindow();
+
+    bool jackFailed;
 /*!
 * @brief This function opens a QMidiArp XML session file for reading
 * using QXmlStreamReader.

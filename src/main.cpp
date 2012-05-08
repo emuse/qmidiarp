@@ -157,8 +157,10 @@ int main(int argc, char *argv[])
         else
             qWarning("File not found: %s", argv[optind]);
     }
+    int result = -1;
+    if (!qmidiarp->jackFailed)
+        result = app.exec();
 
-    int result = app.exec();
     delete qmidiarp;
     return result;
 }

@@ -72,6 +72,7 @@ int MainWindow::sigpipe[2];
 
 MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 {
+    jackFailed = false;
     filename = "";
     lastDir = QDir::homePath();
     alsaMidi = p_alsamidi;
@@ -95,8 +96,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     globStoreWindow->setVisible(true);
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
-    if (!alsaMidi) connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
-
+    if (alsaMidi) {
+        connect(engine->jackSync, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
+    }
+    else {
+        connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
+        connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
+        jackFailed = engine->driver->callJack(p_portCount);
+    }
     connect(globStore, SIGNAL(globStore(int)), engine,
             SLOT(globStore(int)));
     connect(globStore, SIGNAL(requestRestore(int, int)), engine,
@@ -198,14 +205,6 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     jackSyncAction->setCheckable(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
             SLOT(jackSyncToggle(bool)));
-    if (alsaMidi) {
-        connect(engine->jackSync, SIGNAL(j_shutdown()), this,
-                SLOT(jackShutdown()));
-    }
-    else {
-        connect(engine->driver, SIGNAL(j_shutdown()), this,
-                SLOT(jackShutdown()));
-    }
     jackSyncAction->setChecked(false);
     jackSyncAction->setDisabled(true);
 
@@ -319,7 +318,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     if (!installSignalHandlers())
         qWarning("%s", "Signal handlers not installed!");
 
-    show();
+    if (!jackFailed || alsaMidi) show();
 }
 
 MainWindow::~MainWindow()
@@ -487,7 +486,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
 {
     int widgetID, count;
     QString name;
-    
+
     MidiSeq *midiWorker = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
@@ -505,7 +504,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
         moduleWidget->copyParamsFrom(engine->seqWidget(clonefrom));
     }
     else name = p_name;
-    
+
     moduleWidget->manageBox->name = name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
@@ -516,7 +515,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
     if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
-    
+
     if (clonefrom >= 0) {
         midiWorker->reverse = engine->seqWidget(clonefrom)->getReverse();
         midiWorker->setCurrentIndex(engine->seqWidget(clonefrom)->getCurrentIndex());
@@ -979,7 +978,8 @@ void MainWindow::closeEvent(QCloseEvent* e)
     if (isSave()) {
         writeRcFile();
         e->accept();
-    } else
+    }
+    else
         e->ignore();
 }
 
@@ -1020,9 +1020,17 @@ void MainWindow::jackSyncToggle(bool on)
 
 void MainWindow::jackShutdown()
 {
-    engine->setStatus(false);
-    jackSyncAction->setChecked(false);
-    jackSyncAction->setDisabled(true);
+    if (!alsaMidi) {
+        QMessageBox::warning(this, PACKAGE,
+                tr("JACK has shut down or could not be started, but you are trying\n"
+                   "to run QMidiArp with JACK MIDI backend.\n\n"
+                    "Alternatively you can use the ALSA MIDI backend \n"
+                    "by calling qmidiarp -a"));
+    }
+    else {
+        engine->setStatus(false);
+        jackSyncAction->setChecked(false);
+    }
 }
 
 void MainWindow::setGUIforExtSync(bool on)

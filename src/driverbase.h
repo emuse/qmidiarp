@@ -85,6 +85,8 @@ public:
         tempo = bpm;
         internalTempo = bpm;
     }
+    
+    virtual bool callJack(int portcount) = 0;
 
     // duration is in ticks and is valid only for note on events
     virtual void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0) = 0;
