@@ -102,7 +102,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     else {
         connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
-        jackFailed = engine->driver->callJack(p_portCount);
+        if (engine->driver->callJack(p_portCount)) jackFailed = true;
     }
     connect(globStore, SIGNAL(globStore(int)), engine,
             SLOT(globStore(int)));
