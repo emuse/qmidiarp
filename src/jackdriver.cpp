@@ -465,16 +465,17 @@ void JackDriver::setTransportStatus(bool on)
 {
     jack_position_t jpos = getCurrentPos();
     if (useJackSync) {
-    if (jpos.beats_per_minute > 0.01)
-        tempo = (int)jpos.beats_per_minute;
-    else
-        tempo = internalTempo;
-
-    jackOffsetTick = (uint64_t)jpos.frame * TPQN
-        * tempo / (jpos.frame_rate * 60);
+        if (jpos.beats_per_minute > 0.01)
+            tempo = (int)jpos.beats_per_minute;
+        else
+            tempo = internalTempo;
+    
+        jackOffsetTick = (uint64_t)jpos.frame * TPQN
+            * tempo / (jpos.frame_rate * 60);
     }
     else {
         tempo = internalTempo;
+        jackOffsetTick = 0;
     }
 
     m_current_tick = 0;
