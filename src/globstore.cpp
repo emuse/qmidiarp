@@ -203,8 +203,9 @@ void GlobStore::removeLocation(int ix)
                     ->layout()->itemAt(ix)->widget();
         }
     }
+
     widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
-    updateTimeModule(0);
+    if (timeModuleBox->count()) updateTimeModule(0);
 }
 
 void GlobStore::updateTimeModule(int ix)
@@ -414,7 +415,7 @@ void GlobStore::handleController(int ccnumber, int channel, int value)
 {
     QVector<MidiCC> cclist= midiControl->ccList;
     int sval, min, max;
-    
+
     for (int l2 = 0; l2 < cclist.count(); l2++) {
         if ((ccnumber == cclist.at(l2).ccnumber) &&
             (channel == cclist.at(l2).channel)) {
