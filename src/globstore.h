@@ -122,7 +122,7 @@ class GlobStore : public QWidget
 */
   void requestRestore(int moduleID, int ix);
 /*!
-* @brief emitted to Engine, which will make the
+* @brief emitted to Engine::updateGlobRestoreTimeModule(), which will make the
 * module at index windowIndex in the Engine::moduleWindowList trigger
 * store switches when its cursor reaches the end.
 *
