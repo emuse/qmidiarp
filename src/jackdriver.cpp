@@ -41,6 +41,7 @@ JackDriver::JackDriver(
     jackRunning = false;
     portUnmatched = 0;
     forwardUnmatched = false;
+    useJackSync = false;
 
     internalTempo = 120;
 
@@ -443,6 +444,7 @@ void JackDriver::handleEchoes(int nframes)
         m_current_tick = (uint64_t)curJFrame * TPQN * tempo * nframes
             / (jSampleRate * 60);
     }
+
     if (!size) return;
 
     idx = 0;
@@ -469,7 +471,7 @@ void JackDriver::setTransportStatus(bool on)
             tempo = (int)jpos.beats_per_minute;
         else
             tempo = internalTempo;
-    
+
         jackOffsetTick = (uint64_t)jpos.frame * TPQN
             * tempo / (jpos.frame_rate * 60);
     }
