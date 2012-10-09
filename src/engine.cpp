@@ -579,7 +579,10 @@ void Engine::echoCallback(bool echo_from_trig)
                     if ((restoreModType == 'A') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         frameptr = midiArp(l1)->getGrooveIndex() - 1;
-                        percent = frameptr * 100 / (midiArp(l1)->nPoints);
+                        if (midiArp(l1)->nPoints)
+                            percent = frameptr * 100 / (midiArp(l1)->nPoints);
+                        else
+                            percent = 0;
                         emit indicPercentSig(percent);
                         if (!frameptr && restoreFlag) {
                             restoreTick = note_tick;
