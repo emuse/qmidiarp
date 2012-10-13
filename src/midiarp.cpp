@@ -110,7 +110,7 @@ MidiArp::MidiArp()
     patternIndex = 0;
     grooveIndex = 0;
     patternLen = 0;
-    octave = 0;
+    semitone = 0;
     newCurrent = false;
     newNext = false;
     currentNoteTick = 0;
@@ -348,6 +348,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     if (restartFlag) advancePatternIndex(true);
 
     if (!patternIndex) initLoop();
+    chordSemitone[0] = semitone;
     do {
         if (patternLen)
             c = (pattern.at(patternIndex));
@@ -359,6 +360,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 tmpIndex[chordIndex] = c.digitValue() + noteOfs;
                 if (chordMode) {
                     chordIndex++;
+                    chordSemitone[chordIndex] = semitone;
                 }
                 gotCC = false;
                 pause = (c == 'p');
@@ -376,14 +378,20 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                         chordMode = false;
                         gotCC = false;
                         break;
+                    case 't':
+                        semitone++;
+                        break;
+                    case 'g':
+                        semitone--;
+                        break;
                     case '+':
-                        octave++;
+                        semitone+=12;
                         break;
                     case '-':
-                        octave--;
+                        semitone-=12;
                         break;
                     case '=':
-                        octave=0;
+                        semitone = 0;
                         break;
                     case '>':
                         stepWidth *= .5;
@@ -407,6 +415,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                         len *= .5;
                         break;
                 }
+                chordSemitone[chordIndex] = semitone;
             }
         }
     } while (advancePatternIndex(false) && (gotCC || chordMode));
@@ -415,7 +424,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     if (noteCount) do {
         noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0;
         note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
-                + octave * 12, 0, 127, &outOfRange);
+                + chordSemitone[l1], 0, 127, &outOfRange);
         grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
 
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
@@ -451,8 +460,10 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         else {
             l1++;
         }
-
-    } while ((tmpIndex[l1] >= 0) && (l1 < MAXCHORD - 1) && (l1 < noteCount));
+    } while (  (tmpIndex[l1] >= 0)
+            && (l1 < MAXCHORD - 1)
+            && ((l1 < noteCount) || (tmpIndex[l1] == 0))
+            && (noteCount));
 
     note[l1] = -1; // mark end of array
     grooveTmp = (grooveIndex % 2) ? -grooveLength : grooveLength;
@@ -519,7 +530,7 @@ void MidiArp::initLoop()
     stepWidth = 1.0;
     len = 0.5;
     vel = 0.8;
-    octave = 0;
+    semitone = 0;
     grooveIndex = 0;
 }
 

@@ -81,7 +81,8 @@ class MidiArp : public QWidget  {
                                     a delay of 200ms except when another released note is detected before. */
 
     bool sustain, latch_mode;
-    int octave, noteIndex[MAXCHORD];
+    int noteIndex[MAXCHORD], chordSemitone[MAXCHORD];
+    int semitone;
  /*! @brief The input note buffer array of the Arpeggiator, which has
   * two array copies.
   *
