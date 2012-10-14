@@ -258,6 +258,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
             tr("0..9  note played on keyboard, 0 is lowest\n"
             "( ) numbers in parenthesis are stacked to chords\n"
             "  + = -  octave up/reset/down\n"
+            "  t = g  semitone up/reset/down\n"
             " < . > tempo up/reset/down\n"
             "  d h  note length up/down\n"
             "  / \\  velocity up/down\n"
