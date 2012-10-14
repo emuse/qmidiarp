@@ -624,9 +624,11 @@ bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
 bool Engine::eventCallback(MidiEvent inEv)
 {
     bool unmatched;
+    bool no_collision = false;
     int l1;
     unmatched = true;
     int tick = driver->getCurrentTick();
+
 
     /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
     if (sendLogEvents) emit midiEventReceived(inEv, tick);
@@ -646,7 +648,8 @@ bool Engine::eventCallback(MidiEvent inEv)
         unmatched = midiLfo(l1)->handleEvent(inEv, tick);
         if (midiLfo(l1)->gotKbdTrig) {
             nextMinLfoTick = midiLfo(l1)->nextTick;
-            driver->requestEchoAt(nextMinLfoTick, true);
+            no_collision = driver->requestEchoAt(nextMinLfoTick, true);
+            if (!no_collision) midiLfo(l1)->gotKbdTrig = false;
         }
     }
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
@@ -656,14 +659,16 @@ bool Engine::eventCallback(MidiEvent inEv)
         }
         if (midiSeq(l1)->gotKbdTrig) {
             nextMinSeqTick = midiSeq(l1)->nextTick;
-            driver->requestEchoAt(nextMinSeqTick, true);
+            no_collision = driver->requestEchoAt(nextMinSeqTick, true);
+            if (!no_collision) midiSeq(l1)->gotKbdTrig = false;
         }
     }
     for (l1 = 0; l1 < midiArpCount(); l1++) {
         unmatched = midiArp(l1)->handleEvent(inEv, tick, 1);
         if (midiArp(l1)->gotKbdTrig) {
             nextMinArpTick = midiArp(l1)->nextTick;
-            driver->requestEchoAt(nextMinArpTick, true);
+            no_collision = driver->requestEchoAt(nextMinArpTick, true);
+            if (!no_collision) midiArp(l1)->gotKbdTrig = false;
         }
     }
 
