@@ -1,3 +1,19 @@
+qmidiarp-0.5.1 (2012-11-??)
+
+New Features
+  o When Jack is not available at program start, show a message window
+  o Introduce semitone shifts in Arp patterns (request 3574549 by gionnico)
+  o Allow repetition of the 0 note within chords to stack notes when only
+    a single note is played on the keyboard (request 3574549 by gionnico)
+
+Fixed Bugs
+  o When starting from scratch, qmidiarp sometimes didn't start with
+    internal clock
+  o When editing an arp pattern while running, qmidiarp crashed when the
+    pattern length reached zero
+  o Deleting the last module sometimes crashed qmidiarp
+
+
 qmidiarp-0.5.0 (2012-03-24)
 
 New Features
