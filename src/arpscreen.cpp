@@ -84,6 +84,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int patternLen = pattern.length();
     bool chordmd = false;
     int octave = 0;
+    int semitone = 0;
     double vel =1.0;
     double v = 0;
     int grv_cur_sft = 0;
@@ -91,6 +92,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int grv_cur_vel = 0;
     int grooveIndex = 0;
     int chordindex = 0;
+    int polyindex = 0;
     l2 = 0;
     QChar c;
 
@@ -163,6 +165,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     stepwd = 1.0;
     vel = 0.8;
     octave = 0;
+    semitone = 0;
     chordmd = false;
     chordindex = 0;
 
@@ -173,6 +176,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
+            if (chordmd && (nlines == 1) && chordindex) polyindex++;
             if (!chordindex)
             {
                 if (chordmd) chordindex++;
@@ -220,8 +224,17 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     octave--;
                     break;
 
+                case 't':
+                    semitone++;
+                    break;
+
+                case 'g':
+                    semitone--;
+                    break;
+
                 case '=':
                     octave=0;
+                    semitone=0;
                     break;
 
                 case '/':
@@ -257,11 +270,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
 
             if (nlines > 0) {
                 pen.setWidth(notestreak_thick);
-                pen.setColor(QColor(80 + 60 * v, 160 + 40 * v, 80 + 60 * v));
+                if (semitone != 0)
+                    pen.setColor(QColor(50 + 60 * v, 130 + 40 * v, abs(100 + 10 * semitone) % 256));
+                else
+                    pen.setColor(QColor(80 + 60 * v, 160 + 40 * v, 80 + 60 * v));
                 p.setPen(pen);
                 ypos = yscale - yscale * (nlines - 1 + octYoffset)
                             / (patternMaxIndex + 1) / noctaves
-                            + ARPSCR_VMARG - 3 + notestreak_thick;
+                            + ARPSCR_VMARG - 3 + notestreak_thick
+                            - notestreak_thick * polyindex;
                 xpos = ARPSCR_HMARG + x + pen.width() / 2;
                 p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
                 // Cursor
