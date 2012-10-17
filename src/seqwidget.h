@@ -32,6 +32,7 @@
 #include <QCheckBox>
 #include <QAction>
 #include <QToolButton>
+#include <QPushButton>
 #include <QVector>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -93,7 +94,7 @@ class SeqWidget : public QWidget
  * @param parent The parent widget of this module, i.e. MainWindow
  */
     SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
-            bool mutedAdd = false, QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~SeqWidget();
 
     ParStore *parStore;
@@ -106,7 +107,8 @@ class SeqWidget : public QWidget
     QComboBox *channelOut, *portOut;
     QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
     QComboBox *loopBox;
-    QCheckBox *muteOut;
+    QWidget *inOutBox;
+    QPushButton *muteOut;
     QCheckBox *enableNoteIn;
     QCheckBox *enableNoteOff;
     QCheckBox *enableVelIn;
@@ -261,6 +263,7 @@ class SeqWidget : public QWidget
     void setRecord(bool on);
     void setDispVert(int mode);
     void updateDispVert(int mode);
+    void setInOutBoxVisible(bool on);
 
 /*!
 * @brief Slot currently not in use.

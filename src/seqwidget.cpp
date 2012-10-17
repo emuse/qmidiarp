@@ -35,7 +35,7 @@
 
 
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
-    bool mutedAdd, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
@@ -161,12 +161,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     // Output group box on right bottom
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
-    muteOut = new QCheckBox(this);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
     portLabel->setBuddy(portOut);
@@ -182,12 +176,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
 
     QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(muteLabel, 0, 0);
-    portBoxLayout->addWidget(muteOut, 0, 1);
-    portBoxLayout->addWidget(portLabel, 1, 0);
-    portBoxLayout->addWidget(portOut, 1, 1);
-    portBoxLayout->addWidget(channelLabel, 2, 0);
-    portBoxLayout->addWidget(channelOut, 2, 1);
+    portBoxLayout->addWidget(portLabel, 0, 0);
+    portBoxLayout->addWidget(portOut, 0, 1);
+    portBoxLayout->addWidget(channelLabel, 1, 0);
+    portBoxLayout->addWidget(channelOut, 1, 1);
 
     QVBoxLayout* outputLayout = new QVBoxLayout;
     outputLayout->addLayout(portBoxLayout);
@@ -198,12 +190,24 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     portBox->setLayout(outputLayout);
 
+    QAction* hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    hideInOutBoxAction->setCheckable(true);
+    hideInOutBoxAction->setChecked(inOutVisible);
+    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
+    hideInOutBoxButton->setFixedSize(10, 80);
+    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
+
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
+    inOutBox = new QWidget(this);
+    inOutBox->setLayout(inOutBoxLayout);
+    inOutBox->setVisible(inOutVisible);
 
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"), this);
@@ -227,6 +231,13 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     waveFormBox->setMinimumContentsLength(8);
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
+
+    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOut->setFont(QFont("Helvetica", 8));
+    muteOut->setMinimumSize(QSize(35,10));
+    muteOut->setCheckable(true);
+    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     loopBox = new QComboBox(seqBox);
     QStringList names;
@@ -317,13 +328,14 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
     paramBoxLayout->addWidget(waveFormBoxLabel, 1, 0);
     paramBoxLayout->addWidget(waveFormBox, 1, 1);
-    paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
-    paramBoxLayout->addWidget(recordButton, 2, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 3, 0);
-    paramBoxLayout->addWidget(resBox, 3, 1);
-    paramBoxLayout->addWidget(sizeBoxLabel, 4, 0);
-    paramBoxLayout->addWidget(sizeBox, 4, 1);
-    paramBoxLayout->setRowStretch(5, 1);
+    paramBoxLayout->addWidget(muteOut, 2, 0, 1, 2);
+    paramBoxLayout->addWidget(recordButtonLabel, 3, 0);
+    paramBoxLayout->addWidget(recordButton, 3, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 4, 0);
+    paramBoxLayout->addWidget(resBox, 4, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 5, 0);
+    paramBoxLayout->addWidget(sizeBox, 5, 1);
+    paramBoxLayout->setRowStretch(6, 1);
 
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
@@ -339,7 +351,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
-    widgetLayout->addLayout(inOutBoxLayout, 0);
+    widgetLayout->addWidget(hideInOutBoxButton, 0);
+    widgetLayout->addWidget(inOutBox, 0);
 
     setLayout(widgetLayout);
     recordMode = false;
@@ -364,6 +377,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
 
         xml.writeStartElement("display");
             xml.writeTextElement("vertical", QString::number(
@@ -788,6 +802,11 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
+}
+
+void SeqWidget::setInOutBoxVisible(bool on)
+{
+    inOutBox->setVisible(on);
 }
 
 void SeqWidget::setMuted(bool on)

@@ -32,6 +32,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QToolButton>
+#include <QPushButton>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
@@ -105,7 +106,7 @@ class LfoWidget : public QWidget
  * @param parent The parent widget of this module, i.e. MainWindow
  */
     LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
-            bool mutedAdd = false, QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~LfoWidget();
 
     ParStore *parStore;
@@ -120,7 +121,8 @@ class LfoWidget : public QWidget
     QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox;
     QComboBox *loopBox;
-    QCheckBox *muteOut;
+    QWidget *inOutBox;
+    QPushButton *muteOut;
     QCheckBox *enableNoteOff;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
@@ -216,6 +218,7 @@ class LfoWidget : public QWidget
     void updateEnableRestartByKbd(bool on);
     void updateEnableTrigByKbd(bool on);
     void updateTrigLegato(bool on);
+    void setInOutBoxVisible(bool on);
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform

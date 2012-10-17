@@ -28,6 +28,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QToolButton>
+#include <QPushButton>
 #include <QAction>
 #include <QComboBox>
 #include <QGroupBox>
@@ -70,6 +71,7 @@ class ArpWidget : public QWidget
     QComboBox *triggerMode;
     QComboBox *patternPresetBox;
     QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
+    QWidget *inOutBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QToolButton *latchModeButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
@@ -94,7 +96,7 @@ class ArpWidget : public QWidget
  * @param parent The parent widget of this module, i.e. MainWindow
  */
     ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
-            bool mutedAdd = false, QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~ArpWidget();
 
     ParStore *parStore;
@@ -103,7 +105,7 @@ class ArpWidget : public QWidget
     ManageBox *manageBox;
 
     QStringList patternPresets, patternNames;
-    QCheckBox *muteOut;
+    QPushButton *muteOut;
 
     void setChIn(int value);
     void setIndexIn(int index, int value);
@@ -205,6 +207,7 @@ class ArpWidget : public QWidget
     void setRandomVisible(bool on);
     void setEnvelopeVisible(bool on);
     void setInputFilterVisible(bool on);
+    void setInOutBoxVisible(bool on);
 
     void updateChIn(int value);
     void updateIndexIn(int value);

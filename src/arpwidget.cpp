@@ -43,7 +43,7 @@
 
 
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
-    bool mutedAdd, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
@@ -123,12 +123,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
-    muteOut = new QCheckBox(this);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-
     QLabel *portLabel = new QLabel(tr("&Port"), portBox);
     portOut = new QComboBox(portBox);
     portLabel->setBuddy(portOut);
@@ -143,18 +137,24 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
             SLOT(updateChannelOut(int)));
 
     QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(muteLabel, 0, 0);
-    portBoxLayout->addWidget(muteOut, 0, 1);
-    portBoxLayout->addWidget(portLabel, 1, 0);
-    portBoxLayout->addWidget(portOut, 1, 1);
-    portBoxLayout->addWidget(channelLabel, 2, 0);
-    portBoxLayout->addWidget(channelOut, 2, 1);
+    portBoxLayout->addWidget(portLabel, 0, 0);
+    portBoxLayout->addWidget(portOut, 0, 1);
+    portBoxLayout->addWidget(channelLabel, 1, 0);
+    portBoxLayout->addWidget(channelOut, 1, 1);
     if (compactStyle) {
         portBoxLayout->setMargin(2);
         portBoxLayout->setSpacing(1);
     }
     portBox->setLayout(portBoxLayout);
 
+    QAction* hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    hideInOutBoxAction->setCheckable(true);
+    hideInOutBoxAction->setChecked(inOutVisible);
+    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
+    hideInOutBoxButton->setFixedSize(10, 80);
+    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
 
     // Layout for left/right placements of in/out group boxes
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout();
@@ -162,6 +162,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
+    inOutBox = new QWidget(this);
+    inOutBox->setLayout(inOutBoxLayout);
+    inOutBox->setVisible(inOutVisible);
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
@@ -200,6 +203,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
     midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
+
+    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOut->setFont(QFont("Helvetica", 8));
+    muteOut->setMinimumSize(QSize(35,10));
+    muteOut->setCheckable(true);
+    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames;
@@ -245,6 +255,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
         modeLayout->setSpacing(1);
     }
 
+    modeLayout->addWidget(muteOut);
     modeLayout->addWidget(repeatPatternThroughChord);
     modeLayout->addWidget(triggerMode);
     modeLayout->addWidget(latchModeButton);
@@ -349,7 +360,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);
     widgetLayout->addWidget(envelopeBox, 2, 0);
-    widgetLayout->addLayout(inOutBoxLayout, 0, 1, 3, 1);
+    widgetLayout->addWidget(hideInOutBoxButton, 0, 1);
+    widgetLayout->addWidget(inOutBox, 0, 2, 3, 1);
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
     setLayout(widgetLayout);
@@ -406,6 +418,7 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
 {
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
@@ -792,6 +805,11 @@ void ArpWidget::setEnvelopeVisible(bool on)
 {
     attackTime->setVisible(on);
     releaseTime->setVisible(on);
+}
+
+void ArpWidget::setInOutBoxVisible(bool on)
+{
+    inOutBox->setVisible(on);
 }
 
 void ArpWidget::setMuted(bool on)

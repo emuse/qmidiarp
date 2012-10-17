@@ -387,13 +387,13 @@ void MainWindow::seqNew()
     }
 }
 
-void MainWindow::addArp(const QString& name, bool fromfile)
+void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
     ArpWidget *moduleWidget = new ArpWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, this);
+            passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
@@ -430,7 +430,7 @@ void MainWindow::addArp(const QString& name, bool fromfile)
     checkIfFirstModule();
 }
 
-void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom)
+void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
 {
     int widgetID, count;
     QString name;
@@ -438,7 +438,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom)
     MidiLfo *midiWorker = new MidiLfo();
     LfoWidget *moduleWidget = new LfoWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, this);
+            passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -482,7 +482,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom)
     checkIfFirstModule();
 }
 
-void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
+void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
 {
     int widgetID, count;
     QString name;
@@ -490,7 +490,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom)
     MidiSeq *midiWorker = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiWorker,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, this);
+            passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
@@ -764,14 +764,18 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
 {
     int count = 0;
+    bool iovis;
 
 
     while (!xml.atEnd()) {
+        iovis = true;
         xml.readNext();
         if (xml.isEndElement())
             break;
         if (xml.isStartElement() && (xml.name() == "Arp")) {
-            addArp("Arp:" + xml.attributes().value("name").toString(), true);
+            if (xml.attributes().hasAttribute("inOutVisible"))
+                iovis = xml.attributes().value("inOutVisible").toString().toInt();
+            addArp("Arp:" + xml.attributes().value("name").toString(), true, iovis);
             engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml);
             count++;
@@ -782,7 +786,9 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             }
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
-            addLfo("LFO:" + xml.attributes().value("name").toString(), true);
+            if (xml.attributes().hasAttribute("inOutVisible"))
+                iovis = xml.attributes().value("inOutVisible").toString().toInt();
+            addLfo("LFO:" + xml.attributes().value("name").toString(), true, -1, iovis);
             engine->lfoWidget(engine->midiLfoCount() - 1)
                     ->readData(xml);
             count++;
@@ -793,7 +799,9 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             }
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
-            addSeq("Seq:" + xml.attributes().value("name").toString(), true);
+            if (xml.attributes().hasAttribute("inOutVisible"))
+                iovis = xml.attributes().value("inOutVisible").toString().toInt();
+            addSeq("Seq:" + xml.attributes().value("name").toString(), true, -1, iovis);
             engine->seqWidget(engine->midiSeqCount() - 1)
                     ->readData(xml);
             count++;

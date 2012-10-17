@@ -44,7 +44,7 @@
 
 
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
-    bool mutedAdd, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker), modified(false)
 {
     int l1;
@@ -128,13 +128,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *muteLabel = new QLabel(tr("&Mute"),portBox);
-    muteOut = new QCheckBox(this);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteLabel->setBuddy(muteOut);
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-
-
     QLabel *ccnumberLabel = new QLabel(tr("MIDI &CC#"), portBox);
     ccnumberBox = new QSpinBox(portBox);
     ccnumberLabel->setBuddy(ccnumberBox);
@@ -160,14 +153,12 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
 
     QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(muteLabel, 0, 0);
-    portBoxLayout->addWidget(muteOut, 0, 1);
-    portBoxLayout->addWidget(ccnumberLabel, 1, 0);
-    portBoxLayout->addWidget(ccnumberBox, 1, 1);
-    portBoxLayout->addWidget(portLabel, 2, 0);
-    portBoxLayout->addWidget(portOut, 2, 1);
-    portBoxLayout->addWidget(channelLabel, 3, 0);
-    portBoxLayout->addWidget(channelOut, 3, 1);
+    portBoxLayout->addWidget(ccnumberLabel, 0, 0);
+    portBoxLayout->addWidget(ccnumberBox, 0, 1);
+    portBoxLayout->addWidget(portLabel, 1, 0);
+    portBoxLayout->addWidget(portOut, 1, 1);
+    portBoxLayout->addWidget(channelLabel, 2, 0);
+    portBoxLayout->addWidget(channelOut, 2, 1);
 
     QVBoxLayout* outputLayout = new QVBoxLayout;
     outputLayout->addLayout(portBoxLayout);
@@ -178,11 +169,23 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     portBox->setLayout(outputLayout);
 
+    QAction* hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    hideInOutBoxAction->setCheckable(true);
+    hideInOutBoxAction->setChecked(inOutVisible);
+    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
+    hideInOutBoxButton->setFixedSize(10, 80);
+    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
+
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
+    inOutBox = new QWidget(this);
+    inOutBox->setLayout(inOutBoxLayout);
+    inOutBox->setVisible(inOutVisible);
 
     // group box for wave setup
     QGroupBox *waveBox = new QGroupBox(tr("Wave"), this);
@@ -272,6 +275,13 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
             SLOT(updateLoop(int)));
     midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
 
+    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOut->setFont(QFont("Helvetica", 8));
+    muteOut->setMinimumSize(QSize(35,10));
+    muteOut->setCheckable(true);
+    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
@@ -307,8 +317,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     QGridLayout *paramBoxLayout = new QGridLayout;
     paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
-    paramBoxLayout->addWidget(recordButtonLabel, 1, 0);
-    paramBoxLayout->addWidget(recordButton, 1, 1);
+    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 2);
+    paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
+    paramBoxLayout->addWidget(recordButton, 2, 1);
     paramBoxLayout->addWidget(waveFormBoxLabel, 0, 2);
     paramBoxLayout->addWidget(waveFormBox, 0, 3);
     paramBoxLayout->addWidget(freqBoxLabel, 1, 2);
@@ -338,7 +349,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
-    widgetLayout->addLayout(inOutBoxLayout, 0);
+    widgetLayout->addWidget(hideInOutBoxButton, 0);
+    widgetLayout->addWidget(inOutBox, 0);
 
     setLayout(widgetLayout);
     updateAmp(64);
@@ -362,6 +374,7 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
         xml.writeStartElement("input");
             xml.writeTextElement("enableNoteOff", QString::number(
                 midiWorker->enableNoteOff));
@@ -766,6 +779,11 @@ void LfoWidget::mouseWheel(int step)
     cv = offset->value() + step;
     if ((cv < 127) && (cv > 0))
     offset->setValue(cv + step);
+}
+
+void LfoWidget::setInOutBoxVisible(bool on)
+{
+    inOutBox->setVisible(on);
 }
 
 void LfoWidget::setMuted(bool on)
