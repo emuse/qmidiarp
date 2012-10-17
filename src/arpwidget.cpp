@@ -147,7 +147,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     }
     portBox->setLayout(portBoxLayout);
 
-    QAction* hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
     QToolButton *hideInOutBoxButton = new QToolButton(this);
     hideInOutBoxAction->setCheckable(true);
     hideInOutBoxAction->setChecked(inOutVisible);

@@ -64,6 +64,8 @@
 #include "pixmaps/filesave.xpm"
 #include "pixmaps/filesaveas.xpm"
 #include "pixmaps/filequit.xpm"
+#include "pixmaps/iopanelshow.xpm"
+#include "pixmaps/iopanelhide.xpm"
 
 
 static const char FILEEXT[] = ".qmax";
@@ -210,6 +212,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     updateTransportStatus(false);
 
+    QAction* showAllIOAction = new QAction(tr("&Show all IO panels"), this);
+    showAllIOAction->setIcon(QIcon(iopanelshow_xpm));
+    connect(showAllIOAction, SIGNAL(triggered()), this, SLOT(showIO()));
+
+    QAction* hideAllIOAction = new QAction(tr("&Hide all IO panels"), this);
+    hideAllIOAction->setIcon(QIcon(iopanelhide_xpm));
+    connect(hideAllIOAction, SIGNAL(triggered()), this, SLOT(hideIO()));
+
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setIcon(QIcon(eventlog_xpm));
     viewLogAction->setText(tr("&Event Log"));
@@ -252,6 +262,8 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     connect(fileRecentlyOpenedFiles, SIGNAL(triggered(QAction*)), this,
         SLOT(recentFileActivated(QAction*)));
 
+    viewMenu->addAction(showAllIOAction);
+    viewMenu->addAction(hideAllIOAction);
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewSettingsAction);
@@ -280,6 +292,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
             SLOT(ftb_update_orientation(Qt::Orientation)));
 
     controlToolBar = new QToolBar(tr("&Control Toolbar"), this);
+    controlToolBar->addAction(showAllIOAction);
+    controlToolBar->addAction(hideAllIOAction);
+    controlToolBar->addSeparator();
     controlToolBar->addAction(viewLogAction);
     controlToolBar->addAction(viewGrooveAction);
     controlToolBar->addAction(viewGlobAction);
@@ -1024,6 +1039,16 @@ void MainWindow::jackSyncToggle(bool on)
     if (on) midiClockAction->setChecked(false);
     setGUIforExtSync(on);
     engine->driver->setUseJackTransport(on);
+}
+
+void MainWindow::showIO()
+{
+    engine->showAllIOPanels(true);
+}
+
+void MainWindow::hideIO()
+{
+    engine->showAllIOPanels(false);
 }
 
 void MainWindow::jackShutdown()

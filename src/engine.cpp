@@ -685,6 +685,18 @@ bool Engine::eventCallback(MidiEvent inEv)
     return unmatched;
 }
 
+void Engine::showAllIOPanels(bool on)
+{
+    int l1;
+
+    for (l1 = 0; l1 < arpWidgetCount(); l1++)
+        arpWidget(l1)->hideInOutBoxAction->setChecked(on);
+    for (l1 = 0; l1 < lfoWidgetCount(); l1++)
+        lfoWidget(l1)->hideInOutBoxAction->setChecked(on);
+    for (l1 = 0; l1 < seqWidgetCount(); l1++)
+        seqWidget(l1)->hideInOutBoxAction->setChecked(on);
+}
+
 void Engine::sendController(int ccnumber, int channel, int value)
 {
     int l1;

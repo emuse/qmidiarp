@@ -143,6 +143,7 @@ class Engine : public QThread  {
     int getClientId();
     void setTempo(int bpm);
     void sendGroove();
+    void showAllIOPanels(bool on);
 
   signals:
 /**
@@ -171,10 +172,10 @@ class Engine : public QThread  {
 /**
  * @brief Slot for MidiControl::setMidiLearn(). Sets Engine into MIDI Learn status for
  * moduleID and controlID.
- * 
+ *
  * Engine will then wait for an incoming controller event and trigger the
  * attribution by calling MidiControl::appendMidiCC().
- * 
+ *
  * @param moduleWindowID dockWidget ID of the module
  * @param moduleID ID of the module (index in the moduleWidgetList)
  * @param controlID ID of the controllable widget requesting MIDI learn

@@ -7,6 +7,7 @@ pixmaps = \
 	seqadd.xpm seqwavcp.xpm lfowavcp.xpm seqrecord.xpm jacktr.xpm\
 	lfowcustm.xpm lfowsawdn.xpm lfowsawup.xpm lfowsine.xpm lfowtri.xpm\
 	lfowsquare.xpm settings.xpm groovetog.xpm eventlog.xpm \
-	filenew.xpm filesave.xpm filesaveas.xpm fileopen.xpm filequit.xpm
+	filenew.xpm filesave.xpm filesaveas.xpm fileopen.xpm filequit.xpm \
+	iopanelshow.xpm iopanelhide.xpm
 
 EXTRA_DIST = $(pixmaps)

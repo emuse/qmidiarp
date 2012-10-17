@@ -129,6 +129,7 @@ class LfoWidget : public QWidget
     QCheckBox *enableTrigLegato;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
+    QAction* hideInOutBoxAction;
     QComboBox *waveFormBox, *freqBox;
 
     void setChIn(int value);

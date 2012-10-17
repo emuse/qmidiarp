@@ -106,6 +106,7 @@ class ArpWidget : public QWidget
 
     QStringList patternPresets, patternNames;
     QPushButton *muteOut;
+    QAction* hideInOutBoxAction;
 
     void setChIn(int value);
     void setIndexIn(int index, int value);

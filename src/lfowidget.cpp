@@ -169,7 +169,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
 
     portBox->setLayout(outputLayout);
 
-    QAction* hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
     QToolButton *hideInOutBoxButton = new QToolButton(this);
     hideInOutBoxAction->setCheckable(true);
     hideInOutBoxAction->setChecked(inOutVisible);

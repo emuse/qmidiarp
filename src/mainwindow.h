@@ -486,6 +486,8 @@ class MainWindow : public QMainWindow
  * the MidiCC Dialog window.
 */
     void showMidiCCDialog();
+    void showIO();
+    void hideIO();
 /*!
 * @brief This function appends or deletes an Arp pattern preset.
 *

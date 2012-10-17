@@ -118,6 +118,7 @@ class SeqWidget : public QWidget
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
+    QAction* hideInOutBoxAction;
     int dispVertical;
 
     void setChIn(int value);
