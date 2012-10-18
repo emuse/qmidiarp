@@ -142,7 +142,7 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     sample.tick = nextTick;
 
 
-    cur_grv_sft = 0.01 * (grooveTick * frame_nticks);
+    cur_grv_sft = 0.01 * (grooveTick * (frame_nticks - 1));
 
     /* pairwise application of new groove shift */
     if (!(currentIndex % 2)) {

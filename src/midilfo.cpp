@@ -176,7 +176,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         }
     }
 
-    int cur_grv_sft = 0.01 * (grooveTick * step);
+    int cur_grv_sft = 0.01 * (grooveTick * (step - 1));
     /* pairwise application of new groove shift */
     if (!(frameptr % 2)) {
         cur_grv_sft = -cur_grv_sft;
