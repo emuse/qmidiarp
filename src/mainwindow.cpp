@@ -1049,6 +1049,7 @@ void MainWindow::showIO()
 void MainWindow::hideIO()
 {
     engine->showAllIOPanels(false);
+    resize(10, 10);
 }
 
 void MainWindow::jackShutdown()
