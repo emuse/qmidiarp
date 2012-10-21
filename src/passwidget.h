@@ -45,6 +45,7 @@ class PassWidget : public QDialog
 
   private:
     Engine *engine;
+    bool modified;
 
   public:
     PassWidget(Engine* engine, int p_portcount, QWidget* parent=0);
@@ -55,6 +56,8 @@ class PassWidget : public QDialog
     QCheckBox *forwardCheck;
     QComboBox *portUnmatchedSpin;
     bool compactStyle, mutedAdd;
+    bool isModified() { return modified;};
+    void setModified(bool on) { modified = on; };
 
   signals:
     void compactLayoutToggle(bool);

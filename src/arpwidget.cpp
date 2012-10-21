@@ -810,6 +810,7 @@ void ArpWidget::setEnvelopeVisible(bool on)
 void ArpWidget::setInOutBoxVisible(bool on)
 {
     inOutBox->setVisible(on);
+    modified=true;
 }
 
 void ArpWidget::setMuted(bool on)

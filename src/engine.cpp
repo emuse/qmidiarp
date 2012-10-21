@@ -388,7 +388,7 @@ bool Engine::isModified()
             break;
         }
 
-    return modified || arpmodified || lfomodified || seqmodified;
+    return modified || arpmodified || lfomodified || seqmodified || globStoreWidget->isModified();
 }
 
 void Engine::setModified(bool m)
@@ -403,6 +403,8 @@ void Engine::setModified(bool m)
 
     for (int l1 = 0; l1 < seqWidgetCount(); l1++)
         seqWidget(l1)->setModified(m);
+
+    globStoreWidget->setModified(m);
 }
 
 /* All following functions are the core engine of QMidiArp. They need to
@@ -778,6 +780,13 @@ void Engine::setUseMidiClock(bool on)
     setStatus(false);
     driver->setUseMidiClock(on);
     useMidiClock = on;
+    modified = true;
+}
+
+void Engine::setUseJackTransport(bool on)
+{
+    driver->setUseJackTransport(on);
+    modified = true;
 }
 
 void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
@@ -803,6 +812,7 @@ void Engine::setTempo(int bpm)
 void Engine::setSendLogEvents(bool on)
 {
     sendLogEvents = on;
+    modified = true;
 }
 
 void Engine::tr_state_cb(bool on, void *context)

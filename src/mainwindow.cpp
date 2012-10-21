@@ -774,6 +774,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
             grooveWidget->readData(xml);
         else skipXmlElement(xml);
     }
+    passWidget->setModified(false);
 }
 
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
@@ -1008,7 +1009,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 
 bool MainWindow::isModified()
 {
-    return engine->isModified();
+    return (engine->isModified() || passWidget->isModified());
 }
 
 void MainWindow::updateTempo(int p_tempo)
@@ -1038,7 +1039,7 @@ void MainWindow::jackSyncToggle(bool on)
 {
     if (on) midiClockAction->setChecked(false);
     setGUIforExtSync(on);
-    engine->driver->setUseJackTransport(on);
+    engine->setUseJackTransport(on);
 }
 
 void MainWindow::showIO()

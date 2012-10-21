@@ -784,6 +784,7 @@ void LfoWidget::mouseWheel(int step)
 void LfoWidget::setInOutBoxVisible(bool on)
 {
     inOutBox->setVisible(on);
+    modified=true;
 }
 
 void LfoWidget::setMuted(bool on)

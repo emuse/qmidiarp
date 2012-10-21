@@ -57,6 +57,7 @@ class GlobStore : public QWidget
     QHBoxLayout* indivButtonLayout;
     int activeStore[2];
     int currentRequest[2];
+    bool modified;
 
   public:
     GlobStore(QWidget* parent=0);
@@ -68,7 +69,6 @@ class GlobStore : public QWidget
     Indicator *indicator;
     QList<QWidget*> widgetList;
     int switchAtBeat; /**< number of beats after which parameter restore is done in Engine */
-
 /*!
 * @brief creates and adds a new group of global parameter
 *  storage and retrieval buttons
@@ -101,6 +101,8 @@ class GlobStore : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
     void handleController(int ccnumber, int channel, int value);
+    bool isModified() { return modified;};
+    void setModified(bool on) { modified = on; };
 
   signals:
 

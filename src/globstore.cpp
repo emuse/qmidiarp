@@ -126,6 +126,7 @@ GlobStore::GlobStore(QWidget *parent)
     addLocation();
 
     setLayout(centLayout);
+    modified = false;
 }
 
 GlobStore::~GlobStore()
@@ -188,6 +189,7 @@ void GlobStore::addLocation()
         widgetList.last()->layout()->itemAt(1)->widget()->setEnabled(true);
     }
     widgetList.append(globWidget);
+    modified = true;
 }
 
 void GlobStore::removeLocation(int ix)
@@ -206,12 +208,14 @@ void GlobStore::removeLocation(int ix)
 
     widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
     if (timeModuleBox->count()) updateTimeModule(0);
+    modified = true;
 }
 
 void GlobStore::updateTimeModule(int ix)
 {
     (void)ix;
     emit updateGlobRestoreTimeModule(timeModuleBox->currentIndex());
+    modified = true;
 }
 
 void GlobStore::updateTimeModeBox(int ix)
@@ -225,11 +229,13 @@ void GlobStore::updateTimeModeBox(int ix)
         switchAtBeatBox->show();
         indicator->updatePercent(0);
     }
+    modified = true;
 }
 
 void GlobStore::updateSwitchAtBeat(int ix)
 {
     switchAtBeat = ix;
+    modified = true;
 }
 
 void GlobStore::setDispState(int ix, int selected, int windowIndex)
@@ -395,6 +401,7 @@ void GlobStore::readData(QXmlStreamReader& xml)
         }
         else skipXmlElement(xml);
     }
+    modified = false;
 }
 
 void GlobStore::writeData(QXmlStreamWriter& xml)
@@ -409,6 +416,7 @@ void GlobStore::writeData(QXmlStreamWriter& xml)
 
         midiControl->writeData(xml);
     xml.writeEndElement();
+    modified = false;
 }
 
 void GlobStore::handleController(int ccnumber, int channel, int value)

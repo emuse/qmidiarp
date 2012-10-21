@@ -188,6 +188,7 @@ class Engine : public QThread  {
     void setGrooveLength(int grooveLength);
     void setSendLogEvents(bool on);
     void setUseMidiClock(bool on);
+    void setUseJackTransport(bool on);
     bool eventCallback(MidiEvent inEv);
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);

@@ -807,6 +807,7 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
 void SeqWidget::setInOutBoxVisible(bool on)
 {
     inOutBox->setVisible(on);
+    modified=true;
 }
 
 void SeqWidget::setMuted(bool on)

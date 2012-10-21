@@ -97,11 +97,13 @@ void PassWidget::updateForward(bool on)
 {
     engine->driver->setForwardUnmatched(on);
     portUnmatchedSpin->setDisabled(!on);
+    modified = true;
 }
 
 void PassWidget::updatePortUnmatched(int id)
 {
     engine->driver->setPortUnmatched(id);
+    modified = true;
 }
 
 void PassWidget::setForward(bool on)
@@ -118,6 +120,7 @@ void PassWidget::setPortUnmatched(int id)
 void PassWidget::updateControlSetting(bool on)
 {
     engine->setMidiControllable(on);
+    modified = true;
 }
 
 void PassWidget::updateCompactStyle(bool on)
