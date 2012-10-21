@@ -367,6 +367,8 @@ void Engine::setCompactStyle(bool on)
 
 bool Engine::isModified()
 {
+    if (!moduleWindowCount()) return false;
+
     bool arpmodified = false;
     bool lfomodified = false;
     bool seqmodified = false;
@@ -388,7 +390,8 @@ bool Engine::isModified()
             break;
         }
 
-    return modified || arpmodified || lfomodified || seqmodified || globStoreWidget->isModified();
+    return (modified || arpmodified || lfomodified || seqmodified
+            || globStoreWidget->isModified());
 }
 
 void Engine::setModified(bool m)
