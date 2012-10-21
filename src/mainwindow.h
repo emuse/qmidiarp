@@ -100,6 +100,7 @@ class MainWindow : public QMainWindow
     QAction *fileNewAction, *fileOpenAction, *fileSaveAction, *fileSaveAsAction;
     QAction *fileQuitAction;
     QAction *midiClockAction, *jackSyncAction;
+    QAction *showAllIOAction, *hideAllIOAction;
     QMenu* fileRecentlyOpenedFiles;
 
 /*!

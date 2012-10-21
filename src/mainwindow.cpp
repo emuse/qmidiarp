@@ -167,12 +167,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));
     fileSaveAction->setToolTip(tr("Save current arpeggiator file"));
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
+    fileSaveAction->setDisabled(true);
 
     fileSaveAsAction = new QAction(QIcon(filesaveas_xpm), tr("Save &as..."),
             this);
     fileSaveAsAction->setToolTip(
             tr("Save current arpeggiator file with new name"));
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
+    fileSaveAsAction->setDisabled(true);
 
     fileQuitAction = new QAction(QIcon(filequit_xpm), tr("&Quit"), this);
     fileQuitAction->setShortcut(QKeySequence(tr("Ctrl+Q", "File|Quit")));
@@ -212,13 +214,15 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     updateTransportStatus(false);
 
-    QAction* showAllIOAction = new QAction(tr("&Show all IO panels"), this);
+    showAllIOAction = new QAction(tr("&Show all IO panels"), this);
     showAllIOAction->setIcon(QIcon(iopanelshow_xpm));
     connect(showAllIOAction, SIGNAL(triggered()), this, SLOT(showIO()));
+    showAllIOAction->setDisabled(true);
 
-    QAction* hideAllIOAction = new QAction(tr("&Hide all IO panels"), this);
+    hideAllIOAction = new QAction(tr("&Hide all IO panels"), this);
     hideAllIOAction->setIcon(QIcon(iopanelhide_xpm));
     connect(hideAllIOAction, SIGNAL(triggered()), this, SLOT(hideIO()));
+    hideAllIOAction->setDisabled(true);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
     viewLogAction->setIcon(QIcon(eventlog_xpm));
@@ -329,6 +333,8 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     if (checkRcFile())
         readRcFile();
+
+    passWidget->setModified(false);
 
     if (!installSignalHandlers())
         qWarning("%s", "Signal handlers not installed!");
@@ -1273,6 +1279,10 @@ void MainWindow::checkIfLastModule()
         midiClockAction->setChecked(false);
         jackSyncAction->setDisabled(true);
         jackSyncAction->setChecked(false);
+        fileSaveAction->setDisabled(true);
+        fileSaveAsAction->setDisabled(true);
+        showAllIOAction->setDisabled(true);
+        hideAllIOAction->setDisabled(true);
     }
 }
 
@@ -1281,6 +1291,10 @@ void MainWindow::checkIfFirstModule()
     if (engine->moduleWindowCount() == 1) {
         if (alsaMidi) midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
+        fileSaveAction->setEnabled(true);
+        fileSaveAsAction->setEnabled(true);
+        showAllIOAction->setEnabled(true);
+        hideAllIOAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()
                                 || jackSyncAction->isChecked()));
     }
