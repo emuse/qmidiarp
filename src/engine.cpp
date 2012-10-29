@@ -32,6 +32,11 @@
 Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
     ready = false;
+
+    logEventBuffer.resize(128);
+    logTickBuffer.resize(128);
+    logEventCount = 0;
+
     globStoreWidget = p_globStore;
     connect(globStoreWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             this, SLOT(setMidiLearn(int, int, int)));
@@ -633,7 +638,11 @@ bool Engine::eventCallback(MidiEvent inEv)
 
 
     /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
-    if (sendLogEvents) emit midiEventReceived(inEv, tick);
+    if (sendLogEvents) {
+        logEventBuffer.replace(logEventCount, inEv);
+        logTickBuffer.replace(logEventCount, tick);
+        logEventCount++;
+    }
 
     if (useMidiClock){
         if (inEv.type == EV_START) {
@@ -958,4 +967,11 @@ void Engine::updateDisplay()
 
     globStoreWidget->updateDisplay();
     grooveWidget->updateDisplay();
+
+    if ((sendLogEvents) && (logEventCount)) {
+        for (l1 = 0; l1 < logEventCount; l1++) {
+            emit midiEventReceived(logEventBuffer.at(l1), logTickBuffer.at(l1));
+        }
+        logEventCount = 0;
+    }
 }

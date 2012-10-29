@@ -88,6 +88,9 @@ class Engine : public QThread  {
     int requestTick;
     Sample seqSample;
     bool sendLogEvents;
+    int logEventCount;
+    QVector<MidiEvent> logEventBuffer;
+    QVector<int> logTickBuffer;
 
     QTimer *dispTimer;
 
