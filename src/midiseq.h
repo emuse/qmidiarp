@@ -70,7 +70,6 @@ class MidiSeq : public QObject  {
     bool backward;       /*!< True when the sequence should start backward */
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
-    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int noteCount;
     bool recordMode;
     bool seqFinished;
@@ -111,6 +110,7 @@ class MidiSeq : public QObject  {
     int vel, transp, notelength;
     int size, res, waveFormIndex;
     int currentRecStep;
+    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int loopMarker;
     int nPoints;        /*!< Number of steps to be played out */
     int nextTick;

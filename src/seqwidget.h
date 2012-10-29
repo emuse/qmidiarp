@@ -80,6 +80,8 @@ class SeqWidget : public QWidget
     void loadWaveForms();
 
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
+    bool dataChanged;
+    bool needsGUIUpdate;
 
 /* PUBLIC MEMBERS */
   public:
@@ -120,6 +122,8 @@ class SeqWidget : public QWidget
     QAction *recordAction;
     QAction* hideInOutBoxAction;
     int dispVertical;
+    int resBoxIndex;
+    int sizeBoxIndex;
 
     void setChIn(int value);
     void setEnableNoteIn(bool on);
@@ -265,6 +269,8 @@ class SeqWidget : public QWidget
     void setDispVert(int mode);
     void updateDispVert(int mode);
     void setInOutBoxVisible(bool on);
+
+    void updateDisplay();
 
 /*!
 * @brief Slot currently not in use.

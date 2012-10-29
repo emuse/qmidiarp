@@ -211,6 +211,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     waveFormBox->addItem(QIcon(lfowsquare_xpm),"");
     waveFormBox->addItem(QIcon(lfowcustm_xpm),"");
     waveFormBox->setCurrentIndex(0);
+    waveFormBoxIndex = 0;
     waveFormBox->setToolTip(tr("Waveform Basis"));
 
     connect(waveFormBox, SIGNAL(activated(int)), this,
@@ -228,6 +229,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
         << "4" << "5" << "6" << "7" << "8";
     freqBox->insertItems(0, names);
     freqBox->setCurrentIndex(6);
+    freqBoxIndex = 6;
     freqBox->setToolTip(
             tr("Frequency (cycles/beat): Number of wave cycles produced every beat"));
     freqBox->setMinimumContentsLength(3);
@@ -243,6 +245,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
     resBox->insertItems(0, names);
     resBox->setCurrentIndex(4);
+    resBoxIndex = 4;
     resBox->setToolTip(
             tr("Resolution (events/beat): Number of events produced every beat"));
     resBox->setMinimumContentsLength(3);
@@ -258,6 +261,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
             << "12" << "16" << "24" << "32" ;
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(0);
+    sizeBoxIndex = 0;
     sizeBox->setToolTip(tr("Length of LFO wave in beats"));
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
@@ -356,6 +360,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
     updateAmp(64);
 
     lastMute = false;
+    dataChanged = false;
+    needsGUIUpdate = false;
 }
 
 LfoWidget::~LfoWidget()
@@ -644,6 +650,7 @@ void LfoWidget::updateTrigLegato(bool on)
 void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
+    waveFormBoxIndex = val;
     midiWorker->updateWaveForm(val);
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -652,22 +659,19 @@ void LfoWidget::updateWaveForm(int val)
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
     modified = true;
+
 }
 
 void LfoWidget::updateScreen(int val)
 {
-    if (midiWorker->isRecording) {
-        midiWorker->getData(&data);
-        screen->updateScreen(data);
-    }
-    else {
+    if (!midiWorker->isRecording)
         screen->updateScreen(val);
-    }
 }
 
 void LfoWidget::updateFreq(int val)
 {
     if (val > 13) return;
+    freqBoxIndex = val;
     midiWorker->updateFrequency(lfoFreqValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -677,6 +681,7 @@ void LfoWidget::updateFreq(int val)
 void LfoWidget::updateRes(int val)
 {
     if (val > 8) return;
+    resBoxIndex = val;
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -687,6 +692,7 @@ void LfoWidget::updateRes(int val)
 void LfoWidget::updateSize(int val)
 {
     if (val > 11) return;
+    sizeBoxIndex = val;
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateScreen(data);
@@ -967,73 +973,99 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {
-                                m = muteOut->isChecked();
-                                muteOut->setChecked(!m);
+                                m = midiWorker->isMuted;
+                                midiWorker->setMuted(!m);
                             }
                         }
                         else {
                             if (value == max) {
-                                muteOut->setChecked(false);
+                                midiWorker->setMuted(false);
                             }
                             if (value == min) {
-                                muteOut->setChecked(true);
+                                midiWorker->setMuted(true);
                             }
                         }
                 break;
 
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        amplitude->setValue(sval);
+                        midiWorker->updateAmplitude(sval);
                 break;
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        offset->setValue(sval);
+                        midiWorker->updateOffset(sval);
                 break;
                 case 3:
                         sval = min + ((double)value * (max - min) / 127);
-                        waveFormBox->setCurrentIndex(sval);
-                        updateWaveForm(sval);
+                        if (sval < 6) waveFormBoxIndex = sval;
                 break;
                 case 4:
                         sval = min + ((double)value * (max - min) / 127);
-                        freqBox->setCurrentIndex(sval);
-                        updateFreq(sval);
+                        if (sval < 14) freqBoxIndex = sval;
                 break;
                 case 5: if (min == max) {
                             if (value == max) {
-                                m = recordAction->isChecked();
-                                recordAction->setChecked(!m);
+                                m = midiWorker->recordMode;
+                                setRecord(!m);
+                                return;
                             }
                         }
                         else {
                             if (value == max) {
-                                recordAction->setChecked(true);
+                                setRecord(true);
                             }
                             if (value == min) {
-                                recordAction->setChecked(false);
+                                setRecord(false);
                             }
                         }
                 break;
                 case 6:
                         sval = min + ((double)value * (max - min) / 127);
-                        resBox->setCurrentIndex(sval);
-                        updateRes(sval);
+                        if (sval < 9) resBoxIndex = sval;
                 break;
                 case 7:
                         sval = min + ((double)value * (max - min) / 127);
-                        sizeBox->setCurrentIndex(sval);
-                        updateSize(sval);
+                        if (sval < 12) sizeBoxIndex = sval;
                 break;
                 case 8:
                         sval = min + ((double)value * (max - min) / 127);
-                        loopBox->setCurrentIndex(sval);
-                        updateLoop(sval);
+                        if (sval < 6) midiWorker->curLoopMode = sval;
                 break;
 
                 default:
                 break;
             }
+            needsGUIUpdate = true;
         }
     }
+}
+
+void LfoWidget::updateDisplay()
+{
+    QVector<Sample> data;
+    if (midiWorker->isRecording) {
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+    }
+    screen->updateDraw();
+    midiControl->update();
+
+    if (!needsGUIUpdate) return;
+
+    muteOut->setChecked(midiWorker->isMuted);
+    recordAction->setChecked(midiWorker->recordMode);
+    resBox->setCurrentIndex(resBoxIndex);
+    updateRes(resBoxIndex);
+    sizeBox->setCurrentIndex(sizeBoxIndex);
+    updateSize(sizeBoxIndex);
+    freqBox->setCurrentIndex(freqBoxIndex);
+    updateFreq(freqBoxIndex);
+    loopBox->setCurrentIndex(midiWorker->curLoopMode);
+    amplitude->setValue(midiWorker->amp);
+    offset->setValue(midiWorker->offs);
+    if (waveFormBoxIndex != waveFormBox->currentIndex())
+        waveFormBox->setCurrentIndex(waveFormBoxIndex);
+        updateWaveForm(waveFormBoxIndex);
+    needsGUIUpdate = false;
 }

@@ -72,7 +72,6 @@ class MidiLfo : public QObject  {
     bool backward;       /*!< True when the sequence should start backward */
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
-    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int recValue;
     int lastSampleValue;
     bool seqFinished;   /*!< When True, all output events are muted, used when NOTE OFF is received */
@@ -110,6 +109,7 @@ class MidiLfo : public QObject  {
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
+    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int old_res;
     int ccnumber;   /*!< MIDI Controller CC number to output */
     bool isMuted;   /*!< Global mute state */
@@ -129,6 +129,7 @@ class MidiLfo : public QObject  {
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
+    QVector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
 
   public:
     MidiLfo();
@@ -228,9 +229,9 @@ class MidiLfo : public QObject  {
 /*! @brief This function transfers a frame of Sample data points taken from
  * the currently active waveform MidiLfo::data.
  *
- * @param *p_data reference to an array the frame is copied to
+ * @param tick current tick
  */
-    void getNextFrame(QVector<Sample> *p_data, int tick);
+    void getNextFrame(int tick);
 /*! @brief This function toggles the mute state of one point of the
  * MidiLfo::muteMask array.
  *

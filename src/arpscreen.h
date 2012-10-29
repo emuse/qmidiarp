@@ -62,6 +62,7 @@ class ArpScreen : public QWidget
     QString pattern;
     int pattern_updated, currentIndex;
     bool isMuted;
+    bool needsRedraw;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -84,6 +85,7 @@ class ArpScreen : public QWidget
     void updateScreen(int p_index);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
+    void updateDraw();
 };
 
 #endif

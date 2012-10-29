@@ -126,6 +126,13 @@ GlobStore::GlobStore(QWidget *parent)
     addLocation();
 
     setLayout(centLayout);
+    schedRestoreID = 0;
+    schedRestoreVal = 0;
+    schedRestore = false;
+    dispReqIx = 0;
+    dispReqSelected = 0;
+    dispReqWindowIndex = 0;
+    needsGUIUpdate = false;
     modified = false;
 }
 
@@ -237,7 +244,13 @@ void GlobStore::updateSwitchAtBeat(int ix)
     switchAtBeat = ix;
     modified = true;
 }
-
+void GlobStore::requestDispState(int ix, int selected, int windowIndex)
+{
+    dispReqIx = ix;
+    dispReqSelected = selected;
+    dispReqWindowIndex = windowIndex;
+    needsGUIUpdate = true;
+}
 void GlobStore::setDispState(int ix, int selected, int windowIndex)
 {
     int start, end;
@@ -432,8 +445,24 @@ void GlobStore::handleController(int ccnumber, int channel, int value)
             max = cclist.at(l2).max;
             sval = min + ((double)value * (max - min) / 127);
             if (sval >= widgetList.count() - 1) return;
-            emit requestRestore(cclist.at(l2).ID - 1, sval);
-            timeModuleBox->setCurrentIndex(cclist.at(l2).ID - 1);
+            schedRestoreID = cclist.at(l2).ID - 1;
+            schedRestoreVal = sval;
+            schedRestore = true;
         }
     }
+}
+
+void GlobStore::updateDisplay()
+{
+    indicator->updateDraw();
+    midiControl->update();
+    if (schedRestore) {
+        schedRestore = false;
+        emit requestRestore(schedRestoreID, schedRestoreVal);
+        timeModuleBox->setCurrentIndex(schedRestoreID);
+    }
+
+    if (!needsGUIUpdate) return;
+    needsGUIUpdate = false;
+    setDispState(dispReqIx, dispReqSelected, dispReqWindowIndex);
 }

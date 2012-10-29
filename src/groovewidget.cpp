@@ -68,6 +68,10 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     GrooveWidgetLayout->addWidget(grooveLength);
     GrooveWidgetLayout->addStretch();
     setLayout(GrooveWidgetLayout);
+    tickVal = 0;
+    velocityVal = 0;
+    lengthVal = 0;
+    needsGUIUpdate = false;
 }
 
 GrooveWidget::~GrooveWidget()
@@ -101,20 +105,21 @@ void GrooveWidget::handleController(int ccnumber, int channel, int value)
             (channel == cclist.at(l2).channel)) {
             switch (cclist.at(l2).ID) {
                 case 0:
-                        grooveTick->setValue(sval);
+                        tickVal = sval;
                 break;
 
                 case 1:
-                        grooveVelocity->setValue(sval);
+                        velocityVal = sval;
                 break;
 
                 case 2:
-                        grooveLength->setValue(sval);
+                        lengthVal = sval;
                 break;
 
                 default:
                 break;
             }
+            needsGUIUpdate = true;
         }
     }
 }
@@ -148,4 +153,15 @@ void GrooveWidget::writeData(QXmlStreamWriter& xml)
             QString::number(grooveLength->value()));
         midiControl->writeData(xml);
     xml.writeEndElement();
+}
+
+void GrooveWidget::updateDisplay()
+{
+    midiControl->update();
+    if (!needsGUIUpdate) return;
+
+    grooveTick->setValue(tickVal);
+    grooveVelocity->setValue(velocityVal);
+    grooveLength->setValue(lengthVal);
+
 }

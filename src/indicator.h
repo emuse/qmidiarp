@@ -39,6 +39,7 @@ class Indicator : public QWidget
   private:
     int p_angle;
     int p_size;
+    bool needsRedraw;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -51,6 +52,7 @@ class Indicator : public QWidget
 
   public slots:
     void updatePercent(int percent);
+    void updateDraw();
 };
 
 #endif

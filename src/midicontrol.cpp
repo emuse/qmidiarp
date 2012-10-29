@@ -48,40 +48,55 @@ MidiControl::MidiControl(QWidget *parent)
     ccList.clear();
     for (int l1 = 0; l1 < 20; l1++) names << "";
     modified = false;
+    newCCPending = false;
 }
 
 MidiControl::~MidiControl()
 {
 }
-
-void MidiControl::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
+void MidiControl::update()
 {
-    MidiCC midiCC;
+    if (!newCCPending) return;
+
     int l1 = 0;
-    midiCC.name = names[controlID];
-    midiCC.ID = controlID;
-    midiCC.ccnumber = ccnumber;
-    midiCC.channel = channel;
-    midiCC.min = min;
-    midiCC.max = max;
 
     while ( (l1 < ccList.count()) &&
-        ((controlID != ccList.at(l1).ID) ||
-        (ccnumber != ccList.at(l1).ccnumber) ||
-        (channel != ccList.at(l1).channel)) ) l1++;
+        ((pendingCC.ID != ccList.at(l1).ID) ||
+        (pendingCC.ccnumber != ccList.at(l1).ccnumber) ||
+        (pendingCC.channel != ccList.at(l1).channel)) ) l1++;
 
     if (ccList.count() == l1) {
-        ccList.append(midiCC);
+        ccList.append(pendingCC);
         qWarning("MIDI Controller %d appended for %s (internal ID %d)"
-        , ccnumber, qPrintable(midiCC.name), controlID);
+        , pendingCC.ccnumber, qPrintable(pendingCC.name), pendingCC.ID);
     }
     else {
         qWarning("MIDI Controller %d already attributed to %s"
-                , ccnumber, qPrintable(midiCC.name));
+                , pendingCC.ccnumber, qPrintable(pendingCC.name));
     }
 
     cancelMidiLearnAction->setEnabled(false);
     modified = true;
+    newCCPending = false;
+}
+
+void MidiControl::appendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
+{
+    requestAppendMidiCC(controlID, ccnumber, channel, min, max);
+    update();
+}
+
+void MidiControl::requestAppendMidiCC(int controlID, int ccnumber, int channel, int min, int max)
+{
+    if (newCCPending) return;
+    pendingCC.name = names[controlID];
+    pendingCC.ID = controlID;
+    pendingCC.ccnumber = ccnumber;
+    pendingCC.channel = channel;
+    pendingCC.min = min;
+    pendingCC.max = max;
+
+    newCCPending = true;
 }
 
 bool MidiControl::isModified()
@@ -191,8 +206,9 @@ void MidiControl::readData(QXmlStreamReader& xml)
                     max = xml.readElementText().toInt();
                 else skipXmlElement(xml);
             }
-            if ((-1 < ccnumber) && (-1 < channel))
+            if ((-1 < ccnumber) && (-1 < channel)) {
                 appendMidiCC(controlID, ccnumber, channel, min, max);
+            }
             else qWarning("Controller data incomplete");
         }
         else skipXmlElement(xml);

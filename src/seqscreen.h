@@ -58,7 +58,7 @@ class SeqScreen : public QWidget
   Q_OBJECT
 
   private:
-    QTimer *timer;
+    QTimer *timer2;
     QVector<Sample> p_data, data;
     int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY;
@@ -67,6 +67,7 @@ class SeqScreen : public QWidget
     int currentRecStep;
     int currentIndex;
     int loopMarker;
+    bool needsRedraw;
     bool isMuted;
     QPointF trg[3];
 
@@ -79,6 +80,7 @@ class SeqScreen : public QWidget
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
     int baseOctave, nOctaves;
+    QTimer *timer;
 
   signals:
     void mousePressed(double, double, int);
@@ -94,6 +96,7 @@ class SeqScreen : public QWidget
     void setLoopMarker(int pos);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
+    void updateDraw();
 };
 
 #endif

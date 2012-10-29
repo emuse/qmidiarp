@@ -42,9 +42,7 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     grooveVelocity = 0;
     grooveLength = 0;
     isMuted = false;
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    needsRedraw = false;
 }
 
 LfoScreen::~LfoScreen()
@@ -173,23 +171,29 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
 }
 
-
 void LfoScreen::updateScreen(const QVector<Sample>& data)
 {
     p_data = data;
-    update();
+    needsRedraw = true;
 }
 
 void LfoScreen::updateScreen(int p_index)
 {
     currentIndex = p_index;
+    needsRedraw = true;
+}
+
+void LfoScreen::updateDraw()
+{
+    if (!needsRedraw) return;
+    needsRedraw = false;
     update();
 }
 
 void LfoScreen::setMuted(bool on)
 {
     isMuted = on;
-    update();
+    needsRedraw = true;
 }
 
 void LfoScreen::mouseMoveEvent(QMouseEvent *event)
@@ -253,7 +257,7 @@ void LfoScreen::newGrooveValues(int tick, int vel, int length)
     grooveTick = tick;
     grooveVelocity = vel;
     grooveLength = length;
-    if (!timer->isActive()) timer->start(50);
+    needsRedraw = true;
 }
 
 QSize LfoScreen::sizeHint() const

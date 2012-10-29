@@ -57,6 +57,12 @@ class GlobStore : public QWidget
     QHBoxLayout* indivButtonLayout;
     int activeStore[2];
     int currentRequest[2];
+    int schedRestoreID;
+    int schedRestoreVal;
+    bool schedRestore;
+    bool needsGUIUpdate;
+    int dispReqIx, dispReqSelected, dispReqWindowIndex;
+
     bool modified;
 
   public:
@@ -198,8 +204,10 @@ class GlobStore : public QWidget
 * is attributed to. If set to -1 (default), all buttons for index ix are colorized
 */
     void setDispState(int ix, int selected, int windowIndex = -1);
+    void requestDispState(int ix, int selected, int windowIndex = -1);
     void setBGColorAt(int column, int row, int color);
     void mapRestoreSignal();
+    void updateDisplay();
 };
 
 #endif

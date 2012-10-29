@@ -75,6 +75,7 @@ class SeqDriver : public DriverBase {
         int deltaToTick (double curtime);
         double aTimeToDelta(snd_seq_real_time_t* atime);
         const snd_seq_real_time_t* deltaToATime(double curtime);
+        snd_seq_remove_events_t *remove_ev;
         void calcClockRatio();
 
         void initTempo();

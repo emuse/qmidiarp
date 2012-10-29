@@ -74,6 +74,7 @@ MidiSeq::MidiSeq()
     int step = TPQN / res;
     Sample sample;
     sample.value = 60;
+    customWave.reserve(512);
     customWave.clear();
     for (l1 = 0; l1 < size * res; l1++) {
             sample.tick = lt;

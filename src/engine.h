@@ -26,6 +26,7 @@
 #define ENGINE_H
 
 #include <QThread>
+#include <QTimer>
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
@@ -64,6 +65,7 @@ class Engine : public QThread  {
     QList<LfoWidget *> lfoWidgetList;
     QList<MidiSeq *> midiSeqList;
     QList<SeqWidget *> seqWidgetList;
+
     int portCount;
     bool modified;
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
@@ -75,6 +77,7 @@ class Engine : public QThread  {
     int restoreRequest;
     int restoreModule;
     int restoreTick;
+    int tempo;
 
     //From SeqDriver
     int schedDelayTicks;
@@ -83,9 +86,10 @@ class Engine : public QThread  {
     int nextMinArpTick;
     int currentTick;
     int requestTick;
-    QVector<Sample> lfoData;
     Sample seqSample;
     bool sendLogEvents;
+
+    QTimer *dispTimer;
 
     static bool midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
@@ -193,6 +197,7 @@ class Engine : public QThread  {
     void echoCallback(bool echo_from_trig);
     void resetTicks(int curtick);
     void indicPercent(int p);
+    void updateDisplay();
     void updateCursor(QChar modtype, int ix, int pos);
 /*!
 * @brief causes the module of type Engine::restoreModType at position

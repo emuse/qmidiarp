@@ -47,9 +47,7 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     grooveVelocity = 0;
     grooveLength = 0;
     isMuted = false;
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    needsRedraw = false;
 }
 
 SeqScreen::~SeqScreen()
@@ -232,13 +230,13 @@ void SeqScreen::paintEvent(QPaintEvent*)
 void SeqScreen::updateScreen(const QVector<Sample>& data)
 {
     p_data = data;
-    update();
+    needsRedraw = true;
 }
 
 void SeqScreen::updateScreen(int p_index)
 {
     currentIndex = p_index;
-    update();
+    needsRedraw = true;
 }
 
 void SeqScreen::newGrooveValues(int tick, int vel, int length)
@@ -246,13 +244,13 @@ void SeqScreen::newGrooveValues(int tick, int vel, int length)
     grooveTick = tick;
     grooveVelocity = vel;
     grooveLength = length;
-    if (!timer->isActive()) timer->start(50);
+    needsRedraw = true;
 }
 
 void SeqScreen::setMuted(bool on)
 {
     isMuted = on;
-    update();
+    needsRedraw = true;
 }
 
 void SeqScreen::mouseMoveEvent(QMouseEvent *event)
@@ -283,16 +281,25 @@ void SeqScreen::mousePressEvent(QMouseEvent *event)
 void SeqScreen::setRecordMode(bool on)
 {
     recordMode = on;
+    needsRedraw = true;
 }
 
 void SeqScreen::setCurrentRecStep(int recStep)
 {
     currentRecStep = recStep;
+    needsRedraw = true;
 }
 
 void SeqScreen::setLoopMarker(int pos)
 {
     loopMarker = pos;
+    needsRedraw = true;
+}
+
+void SeqScreen::updateDraw()
+{
+    if (!needsRedraw) return;
+    needsRedraw = false;
     update();
 }
 

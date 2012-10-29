@@ -140,6 +140,9 @@ MidiArp::MidiArp()
     latchTimer = new QTimer(this);
     latchTimer->setSingleShot(true);
     connect(latchTimer, SIGNAL(timeout()), this, SLOT(purgeLatchBuffer()));
+
+    returnNote.resize(128);
+    returnVelocity.resize(128);
 }
 
 MidiArp::~MidiArp(){
@@ -541,15 +544,12 @@ void MidiArp::prepareCurrentNote(int askedTick)
     int l1 = 0;
     updateNotes();
     returnTick = currentNoteTick;
-    returnNote.clear();
-    returnVelocity.clear();
-
     while ((currentNote[l1] >= 0) && (l1 < MAXCHORD - 1)) {
-        returnNote.append(currentNote[l1]);
-        returnVelocity.append(currentVelocity[l1]);
+        returnNote.replace(l1, currentNote[l1]);
+        returnVelocity.replace(l1, currentVelocity[l1]);
         l1++;
     }
-    returnNote.append(-1); // mark end of chord
+    returnNote.replace(l1, -1); // mark end of chord
     returnLength = currentLength;
     returnIsNew = newCurrent;
     newCurrent = false;
@@ -766,7 +766,7 @@ void MidiArp::updateTriggerMode(int val)
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
-    latchBuffer.clear();
+    //latchBuffer.clear();
     releaseNoteCount = 0;
 }
 
@@ -791,7 +791,7 @@ void MidiArp::purgeSustainBuffer(int sustick)
         int buf = sustainBuffer.at(l1);
         removeNote(&buf, sustick, 1);
     }
-    sustainBuffer.clear();
+    //sustainBuffer.clear();
 }
 
 void MidiArp::setLatchMode(bool on)
@@ -806,7 +806,7 @@ void MidiArp::purgeLatchBuffer()
         int buf = latchBuffer.at(l1);
         removeNote(&buf, arpTick, 1);
     }
-    latchBuffer.clear();
+    //latchBuffer.clear();
 }
 
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

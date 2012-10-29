@@ -51,6 +51,9 @@ class GrooveWidget : public QWidget
 {
   Q_OBJECT
 
+    bool needsGUIUpdate;
+    int tickVal, velocityVal, lengthVal;
+
   public:
     Slider *grooveVelocity, *grooveTick, *grooveLength;
 
@@ -84,6 +87,7 @@ class GrooveWidget : public QWidget
     void updateGrooveTick(int);
     void updateGrooveLength(int);
     void handleController(int ccnumber, int channel, int value);
+    void updateDisplay();
 };
 
 #endif

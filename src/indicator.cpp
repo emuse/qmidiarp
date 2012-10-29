@@ -35,6 +35,7 @@ Indicator::Indicator(int size, QWidget* parent) : QWidget (parent)
 {
     p_angle = 0;
     p_size = size;
+    needsRedraw = false;
 }
 
 Indicator::~Indicator()
@@ -58,6 +59,13 @@ void Indicator::paintEvent(QPaintEvent*)
 void Indicator::updatePercent(int p)
 {
     p_angle = (100 - p) * 16 * 360 / 100;
+    needsRedraw = true;
+}
+
+void Indicator::updateDraw()
+{
+    if (!needsRedraw) return;
+    needsRedraw = false;
     update();
 }
 

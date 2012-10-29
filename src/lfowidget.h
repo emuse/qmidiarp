@@ -68,6 +68,8 @@ class LfoWidget : public QWidget
     QVector<Sample> data;
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
+    bool dataChanged;
+    bool needsGUIUpdate;
 /*!
 * @brief This function populates the LfoWidget::waveForms list with
 * waveform names.
@@ -134,6 +136,10 @@ class LfoWidget : public QWidget
 
     void setChIn(int value);
     QVector<Sample> getCustomWave();
+    int resBoxIndex;
+    int sizeBoxIndex;
+    int freqBoxIndex;
+    int waveFormBoxIndex;
 
 /*!
 * @brief This function returns the MidiLfo instance associated with this GUI
@@ -220,6 +226,8 @@ class LfoWidget : public QWidget
     void updateEnableTrigByKbd(bool on);
     void updateTrigLegato(bool on);
     void setInOutBoxVisible(bool on);
+
+    void updateDisplay();
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform

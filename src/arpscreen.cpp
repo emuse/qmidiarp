@@ -46,10 +46,7 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
     minStepWidth = 1.0;
     patternMaxIndex = 0;
     isMuted = false;
-
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    needsRedraw = false;
 }
 
 ArpScreen::~ArpScreen()
@@ -304,13 +301,19 @@ void ArpScreen::updateScreen(const QString& p_pattern, int p_minOctave,
     minOctave = p_minOctave;
     nSteps = p_nSteps;
     patternMaxIndex = p_patternMaxIndex;
-
-    update();
+    needsRedraw = true;
 }
 
 void ArpScreen::updateScreen(int p_index)
 {
     currentIndex = p_index;
+    needsRedraw = true;
+}
+
+void ArpScreen::updateDraw()
+{
+    if (!needsRedraw) return;
+    needsRedraw = false;
     update();
 }
 
@@ -319,13 +322,13 @@ void ArpScreen::newGrooveValues(int tick, int vel, int length)
     grooveTick = tick;
     grooveVelocity = vel;
     grooveLength = length;
-    if (!timer->isActive()) timer->start(50);
+    needsRedraw = true;
 }
 
 void ArpScreen::setMuted(bool on)
 {
     isMuted = on;
-    update();
+    needsRedraw = true;
 }
 
 QSize ArpScreen::sizeHint() const

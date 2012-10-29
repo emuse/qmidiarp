@@ -81,8 +81,9 @@ class ArpWidget : public QWidget
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
-    void loadPatternPresets();
+    int patternPresetBoxIndex;
 
+    void loadPatternPresets();
 /* PUBLIC MEMBERS */
   public:
 /*!
@@ -213,6 +214,8 @@ class ArpWidget : public QWidget
     void updateChIn(int value);
     void updateIndexIn(int value);
     void updateRangeIn(int value);
+
+    void updateDisplay();
 
  /*! @brief Slot for ArpWidget::latchModeAction.
   * Will cause notes remaining in MidiArp::latchBuffer until new

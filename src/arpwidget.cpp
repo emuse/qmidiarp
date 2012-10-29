@@ -198,6 +198,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     loadPatternPresets();
     patternPresetBox->insertItems(0, patternNames);
     patternPresetBox->setCurrentIndex(0);
+    patternPresetBoxIndex = 0;
     patternPresetBox->setToolTip(tr("Pattern preset"));
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
@@ -923,26 +924,36 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {
-                                m = muteOut->isChecked();
-                                muteOut->setChecked(!m);
+                                m = midiWorker->isMuted;
+                                midiWorker->setMuted(!m);
                             }
                         }
                         else {
                             if (value == max) {
-                                muteOut->setChecked(false);
+                                midiWorker->setMuted(false);
                             }
                             if (value == min) {
-                                muteOut->setChecked(true);
+                                midiWorker->setMuted(true);
                             }
                         }
                 break;
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        selectPatternPreset(sval);
+                        patternPresetBoxIndex = sval;
                 break;
                 default:
                 break;
             }
         }
     }
+}
+
+void ArpWidget::updateDisplay()
+{
+    screen->updateDraw();
+    midiControl->update();
+    muteOut->setChecked(midiWorker->isMuted);
+    if (patternPresetBoxIndex != patternPresetBox->currentIndex())
+        selectPatternPreset(patternPresetBoxIndex);
+
 }

@@ -70,6 +70,7 @@ class LfoScreen : public QWidget
     int clip(int value, int min, int max, bool *outOfRange);
     bool recordMode;
     bool isMuted;
+    bool needsRedraw;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -94,6 +95,7 @@ class LfoScreen : public QWidget
     void wheelEvent(QWheelEvent* event);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
+    void updateDraw();
 };
 
 #endif

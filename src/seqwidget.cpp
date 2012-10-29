@@ -269,6 +269,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     names << "1" << "2" << "4" << "8" << "16";
     resBox->insertItems(0, names);
     resBox->setCurrentIndex(2);
+    resBoxIndex = 2;
     resBox->setToolTip(
             tr("Resolution (notes/beat): Number of notes produced every beat"));
     resBox->setMinimumContentsLength(3);
@@ -283,6 +284,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(3);
+    sizeBoxIndex = 3;
     sizeBox->setToolTip(tr("Length of Sequence in beats"));
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
@@ -356,6 +358,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     setLayout(widgetLayout);
     recordMode = false;
+    dataChanged=false;
+    needsGUIUpdate=false;
     updateVelocity(64);
     updateWaveForm(0);
     lastMute = false;
@@ -699,12 +703,12 @@ void SeqWidget::setRecord(bool on)
     midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->update();
 }
 
 void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
+    resBoxIndex = val;
     midiWorker->res = seqResValues[val];
     midiWorker->resizeAll();
     midiWorker->getData(&data);
@@ -716,6 +720,7 @@ void SeqWidget::updateRes(int val)
 void SeqWidget::updateSize(int val)
 {
     if (val > 7) return;
+    sizeBoxIndex = val;
     midiWorker->size = val + 1;
     midiWorker->resizeAll();
     midiWorker->getData(&data);
@@ -747,13 +752,13 @@ void SeqWidget::updateTranspose(int val)
 void SeqWidget::processNote(int note, int vel)
 {
     if (!recordMode) {
-        if (enableNoteIn->isChecked()) transpose->setValue(note - 60);
-        if (enableVelIn->isChecked()) velocity->setValue(vel);
+        if (enableNoteIn->isChecked()) updateTranspose(note - 60);
+        if (enableVelIn->isChecked()) updateVelocity(vel);
+        needsGUIUpdate = true;
     }
     else {
-        midiWorker->getData(&data);
         screen->setCurrentRecStep(midiWorker->currentRecStep);
-        screen->updateScreen(data);
+        dataChanged=true;
     }
 }
 
@@ -1017,65 +1022,90 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {
-                                m = muteOut->isChecked();
-                                muteOut->setChecked(!m);
+                                m = midiWorker->isMuted;
+                                midiWorker->setMuted(!m);
                             }
                         }
                         else {
                             if (value == max) {
-                                muteOut->setChecked(false);
+                                midiWorker->setMuted(false);
                             }
                             if (value == min) {
-                                muteOut->setChecked(true);
+                                midiWorker->setMuted(true);
                             }
                         }
                 break;
 
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        velocity->setValue(sval);
+                        midiWorker->vel = sval;
                 break;
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        notelength->setValue(sval);
+                        midiWorker->notelength = sval + sval;
                 break;
 
                 case 3: if (min == max) {
                             if (value == max) {
-                                m = recordAction->isChecked();
-                                recordAction->setChecked(!m);
+                                m = recordMode;
+                                setRecord(!m);
                                 return;
                             }
                         }
                         else {
                             if (value == max) {
-                                recordAction->setChecked(true);
+                                setRecord(true);
                             }
                             if (value == min) {
-                                recordAction->setChecked(false);
+                                setRecord(false);
                             }
                         }
                 break;
                 case 4:
                         sval = min + ((double)value * (max - min) / 127);
-                        resBox->setCurrentIndex(sval);
-                        updateRes(sval);
+                        if (sval < 5) resBoxIndex = sval;
                 break;
                 case 5:
                         sval = min + ((double)value * (max - min) / 127);
-                        sizeBox->setCurrentIndex(sval);
-                        updateSize(sval);
+                        if (sval < 8) sizeBoxIndex = sval;
                 break;
                 case 6:
                         sval = min + ((double)value * (max - min) / 127);
-                        loopBox->setCurrentIndex(sval);
-                        updateLoop(sval);
+                        if (sval < 6) midiWorker->curLoopMode = sval;
                 break;
 
                 default:
                 break;
             }
+            needsGUIUpdate = true;
         }
     }
+}
+
+void SeqWidget::updateDisplay()
+{
+    QVector<Sample> data;
+    if (dataChanged) {
+        dataChanged=false;
+        midiWorker->getData(&data);
+        screen->updateScreen(data);
+    }
+    screen->updateDraw();
+    midiControl->update();
+
+    if (!needsGUIUpdate) return;
+
+    transpose->setValue(midiWorker->transp);
+    notelength->setValue(midiWorker->notelength/2);
+    velocity->setValue(midiWorker->vel);
+    muteOut->setChecked(midiWorker->isMuted);
+    recordAction->setChecked(recordMode);
+    resBox->setCurrentIndex(resBoxIndex);
+    updateRes(resBoxIndex);
+    sizeBox->setCurrentIndex(sizeBoxIndex);
+    updateSize(sizeBoxIndex);
+    loopBox->setCurrentIndex(midiWorker->curLoopMode);
+
+    needsGUIUpdate = false;
 }

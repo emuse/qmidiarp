@@ -64,18 +64,22 @@ MidiLfo::MidiLfo()
     int l1 = 0;
     int lt = 0;
     int step = TPQN / res;
+    cwmin = 0;
+
+    customWave.resize(8192);
     Sample sample;
     sample.value = 63;
-    customWave.clear();
-    cwmin = 0;
+    sample.tick = 0;
     for (l1 = 0; l1 < size * res; l1++) {
         sample.tick = lt;
         sample.muted = false;
-        customWave.append(sample);
+        customWave.replace(l1, sample);
         lt+=step;
     }
-    muteMask.fill(false, size * res);
+    muteMask.fill(false, 8192);
     data.clear();
+    frame.resize(32);
+    frame.fill(sample);
     lastMouseLoc = 0;
     lastMouseY = 0;
     frameptr = 0;
@@ -94,13 +98,11 @@ void MidiLfo::setMuted(bool on)
     isMuted = on;
 }
 
-void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
+void MidiLfo::getNextFrame(int tick)
 {
     //this function is called by engine and returns one sample
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
     //The FRAMELIMIT avoids excessive cursor updating
-
-    QVector<Sample> frame;
     Sample sample;
     const int step = TPQN / res;
     const int npoints = size * res;
@@ -109,7 +111,6 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     int framesize;
     int index;
 
-    frame.clear();
     gotKbdTrig = false;
 
     if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
@@ -129,6 +130,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
             index = (l1 + frameptr) % npoints;
         }
         sample = data.at(index);
+
         if (isRecording) {
             if (framesize < 2) {
                 sample.value = recValue;
@@ -146,7 +148,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
         }
         sample.tick = lt;
         if (seqFinished) sample.muted = true;
-        frame.append(sample);
+        frame.replace(l1, sample);
         lt+=step;
         l1++;
     } while ((l1 < framesize) & (l1 < npoints));
@@ -190,7 +192,7 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
     if (nextTick < (tick - lt)) nextTick = tick;
     sample.value = -1;
     sample.tick = nextTick;
-    frame.append(sample);
+    frame.replace(l1, sample);
 
     if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
         /* round-up to current resolution (quantize) */
@@ -200,7 +202,6 @@ void MidiLfo::getNextFrame(QVector<Sample> *p_data, int tick)
 
     if (seqFinished) frameptr = 0;
 
-    *p_data = frame;
 }
 
 void MidiLfo::getData(QVector<Sample> *p_data)

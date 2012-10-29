@@ -42,7 +42,12 @@ JackDriver::JackDriver(
     portUnmatched = 0;
     forwardUnmatched = false;
     useJackSync = false;
-
+    echoTickQueue.resize(512);
+    evQueue.resize(512);
+    evTickQueue.resize(512);
+    evPortQueue.resize(512);
+    bufPtr = 0;
+    echoPtr = 0;
     internalTempo = 120;
 
 /* Initialize and activate Jack with out_port_count ports if we use
@@ -181,7 +186,7 @@ void JackDriver::jack_shutdown(void *arg)
 int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 {
     uint i;
-    uint l1, l2, size;
+    uint l1, l2;
 
     JackDriver *rd = (JackDriver *) arg;
     uint out_port_count = rd->portCount;
@@ -228,11 +233,11 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     for(i = 0; i < nframes; i++) {
 
         /* MIDI Output queue first **/
-        size = rd->evTickQueue.size();
-        if (size) { /* If we have events, find earliest event tick **/
+        //size = rd->evTickQueue.size();
+        if (rd->bufPtr) { /* If we have events, find earliest event tick **/
             idx = 0;
-            nexttick = rd->evTickQueue.head();
-            for (l1 = 0; l1 < size; l1++) {
+            nexttick = rd->evTickQueue.first();
+            for (l1 = 0; l1 < rd->bufPtr; l1++) {
                 tmptick = rd->evTickQueue.at(l1);
                 if (nexttick > tmptick) {
                     idx = l1;
@@ -244,9 +249,14 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
             ev_inframe = ev_sample % nframes;
             if ((ev_jframe <= cur_j_frame) && (ev_inframe <= i)) {
                 //qWarning("nexttick %d, ev_frame %d, ev_inframe %d, cur_jframe %d", nexttick, ev_jframe, ev_inframe, cur_j_frame);
-                outEv = rd->evQueue.takeAt(idx);
-                evport = rd->evPortQueue.takeAt(idx);
-                rd->evTickQueue.removeAt(idx);
+                outEv = rd->evQueue.at(idx);
+                evport = rd->evPortQueue.at(idx);
+                for (uint l4 = idx ; l4 < (rd->bufPtr - 1);l4++) {
+                    rd->evQueue.replace(l4, rd->evQueue.at(l4 + 1));
+                    rd->evPortQueue.replace(l4, rd->evPortQueue.at(l4 + 1));
+                    rd->evTickQueue.replace(l4, rd->evTickQueue.at(l4 + 1));
+                }
+                rd->bufPtr--;
                 int k = 0;
                 if ((ev_jframe) <= cur_j_frame) {
                     do {
@@ -357,28 +367,27 @@ void JackDriver::jackTrCheckState()
 {
     if (!useJackSync) return;
 
-    int state = getState();
+    uint state = getState();
 
     if (transportState == state) return;
-
     transportState = state;
     switch (state){
         case JackTransportStopped:
             trStateCb(false, cbContext);
-            qWarning( "[JackTransportStopped]" );
+            printf( "[JackTransportStopped]\n" );
         break;
 
         case JackTransportRolling:
             trStateCb(true, cbContext);
-            qWarning( "[JackTransportRolling]" );
+            printf( "[JackTransportRolling]\n" );
         break;
 
         case JackTransportStarting:
-            qWarning( "[JackTransportStarting]" );
+            printf( "[JackTransportStarting]\n" );
         break;
 
         case JackTransportLooping:
-            qWarning( "[JackTransportLooping]" );
+            printf( "[JackTransportLooping]\n" );
         break;
         default:
         break;
@@ -403,22 +412,26 @@ jack_position_t JackDriver::getCurrentPos()
 void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
 {
   //qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
-    evQueue.append(ev);
-    evTickQueue.append(n_tick);
-    evPortQueue.append(outport);
+
+    evQueue.replace(bufPtr,ev);
+    evTickQueue.replace(bufPtr,n_tick);
+    evPortQueue.replace(bufPtr,outport);
+    bufPtr++;
 
     if ((ev.type == EV_NOTEON) && (ev.value)) {
         ev.value = 0;
-        evQueue.append(ev);
-        evTickQueue.append(n_tick + duration / 4);
-        evPortQueue.append(outport);
+        evQueue.replace(bufPtr,ev);
+        evTickQueue.replace(bufPtr,n_tick + duration / 4);
+        evPortQueue.replace(bufPtr,outport);
+        bufPtr++;
     }
 }
 
 bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 {
     if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
-    echoTickQueue.append(echo_tick);
+    echoTickQueue.replace(echoPtr, echo_tick);
+    echoPtr++;
     lastSchedTick = echo_tick;
     if (echo_from_trig) tick_callback(true);
 
@@ -432,8 +445,7 @@ void JackDriver::handleEchoes(int nframes)
 
     if (!queueStatus) return;
 
-    int l1;
-    int size = echoTickQueue.size();
+    uint l1;
     int nexttick, tmptick, idx;
 
     if (useJackSync) {
@@ -445,12 +457,12 @@ void JackDriver::handleEchoes(int nframes)
             / (jSampleRate * 60);
     }
 
-    if (!size) return;
+    if (!echoPtr) return;
 
     idx = 0;
-    nexttick = echoTickQueue.head();
+    nexttick = echoTickQueue.first();
 
-    for (l1 = 0; l1 < size; l1++) {
+    for (l1 = 0; l1 < echoPtr; l1++) {
         tmptick = echoTickQueue.at(l1);
         if (nexttick > tmptick) {
             idx = l1;
@@ -458,7 +470,10 @@ void JackDriver::handleEchoes(int nframes)
         }
     }
     if (m_current_tick >= echoTickQueue.at(idx)) {
-        echoTickQueue.removeAt(idx);
+        for (uint l4 = idx ; l4 < (echoPtr - 1); l4++) {
+            echoTickQueue.replace(l4, echoTickQueue.at(l4 + 1));
+        }
+        echoPtr--;
         tick_callback(false);
     }
 }
@@ -485,15 +500,13 @@ void JackDriver::setTransportStatus(bool on)
     if (on) {
         curJFrame = 0;
         lastSchedTick = 0;
-        echoTickQueue.clear();
-        evQueue.clear();
-        evTickQueue.clear();
-        evPortQueue.clear();
+        echoPtr = 0;
+        bufPtr = 0;
         requestEchoAt(0);
-        qWarning("Internal Transport started");
+        printf("Internal Transport started\n");
     }
     else {
-        qWarning("Internal Transport stopped");
+        printf("Internal Transport stopped\n");
     }
 
     queueStatus = on;

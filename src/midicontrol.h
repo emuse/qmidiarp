@@ -32,6 +32,8 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#include <cstdio>
+
 #ifndef MIDICC_H
 
 /*! @brief Structure holding all elements of a MIDI controller allocated to
@@ -65,14 +67,16 @@ class MidiControl : public QWidget
 * MidiControl::midiLearn() slot along with the ID of the
 * controllable QWidget
 */
-    QSignalMapper *learnSignalMapper;  
+    QSignalMapper *learnSignalMapper;
 /*!
 * @brief Forwards the MIDI-forget context menu action signal to the
 * MidiControl::midiForget() slot along with the ID of the
 * controllable QWidget
 */
     QSignalMapper *forgetSignalMapper;
+    bool newCCPending;
     bool modified;
+    MidiCC pendingCC;
 
   public:
     MidiControl(QWidget *parent);
@@ -126,8 +130,8 @@ class MidiControl : public QWidget
 
   public slots:
 /*!
-* @brief Appends a new MIDI controller - GUI element
-* binding to MidiControl::ccList.
+* @brief Calls MidiControl::requestAppendMidiCC() and MidiControl::update()
+* successively
 *
 * Before appending, it checks whether this binding already exists.
 * @param controlID The ID of the control GUI element
@@ -137,6 +141,25 @@ class MidiControl : public QWidget
 * @param max The maximum value to which the controller range is mapped
 */
     void appendMidiCC(int controlID, int ccnumber, int channel, int min, int max);
+
+/*!
+* @brief Schedules appending of a new MIDI controller - GUI element
+* binding to MidiControl::ccList.
+*
+* It will be appended on the call of MidiControl::update().
+* Before appending, it checks whether this binding already exists.
+* @param controlID The ID of the control GUI element
+* @param ccnumber The CC of the MIDI controller to be attributed
+* @param channel The MIDI Channel of the MIDI controller to be attributed
+* @param min The minimum value to which the controller range is mapped
+* @param max The maximum value to which the controller range is mapped
+*/
+    void requestAppendMidiCC(int controlID, int ccnumber, int channel, int min, int max);
+/*!
+* @brief Does the actual append of the pending controller scheduled by
+* MidiControl::requestAppendMidiCC().
+*/
+    void update();
 /*!
 * @brief removes a MIDI controller - GUI element binding from the MidiControl::ccList.
 *
@@ -167,7 +190,7 @@ class MidiControl : public QWidget
 /*!
 * @brief Slot for the MidiControl::cancelMidiLearnAction in MIDI-Learn
 * context menu.
-* 
+*
 * Signals cancellation of the MIDI-Learn Process to
 * Engine.
 *

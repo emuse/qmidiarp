@@ -25,7 +25,7 @@
 #ifndef JACKSYNC_H
 #define JACKSYNC_H
 
-#include <QQueue>
+#include <QVector>
 #include <QThread>
 #include "config.h"
 #include <jack/jack.h>
@@ -65,14 +65,16 @@ class JackDriver : public DriverBase
     jack_port_t * out_ports[MAX_PORTS];
 
     bool jackRunning;
-    int transportState;
+    uint transportState;
     uint lastSchedTick;
     uint jackOffsetTick;
     uint64_t curJFrame;
-    QQueue<uint> echoTickQueue;
-    QQueue<MidiEvent> evQueue;
-    QQueue<uint> evTickQueue;
-    QQueue<uint> evPortQueue;
+    QVector<uint> echoTickQueue;
+    QVector<MidiEvent> evQueue;
+    QVector<uint> evTickQueue;
+    QVector<uint> evPortQueue;
+    uint bufPtr;
+    uint echoPtr;
     jack_client_t *jack_handle;
     jack_position_t currentPos;
     void handleEchoes(int nframes);

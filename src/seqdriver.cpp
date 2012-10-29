@@ -80,6 +80,9 @@ SeqDriver::SeqDriver(
             exit(1);
         }
     }
+    // prepare mem for note removal at queue stop here to avoid malloc
+    // during call via jack transport
+    snd_seq_remove_events_malloc(&remove_ev);
 
     portUnmatched = 0;
     forwardUnmatched = false;
@@ -109,6 +112,7 @@ SeqDriver::~SeqDriver(){
 
     threadAbort = true;
     wait();
+    snd_seq_remove_events_free(remove_ev);
 
 }
 
@@ -303,24 +307,20 @@ void SeqDriver::setTransportStatus(bool run)
 
         requestEchoAt(0);
 
-        qWarning("Alsa Queue started");
+        printf("Alsa Queue started \n");
     }
     else {
         queueStatus = false;
-        snd_seq_remove_events_t *remove_ev;
-
-        snd_seq_remove_events_malloc(&remove_ev);
         snd_seq_remove_events_set_queue(remove_ev, queue_id);
         snd_seq_remove_events_set_condition(remove_ev,
                 SND_SEQ_REMOVE_OUTPUT | SND_SEQ_REMOVE_IGNORE_OFF);
         snd_seq_remove_events(seq_handle, remove_ev);
-        snd_seq_remove_events_free(remove_ev);
 
         snd_seq_stop_queue(seq_handle, queue_id, NULL);
 
         m_current_tick = 0;
 
-        qWarning("Alsa Queue stopped");
+        printf("Alsa Queue stopped \n");
     }
 }
 
