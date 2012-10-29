@@ -80,6 +80,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreModType = 'X';
     restoreModWindowIndex = -1;
     restoreTick = -1;
+    schedRestoreLocation = -1;
 
     // we happen to need these QSignals for triggering display updates
     // and global parameter restores from within the echo callback.
@@ -619,7 +620,10 @@ void Engine::echoCallback(bool echo_from_trig)
         && (!midiSeqCount() || (nextMinSeqTick >= restoreTick))) {
         restoreTick = -1;
         restoreFlag = false;
-        restore(restoreRequest);
+        // TODO: At term the following should be restore() instead of
+        // schedRestore(). restore is not yet fit for realtime. But
+        // testing seems positive this way.
+        schedRestore(restoreRequest);
     }
 }
 
@@ -636,8 +640,6 @@ bool Engine::eventCallback(MidiEvent inEv)
     unmatched = true;
     int tick = driver->getCurrentTick();
 
-
-    /* Does this cost time or other problems? The signal is sent to the LogWidget.*/
     if (sendLogEvents) {
         logEventBuffer.replace(logEventCount, inEv);
         logTickBuffer.replace(logEventCount, tick);
@@ -898,6 +900,10 @@ void Engine::requestRestore(int windowIndex, int ix)
         }
     }
 }
+void Engine::schedRestore(int ix)
+{
+    schedRestoreLocation = ix;
+}
 
 void Engine::restore(int ix)
 {
@@ -955,6 +961,16 @@ void Engine::updateGlobRestoreTimeModule(int windowIndex)
 void Engine::updateDisplay()
 {
     int l1;
+    // The following is a test whether the display update loop is fast
+    // enough to restore the parameters in time. This cannot be done in
+    // realtime currently, since it requires reworking the restore routines
+    // entirely. Testing seems positive, but TODO.
+
+    if (schedRestoreLocation >= 0) {
+        restore(schedRestoreLocation);
+        schedRestoreLocation = -1;
+    }
+
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->updateDisplay();
     }

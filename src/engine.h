@@ -77,6 +77,7 @@ class Engine : public QThread  {
     int restoreRequest;
     int restoreModule;
     int restoreTick;
+    int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
     int tempo;
 
     //From SeqDriver
@@ -211,6 +212,8 @@ class Engine : public QThread  {
 * @param ix ParStore::list index from which all module parameters are to be restored
 */
     void restore(int ix);
+
+    void schedRestore(int ix);
 /*!
 * @brief causes all modules to remove their entries in the ParStore::list
 * at index ix
