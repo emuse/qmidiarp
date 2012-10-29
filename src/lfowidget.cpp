@@ -1065,8 +1065,9 @@ void LfoWidget::updateDisplay()
     loopBox->setCurrentIndex(midiWorker->curLoopMode);
     amplitude->setValue(midiWorker->amp);
     offset->setValue(midiWorker->offs);
-    if (waveFormBoxIndex != waveFormBox->currentIndex())
+    if (waveFormBoxIndex != waveFormBox->currentIndex()) {
         waveFormBox->setCurrentIndex(waveFormBoxIndex);
         updateWaveForm(waveFormBoxIndex);
+    }
     needsGUIUpdate = false;
 }
