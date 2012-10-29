@@ -134,12 +134,12 @@ MidiArp::MidiArp()
     attack_time = 0.0;
     release_time = 0.0;
     sustain = false;
-    sustainBuffer.clear();
+    sustainBuffer.resize(64);
+    sustainBufferCount = 0;
     latch_mode = false;
-    latchBuffer.clear();
-    latchTimer = new QTimer(this);
-    latchTimer->setSingleShot(true);
-    connect(latchTimer, SIGNAL(timeout()), this, SLOT(purgeLatchBuffer()));
+    latchBuffer.resize(64);
+    latchBufferCount = 0;
+    lastLatchTick = 0;
 
     returnNote.resize(128);
     returnVelocity.resize(128);
@@ -222,17 +222,17 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             return(false);
         }
         if (sustain) {
-            sustainBuffer.append(inEv.data);
+            sustainBuffer.replace(sustainBufferCount, inEv.data);
+            sustainBufferCount++;
             return(false);
         }
 
         if (latch_mode) {
-            latchBuffer.append(inEv.data);
-            if (latchBuffer.count() == noteCount) {
-                latchTimer->stop();
-            }
-            else {
-                latchTimer->start(200);
+            latchBuffer.replace(latchBufferCount, inEv.data);
+            latchBufferCount++;
+            if (latchBufferCount != noteCount) {
+                if ((uint)tick > (uint)(lastLatchTick + 30) && (latchBufferCount > 1)) purgeLatchBuffer();
+                lastLatchTick = tick;
             }
             return(false);
         }
@@ -766,13 +766,13 @@ void MidiArp::updateTriggerMode(int val)
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
-    //latchBuffer.clear();
+    latchBufferCount = 0;
     releaseNoteCount = 0;
 }
 
 int MidiArp::getPressedNoteCount()
 {
-    int c = noteCount - latchBuffer.count() - releaseNoteCount;
+    int c = noteCount - latchBufferCount - releaseNoteCount;
     return(c);
 }
 
@@ -787,11 +787,11 @@ void MidiArp::setSustain(bool on, int sustick)
 
 void MidiArp::purgeSustainBuffer(int sustick)
 {
-    for (int l1 = 0; l1 < sustainBuffer.count(); l1++) {
+    for (int l1 = 0; l1 < sustainBufferCount; l1++) {
         int buf = sustainBuffer.at(l1);
         removeNote(&buf, sustick, 1);
     }
-    //sustainBuffer.clear();
+    sustainBufferCount = 0;
 }
 
 void MidiArp::setLatchMode(bool on)
@@ -802,11 +802,11 @@ void MidiArp::setLatchMode(bool on)
 
 void MidiArp::purgeLatchBuffer()
 {
-    for (int l1 = 0; l1 < latchBuffer.count(); l1++) {
+    for (int l1 = 0; l1 < latchBufferCount; l1++) {
         int buf = latchBuffer.at(l1);
         removeNote(&buf, arpTick, 1);
     }
-    //latchBuffer.clear();
+    latchBufferCount = 0;
 }
 
 void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,

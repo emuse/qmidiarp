@@ -74,6 +74,8 @@ class MidiArp : public QWidget  {
     int grooveIndex; /*!< Holds the current position within the sequence*/
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int randomTick, randomVelocity, randomLength;
+    int sustainBufferCount, latchBufferCount;
+    int lastLatchTick;
     double stepWidth, len, vel;
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
     QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
