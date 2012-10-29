@@ -46,6 +46,7 @@ MidiLfo::MidiLfo()
     size = 1;
     res = 16;
     nPoints = 16;
+    maxNPoints = 16;
     old_res = 0;
     ccnumber = 74;
     portOut = 0;
@@ -412,6 +413,7 @@ void MidiLfo::resizeAll()
             lt+=step;
         }
     }
+    if (npoints > maxNPoints) maxNPoints = npoints;
     nPoints = npoints;
 }
 

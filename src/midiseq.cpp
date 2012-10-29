@@ -58,6 +58,7 @@ MidiSeq::MidiSeq()
     size = 4;
     res = 4;
     nPoints = 16;
+    maxNPoints = 16;
     notelength = 74;
     portOut = 0;
     channelOut = 0;
@@ -354,6 +355,7 @@ void MidiSeq::resizeAll()
         }
     }
 
+    if (npoints > maxNPoints) maxNPoints = npoints;
     if (!loopMarker) nPoints = npoints;
 }
 

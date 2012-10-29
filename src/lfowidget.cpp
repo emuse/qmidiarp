@@ -426,7 +426,7 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiWorker->muteMask.count()) {
+        while (l1 < midiWorker->maxNPoints) {
             tempArray.append(midiWorker->muteMask.at(l1));
             l1++;
         }
@@ -436,7 +436,7 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiWorker->muteMask.count()) {
+        while (l1 < midiWorker->maxNPoints) {
             tempArray.append(midiWorker->customWave.at(l1).value);
             l1++;
         }
@@ -555,6 +555,7 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         midiWorker->muteMask.append(tmpArray.at(l1));
                     }
+                    midiWorker->maxNPoints = tmpArray.count();
                 }
                 else skipXmlElement(xml);
             }

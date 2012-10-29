@@ -113,6 +113,7 @@ class MidiSeq : public QObject  {
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int loopMarker;
     int nPoints;        /*!< Number of steps to be played out */
+    int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
     int nextTick;
     int nOctaves;
     int baseOctave;
