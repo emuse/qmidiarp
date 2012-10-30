@@ -459,7 +459,7 @@ void GlobStore::updateDisplay()
     if (schedRestore) {
         schedRestore = false;
         emit requestRestore(schedRestoreID, schedRestoreVal);
-        timeModuleBox->setCurrentIndex(schedRestoreID);
+        if (schedRestoreID >= 0) timeModuleBox->setCurrentIndex(schedRestoreID);
     }
 
     if (!needsGUIUpdate) return;
