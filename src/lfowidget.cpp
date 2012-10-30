@@ -862,8 +862,8 @@ void LfoWidget::storeParams(int ix, bool empty)
     parStore->temp.offs = offset->value();
     parStore->temp.waveForm = waveFormBox->currentIndex();
 
-    parStore->temp.wave = getCustomWave();
-    parStore->temp.muteMask = midiWorker->muteMask;
+    parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
+    parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
 
     parStore->tempToList(ix);
 }
@@ -871,8 +871,10 @@ void LfoWidget::storeParams(int ix, bool empty)
 void LfoWidget::restoreParams(int ix)
 {
     if (parStore->list.at(ix).empty) return;
-    midiWorker->customWave = parStore->list.at(ix).wave;
-    midiWorker->muteMask = parStore->list.at(ix).muteMask;
+    for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
+        midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
+        midiWorker->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
+    }
     sizeBox->setCurrentIndex(parStore->list.at(ix).size);
     midiWorker->updateSize(sizeBox->currentText().toInt());
 
@@ -942,10 +944,9 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
     amplitude->setValue(fromWidget->amplitude->value());
     offset->setValue(fromWidget->offset->value());
 
-    midiWorker->customWave = fromWidget->getCustomWave();
-    midiWorker->muteMask.clear();
-    for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
-        midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
+    for (int l1 = 0; l1 < fromWidget->getMidiWorker()->maxNPoints; l1++) {
+        midiWorker->customWave.replace(l1, fromWidget->getCustomWave().at(l1));
+        midiWorker->muteMask.replace(l1, midiWorker->customWave.at(l1).muted);
     }
     midiControl->setCcList(fromWidget->midiControl->ccList);
     muteOut->setChecked(true);

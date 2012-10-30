@@ -912,8 +912,8 @@ void SeqWidget::storeParams(int ix, bool empty)
     parStore->temp.vel = velocity->value();
     parStore->temp.dispVertical = dispVertical;
     parStore->temp.loopMode = loopBox->currentIndex();
-    parStore->temp.wave = getCustomWave();
-    parStore->temp.muteMask = midiWorker->muteMask;
+    parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
+    parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
     parStore->temp.loopMarker = getLoopMarker();
 
     parStore->tempToList(ix);
@@ -922,8 +922,10 @@ void SeqWidget::storeParams(int ix, bool empty)
 void SeqWidget::restoreParams(int ix)
 {
     if (parStore->list.at(ix).empty) return;
-    midiWorker->customWave = parStore->list.at(ix).wave;
-    midiWorker->muteMask = parStore->list.at(ix).muteMask;
+    for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
+        midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
+        midiWorker->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
+    }
     sizeBox->setCurrentIndex(parStore->list.at(ix).size);
     midiWorker->size = sizeBox->currentText().toInt();
     midiWorker->res = seqResValues[parStore->list.at(ix).res];
@@ -991,10 +993,9 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
     transpose->setValue(tmp);
 
     notelength->setValue(fromWidget->notelength->value());
-    midiWorker->customWave = fromWidget->getCustomWave();
-    midiWorker->muteMask.clear();
-    for (int l1 = 0; l1 < midiWorker->customWave.count(); l1++) {
-        midiWorker->muteMask.append(midiWorker->customWave.at(l1).muted);
+    for (int l1 = 0; l1 < fromWidget->getMidiWorker()->maxNPoints; l1++) {
+        midiWorker->customWave.replace(l1, fromWidget->getCustomWave().at(l1));
+        midiWorker->muteMask.replace(l1, midiWorker->customWave.at(l1).muted);
     }
     tmp = fromWidget->getLoopMarker();
     midiWorker->setLoopMarker(tmp);
