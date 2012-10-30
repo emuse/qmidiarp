@@ -92,9 +92,8 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
             , this, SLOT(updateCursor(QChar, int, int)));
 
     resetTicks(0);
-    dispTimer = new QTimer(this);
+    dispTimer = new MTimer();
     connect(dispTimer, SIGNAL(timeout()), this, SLOT(updateDisplay()));
-    dispTimer->start(50);
     ready = true;
 }
 
@@ -989,5 +988,19 @@ void Engine::updateDisplay()
             emit midiEventReceived(logEventBuffer.at(l1), logTickBuffer.at(l1));
         }
         logEventCount = 0;
+    }
+}
+
+MTimer::MTimer()
+{
+    start();
+}
+
+void MTimer::run() {
+
+    while(true) {
+        // set fixed to 5000us
+        usleep(5000);
+        emit timeout();
     }
 }

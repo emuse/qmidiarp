@@ -26,7 +26,6 @@
 #define ENGINE_H
 
 #include <QThread>
-#include <QTimer>
 #include <QDockWidget>
 #include <QList>
 #include "seqdriver.h"
@@ -39,6 +38,27 @@
 #include "seqwidget.h"
 #include "groovewidget.h"
 #include "globstore.h"
+
+/*!
+ * @brief Small class implementing a 5ms timer replacing QTimer
+ *
+ * This class produces MTimer::timeout() signals every 5ms. It consumes
+ * about 10 times less CPU than QTimer with the same interval.
+ *
+ */
+class MTimer : public QThread
+{
+    Q_OBJECT
+
+public:
+    MTimer();
+
+signals:
+    void timeout();
+
+protected:
+    void run();
+};
 
 /*!
  * @brief Core Engine Thread. Instantiates SeqDriver and JackDriver.
@@ -93,7 +113,7 @@ class Engine : public QThread  {
     QVector<MidiEvent> logEventBuffer;
     QVector<int> logTickBuffer;
 
-    QTimer *dispTimer;
+    MTimer *dispTimer;
 
     static bool midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
