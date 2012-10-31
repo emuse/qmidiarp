@@ -89,6 +89,8 @@ MidiLfo::MidiLfo()
     newGrooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
+
+    dataChanged = false;
 }
 
 MidiLfo::~MidiLfo(){
@@ -153,6 +155,8 @@ void MidiLfo::getNextFrame(int tick)
         lt+=step;
         l1++;
     } while ((l1 < framesize) & (l1 < npoints));
+
+    dataChanged = true;
 
     reflect = pingpong;
 

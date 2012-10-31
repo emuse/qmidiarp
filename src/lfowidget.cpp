@@ -1046,9 +1046,10 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
 void LfoWidget::updateDisplay()
 {
     QVector<Sample> data;
-    if (midiWorker->isRecording) {
+    if (midiWorker->dataChanged) {
         midiWorker->getData(&data);
         screen->updateScreen(data);
+        midiWorker->dataChanged = false;
     }
     screen->updateDraw();
     midiControl->update();

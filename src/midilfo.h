@@ -109,6 +109,7 @@ class MidiLfo : public QObject  {
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
+    bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int old_res;
     int ccnumber;   /*!< MIDI Controller CC number to output */
