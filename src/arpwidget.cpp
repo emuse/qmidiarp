@@ -366,6 +366,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
     setLayout(widgetLayout);
+    needsGUIUpdate=false;
 }
 
 ArpWidget::~ArpWidget()
@@ -944,6 +945,7 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
                 default:
                 break;
             }
+            needsGUIUpdate = true;
         }
     }
 }
@@ -952,6 +954,9 @@ void ArpWidget::updateDisplay()
 {
     screen->updateDraw();
     midiControl->update();
+
+    if (!needsGUIUpdate) return;
+
     muteOut->setChecked(midiWorker->isMuted);
     if (patternPresetBoxIndex != patternPresetBox->currentIndex())
         selectPatternPreset(patternPresetBoxIndex);

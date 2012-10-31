@@ -81,6 +81,7 @@ class ArpWidget : public QWidget
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
+    bool needsGUIUpdate;
     int patternPresetBoxIndex;
 
     void loadPatternPresets();
