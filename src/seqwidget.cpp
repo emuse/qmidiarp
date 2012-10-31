@@ -578,6 +578,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                         midiWorker->customWave.append(sample);
                         lt+=step;
                     }
+                    updateWaveForm(0);
                 }
                 else if (xml.name() == "loopmarker") {
                     tmp = xml.readElementText().toInt();
