@@ -28,7 +28,6 @@
 #include <QWidget>
 #include <QString>
 #include <QLabel>
-#include <QTimer>
 #include <QSizePolicy>
 #include <QSize>
 
@@ -57,7 +56,6 @@ class ArpScreen : public QWidget
   Q_OBJECT
 
   private:
-    QTimer *timer;
     int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
     int pattern_updated, currentIndex;

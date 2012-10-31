@@ -29,7 +29,6 @@
 #include <QString>
 #include <QLabel>
 #include <QMouseEvent>
-#include <QTimer>
 #include <QWheelEvent>
 #include <QSizePolicy>
 #include <QSize>
@@ -60,7 +59,6 @@ class LfoScreen : public QWidget
   Q_OBJECT
 
   private:
-    QTimer *timer;
     QVector<Sample> p_data, data;
     int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY, mouseW;

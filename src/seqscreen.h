@@ -28,7 +28,6 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QString>
-#include <QTimer>
 #include <QWidget>
 #include <QSizePolicy>
 #include <QSize>
@@ -58,7 +57,6 @@ class SeqScreen : public QWidget
   Q_OBJECT
 
   private:
-    QTimer *timer2;
     QVector<Sample> p_data, data;
     int grooveTick, grooveVelocity, grooveLength;
     int mouseX, mouseY;
@@ -80,7 +78,6 @@ class SeqScreen : public QWidget
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
     int baseOctave, nOctaves;
-    QTimer *timer;
 
   signals:
     void mousePressed(double, double, int);

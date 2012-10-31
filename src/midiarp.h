@@ -29,7 +29,6 @@
 #include <QWidget>
 #include <QString>
 #include <QThread>
-#include <QTimer>
 #include <QVector>
 #include <main.h>
 
@@ -79,8 +78,6 @@ class MidiArp : public QWidget  {
     double stepWidth, len, vel;
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
     QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
-    QTimer *latchTimer;         /*!< Is started when a note is released and causes MidiArp::purgeLatchBuffer after
-                                    a delay of 200ms except when another released note is detected before. */
 
     bool sustain, latch_mode;
     int noteIndex[MAXCHORD], chordSemitone[MAXCHORD];
