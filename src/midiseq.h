@@ -108,7 +108,7 @@ class MidiSeq : public QObject  {
     int channelOut;
     bool isMuted;
     int vel, transp, notelength;
-    int size, res, waveFormIndex;
+    int size, res;
     int currentRecStep;
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int loopMarker;
@@ -212,10 +212,6 @@ class MidiSeq : public QObject  {
  * lead to a bigger size data array.
  */
     void resizeAll();
-/*! @brief Currently not in use. This function will copy the current
- * MidiSeq::data array into MidiSeq::customWave.
- */
-    void copyToCustom();
     void setRecordMode(int on);
     void setRecordedNote(int note);
 

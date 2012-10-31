@@ -62,7 +62,6 @@ MidiSeq::MidiSeq()
     notelength = 74;
     portOut = 0;
     channelOut = 0;
-    waveFormIndex = 0;
     currentIndex = 0;
     nextTick = 0;
     grooveTick = 0;
@@ -226,16 +225,9 @@ void MidiSeq::getData(QVector<Sample> *p_data)
     const int npoints = res * size;
 
     QVector<Sample> data;
-    data.clear();
 
-    switch(waveFormIndex) {
-        case 0: //custom
-            lt = step * npoints;
-            data = customWave.mid(0, npoints);
-        break;
-        default:
-        break;
-    }
+    lt = step * npoints;
+    data = customWave.mid(0, npoints);
     sample.value = -1;
     sample.tick = lt;
     data.append(sample);
@@ -255,11 +247,6 @@ int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
         *outOfRange = true;
     }
     return(tmp);
-}
-
-void MidiSeq::updateWaveForm(int val)
-{
-    waveFormIndex = val;
 }
 
 void MidiSeq::updateLoop(int val)
@@ -357,18 +344,6 @@ void MidiSeq::resizeAll()
 
     if (npoints > maxNPoints) maxNPoints = npoints;
     if (!loopMarker) nPoints = npoints;
-}
-
-void MidiSeq::copyToCustom()
-{
-    QVector<Sample> data;
-    int m;
-
-    data.clear();
-    getData(&data);
-    m = data.count();
-    data.remove(m - 1);
-    customWave = data;
 }
 
 bool MidiSeq::toggleMutePoint(double mouseX)

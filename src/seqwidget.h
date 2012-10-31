@@ -61,24 +61,10 @@ class SeqWidget : public QWidget
 {
     Q_OBJECT
 
-    QAction *copyToCustomAction;
-
     MidiSeq *midiWorker;
     QVector<Sample> data;
     bool modified;      /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
-/*!
-* @brief This function populates the SeqWidget::waveForms list with
-* waveform names, currently only one.
-*
-* This might be used in the future for handling sequence presets
-*
-* @par Currently there is only one waveform
-*   - 0 Custom
-*
-*/
-    void loadWaveForms();
-
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
     bool dataChanged;
     bool needsGUIUpdate;
@@ -104,10 +90,9 @@ class SeqWidget : public QWidget
     SeqScreen *screen;
     ManageBox *manageBox;
 
-    QStringList waveForms;
     QComboBox *chIn;
     QComboBox *channelOut, *portOut;
-    QComboBox *waveFormBox, *resBox, *sizeBox, *freqBox;
+    QComboBox *resBox, *sizeBox, *freqBox;
     QComboBox *loopBox;
     QWidget *inOutBox;
     QPushButton *muteOut;
@@ -272,18 +257,6 @@ class SeqWidget : public QWidget
 
     void updateDisplay();
 
-/*!
-* @brief Slot currently not in use.
-*
-* This function calls the midi worker
-* MidiSeq::copyToCustom, which copies the
-* current sequence to the custom sequence buffer
-*
-* It switches the waveForm combobox to index 0 and calls
-* SeqWidget::updateWaveForm.
-*
-*/
-    void copyToCustom();
 /*!
 * @brief Receiver for incoming note events. This function either sets the
 * global transpose and velocity or records the received note.

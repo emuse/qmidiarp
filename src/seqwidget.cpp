@@ -221,17 +221,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
     connect(screen, SIGNAL(mousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
 
-    QLabel *waveFormBoxLabel = new QLabel(tr("&Sequence"), seqBox);
-    waveFormBox = new QComboBox(seqBox);
-    waveFormBoxLabel->setBuddy(waveFormBox);
-    loadWaveForms();
-    waveFormBox->insertItems(0, waveForms);
-    waveFormBox->setCurrentIndex(0);
-    waveFormBox->setToolTip(tr("Preset Number"));
-    waveFormBox->setMinimumContentsLength(8);
-    connect(waveFormBox, SIGNAL(activated(int)), this,
-            SLOT(updateWaveForm(int)));
-
     muteOut = new QPushButton(tr("&Mute"),this);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,10));
@@ -291,11 +280,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
             SLOT(updateSize(int)));
     midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 
-    //temporarily hide these elements until multiple patterns are implemented
-    waveFormBox->setEnabled(false);
-    waveFormBox->setVisible(false);
-    waveFormBoxLabel->setVisible(false);
-
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
@@ -328,16 +312,14 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
 
     QGridLayout *paramBoxLayout = new QGridLayout;
     paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
-    paramBoxLayout->addWidget(waveFormBoxLabel, 1, 0);
-    paramBoxLayout->addWidget(waveFormBox, 1, 1);
-    paramBoxLayout->addWidget(muteOut, 2, 0, 1, 2);
-    paramBoxLayout->addWidget(recordButtonLabel, 3, 0);
-    paramBoxLayout->addWidget(recordButton, 3, 1);
-    paramBoxLayout->addWidget(resBoxLabel, 4, 0);
-    paramBoxLayout->addWidget(resBox, 4, 1);
-    paramBoxLayout->addWidget(sizeBoxLabel, 5, 0);
-    paramBoxLayout->addWidget(sizeBox, 5, 1);
-    paramBoxLayout->setRowStretch(6, 1);
+    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 2);
+    paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
+    paramBoxLayout->addWidget(recordButton, 2, 1);
+    paramBoxLayout->addWidget(resBoxLabel, 3, 0);
+    paramBoxLayout->addWidget(resBox, 3, 1);
+    paramBoxLayout->addWidget(sizeBoxLabel, 4, 0);
+    paramBoxLayout->addWidget(sizeBox, 4, 1);
+    paramBoxLayout->setRowStretch(5, 1);
 
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
@@ -461,7 +443,6 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 void SeqWidget::readData(QXmlStreamReader& xml)
 {
     int tmp;
-    int wvtmp = 0;
     Sample sample;
 
     while (!xml.atEnd()) {
@@ -614,14 +595,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
         }
         else skipXmlElement(xml);
     }
-    waveFormBox->setCurrentIndex(wvtmp);
-    updateWaveForm(wvtmp);
     modified = false;
-}
-
-void SeqWidget::loadWaveForms()
-{
-    waveForms << tr("Custom");
 }
 
 void SeqWidget::setEnableNoteIn(bool on)
@@ -692,7 +666,7 @@ void SeqWidget::updateNoteLength(int val)
 
 void SeqWidget::updateWaveForm(int val)
 {
-    midiWorker->updateWaveForm(val);
+    (void)val;
     midiWorker->getData(&data);
     screen->updateScreen(data);
     modified = true;
@@ -761,14 +735,6 @@ void SeqWidget::processNote(int note, int vel)
         screen->setCurrentRecStep(midiWorker->currentRecStep);
         dataChanged=true;
     }
-}
-
-void SeqWidget::copyToCustom()
-{
-    midiWorker->copyToCustom();
-    waveFormBox->setCurrentIndex(0);
-    updateWaveForm(0);
-    modified = true;
 }
 
 void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
@@ -934,7 +900,6 @@ void SeqWidget::restoreParams(int ix)
     screen->setLoopMarker(parStore->list.at(ix).loopMarker);
 
     resBox->setCurrentIndex(parStore->list.at(ix).res);
-    waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
     notelength->setValue(parStore->list.at(ix).notelen);
     transpose->setValue(parStore->list.at(ix).transp);
