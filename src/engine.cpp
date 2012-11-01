@@ -81,6 +81,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreModWindowIndex = -1;
     restoreTick = -1;
     schedRestoreLocation = -1;
+    restoreRunOnce = false;
 
     // we happen to need these QSignals for triggering display updates
     // and global parameter restores from within the echo callback.
@@ -310,6 +311,7 @@ SeqWidget *Engine::seqWidget(int index)
 void Engine::addModuleWindow(QDockWidget *moduleWindow)
 {
     moduleWindowList.append(moduleWindow);
+    oldRestoreRequest.append(0);
     modified = true;
 }
 
@@ -357,6 +359,7 @@ void Engine::updateIDs(int curID)
             seqWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
+    oldRestoreRequest.remove(curID);
 }
 
 //general
@@ -815,7 +818,6 @@ void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
             if (test == 'L') midiLearnWindowID = 2;
             if (test == 'S') midiLearnWindowID = 3;
         }
-        qWarning("midiLearnWindowID %d", midiLearnWindowID);
         midiLearnModuleID = moduleID;
         midiLearnID = controlID;
     }
@@ -867,22 +869,35 @@ void Engine::updateCursor(QChar modtype, int ix, int pos)
         default: ;
     }
 }
-void Engine::globStore(int ix)
+void Engine::globStore(int moduleID, int ix)
 {
     int l1;
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->storeParams(ix);
+
+    if (moduleID < 0) {
+        for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+            arpWidget(l1)->storeParams(ix);
+        }
+        for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+            lfoWidget(l1)->storeParams(ix);
+        }
+        for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+            seqWidget(l1)->storeParams(ix);
+        }
+        oldRestoreRequest.fill(ix);
     }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->storeParams(ix);
+    else {
+        QChar test = moduleWindow(moduleID)->objectName().at(0);
+        l1 = moduleWindow(moduleID)->widget()->property("widgetID").toInt();
+        if (test == 'A') arpWidget(l1)->storeParams(ix);
+        if (test == 'L') lfoWidget(l1)->storeParams(ix);
+        if (test == 'S') seqWidget(l1)->storeParams(ix);
+        oldRestoreRequest.replace(moduleID, ix);
     }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->storeParams(ix);
-    }
-    globStoreWidget->setDispState(ix, 1);
+
+    globStoreWidget->setDispState(ix, 1, moduleID);
 }
 
-void Engine::requestRestore(int windowIndex, int ix)
+void Engine::requestRestore(int windowIndex, int ix, bool runOnce)
 {
     restoreModWindowIndex = windowIndex;
 
@@ -891,6 +906,11 @@ void Engine::requestRestore(int windowIndex, int ix)
     }
     else {
         restoreRequest = ix;
+        restoreRunOnce = runOnce;
+        if (!runOnce) {
+             if (windowIndex < 0) oldRestoreRequest.fill(ix);
+             else oldRestoreRequest.replace(windowIndex, ix);
+        }
         globStoreWidget->setDispState(ix, 2, windowIndex);
         if (globStoreWidget->timeModeBox->currentIndex()) {
             requestTick = currentTick;
@@ -899,6 +919,7 @@ void Engine::requestRestore(int windowIndex, int ix)
         }
     }
 }
+
 void Engine::schedRestore(int ix)
 {
     schedRestoreLocation = ix;
@@ -917,6 +938,7 @@ void Engine::restore(int ix)
         for (l1 = 0; l1 < seqWidgetCount(); l1++) {
             seqWidget(l1)->restoreParams(ix);
         }
+        restoreRequest = -1;
     }
     else {
         if (restoreModType == 'A') {
@@ -928,10 +950,15 @@ void Engine::restore(int ix)
         else if (restoreModType == 'S') {
             seqWidget(restoreModIx)->restoreParams(ix);
         }
+        globStoreWidget->requestDispState(ix, 1, restoreModWindowIndex);
+        restoreRequest = -1;
+        if (restoreRunOnce) {
+            requestRestore(restoreModWindowIndex
+                    , oldRestoreRequest.at(restoreModWindowIndex), false);
+        }
     }
 
     globStoreWidget->requestDispState(ix, 1, restoreModWindowIndex);
-    restoreRequest = -1;
 }
 
 void Engine::removeParStores(int ix)

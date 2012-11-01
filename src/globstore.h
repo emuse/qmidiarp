@@ -113,11 +113,12 @@ class GlobStore : public QWidget
   signals:
 
 /*!
-* @brief emitted to Engine::globStore(ix)
+* @brief emitted to Engine::globStore(moduleID, ix)
 *
+* @param moduleID moduleID in the DockWidget that should store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
-  void globStore(int ix);
+  void globStore(int moduleID, int ix);
 /*!
 * @brief emitted to Engine::requestRestore(int)
 *
@@ -127,8 +128,9 @@ class GlobStore : public QWidget
 * @param moduleWidget moduleID in the DockWidget which should restore its
 * parameters. If ix = -1, all modules are called
 * @param ix ParStore::list index from which the parameters are restored
+* @param runOnce Set this to true to provoke a return to previous location after one run
 */
-  void requestRestore(int moduleID, int ix);
+  void requestRestore(int moduleID, int ix, bool runOnce);
 /*!
 * @brief emitted to Engine::updateGlobRestoreTimeModule(), which will make the
 * module at index windowIndex in the Engine::moduleWindowList trigger
@@ -207,6 +209,7 @@ class GlobStore : public QWidget
     void requestDispState(int ix, int selected, int windowIndex = -1);
     void setBGColorAt(int column, int row, int color);
     void mapRestoreSignal();
+    void mapStoreSignal();
     void updateDisplay();
 };
 

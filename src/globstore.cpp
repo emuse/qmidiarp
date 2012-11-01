@@ -92,13 +92,13 @@ GlobStore::GlobStore(QWidget *parent)
     QAction* removeStoreAction = new QAction(tr("&Remove"), this);
     QToolButton *removeStoreButton = new QToolButton(this);
     removeStoreButton->setDefaultAction(removeStoreAction);
-    removeStoreButton->setFixedSize(60, 20);
+    removeStoreButton->setFixedSize(50, 20);
     removeStoreButton->setArrowType (Qt::ArrowType(1));
     connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(removeLocation()));
 
     QToolButton *toolButton = new QToolButton(this);
     toolButton->setText("Global");
-    toolButton->setMinimumSize(QSize(60,30));
+    toolButton->setMinimumSize(QSize(50,30));
     midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
@@ -146,7 +146,7 @@ void GlobStore::storeAll(int ix)
     if (ix >= (widgetList.count() - 1)) {
         addLocation();
     }
-    emit globStore(ix);
+    emit globStore(-1, ix);
 }
 
 void GlobStore::addLocation()
@@ -154,7 +154,7 @@ void GlobStore::addLocation()
     QAction* storeAction = new QAction(tr("&Store"), this);
     QToolButton *storeButton = new QToolButton(this);
     storeButton->setDefaultAction(storeAction);
-    storeButton->setFixedSize(15, 30);
+    storeButton->setFixedSize(15, 25);
     storeAction->setIcon(QIcon(filesave_xpm));
     connect(storeAction, SIGNAL(triggered()), storeSignalMapper, SLOT(map()));
     storeSignalMapper->setMapping(storeAction, widgetList.count());
@@ -162,9 +162,9 @@ void GlobStore::addLocation()
     QAction* restoreAction = new QAction(tr("&Restore"), this);
     QToolButton *restoreButton = new QToolButton(this);
     restoreButton->setDefaultAction(restoreAction);
-    restoreButton->setFixedSize(45, 30);
+    restoreButton->setFixedSize(45, 25);
     restoreAction->setText(QString::number(widgetList.count() + 1));
-    restoreAction->setFont(QFont("Helvetica", 20));
+    restoreAction->setFont(QFont("Helvetica", 18));
     restoreAction->setDisabled(true);
     restoreAction->setObjectName("-1");
     restoreAction->setProperty("index", widgetList.count() + 1);
@@ -183,10 +183,23 @@ void GlobStore::addLocation()
     for (int l1 = 0; l1 < timeModuleBox->count(); l1++) {
         QToolButton *toolButton = new QToolButton(this);
         toolButton->setText(QString::number(widgetList.count()));
-        toolButton->setMinimumSize(QSize(100, 30));
+        toolButton->setFixedSize(QSize(100, 25));
         toolButton->setObjectName(QString::number(l1));
         toolButton->setProperty("index", widgetList.count());
         connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+
+        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+        QAction *storeHereAction = new QAction(tr("&Store here"), this);
+        storeHereAction->setObjectName(QString::number(l1));
+        storeHereAction->setProperty("index", widgetList.count());
+        toolButton->addAction(storeHereAction);
+        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+
+        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
+        setRunOnceAction->setObjectName(QString::number(l1));
+        setRunOnceAction->setProperty("index", l1 + 1);
+        setRunOnceAction->setCheckable(true);
+        toolButton->addAction(setRunOnceAction);
 
         indivButtonLayout->itemAt(l1 + 1)
             ->layout()->itemAt(0)->layout()->addWidget(toolButton);
@@ -312,7 +325,7 @@ void GlobStore::addModule(const QString& name)
     QToolButton *toolButton = new QToolButton(this);
     toolButton->setText(name);
     toolButton->setObjectName(QString::number(count - 1));
-    toolButton->setMinimumSize(QSize(100,30));
+    toolButton->setMinimumSize(QSize(100, 30));
     midiControl->addMidiLearnMenu("Restore_"+name, toolButton, count);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
@@ -322,10 +335,23 @@ void GlobStore::addModule(const QString& name)
     for (int l1 = 0; l1 < widgetList.size() - 1; l1++) {
         QToolButton *toolButton = new QToolButton(this);
         toolButton->setText(QString::number(l1 + 1));
-        toolButton->setMinimumSize(QSize(100, 30));
+        toolButton->setFixedSize(QSize(100, 25));
         toolButton->setObjectName(QString::number(count - 1));
         toolButton->setProperty("index", l1 + 1);
         connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+
+        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+        QAction *storeHereAction = new QAction(tr("&Store here"), this);
+        storeHereAction->setObjectName(QString::number(count - 1));
+        storeHereAction->setProperty("index", l1 + 1);
+        toolButton->addAction(storeHereAction);
+        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+
+        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
+        setRunOnceAction->setObjectName(QString::number(count - 1));
+        setRunOnceAction->setProperty("index", l1 + 1);
+        setRunOnceAction->setCheckable(true);
+        toolButton->addAction(setRunOnceAction);
 
         buttonLayout->addWidget(toolButton);
     }
@@ -379,12 +405,23 @@ void GlobStore::mapRestoreSignal()
 {
     int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
+    bool runOnce = false;
 
     if (moduleID >= 0) {
         timeModuleBox->setCurrentIndex(moduleID);
         updateTimeModule(moduleID);
+        runOnce = ((QWidget*)sender())->actions().at(1)->isChecked();
     }
-    emit requestRestore(moduleID, ix - 1);
+
+    emit requestRestore(moduleID, ix - 1, runOnce);
+}
+
+void GlobStore::mapStoreSignal()
+{
+    int moduleID = sender()->objectName().toInt();
+    int ix = sender()->property("index").toInt();
+
+    emit globStore(moduleID, ix - 1);
 }
 
 void GlobStore::readData(QXmlStreamReader& xml)
@@ -458,7 +495,7 @@ void GlobStore::updateDisplay()
     midiControl->update();
     if (schedRestore) {
         schedRestore = false;
-        emit requestRestore(schedRestoreID, schedRestoreVal);
+        emit requestRestore(schedRestoreID, schedRestoreVal, false);
         if (schedRestoreID >= 0) timeModuleBox->setCurrentIndex(schedRestoreID);
     }
 

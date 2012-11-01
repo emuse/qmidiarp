@@ -91,6 +91,7 @@ class Engine : public QThread  {
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midiLearnFlag;
     bool useMidiClock;
+
     int restoreModIx;
     QChar restoreModType;
     int restoreModWindowIndex;
@@ -98,6 +99,8 @@ class Engine : public QThread  {
     int restoreModule;
     int restoreTick;
     int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
+    int restoreRunOnce; /**< When Engine requests restore during running this tells whether only one run of the location will be done */
+    QVector<int> oldRestoreRequest;
     int tempo;
 
     //From SeqDriver
@@ -245,17 +248,19 @@ class Engine : public QThread  {
 * @brief causes all modules to store their current parameters in their
 * ParStore::list at index ix
 *
+* @param moduleID module window list index of the module to store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
-    void globStore(int ix);
+    void globStore(int moduleID, int ix);
 /*!
 * @brief causes Engine to call Engine::restore() when the timing and
 * restore type conditions are met
 * @param windowIndex Engine::moduleWindowList index of the module which should
 * restore its parameters. If windowIndex is set to -1, all modules are called
 * @param ix ParStore::list index from which all module parameters are to be restored
+* @param runOnce Set this to true to provoke a return to previous location after one run
 */
-    void requestRestore(int windowIndex, int ix);
+    void requestRestore(int windowIndex, int ix, bool runOnce);
 /*!
 * @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
 *

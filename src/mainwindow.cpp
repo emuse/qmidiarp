@@ -106,10 +106,10 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
         if (engine->driver->callJack(p_portCount)) jackFailed = true;
     }
-    connect(globStore, SIGNAL(globStore(int)), engine,
-            SLOT(globStore(int)));
-    connect(globStore, SIGNAL(requestRestore(int, int)), engine,
-            SLOT(requestRestore(int, int)));
+    connect(globStore, SIGNAL(globStore(int, int)), engine,
+            SLOT(globStore(int, int)));
+    connect(globStore, SIGNAL(requestRestore(int, int, bool)), engine,
+            SLOT(requestRestore(int, int, bool)));
     connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
             SLOT(updateGlobRestoreTimeModule(int)));
     connect(globStore, SIGNAL(removeParStores(int)), engine,
