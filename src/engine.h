@@ -99,8 +99,6 @@ class Engine : public QThread  {
     int restoreModule;
     int restoreTick;
     int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
-    int restoreRunOnce; /**< When Engine requests restore during running this tells whether only one run of the location will be done */
-    QVector<int> oldRestoreRequest;
     int tempo;
 
     //From SeqDriver

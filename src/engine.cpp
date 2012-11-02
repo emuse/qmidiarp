@@ -81,7 +81,6 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreModWindowIndex = -1;
     restoreTick = -1;
     schedRestoreLocation = -1;
-    restoreRunOnce = false;
 
     // we happen to need these QSignals for triggering display updates
     // and global parameter restores from within the echo callback.
@@ -311,7 +310,6 @@ SeqWidget *Engine::seqWidget(int index)
 void Engine::addModuleWindow(QDockWidget *moduleWindow)
 {
     moduleWindowList.append(moduleWindow);
-    oldRestoreRequest.append(0);
     modified = true;
 }
 
@@ -359,7 +357,6 @@ void Engine::updateIDs(int curID)
             seqWidget(l1)->manageBox->parentDockID = tempDockID - 1;
         }
     }
-    oldRestoreRequest.remove(curID);
 }
 
 //general
@@ -883,7 +880,6 @@ void Engine::store(int moduleID, int ix)
         for (l1 = 0; l1 < seqWidgetCount(); l1++) {
             seqWidget(l1)->storeParams(ix);
         }
-        oldRestoreRequest.fill(ix);
     }
     else {
         QChar test = moduleWindow(moduleID)->objectName().at(0);
@@ -891,7 +887,6 @@ void Engine::store(int moduleID, int ix)
         if (test == 'A') arpWidget(l1)->storeParams(ix);
         if (test == 'L') lfoWidget(l1)->storeParams(ix);
         if (test == 'S') seqWidget(l1)->storeParams(ix);
-        oldRestoreRequest.replace(moduleID, ix);
     }
 
     globStoreWidget->setDispState(ix, 1, moduleID);
@@ -909,8 +904,6 @@ void Engine::requestRestore(int windowIndex, int ix, bool runOnce)
     }
     if (windowIndex < 0) {
         restoreRequest = ix;
-        restoreRunOnce = runOnce;
-        if (!runOnce) oldRestoreRequest.fill(ix);
     }
     else {
         QChar test = moduleWindow(windowIndex)->objectName().at(0);
@@ -938,31 +931,32 @@ void Engine::restore(int ix)
         int l1;
         for (l1 = 0; l1 < arpWidgetCount(); l1++) {
             arpWidget(l1)->restoreParams(ix);
+            arpWidget(l1)->parStore->oldRestoreRequest = ix;
         }
         for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
             lfoWidget(l1)->restoreParams(ix);
+            lfoWidget(l1)->parStore->oldRestoreRequest = ix;
         }
         for (l1 = 0; l1 < seqWidgetCount(); l1++) {
             seqWidget(l1)->restoreParams(ix);
+            seqWidget(l1)->parStore->oldRestoreRequest = ix;
         }
         restoreRequest = -1;
     }
     else {
         if (restoreModType == 'A') {
             arpWidget(restoreModIx)->restoreParams(ix);
+            arpWidget(restoreModIx)->parStore->oldRestoreRequest = ix;
         }
         else if (restoreModType == 'L') {
             lfoWidget(restoreModIx)->restoreParams(ix);
+            lfoWidget(restoreModIx)->parStore->oldRestoreRequest = ix;
         }
         else if (restoreModType == 'S') {
             seqWidget(restoreModIx)->restoreParams(ix);
+            seqWidget(restoreModIx)->parStore->oldRestoreRequest = ix;
         }
-        globStoreWidget->requestDispState(ix, 1, restoreModWindowIndex);
         restoreRequest = -1;
-        if (restoreRunOnce) {
-            requestRestore(restoreModWindowIndex
-                    , oldRestoreRequest.at(restoreModWindowIndex), false);
-        }
     }
 
     globStoreWidget->requestDispState(ix, 1, restoreModWindowIndex);
