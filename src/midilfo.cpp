@@ -84,6 +84,7 @@ MidiLfo::MidiLfo()
     lastMouseLoc = 0;
     lastMouseY = 0;
     frameptr = 0;
+    frameSize = 1;
     nextTick = 0;
     grooveTick = 0;
     newGrooveTick = 0;
@@ -111,14 +112,13 @@ void MidiLfo::getNextFrame(int tick)
     const int npoints = size * res;
     int lt, l1;
     int framelimit;
-    int framesize;
     int index;
 
     gotKbdTrig = false;
 
     if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
-    framesize = res / framelimit;
-    if (!framesize) framesize = 1;
+    frameSize = res / framelimit;
+    if (!frameSize) frameSize = 1;
 
     if (restartFlag) setFramePtr(0);
     if (!frameptr) grooveTick = newGrooveTick;
@@ -127,7 +127,7 @@ void MidiLfo::getNextFrame(int tick)
     lt = nextTick;
     do {
         if (reverse) {
-            index = (framesize - 1 - l1 + frameptr) % npoints;
+            index = (frameSize - 1 - l1 + frameptr) % npoints;
         }
         else {
             index = (l1 + frameptr) % npoints;
@@ -135,12 +135,12 @@ void MidiLfo::getNextFrame(int tick)
         sample = data.at(index);
 
         if (isRecording) {
-            if (framesize < 2) {
+            if (frameSize < 2) {
                 sample.value = recValue;
             }
             else {
             /* We do linear interpolation of points within frames if
-             * framesize is > 0 to get a smooth recording at high resolutions
+             * frameSize is > 0 to get a smooth recording at high resolutions
              * interpolation is linear between lastSampleValue and current recValue
              */
                 sample.value = lastSampleValue
@@ -154,7 +154,7 @@ void MidiLfo::getNextFrame(int tick)
         frame.replace(l1, sample);
         lt+=step;
         l1++;
-    } while ((l1 < framesize) & (l1 < npoints));
+    } while ((l1 < frameSize) & (l1 < npoints));
 
     dataChanged = true;
 
@@ -201,8 +201,8 @@ void MidiLfo::getNextFrame(int tick)
 
     if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
         /* round-up to current resolution (quantize) */
-        nextTick/= (step * framesize);
-        nextTick*= (step * framesize);
+        nextTick/= (step * frameSize);
+        nextTick*= (step * frameSize);
     }
 
     if (seqFinished) frameptr = 0;

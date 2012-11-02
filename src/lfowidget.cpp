@@ -1060,9 +1060,10 @@ void LfoWidget::updateDisplay()
         }
     }
 
-    if ((getFramePtr() == 1)
+    if ((getFramePtr()/midiWorker->frameSize == 1)
             && (parStore->restoreRequest != parStore->oldRestoreRequest)
-            && parStore->restoreRunOnce) {
+            && parStore->restoreRunOnce
+            && !midiWorker->reverse) {
         parStore->restoreRunOnce = false;
         parStore->restoreRequest = parStore->oldRestoreRequest;
         globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);

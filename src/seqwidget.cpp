@@ -1070,7 +1070,8 @@ void SeqWidget::updateDisplay()
 
     if ((getCurrentIndex() == 1)
             && (parStore->restoreRequest != parStore->oldRestoreRequest)
-            && parStore->restoreRunOnce) {
+            && parStore->restoreRunOnce
+            && !midiWorker->reverse) {
         parStore->restoreRunOnce = false;
         parStore->restoreRequest = parStore->oldRestoreRequest;
         globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);

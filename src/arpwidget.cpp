@@ -955,7 +955,7 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 void ArpWidget::updateDisplay()
 {
 
-    if ((parStore->restoreRequest >= 0) && !getGrooveIndex()) {
+    if ((parStore->restoreRequest >= 0) && (getGrooveIndex() == 1)) {
         int req = parStore->restoreRequest;
         restoreParams(req);
         globStore->setDispState(req, 1, manageBox->parentDockID);
@@ -966,7 +966,7 @@ void ArpWidget::updateDisplay()
         }
     }
 
-    if ((getGrooveIndex() == 1)
+    if ((getGrooveIndex() == 2)
             && (parStore->restoreRequest != parStore->oldRestoreRequest)
             && parStore->restoreRunOnce) {
         parStore->restoreRunOnce = false;
