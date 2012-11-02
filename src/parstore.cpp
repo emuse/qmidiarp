@@ -64,6 +64,10 @@ ParStore::ParStore()
     temp.rndVel = 0;
     temp.pattern = "";
     list.clear();
+
+    restoreRequest = -1;
+    oldRestoreRequest = 0;
+    restoreRunOnce = false;
 }
 
 ParStore::~ParStore()
@@ -270,4 +274,10 @@ void ParStore::readData(QXmlStreamReader& xml)
             ix++;
         }
     }
+}
+
+void ParStore::setRestoreRequest(int ix, bool runOnce)
+{
+    restoreRequest = ix;
+    restoreRunOnce = runOnce;
 }

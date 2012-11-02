@@ -37,6 +37,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#include "globstore.h"
 #include "midiseq.h"
 #include "slider.h"
 #include "seqscreen.h"
@@ -62,6 +63,7 @@ class SeqWidget : public QWidget
     Q_OBJECT
 
     MidiSeq *midiWorker;
+    GlobStore *globStore;
     QVector<Sample> data;
     bool modified;      /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
@@ -81,7 +83,8 @@ class SeqWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-    SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
+    SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
+            int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~SeqWidget();
 

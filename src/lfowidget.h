@@ -36,6 +36,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#include "globstore.h"
 #include "midilfo.h"
 #include "slider.h"
 #include "lfoscreen.h"
@@ -65,6 +66,7 @@ class LfoWidget : public QWidget
     Q_OBJECT
 
     MidiLfo *midiWorker;
+    GlobStore *globStore;
     QVector<Sample> data;
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
@@ -107,7 +109,8 @@ class LfoWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-    LfoWidget(MidiLfo *p_midiWorker, int portCount, bool compactStyle,
+    LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
+            int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~LfoWidget();
 

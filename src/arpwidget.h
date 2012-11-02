@@ -39,6 +39,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#include "globstore.h"
 #include "midiarp.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -77,6 +78,7 @@ class ArpWidget : public QWidget
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
     QAction *latchModeAction;
     MidiArp *midiWorker;
+    GlobStore *globStore;
     QLineEdit *patternText;
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
@@ -97,7 +99,8 @@ class ArpWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-    ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
+    ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
+            int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
     ~ArpWidget();
 

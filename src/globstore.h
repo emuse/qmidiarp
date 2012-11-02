@@ -113,12 +113,12 @@ class GlobStore : public QWidget
   signals:
 
 /*!
-* @brief emitted to Engine::globStore(moduleID, ix)
+* @brief emitted to Engine::store(moduleID, ix)
 *
 * @param moduleID moduleID in the DockWidget that should store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
-  void globStore(int moduleID, int ix);
+  void store(int moduleID, int ix);
 /*!
 * @brief emitted to Engine::requestRestore(int)
 *
@@ -210,6 +210,7 @@ class GlobStore : public QWidget
     void setBGColorAt(int column, int row, int color);
     void mapRestoreSignal();
     void mapStoreSignal();
+    void updateRunOnce(bool on);
     void updateDisplay();
 };
 

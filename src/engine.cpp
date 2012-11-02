@@ -869,7 +869,7 @@ void Engine::updateCursor(QChar modtype, int ix, int pos)
         default: ;
     }
 }
-void Engine::globStore(int moduleID, int ix)
+void Engine::store(int moduleID, int ix)
 {
     int l1;
 
@@ -902,21 +902,28 @@ void Engine::requestRestore(int windowIndex, int ix, bool runOnce)
     restoreModWindowIndex = windowIndex;
 
     if (status == false) {
+        if (windowIndex >= 0) restoreModIx = moduleWindow(restoreModWindowIndex)->widget()
+                        ->property("widgetID").toInt();
         restore(ix);
+        return;
     }
-    else {
+    if (windowIndex < 0) {
         restoreRequest = ix;
         restoreRunOnce = runOnce;
-        if (!runOnce) {
-             if (windowIndex < 0) oldRestoreRequest.fill(ix);
-             else oldRestoreRequest.replace(windowIndex, ix);
-        }
-        globStoreWidget->setDispState(ix, 2, windowIndex);
-        if (globStoreWidget->timeModeBox->currentIndex()) {
-            requestTick = currentTick;
-            restoreTick = TPQN * (2 + globStoreWidget->switchAtBeatBox
-                ->currentIndex() + currentTick / TPQN);
-        }
+        if (!runOnce) oldRestoreRequest.fill(ix);
+    }
+    else {
+        QChar test = moduleWindow(windowIndex)->objectName().at(0);
+        int l1 = moduleWindow(windowIndex)->widget()->property("widgetID").toInt();
+        if (test == 'A') arpWidget(l1)->parStore->setRestoreRequest(ix, runOnce);
+        if (test == 'L') lfoWidget(l1)->parStore->setRestoreRequest(ix, runOnce);
+        if (test == 'S') seqWidget(l1)->parStore->setRestoreRequest(ix, runOnce);
+    }
+    globStoreWidget->setDispState(ix, 2, windowIndex);
+    if (globStoreWidget->timeModeBox->currentIndex()) {
+        requestTick = currentTick;
+        restoreTick = TPQN * (2 + globStoreWidget->switchAtBeatBox
+            ->currentIndex() + currentTick / TPQN);
     }
 }
 

@@ -107,6 +107,9 @@ class ParStore : public QObject
     QList<TempStore> list; /**< List of TempStore::temp structures for
                         parameter storage*/
 
+    int restoreRequest;
+    int oldRestoreRequest;
+    bool restoreRunOnce;
 /*!
 * @brief stores all module parameters to TempStore::temp and stores temp
 * in TempStore::list at index ix. If the given index is greater than the list size,
@@ -129,5 +132,7 @@ class ParStore : public QObject
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+
+    void setRestoreRequest(int ix, bool runOnce);
 };
 #endif

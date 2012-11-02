@@ -106,8 +106,8 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
         if (engine->driver->callJack(p_portCount)) jackFailed = true;
     }
-    connect(globStore, SIGNAL(globStore(int, int)), engine,
-            SLOT(globStore(int, int)));
+    connect(globStore, SIGNAL(store(int, int)), engine,
+            SLOT(store(int, int)));
     connect(globStore, SIGNAL(requestRestore(int, int, bool)), engine,
             SLOT(requestRestore(int, int, bool)));
     connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
@@ -412,7 +412,7 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
-    ArpWidget *moduleWidget = new ArpWidget(midiWorker,
+    ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
@@ -457,7 +457,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     QString name;
 
     MidiLfo *midiWorker = new MidiLfo();
-    LfoWidget *moduleWidget = new LfoWidget(midiWorker,
+    LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
@@ -509,7 +509,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     QString name;
 
     MidiSeq *midiWorker = new MidiSeq();
-    SeqWidget *moduleWidget = new SeqWidget(midiWorker,
+    SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));

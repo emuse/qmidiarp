@@ -34,9 +34,11 @@
 #include "pixmaps/seqrecord.xpm"
 
 
-SeqWidget::SeqWidget(MidiSeq *p_midiWorker, int portCount, bool compactStyle,
+SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
+    int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, QWidget *parent):
-    QWidget(parent), midiWorker(p_midiWorker), modified(false)
+    QWidget(parent), midiWorker(p_midiWorker),
+    globStore(p_globStore), modified(false)
 {
     int l1;
 
@@ -1054,6 +1056,27 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 void SeqWidget::updateDisplay()
 {
     QVector<Sample> data;
+
+    if ((parStore->restoreRequest >= 0) && !getCurrentIndex()) {
+        int req = parStore->restoreRequest;
+        restoreParams(req);
+        globStore->setDispState(req, 1, manageBox->parentDockID);
+        parStore->restoreRequest = -1;
+        if (!parStore->restoreRunOnce) {
+            parStore->oldRestoreRequest = req;
+            parStore->restoreRequest = -1;
+        }
+    }
+
+    if ((getCurrentIndex() == 1)
+            && (parStore->restoreRequest != parStore->oldRestoreRequest)
+            && parStore->restoreRunOnce) {
+        parStore->restoreRunOnce = false;
+        parStore->restoreRequest = parStore->oldRestoreRequest;
+        globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);
+    }
+
+
     if (dataChanged) {
         dataChanged=false;
         midiWorker->getData(&data);

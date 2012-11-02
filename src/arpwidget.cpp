@@ -42,9 +42,11 @@
 
 
 
-ArpWidget::ArpWidget(MidiArp *p_midiWorker, int portCount, bool compactStyle,
+ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
+    int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, QWidget *parent):
-    QWidget(parent), midiWorker(p_midiWorker), modified(false)
+    QWidget(parent), midiWorker(p_midiWorker),
+    globStore(p_globStore), modified(false)
 {
     int l1;
 
@@ -952,6 +954,26 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 
 void ArpWidget::updateDisplay()
 {
+
+    if ((parStore->restoreRequest >= 0) && !getGrooveIndex()) {
+        int req = parStore->restoreRequest;
+        restoreParams(req);
+        globStore->setDispState(req, 1, manageBox->parentDockID);
+        parStore->restoreRequest = -1;
+        if (!parStore->restoreRunOnce) {
+            parStore->oldRestoreRequest = req;
+            parStore->restoreRequest = -1;
+        }
+    }
+
+    if ((getGrooveIndex() == 1)
+            && (parStore->restoreRequest != parStore->oldRestoreRequest)
+            && parStore->restoreRunOnce) {
+        parStore->restoreRunOnce = false;
+        parStore->restoreRequest = parStore->oldRestoreRequest;
+        globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);
+    }
+
     screen->updateDraw();
     midiControl->update();
 

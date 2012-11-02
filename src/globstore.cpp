@@ -146,7 +146,7 @@ void GlobStore::storeAll(int ix)
     if (ix >= (widgetList.count() - 1)) {
         addLocation();
     }
-    emit globStore(-1, ix);
+    emit store(-1, ix);
 }
 
 void GlobStore::addLocation()
@@ -197,9 +197,10 @@ void GlobStore::addLocation()
 
         QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
         setRunOnceAction->setObjectName(QString::number(l1));
-        setRunOnceAction->setProperty("index", l1 + 1);
+        setRunOnceAction->setProperty("index", widgetList.count());
         setRunOnceAction->setCheckable(true);
         toolButton->addAction(setRunOnceAction);
+        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
 
         indivButtonLayout->itemAt(l1 + 1)
             ->layout()->itemAt(0)->layout()->addWidget(toolButton);
@@ -268,6 +269,7 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
 {
     int start, end;
     int l1, l2;
+    int color;
 
     if (windowIndex < 0) {
         start = 0;
@@ -281,7 +283,14 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
     if (selected == 1) {
         for (l1 = start; l1 <= end; l1++) {
             for (l2 = 1; l2 <= widgetList.count(); l2++) {
-                setBGColorAt(l1, l2 - 1, 0);
+                if (l1 > 0) {
+                    color = 3 * (indivButtonLayout->itemAt(l1)
+                        ->layout()->itemAt(0)->layout()
+                        ->itemAt(l2 - 1)->widget()
+                        ->actions().at(1)->isChecked());
+                }
+                else color = 0;
+                setBGColorAt(l1, l2 - 1, color);
             }
             setBGColorAt(l1, ix + 1, 1);
         }
@@ -289,12 +298,11 @@ void GlobStore::setDispState(int ix, int selected, int windowIndex)
         activeStore[1] = ix;
     }
     else if (selected == 2) {
-        if ((currentRequest[0] != activeStore[0]) ||
-            (currentRequest[1] != activeStore[1])) {
-            setBGColorAt(currentRequest[0] + 1, currentRequest[1] + 1, 0);
-        }
         for (l1 = start; l1 <= end; l1++) {
             setBGColorAt(l1, ix + 1, 2);
+            if (currentRequest[1] != activeStore[1]) {
+                setBGColorAt(l1, currentRequest[1] + 1, 0);
+            }
         }
         currentRequest[0] = windowIndex;
         currentRequest[1] = ix;
@@ -309,6 +317,8 @@ void GlobStore::setBGColorAt(int column, int row, int color)
         styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
     else if (color == 2)    //yellow
         styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
+    else if (color == 3)    //yellow
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 255, 10%); }";
     else                    //no color
         styleSheet = "QToolButton { }";
 
@@ -352,6 +362,7 @@ void GlobStore::addModule(const QString& name)
         setRunOnceAction->setProperty("index", l1 + 1);
         setRunOnceAction->setCheckable(true);
         toolButton->addAction(setRunOnceAction);
+        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
 
         buttonLayout->addWidget(toolButton);
     }
@@ -408,8 +419,6 @@ void GlobStore::mapRestoreSignal()
     bool runOnce = false;
 
     if (moduleID >= 0) {
-        timeModuleBox->setCurrentIndex(moduleID);
-        updateTimeModule(moduleID);
         runOnce = ((QWidget*)sender())->actions().at(1)->isChecked();
     }
 
@@ -421,7 +430,15 @@ void GlobStore::mapStoreSignal()
     int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
 
-    emit globStore(moduleID, ix - 1);
+    emit store(moduleID, ix - 1);
+}
+
+void GlobStore::updateRunOnce(bool on)
+{
+    int moduleID = sender()->objectName().toInt();
+    int ix = sender()->property("index").toInt();
+
+    setBGColorAt(moduleID + 1, ix, 3*on);
 }
 
 void GlobStore::readData(QXmlStreamReader& xml)
