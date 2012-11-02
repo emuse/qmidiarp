@@ -551,11 +551,10 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
-                    midiWorker->muteMask.clear();
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        midiWorker->muteMask.append(tmpArray.at(l1));
+                        midiWorker->muteMask.replace(l1, tmpArray.at(l1));
                     }
                     midiWorker->maxNPoints = tmpArray.count();
                 }
@@ -568,7 +567,6 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.isStartElement() && (xml.name() == "data")) {
-                    midiWorker->customWave.clear();
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TPQN / midiWorker->res;
@@ -577,7 +575,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                         sample.value = tmpArray.at(l1);
                         sample.tick = lt;
                         sample.muted = midiWorker->muteMask.at(l1);
-                        midiWorker->customWave.append(sample);
+                        midiWorker->customWave.replace(l1, sample);
                         lt+=step;
                     }
                     updateWaveForm(0);
