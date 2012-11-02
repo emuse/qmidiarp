@@ -897,11 +897,15 @@ void Engine::requestRestore(int windowIndex, int ix, bool runOnce)
     restoreModWindowIndex = windowIndex;
 
     if (status == false) {
-        if (windowIndex >= 0) restoreModIx = moduleWindow(restoreModWindowIndex)->widget()
+        if (windowIndex >= 0) {
+            restoreModIx = moduleWindow(restoreModWindowIndex)->widget()
                         ->property("widgetID").toInt();
+            restoreModType = moduleWindow(windowIndex)->objectName().at(0);
+        }
         restore(ix);
         return;
     }
+
     if (windowIndex < 0) {
         restoreRequest = ix;
     }
@@ -912,6 +916,7 @@ void Engine::requestRestore(int windowIndex, int ix, bool runOnce)
         if (test == 'L') lfoWidget(l1)->parStore->setRestoreRequest(ix, runOnce);
         if (test == 'S') seqWidget(l1)->parStore->setRestoreRequest(ix, runOnce);
     }
+
     globStoreWidget->setDispState(ix, 2, windowIndex);
     if (globStoreWidget->timeModeBox->currentIndex()) {
         requestTick = currentTick;
