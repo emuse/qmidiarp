@@ -405,7 +405,8 @@ void MidiLfo::resizeAll()
 
     if (maxNPoints < npoints) {
         for (l1 = 0; l1 < npoints; l1++) {
-            if (l1 >= maxNPoints) muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
+            if (l1 >= maxNPoints)
+                muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
             sample = customWave.at(l1 % maxNPoints);
             sample.tick = lt;
             sample.muted = muteMask.at(l1);

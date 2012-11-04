@@ -320,7 +320,6 @@ void MidiSeq::resizeAll()
 {
     int lt = 0;
     int l1 = 0;
-    int os;
     const int step = TPQN / res;
     const int npoints = res * size;
     Sample sample;
@@ -328,21 +327,19 @@ void MidiSeq::resizeAll()
     currentIndex%=npoints;
     currentRecStep%=npoints;
 
-    os = customWave.count();
-    if (os < npoints) {
-        customWave.resize(npoints);
-        muteMask.resize(npoints);
+    if (maxNPoints < npoints) {
         for (l1 = 0; l1 < npoints; l1++) {
-            if (l1 >= os) muteMask.replace(l1, muteMask.at(l1 % os));
-            sample = customWave.at(l1 % os);
+            if (l1 >= maxNPoints)
+                muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
+            sample = customWave.at(l1 % maxNPoints);
             sample.tick = lt;
             sample.muted = muteMask.at(l1);
             customWave.replace(l1, sample);
             lt+=step;
         }
+        maxNPoints = npoints;
     }
 
-    if (npoints > maxNPoints) maxNPoints = npoints;
     if (!loopMarker) nPoints = npoints;
 }
 
