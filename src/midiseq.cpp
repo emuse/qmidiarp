@@ -74,15 +74,15 @@ MidiSeq::MidiSeq()
     int step = TPQN / res;
     Sample sample;
     sample.value = 60;
-    customWave.reserve(512);
-    customWave.clear();
-    for (l1 = 0; l1 < size * res; l1++) {
+    customWave.resize(512);
+    muteMask.resize(512);
+    for (l1 = 0; l1 < 512; l1++) {
             sample.tick = lt;
             sample.muted = false;
-            customWave.append(sample);
+            customWave.replace(l1, sample);
             lt+=step;
     }
-    muteMask.fill(false, size * res);
+    muteMask.fill(false, 512);
 }
 
 MidiSeq::~MidiSeq(){
