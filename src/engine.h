@@ -249,7 +249,7 @@ class Engine : public QThread  {
 * @param moduleID module window list index of the module to store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
-    void store(int moduleID, int ix);
+    void store(int ix);
 /*!
 * @brief causes Engine to call Engine::restore() when the timing and
 * restore type conditions are met
@@ -258,7 +258,7 @@ class Engine : public QThread  {
 * @param ix ParStore::list index from which all module parameters are to be restored
 * @param runOnce Set this to true to provoke a return to previous location after one run
 */
-    void requestRestore(int windowIndex, int ix, bool runOnce);
+    void requestRestore(int ix);
 /*!
 * @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
 *

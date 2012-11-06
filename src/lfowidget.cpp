@@ -45,15 +45,18 @@
 
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker),
     globStore(p_globStore), modified(false)
 {
     int l1;
 
-    parStore = new ParStore();
-
     midiControl = new MidiControl(this);
+
+    parStore = new ParStore(globStore, name, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
 
     manageBox = new ManageBox("LFO:", true, this);
 
@@ -368,6 +371,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
 LfoWidget::~LfoWidget()
 {
+    delete parStore;
 }
 
 MidiLfo *LfoWidget::getMidiWorker()
@@ -1034,6 +1038,18 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 6) midiWorker->curLoopMode = sval;
                 break;
+                case 9:
+                        sval = min + ((double)value * (max - min) / 127);
+                        if ((sval < parStore->list.count())
+                                && (sval != parStore->activeStore)
+                                && (sval != parStore->currentRequest)) {
+                            parStore->requestDispState(sval, 2);
+                            parStore->restoreRequest = sval;
+                            parStore->restoreRunOnce = parStore->runOnceList.at(sval);
+                        }
+                        else return;
+                break;
+
 
                 default:
                 break;
@@ -1047,14 +1063,15 @@ void LfoWidget::updateDisplay()
 {
     QVector<Sample> data;
 
+    parStore->updateDisplay();
+
     if ((parStore->restoreRequest >= 0) && !getFramePtr()) {
         int req = parStore->restoreRequest;
         restoreParams(req);
-        globStore->setDispState(req, 1, manageBox->parentDockID);
+        parStore->setDispState(req + 1, 1);
         parStore->restoreRequest = -1;
         if (!parStore->restoreRunOnce) {
             parStore->oldRestoreRequest = req;
-            parStore->restoreRequest = -1;
         }
     }
 
@@ -1064,7 +1081,7 @@ void LfoWidget::updateDisplay()
             && !midiWorker->reverse) {
         parStore->restoreRunOnce = false;
         parStore->restoreRequest = parStore->oldRestoreRequest;
-        globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);
+        parStore->setDispState(parStore->restoreRequest, 2);
     }
 
     if (midiWorker->dataChanged) {

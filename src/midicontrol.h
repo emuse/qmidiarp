@@ -109,16 +109,6 @@ class MidiControl : public QWidget
 * @param count Internal identifier of the controllable QWidget
 */
     void addMidiLearnMenu(const QString &name, QWidget *widget, int count = 0);
-/*!
-* @brief Sets a new attribution of internal ID to a MIDI-controllable QWidget
-*
-* It also updates existing bindings found in the MidiControl::ccList to the
-* new mapping.
-*
-* @param widget QWidget to which the new ID is attributed
-* @param ix Index to attribute to the *widget
-*/
-    void changeMapping(QWidget *widget, int ix);
 
   signals:
 /*! @brief Connected to Engine::setMidiLearn() to listen for incoming events.

@@ -106,10 +106,10 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
         if (engine->driver->callJack(p_portCount)) jackFailed = true;
     }
-    connect(globStore, SIGNAL(store(int, int)), engine,
-            SLOT(store(int, int)));
-    connect(globStore, SIGNAL(requestRestore(int, int, bool)), engine,
-            SLOT(requestRestore(int, int, bool)));
+    connect(globStore, SIGNAL(store(int)), engine,
+            SLOT(store(int)));
+    connect(globStore, SIGNAL(requestRestore(int)), engine,
+            SLOT(requestRestore(int)));
     connect(globStore, SIGNAL(updateGlobRestoreTimeModule(int)), engine,
             SLOT(updateGlobRestoreTimeModule(int)));
     connect(globStore, SIGNAL(removeParStores(int)), engine,
@@ -344,6 +344,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
 MainWindow::~MainWindow()
 {
+    clear();
 }
 
 void MainWindow::updateWindowTitle()
@@ -414,7 +415,7 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
     MidiArp *midiWorker = new MidiArp();
     ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, this);
+            passWidget->mutedAdd, inOutVisible, name, this);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
@@ -454,12 +455,11 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
 void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
 {
     int widgetID, count;
-    QString name;
 
     MidiLfo *midiWorker = new MidiLfo();
     LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, this);
+            passWidget->mutedAdd, inOutVisible, p_name, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -470,12 +470,11 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 
     widgetID = engine->lfoWidgetCount();
     if (clonefrom >= 0) {
-        name = engine->lfoWidget(clonefrom)->manageBox->name + "_0";
         moduleWidget->copyParamsFrom(engine->lfoWidget(clonefrom));
     }
-    else name = p_name;
 
-    moduleWidget->manageBox->name = name;
+    //TODO: transfer these items to constructor
+    moduleWidget->manageBox->name = p_name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
@@ -498,7 +497,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
-    appendDock(moduleWidget, name, count);
+    appendDock(moduleWidget, p_name, count);
 
     checkIfFirstModule();
 }
@@ -506,12 +505,11 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
 {
     int widgetID, count;
-    QString name;
 
     MidiSeq *midiWorker = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, this);
+            passWidget->mutedAdd, inOutVisible, p_name, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
@@ -521,12 +519,9 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 
     widgetID = engine->seqWidgetCount();
     if (clonefrom >= 0) {
-        name = engine->seqWidget(clonefrom)->manageBox->name + "_0";
         moduleWidget->copyParamsFrom(engine->seqWidget(clonefrom));
     }
-    else name = p_name;
-
-    moduleWidget->manageBox->name = name;
+    moduleWidget->manageBox->name = p_name;
     moduleWidget->manageBox->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
@@ -549,19 +544,23 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
-    appendDock(moduleWidget, name, count);
+    appendDock(moduleWidget, p_name, count);
 
     checkIfFirstModule();
 }
 
 void MainWindow::cloneLfo(int ID)
 {
-    addLfo("", false, ID);
+    QString name;
+    name = engine->lfoWidget(ID)->manageBox->name + "_0";
+    addLfo(name, false, ID);
 }
 
 void MainWindow::cloneSeq(int ID)
 {
-    addSeq("", false, ID);
+    QString name;
+    name = engine->seqWidget(ID)->manageBox->name + "_0";
+    addSeq(name, false, ID);
 }
 
 void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
@@ -577,7 +576,6 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
     globStore->addModule(name);
-
 }
 
 void MainWindow::renameDock(const QString& name, int parentDockID)

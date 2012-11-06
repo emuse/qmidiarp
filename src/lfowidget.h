@@ -111,7 +111,8 @@ class LfoWidget : public QWidget
  */
     LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true, QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true,
+            const QString& name = "", QWidget* parent=0);
     ~LfoWidget();
 
     ParStore *parStore;
@@ -165,13 +166,6 @@ class LfoWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
-/*!
-* @brief This function stores some module parameters in a parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
-    void storeParams(int ix, bool empty = false);
 /*!
 * @brief This function restores some module parameters from the parameter
 * list object
@@ -381,6 +375,13 @@ class LfoWidget : public QWidget
 *
 */
     void setMuted(bool on);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void storeParams(int ix, bool empty = false);
 
     int getFramePtr() { return midiWorker->getFramePtr(); }
     int getNextTick() { return midiWorker->nextTick; }

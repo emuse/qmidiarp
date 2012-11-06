@@ -36,15 +36,18 @@
 
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker),
     globStore(p_globStore), modified(false)
 {
     int l1;
 
-    parStore = new ParStore();
-
     midiControl = new MidiControl(this);
+
+    parStore = new ParStore(globStore, name, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
 
     manageBox = new ManageBox("Seq:", true, this);
 
@@ -351,6 +354,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
 SeqWidget::~SeqWidget()
 {
+    delete parStore;
 }
 
 MidiSeq *SeqWidget::getMidiWorker()
@@ -1042,6 +1046,17 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 6) midiWorker->curLoopMode = sval;
                 break;
+                case 7:
+                        sval = min + ((double)value * (max - min) / 127);
+                        if ((sval < parStore->list.count())
+                                && (sval != parStore->activeStore)
+                                && (sval != parStore->currentRequest)) {
+                            parStore->requestDispState(sval, 2);
+                            parStore->restoreRequest = sval;
+                            parStore->restoreRunOnce = parStore->runOnceList.at(sval);
+                        }
+                        else return;
+                break;
 
                 default:
                 break;
@@ -1055,14 +1070,15 @@ void SeqWidget::updateDisplay()
 {
     QVector<Sample> data;
 
+    parStore->updateDisplay();
+
     if ((parStore->restoreRequest >= 0) && !getCurrentIndex()) {
         int req = parStore->restoreRequest;
         restoreParams(req);
-        globStore->setDispState(req, 1, manageBox->parentDockID);
+        parStore->setDispState(req + 1, 1);
         parStore->restoreRequest = -1;
         if (!parStore->restoreRunOnce) {
             parStore->oldRestoreRequest = req;
-            parStore->restoreRequest = -1;
         }
     }
 
@@ -1072,9 +1088,8 @@ void SeqWidget::updateDisplay()
             && !midiWorker->reverse) {
         parStore->restoreRunOnce = false;
         parStore->restoreRequest = parStore->oldRestoreRequest;
-        globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);
+        parStore->setDispState(parStore->restoreRequest, 2);
     }
-
 
     if (dataChanged) {
         dataChanged=false;

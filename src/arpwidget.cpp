@@ -44,15 +44,18 @@
 
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
+    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
     QWidget(parent), midiWorker(p_midiWorker),
     globStore(p_globStore), modified(false)
 {
     int l1;
 
-    parStore = new ParStore();
-
     midiControl = new MidiControl(this);
+
+    parStore = new ParStore(globStore, name, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
 
     manageBox = new ManageBox("Arp:", false, this);
 
@@ -373,6 +376,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
 ArpWidget::~ArpWidget()
 {
+    delete parStore;
 }
 
 MidiArp *ArpWidget::getMidiWorker()
@@ -944,6 +948,18 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         patternPresetBoxIndex = sval;
                 break;
+                case 2:
+                        sval = min + ((double)value * (max - min) / 127);
+                        if ((sval < parStore->list.count())
+                                && (sval != parStore->activeStore)
+                                && (sval != parStore->currentRequest)) {
+                            parStore->requestDispState(sval, 2);
+                            parStore->restoreRequest = sval;
+                            parStore->restoreRunOnce = parStore->runOnceList.at(sval);
+                        }
+                        else return;
+                break;
+
                 default:
                 break;
             }
@@ -954,15 +970,16 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 
 void ArpWidget::updateDisplay()
 {
+    parStore->updateDisplay();
 
-    if ((parStore->restoreRequest >= 0) && (getGrooveIndex() == 1)) {
+    if ((parStore->restoreRequest >= 0) && ((getGrooveIndex() == 1)
+                || (getGrooveIndex() == 0))) {
         int req = parStore->restoreRequest;
         restoreParams(req);
-        globStore->setDispState(req, 1, manageBox->parentDockID);
+        parStore->setDispState(req + 1, 1);
         parStore->restoreRequest = -1;
         if (!parStore->restoreRunOnce) {
             parStore->oldRestoreRequest = req;
-            parStore->restoreRequest = -1;
         }
     }
 
@@ -971,8 +988,9 @@ void ArpWidget::updateDisplay()
             && parStore->restoreRunOnce) {
         parStore->restoreRunOnce = false;
         parStore->restoreRequest = parStore->oldRestoreRequest;
-        globStore->setDispState(parStore->restoreRequest, 2, manageBox->parentDockID);
+        parStore->setDispState(parStore->restoreRequest, 2);
     }
+
 
     screen->updateDraw();
     midiControl->update();

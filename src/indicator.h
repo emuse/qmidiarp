@@ -40,12 +40,13 @@ class Indicator : public QWidget
     int p_angle;
     int p_size;
     bool needsRedraw;
+    QColor fillColor;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
 
   public:
-    Indicator(int size, QWidget* parent=0);
+    Indicator(int size, QChar modType = ' ', QWidget* parent=0);
     ~Indicator();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;

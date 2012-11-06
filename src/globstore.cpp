@@ -38,10 +38,8 @@ GlobStore::GlobStore(QWidget *parent)
     midiControl->ID = -2;
     midiControl->parentDockID = -2;
 
-    activeStore[0] = 0;
-    activeStore[1] = 0;
-    currentRequest[0] = 0;
-    currentRequest[1] = 0;
+    activeStore = 0;
+    currentRequest = 0;
     switchAtBeat = 0;
 
     storeSignalMapper = new QSignalMapper(this);
@@ -69,7 +67,7 @@ GlobStore::GlobStore(QWidget *parent)
 
     QWidget *indicatorBox = new QWidget(this);
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
-    indicator = new Indicator(20, this);
+    indicator = new Indicator(20, ' ', this);
     indicatorBox->setMinimumHeight(30);
     indicatorBox->setMinimumWidth(30);
     indicatorLayout->addWidget(indicator);
@@ -126,12 +124,10 @@ GlobStore::GlobStore(QWidget *parent)
     addLocation();
 
     setLayout(centLayout);
-    schedRestoreID = 0;
     schedRestoreVal = 0;
     schedRestore = false;
     dispReqIx = 0;
     dispReqSelected = 0;
-    dispReqWindowIndex = 0;
     needsGUIUpdate = false;
     modified = false;
 }
@@ -146,7 +142,7 @@ void GlobStore::storeAll(int ix)
     if (ix >= (widgetList.count() - 1)) {
         addLocation();
     }
-    emit store(-1, ix);
+    emit store(ix);
 }
 
 void GlobStore::addLocation()
@@ -180,32 +176,6 @@ void GlobStore::addLocation()
 
     indivButtonLayout->itemAt(0)->layout()->itemAt(0)->layout()->addWidget(globWidget);
 
-    for (int l1 = 0; l1 < timeModuleBox->count(); l1++) {
-        QToolButton *toolButton = new QToolButton(this);
-        toolButton->setText(QString::number(widgetList.count()));
-        toolButton->setFixedSize(QSize(100, 25));
-        toolButton->setObjectName(QString::number(l1));
-        toolButton->setProperty("index", widgetList.count());
-        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
-
-        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-        QAction *storeHereAction = new QAction(tr("&Store here"), this);
-        storeHereAction->setObjectName(QString::number(l1));
-        storeHereAction->setProperty("index", widgetList.count());
-        toolButton->addAction(storeHereAction);
-        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
-
-        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
-        setRunOnceAction->setObjectName(QString::number(l1));
-        setRunOnceAction->setProperty("index", widgetList.count());
-        setRunOnceAction->setCheckable(true);
-        toolButton->addAction(setRunOnceAction);
-        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
-
-        indivButtonLayout->itemAt(l1 + 1)
-            ->layout()->itemAt(0)->layout()->addWidget(toolButton);
-    }
-
     if (widgetList.count()) {
         widgetList.last()->layout()->itemAt(1)->widget()->setEnabled(true);
     }
@@ -216,17 +186,10 @@ void GlobStore::addLocation()
 void GlobStore::removeLocation(int ix)
 {
     if (ix == -1) ix = widgetList.count() - 1;
-    if (ix < 0) return;
+    if (ix < 1) return;
 
     emit removeParStores(ix - 1);
-    if (widgetList.count() > 1) {
-        delete widgetList.takeAt(ix);
-        for (int l1 = 1; l1 <= timeModuleBox->count(); l1++) {
-            delete indivButtonLayout->itemAt(l1)->layout()->itemAt(0)
-                    ->layout()->itemAt(ix)->widget();
-        }
-    }
-
+    if (widgetList.count() > 1) delete widgetList.takeAt(ix);
     widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
     if (timeModuleBox->count()) updateTimeModule(0);
     modified = true;
@@ -258,54 +221,39 @@ void GlobStore::updateSwitchAtBeat(int ix)
     switchAtBeat = ix;
     modified = true;
 }
-void GlobStore::requestDispState(int ix, int selected, int windowIndex)
+
+void GlobStore::requestDispState(int ix, int selected)
 {
     dispReqIx = ix;
     dispReqSelected = selected;
-    dispReqWindowIndex = windowIndex;
     needsGUIUpdate = true;
 }
-void GlobStore::setDispState(int ix, int selected, int windowIndex)
+
+void GlobStore::setDispState(int ix, int selected)
 {
     int start, end;
     int l1, l2;
-    int color;
 
-    if (windowIndex < 0) {
-        start = 0;
-        end = timeModuleBox->count();
-    }
-    else {
-        start = windowIndex + 1;
-        end = start;
-    }
+    start = 1;
+    end = timeModuleBox->count();
 
     if (selected == 1) {
         for (l1 = start; l1 <= end; l1++) {
-            for (l2 = 1; l2 <= widgetList.count(); l2++) {
-                if (l1 > 0) {
-                    color = 3 * (indivButtonLayout->itemAt(l1)
-                        ->layout()->itemAt(0)->layout()
-                        ->itemAt(l2 - 1)->widget()
-                        ->actions().at(1)->isChecked());
-                }
-                else color = 0;
-                setBGColorAt(l1, l2 - 1, color);
+            for (l2 = 1; l2 < widgetList.count(); l2++) {
+                setBGColorAt(l1, l2 , 0);
             }
             setBGColorAt(l1, ix + 1, 1);
         }
-        activeStore[0] = windowIndex;
-        activeStore[1] = ix;
+        activeStore = ix;
     }
     else if (selected == 2) {
         for (l1 = start; l1 <= end; l1++) {
             setBGColorAt(l1, ix + 1, 2);
-            if (currentRequest[1] != activeStore[1]) {
-                setBGColorAt(l1, currentRequest[1] + 1, 0);
+            if (currentRequest != activeStore) {
+                setBGColorAt(l1, currentRequest + 1, 0);
             }
         }
-        currentRequest[0] = windowIndex;
-        currentRequest[1] = ix;
+        currentRequest = ix;
     }
 }
 
@@ -317,94 +265,28 @@ void GlobStore::setBGColorAt(int column, int row, int color)
         styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
     else if (color == 2)    //yellow
         styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
-    else if (color == 3)    //yellow
+    else if (color == 3)    //blueish
         styleSheet = "QToolButton { background-color: rgba(50, 255, 255, 10%); }";
     else                    //no color
         styleSheet = "QToolButton { }";
 
-    indivButtonLayout->itemAt(column)->layout()->itemAt(0)->layout()
+    indivButtonLayout->itemAt(column)->widget()->layout()->itemAt(0)->layout()
                 ->itemAt(row)->widget()->setStyleSheet(styleSheet);
 }
 
 void GlobStore::addModule(const QString& name)
 {
     timeModuleBox->addItem(name);
-
-    int count = timeModuleBox->count();
-
-    QToolButton *toolButton = new QToolButton(this);
-    toolButton->setText(name);
-    toolButton->setObjectName(QString::number(count - 1));
-    toolButton->setMinimumSize(QSize(100, 30));
-    midiControl->addMidiLearnMenu("Restore_"+name, toolButton, count);
-
-    QVBoxLayout *buttonLayout = new QVBoxLayout;
-    buttonLayout->addWidget(toolButton);
-
-
-    for (int l1 = 0; l1 < widgetList.size() - 1; l1++) {
-        QToolButton *toolButton = new QToolButton(this);
-        toolButton->setText(QString::number(l1 + 1));
-        toolButton->setFixedSize(QSize(100, 25));
-        toolButton->setObjectName(QString::number(count - 1));
-        toolButton->setProperty("index", l1 + 1);
-        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
-
-        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-        QAction *storeHereAction = new QAction(tr("&Store here"), this);
-        storeHereAction->setObjectName(QString::number(count - 1));
-        storeHereAction->setProperty("index", l1 + 1);
-        toolButton->addAction(storeHereAction);
-        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
-
-        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
-        setRunOnceAction->setObjectName(QString::number(count - 1));
-        setRunOnceAction->setProperty("index", l1 + 1);
-        setRunOnceAction->setCheckable(true);
-        toolButton->addAction(setRunOnceAction);
-        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
-
-        buttonLayout->addWidget(toolButton);
-    }
-
-    QVBoxLayout *columnLayout = new QVBoxLayout;
-    columnLayout->addLayout(buttonLayout);
-    columnLayout->addStretch();
-
-    indivButtonLayout->addLayout(columnLayout);
     updateTimeModule(timeModuleBox->currentIndex());
 }
 
 void GlobStore::removeModule(int ix)
 {
-    int l1, l2;
     if (ix < 0) return;
 
     timeModuleBox->setCurrentIndex(0);
     if (timeModuleBox->count()) updateTimeModule(0);
     timeModuleBox->removeItem(ix);
-
-    midiControl->removeMidiCC(ix + 1, 0, -1);
-    midiControl->names.removeAt(ix + 1);
-    midiControl->names.append("");
-
-    for (l1 = 0; l1 < widgetList.size(); l1++) {
-        delete indivButtonLayout->itemAt(ix + 1)->layout()->itemAt(0)
-                ->layout()->takeAt(0)->widget();
-    }
-    delete indivButtonLayout->takeAt(ix + 1)->layout();
-
-    // decrement button indices and midiControl indices
-    // to fill gap of removed module
-    for (l2 = ix + 1; l2 < timeModuleBox->count() + 1; l2++) {
-        for (l1 = 0; l1 < widgetList.size(); l1++) {
-            QWidget *toolButton = indivButtonLayout->itemAt(l2)
-            ->layout()->itemAt(0)->layout()->itemAt(l1)->widget();
-
-            if (!l1) midiControl->changeMapping(toolButton, l2);
-            toolButton->setObjectName(QString::number(l2 - 1));
-        }
-    }
 
     if (!timeModuleBox->count())
         while (widgetList.count() > 1) {
@@ -414,31 +296,16 @@ void GlobStore::removeModule(int ix)
 
 void GlobStore::mapRestoreSignal()
 {
-    int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
-    bool runOnce = false;
 
-    if (moduleID >= 0) {
-        runOnce = ((QWidget*)sender())->actions().at(1)->isChecked();
-    }
-
-    emit requestRestore(moduleID, ix - 1, runOnce);
+    emit requestRestore(ix - 1);
 }
 
 void GlobStore::mapStoreSignal()
 {
-    int moduleID = sender()->objectName().toInt();
     int ix = sender()->property("index").toInt();
 
-    emit store(moduleID, ix - 1);
-}
-
-void GlobStore::updateRunOnce(bool on)
-{
-    int moduleID = sender()->objectName().toInt();
-    int ix = sender()->property("index").toInt();
-
-    setBGColorAt(moduleID + 1, ix, 3*on);
+    emit store(ix - 1);
 }
 
 void GlobStore::readData(QXmlStreamReader& xml)
@@ -488,21 +355,21 @@ void GlobStore::writeData(QXmlStreamWriter& xml)
 
 void GlobStore::handleController(int ccnumber, int channel, int value)
 {
-    QVector<MidiCC> cclist= midiControl->ccList;
+    if (!midiControl->ccList.count()) return;
+
+    MidiCC midiCC = midiControl->ccList.at(0);
     int sval, min, max;
 
-    for (int l2 = 0; l2 < cclist.count(); l2++) {
-        if ((ccnumber == cclist.at(l2).ccnumber) &&
-            (channel == cclist.at(l2).channel)) {
-            if (cclist.at(l2).ID > timeModuleBox->count()) return;
-            min = cclist.at(l2).min;
-            max = cclist.at(l2).max;
-            sval = min + ((double)value * (max - min) / 127);
-            if (sval >= widgetList.count() - 1) return;
-            schedRestoreID = cclist.at(l2).ID - 1;
-            schedRestoreVal = sval;
-            schedRestore = true;
-        }
+    if ((ccnumber != midiCC.ccnumber) || (channel != midiCC.channel)) return;
+
+    min = midiCC.min;
+    max = midiCC.max;
+    sval = min + ((double)value * (max - min) / 127);
+    if ((sval < widgetList.count() - 1)
+            && (sval != activeStore)
+            && (sval != currentRequest)) {
+        schedRestoreVal = sval;
+        schedRestore = true;
     }
 }
 
@@ -512,11 +379,10 @@ void GlobStore::updateDisplay()
     midiControl->update();
     if (schedRestore) {
         schedRestore = false;
-        emit requestRestore(schedRestoreID, schedRestoreVal, false);
-        if (schedRestoreID >= 0) timeModuleBox->setCurrentIndex(schedRestoreID);
+        emit requestRestore(schedRestoreVal);
     }
 
     if (!needsGUIUpdate) return;
     needsGUIUpdate = false;
-    setDispState(dispReqIx, dispReqSelected, dispReqWindowIndex);
+    setDispState(dispReqIx, dispReqSelected);
 }

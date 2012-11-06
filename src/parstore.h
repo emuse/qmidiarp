@@ -26,11 +26,16 @@
 #define PARSTORE_H
 
 #include <QObject>
+#include <QWidget>
 #include <QList>
 #include <QString>
+#include <QToolButton>
 #include <QVector>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+
+#include "globstore.h"
+#include "indicator.h"
 
 #ifndef SAMPLE_H
 #define SAMPLE_H
@@ -58,13 +63,19 @@ const int seqResValues[5] = {1, 2, 4, 8, 16};
  *
  * ParStore is used by each of QMidiArp's module widgets.
  */
-class ParStore : public QObject
+class ParStore : public QWidget
 {
   Q_OBJECT
 
   public:
-    ParStore();
+    ParStore(GlobStore *p_globStore, const QString &name = "", QWidget* parent = 0);
     ~ParStore();
+    GlobStore *globStore;
+    QToolButton *topButton;
+    Indicator *ndc;
+    QList<bool> runOnceList;
+    int activeStore;
+    int currentRequest;
     struct TempStore {
         bool empty;
         bool muteOut;
@@ -110,6 +121,9 @@ class ParStore : public QObject
     int restoreRequest;
     int oldRestoreRequest;
     bool restoreRunOnce;
+    bool needsGUIUpdate;
+    int dispReqIx, dispReqSelected;
+
 /*!
 * @brief stores all module parameters to TempStore::temp and stores temp
 * in TempStore::list at index ix. If the given index is greater than the list size,
@@ -133,6 +147,21 @@ class ParStore : public QObject
 */
     void writeData(QXmlStreamWriter& xml);
 
-    void setRestoreRequest(int ix, bool runOnce);
+    void setRestoreRequest(int ix);
+    void setBGColorAt(int row, int color);
+    void updateDisplay();
+
+  signals:
+    void store(int ix, bool empty);
+
+  public slots:
+
+    void updateRunOnce(bool on);
+    void addLocation();
+    void removeLocation(int ix);
+    void mapRestoreSignal();
+    void mapStoreSignal();
+    void requestDispState(int ix, int selected);
+    void setDispState(int ix, int selected);
 };
 #endif

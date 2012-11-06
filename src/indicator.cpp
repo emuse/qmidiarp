@@ -31,10 +31,25 @@
 #include "indicator.h"
 
 
-Indicator::Indicator(int size, QWidget* parent) : QWidget (parent)
+Indicator::Indicator(int size, QChar modType, QWidget* parent) : QWidget (parent)
 {
     p_angle = 0;
     p_size = size;
+    switch (modType.toLatin1()) {
+        case 'A':
+            fillColor = QColor(60, 150, 30);
+        break;
+
+        case 'L':
+            fillColor = QColor(150, 60, 30);
+        break;
+
+        case 'S':
+            fillColor = QColor(30, 60, 150);
+        break;
+
+        default: fillColor = QColor(200, 160, 0);
+    }
     needsRedraw = false;
 }
 
@@ -49,7 +64,7 @@ void Indicator::paintEvent(QPaintEvent*)
     QPen pen;
     pen.setWidth(2);
     pen.setColor(QColor(0, 0, 0));
-    p.setBrush((QColor(200, 160, 0)));
+    p.setBrush(fillColor);
     p.setPen(pen);
     p.setRenderHint(QPainter::Antialiasing, true);
     QRectF r(5.0, 5.0, p_size, p_size);

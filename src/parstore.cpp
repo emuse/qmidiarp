@@ -25,7 +25,8 @@
 #include "main.h"
 #include "parstore.h"
 
-ParStore::ParStore()
+ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent):
+            QWidget(parent), globStore(p_globStore)
 {
     // when temp.empty is true, restoring from that set is ignored
     temp.empty = false;
@@ -65,23 +66,78 @@ ParStore::ParStore()
     temp.pattern = "";
     list.clear();
 
+    ndc = new Indicator(14, name.at(0), this);
+
+    topButton = new QToolButton(this);
+    topButton->setFont(QFont("Helvetica", 8));
+    topButton->setText(name);
+    topButton->setMinimumSize(QSize(75, 30));
+
+    QWidget *indicatorBox = new QWidget(this);
+    QHBoxLayout *indicatorLayout = new QHBoxLayout;
+    indicatorBox->setMinimumHeight(20);
+    indicatorBox->setMinimumWidth(25);
+    indicatorLayout->addWidget(ndc);
+    indicatorLayout->setMargin(2);
+    indicatorLayout->setSpacing(1);
+    indicatorBox->setLayout(indicatorLayout);
+
+    QWidget *topRow = new QWidget(this);
+    QHBoxLayout *topRowLayout = new QHBoxLayout;
+    topRowLayout->addWidget(indicatorBox);
+    topRowLayout->addWidget(topButton);
+    topRowLayout->setSpacing(0);
+    topRowLayout->setMargin(0);
+    topRow->setLayout(topRowLayout);
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout();
+    buttonLayout->addWidget(topRow);
+
+
+    for (int l1 = 0; l1 < list.size() - 1; l1++) {
+        QToolButton *toolButton = new QToolButton(this);
+        toolButton->setText(QString::number(l1 + 1));
+        toolButton->setFixedSize(QSize(100, 25));
+        toolButton->setProperty("index", l1 + 1);
+        connect(toolButton, SIGNAL(pressed()), globStore, SLOT(mapRestoreSignal()));
+
+        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+        QAction *storeHereAction = new QAction(tr("&Store here"), this);
+        storeHereAction->setProperty("index", l1 + 1);
+        toolButton->addAction(storeHereAction);
+        connect(storeHereAction, SIGNAL(triggered()), globStore, SLOT(mapStoreSignal()));
+
+        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
+        setRunOnceAction->setProperty("index", l1 + 1);
+        setRunOnceAction->setCheckable(true);
+        toolButton->addAction(setRunOnceAction);
+        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
+
+        buttonLayout->addWidget(toolButton);
+    }
+
+    QVBoxLayout *columnLayout = new QVBoxLayout;
+    columnLayout->addLayout(buttonLayout);
+    columnLayout->addStretch();
+    columnLayout->setMargin(0);
+    columnLayout->setSpacing(0);
+    setLayout(columnLayout);
+
+    globStore->indivButtonLayout->addWidget(this);
+
+
     restoreRequest = -1;
     oldRestoreRequest = 0;
     restoreRunOnce = false;
+    activeStore = 0;
+    currentRequest = 0;
+    dispReqIx = 0;
+    dispReqSelected = 0;
+    needsGUIUpdate = false;
 }
 
 ParStore::~ParStore()
 {
-}
-
-void ParStore::tempToList(int ix)
-{
-    if (ix >= list.size()) {
-        list.append(temp);
-    }
-    else {
-        list.replace(ix, temp);
-    }
 }
 
 void ParStore::writeData(QXmlStreamWriter& xml)
@@ -276,8 +332,136 @@ void ParStore::readData(QXmlStreamReader& xml)
     }
 }
 
-void ParStore::setRestoreRequest(int ix, bool runOnce)
+void ParStore::addLocation()
+{
+        QToolButton *toolButton = new QToolButton(this);
+        toolButton->setText(QString::number(list.count()));
+        toolButton->setFixedSize(QSize(100, 25));
+        toolButton->setProperty("index", list.count());
+        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+
+        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
+        QAction *storeHereAction = new QAction(tr("&Store here"), this);
+        storeHereAction->setProperty("index", list.count());
+        toolButton->addAction(storeHereAction);
+        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+
+        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
+        setRunOnceAction->setProperty("index", list.count());
+        setRunOnceAction->setCheckable(true);
+        toolButton->addAction(setRunOnceAction);
+        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
+
+        layout()->itemAt(0)->layout()->addWidget(toolButton);
+        runOnceList.append(false);
+}
+
+void ParStore::removeLocation(int ix)
+{
+    if (ix == -1) ix = list.count() - 1;
+
+    list.removeAt(ix);
+    QWidget *button = new QWidget(this);
+    button = layout()->itemAt(0)->layout()->takeAt(ix + 1)->widget();
+    delete button;
+    runOnceList.removeAt(ix);
+}
+
+
+void ParStore::setRestoreRequest(int ix)
 {
     restoreRequest = ix;
-    restoreRunOnce = runOnce;
+    restoreRunOnce = runOnceList.at(ix);
+
+    setDispState(ix, 2);
+}
+
+void ParStore::updateRunOnce(bool on)
+{
+    int ix = sender()->property("index").toInt();
+
+    runOnceList.replace(ix - 1, on);
+    setBGColorAt(ix, 3*on);
+}
+
+void ParStore::setBGColorAt(int row, int color)
+{
+    QString styleSheet;
+
+    if (color == 1)         //green
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
+    else if (color == 2)    //yellow
+        styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
+    else if (color == 3)    //blueish
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 255, 10%); }";
+    else                    //no color
+        styleSheet = "QToolButton { }";
+
+    layout()->itemAt(0)->layout()->itemAt(row)->widget()->setStyleSheet(styleSheet);
+}
+
+void ParStore::tempToList(int ix)
+{
+    if (ix >= list.size()) {
+        list.append(temp);
+        addLocation();
+    }
+    else {
+        list.replace(ix, temp);
+    }
+    setDispState(ix + 1, 1);
+}
+
+void ParStore::mapRestoreSignal()
+{
+    int ix = sender()->property("index").toInt();
+
+    setRestoreRequest(ix - 1);
+}
+
+void ParStore::mapStoreSignal()
+{
+    int ix = sender()->property("index").toInt();
+
+    emit store(ix - 1, false);
+}
+
+void ParStore::setDispState(int ix, int selected)
+{
+    int l2;
+    int color;
+
+    if (selected == 1) {
+        for (l2 = 1; l2 <= list.count(); l2++) {
+            color = 3 * (layout()->itemAt(0)->layout()
+                    ->itemAt(l2)->widget()
+                    ->actions().at(1)->isChecked());
+            setBGColorAt(l2, color);
+        }
+        setBGColorAt(ix, 1);
+        activeStore = ix - 1;
+    }
+    else if (selected == 2) {
+        setBGColorAt(ix + 1, 2);
+        if (currentRequest != activeStore) {
+            setBGColorAt(currentRequest + 1, 0);
+        }
+        currentRequest = ix;
+    }
+}
+
+void ParStore::requestDispState(int ix, int selected)
+{
+    dispReqIx = ix;
+    dispReqSelected = selected;
+    needsGUIUpdate = true;
+}
+
+void ParStore::updateDisplay()
+{
+    ndc->updateDraw();
+
+    if (!needsGUIUpdate) return;
+    needsGUIUpdate = false;
+    setDispState(dispReqIx, dispReqSelected);
 }
