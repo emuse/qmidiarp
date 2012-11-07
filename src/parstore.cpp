@@ -99,13 +99,13 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
         toolButton->setText(QString::number(l1 + 1));
         toolButton->setFixedSize(QSize(100, 25));
         toolButton->setProperty("index", l1 + 1);
-        connect(toolButton, SIGNAL(pressed()), globStore, SLOT(mapRestoreSignal()));
+        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 
         toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
         QAction *storeHereAction = new QAction(tr("&Store here"), this);
         storeHereAction->setProperty("index", l1 + 1);
         toolButton->addAction(storeHereAction);
-        connect(storeHereAction, SIGNAL(triggered()), globStore, SLOT(mapStoreSignal()));
+        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
 
         QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
         setRunOnceAction->setProperty("index", l1 + 1);
