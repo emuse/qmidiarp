@@ -93,28 +93,35 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
     QVBoxLayout *buttonLayout = new QVBoxLayout();
     buttonLayout->addWidget(topRow);
 
+    locContextMenu = new QMenu(this);
 
-    for (int l1 = 0; l1 < list.size() - 1; l1++) {
-        QToolButton *toolButton = new QToolButton(this);
-        toolButton->setText(QString::number(l1 + 1));
-        toolButton->setFixedSize(QSize(100, 25));
-        toolButton->setProperty("index", l1 + 1);
-        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+    QAction *storeHereAction = new QAction(tr("&Store here"), this);
+    storeHereAction->setProperty("index", list.count());
+    locContextMenu->addAction(storeHereAction);
+    connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
 
-        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-        QAction *storeHereAction = new QAction(tr("&Store here"), this);
-        storeHereAction->setProperty("index", l1 + 1);
-        toolButton->addAction(storeHereAction);
-        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+    jumpToIndexMenu = new QMenu(tr("When finished"), this);
 
-        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
-        setRunOnceAction->setProperty("index", l1 + 1);
-        setRunOnceAction->setCheckable(true);
-        toolButton->addAction(setRunOnceAction);
-        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
+    jumpToGroup = new QActionGroup(this);
+    connect(jumpToGroup, SIGNAL(triggered(QAction *))
+             , this, SLOT(updateRunOnce(QAction *)));
 
-        buttonLayout->addWidget(toolButton);
-    }
+    jumpToIndexMenu->addAction(new QAction(tr("Stay here"), this));
+    jumpToIndexMenu->actions().last()->setProperty("index", -2);
+    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
+    jumpToIndexMenu->actions().last()->setCheckable(true);
+    jumpToIndexMenu->actions().last()->setChecked(true);
+
+    jumpToIndexMenu->addAction(new QAction(tr("Jump back"), this));
+    jumpToIndexMenu->actions().last()->setProperty("index", -1);
+    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
+    jumpToIndexMenu->actions().last()->setCheckable(true);
+
+    jumpToIndexMenu->addSeparator()->setText(tr("Jump to:"));
+
+    locContextMenu->addMenu(jumpToIndexMenu);
+
+    for (int l1 = 0; l1 < list.size() - 1; l1++) addLocation();
 
     QVBoxLayout *columnLayout = new QVBoxLayout;
     columnLayout->addLayout(buttonLayout);
@@ -334,26 +341,21 @@ void ParStore::readData(QXmlStreamReader& xml)
 
 void ParStore::addLocation()
 {
-        QToolButton *toolButton = new QToolButton(this);
-        toolButton->setText(QString::number(list.count()));
-        toolButton->setFixedSize(QSize(100, 25));
-        toolButton->setProperty("index", list.count());
-        connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
+    QToolButton *toolButton = new QToolButton(this);
+    toolButton->setText(QString::number(list.count()));
+    toolButton->setFixedSize(QSize(100, 25));
+    toolButton->setProperty("index", list.count());
+    connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 
-        toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::ActionsContextMenu));
-        QAction *storeHereAction = new QAction(tr("&Store here"), this);
-        storeHereAction->setProperty("index", list.count());
-        toolButton->addAction(storeHereAction);
-        connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+    toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::CustomContextMenu));
+    connect(toolButton, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showLocContextMenu(const QPoint &)));
 
-        QAction *setRunOnceAction = new QAction(tr("&Run once and return"), this);
-        setRunOnceAction->setProperty("index", list.count());
-        setRunOnceAction->setCheckable(true);
-        toolButton->addAction(setRunOnceAction);
-        connect(setRunOnceAction, SIGNAL(toggled(bool)), this, SLOT(updateRunOnce(bool)));
+    jumpToIndexMenu->addAction(new QAction(QString::number(list.count()), this));
+    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
+    jumpToIndexMenu->actions().last()->setCheckable(true);
 
-        layout()->itemAt(0)->layout()->addWidget(toolButton);
-        runOnceList.append(false);
+    layout()->itemAt(0)->layout()->addWidget(toolButton);
+    jumpToList.append(-2);
 }
 
 void ParStore::removeLocation(int ix)
@@ -363,25 +365,39 @@ void ParStore::removeLocation(int ix)
     list.removeAt(ix);
     QWidget *button = new QWidget(this);
     button = layout()->itemAt(0)->layout()->takeAt(ix + 1)->widget();
+    QAction *action = jumpToIndexMenu->actions().at(ix + 3);
     delete button;
-    runOnceList.removeAt(ix);
+    delete action;
+    jumpToList.removeAt(ix);
 }
 
 
 void ParStore::setRestoreRequest(int ix)
 {
     restoreRequest = ix;
-    restoreRunOnce = runOnceList.at(ix);
+    restoreRunOnce = (jumpToList.at(ix) > -2 );
 
     setDispState(ix, 2);
 }
 
-void ParStore::updateRunOnce(bool on)
+void ParStore::updateRunOnce(QAction *action)
 {
-    int ix = sender()->property("index").toInt();
+    int choice = action->property("index").toInt();
+    int location = sender()->property("index").toInt();
 
-    runOnceList.replace(ix - 1, on);
-    setBGColorAt(ix, 3*on);
+    if (choice == -2) { //stay here
+        jumpToList.replace(location, -2);
+        setBGColorAt(location + 1, 0);
+    }
+    else if (choice == -1) { //jump back to last
+        jumpToList.replace(location, -1);
+        setBGColorAt(location + 1, 3);
+    }
+    else if (choice >= 0) { //jump to location
+        int jumpto = action->text().toInt() - 1;
+        jumpToList.replace(location, jumpto);
+        setBGColorAt(location + 1, 3);
+    }
 }
 
 void ParStore::setBGColorAt(int row, int color)
@@ -409,7 +425,7 @@ void ParStore::tempToList(int ix)
     else {
         list.replace(ix, temp);
     }
-    setDispState(ix + 1, 1);
+    setDispState(ix, 1);
 }
 
 void ParStore::mapRestoreSignal()
@@ -430,16 +446,13 @@ void ParStore::setDispState(int ix, int selected)
 {
     int l2;
     int color;
-
     if (selected == 1) {
         for (l2 = 1; l2 <= list.count(); l2++) {
-            color = 3 * (layout()->itemAt(0)->layout()
-                    ->itemAt(l2)->widget()
-                    ->actions().at(1)->isChecked());
+            color = 3 * (jumpToList.at(l2 - 1) > -2);
             setBGColorAt(l2, color);
         }
-        setBGColorAt(ix, 1);
-        activeStore = ix - 1;
+        setBGColorAt(ix + 1, 1);
+        activeStore = ix;
     }
     else if (selected == 2) {
         setBGColorAt(ix + 1, 2);
@@ -457,11 +470,61 @@ void ParStore::requestDispState(int ix, int selected)
     needsGUIUpdate = true;
 }
 
-void ParStore::updateDisplay()
+void ParStore::updateDisplay(int frame, bool reverse)
 {
     ndc->updateDraw();
 
-    if (!needsGUIUpdate) return;
-    needsGUIUpdate = false;
-    setDispState(dispReqIx, dispReqSelected);
+    if (needsGUIUpdate) {
+        needsGUIUpdate = false;
+        setDispState(dispReqIx, dispReqSelected);
+    }
+
+    if ((restoreRequest >= 0) && !frame) {
+        int req = restoreRequest;
+        setDispState(req, 1);
+        emit restore(req);
+        restoreRequest = -1;
+        if (!restoreRunOnce) {
+            oldRestoreRequest = req;
+        }
+    }
+
+    if ((frame == 1)
+            && (restoreRequest != oldRestoreRequest)
+            && restoreRunOnce
+            && !reverse) {
+        if (jumpToList.at(activeStore) >= 0) {
+            restoreRequest = jumpToList.at(activeStore);
+            oldRestoreRequest = restoreRequest;
+        }
+        else {
+            restoreRequest = oldRestoreRequest;
+        }
+        restoreRunOnce = (jumpToList.at(restoreRequest) > -2);
+        setDispState(restoreRequest, 2);
+    }
+
+}
+
+void ParStore::showLocContextMenu(const QPoint &pos)
+{
+    int senderlocation = sender()->property("index").toInt() - 1;
+    int l1;
+
+    for (l1 = 0; l1 < locContextMenu->actions().count(); l1++) {
+        locContextMenu->actions().at(l1)->setProperty("index",
+            senderlocation + 1);
+    }
+    for (l1 = 0; l1 < list.count(); l1++) {
+        jumpToGroup->actions().at(l1 + 2)
+                ->setDisabled(l1 == senderlocation);
+    }
+
+    locContextMenu->setProperty("index", senderlocation);
+    jumpToGroup->setProperty("index", senderlocation);
+
+    jumpToGroup->actions().at(jumpToList.at(senderlocation) + 2)
+            ->setChecked(true);
+
+    locContextMenu->popup(QWidget::mapToGlobal(pos));
 }

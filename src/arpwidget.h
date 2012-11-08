@@ -134,13 +134,6 @@ class ArpWidget : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
-    void restoreParams(int ix);
-/*!
 * @brief This function returns the MidiArp instance associated with this GUI
 * Widget.
 * @return MidiArp instance associated with this GUI
@@ -252,6 +245,13 @@ class ArpWidget : public QWidget
 * @param Position index in the parameter list
 */
     void storeParams(int ix, bool empty = false);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void restoreParams(int ix);
     void handleController(int ccnumber, int channel, int value);
     int getGrooveIndex() { return midiWorker->getGrooveIndex(); }
 };

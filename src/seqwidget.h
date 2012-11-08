@@ -141,13 +141,6 @@ class SeqWidget : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
-    void restoreParams(int ix);
-/*!
 * @brief This function copies all Seq module GUI parameters from
 * fromWidget
 *
@@ -337,6 +330,13 @@ class SeqWidget : public QWidget
 * @param Position index in the parameter list
 */
     void storeParams(int ix, bool empty = false);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void restoreParams(int ix);
 
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
     int getLoopMarker() { return midiWorker->loopMarker; }

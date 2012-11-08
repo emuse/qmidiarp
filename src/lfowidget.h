@@ -167,13 +167,6 @@ class LfoWidget : public QWidget
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
-    void restoreParams(int ix);
-/*!
 * @brief This function copies all LFO module GUI parameters from
 * fromWidget
 *
@@ -382,6 +375,13 @@ class LfoWidget : public QWidget
 * @param Position index in the parameter list
 */
     void storeParams(int ix, bool empty = false);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void restoreParams(int ix);
 
     int getFramePtr() { return midiWorker->getFramePtr(); }
     int getNextTick() { return midiWorker->nextTick; }

@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QList>
+#include <QMenu>
 #include <QString>
 #include <QToolButton>
 #include <QVector>
@@ -73,9 +74,13 @@ class ParStore : public QWidget
     GlobStore *globStore;
     QToolButton *topButton;
     Indicator *ndc;
-    QList<bool> runOnceList;
+    QList<int> jumpToList;
+    QMenu *locContextMenu;
+    QMenu *jumpToIndexMenu;
+    QActionGroup *jumpToGroup;
     int activeStore;
     int currentRequest;
+
     struct TempStore {
         bool empty;
         bool muteOut;
@@ -149,19 +154,21 @@ class ParStore : public QWidget
 
     void setRestoreRequest(int ix);
     void setBGColorAt(int row, int color);
-    void updateDisplay();
+    void updateDisplay(int frame, bool reverse);
 
   signals:
     void store(int ix, bool empty);
+    void restore(int ix);
 
   public slots:
 
-    void updateRunOnce(bool on);
+    void updateRunOnce(QAction *action);
     void addLocation();
     void removeLocation(int ix);
     void mapRestoreSignal();
     void mapStoreSignal();
     void requestDispState(int ix, int selected);
     void setDispState(int ix, int selected);
+    void showLocContextMenu(const QPoint &pos);
 };
 #endif
