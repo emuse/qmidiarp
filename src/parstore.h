@@ -162,7 +162,8 @@ class ParStore : public QWidget
 
   public slots:
 
-    void updateRunOnce(QAction *action);
+    void mapJumpToGroup(QAction *action);
+    void updateRunOnce(int location, int choice);
     void addLocation();
     void removeLocation(int ix);
     void mapRestoreSignal();

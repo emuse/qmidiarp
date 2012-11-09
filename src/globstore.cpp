@@ -262,9 +262,9 @@ void GlobStore::setBGColorAt(int column, int row, int color)
     QString styleSheet;
 
     if (color == 1)         //green
-        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
     else if (color == 2)    //yellow
-        styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
+        styleSheet = "QToolButton { background-color: rgba(80, 255, 80, 10%); }";
     else if (color == 3)    //blueish
         styleSheet = "QToolButton { background-color: rgba(50, 255, 255, 10%); }";
     else                    //no color

@@ -104,7 +104,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
 
     jumpToGroup = new QActionGroup(this);
     connect(jumpToGroup, SIGNAL(triggered(QAction *))
-             , this, SLOT(updateRunOnce(QAction *)));
+             , this, SLOT(mapJumpToGroup(QAction *)));
 
     jumpToIndexMenu->addAction(new QAction(tr("Stay here"), this));
     jumpToIndexMenu->actions().last()->setProperty("index", -2);
@@ -188,6 +188,8 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("rndVel", QString::number(list.at(ix).rndVel));
             xml.writeTextElement("pattern", list.at(ix).pattern);
 
+            xml.writeTextElement("jumpTo", QString::number(jumpToList.at(ix)));
+
             tempArray.clear();
             l1 = 0;
             while (l1 < list.at(ix).muteMask.count()) {
@@ -216,6 +218,7 @@ void ParStore::readData(QXmlStreamReader& xml)
 {
     int ix = 0;
     int step = 0;
+    int tmpjumpto = -2;
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -287,6 +290,8 @@ void ParStore::readData(QXmlStreamReader& xml)
                     temp.rndVel = xml.readElementText().toInt();
                 else if (xml.name() == "pattern")
                     temp.pattern = xml.readElementText();
+                else if (xml.name() == "jumpTo")
+                    tmpjumpto = xml.readElementText().toInt();
                 else if (xml.isStartElement() && (xml.name() == "muteMask")) {
                     while (!xml.atEnd()) {
                         xml.readNext();
@@ -334,6 +339,7 @@ void ParStore::readData(QXmlStreamReader& xml)
                 else skipXmlElement(xml);
             }
             tempToList(ix);
+            updateRunOnce(ix, tmpjumpto);
             ix++;
         }
     }
@@ -352,6 +358,7 @@ void ParStore::addLocation()
 
     jumpToIndexMenu->addAction(new QAction(QString::number(list.count()), this));
     jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
+    jumpToIndexMenu->actions().last()->setProperty("index", list.count() - 1);
     jumpToIndexMenu->actions().last()->setCheckable(true);
 
     layout()->itemAt(0)->layout()->addWidget(toolButton);
@@ -369,6 +376,10 @@ void ParStore::removeLocation(int ix)
     delete button;
     delete action;
     jumpToList.removeAt(ix);
+
+    for (int l1 = 0; l1 < jumpToList.count(); l1++) {
+        if (jumpToList.at(l1) >= jumpToList.count()) updateRunOnce(l1, -2);
+    }
 }
 
 
@@ -380,22 +391,33 @@ void ParStore::setRestoreRequest(int ix)
     setDispState(ix, 2);
 }
 
-void ParStore::updateRunOnce(QAction *action)
+void ParStore::mapJumpToGroup(QAction *action)
 {
     int choice = action->property("index").toInt();
     int location = sender()->property("index").toInt();
 
+    updateRunOnce(location, choice);
+}
+
+void ParStore::updateRunOnce(int location, int choice)
+{
     if (choice == -2) { //stay here
         jumpToList.replace(location, -2);
         setBGColorAt(location + 1, 0);
+        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setText(QString::number(location + 1));
     }
     else if (choice == -1) { //jump back to last
         jumpToList.replace(location, -1);
         setBGColorAt(location + 1, 3);
+        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setText(QString::number(location + 1) + " < ");
     }
     else if (choice >= 0) { //jump to location
-        int jumpto = action->text().toInt() - 1;
-        jumpToList.replace(location, jumpto);
+        jumpToList.replace(location, choice);
+        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setText(QString::number(location + 1)
+                    + " > " + QString::number(choice + 1));
         setBGColorAt(location + 1, 3);
     }
 }
@@ -405,11 +427,11 @@ void ParStore::setBGColorAt(int row, int color)
     QString styleSheet;
 
     if (color == 1)         //green
-        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 30%); }";
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
     else if (color == 2)    //yellow
-        styleSheet = "QToolButton { background-color: rgba(255, 255, 50, 30%); }";
+        styleSheet = "QToolButton { background-color: rgba(80, 255, 80, 10%); }";
     else if (color == 3)    //blueish
-        styleSheet = "QToolButton { background-color: rgba(50, 255, 255, 10%); }";
+        styleSheet = "QToolButton { }";
     else                    //no color
         styleSheet = "QToolButton { }";
 
@@ -425,6 +447,7 @@ void ParStore::tempToList(int ix)
     else {
         list.replace(ix, temp);
     }
+    currentRequest = ix;
     setDispState(ix, 1);
 }
 
