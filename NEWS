@@ -1,6 +1,13 @@
 qmidiarp-0.5.1 (2012-11-??)
 
 New Features
+  o Global Storages have new features accessible through right-click
+    on each storage location. You can choose if at pattern end another
+    storage location is automatically selected and create dynamic pattern
+    sequences.
+  o Global Storage now has a position pacman indicator for each module
+  o Clicking on the top button in the global store window now raises the
+    selected module window
   o When Jack is not available at program start, show a message window
   o Introduce semitone shifts in Arp patterns (request 3574549 by gionnico)
   o Allow repetition of the 0 note within chords to stack notes when only
@@ -16,6 +23,11 @@ Fixed Bugs
   o Deleting the last module sometimes crashed qmidiarp
   o Trigger mode sometimes caused hanging when a new note was received
 
+General Changes
+  o There have been many changes toward realtime compatibility under the
+    hood. In particular, there are no more memory allocations/frees in
+    the realtime component. As a side effect, QMidiArp uses slightly more
+    CPU mainly due to not always optimal screen drawing.
 
 qmidiarp-0.5.0 (2012-03-24)
 
