@@ -182,9 +182,6 @@ class Engine : public QThread  {
  * @param tick Set to the tick value at which the event was received
  */
     void midiEventReceived(MidiEvent ev, int tick);
-    void restoreSig(int ix);
-    void indicPercentSig(int p);
-    void updateCursorSig(QChar modtype, int ix, int pos);
 
   public slots:
     void setStatus(bool);

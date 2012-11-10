@@ -82,15 +82,6 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreTick = -1;
     schedRestoreLocation = -1;
 
-    // we happen to need these QSignals for triggering display updates
-    // and global parameter restores from within the echo callback.
-    // Direct calls to the module widgets were shown to
-    // cause frequent segfaults.
-    connect(this, SIGNAL(restoreSig(int)), this, SLOT(restore(int)));
-    connect(this, SIGNAL(indicPercentSig(int)), this, SLOT(indicPercent(int)));
-    connect(this, SIGNAL(updateCursorSig(QChar, int, int))
-            , this, SLOT(updateCursor(QChar, int, int)));
-
     resetTicks(0);
     dispTimer = new MTimer();
     connect(dispTimer, SIGNAL(timeout()), this, SLOT(updateDisplay()));
