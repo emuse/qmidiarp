@@ -52,7 +52,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="157"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Mostrar/ocultar opciones de entrada/salida</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="177"/>
@@ -117,12 +117,12 @@
     <message>
         <location filename="../arpwidget.cpp" line="234"/>
         <source>Kbd restart legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Reiniciar ligado</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="234"/>
         <source>Kbd trigger legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Disparador ligado</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="236"/>
@@ -144,7 +144,14 @@
   d h  note length up/down
   / \  velocity up/down
    p   pause</source>
-        <translation type="unfinished"></translation>
+        <translation>0..9  nota recibida desde el teclado, 0 es la más grave
+( ) números entre paréntesis: agrupación para formar acordes
+  + = -  octava: superior/nominal/inferior
+  t = g  semitono: superior/nominal/inferior
+ &lt; . &gt; tempo: aumentar/nominal/disminuir
+  d h  longitud de la nota: aumentar/disminuir
+  / \  velocidad: aumentar/disminuir
+   p   pausa</translation>
     </message>
     <message>
         <source>0..9  note played on keyboard, 0 is lowest
@@ -245,27 +252,27 @@
     <message>
         <location filename="../globstore.cpp" line="50"/>
         <source>End of</source>
-        <translation type="unfinished"></translation>
+        <translation>Final de</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="51"/>
         <source>After</source>
-        <translation type="unfinished"></translation>
+        <translation>Después</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="90"/>
         <source>&amp;Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="150"/>
         <source>&amp;Store</source>
-        <translation type="unfinished"></translation>
+        <translation>Almacenar</translation>
     </message>
     <message>
         <location filename="../globstore.cpp" line="158"/>
         <source>&amp;Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurar</translation>
     </message>
 </context>
 <context>
@@ -350,12 +357,12 @@
     <message>
         <location filename="../lfowidget.cpp" line="86"/>
         <source>&amp;Legato</source>
-        <translation type="unfinished"></translation>
+        <translation>Ligado</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="90"/>
         <source>Retrigger / restart upon new legato note as well</source>
-        <translation type="unfinished"></translation>
+        <translation>Volver a disparar/reiniciar también cada nueva nota ligada</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="103"/>
@@ -385,7 +392,7 @@
     <message>
         <location filename="../lfowidget.cpp" line="179"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Mostrar/ocultar opciones de entrada/salida</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="198"/>
@@ -444,7 +451,7 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../lfowidget.cpp" line="283"/>
         <source>Loop, bounce or play once going forward or backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Repetir, rebotar o reproducir una vez, adelante o atrás</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="297"/>
@@ -556,7 +563,7 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="92"/>
         <source>Global Store</source>
-        <translation type="unfinished"></translation>
+        <translation>Almacenamiento global</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="140"/>
@@ -686,12 +693,12 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="217"/>
         <source>&amp;Show all IO panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar todos los paneles de E/S</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="222"/>
         <source>&amp;Hide all IO panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocultar todos los paneles de E/S</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="229"/>
@@ -729,13 +736,13 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="245"/>
         <source>&amp;Global Store</source>
-        <translation type="unfinished"></translation>
+        <translation>Almacenamiento global</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="246"/>
         <source>Ctrl+$</source>
         <comment>View|GlobalStore</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+$</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="250"/>
@@ -771,7 +778,7 @@ Rueda para cambiar desplazamiento</translation>
         <location filename="../mainwindow.cpp" line="276"/>
         <source>Ctrl+M</source>
         <comment>View|MidiControllers</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+M</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="284"/>
@@ -894,7 +901,9 @@ to run QMidiArp with JACK MIDI backend.
 
 Alternatively you can use the ALSA MIDI backend 
 by calling qmidiarp -a</source>
-        <translation type="unfinished"></translation>
+        <translation>JACK ha terminado, o no puede iniciarse, pero QMidiArp intenta usar el motor JACK MIDI.
+
+Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidiarp -a</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1136"/>
@@ -1017,27 +1026,27 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../parstore.cpp" line="100"/>
         <source>&amp;Store here</source>
-        <translation type="unfinished"></translation>
+        <translation>Almacenar aquí</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="106"/>
         <source>When finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Al terminar</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="112"/>
         <source>Stay here</source>
-        <translation type="unfinished"></translation>
+        <translation>Permanecer aquí</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="118"/>
         <source>Jump back</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar hacia atrás</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="123"/>
         <source>Jump to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Saltar a:</translation>
     </message>
 </context>
 <context>
@@ -1212,12 +1221,12 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../seqwidget.cpp" line="125"/>
         <source>&amp;Legato</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ligado</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="129"/>
         <source>Retrigger / restart upon new legato note as well</source>
-        <translation type="unfinished"></translation>
+        <translation>Volver a disparar/reiniciar también cada nueva nota ligada</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="171"/>
@@ -1232,7 +1241,7 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../seqwidget.cpp" line="200"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar/ocultar opciones de E/S</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="220"/>
@@ -1255,7 +1264,7 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../seqwidget.cpp" line="244"/>
         <source>Loop, bounce or play once going forward or backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Repetir, rebotar o reproducir una vez, adelante o atrás</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="250"/>
