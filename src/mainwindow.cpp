@@ -66,6 +66,7 @@
 #include "pixmaps/filequit.xpm"
 #include "pixmaps/iopanelshow.xpm"
 #include "pixmaps/iopanelhide.xpm"
+#include "pixmaps/midicontrol.xpm"
 
 
 static const char FILEEXT[] = ".qmax";
@@ -271,7 +272,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewGlobAction);
-    viewMenu->addAction(tr("&MIDI Controllers..."),
+    viewMenu->addAction(QIcon(midicontrol_xpm), tr("&MIDI Controllers..."),
             this, SLOT(showMidiCCDialog()))
             ->setShortcut(QKeySequence(tr("Ctrl+M", "View|MidiControllers")));
     viewMenu->addAction(viewSettingsAction);
