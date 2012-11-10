@@ -448,6 +448,8 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, name, count);
+    connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
+            , engine->moduleWindow(count), SLOT(raise()));
 
     checkIfFirstModule();
 }
@@ -498,6 +500,8 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
+    connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
+            , engine->moduleWindow(count), SLOT(raise()));
 
     checkIfFirstModule();
 }
@@ -545,7 +549,8 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
-
+    connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
+            , engine->moduleWindow(count), SLOT(raise()));
     checkIfFirstModule();
 }
 
