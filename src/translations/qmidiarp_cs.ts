@@ -37,7 +37,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="157"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukázat/Skrýt nastavení pro vstup-výstup</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="177"/>
@@ -104,7 +104,14 @@
   d h  note length up/down
   / \  velocity up/down
    p   pause</source>
-        <translation type="unfinished"></translation>
+        <translation>0..9 přehrávaná nota ve stoupajícím pořadí
+( ) Noty mezi závorkami jsou vykládány jako akkord
+ + = - Oktáva nahoru/běžná hodnota/dolů
+  t = g  Půltón nahoru/nastavit znovu/dolů
+ &lt; . &gt; Tempo nahoru/běžná hodnota/dolů
+ d h Délka noty nahoru/dolů
+ / \ Rychlost nahoru/dolů
+ p Přestávka</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="343"/>
@@ -347,7 +354,7 @@
     <message>
         <location filename="../lfowidget.cpp" line="179"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukázat/Skrýt nastavení pro vstup-výstup</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="198"/>
@@ -643,12 +650,12 @@ Kolečko myši: změna posunu</translation>
     <message>
         <location filename="../mainwindow.cpp" line="217"/>
         <source>&amp;Show all IO panels</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukázat všechny panely vstupu/výstupu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="222"/>
         <source>&amp;Hide all IO panels</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Skrýt všechny panely vstupu/výstupu</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="230"/>
@@ -697,7 +704,7 @@ Kolečko myši: změna posunu</translation>
         <location filename="../mainwindow.cpp" line="276"/>
         <source>Ctrl+M</source>
         <comment>View|MidiControllers</comment>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+M</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="289"/>
@@ -854,7 +861,11 @@ to run QMidiArp with JACK MIDI backend.
 
 Alternatively you can use the ALSA MIDI backend 
 by calling qmidiarp -a</source>
-        <translation type="unfinished"></translation>
+        <translation>JACK se vypnul nebo se jej nepodařilo spustit, ale vy zkoušíte
+spustit QMidiArp s jádrem JACK MIDI.
+
+Jako náhradu můžete použít jádro ALSA MIDI
+zavoláním qmidiarp -a</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1181"/>
@@ -1019,27 +1030,27 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../parstore.cpp" line="100"/>
         <source>&amp;Store here</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukládat zde</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="106"/>
         <source>When finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Při skončení</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="112"/>
         <source>Stay here</source>
-        <translation type="unfinished"></translation>
+        <translation>Zůstat zde</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="118"/>
         <source>Jump back</source>
-        <translation type="unfinished"></translation>
+        <translation>Skočit zpět</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="123"/>
         <source>Jump to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Skočit na:</translation>
     </message>
 </context>
 <context>
@@ -1268,7 +1279,7 @@ by calling qmidiarp -a</source>
     <message>
         <location filename="../seqwidget.cpp" line="200"/>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukázat/Skrýt nastavení pro vstup-výstup</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="244"/>
