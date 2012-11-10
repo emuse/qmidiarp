@@ -270,10 +270,11 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     viewMenu->addAction(hideAllIOAction);
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
-    viewMenu->addAction(viewSettingsAction);
     viewMenu->addAction(viewGlobAction);
     viewMenu->addAction(tr("&MIDI Controllers..."),
-            this, SLOT(showMidiCCDialog()));
+            this, SLOT(showMidiCCDialog()))
+            ->setShortcut(QKeySequence(tr("Ctrl+M", "View|MidiControllers")));
+    viewMenu->addAction(viewSettingsAction);
 
     arpMenu->addAction(addArpAction);
     arpMenu->addAction(addLfoAction);
