@@ -25,6 +25,8 @@
 #include "main.h"
 #include "parstore.h"
 
+#include "pixmaps/filesave.xpm"
+
 ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent):
             QWidget(parent), globStore(p_globStore)
 {
@@ -97,6 +99,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
 
     QAction *storeHereAction = new QAction(tr("&Store here"), this);
     storeHereAction->setProperty("index", list.count());
+    storeHereAction->setIcon(QIcon(filesave_xpm));
     locContextMenu->addAction(storeHereAction);
     connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
 
