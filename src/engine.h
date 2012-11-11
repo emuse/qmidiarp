@@ -263,7 +263,7 @@ class Engine : public QThread  {
  * @brief turns on and off JACK Transport synchronization
  *
  * It calls DriverBase::setUseJackTransport(). This is a slot for
- * MainWindow::setUseJackTransport() called when the toolbar button is clicked.
+ * MainWindow::jackSyncToggle() called when the toolbar button is clicked.
  */
     void setUseJackTransport(bool on);
 /**
@@ -272,7 +272,7 @@ class Engine : public QThread  {
  * It queries all module midi workers for direct event eligibility and if
  * not routes it to all module's handleController() methods. If logging
  * is enabled, it stores the event in the Engine::logEventBuffer, which
- * is regularly accessed by the LogWidget in Engine::updateDisplay().
+ * is regularly transferred to the LogWidget by Engine::updateDisplay().
  *
  * @param inEv MidiEvent structure that should be handled
  */

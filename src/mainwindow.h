@@ -104,13 +104,13 @@ class MainWindow : public QMainWindow
     QMenu* fileRecentlyOpenedFiles;
 
 /*!
-* @brief This function opens a file dialog and calls either
+* @brief  opens a file dialog and calls either
 * MainWindow::openTextFile or
 * MainWindow::openFile depending on the selected file extension.
 * It is called by MainWindow::fileOpen.
 */
     void chooseFile();
-/*! @brief This function checks whether parameter modifications
+/*! @brief  checks whether parameter modifications
  * were done after the last save.
  *
  * If yes, it queries the user how to handle unsaved changes using a
@@ -120,7 +120,7 @@ class MainWindow : public QMainWindow
     bool isSave();
     void updateWindowTitle();
 /*!
-* @brief This function opens a QMidiArp XML session file named
+* @brief  opens a QMidiArp XML session file named
 * MainWindow::filename for write using QXmlStreamReader.
 *
 * It writes global and GUI parameters and and calls the
@@ -129,19 +129,19 @@ class MainWindow : public QMainWindow
 * @return True if write was successful
 */
     bool saveFile();
-/*! @brief This function opens a file dialog and appends the file extension to
+/*! @brief  opens a file dialog and appends the file extension to
  * the chosen name if not present. It is called by fileSaveAs.
  * @return True if a file name was successfully chosen
  */
     bool saveFileAs();
 /*!
-* @brief This function returns the result of Engine::isModified
+* @brief  returns the result of Engine::isModified
 * @return True if unsaved parameter modifications exist in any module
 *
 */
     bool isModified();
 /*!
-* @brief This function creates and adds a new MidiArp to Engine.
+* @brief  creates and adds a new MidiArp to Engine.
 *
 * It also creates and adds the associated ArpWidget
 * and DockWidget to the corresponding lists in Engine. It sets
@@ -153,7 +153,7 @@ class MainWindow : public QMainWindow
 */
     void addArp(const QString&, bool fromfile = false, bool inOutVisible = true);
 /*!
-* @brief This function creates and adds a new MidiLfo to Engine.
+* @brief  creates and adds a new MidiLfo to Engine.
 *
 * It also creates and adds the associated LfoWidget
 * and DockWidget to the corresponding lists in Engine. It sets
@@ -167,7 +167,7 @@ class MainWindow : public QMainWindow
 */
     void addLfo(const QString&, bool fromfile = false, int clonefrom = -1, bool inOutVisible = true);
 /*!
-* @brief This function creates and adds a new MidiSeq to Engine.
+* @brief  creates and adds a new MidiSeq to Engine.
 *
 * It also creates and adds the associated SeqWidget
 * and DockWidget to the corresponding lists in Engine. It sets
@@ -181,7 +181,7 @@ class MainWindow : public QMainWindow
 */
     void addSeq(const QString&, bool fromfile = false, int clonefrom = -1, bool inOutVisible = true);
 /*!
-* @brief This function wraps the given widget in a QDockWidget and adds
+* @brief  wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
 *
 * @param *moduleWidget The QWidget to be embedded
@@ -189,14 +189,14 @@ class MainWindow : public QMainWindow
 */
     void appendDock(QWidget *moduleWidget, const QString& name, int count);
 /*!
-* @brief This function reads global parameter block from an XML session
+* @brief  reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
 *
 * @param xml Reference to QXmlStreamReader containing the open XML stream
 */
     void readFilePartGlobal(QXmlStreamReader& xml);
 /*!
-* @brief This function reads the module parameter blocks from the XML stream
+* @brief  reads the module parameter blocks from the XML stream
 *  by calling their read functions.
 *
 * It uses the first three letters of the module name to distinguish their
@@ -208,14 +208,14 @@ class MainWindow : public QMainWindow
 */
     void readFilePartModules(QXmlStreamReader& xml);
 /*!
-* @brief This function reads the GUI settings block
+* @brief  reads the GUI settings block
 * from the XML session stream passed by the caller.
 *
 * @param xml Reference to QXmlStreamReader containing the XML stream
 */
     void readFilePartGUI(QXmlStreamReader& xml);
 /*!
-* @brief This function prepends a filename at the beginning of the recently
+* @brief  prepends a filename at the beginning of the recently
 * opened files list.
 *
 * It is called by openFile if the opening was successful.
@@ -225,7 +225,7 @@ class MainWindow : public QMainWindow
 */
     void addRecentlyOpenedFile(const QString &fn, QStringList &lst);
 /*!
-* @brief This function appends a filename at the end of the recently
+* @brief  appends a filename at the end of the recently
 * opened files list.
 *
 * It is called by openFile if the opening was successful.
@@ -235,7 +235,7 @@ class MainWindow : public QMainWindow
 */
     void appendRecentlyOpenedFile(const QString &fn, QStringList &lst);
 /*!
-* @brief This function checks whether a .qmidiarprc file is present
+* @brief  checks whether a .qmidiarprc file is present
 * and creates it with default settings, if not.
 * @return True if the file existed, False if it was created now.
 * @see readRcFile, updatePatternPresets
@@ -243,7 +243,7 @@ class MainWindow : public QMainWindow
 */
     bool checkRcFile();
 /*!
-* @brief This function writes the .qmidiarprc text resource file.
+* @brief  writes the .qmidiarprc text resource file.
 *
 * It is called on program exit and upon modification of the
 * Arp preset list.
@@ -251,7 +251,7 @@ class MainWindow : public QMainWindow
 */
     void writeRcFile();
 /*!
-* @brief This function reads all elements from the .qmidiarprc text
+* @brief  reads all elements from the .qmidiarprc text
 * resource file.
 *
 * The file contains the Arp preset patterns, the last
@@ -262,7 +262,7 @@ class MainWindow : public QMainWindow
 */
     void readRcFile();
 /*!
-* @brief This function checks if there are no more modules present and sets
+* @brief  checks if there are no more modules present and sets
 * some GUI elements accordingly if so.
 *
 * It is called by removeArp, removeSeq and removeLfo.
@@ -270,7 +270,7 @@ class MainWindow : public QMainWindow
 */
     void checkIfLastModule();
 /*!
-* @brief This function checks if there were no modules present, i.e.
+* @brief  checks if there were no modules present, i.e.
 * if the module we just created is the first one, and sets some GUI
 * elements accordingly if so.
 *
@@ -279,7 +279,7 @@ class MainWindow : public QMainWindow
 */
     void checkIfFirstModule();
 /*!
-* @brief This function removes and deletes all modules from the
+* @brief  removes and deletes all modules from the
 * lists.
 *
 * It removes all module components, i.e. the Midi workers, UI widgets
@@ -288,7 +288,7 @@ class MainWindow : public QMainWindow
 */
     void clear();
 /*!
-* @brief This function disables or enables GUI elements depending on
+* @brief  disables or enables GUI elements depending on
 * synchronization mode
 *
 * It distinguishes between internal and external (MIDI Clock or
@@ -301,7 +301,7 @@ class MainWindow : public QMainWindow
 */
     void setGUIforExtSync(bool on);
 /*!
-* @brief This function restarts the transport position if rolling and does
+* @brief  restarts the transport position if rolling and does
 * nothing if it is stopped
 *
 */
@@ -311,7 +311,7 @@ class MainWindow : public QMainWindow
  * This function writes a message to the pipe and leaves as soon as possible
  */
     static void handleSignal(int);
-/*! @brief This function sets up a QSocketNotifier forwarding UNIX signals
+/*! @brief  sets up a QSocketNotifier forwarding UNIX signals
  * as Qt signals to provide Ladish L1 support.
  *
  * @return True if installation succeeded.
@@ -336,7 +336,7 @@ class MainWindow : public QMainWindow
 
     bool jackFailed;
 /*!
-* @brief This function opens a QMidiArp XML session file for reading
+* @brief  opens a QMidiArp XML session file for reading
 * using QXmlStreamReader.
 *
 * It queries XML block elements and calls the block readers
@@ -356,24 +356,32 @@ class MainWindow : public QMainWindow
 /* PUBLIC SLOTS */
   public slots:
 /*!
-* @brief Slot for "New..." UI entries. This function calls MainWindow::clear
+* @brief Slot for "New..." UI entries.
+*
+* This function calls MainWindow::clear
 * and empties the current MainWindow::filename.
 */
     void fileNew();
 /*!
-* @brief Slot for "Open..." UI entries. This function calls MainWindow::isSave
+* @brief Slot for "Open..." UI entries.
+*
+* This function calls MainWindow::isSave
 *  and MainWindow::chooseFile if all changes are in saved state.
 */
     void fileOpen();
 /*!
-* @brief Slot for file Save GUI elements. This function calls either
+* @brief Slot for file Save GUI elements.
+*
+* This function calls either
 * MainWindow::saveFileAs
 * or MainWindow::saveFile depending on whether the MainWindow::filename is set.
 *
 */
     void fileSave();
 /*!
-* @brief Slot for file SaveAs GUI elements. This function calls saveFileAs.
+* @brief Slot for file SaveAs GUI elements.
+*
+* This function calls saveFileAs.
 *
 */
     void fileSaveAs();
@@ -399,7 +407,7 @@ class MainWindow : public QMainWindow
 */
     void seqNew();
 /*!
-* @brief This function renames the TitleBar of a DockWidget
+* @brief  renames the TitleBar of a DockWidget
 * with the passed name
 *
 * @param name New name attribute of the DockWidget
@@ -407,7 +415,7 @@ class MainWindow : public QMainWindow
 */
     void renameDock(const QString& name, int index);
 /*!
-* @brief This function removes and deletes an Arpeggiator module.
+* @brief  removes and deletes an Arpeggiator module.
 *
 * It removes all components MidiArp, ArpWidget and
 * DockWidget from the corresponding lists in Engine.
@@ -416,7 +424,7 @@ class MainWindow : public QMainWindow
 */
     void removeArp(int index);
 /*!
-* @brief This function removes and deletes an LFO module.
+* @brief  removes and deletes an LFO module.
 *
 * It removes all components MidiLfo, LfoWidget and
 * DockWidget from the corresponding lists in Engine.
@@ -425,7 +433,7 @@ class MainWindow : public QMainWindow
 */
     void removeLfo(int index);
 /*!
-* @brief This function removes and deletes a Seq module.
+* @brief  removes and deletes a Seq module.
 *
 * It removes all components MidiSeq, SeqWidget and
 * DockWidget from the corresponding lists in Engine.
@@ -434,13 +442,13 @@ class MainWindow : public QMainWindow
 */
     void removeSeq(int index);
 /*!
-* @brief This function duplicates and adds a MidiLfo to the Engine.
+* @brief  duplicates and adds a MidiLfo to the Engine.
 *
 * @param ID List ID of the module to copy
 */
     void cloneLfo(int ID);
 /*!
-* @brief This function duplicates and adds a MidiSeq to the Engine.
+* @brief  duplicates and adds a MidiSeq to the Engine.
 *
 * @param ID List ID of the module to copy
 */
@@ -454,9 +462,10 @@ class MainWindow : public QMainWindow
 *
 */
     void updateTempo(int tempo);
-/*! @brief Slot for runQueue ToolButton.
-* This function emits the MainWindow::runQueue signal with the state passed by the caller.
-* @param on True to set Queue to running state or to restart
+/*! @brief Slot for MainWindow::runAction ToolButton.
+* This function calls Engine::setStatus() and disables the
+* MainWindow::tempoSpin box
+* @param on True to set Transport to running state
 *
 */
     void updateTransportStatus(bool on);
@@ -490,7 +499,7 @@ class MainWindow : public QMainWindow
     void showIO();
     void hideIO();
 /*!
-* @brief This function appends or deletes an Arp pattern preset.
+* @brief  appends or deletes an Arp pattern preset.
 *
 * If index = 0, it appends an Arp pattern. If index > 0 it deletes
 * the Arp pattern at index from the list.
@@ -514,7 +523,7 @@ class MainWindow : public QMainWindow
 */
     void recentFileActivated(QAction*);
 /*!
-* @brief This function populates the recent files menu.
+* @brief  populates the recent files menu.
 *
 * It is called by the constructor MainWindow::MainWindow
 * @see recentFileActivated, addRecentlyOpenedFile
