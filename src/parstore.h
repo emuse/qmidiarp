@@ -74,12 +74,14 @@ class ParStore : public QWidget
     GlobStore *globStore;
     QToolButton *topButton;
     Indicator *ndc;
-    QList<int> jumpToList;
+    QList<int> jumpToList; /**< List of jumpTo configurations for each location
+                            @see ParStore::updateRunOnce()*/
     QMenu *locContextMenu;
     QMenu *jumpToIndexMenu;
     QActionGroup *jumpToGroup;
-    int activeStore;
-    int currentRequest;
+
+    int activeStore; /**< Currently active location index*/
+    int currentRequest; /**< Currently pending location index*/
 
     struct TempStore {
         bool empty;
@@ -162,6 +164,9 @@ class ParStore : public QWidget
 * @brief sets ParStore::restoreRequest and ParStore::restoreRunOnce to the
 * location specified
 *
+* This will cause ParStore::updateDisplay() to do the parameter restore on
+* its next call
+*
 * @param ix Location index to be restored at pattern end
 */
     void setRestoreRequest(int ix);
@@ -185,16 +190,16 @@ class ParStore : public QWidget
 
   signals:
 /*!
-* @brief connected to the parent widget and causing parameter storage to the
-* location ix
+* @brief is connected to the parent widget and should cause it to store
+* parameters to the location ix
 *
 * @param ix Storage location
 * @param empty True if no parameters are stored and only the template is added
 */
     void store(int ix, bool empty);
 /*!
-* @brief connected to the parent widget and causing immediate parameter restore from
-* location ix
+* @brief is connected to the parent widget and should cause immediate
+* parameter restore from location ix
 *
 * @param ix Storage location
 */
@@ -215,7 +220,8 @@ class ParStore : public QWidget
 *
 * The choices are -2 for "Stay here" (no jumps at pattern end), -1 for
 * returning to the previous location (ParStore::oldRestoreRequest) or (if
-* zero or above) the location to jump to at pattern end.
+* zero or above) the location to jump to at pattern end. The choice value is
+* copied to ParStore::jumpToList()
 *
 * @param location Location to be configured
 * @param choice -2 (no jumps), -1 (return to previous),
@@ -237,10 +243,54 @@ class ParStore : public QWidget
 * @param ix Location index to be removed
 */
     void removeLocation(int ix);
+/*!
+* @brief slot for each location's global restore button
+*
+* Sets the location index to restore from the caller widget "index" property and
+* calls ParStore::setRestoreRequest() with that location.
+*/
     void mapRestoreSignal();
+/*!
+* @brief slot for each location's global store button
+*
+* Sets the location index to restore from the caller widget "index" property and
+* emits the ParStore::store() signal to the parent module widget.
+*/
     void mapStoreSignal();
-    void requestDispState(int ix, int selected);
+/*!
+* @brief handles the ParStore button colors as a function
+* of selection state.
+*
+* It attributes blueish color to all buttons at index ix if selected is 2
+* and green color if selected is 1. It will remove color attributes from
+* the remaining buttons.
+*
+* @param ix Storage index of the storage button to act on
+* @param selected Color state to attribute to the button, 1 = green, 2 = blueish
+*/
     void setDispState(int ix, int selected);
+/*!
+* @brief will cause a flag to be set, which causes ParStore::updateDisplay()
+*  to call ParStore::setDispState() at the next occasion.
+*
+* This function is used by ParStore::handleController(), since setDispState()
+* cannot be called directly from the realtime thread which sends the controller.
+*
+* @param ix Storage index of the storage button to act on
+* @param selected Color state to attribute to the button, 1 = green, 2 = blueish
+*/
+    void requestDispState(int ix, int selected);
+/*!
+* @brief configures and shows the context menu for individual storage locations
+*
+* This is the slot for context menu call of each individual storage button.
+* As part of the context menu, the ParStore::jumpToGroup QAction group is
+* configured with the ParStore::jumpToList state of that location at each
+* time this function is called.
+*
+* @param &pos mouse position transferred by the caller widget in widget
+* coordinates
+*/
     void showLocContextMenu(const QPoint &pos);
 };
 #endif

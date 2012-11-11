@@ -483,7 +483,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
                     frameptr = midiLfo(l1)->getFramePtr();
-                    updateCursor('L', l1, frameptr);
+                    lfoWidget(l1)->updateScreen(frameptr);
                     midiLfo(l1)->getNextFrame(tick);
                     outport = midiLfo(l1)->portOut;
                     l2 = 0;
@@ -500,7 +500,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     lfoWidget(l1)->parStore->ndc->updatePercent(percent);
                     if ((restoreModType == 'L') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        indicPercent(percent);
+                        globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && restoreFlag) {
                             restoreTick = midiLfo(l1)->frame.at(l2).tick;
                             restoreFlag = false;
@@ -526,7 +526,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    updateCursor('S', l1, midiSeq(l1)->getCurrentIndex());
+                    seqWidget(l1)->screen->updateScreen(midiSeq(l1)->getCurrentIndex());
 
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
@@ -540,7 +540,7 @@ void Engine::echoCallback(bool echo_from_trig)
                         seqWidget(l1)->parStore->ndc->updatePercent(percent);
                     if ((restoreModType == 'S') && (l1 == restoreModIx)
                           && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        indicPercent(percent);
+                        globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && restoreFlag) {
                             restoreTick = midiSeq(l1)->nextTick;
                             restoreFlag = false;
@@ -570,7 +570,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
                     isNew = midiArp(l1)->returnIsNew;
-                    updateCursor('A', l1, midiArp(l1)->getGrooveIndex());
+                    arpWidget(l1)->screen->updateScreen(midiArp(l1)->getGrooveIndex());
                     if (!midiArp(l1)->returnNote.isEmpty()) {
                         if (isNew && midiArp(l1)->returnVelocity.at(0)) {
                             l2 = 0;
@@ -590,7 +590,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     arpWidget(l1)->parStore->ndc->updatePercent(percent);
                     if ((restoreModType == 'A') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        indicPercent(percent);
+                        globStoreWidget->indicator->updatePercent(percent);
                         if (!frameptr && restoreFlag) {
                             restoreTick = note_tick;
                             restoreFlag = false;
@@ -610,7 +610,7 @@ void Engine::echoCallback(bool echo_from_trig)
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
         percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
-        indicPercent(percent);
+        globStoreWidget->indicator->updatePercent(percent);
     }
 
     if ((restoreTick > -1)
@@ -842,30 +842,6 @@ void Engine::tr_state_cb(bool on, void *context)
     }
 }
 
-void Engine::indicPercent(int p)
-{
-    globStoreWidget->indicator->updatePercent(p);
-}
-
-void Engine::updateCursor(QChar modtype, int ix, int pos)
-{
-    switch (modtype.toLatin1()) {
-
-        case 'S':
-            seqWidget(ix)->screen->updateScreen(pos);
-        break;
-
-        case 'L':
-            lfoWidget(ix)->updateScreen(pos);
-        break;
-
-        case 'A':
-            arpWidget(ix)->screen->updateScreen(pos);
-        break;
-
-        default: ;
-    }
-}
 void Engine::store(int ix)
 {
     int l1;

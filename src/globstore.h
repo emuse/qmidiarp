@@ -192,23 +192,59 @@ class GlobStore : public QWidget
 */
     void updateSwitchAtBeat(int ix);
 /*!
-* @brief handles the GlobStore button colors as a function
+* @brief handles the ParStore button colors as a function
 * of selection state.
 *
-* It attributes yellow color to the button at index ix if selected is 2
+* It attributes blueish color to all buttons at index ix if selected is 2
 * and green color if selected is 1. It will remove color attributes from
 * the remaining buttons.
 *
 * @param ix Storage index of the storage button to act on
-* @param selected Color state to attribute to the button, 1 = green, 2 = yellow
-* @param windowIndex Engine::ModuleWindowList index the button to colorize
-* is attributed to. If set to -1 (default), all buttons for index ix are colorized
+* @param selected Color state to attribute to the button, 1 = green, 2 = blueish
 */
     void setDispState(int ix, int selected);
+/*!
+* @brief will cause a flag to be set, which causes GlobStore::updateDisplay()
+*  to call GlobStore::setDispState() at the next occasion.
+*
+* This function is used by GlobStore::handleController(), since setDispState()
+* cannot be called directly from the realtime thread which sends the controller.
+*
+* @param ix Storage index of the storage button to act on
+* @param selected Color state to attribute to the button, 1 = green, 2 = blueish
+*/
     void requestDispState(int ix, int selected);
+/*!
+* @brief sets the color of location button row to the specified color index
+*
+* @param column ModuleWindow index of which button color is to be set
+* @param row Location index at which button color is to be set
+* @param color Location color (0: no color, 1: active color, 2: pending color)
+*/
     void setBGColorAt(int column, int row, int color);
+/*!
+* @brief slot for each location's global restore button
+*
+* Sets the location index to restore from the caller widget "index" property and
+* emits the GlobStore::restore() signal to Engine.
+*/
     void mapRestoreSignal();
+/*!
+* @brief slot for each location's global store button
+*
+* Sets the location index to restore from the caller widget "index" property and
+* emits the GlobStore::store() signal to Engine.
+*/
     void mapStoreSignal();
+/*!
+* @brief is called by the parent widget and part of the display timer event loop.
+
+* sets the indicator position and handles storage requests as a function of the
+* GUI requests and series parameters
+*
+* @param frame Current frame position of the parent module
+* @param reverse Set to true if the parent module currently plays backward
+*/
     void updateDisplay();
 };
 
