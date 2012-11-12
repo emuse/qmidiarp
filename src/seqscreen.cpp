@@ -96,7 +96,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
     p.setViewport(0, 0, w, h);
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(20, 20, 160));
-    p.drawRect(0, 0, w - 1, h - 1);
 
     //Draw current record step
     if (recordMode)
