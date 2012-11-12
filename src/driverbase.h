@@ -85,7 +85,7 @@ public:
         tempo = bpm;
         internalTempo = bpm;
     }
-    
+
     virtual bool callJack(int portcount) = 0;
 
     // duration is in ticks and is valid only for note on events

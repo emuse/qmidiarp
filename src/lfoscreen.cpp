@@ -134,9 +134,10 @@ void LfoScreen::paintEvent(QPaintEvent*)
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
     grooveTmp = (beatRes < 32) ? grooveTick : 0;
-    for (l1 = 0; l1 < npoints; l1++) {
+    l1 = 0;
+    while (l1 < npoints) {
 
-        x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * nsteps * xscale / npoints;
+        x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * (int)nsteps * xscale / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCR_VMARG;
         xpos = LFOSCR_HMARG + x + pen.width() / 2;
@@ -148,9 +149,11 @@ void LfoScreen::paintEvent(QPaintEvent*)
         }
         p.setPen(pen);
         p.drawLine(xpos, ypos,
-                        xpos + (xscale / beatRes) - pen.width(), ypos);
+                        xpos + (xscale / beatRes)
+                        - (pen.width()/(2+npoints/(TPQN*8))), ypos);
+        l1++;
+        l1+=npoints/(TPQN*4);
     }
-
     // Cursor
     pen.setWidth(notestreak_thick * 2);
     pen.setColor(QColor(200, 180, 70));
