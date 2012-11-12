@@ -43,10 +43,8 @@
  *
  * SeqScreen is created and embedded by SeqWidget. The painter callback
  * produces a streak map of a waveform as a piano roll display. The
- * display is updated by calling SeqScreen::updateScreen() with the
- * Sample vector as argument. A cursor is placed at the corresponding
- * vector index by calling SeqScreen::updateScreen() with the integer
- * current index as an overloaded member.
+ * display is updated by calling SeqScreen::updateData() with the
+ * Sample vector as argument followed by updateDraw().
  * SeqScreen emits mouse events corresponding to the Qt mousePressed()
  * and mouseMoved() events. The mouse position is transferred as a
  * double from 0 ... 1.0 representing the relative mouse position on the

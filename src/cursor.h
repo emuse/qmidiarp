@@ -39,18 +39,13 @@
 #define CSR_HMARG    20
 
 
-/*! @brief Drawing widget for visualization of waveforms using QPainter
+/*! @brief Drawing widget for visualization the cursor using QPainter
  *
- * LfoScreen is created and embedded by SeqWidget. The painter callback
- * produces a streak map of a sequence as a piano roll display. The
- * display is updated by calling LfoScreen::updateScreen() with the
- * Sample vector as argument. A cursor is placed at the corresponding
- * vector index by calling LfoScreen::updateScreen() with the integer
- * current index as an overloaded member.
- * LfoScreen emits mouse events corresponding to the Qt mousePressed()
- * and mouseMoved() events. The mouse position is transferred as a
- * double from 0 ... 1.0 representing the relative mouse position on the
- * entire LfoScreen display area.
+ * Cursor is created and embedded by SeqWidget. The painter
+ * produces a streak whose location is a function of module resolution,
+ * size transferred through the Cursor::updateNumbers()
+ * and and frame position transferred by Cursor::updatePosition(). The
+ * drawing update is done by Cursor::updateDraw().
  */
 class Cursor : public QWidget
 {
