@@ -201,12 +201,16 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     screen->setToolTip(
         tr("Right button to mute points\nLeft button to draw custom wave\nWheel to change offset"));
     screen->setMinimumHeight(80);
+
     connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
             SLOT(mouseMoved(double, double, int)));
     connect(screen, SIGNAL(mousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
     connect(screen, SIGNAL(mouseWheel(int)), this,
             SLOT(mouseWheel(int)));
+
+    cursor = new Cursor('L', this);
+
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), waveBox);
     waveFormBox = new QComboBox(waveBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
@@ -348,10 +352,11 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     QGridLayout* waveBoxLayout = new QGridLayout;
     waveBoxLayout->addWidget(screen, 0, 0);
-    waveBoxLayout->addLayout(paramBoxLayout, 1, 0);
-    waveBoxLayout->addLayout(sliderLayout, 2, 0);
+    waveBoxLayout->addWidget(cursor, 1, 0);
+    waveBoxLayout->addLayout(paramBoxLayout, 2, 0);
+    waveBoxLayout->addLayout(sliderLayout, 3, 0);
     if (compactStyle) {
-        waveBoxLayout->setSpacing(1);
+        waveBoxLayout->setSpacing(0);
         waveBoxLayout->setMargin(2);
     }
     waveBox->setLayout(waveBoxLayout);
@@ -660,7 +665,7 @@ void LfoWidget::updateWaveForm(int val)
     waveFormBoxIndex = val;
     midiWorker->updateWaveForm(val);
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     bool isCustom = (val == 5);
     if (isCustom) newCustomOffset();
     amplitude->setDisabled(isCustom);
@@ -672,7 +677,7 @@ void LfoWidget::updateWaveForm(int val)
 void LfoWidget::updateScreen(int val)
 {
     if (!midiWorker->isRecording)
-        screen->updateScreen(val);
+        cursor->updatePosition(val);
 }
 
 void LfoWidget::updateFreq(int val)
@@ -681,7 +686,7 @@ void LfoWidget::updateFreq(int val)
     freqBoxIndex = val;
     midiWorker->updateFrequency(lfoFreqValues[val]);
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -691,7 +696,7 @@ void LfoWidget::updateRes(int val)
     resBoxIndex = val;
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     newCustomOffset();
     modified = true;
 }
@@ -702,7 +707,7 @@ void LfoWidget::updateSize(int val)
     sizeBoxIndex = val;
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     newCustomOffset();
     modified = true;
 }
@@ -718,7 +723,7 @@ void LfoWidget::updateAmp(int val)
 {
     midiWorker->updateAmplitude(val);
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -726,7 +731,7 @@ void LfoWidget::updateOffs(int val)
 {
     midiWorker->updateOffset(val);
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -765,7 +770,7 @@ void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
         newCustomOffset();
     }
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -782,7 +787,7 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
         newCustomOffset();
     }
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -1069,10 +1074,12 @@ void LfoWidget::updateDisplay()
 
     if (midiWorker->dataChanged) {
         midiWorker->getData(&data);
-        screen->updateScreen(data);
+        screen->updateData(data);
+        cursor->updateNumbers(midiWorker->res, midiWorker->size);
         midiWorker->dataChanged = false;
     }
     screen->updateDraw();
+    cursor->updateDraw();
     midiControl->update();
 
     if (!needsGUIUpdate) return;

@@ -154,14 +154,6 @@ void LfoScreen::paintEvent(QPaintEvent*)
         l1++;
         l1+=npoints/(TPQN*4);
     }
-    // Cursor
-    pen.setWidth(notestreak_thick * 2);
-    pen.setColor(QColor(200, 180, 70));
-    p.setPen(pen);
-    x = (currentIndex + .01 * (double)grooveTmp * (currentIndex % 2)) * xscale * (int)nsteps / npoints;
-    xpos = LFOSCR_HMARG + x + pen.width() / 2;
-    p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - pen.width(), h - 2);
 
     //Horizontal separators and numbers
     p.setPen(QColor(180, 120, 40));
@@ -174,15 +166,9 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
 }
 
-void LfoScreen::updateScreen(const QVector<Sample>& data)
+void LfoScreen::updateData(const QVector<Sample>& data)
 {
     p_data = data;
-    needsRedraw = true;
-}
-
-void LfoScreen::updateScreen(int p_index)
-{
-    currentIndex = p_index;
     needsRedraw = true;
 }
 

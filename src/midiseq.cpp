@@ -69,6 +69,8 @@ MidiSeq::MidiSeq()
     grooveVelocity = 0;
     grooveLength = 0;
     isMuted = false;
+    dataChanged = false;
+
     int lt = 0;
     int l1 = 0;
     int step = TPQN / res;
@@ -341,6 +343,7 @@ void MidiSeq::resizeAll()
     }
 
     if (!loopMarker) nPoints = npoints;
+    dataChanged = true;
 }
 
 bool MidiSeq::toggleMutePoint(double mouseX)

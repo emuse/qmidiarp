@@ -107,6 +107,7 @@ class MidiSeq : public QObject  {
     int portOut;        /**< Output port index */
     int channelOut;
     bool isMuted;
+    bool dataChanged;
     int vel, transp, notelength;
     int size, res;
     int currentRecStep;

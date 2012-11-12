@@ -148,6 +148,7 @@ void MidiLfo::getNextFrame(int tick)
                             * ((double)l1 + .5);
             }
             customWave.replace(index, sample);
+            dataChanged = true;
         }
         sample.tick = lt;
         if (seqFinished) sample.muted = true;
@@ -156,7 +157,6 @@ void MidiLfo::getNextFrame(int tick)
         l1++;
     } while ((l1 < frameSize) & (l1 < npoints));
 
-    dataChanged = true;
 
     reflect = pingpong;
 
@@ -416,6 +416,7 @@ void MidiLfo::resizeAll()
         maxNPoints = npoints;
     }
     nPoints = npoints;
+    dataChanged = true;
 }
 
 void MidiLfo::copyToCustom()

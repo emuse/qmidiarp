@@ -4,6 +4,7 @@ SUBDIRS = pixmaps
 bin_PROGRAMS = qmidiarp
 
 nodist_qmidiarp_SOURCES = \
+	cursor_moc.cpp \
 	engine_moc.cpp \
 	arpscreen_moc.cpp \
 	lfoscreen_moc.cpp \
@@ -29,6 +30,7 @@ nodist_qmidiarp_SOURCES = \
 	slider_moc.cpp
 
 qmidiarp_SOURCES = \
+	cursor.cpp cursor.h \
 	engine.cpp engine.h \
 	arpscreen.cpp arpscreen.h \
 	lfoscreen.cpp lfoscreen.h \

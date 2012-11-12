@@ -198,15 +198,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
     p.setPen(pen);
     p.drawLine(SEQSCR_HMARG / 2, ypos, SEQSCR_HMARG *2 / 3, ypos);
 
-    // Cursor
-    pen.setWidth(notestreak_thick);
-    pen.setColor(QColor(50, 180, 220));
-    p.setPen(pen);
-    x = (currentIndex + .01 * (double)grooveTick * (currentIndex % 2))
-        * xscale * (int)nsteps / npoints;
-    xpos = SEQSCR_HMARG + x + pen.width() / 2;
-    p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - pen.width(), h - 2);
     // Loop Marker
     if (loopMarker) {
         QPolygon trg;
@@ -227,15 +218,9 @@ void SeqScreen::paintEvent(QPaintEvent*)
     }
 }
 
-void SeqScreen::updateScreen(const QVector<Sample>& data)
+void SeqScreen::updateData(const QVector<Sample>& data)
 {
     p_data = data;
-    needsRedraw = true;
-}
-
-void SeqScreen::updateScreen(int p_index)
-{
-    currentIndex = p_index;
     needsRedraw = true;
 }
 

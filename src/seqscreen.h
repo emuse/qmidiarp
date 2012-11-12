@@ -84,8 +84,7 @@ class SeqScreen : public QWidget
     void mouseMoved(double, double, int);
 
   public slots:
-    void updateScreen(const QVector<Sample>& data);
-    void updateScreen(int currentIndex);
+    void updateData(const QVector<Sample>& data);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void setRecordMode(bool on);

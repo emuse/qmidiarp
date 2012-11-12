@@ -228,6 +228,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     connect(screen, SIGNAL(mousePressed(double, double, int)), this,
             SLOT(mousePressed(double, double, int)));
 
+    cursor = new Cursor('S', this);
+
     muteOut = new QPushButton(tr("&Mute"),this);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,10));
@@ -330,11 +332,12 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     QGridLayout* seqBoxLayout = new QGridLayout;
     seqBoxLayout->addWidget(screen, 0, 0, 1, 2);
-    seqBoxLayout->addLayout(paramBoxLayout, 1, 0);
-    seqBoxLayout->addLayout(sliderLayout, 1, 1);
+    seqBoxLayout->addWidget(cursor, 1, 0, 1, 2);
+    seqBoxLayout->addLayout(paramBoxLayout, 2, 0);
+    seqBoxLayout->addLayout(sliderLayout, 2, 1);
     if (compactStyle) {
         seqBoxLayout->setMargin(2);
-        seqBoxLayout->setSpacing(1);
+        seqBoxLayout->setSpacing(0);
     }
     seqBox->setLayout(seqBoxLayout);
 
@@ -675,7 +678,7 @@ void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -695,7 +698,7 @@ void SeqWidget::updateRes(int val)
     midiWorker->resizeAll();
     midiWorker->getData(&data);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -707,7 +710,7 @@ void SeqWidget::updateSize(int val)
     midiWorker->resizeAll();
     midiWorker->getData(&data);
     screen->setCurrentRecStep(midiWorker->currentRecStep);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -755,7 +758,7 @@ void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
         screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -779,7 +782,7 @@ void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
         screen->setCurrentRecStep(midiWorker->currentRecStep);
     }
     midiWorker->getData(&data);
-    screen->updateScreen(data);
+    screen->updateData(data);
     modified = true;
 }
 
@@ -1075,12 +1078,15 @@ void SeqWidget::updateDisplay()
     parStore->updateDisplay(getCurrentIndex(), midiWorker->reverse);
 
 
-    if (dataChanged) {
+    if (dataChanged || midiWorker->dataChanged) {
         dataChanged=false;
+        midiWorker->dataChanged=false;
         midiWorker->getData(&data);
-        screen->updateScreen(data);
+        screen->updateData(data);
+        cursor->updateNumbers(midiWorker->res, midiWorker->size);
     }
     screen->updateDraw();
+    cursor->updateDraw();
     midiControl->update();
 
     if (!needsGUIUpdate) return;

@@ -44,6 +44,7 @@
 #include "midicontrol.h"
 #include "managebox.h"
 #include "parstore.h"
+#include "cursor.h"
 
 
 /*!
@@ -92,6 +93,7 @@ class SeqWidget : public QWidget
     ParStore *parStore;
     MidiControl *midiControl;
     SeqScreen *screen;
+    Cursor *cursor;
     ManageBox *manageBox;
 
     QComboBox *chIn;

@@ -43,6 +43,7 @@
 #include "midicontrol.h"
 #include "managebox.h"
 #include "parstore.h"
+#include "cursor.h"
 
 /*! This array holds the currently available frequency values.
  */
@@ -118,6 +119,7 @@ class LfoWidget : public QWidget
     ParStore *parStore;
     MidiControl *midiControl;
     LfoScreen *screen;
+    Cursor *cursor;
     ManageBox *manageBox;
 
     QStringList waveForms;

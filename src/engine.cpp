@@ -483,7 +483,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
                     frameptr = midiLfo(l1)->getFramePtr();
-                    lfoWidget(l1)->updateScreen(frameptr);
+                    lfoWidget(l1)->cursor->updatePosition(frameptr);
                     midiLfo(l1)->getNextFrame(tick);
                     outport = midiLfo(l1)->portOut;
                     l2 = 0;
@@ -526,7 +526,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    seqWidget(l1)->screen->updateScreen(midiSeq(l1)->getCurrentIndex());
+                    seqWidget(l1)->cursor->updatePosition(midiSeq(l1)->getCurrentIndex());
 
                     midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;

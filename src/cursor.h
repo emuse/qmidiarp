@@ -1,6 +1,6 @@
 /*!
- * @file lfoscreen.h
- * @brief Header for the LfoScreen class
+ * @file cursor.h
+ * @brief Header for the Cursor class
  *
  * @section LICENSE
  *
@@ -22,23 +22,21 @@
  *      MA 02110-1301, USA.
  *
  */
-#ifndef LFOSCREEN_H
-#define LFOSCREEN_H
+#ifndef CURSOR_H
+#define CURSOR_H
 
 #include <QWidget>
 #include <QString>
 #include <QLabel>
-#include <QMouseEvent>
-#include <QWheelEvent>
 #include <QSizePolicy>
 #include <QSize>
 
 #include "midilfo.h"
 
-#define LFOSCR_MIN_W   250
-#define LFOSCR_MIN_H   120
-#define LFOSCR_VMARG    10
-#define LFOSCR_HMARG    20
+#define CSR_MIN_W   250
+#define CSR_MIN_H     6
+#define CSR_VMARG    10
+#define CSR_HMARG    20
 
 
 /*! @brief Drawing widget for visualization of waveforms using QPainter
@@ -54,45 +52,30 @@
  * double from 0 ... 1.0 representing the relative mouse position on the
  * entire LfoScreen display area.
  */
-class LfoScreen : public QWidget
+class Cursor : public QWidget
 {
   Q_OBJECT
 
   private:
-    QVector<Sample> p_data, data;
-    int grooveTick, grooveVelocity, grooveLength;
-    int mouseX, mouseY, mouseW;
     int w, h;
-    int xMax;
+    QChar modType;
+    int nPoints, nSteps;
     int currentIndex;
-    int clip(int value, int min, int max, bool *outOfRange);
-    bool recordMode;
-    bool isMuted;
     bool needsRedraw;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
 
   public:
-    LfoScreen(QWidget* parent=0);
-    ~LfoScreen();
+    Cursor(QChar modtype = 'L', QWidget* parent=0);
+    ~Cursor();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
 
-  signals:
-    void mousePressed(double, double, int);
-    void mouseMoved(double, double, int);
-    void mouseWheel(int);
-
   public slots:
-    void updateData(const QVector<Sample>& data);
-    void mouseMoveEvent(QMouseEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void setRecord(bool on);
-    void wheelEvent(QWheelEvent* event);
-    void newGrooveValues(int tick, int vel, int length);
-    void setMuted(bool on);
     void updateDraw();
+    void updatePosition(int index);
+    void updateNumbers(int res, int size);
 };
 
 #endif
