@@ -26,8 +26,11 @@ Fixed Bugs
 General Changes
   o There have been many changes toward realtime compatibility under the
     hood. In particular, there are no more memory allocations/frees in
-    the realtime component. As a side effect, QMidiArp uses slightly more
-    CPU mainly due to not always optimal screen drawing.
+    the realtime component.
+  o LFO Waveforms with high resolutions and lengths appear with finer
+    streaks
+  o Overall CPU usage should be slightly reduced
+
 
 qmidiarp-0.5.0 (2012-03-24)
 
