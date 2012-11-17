@@ -52,7 +52,6 @@ void Cursor::paintEvent(QPaintEvent*)
     QColor bg, fg;
     QPen pen;
 
-    int beatRes = nPoints / nSteps;
     int xpos, xscale;
     int x;
     w = QWidget::width();
@@ -70,16 +69,16 @@ void Cursor::paintEvent(QPaintEvent*)
 
     p.fillRect(0, 0, w, h, bg);
 
-    xscale = (w - 2 * CSR_HMARG) / nSteps;
+    xscale = (w - 2 * CSR_HMARG);
 
     // Cursor
     pen.setWidth(notestreak_thick * 2);
     pen.setColor(fg);
     p.setPen(pen);
-    x = currentIndex * xscale * nSteps / nPoints;
+    x = currentIndex * xscale / nPoints;
     xpos = CSR_HMARG + x + pen.width() / 2;
     p.drawLine(xpos, h - 2,
-                    xpos + (xscale / beatRes) - pen.width(), h - 2);
+                    xpos + (xscale / nPoints) - pen.width(), h - 2);
 
 }
 
