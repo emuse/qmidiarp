@@ -907,7 +907,7 @@ void ArpWidget::restoreParams(int ix)
     randomLength->setValue(parStore->list.at(ix).rndLen);
     randomVelocity->setValue(parStore->list.at(ix).rndVel);
 
-    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    //muteOut->setChecked(parStore->list.at(ix).muteOut);
     chIn->setCurrentIndex(parStore->list.at(ix).chIn);
     updateChIn(parStore->list.at(ix).chIn);
     channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);

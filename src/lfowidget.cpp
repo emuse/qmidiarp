@@ -897,7 +897,7 @@ void LfoWidget::restoreParams(int ix)
     waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
 
-    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    //muteOut->setChecked(parStore->list.at(ix).muteOut);
     chIn->setCurrentIndex(parStore->list.at(ix).chIn);
     updateChIn(parStore->list.at(ix).chIn);
     ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);

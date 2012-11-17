@@ -916,7 +916,7 @@ void SeqWidget::restoreParams(int ix)
     velocity->setValue(parStore->list.at(ix).vel);
     setDispVert(parStore->list.at(ix).dispVertical);
 
-    muteOut->setChecked(parStore->list.at(ix).muteOut);
+    //muteOut->setChecked(parStore->list.at(ix).muteOut);
     chIn->setCurrentIndex(parStore->list.at(ix).chIn);
     updateChIn(parStore->list.at(ix).chIn);
     channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
