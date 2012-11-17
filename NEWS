@@ -1,4 +1,4 @@
-qmidiarp-0.5.1 (2012-11-??)
+qmidiarp-0.5.1 (2012-11-17)
 
 New Features
   o Global Storages have new features accessible through right-click
@@ -22,6 +22,7 @@ Fixed Bugs
     pattern length reached zero
   o Deleting the last module sometimes crashed qmidiarp
   o Trigger mode sometimes caused hanging when a new note was received
+  o Global Storage locations did not get updated when module names changed
 
 General Changes
   o There have been many changes toward realtime compatibility under the
@@ -29,6 +30,8 @@ General Changes
     the realtime component.
   o LFO Waveforms with high resolutions and lengths appear with finer
     streaks
+  o The Mute state of each module is no longer changed when a parameter
+    restore is done
   o Overall CPU usage should be slightly reduced
 
 
