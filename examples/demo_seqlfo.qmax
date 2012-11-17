@@ -209,6 +209,45 @@
                         <data>244824303a3e3f3c24433c463f413e37</data>
                     </wave>
                 </parStore>
+                <parStore ID="4">
+                    <empty>0</empty>
+                    <muteOut>0</muteOut>
+                    <res>2</res>
+                    <size>3</size>
+                    <loopMode>0</loopMode>
+                    <waveForm>0</waveForm>
+                    <portOut>0</portOut>
+                    <channelOut>0</channelOut>
+                    <chIn>0</chIn>
+                    <ccnumber>-1</ccnumber>
+                    <ccnumberIn>0</ccnumberIn>
+                    <freq>0</freq>
+                    <ampl>0</ampl>
+                    <offs>0</offs>
+                    <loopMarker>0</loopMarker>
+                    <notelen>112</notelen>
+                    <vel>80</vel>
+                    <dispVertical>0</dispVertical>
+                    <transp>-4</transp>
+                    <indexIn0>0</indexIn0>
+                    <indexIn1>0</indexIn1>
+                    <rangeIn0>0</rangeIn0>
+                    <rangeIn1>0</rangeIn1>
+                    <attack>0</attack>
+                    <release>0</release>
+                    <repeatMode>0</repeatMode>
+                    <rndTick>0</rndTick>
+                    <rndLen>0</rndLen>
+                    <rndVel>0</rndVel>
+                    <pattern></pattern>
+                    <jumpTo>-2</jumpTo>
+                    <muteMask>
+                        <data>00010101000101010100010001000101</data>
+                    </muteMask>
+                    <wave>
+                        <data>2d4824302d4f3e402d374c4a4c483e51</data>
+                    </wave>
+                </parStore>
             </globalStores>
         </Seq>
         <LFO name="1" inOutVisible="1">
@@ -335,7 +374,7 @@
                     <ccnumberIn>74</ccnumberIn>
                     <freq>0</freq>
                     <ampl>18</ampl>
-                    <offs>5</offs>
+                    <offs>32</offs>
                     <loopMarker>0</loopMarker>
                     <notelen>0</notelen>
                     <vel>0</vel>
@@ -357,7 +396,7 @@
                         <data>0000000000000000000000000000000000000000000000000000000000000000</data>
                     </muteMask>
                     <wave>
-                        <data>0505050506080b0c0e1013131417191c202122232526282b2e2f30313437393c</data>
+                        <data>2020202021232627292b2e2e2f3234373b3c3d3e40414346494a4b4c4f525457</data>
                     </wave>
                 </parStore>
                 <parStore ID="3">
@@ -399,9 +438,48 @@
                         <data>19631c1c4f1c551c1c531c1a67155719202122232526282b2e2f30313437393c</data>
                     </wave>
                 </parStore>
+                <parStore ID="4">
+                    <empty>0</empty>
+                    <muteOut>0</muteOut>
+                    <res>2</res>
+                    <size>3</size>
+                    <loopMode>0</loopMode>
+                    <waveForm>5</waveForm>
+                    <portOut>0</portOut>
+                    <channelOut>0</channelOut>
+                    <chIn>0</chIn>
+                    <ccnumber>74</ccnumber>
+                    <ccnumberIn>74</ccnumberIn>
+                    <freq>0</freq>
+                    <ampl>18</ampl>
+                    <offs>23</offs>
+                    <loopMarker>0</loopMarker>
+                    <notelen>0</notelen>
+                    <vel>0</vel>
+                    <dispVertical>0</dispVertical>
+                    <transp>0</transp>
+                    <indexIn0>0</indexIn0>
+                    <indexIn1>0</indexIn1>
+                    <rangeIn0>0</rangeIn0>
+                    <rangeIn1>0</rangeIn1>
+                    <attack>0</attack>
+                    <release>0</release>
+                    <repeatMode>0</repeatMode>
+                    <rndTick>0</rndTick>
+                    <rndLen>0</rndLen>
+                    <rndVel>0</rndVel>
+                    <pattern></pattern>
+                    <jumpTo>-2</jumpTo>
+                    <muteMask>
+                        <data>0000000000000000000000000000000000000000000000000000000000000000</data>
+                    </muteMask>
+                    <wave>
+                        <data>1727271f1f3436243529352436243536202122232526282b2e2f30313437393c</data>
+                    </wave>
+                </parStore>
             </globalStores>
         </LFO>
-        <Seq name="2" inOutVisible="1">
+        <Seq name="Bass" inOutVisible="1">
             <display>
                 <vertical>0</vertical>
             </display>
@@ -428,10 +506,10 @@
                 <transp>0</transp>
             </seqParams>
             <muteMask>
-                <data>00000000000000000000000000000000</data>
+                <data>0000000000000000000000000000000000000000000000000000000000000000</data>
             </muteMask>
             <sequence>
-                <data>2430244d24243c242430244f24243c24</data>
+                <data>2430244d24243c242430244f24243c242430244d24243c2424242e304d243c24</data>
                 <loopmarker>0</loopmarker>
             </sequence>
             <midiControllers/>
@@ -547,10 +625,10 @@
                     <pattern></pattern>
                     <jumpTo>-2</jumpTo>
                     <muteMask>
-                        <data>00000000000000000000000000000000</data>
+                        <data>0000000000000000000000000000000000000000000000000000000000000000</data>
                     </muteMask>
                     <wave>
-                        <data>2430244d24243c242445434f24515224</data>
+                        <data>2430244d24243c242445434f245152242430244d24243c2424242e304d243c24</data>
                     </wave>
                 </parStore>
                 <parStore ID="3">
@@ -592,9 +670,48 @@
                         <data>2430244d24243c242445434f24515224</data>
                     </wave>
                 </parStore>
+                <parStore ID="4">
+                    <empty>0</empty>
+                    <muteOut>0</muteOut>
+                    <res>2</res>
+                    <size>7</size>
+                    <loopMode>0</loopMode>
+                    <waveForm>0</waveForm>
+                    <portOut>0</portOut>
+                    <channelOut>1</channelOut>
+                    <chIn>0</chIn>
+                    <ccnumber>-1</ccnumber>
+                    <ccnumberIn>0</ccnumberIn>
+                    <freq>0</freq>
+                    <ampl>0</ampl>
+                    <offs>0</offs>
+                    <loopMarker>0</loopMarker>
+                    <notelen>67</notelen>
+                    <vel>75</vel>
+                    <dispVertical>0</dispVertical>
+                    <transp>-7</transp>
+                    <indexIn0>0</indexIn0>
+                    <indexIn1>0</indexIn1>
+                    <rangeIn0>0</rangeIn0>
+                    <rangeIn1>0</rangeIn1>
+                    <attack>0</attack>
+                    <release>0</release>
+                    <repeatMode>0</repeatMode>
+                    <rndTick>0</rndTick>
+                    <rndLen>0</rndLen>
+                    <rndVel>0</rndVel>
+                    <pattern></pattern>
+                    <jumpTo>-2</jumpTo>
+                    <muteMask>
+                        <data>0000000000000000000000000000000000000000000000000000000000000000</data>
+                    </muteMask>
+                    <wave>
+                        <data>2430244d24243c24242435334f243c242430244d24243c2424242e304f243c24</data>
+                    </wave>
+                </parStore>
             </globalStores>
         </Seq>
-        <Seq name="3" inOutVisible="1">
+        <Seq name="Distrt" inOutVisible="1">
             <display>
                 <vertical>0</vertical>
             </display>
@@ -709,7 +826,7 @@
                 </parStore>
                 <parStore ID="2">
                     <empty>0</empty>
-                    <muteOut>0</muteOut>
+                    <muteOut>1</muteOut>
                     <res>2</res>
                     <size>3</size>
                     <loopMode>0</loopMode>
@@ -785,9 +902,48 @@
                         <data>2424242b303330434a323332334f324b</data>
                     </wave>
                 </parStore>
+                <parStore ID="4">
+                    <empty>0</empty>
+                    <muteOut>0</muteOut>
+                    <res>2</res>
+                    <size>3</size>
+                    <loopMode>0</loopMode>
+                    <waveForm>0</waveForm>
+                    <portOut>0</portOut>
+                    <channelOut>2</channelOut>
+                    <chIn>0</chIn>
+                    <ccnumber>-1</ccnumber>
+                    <ccnumberIn>0</ccnumberIn>
+                    <freq>0</freq>
+                    <ampl>0</ampl>
+                    <offs>0</offs>
+                    <loopMarker>0</loopMarker>
+                    <notelen>72</notelen>
+                    <vel>127</vel>
+                    <dispVertical>0</dispVertical>
+                    <transp>-4</transp>
+                    <indexIn0>0</indexIn0>
+                    <indexIn1>0</indexIn1>
+                    <rangeIn0>0</rangeIn0>
+                    <rangeIn1>0</rangeIn1>
+                    <attack>0</attack>
+                    <release>0</release>
+                    <repeatMode>0</repeatMode>
+                    <rndTick>0</rndTick>
+                    <rndLen>0</rndLen>
+                    <rndVel>0</rndVel>
+                    <pattern></pattern>
+                    <jumpTo>-2</jumpTo>
+                    <muteMask>
+                        <data>00010101000101010101010101010101</data>
+                    </muteMask>
+                    <wave>
+                        <data>304d452b30334a434c4d514a434a434c</data>
+                    </wave>
+                </parStore>
             </globalStores>
         </Seq>
-        <LFO name="2" inOutVisible="1">
+        <LFO name="FiltBs" inOutVisible="1">
             <input>
                 <enableNoteOff>0</enableNoteOff>
                 <restartByKbd>0</restartByKbd>
@@ -933,7 +1089,7 @@
                         <data>0000000000000000000000000000000000000000000000000000000000000000</data>
                     </muteMask>
                     <wave>
-                        <data>050506070707080c0f1115191c1e2122222222222226272b2c30353a3d42464a</data>
+                        <data>050506070707080c0f1115191c1e212222272b3034383d42464b4f555a606578</data>
                     </wave>
                 </parStore>
                 <parStore ID="3">
@@ -975,11 +1131,50 @@
                         <data>080811141a23313d454b5155595d6168636363615c544c47413e352c281d1407</data>
                     </wave>
                 </parStore>
+                <parStore ID="4">
+                    <empty>0</empty>
+                    <muteOut>0</muteOut>
+                    <res>2</res>
+                    <size>3</size>
+                    <loopMode>0</loopMode>
+                    <waveForm>5</waveForm>
+                    <portOut>0</portOut>
+                    <channelOut>1</channelOut>
+                    <chIn>0</chIn>
+                    <ccnumber>74</ccnumber>
+                    <ccnumberIn>74</ccnumberIn>
+                    <freq>1</freq>
+                    <ampl>23</ampl>
+                    <offs>6</offs>
+                    <loopMarker>0</loopMarker>
+                    <notelen>0</notelen>
+                    <vel>0</vel>
+                    <dispVertical>0</dispVertical>
+                    <transp>0</transp>
+                    <indexIn0>0</indexIn0>
+                    <indexIn1>0</indexIn1>
+                    <rangeIn0>0</rangeIn0>
+                    <rangeIn1>0</rangeIn1>
+                    <attack>0</attack>
+                    <release>0</release>
+                    <repeatMode>0</repeatMode>
+                    <rndTick>0</rndTick>
+                    <rndLen>0</rndLen>
+                    <rndVel>0</rndVel>
+                    <pattern></pattern>
+                    <jumpTo>-2</jumpTo>
+                    <muteMask>
+                        <data>0000000000000000000000000000000000000000000000000000000000000000</data>
+                    </muteMask>
+                    <wave>
+                        <data>0d230e230d250c25062c1b132c112624636363615c544c47413e352c281d1407</data>
+                    </wave>
+                </parStore>
             </globalStores>
         </LFO>
     </modules>
     <GUI>
-        <windowState>000000ff00000000fd00000002000000020000043b00000193fc0100000004fb0000000a004100720070003a00320100000000000001ef0000000000000000fb0000000a004100720070003a003101000001f2000001ef0000000000000000fc00000000000002500000025000fffffffa000000010100000003fb0000000a005300650071003a00320100000000ffffffff0000025000fffffffb0000000a005300650071003a00310100000000ffffffff0000025000fffffffb0000000a005300650071003a00330100000000ffffffff0000025000fffffffc00000256000001e5000001e500fffffffa000000010200000002fb0000000a004c0046004f003a00310100000000ffffffff0000012500fffffffb0000000a004c0046004f003a00320100000033000001930000012500ffffff000000030000043b000000f6fc0100000004fb00000012006c006f0067005700690064006700650074020000000c0000012100000194000001a9fb00000014007000610073007300570069006400670065007402000002b80000005800000190000000c8fb000000120067006c006f006200530074006f007200650100000000000002e20000023c00fffffffb0000001800670072006f006f0076006500570069006400670065007401000002e8000001530000014f00ffffff0000043b0000000000000004000000040000000800000008fc0000000100000002000000020000001600660069006c00650054006f006f006c0042006100720100000000ffffffff00000000000000000000001c0063006f006e00740072006f006c0054006f006f006c0042006100720100000085ffffffff0000000000000000</windowState>
+        <windowState>000000ff00000000fd00000002000000020000043b00000193fc0100000006fb0000000a004100720070003a00320100000000000001ef0000000000000000fb0000000a004100720070003a003101000001f2000001ef0000000000000000fc00000000000002500000025000fffffffa000000000200000003fb00000014005300650071003a0044006900730074007200740100000000ffffffff0000017c00fffffffb0000000a005300650071003a00310100000000ffffffff0000017c00fffffffb00000010005300650071003a004200610073007301000000330000017c0000017c00fffffffc00000256000001e5000001e500fffffffa000000000200000002fb00000014004c0046004f003a00460069006c0074004200730100000000ffffffff0000012500fffffffb0000000a004c0046004f003a00310100000033000001930000012500fffffffc0000025a000002500000000000fffffffa000000000100000002fb0000000a005300650071003a00320100000000ffffffff0000000000000000fb0000000a005300650071003a00330100000000ffffffff0000000000000000fc00000796000003530000000000fffffffa000000000200000001fb0000000a004c0046004f003a00320100000033000001930000000000000000000000030000043b0000010ffc0100000004fb00000012006c006f0067005700690064006700650074020000000c0000012100000194000001a9fb00000014007000610073007300570069006400670065007402000002b80000005800000190000000c8fb000000120067006c006f006200530074006f0072006501000000000000023c0000023c00fffffffb0000001800670072006f006f007600650057006900640067006500740100000242000001f90000014f00ffffff0000043b0000000000000004000000040000000800000008fc0000000100000002000000020000001600660069006c00650054006f006f006c0042006100720100000000ffffffff00000000000000000000001c0063006f006e00740072006f006c0054006f006f006c0042006100720100000085ffffffff0000000000000000</windowState>
     </GUI>
     <globalstorage>
         <timeMode>0</timeMode>
