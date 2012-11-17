@@ -321,6 +321,16 @@ int Engine::moduleWindowCount()
     return(moduleWindowList.count());
 }
 
+void Engine::renameDock(const QString& name, int parentDockID, int widgetID)
+{
+    moduleWindow(parentDockID)->setWindowTitle(name);
+    if (name.startsWith('S')) seqWidget(widgetID)->parStore->topButton->setText(name);
+    if (name.startsWith('L')) lfoWidget(widgetID)->parStore->topButton->setText(name);
+    if (name.startsWith('A')) arpWidget(widgetID)->parStore->topButton->setText(name);
+    setModified(true);
+}
+
+
 void Engine::updateIDs(int curID)
 {
     int l1, tempDockID;

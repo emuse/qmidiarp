@@ -61,8 +61,9 @@ class ManageBox : public QWidget
 /*! @brief Emitted to MainWindow::renameDock for module rename.
  *  @param mname New name of the module
  *  @param parentDockID parentDockID of the module to rename
+ *  @param ID widgetID of the module to rename
  * */
-    void dockRename(const QString& mname, int parentDockID);
+    void dockRename(const QString& mname, int parentDockID, int ID);
 /*! @brief Emitted to MainWindow::cloneSeq for module duplication.
  *  @param ID module ID of the module to clone
  * */

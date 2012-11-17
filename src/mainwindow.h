@@ -407,14 +407,6 @@ class MainWindow : public QMainWindow
 */
     void seqNew();
 /*!
-* @brief  renames the TitleBar of a DockWidget
-* with the passed name
-*
-* @param name New name attribute of the DockWidget
-* @param index The widget ID of the DockWidget to rename
-*/
-    void renameDock(const QString& name, int index);
-/*!
 * @brief  removes and deletes an Arpeggiator module.
 *
 * It removes all components MidiArp, ArpWidget and

@@ -424,8 +424,8 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
                     QString&, int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
-            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+            engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
@@ -467,8 +467,8 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
-            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+            engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
@@ -518,8 +518,8 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
             passWidget->mutedAdd, inOutVisible, p_name, this);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int)),
-            this, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+            engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
@@ -583,12 +583,6 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     engine->addModuleWindow(moduleWindow);
     globStore->addModule(name);
-}
-
-void MainWindow::renameDock(const QString& name, int parentDockID)
-{
-    engine->moduleWindow(parentDockID)->setWindowTitle(name);
-    engine->setModified(true);
 }
 
 void MainWindow::removeArp(int index)

@@ -185,6 +185,14 @@ class Engine : public QThread  {
     void midiEventReceived(MidiEvent ev, int tick);
 
   public slots:
+/*!
+* @brief  renames the TitleBar of a DockWidget
+* with the passed name
+*
+* @param name New name attribute of the DockWidget
+* @param index The widget ID of the DockWidget to rename
+*/
+    void renameDock(const QString& name, int windowID, int widgetID);
     void setStatus(bool);
 /**
  * @brief Sets the modified flag, which is queried before

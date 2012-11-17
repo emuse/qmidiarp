@@ -110,7 +110,7 @@ void ManageBox::moduleRename()
 
     if (ok && !newname.isEmpty()) {
         name = namePrefix + newname;
-        emit dockRename(name, parentDockID);
+        emit dockRename(name, parentDockID, ID);
     }
 }
 
