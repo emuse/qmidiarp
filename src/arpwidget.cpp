@@ -52,13 +52,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
     midiControl = new MidiControl(this);
 
-    parStore = new ParStore(globStore, name, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
-
     manageBox = new ManageBox("Arp:", false, this);
 
     // Input group box on left side
@@ -212,11 +205,13 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
             SLOT(selectPatternPreset(int)));
     midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
 
-    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOutAction = new QAction(tr("&Mute"),this);
+    muteOutAction->setCheckable(true);
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    muteOut = new QToolButton(this);
+    muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,10));
-    muteOut->setCheckable(true);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
@@ -362,7 +357,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
-    muteOut->setChecked(mutedAdd);
+    muteOutAction->setChecked(mutedAdd);
+    
+    parStore = new ParStore(globStore, name, muteOutAction, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
+    connect(parStore, SIGNAL(restore(int)),
+             this, SLOT(restoreParams(int)));
 
     QGridLayout *widgetLayout = new QGridLayout;
     widgetLayout->addWidget(patternBox, 0, 0);
@@ -897,24 +899,25 @@ void ArpWidget::restoreParams(int ix)
     patternText->setText(parStore->list.at(ix).pattern);
     repeatPatternThroughChord->setCurrentIndex(parStore->list.at(ix).repeatMode);
     updateRepeatPattern(parStore->list.at(ix).repeatMode);
-    indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
-    indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
-    rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
-    rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
-    attackTime->setValue(parStore->list.at(ix).attack);
-    releaseTime->setValue(parStore->list.at(ix).release);
-    randomTick->setValue(parStore->list.at(ix).rndTick);
-    randomLength->setValue(parStore->list.at(ix).rndLen);
-    randomVelocity->setValue(parStore->list.at(ix).rndVel);
-
-    //muteOut->setChecked(parStore->list.at(ix).muteOut);
-    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-    updateChIn(parStore->list.at(ix).chIn);
-    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-    updateChannelOut(parStore->list.at(ix).channelOut);
-    setPortOut(parStore->list.at(ix).portOut);
-    updatePortOut(parStore->list.at(ix).portOut);
-
+    if (!parStore->onlyPatternList.at(ix)) {
+        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
+        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
+        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
+        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
+        attackTime->setValue(parStore->list.at(ix).attack);
+        releaseTime->setValue(parStore->list.at(ix).release);
+        randomTick->setValue(parStore->list.at(ix).rndTick);
+        randomLength->setValue(parStore->list.at(ix).rndLen);
+        randomVelocity->setValue(parStore->list.at(ix).rndVel);
+    
+        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+        updateChIn(parStore->list.at(ix).chIn);
+        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+        updateChannelOut(parStore->list.at(ix).channelOut);
+        setPortOut(parStore->list.at(ix).portOut);
+        updatePortOut(parStore->list.at(ix).portOut);
+    }
     midiWorker->advancePatternIndex(true);
 }
 

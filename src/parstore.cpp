@@ -27,8 +27,10 @@
 
 #include "pixmaps/filesave.xpm"
 
-ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent):
-            QWidget(parent), globStore(p_globStore)
+ParStore::ParStore(GlobStore *p_globStore, const QString &name,
+            QAction *p_muteOutAction,
+            QWidget* parent):
+                QWidget(parent), globStore(p_globStore)
 {
     // when temp.empty is true, restoring from that set is ignored
     temp.empty = false;
@@ -73,8 +75,20 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
     topButton = new QToolButton(this);
     topButton->setFont(QFont("Helvetica", 8));
     topButton->setText(name);
-    topButton->setMinimumSize(QSize(75, 30));
+    topButton->setMinimumSize(QSize(75, 10));
 
+    muteOutAction = p_muteOutAction;
+    muteOut = new QToolButton(this);
+    muteOut->setDefaultAction(muteOutAction);
+    muteOut->setFont(QFont("Helvetica", 8));
+    muteOut->setMinimumSize(QSize(10, 10));
+
+    QVBoxLayout *controlLayout = new QVBoxLayout;
+    controlLayout->addWidget(topButton);
+    controlLayout->addWidget(muteOut);
+    controlLayout->setMargin(0);
+    controlLayout->setSpacing(0);
+    
     QWidget *indicatorBox = new QWidget(this);
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
     indicatorBox->setMinimumHeight(20);
@@ -87,7 +101,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
     QWidget *topRow = new QWidget(this);
     QHBoxLayout *topRowLayout = new QHBoxLayout;
     topRowLayout->addWidget(indicatorBox);
-    topRowLayout->addWidget(topButton);
+    topRowLayout->addLayout(controlLayout);
     topRowLayout->setSpacing(0);
     topRowLayout->setMargin(0);
     topRow->setLayout(topRowLayout);
@@ -102,6 +116,12 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name, QWidget* parent)
     storeHereAction->setIcon(QIcon(filesave_xpm));
     locContextMenu->addAction(storeHereAction);
     connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+
+    QAction *onlyPatternAction = new QAction(tr("&Act on pattern only"), this);
+    onlyPatternAction->setProperty("index", list.count());
+    onlyPatternAction->setCheckable(true);
+    locContextMenu->addAction(onlyPatternAction);
+    connect(onlyPatternAction, SIGNAL(toggled(bool)), this, SLOT(updateOnlyPattern(bool)));
 
     jumpToIndexMenu = new QMenu(tr("When finished"), this);
 
@@ -192,6 +212,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("pattern", list.at(ix).pattern);
 
             xml.writeTextElement("jumpTo", QString::number(jumpToList.at(ix)));
+            xml.writeTextElement("onlyPattern", QString::number((int)onlyPatternList.at(ix)));
 
             tempArray.clear();
             l1 = 0;
@@ -222,6 +243,7 @@ void ParStore::readData(QXmlStreamReader& xml)
     int ix = 0;
     int step = 0;
     int tmpjumpto = -2;
+    int tmponlypattern = 0;
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -295,6 +317,8 @@ void ParStore::readData(QXmlStreamReader& xml)
                     temp.pattern = xml.readElementText();
                 else if (xml.name() == "jumpTo")
                     tmpjumpto = xml.readElementText().toInt();
+                else if (xml.name() == "onlyPattern")
+                    tmponlypattern = xml.readElementText().toInt();
                 else if (xml.isStartElement() && (xml.name() == "muteMask")) {
                     while (!xml.atEnd()) {
                         xml.readNext();
@@ -343,6 +367,7 @@ void ParStore::readData(QXmlStreamReader& xml)
             }
             tempToList(ix);
             updateRunOnce(ix, tmpjumpto);
+            onlyPatternList.replace(ix, tmponlypattern);
             ix++;
         }
     }
@@ -366,6 +391,7 @@ void ParStore::addLocation()
 
     layout()->itemAt(0)->layout()->addWidget(toolButton);
     jumpToList.append(-2);
+    onlyPatternList.append(false);
 }
 
 void ParStore::removeLocation(int ix)
@@ -379,6 +405,7 @@ void ParStore::removeLocation(int ix)
     delete button;
     delete action;
     jumpToList.removeAt(ix);
+    onlyPatternList.removeAt(ix);
 
     for (int l1 = 0; l1 < jumpToList.count(); l1++) {
         if (jumpToList.at(l1) >= jumpToList.count()) updateRunOnce(l1, -2);
@@ -551,6 +578,11 @@ void ParStore::showLocContextMenu(const QPoint &pos)
 
     jumpToGroup->actions().at(jumpToList.at(senderlocation) + 2)
             ->setChecked(true);
-
+    locContextMenu->actions().at(1)->setChecked(onlyPatternList.at(senderlocation));
     locContextMenu->popup(QWidget::mapToGlobal(pos));
+}
+
+void ParStore::updateOnlyPattern(bool on)
+{
+    onlyPatternList.replace(sender()->property("index").toInt() - 1, on);
 }

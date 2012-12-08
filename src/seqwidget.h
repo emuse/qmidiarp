@@ -101,7 +101,8 @@ class SeqWidget : public QWidget
     QComboBox *resBox, *sizeBox, *freqBox;
     QComboBox *loopBox;
     QWidget *inOutBox;
-    QPushButton *muteOut;
+    QAction *muteOutAction;
+    QToolButton *muteOut;
     QCheckBox *enableNoteIn;
     QCheckBox *enableNoteOff;
     QCheckBox *enableVelIn;

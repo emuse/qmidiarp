@@ -130,7 +130,6 @@ class LfoWidget : public QWidget
     QComboBox *resBox, *sizeBox;
     QComboBox *loopBox;
     QWidget *inOutBox;
-    QPushButton *muteOut;
     QCheckBox *enableNoteOff;
     QCheckBox *enableRestartByKbd;
     QCheckBox *enableTrigByKbd;
@@ -138,6 +137,8 @@ class LfoWidget : public QWidget
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QAction* hideInOutBoxAction;
+    QAction *muteOutAction;
+    QToolButton *muteOut;
     QComboBox *waveFormBox, *freqBox;
 
     void setChIn(int value);

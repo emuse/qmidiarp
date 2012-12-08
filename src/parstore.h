@@ -69,13 +69,19 @@ class ParStore : public QWidget
   Q_OBJECT
 
   public:
-    ParStore(GlobStore *p_globStore, const QString &name = "", QWidget* parent = 0);
+    ParStore(GlobStore *p_globStore, const QString &name = "",
+                QAction* p_muteOutAction = 0,
+                QWidget* parent = 0);
     ~ParStore();
     GlobStore *globStore;
     QToolButton *topButton;
+    QAction *muteOutAction;
+    QToolButton *muteOut;
     Indicator *ndc;
     QList<int> jumpToList; /**< List of jumpTo configurations for each location
                             @see ParStore::updateRunOnce()*/
+    QList<bool> onlyPatternList; /**< List of switch configuration for each location
+                            @see ParStore::updateOnlyPattern()*/
     QMenu *locContextMenu;
     QMenu *jumpToIndexMenu;
     QActionGroup *jumpToGroup;
@@ -292,5 +298,6 @@ class ParStore : public QWidget
 * coordinates
 */
     void showLocContextMenu(const QPoint &pos);
+    void updateOnlyPattern(bool on);
 };
 #endif

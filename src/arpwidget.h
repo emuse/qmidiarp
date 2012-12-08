@@ -111,7 +111,8 @@ class ArpWidget : public QWidget
     ManageBox *manageBox;
 
     QStringList patternPresets, patternNames;
-    QPushButton *muteOut;
+    QAction *muteOutAction;
+    QToolButton *muteOut;
     QAction* hideInOutBoxAction;
 
     void setChIn(int value);

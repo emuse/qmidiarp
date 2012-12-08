@@ -53,13 +53,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     midiControl = new MidiControl(this);
 
-    parStore = new ParStore(globStore, name, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
-
     manageBox = new ManageBox("LFO:", true, this);
 
     // Input group box on right top
@@ -290,11 +283,13 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             SLOT(updateLoop(int)));
     midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
 
-    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOutAction = new QAction(tr("&Mute"),this);
+    muteOutAction->setCheckable(true);
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    muteOut = new QToolButton(this);
+    muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,10));
-    muteOut->setCheckable(true);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
 
@@ -367,6 +362,14 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(waveBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
+
+    parStore = new ParStore(globStore, name, muteOutAction, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
+    connect(parStore, SIGNAL(restore(int)),
+             this, SLOT(restoreParams(int)));
+
 
     setLayout(widgetLayout);
     updateAmp(64);
@@ -896,20 +899,22 @@ void LfoWidget::restoreParams(int ix)
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
+    if (!parStore->onlyPatternList.at(ix)) {
 
-    //muteOut->setChecked(parStore->list.at(ix).muteOut);
-    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-    updateChIn(parStore->list.at(ix).chIn);
-    ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
-    ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
-    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-    updateChannelOut(parStore->list.at(ix).channelOut);
-    setPortOut(parStore->list.at(ix).portOut);
-    updatePortOut(parStore->list.at(ix).portOut);
+        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+        updateChIn(parStore->list.at(ix).chIn);
+        ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
+        ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
+        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+        updateChannelOut(parStore->list.at(ix).channelOut);
+        setPortOut(parStore->list.at(ix).portOut);
+        updatePortOut(parStore->list.at(ix).portOut);
+        offset->setValue(parStore->list.at(ix).offs);
+        amplitude->setValue(parStore->list.at(ix).ampl);
+    }
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
-    offset->setValue(parStore->list.at(ix).offs);
-    amplitude->setValue(parStore->list.at(ix).ampl);
     midiWorker->setFramePtr(0);
 }
 

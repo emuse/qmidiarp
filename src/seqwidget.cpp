@@ -44,13 +44,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     midiControl = new MidiControl(this);
 
-    parStore = new ParStore(globStore, name, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
-
     manageBox = new ManageBox("Seq:", true, this);
 
     // Display group box on right
@@ -230,11 +223,13 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     cursor = new Cursor('S', this);
 
-    muteOut = new QPushButton(tr("&Mute"),this);
+    muteOutAction = new QAction(tr("&Mute"),this);
+    muteOutAction->setCheckable(true);
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
+    muteOut = new QToolButton(this);
+    muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,10));
-    muteOut->setCheckable(true);
-    connect(muteOut, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     loopBox = new QComboBox(seqBox);
@@ -347,6 +342,14 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
+    
+    parStore = new ParStore(globStore, name, muteOutAction, this);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
+    connect(parStore, SIGNAL(store(int, bool)),
+             this, SLOT(storeParams(int, bool)));
+    connect(parStore, SIGNAL(restore(int)),
+             this, SLOT(restoreParams(int)));
+
 
     setLayout(widgetLayout);
     recordMode = false;
@@ -911,20 +914,21 @@ void SeqWidget::restoreParams(int ix)
 
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
-    notelength->setValue(parStore->list.at(ix).notelen);
-    transpose->setValue(parStore->list.at(ix).transp);
-    velocity->setValue(parStore->list.at(ix).vel);
-    setDispVert(parStore->list.at(ix).dispVertical);
-
-    //muteOut->setChecked(parStore->list.at(ix).muteOut);
-    chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-    updateChIn(parStore->list.at(ix).chIn);
-    channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-    updateChannelOut(parStore->list.at(ix).channelOut);
-    setPortOut(parStore->list.at(ix).portOut);
-    updatePortOut(parStore->list.at(ix).portOut);
+    if (!parStore->onlyPatternList.at(ix)) {
+        notelength->setValue(parStore->list.at(ix).notelen);
+        transpose->setValue(parStore->list.at(ix).transp);
+        velocity->setValue(parStore->list.at(ix).vel);
+        setDispVert(parStore->list.at(ix).dispVertical);
+    
+        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+        updateChIn(parStore->list.at(ix).chIn);
+        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+        updateChannelOut(parStore->list.at(ix).channelOut);
+        setPortOut(parStore->list.at(ix).portOut);
+        updatePortOut(parStore->list.at(ix).portOut);
+    }
     updateLoop(parStore->list.at(ix).loopMode);
-
     updateWaveForm(parStore->list.at(ix).waveForm);
     midiWorker->setCurrentIndex(0);
 }
