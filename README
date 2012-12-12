@@ -1,4 +1,6 @@
-QMidiArp by Frank Kober, Guido Scholz (c)2009 - 2011
+QMidiArp by Frank Kober 2009 - 2012
+            Nedko Arnaudov 2011
+            Guido Scholz 2009
             Matthias Nagorni          (c)2004 by Novell
 
          published under the GNU General Public License.
@@ -8,7 +10,7 @@ QMidiArp by Frank Kober, Guido Scholz (c)2009 - 2011
 
 Description
 -----------
-QMidiArp is an arpeggiator, sequencer and MIDI LFO for ALSA.
+QMidiArp is an arpeggiator, sequencer and MIDI LFO for ALSA and JACK.
 For further information on general function please refer to the qmidiarp
 manual page.
 
@@ -17,8 +19,8 @@ Dependencies
 ------------
 You need the following development headers and libraries for building.
 
-libqt4-dev     (qt-devel)
-libasound2-dev (alsa-lib-devel)
+libqt4-dev     (qt4-devel)
+libasound2-dev (libalsa-devel)
 libjack-dev    (jackit-devel)
 
 
