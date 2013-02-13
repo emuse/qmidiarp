@@ -382,7 +382,8 @@ void ParStore::addLocation()
     connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 
     toolButton->setContextMenuPolicy(Qt::ContextMenuPolicy(Qt::CustomContextMenu));
-    connect(toolButton, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showLocContextMenu(const QPoint &)));
+    connect(toolButton, SIGNAL(customContextMenuRequested(const QPoint &))
+                    , this, SLOT(showLocContextMenu(const QPoint &)));
 
     jumpToIndexMenu->addAction(new QAction(QString::number(list.count()), this));
     jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
