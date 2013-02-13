@@ -899,9 +899,11 @@ void LfoWidget::restoreParams(int ix)
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     waveFormBox->setCurrentIndex(parStore->list.at(ix).waveForm);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
+    updateLoop(parStore->list.at(ix).loopMode);
+    updateWaveForm(parStore->list.at(ix).waveForm);
     if (!parStore->onlyPatternList.at(ix)) {
-
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        offset->setValue(parStore->list.at(ix).offs);
         chIn->setCurrentIndex(parStore->list.at(ix).chIn);
         updateChIn(parStore->list.at(ix).chIn);
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
@@ -910,11 +912,8 @@ void LfoWidget::restoreParams(int ix)
         updateChannelOut(parStore->list.at(ix).channelOut);
         setPortOut(parStore->list.at(ix).portOut);
         updatePortOut(parStore->list.at(ix).portOut);
-        offset->setValue(parStore->list.at(ix).offs);
         amplitude->setValue(parStore->list.at(ix).ampl);
     }
-    updateLoop(parStore->list.at(ix).loopMode);
-    updateWaveForm(parStore->list.at(ix).waveForm);
     midiWorker->setFramePtr(0);
 }
 
