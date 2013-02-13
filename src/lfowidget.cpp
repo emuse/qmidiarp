@@ -508,7 +508,7 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.name() == "muted")
-                    muteOut->setChecked(xml.readElementText().toInt());
+                    muteOutAction->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     channelOut->setCurrentIndex(tmp);
@@ -964,7 +964,7 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
         midiWorker->muteMask.replace(l1, midiWorker->customWave.at(l1).muted);
     }
     midiControl->setCcList(fromWidget->midiControl->ccList);
-    muteOut->setChecked(true);
+    muteOutAction->setChecked(true);
 
     tmp = fromWidget->waveFormBox->currentIndex();
     waveFormBox->setCurrentIndex(tmp);

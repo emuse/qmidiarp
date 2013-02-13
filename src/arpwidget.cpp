@@ -539,7 +539,7 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.name() == "muted")
-                    muteOut->setChecked(xml.readElementText().toInt());
+                    muteOutAction->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     channelOut->setCurrentIndex(tmp);
