@@ -59,7 +59,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     p.setPen(pen);
 
     int l1, l2;
-    double nsteps = 0.0;
+    int nsteps = 0.0;
     int beat = 4;
     int npoints = 0;
     int ypos, xpos, xscale, yscale;
@@ -79,7 +79,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     nsteps = p_data.at(npoints).tick / TPQN;
     beatRes = npoints / nsteps;
     beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
-    xscale = (w - 2 * LFOSCR_HMARG) / nsteps;
+    xscale = (w - 2 * LFOSCR_HMARG);
     yscale = h - 2 * LFOSCR_VMARG;
 
     //Beryll Filled Frame
@@ -104,7 +104,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
         } else {
             p.setPen(QColor(180, 100, 100));
         }
-        x = l1 * xscale;
+        x = l1 * xscale / nsteps;
         p.drawLine(LFOSCR_HMARG + x, LFOSCR_VMARG,
                 LFOSCR_HMARG + x, h-LFOSCR_VMARG);
 
@@ -118,8 +118,8 @@ void LfoScreen::paintEvent(QPaintEvent*)
             p.setPen(QColor(120, 60, 20));
             x1 = x;
             for (l2 = 1; l2 < beatDiv; l2++) {
-                x1 = x + l2 * xscale / beatDiv;
-                if (x1 < xscale * nsteps)
+                x1 = x + l2 * xscale / nsteps / beatDiv;
+                if (x1 < xscale)
                     p.drawLine(LFOSCR_HMARG + x1,
                             LFOSCR_VMARG, LFOSCR_HMARG + x1,
                             h - LFOSCR_VMARG);
@@ -136,7 +136,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     l1 = 0;
     while (l1 < npoints) {
 
-        x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * (int)nsteps * xscale / npoints;
+        x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * xscale / npoints;
         ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCR_VMARG;
         xpos = LFOSCR_HMARG + x + pen.width() / 2;
@@ -148,7 +148,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
         }
         p.setPen(pen);
         p.drawLine(xpos, ypos,
-                        xpos + (xscale / beatRes)
+                        xpos + (xscale / nsteps / beatRes)
                         - (pen.width()/(2+npoints/(TPQN*8))), ypos);
         l1++;
         l1+=npoints/(TPQN*4);
