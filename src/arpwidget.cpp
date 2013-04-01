@@ -211,7 +211,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     muteOut = new QToolButton(this);
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
-    muteOut->setMinimumSize(QSize(35,10));
+    muteOut->setMinimumSize(QSize(35,20));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     repeatPatternThroughChord = new QComboBox(patternBox);
