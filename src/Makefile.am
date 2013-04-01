@@ -27,7 +27,8 @@ nodist_qmidiarp_SOURCES = \
 	parstore_moc.cpp \
 	jackdriver_moc.cpp \
 	seqdriver_moc.cpp \
-	slider_moc.cpp
+	slider_moc.cpp \
+	storagebutton_moc.cpp
 
 qmidiarp_SOURCES = \
 	cursor.cpp cursor.h \
@@ -56,7 +57,8 @@ qmidiarp_SOURCES = \
 	passwidget.cpp passwidget.h \
 	jackdriver.cpp jackdriver.h \
 	seqdriver.cpp seqdriver.h \
-	slider.cpp slider.h
+	slider.cpp slider.h \
+	storagebutton.cpp storagebutton.h
 
 qmidiarp_LDADD = $(QT_LIBS)
 

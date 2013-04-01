@@ -24,6 +24,7 @@
 
 #include "main.h"
 #include "parstore.h"
+#include "storagebutton.h"
 
 #include "pixmaps/filesave.xpm"
 
@@ -88,7 +89,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     controlLayout->addWidget(muteOut);
     controlLayout->setMargin(0);
     controlLayout->setSpacing(0);
-    
+
     QWidget *indicatorBox = new QWidget(this);
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
     indicatorBox->setMinimumHeight(20);
@@ -98,12 +99,14 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
-    QWidget *topRow = new QWidget(this);
+    QFrame *topRow = new QFrame(this);
     QHBoxLayout *topRowLayout = new QHBoxLayout;
     topRowLayout->addWidget(indicatorBox);
     topRowLayout->addLayout(controlLayout);
     topRowLayout->setSpacing(0);
     topRowLayout->setMargin(0);
+    topRow->setMinimumSize(QSize(48,46));;
+    topRow->setFrameStyle(QFrame::StyledPanel);
     topRow->setLayout(topRowLayout);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout();
@@ -375,9 +378,8 @@ void ParStore::readData(QXmlStreamReader& xml)
 
 void ParStore::addLocation()
 {
-    QToolButton *toolButton = new QToolButton(this);
+    StorageButton *toolButton = new StorageButton(this);
     toolButton->setText(QString::number(list.count()));
-    toolButton->setFixedSize(QSize(100, 25));
     toolButton->setProperty("index", list.count());
     connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 
@@ -435,20 +437,19 @@ void ParStore::updateRunOnce(int location, int choice)
     if (choice == -2) { //stay here
         jumpToList.replace(location, -2);
         setBGColorAt(location + 1, 0);
-        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setText(QString::number(location + 1));
+        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setSecondText("", 0);
     }
     else if (choice == -1) { //jump back to last
         jumpToList.replace(location, -1);
         setBGColorAt(location + 1, 3);
-        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setText(QString::number(location + 1) + " < ");
+        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setSecondText("<- ", 1);
     }
     else if (choice >= 0) { //jump to location
         jumpToList.replace(location, choice);
-        ((QToolButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setText(QString::number(location + 1)
-                    + " > " + QString::number(choice + 1));
+        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
+            ->widget()))->setSecondText("-> "+QString::number(choice + 1), 2);
         setBGColorAt(location + 1, 3);
     }
 }

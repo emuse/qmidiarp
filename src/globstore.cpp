@@ -96,11 +96,20 @@ GlobStore::GlobStore(QWidget *parent)
 
     QToolButton *toolButton = new QToolButton(this);
     toolButton->setText("Global");
-    toolButton->setMinimumSize(QSize(50,42));
+    toolButton->setMinimumSize(QSize(48,40));
     midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
+    QFrame *topRow = new QFrame(this);
+
+    QHBoxLayout *topRowLayout = new QHBoxLayout;
+    topRowLayout->addWidget(toolButton);
+    topRowLayout->setSpacing(0);
+    topRowLayout->setMargin(0);
+    topRow->setFrameStyle(QFrame::StyledPanel);
+    topRow->setMinimumSize(QSize(48,46));;
+    topRow->setLayout(topRowLayout);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
-    buttonLayout->addWidget(toolButton);
+    buttonLayout->addWidget(topRow);
 
     QVBoxLayout *columnLayout = new QVBoxLayout;
     columnLayout->addLayout(buttonLayout);
