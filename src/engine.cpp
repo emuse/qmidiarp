@@ -53,12 +53,12 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     portCount = p_portCount;
 
     if (!p_alsamidi) {
-        driver = new JackDriver(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback);
+        driver = new JackDriver(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
     }
     else {
     // In case of ALSA MIDI with Jack Transport sync, JackDriver is instantiated with 0 ports
     // a pointer to jackSync has to be passed to driver
-        jackSync = new JackDriver(0,  this, tr_state_cb, midi_event_received_callback, tick_callback);
+        jackSync = new JackDriver(0,  this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
         driver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
     }
 
@@ -519,9 +519,9 @@ void Engine::echoCallback(bool echo_from_trig)
                 }
             }
             if (!l1)
-                nextMinLfoTick = midiLfo(l1)->nextTick;
-            else if (midiLfo(l1)->nextTick < nextMinLfoTick)
-                nextMinLfoTick = midiLfo(l1)->nextTick;
+                nextMinLfoTick = midiLfo(l1)->nextTick - schedDelayTicks;
+            else if (midiLfo(l1)->nextTick < nextMinLfoTick + schedDelayTicks)
+                nextMinLfoTick = midiLfo(l1)->nextTick - schedDelayTicks;
         }
         driver->requestEchoAt(nextMinLfoTick, 0);
     }
@@ -559,9 +559,9 @@ void Engine::echoCallback(bool echo_from_trig)
                 }
             }
             if (!l1)
-                nextMinSeqTick = midiSeq(l1)->nextTick;
-            else if (midiSeq(l1)->nextTick < nextMinSeqTick)
-                nextMinSeqTick = midiSeq(l1)->nextTick;
+                nextMinSeqTick = midiSeq(l1)->nextTick - schedDelayTicks;
+            else if (midiSeq(l1)->nextTick < nextMinSeqTick + schedDelayTicks)
+                nextMinSeqTick = midiSeq(l1)->nextTick - schedDelayTicks;
         }
         driver->requestEchoAt(nextMinSeqTick, 0);
     }
@@ -625,8 +625,8 @@ void Engine::echoCallback(bool echo_from_trig)
 
     if ((restoreTick > -1)
         && (!midiArpCount() || (nextMinArpTick + schedDelayTicks >= restoreTick))
-        && (!midiLfoCount() || (nextMinLfoTick >= restoreTick))
-        && (!midiSeqCount() || (nextMinSeqTick >= restoreTick))) {
+        && (!midiLfoCount() || (nextMinLfoTick + schedDelayTicks >= restoreTick))
+        && (!midiSeqCount() || (nextMinSeqTick + schedDelayTicks >= restoreTick))) {
         restoreTick = -1;
         restoreFlag = false;
         // TODO: At term the following should be restore() instead of
@@ -830,11 +830,18 @@ void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
     }
 }
 
-void Engine::setTempo(int bpm)
+void Engine::setTempo(double bpm)
 {
-    driver->setTempo(bpm);
+    driver->requestTempo(bpm);
+    requestedTempo = bpm;
+
     tempo=bpm;
     modified = true;
+}
+
+void Engine::tempo_callback(double bpm, void *context)
+{
+    ((Engine *)context)->requestedTempo = bpm;
 }
 
 void Engine::setSendLogEvents(bool on)
@@ -963,6 +970,11 @@ void Engine::updateDisplay()
             emit midiEventReceived(logEventBuffer.at(l1), logTickBuffer.at(l1));
         }
         logEventCount = 0;
+    }
+
+    if (requestedTempo != tempo) {
+        tempo = requestedTempo;
+        emit tempoUpdated(tempo);
     }
 }
 

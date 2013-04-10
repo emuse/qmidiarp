@@ -80,10 +80,15 @@ public:
     {
         portUnmatched = id;
     }
-    virtual void setTempo(int bpm)
+    virtual void setTempo(double bpm)
     {
         tempo = bpm;
         internalTempo = bpm;
+    }
+
+    virtual void requestTempo(double bpm)
+    {
+        requestedTempo = bpm;
     }
 
     virtual bool callJack(int portcount) = 0;
@@ -149,7 +154,7 @@ protected:
     unsigned int m_current_tick;
     unsigned int m_next_tick;
     uint64_t m_tpm;             // ticks per minute
-    int tempo, internalTempo;
+    double tempo, internalTempo, requestedTempo;
     int portCount;
 };
 

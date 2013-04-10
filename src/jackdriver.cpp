@@ -32,12 +32,14 @@ JackDriver::JackDriver(
     void * callback_context,
     void (* p_tr_state_cb)(bool j_tr_state, void * context),
     bool (* midi_event_received_callback)(void * context, MidiEvent ev),
-    void (* tick_callback)(void * context, bool echo_from_trig))
+    void (* tick_callback)(void * context, bool echo_from_trig),
+    void (* p_tempo_callback)(double bpm, void * context))
     : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
     portCount = p_portCount;
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
+    tempoCb = p_tempo_callback;
     jackRunning = false;
     portUnmatched = 0;
     forwardUnmatched = false;
@@ -49,6 +51,9 @@ JackDriver::JackDriver(
     bufPtr = 0;
     echoPtr = 0;
     internalTempo = 120;
+    requestedTempo = 120;
+    tempoChangeTick = 0;
+    tempoChangeJPosFrame = 0;
 
 /* Initialize and activate Jack with out_port_count ports if we use
  *  JACK driver backend, i.e. portCount > 0 */
@@ -194,11 +199,13 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 
     if (!out_port_count) return (0);
 
+    rd->handleEchoes(nframes);
+
     int cur_tempo = rd->tempo;
     uint64_t cur_j_frame = rd->curJFrame;
     bool forward_unmatched = rd->forwardUnmatched;
     int port_unmatched = rd->portUnmatched;
-
+    uint tempochangetick = rd->tempoChangeTick;
     uint nexttick = 0;
     uint tmptick = 0;
     uint idx = 0;
@@ -212,7 +219,6 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     inEv.value = 0;
     MidiEvent outEv;
     outEv.channel = 0;
-
 
     unsigned char* buffer;
     jack_midi_event_t in_event;
@@ -233,7 +239,6 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     for(i = 0; i < nframes; i++) {
 
         /* MIDI Output queue first **/
-        //size = rd->evTickQueue.size();
         if (rd->bufPtr) { /* If we have events, find earliest event tick **/
             idx = 0;
             nexttick = rd->evTickQueue.first();
@@ -244,11 +249,11 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                     nexttick = tmptick;
                 }
             }
-            ev_sample = (uint64_t)j_sample_rate * 60 * nexttick / (TPQN * cur_tempo);
+            ev_sample = (uint64_t)j_sample_rate * 60 * (nexttick - tempochangetick) / TPQN / cur_tempo;
             ev_jframe = ev_sample / nframes;
             ev_inframe = ev_sample % nframes;
             if ((ev_jframe <= cur_j_frame) && (ev_inframe <= i)) {
-                //qWarning("nexttick %d, ev_frame %d, ev_inframe %d, cur_jframe %d", nexttick, ev_jframe, ev_inframe, cur_j_frame);
+                //qWarning("nexttick %d, ev_frame %d, ev_inframe %d, cur_jframe %d, buf_idx %d", nexttick, ev_jframe, ev_inframe, cur_j_frame, idx);
                 outEv = rd->evQueue.at(idx);
                 evport = rd->evPortQueue.at(idx);
                 for (uint l4 = idx ; l4 < (rd->bufPtr - 1);l4++) {
@@ -258,21 +263,17 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                 }
                 rd->bufPtr--;
                 int k = 0;
-                if ((ev_jframe) <= cur_j_frame) {
-                    do {
-                        if ((ev_jframe) < cur_j_frame) {
-                            ev_inframe = 0;
-                        }
-                        buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe + k, 3);
-                        k++;
-                    } while (buffer == NULL);
+                do {
+                    if ((ev_jframe) < cur_j_frame) ev_inframe = 0;
+                    buffer = jack_midi_event_reserve(out_buf[evport], ev_inframe + k, 3);
+                    k++;
+                } while (buffer == NULL);
 
-                    buffer[2] = outEv.value;        /* velocity / value **/
-                    buffer[1] = outEv.data;         /* note / controller **/
-                    if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
-                    if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
-                    buffer[0] += outEv.channel;
-                }
+                buffer[2] = outEv.value;        /* velocity / value **/
+                buffer[1] = outEv.data;         /* note / controller **/
+                if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
+                if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
+                buffer[0] += outEv.channel;
             }
         }
         /* MIDI Input handling **/
@@ -328,7 +329,7 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                 jack_midi_event_get(&in_event, in_buf, event_index);
         }
     }
-    rd->handleEchoes(nframes);
+    rd->curJFrame++;
     return(0);
 }
 
@@ -441,22 +442,32 @@ bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 void JackDriver::handleEchoes(int nframes)
 {
-    curJFrame++;
-
-    if (!queueStatus) return;
-
     uint l1;
     int nexttick, tmptick, idx;
 
     if (useJackSync) {
-        m_current_tick = ((uint64_t)currentPos.frame * TPQN * tempo
-            / (currentPos.frame_rate * 60)) - jackOffsetTick;
+        if (currentPos.beats_per_minute > 0.01) {
+            if (currentPos.beats_per_minute != tempo) {
+                tempoChangeJPosFrame = currentPos.frame;
+                setTempo(currentPos.beats_per_minute);
+                // inform engine via callback about the tempo change
+                tempoCb(tempo, cbContext);
+                requestedTempo = currentPos.beats_per_minute;
+            }
+        }
+        m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
+            * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
     }
     else {
-        m_current_tick = (uint64_t)curJFrame * TPQN * tempo * nframes
-            / (jSampleRate * 60);
+        if (requestedTempo != tempo) setTempo(requestedTempo);
+        m_current_tick =  (uint64_t)curJFrame * TPQN * tempo * nframes
+            / (jSampleRate * 60) + tempoChangeTick;
     }
 
+    if (!queueStatus) {
+        curJFrame++;
+        return;
+    }
     if (!echoPtr) return;
 
     idx = 0;
@@ -478,27 +489,34 @@ void JackDriver::handleEchoes(int nframes)
     }
 }
 
+void JackDriver::setTempo(double bpm)
+{
+    tempoChangeTick = m_current_tick;
+    curJFrame = 0;
+    tempo = bpm;
+    internalTempo = bpm;
+}
+
 void JackDriver::setTransportStatus(bool on)
 {
     jack_position_t jpos = getCurrentPos();
     if (useJackSync) {
         if (jpos.beats_per_minute > 0.01)
-            tempo = (int)jpos.beats_per_minute;
+            tempo = jpos.beats_per_minute;
         else
             tempo = internalTempo;
 
-        jackOffsetTick = (uint64_t)jpos.frame * TPQN
-            * tempo / (jpos.frame_rate * 60);
+        tempoChangeJPosFrame = jpos.frame;
     }
     else {
         tempo = internalTempo;
-        jackOffsetTick = 0;
     }
 
     m_current_tick = 0;
 
     if (on) {
         curJFrame = 0;
+        tempoChangeTick = 0;
         lastSchedTick = 0;
         echoPtr = 0;
         bufPtr = 0;

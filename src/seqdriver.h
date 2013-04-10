@@ -88,6 +88,7 @@ class SeqDriver : public DriverBase {
         int lastRatioTick;
         int lastSchedTick;
         int jackOffsetTick;
+        int tempoChangeTick;
 
         double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
         snd_seq_real_time_t delta, realTime;
@@ -112,7 +113,7 @@ class SeqDriver : public DriverBase {
 
    public slots:
         void setTransportStatus(bool run); /** is pure in DriverBase */
-        void setTempo(int bpm); /** overloaded over DriverBase */
+        void setTempo(double bpm); /** overloaded over DriverBase */
         void setUseMidiClock(bool on); /** overloaded over DriverBase */
         void setUseJackTransport(bool on); /** overloaded over DriverBase */
 };

@@ -454,6 +454,13 @@ class MainWindow : public QMainWindow
 *
 */
     void updateTempo(int tempo);
+/*! @brief Slot for Engine::tempoUpdated() signal.
+*
+* This function displays a new tempo value in the tempo spin box.
+* @param tempo The new tempo to be displayed
+*
+*/
+    void displayTempo(double p_tempo);
 /*! @brief Slot for MainWindow::runAction ToolButton.
 * This function calls Engine::setStatus() and disables the
 * MainWindow::tempoSpin box

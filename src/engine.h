@@ -99,7 +99,8 @@ class Engine : public QThread  {
     int restoreModule;
     int restoreTick;
     int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
-    int tempo;
+    double tempo;
+    double requestedTempo;
 
     //From SeqDriver
     int schedDelayTicks;
@@ -119,7 +120,7 @@ class Engine : public QThread  {
     static bool midi_event_received_callback(void * context, MidiEvent ev);
     static void tick_callback(void * context, bool echo_from_trig);
     static void tr_state_cb(bool tr_state, void * context);
-
+    static void tempo_callback(double bpm, void *context);
   public:
     int grooveTick, grooveVelocity, grooveLength;
     bool midiControllable;
@@ -171,7 +172,7 @@ class Engine : public QThread  {
     SeqWidget *seqWidget(int index);
 
     int getClientId();
-    void setTempo(int bpm);
+    void setTempo(double bpm);
     void sendGroove();
     void showAllIOPanels(bool on);
 
@@ -183,6 +184,15 @@ class Engine : public QThread  {
  * @param tick Set to the tick value at which the event was received
  */
     void midiEventReceived(MidiEvent ev, int tick);
+/**
+ * @brief This signal is connected to the MainWindow::updateTempo() slot
+ *
+ * It is emitted in case of a tempo change detected on the driver, for
+ * instance when the Jack Transport Master has changed its tempo
+ *
+ * @param bpm New tempo to display
+ */
+    void tempoUpdated(double bpm);
 
   public slots:
 /*!

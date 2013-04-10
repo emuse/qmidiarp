@@ -67,8 +67,9 @@ class JackDriver : public DriverBase
     bool jackRunning;
     uint transportState;
     uint lastSchedTick;
-    uint jackOffsetTick;
+    uint tempoChangeTick;
     uint64_t curJFrame;
+    uint64_t tempoChangeJPosFrame;
     QVector<uint> echoTickQueue;
     QVector<MidiEvent> evQueue;
     QVector<uint> evTickQueue;
@@ -91,10 +92,12 @@ class JackDriver : public DriverBase
             void * callback_context,
             void (* p_tr_state_cb)(bool j_tr_state, void * context),
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),
-            void (* tick_callback)(void * context, bool echo_from_trig));
+            void (* tick_callback)(void * context, bool echo_from_trig),
+            void (* p_tempo_callback)(double bpm, void * context));
     ~JackDriver();
 
     void (* trStateCb)(bool j_tr_state, void * context);
+    void (* tempoCb)(double bpm, void * context);
     void * cbContext;
 
   signals:
@@ -116,6 +119,7 @@ class JackDriver : public DriverBase
     jack_position_t getCurrentPos();
     bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
     void setTransportStatus(bool run);
+    void setTempo(double bpm);
     int getClientId() {return 0; }
     bool callJack(int portcount);
 };

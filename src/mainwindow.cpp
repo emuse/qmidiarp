@@ -107,6 +107,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
         if (engine->driver->callJack(p_portCount)) jackFailed = true;
     }
+    connect(engine, SIGNAL(tempoUpdated(double)), this,
+            SLOT(displayTempo(double)));
+
     connect(globStore, SIGNAL(store(int)), engine,
             SLOT(store(int)));
     connect(globStore, SIGNAL(requestRestore(int)), engine,
@@ -1022,10 +1025,15 @@ void MainWindow::updateTempo(int p_tempo)
     engine->setTempo(p_tempo);
 }
 
+void MainWindow::displayTempo(double p_tempo)
+{
+    tempoSpin->setValue(p_tempo);
+}
+
 void MainWindow::updateTransportStatus(bool on)
 {
     engine->setStatus(on);
-    tempoSpin->setDisabled(on);
+    if (alsaMidi) tempoSpin->setDisabled(on);
 }
 
 void MainWindow::resetTransport()

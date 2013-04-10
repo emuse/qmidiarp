@@ -97,6 +97,7 @@ SeqDriver::SeqDriver(
     useMidiClock = false;
     midiTick = 0;
     lastRatioTick = 0;
+    tempoChangeTick = 0;
 
     internalTempo = 120;
     initTempo();
@@ -274,8 +275,9 @@ bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
     return true;
 }
 
-void SeqDriver::setTempo(int bpm)
+void SeqDriver::setTempo(double bpm)
 {
+    tempoChangeTick = m_current_tick;
     tempo = bpm;
     internalTempo = bpm;
     clockRatio = 60e9/TPQN/tempo;
