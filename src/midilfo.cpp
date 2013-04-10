@@ -55,6 +55,9 @@ MidiLfo::MidiLfo()
     ccnumberIn = 74;
     waveFormIndex = 0;
     isMuted = false;
+    isMutedDefer = false;
+    deferChanges = false;
+    parChangesPending = false;
     recordMode = false;
     isRecording = false;
     reverse = false;
@@ -92,6 +95,7 @@ MidiLfo::MidiLfo()
     grooveLength = 0;
 
     dataChanged = false;
+    needsGUIUpdate = false;
 }
 
 MidiLfo::~MidiLfo(){
@@ -99,7 +103,12 @@ MidiLfo::~MidiLfo(){
 
 void MidiLfo::setMuted(bool on)
 {
-    isMuted = on;
+    isMutedDefer = on;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else isMuted = on;
+    needsGUIUpdate = false;
 }
 
 void MidiLfo::getNextFrame(int tick)
@@ -165,6 +174,7 @@ void MidiLfo::getNextFrame(int tick)
         if (frameptr < 0) {
             if (!enableLoop) seqFinished = true;
             frameptr = npoints - l1;
+            applyPendingParChanges();
             if (reflect  || !backward) {
                 reverse = false;
                 frameptr = 0;
@@ -176,6 +186,7 @@ void MidiLfo::getNextFrame(int tick)
         if (frameptr >= npoints) {
             if (!enableLoop) seqFinished = true;
             frameptr = 0;
+            applyPendingParChanges();
             if (reflect || backward) {
                 reverse = true;
                 frameptr = npoints - l1;
@@ -540,3 +551,14 @@ void MidiLfo::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
     grooveLength = p_grooveLength;
 }
 
+void MidiLfo::applyPendingParChanges()
+{
+    if (!parChangesPending) return;
+
+    int olddefer = deferChanges;
+    deferChanges = false;
+    setMuted(isMutedDefer);
+    deferChanges = olddefer;
+    parChangesPending = false;
+    needsGUIUpdate = true;
+}

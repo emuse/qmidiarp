@@ -84,9 +84,15 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(10, 10));
 
+    QHBoxLayout *muteRowLayout = new QHBoxLayout;
+    muteRowLayout->addStretch();
+    muteRowLayout->addWidget(muteOut);
+    muteRowLayout->setMargin(0);
+    muteRowLayout->setSpacing(0);
+
     QVBoxLayout *controlLayout = new QVBoxLayout;
     controlLayout->addWidget(topButton);
-    controlLayout->addWidget(muteOut);
+    controlLayout->addLayout(muteRowLayout);
     controlLayout->setMargin(0);
     controlLayout->setSpacing(0);
 

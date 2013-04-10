@@ -214,6 +214,15 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     muteOut->setMinimumSize(QSize(35,20));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
+    deferChangesAction = new QAction("D", this);
+    deferChangesAction->setToolTip(tr("Defer all parameter changes to pattern end"));
+    deferChangesAction->setCheckable(true);
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
+
+    QToolButton *deferChangesButton = new QToolButton(this);
+    deferChangesButton->setDefaultAction(deferChangesAction);
+    deferChangesButton->setFixedSize(20, 20);
+
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames;
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
@@ -259,6 +268,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     }
 
     modeLayout->addWidget(muteOut);
+    modeLayout->addWidget(deferChangesButton);
     modeLayout->addWidget(repeatPatternThroughChord);
     modeLayout->addWidget(triggerMode);
     modeLayout->addWidget(latchModeButton);
@@ -358,7 +368,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     envelopeBox->setLayout(envelopeBoxLayout);
 
     muteOutAction->setChecked(mutedAdd);
-    
+
     parStore = new ParStore(globStore, name, muteOutAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
     connect(parStore, SIGNAL(store(int, bool)),
@@ -828,7 +838,12 @@ void ArpWidget::setInOutBoxVisible(bool on)
 void ArpWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
-    screen->setMuted(on);
+    screen->setMuted(midiWorker->isMuted);
+}
+
+void ArpWidget::updateDeferChanges(bool on)
+{
+    midiWorker->updateDeferChanges(on);
 }
 
 void ArpWidget::setLatchMode(bool on)
@@ -909,7 +924,7 @@ void ArpWidget::restoreParams(int ix)
         randomTick->setValue(parStore->list.at(ix).rndTick);
         randomLength->setValue(parStore->list.at(ix).rndLen);
         randomVelocity->setValue(parStore->list.at(ix).rndVel);
-    
+
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
         chIn->setCurrentIndex(parStore->list.at(ix).chIn);
         updateChIn(parStore->list.at(ix).chIn);
@@ -982,10 +997,13 @@ void ArpWidget::updateDisplay()
     screen->updateDraw();
     midiControl->update();
 
-    if (!needsGUIUpdate) return;
+    if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
     muteOut->setChecked(midiWorker->isMuted);
+    screen->setMuted(midiWorker->isMuted);
     if (patternPresetBoxIndex != patternPresetBox->currentIndex())
         selectPatternPreset(patternPresetBoxIndex);
 
+    needsGUIUpdate = false;
+    midiWorker->needsGUIUpdate = false;
 }

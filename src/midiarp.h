@@ -218,6 +218,9 @@ class MidiArp : public QWidget  {
     int portOut;    /*!< Output port, set by ArpWidget */
     int channelOut; /*!< Output channel, set by ArpWidget */
     bool isMuted;   /*!< Mute state set by ArpWidget */
+    bool isMutedDefer;   /*!< Deferred Global mute state */
+    bool deferChanges;    /*!< set by ArpWidget to defer parameter changes to pattern end */
+    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
     bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
     bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
@@ -244,6 +247,8 @@ class MidiArp : public QWidget  {
     int returnIsNew;
     int nextTick; /*!< Holds the next tick at which note events will be played out */
 
+    bool needsGUIUpdate;
+
   public:
     MidiArp();
     ~MidiArp();
@@ -260,6 +265,12 @@ class MidiArp : public QWidget  {
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
+/*! @brief This function sets MidiArp::deferChanges, which will cause a
+ * parameter changes only at pattern end.
+ *
+ * @param on Set to True to defer changes to pattern end
+ */
+    void updateDeferChanges(bool on) { deferChanges = on; }
 /**
  * @brief This function calculates the index of the next arpeggio
  * step and revolves it if necessary.
@@ -362,6 +373,10 @@ class MidiArp : public QWidget  {
     void purgeSustainBuffer(int sustick);
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
     void clearNoteBuffer();
+/*! @brief Checks if deferred parameter changes are pending and applies
+ * them if so
+ */
+    void applyPendingParChanges();
 
   public slots:
  /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for

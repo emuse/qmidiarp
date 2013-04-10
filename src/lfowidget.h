@@ -138,6 +138,7 @@ class LfoWidget : public QWidget
     QAction *recordAction;
     QAction* hideInOutBoxAction;
     QAction *muteOutAction;
+    QAction *deferChangesAction;
     QToolButton *muteOut;
     QComboBox *waveFormBox, *freqBox;
 
@@ -371,6 +372,15 @@ class LfoWidget : public QWidget
 *
 */
     void setMuted(bool on);
+/*!
+* @brief Slot for the LfoWidget::deferChanges action.
+*
+* Sets a flag in the midi worker causing parameter changes to become
+* active/inactive only at pattern end.
+*
+* @param on Set to True for deferring parameter changes to pattern end
+*/
+    void updateDeferChanges(bool on);
 /*!
 * @brief This function stores some module parameters in a parameter
 * list object

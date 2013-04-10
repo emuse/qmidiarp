@@ -110,10 +110,14 @@ class MidiLfo : public QObject  {
     int channelOut; /*!< MIDI output channel */
     bool recordMode, isRecording;
     bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
+    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
+    bool needsGUIUpdate;
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int old_res;
     int ccnumber;   /*!< MIDI Controller CC number to output */
     bool isMuted;   /*!< Global mute state */
+    bool isMutedDefer;   /*!< Deferred Global mute state */
+    bool deferChanges;    /*!< set by LfoWidget to defer parameter changes to pattern end */
     int freq, amp, offs, ccnumberIn, chIn;
     int size;       /*!< Size of the waveform in quarter notes */
     int res;        /*!< Resolution of the waveform in ticks per quarter note */
@@ -152,6 +156,12 @@ class MidiLfo : public QObject  {
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool on);
+/*! @brief This function sets MidiLfo::deferChanges, which will cause a
+ * parameter changes only at pattern end.
+ *
+ * @param on Set to True to defer changes to pattern end
+ */
+    void updateDeferChanges(bool on) { deferChanges = on; }
 /*! @brief This function sets the (controller) value of one point of the
  * MidiLfo::customWave array. It is used for handling drawing functionality.
  *
@@ -260,6 +270,10 @@ class MidiLfo : public QObject  {
     void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
     int getFramePtr() { return frameptr;}
+/*! @brief Checks if deferred parameter changes are pending and applies
+ * them if so
+ */
+    void applyPendingParChanges();
 };
 
 #endif

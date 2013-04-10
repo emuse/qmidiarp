@@ -131,6 +131,9 @@ MidiArp::MidiArp()
     grooveLength = 0;
     repeatPatternThroughChord = 1;
     isMuted = false;
+    isMutedDefer = false;
+    deferChanges = false;
+    parChangesPending = false;
     attack_time = 0.0;
     release_time = 0.0;
     sustain = false;
@@ -143,6 +146,8 @@ MidiArp::MidiArp()
 
     returnNote.resize(128);
     returnVelocity.resize(128);
+
+    needsGUIUpdate = false;
 }
 
 MidiArp::~MidiArp(){
@@ -150,7 +155,12 @@ MidiArp::~MidiArp(){
 
 void MidiArp::setMuted(bool on)
 {
-    isMuted = on;
+    isMutedDefer = on;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else isMuted = on;
+    needsGUIUpdate = false;
 }
 
 bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
@@ -506,6 +516,8 @@ bool MidiArp::advancePatternIndex(bool reset)
     if ((patternIndex >= patternLen) || reset) {
         patternIndex = 0;
         restartFlag = false;
+        applyPendingParChanges();
+
         switch (repeatPatternThroughChord) {
             case 1:
                 noteOfs++;
@@ -815,4 +827,16 @@ void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
     newGrooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
+}
+
+void MidiArp::applyPendingParChanges()
+{
+    if (!parChangesPending) return;
+
+    int olddefer = deferChanges;
+    deferChanges = false;
+    setMuted(isMutedDefer);
+    deferChanges = olddefer;
+    parChangesPending = false;
+    needsGUIUpdate = true;
 }

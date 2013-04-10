@@ -54,12 +54,15 @@ MidiSeq::MidiSeq()
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
+    velDefer = 0;
     transp = 0;
+    transpDefer = 0;
     size = 4;
     res = 4;
     nPoints = 16;
     maxNPoints = 16;
     notelength = 74;
+    notelengthDefer = 74;
     portOut = 0;
     channelOut = 0;
     currentIndex = 0;
@@ -69,7 +72,11 @@ MidiSeq::MidiSeq()
     grooveVelocity = 0;
     grooveLength = 0;
     isMuted = false;
+    isMutedDefer = false;
+    deferChanges = false;
+    parChangesPending = false;
     dataChanged = false;
+    needsGUIUpdate = false;
 
     int lt = 0;
     int l1 = 0;
@@ -92,7 +99,13 @@ MidiSeq::~MidiSeq(){
 
 void MidiSeq::setMuted(bool on)
 {
-    isMuted = on;
+    isMutedDefer = on;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else isMuted = on;
+
+    needsGUIUpdate = false;
 }
 
 bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
@@ -178,6 +191,7 @@ void MidiSeq::advancePatternIndex()
         if (!pivot) pivot = npoints;
         if (currentIndex == -1) {
             if (!enableLoop) seqFinished = true;
+            applyPendingParChanges();
             if (reflect  || !backward) {
                 reverse = false;
                 currentIndex = 0;
@@ -186,6 +200,7 @@ void MidiSeq::advancePatternIndex()
         }
         else if (currentIndex == pivot - 1) {
             if (!enableLoop) seqFinished = true;
+            applyPendingParChanges();
             if (loopMarker < 0) reflect = true;
             if (loopMarker > 0) reflect = false;
             if (reflect) {
@@ -199,6 +214,8 @@ void MidiSeq::advancePatternIndex()
         currentIndex++;
         if (currentIndex == npoints) {
             if (!enableLoop) seqFinished = true;
+            applyPendingParChanges();
+
             if (reflect || backward) {
                 reverse = true;
                 currentIndex = npoints - 1;
@@ -208,6 +225,7 @@ void MidiSeq::advancePatternIndex()
         else if ((currentIndex == pivot)) {
             if (!pivot) pivot = npoints;
             if (!enableLoop) seqFinished = true;
+            applyPendingParChanges();
             if (loopMarker > 0) reflect = true;
             if (loopMarker < 0) reflect = false;
             if (reflect) {
@@ -259,14 +277,31 @@ void MidiSeq::updateLoop(int val)
     curLoopMode = val;
 }
 
+void MidiSeq::updateNoteLength(int val)
+{
+    notelengthDefer = val;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else notelength = val;
+}
+
 void MidiSeq::updateVelocity(int val)
 {
-    vel = val;
+    velDefer = val;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else vel = val;
 }
 
 void MidiSeq::updateTranspose(int val)
 {
-    transp = val;
+    transpDefer = val;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else transp = val;
 }
 
 void MidiSeq::recordNote(int val)
@@ -397,4 +432,22 @@ void MidiSeq::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
     newGrooveTick = p_grooveTick;
     grooveVelocity = p_grooveVelocity;
     grooveLength = p_grooveLength;
+}
+
+void MidiSeq::applyPendingParChanges()
+{
+    if (!parChangesPending) return;
+
+    int olddefer = deferChanges;
+    deferChanges = false;
+
+    setMuted(isMutedDefer);
+    updateNoteLength(notelengthDefer);
+    updateVelocity(velDefer);
+    updateTranspose(transpDefer);
+
+    deferChanges = olddefer;
+    parChangesPending = false;
+    needsGUIUpdate = true;
+
 }

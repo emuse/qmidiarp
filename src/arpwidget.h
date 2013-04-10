@@ -112,6 +112,7 @@ class ArpWidget : public QWidget
 
     QStringList patternPresets, patternNames;
     QAction *muteOutAction;
+    QAction *deferChangesAction;
     QToolButton *muteOut;
     QAction* hideInOutBoxAction;
 
@@ -239,6 +240,15 @@ class ArpWidget : public QWidget
 *
 */
     void setMuted(bool on);
+/*!
+* @brief Slot for the ArpWidget::deferChanges action.
+*
+* Sets a flag in the midi worker causing parameter changes to become
+* active/inactive only at pattern end.
+*
+* @param on Set to True for deferring parameter changes to pattern end
+*/
+    void updateDeferChanges(bool on);
 /*!
 * @brief This function stores some module parameters in a parameter
 * list object

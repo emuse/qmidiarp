@@ -107,8 +107,13 @@ class MidiSeq : public QObject  {
     int portOut;        /**< Output port index */
     int channelOut;
     bool isMuted;
+    bool isMutedDefer;   /*!< Deferred Global mute state */
+    bool deferChanges;  /*!< set by SeqWidget to defer parameter changes to pattern end */
+    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
     bool dataChanged;
+    bool needsGUIUpdate;
     int vel, transp, notelength;
+    int velDefer, transpDefer, notelengthDefer;
     int size, res;
     int currentRecStep;
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
@@ -126,6 +131,7 @@ class MidiSeq : public QObject  {
     MidiSeq();
     ~MidiSeq();
     void updateWaveForm(int val);
+    void updateNoteLength(int);
     void updateVelocity(int);
     void updateLoop(int);
     void updateTranspose(int);
@@ -138,6 +144,12 @@ class MidiSeq : public QObject  {
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
+/*! @brief This function sets MidiSeq::deferChanges, which will cause a
+ * parameter changes only at pattern end.
+ *
+ * @param on Set to True to defer changes to pattern end
+ */
+    void updateDeferChanges(bool on) { deferChanges = on; }
 /**
  * @brief This function does the actions related to a newly received note.
  *
@@ -257,7 +269,10 @@ class MidiSeq : public QObject  {
 
     void setCurrentIndex(int ix);
     int getCurrentIndex() {return currentIndex; }
-
+/*! @brief Checks if deferred parameter changes are pending and applies
+ * them if so
+ */
+    void applyPendingParChanges();
 };
 
 #endif

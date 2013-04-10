@@ -232,6 +232,15 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     muteOut->setMinimumSize(QSize(35,20));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
+    deferChangesAction = new QAction("D", this);
+    deferChangesAction->setToolTip(tr("Defer all parameter changes to pattern end"));
+    deferChangesAction->setCheckable(true);
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
+
+    QToolButton *deferChangesButton = new QToolButton(this);
+    deferChangesButton->setDefaultAction(deferChangesAction);
+    deferChangesButton->setFixedSize(20, 20);
+
     loopBox = new QComboBox(seqBox);
     QStringList names;
     names.clear();
@@ -316,7 +325,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     QGridLayout *paramBoxLayout = new QGridLayout;
     paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
-    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 2);
+    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 1);
+    paramBoxLayout->addWidget(deferChangesButton, 1, 1, 1, 2);
     paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
     paramBoxLayout->addWidget(recordButton, 2, 1);
     paramBoxLayout->addWidget(resBoxLabel, 3, 0);
@@ -342,7 +352,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
-    
+
     parStore = new ParStore(globStore, name, muteOutAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
     connect(parStore, SIGNAL(store(int, bool)),
@@ -673,7 +683,7 @@ void SeqWidget::updateTrigLegato(bool on)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    midiWorker->notelength = val + val;
+    midiWorker->updateNoteLength(val + val);
     modified = true;
 }
 
@@ -727,13 +737,13 @@ void SeqWidget::updateLoop(int val)
 
 void SeqWidget::updateVelocity(int val)
 {
-    midiWorker->vel = val;
+    midiWorker->updateVelocity(val);
     modified = true;
 }
 
 void SeqWidget::updateTranspose(int val)
 {
-    midiWorker->transp = val;
+    midiWorker->updateTranspose(val);
     modified = true;
 }
 
@@ -798,7 +808,12 @@ void SeqWidget::setInOutBoxVisible(bool on)
 void SeqWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
-    screen->setMuted(on);
+    screen->setMuted(midiWorker->isMuted);
+}
+
+void SeqWidget::updateDeferChanges(bool on)
+{
+    midiWorker->updateDeferChanges(on);
 }
 
 void SeqWidget::setPortOut(int value)
@@ -919,7 +934,7 @@ void SeqWidget::restoreParams(int ix)
         transpose->setValue(parStore->list.at(ix).transp);
         velocity->setValue(parStore->list.at(ix).vel);
         setDispVert(parStore->list.at(ix).dispVertical);
-    
+
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
         chIn->setCurrentIndex(parStore->list.at(ix).chIn);
         updateChIn(parStore->list.at(ix).chIn);
@@ -1093,12 +1108,13 @@ void SeqWidget::updateDisplay()
     cursor->updateDraw();
     midiControl->update();
 
-    if (!needsGUIUpdate) return;
+    if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
     transpose->setValue(midiWorker->transp);
     notelength->setValue(midiWorker->notelength/2);
     velocity->setValue(midiWorker->vel);
-    muteOut->setChecked(midiWorker->isMuted);
+    muteOutAction->setChecked(midiWorker->isMuted);
+    screen->setMuted(midiWorker->isMuted);
     recordAction->setChecked(recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
@@ -1107,4 +1123,5 @@ void SeqWidget::updateDisplay()
     loopBox->setCurrentIndex(midiWorker->curLoopMode);
 
     needsGUIUpdate = false;
+    midiWorker->needsGUIUpdate = false;
 }

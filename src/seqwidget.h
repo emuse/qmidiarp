@@ -102,6 +102,7 @@ class SeqWidget : public QWidget
     QComboBox *loopBox;
     QWidget *inOutBox;
     QAction *muteOutAction;
+    QAction *deferChangesAction;
     QToolButton *muteOut;
     QCheckBox *enableNoteIn;
     QCheckBox *enableNoteOff;
@@ -317,15 +318,24 @@ class SeqWidget : public QWidget
 */
     void updatePortOut(int value);
 /*!
-* @brief Slot for the SeqWidget::muteOut checkbox.
-* This function suppresses output of Seq data.
+* @brief Slot for the SeqWidget::muteOut action.
+* Suppresses output of Seq data.
 *
-* It callsS
+* It calls
 * MidiSeq::setMuted and SeqScreen::setMuted
 * @param on Set to True for muting this module
 *
 */
     void setMuted(bool on);
+/*!
+* @brief Slot for the SeqWidget::deferChanges action.
+*
+* Sets a flag in the midi worker causing parameter changes to become
+* active/inactive only at pattern end.
+*
+* @param on Set to True for deferring parameter changes to pattern end
+*/
+    void updateDeferChanges(bool on);
 /*!
 * @brief This function stores some module parameters in a parameter
 * list object

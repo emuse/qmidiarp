@@ -292,6 +292,14 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     muteOut->setMinimumSize(QSize(35,20));
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
+    deferChangesAction = new QAction("D", this);
+    deferChangesAction->setToolTip(tr("Defer all parameter changes to pattern end"));
+    deferChangesAction->setCheckable(true);
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
+
+    QToolButton *deferChangesButton = new QToolButton(this);
+    deferChangesButton->setDefaultAction(deferChangesAction);
+    deferChangesButton->setFixedSize(20, 20);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
@@ -327,7 +335,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     QGridLayout *paramBoxLayout = new QGridLayout;
     paramBoxLayout->addWidget(loopBox, 0, 0, 1, 2);
-    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 2);
+    paramBoxLayout->addWidget(muteOut, 1, 0, 1, 1);
+    paramBoxLayout->addWidget(deferChangesButton, 1, 1, 1, 2);
     paramBoxLayout->addWidget(recordButtonLabel, 2, 0);
     paramBoxLayout->addWidget(recordButton, 2, 1);
     paramBoxLayout->addWidget(waveFormBoxLabel, 0, 2);
@@ -811,7 +820,12 @@ void LfoWidget::setInOutBoxVisible(bool on)
 void LfoWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
-    screen->setMuted(on);
+    screen->setMuted(midiWorker->isMuted);
+}
+
+void LfoWidget::updateDeferChanges(bool on)
+{
+    midiWorker->updateDeferChanges(on);
 }
 
 void LfoWidget::setRecord(bool on)
@@ -1086,9 +1100,10 @@ void LfoWidget::updateDisplay()
     cursor->updateDraw();
     midiControl->update();
 
-    if (!needsGUIUpdate) return;
+    if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
-    muteOut->setChecked(midiWorker->isMuted);
+    muteOutAction->setChecked(midiWorker->isMuted);
+    screen->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
@@ -1104,4 +1119,5 @@ void LfoWidget::updateDisplay()
         updateWaveForm(waveFormBoxIndex);
     }
     needsGUIUpdate = false;
+    midiWorker->needsGUIUpdate = false;
 }
