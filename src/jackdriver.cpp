@@ -447,6 +447,8 @@ void JackDriver::handleEchoes(int nframes)
 
     if (useJackSync) {
         if (currentPos.beats_per_minute > 0.01) {
+        m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
+            * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
             if (currentPos.beats_per_minute != tempo) {
                 tempoChangeJPosFrame = currentPos.frame;
                 setTempo(currentPos.beats_per_minute);
@@ -455,13 +457,11 @@ void JackDriver::handleEchoes(int nframes)
                 requestedTempo = currentPos.beats_per_minute;
             }
         }
-        m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
-            * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
     }
     else {
-        if (requestedTempo != tempo) setTempo(requestedTempo);
         m_current_tick =  (uint64_t)curJFrame * TPQN * tempo * nframes
             / (jSampleRate * 60) + tempoChangeTick;
+        if (requestedTempo != tempo) setTempo(requestedTempo);
     }
 
     if (!queueStatus) {
