@@ -89,7 +89,6 @@ SeqDriver::SeqDriver(
 
     lastSchedTick = 0;
     m_current_tick = 0;
-    jackOffsetTick = 0;
 
     queueStatus = false;
     startQueue = false;
@@ -98,10 +97,12 @@ SeqDriver::SeqDriver(
     midiTick = 0;
     lastRatioTick = 0;
     tempoChangeTick = 0;
-
+    tempoChangeFrame = 0;
+    requestedTempo = 120;
     internalTempo = 120;
     initTempo();
     clockRatio = 60e9/TPQN/tempo;
+    tempoChangeTime = 0;
 
     threadAbort = false;
     start(Priority(6));
@@ -160,20 +161,20 @@ void SeqDriver::run()
                 }
                 else if (useJackSync) {
                     jPos = jackSync->getCurrentPos();
-                    if (jPos.beats_per_minute > 0)
-                        tempo = jPos.beats_per_minute;
+                    if (jPos.beats_per_minute > 0) requestedTempo = jPos.beats_per_minute;
 
-                    m_current_tick = (long)jPos.frame * TPQN
-                            / jPos.frame_rate * tempo / 60.
-                            - jackOffsetTick;
+                    m_current_tick = (long)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
+                            / jPos.frame_rate / 60.
+                            + tempoChangeTick;
                     calcClockRatio();
                 }
                 else {
-                    clockRatio = 60e9/TPQN/tempo;
                     m_current_tick = deltaToTick(aTimeToDelta(&realTime));
+                    clockRatio = 60e9/TPQN/tempo;
                 }
-
+                if (requestedTempo != tempo) setTempo(requestedTempo);
                 tick_callback((inEv.data));
+                requestEchoAt(m_current_tick+2);
             }
             else {
                 unmatched = true;
@@ -224,14 +225,14 @@ void SeqDriver::initTempo()
         else
             tempo = internalTempo;
 
-        jackOffsetTick = (uint64_t)jPos.frame * TPQN
-                * tempo / (jPos.frame_rate * 60);
-        clockRatio = 60e9/TPQN/tempo;
+        tempoChangeFrame = (uint64_t)jPos.frame;
     }
     else {
         tempo = internalTempo;
-        clockRatio = 60e9/TPQN/tempo;
     }
+
+    clockRatio = 60e9/TPQN/tempo;
+
     if (useMidiClock) {
         midiTick = 0;
         lastRatioTick = 0;
@@ -240,7 +241,7 @@ void SeqDriver::initTempo()
 
 void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, unsigned outport, unsigned length)
 {
-  //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
+    //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);
 
@@ -278,9 +279,9 @@ bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 void SeqDriver::setTempo(double bpm)
 {
     tempoChangeTick = m_current_tick;
-    tempo = bpm;
+    tempoChangeTime = aTimeToDelta(&realTime);
     internalTempo = bpm;
-    clockRatio = 60e9/TPQN/tempo;
+    initTempo();
 }
 
 void SeqDriver::getTime()
@@ -299,6 +300,9 @@ void SeqDriver::getTime()
 void SeqDriver::setTransportStatus(bool run)
 {
     if (run) {
+        tempoChangeTick = 0;
+        getTime();
+        tempoChangeTime = 0;
         queueStatus = true;
         startQueue = true;
 
@@ -334,12 +338,18 @@ void SeqDriver::setUseMidiClock(bool on)
 
 double SeqDriver::tickToDelta(int tick)
 {
-    return (double)clockRatio * tick;
+    if (tick > tempoChangeTick)
+        return (double)clockRatio * (tick-tempoChangeTick) + tempoChangeTime;
+    else
+        return 0;
 }
 
 int SeqDriver::deltaToTick(double curtime)
 {
-    return (int)(curtime / clockRatio);
+    if (tempoChangeTime < curtime)
+        return (int)((curtime-tempoChangeTime) / clockRatio)+tempoChangeTick;
+    else
+        return 0;
 }
 
 double SeqDriver::aTimeToDelta(snd_seq_real_time_t* atime)
@@ -359,7 +369,7 @@ void SeqDriver::calcClockRatio()
     double old_clock_ratio = clockRatio;
 
     if (m_current_tick > 0) {
-        clockRatio = aTimeToDelta(&realTime)/m_current_tick;
+        clockRatio = (aTimeToDelta(&realTime) - tempoChangeTime)/(m_current_tick - tempoChangeTick);
     }
     if ((clockRatio == 0) || (clockRatio > 60e9 / tempo)) {
         clockRatio = old_clock_ratio;

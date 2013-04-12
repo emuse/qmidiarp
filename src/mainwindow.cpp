@@ -1033,7 +1033,7 @@ void MainWindow::displayTempo(double p_tempo)
 void MainWindow::updateTransportStatus(bool on)
 {
     engine->setStatus(on);
-    if (alsaMidi) tempoSpin->setDisabled(on);
+    //if (alsaMidi) tempoSpin->setDisabled(on);
 }
 
 void MainWindow::resetTransport()
