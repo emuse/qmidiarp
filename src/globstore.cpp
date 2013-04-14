@@ -124,7 +124,7 @@ GlobStore::GlobStore(QWidget *parent)
 
     QHBoxLayout *secondRowLayout = new QHBoxLayout;
     secondRowLayout->addLayout(indivButtonLayout);
-    secondRowLayout->addStretch();
+    secondRowLayout->addStretch(1);
 
     QVBoxLayout *centLayout = new QVBoxLayout();
     centLayout->addLayout(upperRowLayout);
