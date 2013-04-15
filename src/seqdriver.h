@@ -76,7 +76,7 @@ class SeqDriver : public DriverBase {
         double aTimeToDelta(snd_seq_real_time_t* atime);
         const snd_seq_real_time_t* deltaToATime(double curtime);
         snd_seq_remove_events_t *remove_ev;
-        void calcClockRatio();
+        void calcClockRatio(double realtime);
 
         void initTempo();
         bool callJack(int portcount);
@@ -92,9 +92,8 @@ class SeqDriver : public DriverBase {
         uint64_t tempoChangeFrame;
 
         double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
-        double tempoChangeTime;         /* duration of one tick, in nanoseconds; based on current tempo */
-        snd_seq_real_time_t delta, realTime;
-        snd_seq_real_time_t tmpTime;
+        double tempoChangeTime;
+        snd_seq_real_time_t atime;
 
 
     public:
@@ -109,7 +108,9 @@ class SeqDriver : public DriverBase {
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),
             void (* tick_callback)(void * context, bool echo_from_trig));
         ~SeqDriver();
-        void getTime();
+        double getCurrentTime();
+        void calcCurrentTick(); /** calculate m_current_tick based on realTime */
+        void requestTempo(double bpm); /** reimplemented over DriverBase */
         void setTempo(double bpm); /** reimplemented over DriverBase */
         int getClientId(); /** reimplemented over DriverBase */
         void run();

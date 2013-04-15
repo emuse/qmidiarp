@@ -370,6 +370,10 @@ void JackDriver::jackTrCheckState()
 
     uint state = getState();
 
+    if (!portCount && (currentPos.beats_per_minute != tempo)) {
+        tempoCb(currentPos.beats_per_minute, cbContext);
+    }
+
     if (transportState == state) return;
     transportState = state;
     switch (state){
