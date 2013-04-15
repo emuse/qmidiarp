@@ -74,6 +74,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     currentTick = 0;
     requestTick = 0;
     tempo = 120;
+    requestedTempo = 120;
 
     restoreRequest = -1;
     restoreModIx = 0;
