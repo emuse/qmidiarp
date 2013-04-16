@@ -215,7 +215,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     deferChangesAction = new QAction("D", this);
-    deferChangesAction->setToolTip(tr("Defer all parameter changes to pattern end"));
+    deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
     deferChangesAction->setCheckable(true);
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
 
@@ -467,6 +467,8 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         xml.writeStartElement("output");
             xml.writeTextElement("muted", QString::number(
                 midiWorker->isMuted));
+            xml.writeTextElement("defer", QString::number(
+                midiWorker->deferChanges));
             xml.writeTextElement("port", QString::number(
                 midiWorker->portOut));
             xml.writeTextElement("channel", QString::number(
@@ -550,6 +552,8 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     break;
                 if (xml.name() == "muted")
                     muteOutAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "defer")
+                    deferChangesAction->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "channel") {
                     tmp = xml.readElementText().toInt();
                     channelOut->setCurrentIndex(tmp);
