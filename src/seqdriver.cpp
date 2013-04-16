@@ -97,6 +97,7 @@ SeqDriver::SeqDriver(
     midiTick = 0;
     lastRatioTick = 0;
     tempoChangeTick = 0;
+    midiTempoRefreshTick = 0;
     tempoChangeFrame = 0;
     requestedTempo = 120;
     internalTempo = 120;
@@ -145,13 +146,13 @@ void SeqDriver::run()
             inEv.value = 0;
 
             if ((inEv.type == EV_CLOCK)&& useMidiClock) {
+                calcCurrentTick(getCurrentTime());
                 midiTick++;
-                m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
             }
             if (((inEv.type == EV_ECHO) || startQueue) && queueStatus) {
                 startQueue = false;
                 unmatched = false;
-                calcCurrentTick();
+                calcCurrentTick(aTimeToDelta(&evIn->time.time));
                 tick_callback((inEv.data));
             }
             else {
@@ -167,13 +168,13 @@ void SeqDriver::run()
                         inEv.value = 0;
                         inEv.type = EV_NOTEON;
                     }
-                m_current_tick = deltaToTick(getCurrentTime());
+                    calcCurrentTick(aTimeToDelta(&evIn->time.time));
                 }
                 else inEv.value = evIn->data.control.value;
 
                 if (inEv.type == EV_CONTROLLER) {
                     inEv.data = evIn->data.control.param;
-                m_current_tick = deltaToTick(getCurrentTime());
+                    calcCurrentTick(aTimeToDelta(&evIn->time.time));
                 }
 
                 unmatched = midi_event_received(inEv);
@@ -191,15 +192,20 @@ void SeqDriver::run()
     }
 }
 
-void SeqDriver::calcCurrentTick() {
-
-    double tmpTime = getCurrentTime();
+void SeqDriver::calcCurrentTick(double tmpTime) {
 
     if (useMidiClock) {
-        m_current_tick = midiTick*TPQN/MIDICLK_TPQN;
-        if (midiTick > lastRatioTick + 3 || !midiTick) {
+        m_current_tick = midiTick * TPQN / MIDICLK_TPQN;
+        if (midiTick > lastRatioTick + 4 || !midiTick) {
             calcClockRatio(tmpTime);
             lastRatioTick = midiTick;
+            internalTempo = (60e9/TPQN/clockRatio);
+        }
+        if (midiTick > midiTempoRefreshTick + 48) {
+            tempoChangeTick = m_current_tick;
+            tempoChangeTime = tmpTime;
+            midiTempoRefreshTick = midiTick;
+            jackSync->tempoCb(internalTempo, jackSync->cbContext);
         }
     }
     else if (useJackSync) {
@@ -237,6 +243,7 @@ void SeqDriver::initTempo()
     if (useMidiClock) {
         midiTick = 0;
         lastRatioTick = 0;
+        midiTempoRefreshTick = 0;
     }
 }
 
@@ -279,9 +286,10 @@ bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 void SeqDriver::requestTempo(double bpm)
 {
-    calcCurrentTick();
+    double tmpTime = getCurrentTime();
+    calcCurrentTick(tmpTime);
     tempoChangeTick = m_current_tick;
-    tempoChangeTime = getCurrentTime();
+    tempoChangeTime = tmpTime;
     internalTempo = bpm;
     initTempo();
     requestedTempo = bpm;
@@ -347,6 +355,7 @@ void SeqDriver::setUseMidiClock(bool on)
 {
     clockRatio = 60e9/TPQN/tempo;
     useMidiClock = on;
+    if (!on) jackSync->tempoCb(internalTempo, jackSync->cbContext);
 }
 
 double SeqDriver::tickToDelta(int tick)
@@ -387,6 +396,8 @@ void SeqDriver::calcClockRatio(double realtime)
     if ((clockRatio == 0) || (clockRatio > 60e9 / tempo)) {
         clockRatio = old_clock_ratio;
     }
+    clockRatio+=old_clock_ratio;
+    clockRatio*=.5;
 }
 
 int SeqDriver::getClientId()
