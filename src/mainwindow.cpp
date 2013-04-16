@@ -1022,7 +1022,8 @@ bool MainWindow::isModified()
 
 void MainWindow::updateTempo(int p_tempo)
 {
-    engine->setTempo(p_tempo);
+    if (!midiClockAction->isChecked())
+        engine->setTempo(p_tempo);
 }
 
 void MainWindow::displayTempo(double p_tempo)

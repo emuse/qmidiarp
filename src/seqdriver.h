@@ -86,6 +86,7 @@ class SeqDriver : public DriverBase {
 
         int midiTick;
         int lastRatioTick;
+        int midiTempoRefreshTick;
         int lastSchedTick;
         int jackOffsetTick;
         int tempoChangeTick;
@@ -109,7 +110,7 @@ class SeqDriver : public DriverBase {
             void (* tick_callback)(void * context, bool echo_from_trig));
         ~SeqDriver();
         double getCurrentTime();
-        void calcCurrentTick(); /** calculate m_current_tick based on realTime */
+        void calcCurrentTick(double time); /** calculate m_current_tick based on realTime */
         void requestTempo(double bpm); /** reimplemented over DriverBase */
         void setTempo(double bpm); /** reimplemented over DriverBase */
         int getClientId(); /** reimplemented over DriverBase */
