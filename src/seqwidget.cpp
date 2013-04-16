@@ -915,6 +915,7 @@ void SeqWidget::storeParams(int ix, bool empty)
 
 void SeqWidget::restoreParams(int ix)
 {
+    midiWorker->parChangesPending = false;
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
         midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
@@ -930,9 +931,9 @@ void SeqWidget::restoreParams(int ix)
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
     if (!parStore->onlyPatternList.at(ix)) {
-        notelength->setValue(parStore->list.at(ix).notelen);
-        transpose->setValue(parStore->list.at(ix).transp);
-        velocity->setValue(parStore->list.at(ix).vel);
+        midiWorker->notelength = parStore->list.at(ix).notelen;
+        midiWorker->transp = parStore->list.at(ix).transp;
+        midiWorker->vel = parStore->list.at(ix).vel;
         setDispVert(parStore->list.at(ix).dispVertical);
 
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
@@ -946,6 +947,7 @@ void SeqWidget::restoreParams(int ix)
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
     midiWorker->setCurrentIndex(0);
+    needsGUIUpdate = true;
 }
 
 void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
