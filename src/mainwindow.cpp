@@ -72,6 +72,7 @@
 static const char FILEEXT[] = ".qmax";
 
 int MainWindow::sigpipe[2];
+nsm_client_t *MainWindow::nsm = 0;
 
 MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 {
@@ -97,6 +98,27 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     globStoreWindow->setWidget(globStore);
     globStoreWindow->setObjectName("globStore");
     globStoreWindow->setVisible(true);
+
+    const char *nsm_url = getenv( "NSM_URL" );
+
+    if ( nsm_url )
+    {
+        nsm = nsm_new();
+
+        nsm_set_open_callback( nsm, cb_nsm_open, 0 );
+        //nsm_set_save_callback( nsm, cb_nsm_save, 0 );
+
+        if ( 0 == nsm_init( nsm, nsm_url ) )
+        {
+            nsm_send_announce( nsm, "FOO", "", "qmidiarp" );
+        }
+        else
+        {
+            nsm_free( nsm );
+            nsm = 0;
+        }
+    }
+
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (alsaMidi) {
@@ -1421,4 +1443,14 @@ void MainWindow::ftb_update_orientation(Qt::Orientation orient)
     else {
         fileToolBar->setMinimumHeight(0);
     }
+}
+
+int MainWindow::cb_nsm_open ( const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata )
+{
+    return ERR_OK;
+}
+
+int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
+{
+  return ERR_OK;
 }

@@ -39,6 +39,21 @@ AC_CHECK_LIB([jack], [jack_client_open], ,
              [AC_MSG_ERROR(JACK library (jack) is required)])
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
+# OSC support
+PKG_CHECK_MODULES(LIBLO, liblo >= 0.26)
+LIBSsave=$LIBS
+CFLAGSsave=$CFLAGS
+CFLAGS=$LIBLO_CFLAGS
+LIBS=$LIBLO_LIBS
+# AC_MSG_CHECKING([for liblo OSC library])
+# AC_MSG_RESULT()
+# AC_CHECK_LIB(LIBLO,lo_address_new,[],[libloWorks=no])
+#echo "liblo OSC library: $LIBLO_LIBS"
+AC_SUBST(LIBLO_CFLAGS)
+AC_SUBST(LIBLO_LIBS)
+LIBS+=$LIBSsave
+CFLAGS+=$CFLAGSsave
+
 PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
 if test "x$HAVE_QT4" = "xyes"; then
   dnl Check needed because in some cases the QtGui includedir

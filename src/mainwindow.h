@@ -44,6 +44,7 @@
 #include "globstore.h"
 #include "groovewidget.h"
 #include "config.h"
+#include "nsm.h"
 
 #ifdef JACK_SESSION
 #include <jack/session.h>
@@ -102,6 +103,8 @@ class MainWindow : public QMainWindow
     QAction *midiClockAction, *jackSyncAction;
     QAction *showAllIOAction, *hideAllIOAction;
     QMenu* fileRecentlyOpenedFiles;
+
+    static nsm_client_t *nsm;
 
 /*!
 * @brief  opens a file dialog and calls either
@@ -543,6 +546,9 @@ class MainWindow : public QMainWindow
     void jsAction(int ev);
     void ctb_update_orientation(Qt::Orientation orient);
     void ftb_update_orientation(Qt::Orientation orient);
+
+    int cb_nsm_open ( const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata );
+    int cb_nsm_save ( char **out_msg, void *userdata );
 };
 
 #endif
