@@ -1349,6 +1349,11 @@ bool MainWindow::installSignalHandlers()
         return false;
     }
 
+    if (sigaction(SIGTERM, &action, NULL) == -1) {
+        qWarning("sigaction() failed: %s", std::strerror(errno));
+        return false;
+    }
+
     return true;
 }
 
@@ -1367,7 +1372,8 @@ void MainWindow::signalAction(int fd)
             break;
 
         case SIGINT:
-            close();
+        case SIGTERM:
+          close();
             break;
 
         default:
