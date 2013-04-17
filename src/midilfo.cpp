@@ -169,12 +169,14 @@ void MidiLfo::getNextFrame(int tick)
 
     reflect = pingpong;
 
+    if ((!frameptr && !reverse)
+        || (frameptr == npoints - l1 && reverse)) applyPendingParChanges();
+
     if (reverse) {
         frameptr-=l1;
         if (frameptr < 0) {
             if (!enableLoop) seqFinished = true;
             frameptr = npoints - l1;
-            applyPendingParChanges();
             if (reflect  || !backward) {
                 reverse = false;
                 frameptr = 0;
@@ -186,7 +188,6 @@ void MidiLfo::getNextFrame(int tick)
         if (frameptr >= npoints) {
             if (!enableLoop) seqFinished = true;
             frameptr = 0;
-            applyPendingParChanges();
             if (reflect || backward) {
                 reverse = true;
                 frameptr = npoints - l1;
