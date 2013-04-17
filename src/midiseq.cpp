@@ -187,11 +187,11 @@ void MidiSeq::advancePatternIndex()
     reflect = pingpong;
 
     if (reverse) {
-        currentIndex--;
         if (!pivot) pivot = npoints;
+        if (currentIndex == pivot - 1) applyPendingParChanges();
+        currentIndex--;
         if (currentIndex == -1) {
             if (!enableLoop) seqFinished = true;
-            applyPendingParChanges();
             if (reflect  || !backward) {
                 reverse = false;
                 currentIndex = 0;
@@ -200,7 +200,6 @@ void MidiSeq::advancePatternIndex()
         }
         else if (currentIndex == pivot - 1) {
             if (!enableLoop) seqFinished = true;
-            applyPendingParChanges();
             if (loopMarker < 0) reflect = true;
             if (loopMarker > 0) reflect = false;
             if (reflect) {
@@ -211,10 +210,10 @@ void MidiSeq::advancePatternIndex()
         }
     }
     else {
+        if (!currentIndex) applyPendingParChanges();
         currentIndex++;
         if (currentIndex == npoints) {
             if (!enableLoop) seqFinished = true;
-            applyPendingParChanges();
 
             if (reflect || backward) {
                 reverse = true;
@@ -225,7 +224,6 @@ void MidiSeq::advancePatternIndex()
         else if ((currentIndex == pivot)) {
             if (!pivot) pivot = npoints;
             if (!enableLoop) seqFinished = true;
-            applyPendingParChanges();
             if (loopMarker > 0) reflect = true;
             if (loopMarker < 0) reflect = false;
             if (reflect) {
