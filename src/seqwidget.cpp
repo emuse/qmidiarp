@@ -353,7 +353,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
 
-    parStore = new ParStore(globStore, name, muteOutAction, this);
+    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
     connect(parStore, SIGNAL(store(int, bool)),
              this, SLOT(storeParams(int, bool)));
@@ -813,6 +813,7 @@ void SeqWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
 }
 
 void SeqWidget::updateDeferChanges(bool on)
@@ -1121,6 +1122,7 @@ void SeqWidget::updateDisplay()
     velocity->setValue(midiWorker->vel);
     muteOutAction->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
