@@ -112,24 +112,20 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         if ( 0 == nsm_init_thread( nsm, nsm_url ) )
         {
             nsm_send_announce( nsm, APP_NAME, "", "qmidiarp" );
-
+            nsm_thread_start(nsm);
             for (int i=0; i<5000; ++i)
             {
-                nsm_check_wait(nsm, 0);
+                // wait until filename is set
                 if (!filename.isEmpty())
                     break;
                 usleep(1000);
             }
-            nsm_thread_start(nsm);
         }
         else
         {
             nsm_free( nsm );
             nsm = 0;
         }
-
-        //nsm_thread_start(nsm);
-        //nsm_check_wait(nsm, 5);
     }
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
@@ -380,8 +376,14 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     if (!jackFailed || alsaMidi) show();
 
-    if (nsm_is_active(nsm))
+    if (nsm && nsm_is_active(nsm))
+    {
+        fileNewAction->setDisabled(true);
+        fileOpenAction->setDisabled(true);
+        fileSaveAsAction->setDisabled(true);
+        fileRecentlyOpenedFiles->setDisabled(true);
         openFile(filename);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -1274,6 +1276,9 @@ void MainWindow::setupRecentFilesMenu()
     } else {
         fileRecentlyOpenedFiles->setEnabled(false);
     }
+
+    if (nsm && nsm_is_active(nsm))
+      fileRecentlyOpenedFiles->setEnabled(false);
 }
 
 void MainWindow::recentFileActivated(QAction *action)
@@ -1343,7 +1348,12 @@ void MainWindow::checkIfFirstModule()
         if (alsaMidi) midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
         fileSaveAction->setEnabled(true);
-        fileSaveAsAction->setEnabled(true);
+        if (nsm && nsm_is_active(nsm)) {
+            fileSaveAsAction->setDisabled(true);
+        }
+        else {
+            fileSaveAsAction->setEnabled(true);
+        }
         showAllIOAction->setEnabled(true);
         hideAllIOAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()
@@ -1417,7 +1427,7 @@ void MainWindow::signalAction(int fd)
 
         case SIGINT:
         case SIGTERM:
-          close();
+            close();
             break;
 
         default:
@@ -1469,13 +1479,11 @@ void MainWindow::ftb_update_orientation(Qt::Orientation orient)
 
 int MainWindow::cb_nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata)
 {
-    std::cout << "open callback " << std::endl;
     return ((MainWindow *)userdata)->nsm_open(name, display_name, client_id, out_msg);
 }
 
 int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
 {
-    std::cout << "save callback " << std::endl;
     return ((MainWindow *)userdata)->nsm_save(out_msg);
 }
 
