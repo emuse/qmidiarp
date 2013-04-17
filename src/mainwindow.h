@@ -547,8 +547,11 @@ class MainWindow : public QMainWindow
     void ctb_update_orientation(Qt::Orientation orient);
     void ftb_update_orientation(Qt::Orientation orient);
 
-    int cb_nsm_open ( const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata );
-    int cb_nsm_save ( char **out_msg, void *userdata );
+    static int cb_nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata);
+    static int cb_nsm_save(char **out_msg, void *userdata);
+
+    int nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg);
+    int nsm_save(char **out_msg);
 };
 
 #endif

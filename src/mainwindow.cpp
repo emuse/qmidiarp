@@ -45,6 +45,7 @@
 #include <cstring>  // for strerror()
 #include <unistd.h> // for pipe()
 
+#include <iostream>
 
 #include "mainwindow.h"
 
@@ -105,20 +106,31 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     {
         nsm = nsm_new();
 
-        nsm_set_open_callback( nsm, cb_nsm_open, 0 );
-        //nsm_set_save_callback( nsm, cb_nsm_save, 0 );
+        nsm_set_open_callback( nsm, cb_nsm_open, this );
+        nsm_set_save_callback( nsm, cb_nsm_save, this );
 
-        if ( 0 == nsm_init( nsm, nsm_url ) )
+        if ( 0 == nsm_init_thread( nsm, nsm_url ) )
         {
-            nsm_send_announce( nsm, "FOO", "", "qmidiarp" );
+            nsm_send_announce( nsm, APP_NAME, "", "qmidiarp" );
+
+            for (int i=0; i<5000; ++i)
+            {
+                nsm_check_wait(nsm, 0);
+                if (!filename.isEmpty())
+                    break;
+                usleep(1000);
+            }
+            nsm_thread_start(nsm);
         }
         else
         {
             nsm_free( nsm );
             nsm = 0;
         }
-    }
 
+        //nsm_thread_start(nsm);
+        //nsm_check_wait(nsm, 5);
+    }
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (alsaMidi) {
@@ -367,6 +379,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         qWarning("%s", "Signal handlers not installed!");
 
     if (!jackFailed || alsaMidi) show();
+
+    if (nsm_is_active(nsm))
+        openFile(filename);
 }
 
 MainWindow::~MainWindow()
@@ -722,9 +737,16 @@ void MainWindow::openFile(const QString& fn)
 
     QFile f(fn);
     if (!f.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(this, APP_NAME,
+        if (nsm_is_active(nsm)) {
+            filename = fn;
+            //updateWindowTitle();
+            return;
+        }
+        else {
+            QMessageBox::warning(this, APP_NAME,
                 tr("Could not read from file '%1'.").arg(fn));
-        return;
+            return;
+        }
     }
 
     clear();
@@ -1445,12 +1467,29 @@ void MainWindow::ftb_update_orientation(Qt::Orientation orient)
     }
 }
 
-int MainWindow::cb_nsm_open ( const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata )
+int MainWindow::cb_nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata)
 {
-    return ERR_OK;
+    std::cout << "open callback " << std::endl;
+    return ((MainWindow *)userdata)->nsm_open(name, display_name, client_id, out_msg);
 }
 
 int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
 {
-  return ERR_OK;
+    std::cout << "save callback " << std::endl;
+    return ((MainWindow *)userdata)->nsm_save(out_msg);
+}
+
+int MainWindow::nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg)
+{
+    QString configFile = name;
+    configFile.append(".qmax");
+    filename = configFile;
+    return ERR_OK;
+}
+
+int MainWindow::nsm_save(char **out_msg)
+{
+    int err = ERR_OK;
+    if (!saveFile()) err = ERR_GENERAL;
+    return err;
 }
