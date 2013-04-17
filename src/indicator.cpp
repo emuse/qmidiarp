@@ -51,6 +51,7 @@ Indicator::Indicator(int size, QChar modType, QWidget* parent) : QWidget (parent
         default: fillColor = QColor(200, 160, 0);
     }
     needsRedraw = false;
+    isMuted = false;
 }
 
 Indicator::~Indicator()
@@ -63,8 +64,9 @@ void Indicator::paintEvent(QPaintEvent*)
     QPainter p(this);
     QPen pen;
     pen.setWidth(2);
-    pen.setColor(QColor(0, 0, 0));
-    p.setBrush(fillColor);
+    pen.setColor(QColor(0, 0, 0, (int)!isMuted * 200 + 55));
+    if (isMuted) p.setBrush(fillColor.lighter(220));
+    else p.setBrush(fillColor);
     p.setPen(pen);
     p.setRenderHint(QPainter::Antialiasing, true);
     QRectF r(5.0, 5.0, p_size, p_size);
@@ -82,6 +84,12 @@ void Indicator::updateDraw()
     if (!needsRedraw) return;
     needsRedraw = false;
     update();
+}
+
+void Indicator::setMuted(bool on)
+{
+    isMuted = on;
+    needsRedraw = true;
 }
 
 QSize Indicator::sizeHint() const

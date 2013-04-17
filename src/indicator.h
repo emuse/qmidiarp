@@ -40,6 +40,7 @@ class Indicator : public QWidget
     int p_angle;
     int p_size;
     bool needsRedraw;
+    bool isMuted;
     QColor fillColor;
 
   protected:
@@ -53,6 +54,7 @@ class Indicator : public QWidget
 
   public slots:
     void updatePercent(int percent);
+    void setMuted(bool on);
     void updateDraw();
 };
 

@@ -372,7 +372,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
 
-    parStore = new ParStore(globStore, name, muteOutAction, this);
+    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
     connect(parStore, SIGNAL(store(int, bool)),
              this, SLOT(storeParams(int, bool)));
@@ -825,6 +825,7 @@ void LfoWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
 }
 
 void LfoWidget::updateDeferChanges(bool on)
@@ -1108,6 +1109,7 @@ void LfoWidget::updateDisplay()
 
     muteOutAction->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);

@@ -369,7 +369,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
     muteOutAction->setChecked(mutedAdd);
 
-    parStore = new ParStore(globStore, name, muteOutAction, this);
+    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
     connect(parStore, SIGNAL(store(int, bool)),
              this, SLOT(storeParams(int, bool)));
@@ -843,6 +843,7 @@ void ArpWidget::setMuted(bool on)
 {
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
 }
 
 void ArpWidget::updateDeferChanges(bool on)
@@ -1005,6 +1006,7 @@ void ArpWidget::updateDisplay()
 
     muteOut->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
+    parStore->ndc->setMuted(midiWorker->isMuted);
     if (patternPresetBoxIndex != patternPresetBox->currentIndex())
         selectPatternPreset(patternPresetBoxIndex);
 

@@ -71,12 +71,15 @@ class ParStore : public QWidget
   public:
     ParStore(GlobStore *p_globStore, const QString &name = "",
                 QAction* p_muteOutAction = 0,
+                QAction* p_deferChangesAction = 0,
                 QWidget* parent = 0);
     ~ParStore();
     GlobStore *globStore;
     QToolButton *topButton;
     QAction *muteOutAction;
+    QAction *deferChangesAction;
     QToolButton *muteOut;
+    QToolButton *deferChanges;
     Indicator *ndc;
     QList<int> jumpToList; /**< List of jumpTo configurations for each location
                             @see ParStore::updateRunOnce()*/

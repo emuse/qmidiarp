@@ -30,6 +30,7 @@
 
 ParStore::ParStore(GlobStore *p_globStore, const QString &name,
             QAction *p_muteOutAction,
+            QAction *p_deferChangesAction,
             QWidget* parent):
                 QWidget(parent), globStore(p_globStore)
 {
@@ -84,9 +85,16 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(10, 10));
 
+    deferChangesAction = p_deferChangesAction;
+    deferChanges = new QToolButton(this);
+    deferChanges->setDefaultAction(deferChangesAction);
+    deferChanges->setFont(QFont("Helvetica", 8));
+    deferChanges->setMinimumSize(QSize(10, 10));
+
     QHBoxLayout *muteRowLayout = new QHBoxLayout;
     muteRowLayout->addStretch();
     muteRowLayout->addWidget(muteOut);
+    muteRowLayout->addWidget(deferChanges);
     muteRowLayout->setMargin(0);
     muteRowLayout->setSpacing(0);
 
