@@ -29,6 +29,7 @@
 
 JackDriver::JackDriver(
     int p_portCount,
+    const char *client_name,
     void * callback_context,
     void (* p_tr_state_cb)(bool j_tr_state, void * context),
     bool (* midi_event_received_callback)(void * context, MidiEvent ev),
@@ -37,6 +38,7 @@ JackDriver::JackDriver(
     : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
     portCount = p_portCount;
+    clientName = client_name;
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
     tempoCb = p_tempo_callback;
@@ -105,17 +107,17 @@ int JackDriver::initJack(int out_port_count)
 
 #ifdef JACK_SESSION
        if (global_jack_session_uuid.isEmpty() || !out_port_count) {
-           if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
+           if ((jack_handle = jack_client_open(clientName, JackNullOption, NULL)) == 0) {
             qCritical("jack server not running?");
                return 1;
            }
        }
-       else if ((jack_handle = jack_client_open(PACKAGE, JackSessionID, NULL, global_jack_session_uuid.data())) == 0) {
+       else if ((jack_handle = jack_client_open(clientName, JackSessionID, NULL, global_jack_session_uuid.data())) == 0) {
         qCritical("jack server not running?");
            return 1;
        }
 #else
-    if ((jack_handle = jack_client_open(PACKAGE, JackNullOption, NULL)) == 0) {
+    if ((jack_handle = jack_client_open(clientName, JackNullOption, NULL)) == 0) {
         qCritical("jack server not running?");
         return 1;
     }

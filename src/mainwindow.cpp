@@ -81,6 +81,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     filename = "";
     lastDir = QDir::homePath();
     alsaMidi = p_alsamidi;
+    clientName = PACKAGE;
 
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
@@ -128,7 +129,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         }
     }
 
-    engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
+    std::cout << "mainwin.clientName: " << clientName << std::endl;
+
+    engine = new Engine(globStore, grooveWidget, p_portCount, clientName, alsaMidi, this);
     if (alsaMidi) {
         connect(engine->jackSync, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
     }
@@ -1492,6 +1495,8 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
     QString configFile = name;
     configFile.append(".qmax");
     filename = configFile;
+    clientName = client_id;
+    std::cout << "nsm_open.clientName: " << clientName << std::endl;
     return ERR_OK;
 }
 

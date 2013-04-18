@@ -25,12 +25,15 @@
 
 #include <QString>
 
+#include <iostream>
+
 #include "seqdriver.h"
 #include "engine.h"
 
 
-Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
+Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, const char *client_name, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
 {
+    std::cout << "engine.client_name: " << client_name << std::endl;
     ready = false;
 
     logEventBuffer.resize(128);
@@ -53,12 +56,12 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     portCount = p_portCount;
 
     if (!p_alsamidi) {
-        driver = new JackDriver(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
+        driver = new JackDriver(portCount, client_name, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
     }
     else {
     // In case of ALSA MIDI with Jack Transport sync, JackDriver is instantiated with 0 ports
     // a pointer to jackSync has to be passed to driver
-        jackSync = new JackDriver(0,  this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
+        jackSync = new JackDriver(0, client_name, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
         driver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
     }
 

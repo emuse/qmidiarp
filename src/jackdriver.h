@@ -89,6 +89,7 @@ class JackDriver : public DriverBase
 
   public:
     JackDriver(int p_portCount,
+            const char *client_name,
             void * callback_context,
             void (* p_tr_state_cb)(bool j_tr_state, void * context),
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),

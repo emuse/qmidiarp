@@ -156,6 +156,7 @@ protected:
     uint64_t m_tpm;             // ticks per minute
     double tempo, internalTempo, requestedTempo;
     int portCount;
+    const char *clientName;
 };
 
 #endif // #ifndef DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED
