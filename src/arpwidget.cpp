@@ -915,6 +915,7 @@ void ArpWidget::storeParams(int ix, bool empty)
 
 void ArpWidget::restoreParams(int ix)
 {
+    midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     patternText->setText(parStore->list.at(ix).pattern);
     repeatPatternThroughChord->setCurrentIndex(parStore->list.at(ix).repeatMode);

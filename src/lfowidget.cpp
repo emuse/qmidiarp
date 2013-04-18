@@ -903,6 +903,7 @@ void LfoWidget::storeParams(int ix, bool empty)
 
 void LfoWidget::restoreParams(int ix)
 {
+    midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
         midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));

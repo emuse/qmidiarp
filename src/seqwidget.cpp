@@ -920,7 +920,7 @@ void SeqWidget::storeParams(int ix, bool empty)
 
 void SeqWidget::restoreParams(int ix)
 {
-    midiWorker->parChangesPending = false;
+    midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
         midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
@@ -952,6 +952,7 @@ void SeqWidget::restoreParams(int ix)
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
     midiWorker->setCurrentIndex(0);
+
     needsGUIUpdate = true;
 }
 
