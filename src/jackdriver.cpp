@@ -44,10 +44,10 @@ JackDriver::JackDriver(
     portUnmatched = 0;
     forwardUnmatched = false;
     useJackSync = false;
-    echoTickQueue.resize(512);
-    evQueue.resize(512);
-    evTickQueue.resize(512);
-    evPortQueue.resize(512);
+    echoTickQueue.resize(JQ_BUFSZ);
+    evQueue.resize(JQ_BUFSZ);
+    evTickQueue.resize(JQ_BUFSZ);
+    evPortQueue.resize(JQ_BUFSZ);
     bufPtr = 0;
     echoPtr = 0;
     internalTempo = 120;
@@ -418,6 +418,10 @@ void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsig
 {
   //qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
 
+    if (bufPtr > JQ_BUFSZ - 2) {
+        printf("WARNING: Event buffer overflow. Buffer cleared.\n");
+        bufPtr = 0;
+    }
     evQueue.replace(bufPtr,ev);
     evTickQueue.replace(bufPtr,n_tick);
     evPortQueue.replace(bufPtr,outport);
@@ -434,6 +438,10 @@ void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsig
 
 bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 {
+    if (echoPtr > JQ_BUFSZ - 1) {
+        printf("WARNING: Echo buffer overflow. Buffer cleared.\n");
+        echoPtr = 0;
+    }
     if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
     echoTickQueue.replace(echoPtr, echo_tick);
     echoPtr++;

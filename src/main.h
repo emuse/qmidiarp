@@ -44,6 +44,7 @@ extern void skipXmlElement(QXmlStreamReader& xml);
 
 #define MAX_PORTS         64
 #define SEQPOOL         2048
+#define JQ_BUFSZ        1024
 #define LFO_FRAMELIMIT    16
 #define MAXNOTES         128
 #define TPQN             192
