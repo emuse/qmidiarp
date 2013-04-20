@@ -826,11 +826,13 @@ void LfoWidget::setMuted(bool on)
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
+    modified = true;
 }
 
 void LfoWidget::updateDeferChanges(bool on)
 {
     midiWorker->updateDeferChanges(on);
+    modified = true;
 }
 
 void LfoWidget::setRecord(bool on)

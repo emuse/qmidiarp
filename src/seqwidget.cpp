@@ -814,11 +814,13 @@ void SeqWidget::setMuted(bool on)
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
+    modified = true;
 }
 
 void SeqWidget::updateDeferChanges(bool on)
 {
     midiWorker->updateDeferChanges(on);
+    modified = true;
 }
 
 void SeqWidget::setPortOut(int value)
