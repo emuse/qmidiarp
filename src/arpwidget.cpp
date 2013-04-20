@@ -401,6 +401,7 @@ MidiArp *ArpWidget::getMidiWorker()
 void ArpWidget::updateChIn(int value)
 {
     midiWorker->chIn = value;
+    modified = true;
 }
 
 void ArpWidget::updateIndexIn(int value)
@@ -411,6 +412,7 @@ void ArpWidget::updateIndexIn(int value)
         midiWorker->indexIn[1] = value;
     }
     checkIfInputFilterSet();
+    modified = true;
 }
 
 void ArpWidget::updateRangeIn(int value)
@@ -421,6 +423,7 @@ void ArpWidget::updateRangeIn(int value)
         midiWorker->rangeIn[1] = value;
     }
     checkIfInputFilterSet();
+    modified = true;
 }
 
 void ArpWidget::checkIfInputFilterSet()
@@ -844,11 +847,13 @@ void ArpWidget::setMuted(bool on)
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
+    modified = true;
 }
 
 void ArpWidget::updateDeferChanges(bool on)
 {
     midiWorker->updateDeferChanges(on);
+    modified = true;
 }
 
 void ArpWidget::setLatchMode(bool on)
