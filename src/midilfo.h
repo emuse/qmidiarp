@@ -274,6 +274,14 @@ class MidiLfo : public QObject  {
  * them if so
  */
     void applyPendingParChanges();
+/**
+ * @brief sets MidiLfo::nextTick and MidiLfo::framePtr position
+ * according to the specified tick.
+ *
+ * @param tick The current tick to which the module position should be
+ * aligned.
+ */
+    void setNextTick(int tick);
 };
 
 #endif

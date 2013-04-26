@@ -384,6 +384,14 @@ class MidiArp : public QWidget  {
   */
     void purgeLatchBuffer();
     int getGrooveIndex() { return grooveIndex; }
+/**
+ * @brief sets MidiArp::nextTick and MidiArp::patternIndex position
+ * according to the specified tick.
+ *
+ * @param tick The current tick to which the module position should be
+ * aligned.
+ */
+    void setNextTick(int tick);
 
 };
 

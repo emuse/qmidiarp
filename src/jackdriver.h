@@ -66,6 +66,7 @@ class JackDriver : public DriverBase
 
     bool jackRunning;
     uint transportState;
+    uint jackNFrames;
     uint lastSchedTick;
     uint tempoChangeTick;
     uint64_t curJFrame;

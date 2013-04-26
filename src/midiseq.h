@@ -273,6 +273,14 @@ class MidiSeq : public QObject  {
  * them if so
  */
     void applyPendingParChanges();
+/**
+ * @brief sets MidiSeq::nextTick and MidiSeq::currentIndex position
+ * according to the specified tick.
+ *
+ * @param tick The current tick to which the module position should be
+ * aligned.
+ */
+    void setNextTick(int tick);
 };
 
 #endif

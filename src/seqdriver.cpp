@@ -98,6 +98,8 @@ SeqDriver::SeqDriver(
     lastRatioTick = 0;
     tempoChangeTick = 0;
     midiTempoRefreshTick = 0;
+    trStartingTick = 0;
+    trLoopingTick = 0;
     tempoChangeFrame = 0;
     requestedTempo = 120;
     internalTempo = 120;
@@ -123,6 +125,7 @@ void SeqDriver::run()
 {
     snd_seq_event_t *evIn;
     bool unmatched = true;
+    double tmpTime = 0;
     MidiEvent inEv;
     int pollr = 0;
 
@@ -138,6 +141,8 @@ void SeqDriver::run()
         pollr = poll(pfds, nfds, 200);
         while (pollr > 0) {
 
+            tmpTime = getCurrentTime();
+
             snd_seq_event_input(seq_handle, &evIn);
 
             inEv.type = evIn->type;
@@ -146,7 +151,7 @@ void SeqDriver::run()
             inEv.value = 0;
 
             if ((inEv.type == EV_CLOCK)&& useMidiClock) {
-                calcCurrentTick(getCurrentTime());
+                calcCurrentTick(tmpTime);
                 midiTick++;
             }
             if (((inEv.type == EV_ECHO) || startQueue) && queueStatus) {
@@ -168,13 +173,13 @@ void SeqDriver::run()
                         inEv.value = 0;
                         inEv.type = EV_NOTEON;
                     }
-                    calcCurrentTick(aTimeToDelta(&evIn->time.time));
+                    calcCurrentTick(tmpTime);
                 }
                 else inEv.value = evIn->data.control.value;
 
                 if (inEv.type == EV_CONTROLLER) {
                     inEv.data = evIn->data.control.param;
-                    calcCurrentTick(aTimeToDelta(&evIn->time.time));
+                    calcCurrentTick(tmpTime);
                 }
 
                 unmatched = midi_event_received(inEv);
@@ -215,7 +220,15 @@ void SeqDriver::calcCurrentTick(double tmpTime) {
         m_current_tick = (long)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
                 / jPos.frame_rate / 60.
                 + tempoChangeTick;
-        calcClockRatio(tmpTime);
+
+        tmpTime = tickToDelta(m_current_tick);
+        snd_seq_event_t ev;
+        snd_seq_ev_clear(&ev);
+        snd_seq_ev_set_queue_pos_real(&ev, queue_id, deltaToATime(tmpTime));
+        snd_seq_ev_set_direct(&ev);
+        snd_seq_event_output_direct(seq_handle, &ev);
+
+        clockRatio = 60e9/TPQN/tempo;
     }
     else {
         m_current_tick = deltaToTick(tmpTime);
@@ -322,18 +335,20 @@ double SeqDriver::getCurrentTime()
 void SeqDriver::setTransportStatus(bool run)
 {
     if (run) {
-        tempoChangeTick = 0;
-        tempoChangeTime = 0;
         queueStatus = true;
         startQueue = true;
 
         initTempo();
-
+        tempoChangeTick = 0;
+        tempoChangeTime = 0;
+        tempoChangeFrame = 0;
+        if (useJackSync)
+            trStartingTick = jackSync->trStartingTick;
+        else
+            trStartingTick = 0;
         snd_seq_start_queue(seq_handle, queue_id, NULL);
         snd_seq_drain_output(seq_handle);
-
-        requestEchoAt(0);
-
+        calcCurrentTick(0);
         printf("Alsa Queue started \n");
     }
     else {

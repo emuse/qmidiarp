@@ -449,3 +449,18 @@ void MidiSeq::applyPendingParChanges()
     needsGUIUpdate = true;
 
 }
+
+void MidiSeq::setNextTick(int tick)
+{
+    int tickres = TPQN/res;
+    int pos = (tick/tickres) % nPoints;
+
+    reverse = false;
+    if (pingpong || (loopMarker > 0)) reverse = (((tick/tickres) / nPoints) % 2);
+
+    if (backward) reverse = !reverse;
+    if (reverse) pos = nPoints - pos;
+
+    setCurrentIndex(pos);
+    nextTick = (tick/tickres) * tickres;
+}

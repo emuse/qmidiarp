@@ -54,6 +54,9 @@ JackDriver::JackDriver(
     requestedTempo = 120;
     tempoChangeTick = 0;
     tempoChangeJPosFrame = 0;
+    jackNFrames = 256;
+    trStartingTick = 0;
+    trLoopingTick = 0;
 
 /* Initialize and activate Jack with out_port_count ports if we use
  *  JACK driver backend, i.e. portCount > 0 */
@@ -388,10 +391,12 @@ void JackDriver::jackTrCheckState()
         break;
 
         case JackTransportStarting:
+            trStartingTick = m_current_tick;
             printf( "[JackTransportStarting]\n" );
         break;
 
         case JackTransportLooping:
+            trLoopingTick = m_current_tick;
             printf( "[JackTransportLooping]\n" );
         break;
         default:
@@ -457,6 +462,7 @@ void JackDriver::handleEchoes(int nframes)
     uint l1;
     int nexttick, tmptick, idx;
 
+    jackNFrames = nframes;
     if (useJackSync) {
         if (currentPos.beats_per_minute > 0.01) {
         m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
@@ -518,21 +524,26 @@ void JackDriver::setTransportStatus(bool on)
         else
             tempo = internalTempo;
 
-        tempoChangeJPosFrame = jpos.frame;
+        tempoChangeJPosFrame = 0;
+        tempoChangeTick = 0;
     }
     else {
         tempo = internalTempo;
     }
 
-    m_current_tick = 0;
-
     if (on) {
-        curJFrame = 0;
+        if (useJackSync) {
+            m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
+                * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
+            curJFrame = ((uint64_t)currentPos.frame - tempoChangeJPosFrame) * (jSampleRate * 60) / jackNFrames / (currentPos.frame_rate * 60);
+        } else {
+            m_current_tick = 0;
+            curJFrame = 0;
+        }
         tempoChangeTick = 0;
         lastSchedTick = 0;
         echoPtr = 0;
         bufPtr = 0;
-        requestEchoAt(0);
         printf("Internal Transport started\n");
     }
     else {
