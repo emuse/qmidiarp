@@ -563,3 +563,18 @@ void MidiLfo::applyPendingParChanges()
     parChangesPending = false;
     needsGUIUpdate = true;
 }
+
+void MidiLfo::setNextTick(int tick)
+{
+    int tickres = TPQN/res;
+    int pos = (tick/tickres) % nPoints;
+
+    reverse = false;
+    if (pingpong) reverse = (((tick/tickres) / nPoints) % 2);
+
+    if (backward) reverse = !reverse;
+    if (reverse) pos = nPoints - pos;
+
+    setFramePtr(pos);
+    nextTick = (tick/tickres) * tickres;
+}

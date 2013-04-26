@@ -513,10 +513,12 @@ bool MidiArp::advancePatternIndex(bool reset)
     if (patternLen) {
         patternIndex++;
     }
+
     if ((patternIndex >= patternLen) || reset) {
         patternIndex = 0;
         restartFlag = false;
         applyPendingParChanges();
+
 
         switch (repeatPatternThroughChord) {
             case 1:
@@ -839,4 +841,13 @@ void MidiArp::applyPendingParChanges()
     deferChanges = olddefer;
     parChangesPending = false;
     needsGUIUpdate = true;
+}
+
+void MidiArp::setNextTick(int tick)
+{
+    returnTick = tick / (int)(nSteps*TPQN) * (int)(nSteps*TPQN);
+    patternIndex = 0;
+    currentNoteTick = returnTick;
+    arpTick = returnTick;
+    nextTick = returnTick;
 }

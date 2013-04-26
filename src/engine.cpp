@@ -83,6 +83,9 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     restoreTick = -1;
     schedRestoreLocation = -1;
 
+    nextMinArpTick = 0;
+    nextMinLfoTick = 0;
+    nextMinSeqTick = 0;
     resetTicks(0);
     dispTimer = new MTimer();
     connect(dispTimer, SIGNAL(timeout()), this, SLOT(updateDisplay()));
@@ -454,8 +457,12 @@ void Engine::setStatus(bool on)
         }
     }
     status = on;
-    resetTicks(0);
     driver->setTransportStatus(on);
+    if (on) {
+        uint64_t starttick = driver->getCurrentTick();
+        resetTicks(starttick);
+        driver->requestEchoAt(starttick);
+    }
 }
 
 void Engine::tick_callback(void * context, bool echo_from_trig)
@@ -772,23 +779,27 @@ void Engine::learnController(int ccnumber, int channel)
 void Engine::resetTicks(int curtick)
 {
     int l1;
-
     for (l1 = 0; l1 < midiArpCount(); l1++) {
-        midiArp(l1)->foldReleaseTicks(curtick);
-        midiArp(l1)->initArpTick(0);
-        midiArp(l1)->nextTick = 0;
+        midiArp(l1)->foldReleaseTicks(driver->trStartingTick - curtick);
+        midiArp(l1)->setNextTick(curtick);
+        if (!l1) nextMinArpTick = midiArp(l1)->nextTick;
+        if (midiArp(l1)->nextTick < nextMinArpTick)
+            nextMinArpTick=midiArp(l1)->nextTick;
     }
+
     for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        midiLfo(l1)->setFramePtr(0);
-        midiLfo(l1)->nextTick = 0;
+        midiLfo(l1)->setNextTick(curtick);
+        if (!l1) nextMinLfoTick = midiLfo(l1)->nextTick;
+        if (midiLfo(l1)->nextTick < nextMinLfoTick)
+            nextMinLfoTick=midiLfo(l1)->nextTick;
     }
+
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
-        midiSeq(l1)->setCurrentIndex(0);
-        midiSeq(l1)->nextTick = 0;
+        midiSeq(l1)->setNextTick(curtick);
+        if (!l1) nextMinSeqTick = midiSeq(l1)->nextTick;
+        if (midiSeq(l1)->nextTick < nextMinSeqTick)
+            nextMinSeqTick=midiSeq(l1)->nextTick;
     }
-    nextMinLfoTick = 0;
-    nextMinSeqTick = 0;
-    nextMinArpTick = 0;
 }
 
 void Engine::setMidiControllable(bool on)

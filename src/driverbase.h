@@ -37,6 +37,8 @@ public:
     bool forwardUnmatched, queueStatus;
     int portUnmatched;
     QString jsFilename;
+    uint trStartingTick;
+    uint trLoopingTick;
 
     virtual void resetTick(unsigned int tick = 0)
     {
@@ -153,6 +155,7 @@ protected:
     uint64_t m_backend_rate;    // samples(?) per minute (granularity)
     unsigned int m_current_tick;
     unsigned int m_next_tick;
+
     uint64_t m_tpm;             // ticks per minute
     double tempo, internalTempo, requestedTempo;
     int portCount;
