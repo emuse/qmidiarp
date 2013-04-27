@@ -365,7 +365,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     }
     waveBox->setLayout(waveBoxLayout);
 
-    muteOut->setChecked(mutedAdd);
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
@@ -379,6 +378,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     connect(parStore, SIGNAL(restore(int)),
              this, SLOT(restoreParams(int)));
 
+    muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
     updateAmp(64);

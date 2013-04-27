@@ -346,8 +346,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     }
     seqBox->setLayout(seqBoxLayout);
 
-    muteOut->setChecked(mutedAdd);
-
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
@@ -360,6 +358,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     connect(parStore, SIGNAL(restore(int)),
              this, SLOT(restoreParams(int)));
 
+    muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
     recordMode = false;
