@@ -1,3 +1,16 @@
+qmidiarp-0.5.2 (2013-05-??)
+
+New Features
+  o Tempo changes are again possible while running, both manually or by
+    a Jack Transport Master
+  o Jack Transport position is now taken into account when starting,
+    QMidiArp used to start always at zero
+  o Muting and sequencer parameter changes can be deferred to pattern
+    end using a new toolbutton
+  o Modules in the Global Storage window have mute/defer buttons
+  o Global Storage location switches can be set to affect only the pattern
+
+
 qmidiarp-0.5.1 (2012-11-17)
 
 New Features
