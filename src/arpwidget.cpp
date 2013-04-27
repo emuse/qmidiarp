@@ -367,7 +367,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
-    muteOutAction->setChecked(mutedAdd);
 
     parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
     midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
@@ -375,6 +374,8 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
              this, SLOT(storeParams(int, bool)));
     connect(parStore, SIGNAL(restore(int)),
              this, SLOT(restoreParams(int)));
+
+    muteOutAction->setChecked(mutedAdd);
 
     QGridLayout *widgetLayout = new QGridLayout;
     widgetLayout->addWidget(patternBox, 0, 0);
