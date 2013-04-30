@@ -105,7 +105,6 @@ class MainWindow : public QMainWindow
     QMenu* fileRecentlyOpenedFiles;
 
     static nsm_client_t *nsm;
-    const char *clientName;
 
 /*!
 * @brief  opens a file dialog and calls either

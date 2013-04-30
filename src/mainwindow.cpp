@@ -81,7 +81,6 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     filename = "";
     lastDir = QDir::homePath();
     alsaMidi = p_alsamidi;
-    clientName = PACKAGE;
 
     grooveWidget = new GrooveWidget(this);
     grooveWindow = new QDockWidget(tr("Groove"), this);
@@ -134,7 +133,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     else {
         connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
-        if (!nsm && engine->driver->callJack(p_portCount, clientName)) jackFailed = true;
+        if (!nsm && engine->driver->callJack(p_portCount, PACKAGE)) jackFailed = true;
     }
     connect(engine, SIGNAL(tempoUpdated(double)), this,
             SLOT(displayTempo(double)));
@@ -1496,8 +1495,6 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
     }
     configFile.append(".qmax");
     emit nsmOpenFile(configFile);
-    filename = configFile;
-    clientName = client_id;
     return ERR_OK;
 }
 
