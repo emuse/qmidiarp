@@ -334,7 +334,7 @@ class MainWindow : public QMainWindow
 /*!
 * @param p_portCount Number of registered MIDI output ports
 */
-    MainWindow(int p_portCount, bool p_alsamidi);
+    MainWindow(int p_portCount, bool p_alsamidi, char *execName);
     ~MainWindow();
 
     bool jackFailed;

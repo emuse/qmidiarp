@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         app.installTranslator(&qmidiarpTr);
 #endif
 
-    MainWindow* qmidiarp = new MainWindow(portCount, alsamidi);
+    MainWindow* qmidiarp = new MainWindow(portCount, alsamidi, argv[0]);
     if (optind < argc) {
         QFileInfo fi(argv[optind]);
         if (fi.exists())

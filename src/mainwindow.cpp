@@ -75,7 +75,7 @@ static const char FILEEXT[] = ".qmax";
 int MainWindow::sigpipe[2];
 nsm_client_t *MainWindow::nsm = 0;
 
-MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
+MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 {
     jackFailed = false;
     filename = "";
@@ -114,7 +114,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         {
             connect(this, SIGNAL(nsmOpenFile(const QString &)), this,
                     SLOT(openFile(const QString &)));
-            nsm_send_announce( nsm, APP_NAME, ":switch:", PACKAGE );
+            nsm_send_announce( nsm, APP_NAME, ":switch:", execName );
             nsm_thread_start(nsm);
         }
         else
