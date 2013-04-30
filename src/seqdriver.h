@@ -79,7 +79,7 @@ class SeqDriver : public DriverBase {
         void calcClockRatio(double realtime);
 
         void initTempo();
-        bool callJack(int portcount);
+        bool callJack(int portcount, const QString & clientname=PACKAGE);
 
         JackDriver *jackSync;
         jack_position_t jPos;

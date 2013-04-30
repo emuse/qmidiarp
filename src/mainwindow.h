@@ -339,23 +339,11 @@ class MainWindow : public QMainWindow
     ~MainWindow();
 
     bool jackFailed;
-/*!
-* @brief  opens a QMidiArp XML session file for reading
-* using QXmlStreamReader.
-*
-* It queries XML block elements and calls the block readers
-* MainWindow::readFilePartGlobal, MainWindow::readFilePartModules,
-* MainWindow::readFilePartGUI. It sets MainWindow::lastDir according to
-* the file path given with fn and calls MainWindow::updateWindowTitle.
-* It updates MainWindow::recentFiles list.
-*
-* @param fn File name to open including its absolute path
-*/
-    void openFile(const QString&);
 
 /* SIGNALS */
   signals:
     void newTempo(int);
+    void nsmOpenFile(const QString & name);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -373,6 +361,19 @@ class MainWindow : public QMainWindow
 *  and MainWindow::chooseFile if all changes are in saved state.
 */
     void fileOpen();
+/*!
+* @brief  opens a QMidiArp XML session file for reading
+* using QXmlStreamReader.
+*
+* It queries XML block elements and calls the block readers
+* MainWindow::readFilePartGlobal, MainWindow::readFilePartModules,
+* MainWindow::readFilePartGUI. It sets MainWindow::lastDir according to
+* the file path given with fn and calls MainWindow::updateWindowTitle.
+* It updates MainWindow::recentFiles list.
+*
+* @param fn File name to open including its absolute path
+*/
+    void openFile(const QString&);
 /*!
 * @brief Slot for file Save GUI elements.
 *

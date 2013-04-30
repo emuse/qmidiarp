@@ -101,6 +101,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
     globStoreWindow->setObjectName("globStore");
     globStoreWindow->setVisible(true);
 
+    /* -> NSM stuff */
     const char *nsm_url = getenv( "NSM_URL" );
 
     if ( nsm_url )
@@ -112,15 +113,10 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
         if ( 0 == nsm_init_thread( nsm, nsm_url ) )
         {
-            nsm_send_announce( nsm, APP_NAME, "", "qmidiarp" );
+            connect(this, SIGNAL(nsmOpenFile(const QString &)), this,
+                    SLOT(openFile(const QString &)));
+            nsm_send_announce( nsm, APP_NAME, ":switch:", PACKAGE );
             nsm_thread_start(nsm);
-            for (int i=0; i<5000; ++i)
-            {
-                // wait until filename is set
-                if (!filename.isEmpty())
-                    break;
-                usleep(1000);
-            }
         }
         else
         {
@@ -129,16 +125,16 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
         }
     }
 
-    std::cout << "mainwin.clientName: " << clientName << std::endl;
+    /* NSM stuff <- */
 
-    engine = new Engine(globStore, grooveWidget, p_portCount, clientName, alsaMidi, this);
+    engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (alsaMidi) {
         connect(engine->jackSync, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
     }
     else {
         connect(engine->driver, SIGNAL(jsEvent(int)), this, SLOT(jsAction(int)));
         connect(engine->driver, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
-        if (engine->driver->callJack(p_portCount)) jackFailed = true;
+        if (!nsm && engine->driver->callJack(p_portCount, clientName)) jackFailed = true;
     }
     connect(engine, SIGNAL(tempoUpdated(double)), this,
             SLOT(displayTempo(double)));
@@ -379,14 +375,15 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi)
 
     if (!jackFailed || alsaMidi) show();
 
+    /* -> NSM stuff */
     if (nsm && nsm_is_active(nsm))
     {
         fileNewAction->setDisabled(true);
         fileOpenAction->setDisabled(true);
         fileSaveAsAction->setDisabled(true);
         fileRecentlyOpenedFiles->setDisabled(true);
-        openFile(filename);
     }
+    /* NSM stuff <- */
 }
 
 MainWindow::~MainWindow()
@@ -1493,10 +1490,14 @@ int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
 int MainWindow::nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg)
 {
     QString configFile = name;
+    if (!alsaMidi) {
+        engine->driver->callJack(-1);
+        engine->driver->callJack(engine->getPortCount(), client_id);
+    }
     configFile.append(".qmax");
+    emit nsmOpenFile(configFile);
     filename = configFile;
     clientName = client_id;
-    std::cout << "nsm_open.clientName: " << clientName << std::endl;
     return ERR_OK;
 }
 

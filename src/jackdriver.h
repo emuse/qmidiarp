@@ -89,7 +89,6 @@ class JackDriver : public DriverBase
 
   public:
     JackDriver(int p_portCount,
-            const char *client_name,
             void * callback_context,
             void (* p_tr_state_cb)(bool j_tr_state, void * context),
             bool (* midi_event_received_callback)(void * context, MidiEvent ev),
@@ -108,7 +107,7 @@ class JackDriver : public DriverBase
   public:
     jack_nframes_t jSampleRate;
     bool isRunning() { return jackRunning; }
-    int initJack(int out_port_count);
+    int initJack(int out_port_count, const QString & clientname=PACKAGE);
     int activateJack();
     int deactivateJack();
 
@@ -122,7 +121,7 @@ class JackDriver : public DriverBase
     void setTransportStatus(bool run);
     void setTempo(double bpm);
     int getClientId() {return 0; }
-    bool callJack(int portcount);
+    bool callJack(int portcount, const QString & clientname=PACKAGE);
 };
 
 

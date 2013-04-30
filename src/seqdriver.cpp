@@ -411,7 +411,7 @@ void SeqDriver::setUseJackTransport(bool on)
     }
 }
 
-bool SeqDriver::callJack(int portcount)
+bool SeqDriver::callJack(int portcount, const QString & clientname)
 {
-    return jackSync->callJack(portcount);
+    return jackSync->callJack(portcount, clientname);
 }

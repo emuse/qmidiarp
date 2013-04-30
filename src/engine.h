@@ -132,7 +132,7 @@ class Engine : public QThread  {
     DriverBase *driver;
 
   public:
-    Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, const char *client_name, bool p_alsamidi, QWidget* parent=0);
+    Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
     ~Engine();
     int getPortCount();
     bool isModified();

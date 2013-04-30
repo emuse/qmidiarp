@@ -91,7 +91,7 @@ public:
         requestedTempo = bpm;
     }
 
-    virtual bool callJack(int portcount) = 0;
+    virtual bool callJack(int portcount, const QString & clientname=PACKAGE) = 0;
 
     // duration is in ticks and is valid only for note on events
     virtual void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0) = 0;
@@ -156,7 +156,6 @@ protected:
     uint64_t m_tpm;             // ticks per minute
     double tempo, internalTempo, requestedTempo;
     int portCount;
-    const char *clientName;
 };
 
 #endif // #ifndef DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED
