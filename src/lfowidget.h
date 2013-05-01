@@ -88,16 +88,6 @@ class LfoWidget : public QWidget
 */
     void loadWaveForms();
 
-/*!
-* @brief This function determines the minimum of the current waveform and
-* sets the LfoWidget::offset slider accordingly.
-*
-* It also sets MidiLfo::cwmin. When a new waveform is drawn, its minimum
-* offset from 0 changes and the offset controller has to be adapted in range.
-*
-*/
-    void newCustomOffset();
-
 /* PUBLIC MEMBERS */
   public:
 /*!

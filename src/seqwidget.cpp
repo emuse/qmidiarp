@@ -750,19 +750,6 @@ void SeqWidget::updateTranspose(int val)
     modified = true;
 }
 
-void SeqWidget::processNote(int note, int vel)
-{
-    if (!recordMode) {
-        if (enableNoteIn->isChecked()) updateTranspose(note - 60);
-        if (enableVelIn->isChecked()) updateVelocity(vel);
-        needsGUIUpdate = true;
-    }
-    else {
-        screen->setCurrentRecStep(midiWorker->currentRecStep);
-        dataChanged=true;
-    }
-}
-
 void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1)) return;
@@ -1053,17 +1040,17 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 3: if (min == max) {
                             if (value == max) {
-                                m = recordMode;
-                                setRecord(!m);
+                                m = midiWorker->recordMode;
+                                midiWorker->setRecordMode(!m);
                                 return;
                             }
                         }
                         else {
                             if (value == max) {
-                                setRecord(true);
+                                midiWorker->setRecordMode(true);
                             }
                             if (value == min) {
-                                setRecord(false);
+                                midiWorker->setRecordMode(false);
                             }
                         }
                 break;
@@ -1111,6 +1098,7 @@ void SeqWidget::updateDisplay()
         midiWorker->dataChanged=false;
         midiWorker->getData(&data);
         screen->updateData(data);
+        if (recordMode) screen->setCurrentRecStep(midiWorker->currentRecStep);
         cursor->updateNumbers(midiWorker->res, midiWorker->size);
     }
     screen->updateDraw();
@@ -1125,7 +1113,7 @@ void SeqWidget::updateDisplay()
     muteOutAction->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
-    recordAction->setChecked(recordMode);
+    recordAction->setChecked(midiWorker->recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
     sizeBox->setCurrentIndex(sizeBoxIndex);

@@ -252,23 +252,6 @@ class SeqWidget : public QWidget
     void updateDisplay();
 
 /*!
-* @brief Receiver for incoming note events. This function either sets the
-* global transpose and velocity or records the received note.
-*
-* Depending on the state of the SeqWidget::enableNoteIn and
-* SeqWidget::enableVelIn checkboxes, global transpose and velocity
-* are set according to the received note. If recordMode is set,
-* MidiSeq::recordNote is called, which will replace the current sequence
-* sample by the new note. Then, the screen is updated with the
-* new sequence (waveform).
-*
-* @param note Note value (0 ... 127) of the received note event.
-* @param velocity Velocity value (0 ... 127) of the received note event.
-*
-*/
-    void processNote(int note, int velocity);
-
-/*!
 * @brief Slot for the SeqScreen::mouseMoved signal. This function
 * mutes or sets a wave point when the mouse is moved with held buttons.
 *

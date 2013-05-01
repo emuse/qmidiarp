@@ -345,6 +345,7 @@ void MidiLfo::updateAmplitude(int val)
 
 void MidiLfo::updateOffset(int val)
 {
+    if (isRecording) return;
     if (waveFormIndex == 5) updateCustomWaveOffset(val);
     offs = val;
 }
@@ -437,6 +438,19 @@ void MidiLfo::copyToCustom()
     customWave.replace(l1, data.at(l1));
 }
 
+void MidiLfo::newCustomOffset()
+{
+    int min = 127;
+    int value;
+    const int npoints = res * size;
+    for (int l1 = 0; l1 < npoints; l1++) {
+        value = customWave.at(l1).value;
+        if (value < min) min = value;
+    }
+    cwmin = min;
+    offs = min;
+}
+
 void MidiLfo::updateCustomWaveOffset(int cwoffs)
 {
     Sample sample;
@@ -503,6 +517,16 @@ void MidiLfo::setFramePtr(int idx)
         restartFlag = false;
         if (reverse) frameptr = res * size - 1;
     }
+}
+
+void MidiLfo::setRecordMode(bool on)
+{
+    if (!on) {
+        isRecording = false;
+        newCustomOffset();
+        dataChanged = true;
+    }
+    recordMode = on;
 }
 
 void MidiLfo::record(int value)
