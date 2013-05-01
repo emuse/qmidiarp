@@ -683,7 +683,7 @@ void LfoWidget::updateWaveForm(int val)
     midiWorker->getData(&data);
     screen->updateData(data);
     bool isCustom = (val == 5);
-    if (isCustom) newCustomOffset();
+    if (isCustom) midiWorker->newCustomOffset();
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
     modified = true;
@@ -713,7 +713,7 @@ void LfoWidget::updateRes(int val)
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateData(data);
-    newCustomOffset();
+    midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -724,7 +724,7 @@ void LfoWidget::updateSize(int val)
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateData(data);
-    newCustomOffset();
+    midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -759,20 +759,6 @@ void LfoWidget::copyToCustom()
     modified = true;
 }
 
-void LfoWidget::newCustomOffset()
-{
-    int min = 127;
-    int value;
-    const int npoints = sizeBox->currentText().toInt()
-                        * resBox->currentText().toInt();
-    for (int l1 = 0; l1 < npoints; l1++) {
-        value = data.at(l1).value;
-        if (value < min) min = value;
-    }
-    midiWorker->cwmin = min;
-    offset->setValue(min);
-}
-
 void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
 {
     if (buttons == 2) {
@@ -783,10 +769,9 @@ void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
             copyToCustom();
         }
         midiWorker->setCustomWavePoint(mouseX, mouseY, false);
-        newCustomOffset();
+        midiWorker->newCustomOffset();
     }
-    midiWorker->getData(&data);
-    screen->updateData(data);
+    midiWorker->dataChanged = true;
     modified = true;
 }
 
@@ -800,10 +785,9 @@ void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
             copyToCustom();
         }
         midiWorker->setCustomWavePoint(mouseX, mouseY, true);
-        newCustomOffset();
+        midiWorker->newCustomOffset();
     }
-    midiWorker->getData(&data);
-    screen->updateData(data);
+    midiWorker->dataChanged = true;
     modified = true;
 }
 
@@ -837,12 +821,8 @@ void LfoWidget::updateDeferChanges(bool on)
 
 void LfoWidget::setRecord(bool on)
 {
-    if (!on) {
-        midiWorker->isRecording = false;
-        newCustomOffset();
-    }
-    midiWorker->recordMode = on;
-    screen->setRecord(on);
+    midiWorker->setRecordMode(on);
+    screen->setRecordMode(on);
 }
 
 void LfoWidget::setPortOut(int value)
@@ -1046,16 +1026,16 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                 case 5: if (min == max) {
                             if (value == max) {
                                 m = midiWorker->recordMode;
-                                setRecord(!m);
+                                midiWorker->setRecordMode(!m);
                                 return;
                             }
                         }
                         else {
                             if (value == max) {
-                                setRecord(true);
+                                midiWorker->setRecordMode(true);
                             }
                             if (value == min) {
-                                setRecord(false);
+                                midiWorker->setRecordMode(false);
                             }
                         }
                 break;
@@ -1102,6 +1082,7 @@ void LfoWidget::updateDisplay()
         midiWorker->getData(&data);
         screen->updateData(data);
         cursor->updateNumbers(midiWorker->res, midiWorker->size);
+        offset->setValue(midiWorker->offs);
         midiWorker->dataChanged = false;
     }
     screen->updateDraw();
@@ -1114,6 +1095,7 @@ void LfoWidget::updateDisplay()
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);
+    screen->setRecordMode(midiWorker->recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
     sizeBox->setCurrentIndex(sizeBoxIndex);

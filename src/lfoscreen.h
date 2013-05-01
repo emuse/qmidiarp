@@ -86,7 +86,7 @@ class LfoScreen : public QWidget
     void updateData(const QVector<Sample>& data);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
-    void setRecord(bool on);
+    void setRecordMode(bool on);
     void wheelEvent(QWheelEvent* event);
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);

@@ -686,9 +686,6 @@ bool Engine::eventCallback(MidiEvent inEv)
     }
     for (l1 = 0; l1 < midiSeqCount(); l1++) {
         unmatched = midiSeq(l1)->handleEvent(inEv, tick);
-        if (inEv.type == EV_NOTEON && !unmatched && inEv.value) {
-            seqWidget(l1)->processNote(inEv.data, inEv.value);
-        }
         if (midiSeq(l1)->gotKbdTrig) {
             nextMinSeqTick = midiSeq(l1)->nextTick;
             no_collision = driver->requestEchoAt(nextMinSeqTick, true);

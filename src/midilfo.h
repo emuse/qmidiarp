@@ -150,6 +150,17 @@ class MidiLfo : public QObject  {
     void updateLoop(int);
     void updateQueueTempo(int);
     void record(int value);
+    void setRecordMode(bool on);
+/*!
+* @brief This function determines the minimum of the current waveform and
+* sets the LfoWidget::offset slider accordingly.
+*
+* It also sets MidiLfo::cwmin. When a new waveform is drawn, its minimum
+* offset from 0 changes and the offset controller has to be adapted in range.
+*
+*/
+    void newCustomOffset();
+
 /*! @brief This function sets MidiLfo::isMuted, which is checked by
  * Engine and which suppresses data output globally if set to True.
  *

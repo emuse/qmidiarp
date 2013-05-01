@@ -120,9 +120,15 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
             recordNote(inEv.data);
             return(false);
         }
-        if (enableNoteIn) updateTranspose(inEv.data - 60);
+        if (enableNoteIn) {
+            updateTranspose(inEv.data - 60);
+            needsGUIUpdate = true;
+        }
         if (restartByKbd && (!noteCount || trigLegato)) restartFlag = true;
-        if (enableVelIn) updateVelocity(inEv.value);
+        if (enableVelIn) {
+            updateVelocity(inEv.value);
+            needsGUIUpdate = true;
+        }
         seqFinished = false;
         noteCount++;
         if (trigByKbd && ((noteCount == 1) || trigLegato)) {
@@ -307,6 +313,7 @@ void MidiSeq::recordNote(int val)
         setRecordedNote(val);
         currentRecStep++;
         currentRecStep %= (res * size);
+        dataChanged = true;
 }
 
 void MidiSeq::updateQueueTempo(int val)

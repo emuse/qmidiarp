@@ -235,7 +235,7 @@ int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
     return(tmp);
 }
 
-void LfoScreen::setRecord(bool on)
+void LfoScreen::setRecordMode(bool on)
 {
     recordMode = on;
 }

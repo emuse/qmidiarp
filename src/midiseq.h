@@ -71,7 +71,6 @@ class MidiSeq : public QObject  {
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
     int noteCount;
-    bool recordMode;
     bool seqFinished;
 /**
  * @brief This function allows forcing an integer value within the
@@ -110,6 +109,7 @@ class MidiSeq : public QObject  {
     bool isMutedDefer;   /*!< Deferred Global mute state */
     bool deferChanges;  /*!< set by SeqWidget to defer parameter changes to pattern end */
     bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
+    bool recordMode;
     bool dataChanged;
     bool needsGUIUpdate;
     int vel, transp, notelength;
