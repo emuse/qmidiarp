@@ -73,10 +73,15 @@
 static const char FILEEXT[] = ".qmax";
 
 int MainWindow::sigpipe[2];
+#ifdef NSM
 nsm_client_t *MainWindow::nsm = 0;
+#endif
 
 MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 {
+#ifndef NSM
+(void)execName;
+#endif
     jackFailed = false;
     filename = "";
     lastDir = QDir::homePath();
@@ -100,7 +105,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     globStoreWindow->setObjectName("globStore");
     globStoreWindow->setVisible(true);
 
-    /* -> NSM stuff */
+#ifdef NSM
     const char *nsm_url = getenv( "NSM_URL" );
 
     if ( nsm_url )
@@ -123,8 +128,9 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
             nsm = 0;
         }
     }
-
-    /* NSM stuff <- */
+#else
+    bool nsm = 0;
+#endif
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
     if (alsaMidi) {
@@ -374,7 +380,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 
     if (!jackFailed || alsaMidi) show();
 
-    /* -> NSM stuff */
+#ifdef NSM
     if (nsm && nsm_is_active(nsm))
     {
         fileNewAction->setDisabled(true);
@@ -382,7 +388,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
         fileSaveAsAction->setDisabled(true);
         fileRecentlyOpenedFiles->setDisabled(true);
     }
-    /* NSM stuff <- */
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -738,16 +744,20 @@ void MainWindow::openFile(const QString& fn)
 
     QFile f(fn);
     if (!f.open(QIODevice::ReadOnly)) {
+#ifdef NSM
         if (nsm_is_active(nsm)) {
             filename = fn;
             //updateWindowTitle();
             return;
         }
         else {
+#endif
             QMessageBox::warning(this, APP_NAME,
                 tr("Could not read from file '%1'.").arg(fn));
             return;
+#ifdef NSM
         }
+#endif
     }
 
     clear();
@@ -1273,11 +1283,13 @@ void MainWindow::setupRecentFilesMenu()
         for (; it != recentFiles.end(); ++it) {
             fileRecentlyOpenedFiles->addAction(*it);
         }
-    } else {
+    }
+    else {
         fileRecentlyOpenedFiles->setEnabled(false);
     }
-
+#ifdef NSM
     if (nsm && nsm_is_active(nsm))
+#endif
       fileRecentlyOpenedFiles->setEnabled(false);
 }
 
@@ -1348,12 +1360,16 @@ void MainWindow::checkIfFirstModule()
         if (alsaMidi) midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
         fileSaveAction->setEnabled(true);
+#ifdef NSM
         if (nsm && nsm_is_active(nsm)) {
             fileSaveAsAction->setDisabled(true);
         }
         else {
+#endif
             fileSaveAsAction->setEnabled(true);
+#ifdef NSM
         }
+#endif
         showAllIOAction->setEnabled(true);
         hideAllIOAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()
@@ -1477,6 +1493,7 @@ void MainWindow::ftb_update_orientation(Qt::Orientation orient)
     }
 }
 
+#ifdef NSM
 int MainWindow::cb_nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata)
 {
     return ((MainWindow *)userdata)->nsm_open(name, display_name, client_id, out_msg);
@@ -1489,6 +1506,9 @@ int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
 
 int MainWindow::nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg)
 {
+    (void)out_msg;
+    (void)display_name;
+
     QString configFile = name;
     if (!alsaMidi) {
         engine->driver->callJack(-1);
@@ -1501,7 +1521,10 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
 
 int MainWindow::nsm_save(char **out_msg)
 {
+    (void)out_msg;
+
     int err = ERR_OK;
     if (!saveFile()) err = ERR_GENERAL;
     return err;
 }
+#endif

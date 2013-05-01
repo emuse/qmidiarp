@@ -39,21 +39,6 @@ AC_CHECK_LIB([jack], [jack_client_open], ,
              [AC_MSG_ERROR(JACK library (jack) is required)])
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
-# OSC support
-PKG_CHECK_MODULES(LIBLO, liblo >= 0.26)
-LIBSsave=$LIBS
-CFLAGSsave=$CFLAGS
-CFLAGS=$LIBLO_CFLAGS
-LIBS=$LIBLO_LIBS
-# AC_MSG_CHECKING([for liblo OSC library])
-# AC_MSG_RESULT()
-# AC_CHECK_LIB(LIBLO,lo_address_new,[],[libloWorks=no])
-#echo "liblo OSC library: $LIBLO_LIBS"
-AC_SUBST(LIBLO_CFLAGS)
-AC_SUBST(LIBLO_LIBS)
-LIBS+=$LIBSsave
-CFLAGS+=$CFLAGSsave
-
 PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
 if test "x$HAVE_QT4" = "xyes"; then
   dnl Check needed because in some cases the QtGui includedir
@@ -103,6 +88,40 @@ if test "x$LRELEASE" = "xno" ; then
     [cannot find 'lrelease', please install the Qt4 development tools package.])
 fi
 ], [AC_MSG_NOTICE([translations are disabled])])
+
+# Enable NSM support
+AC_ARG_ENABLE(nsm,
+  AC_HELP_STRING([--enable-nsm], [enable NSM support generation (default=yes)]),
+  [ac_nsm="$enableval"],
+  [ac_nsm="yes"])
+
+AM_CONDITIONAL([ENABLE_NSM], [test "x$ac_nsm" = "xyes"])
+
+AM_COND_IF([ENABLE_NSM],[
+dnl check for liblo
+AC_CHECK_HEADER( lo/lo.h, loinclude_found="yes", loinclude_found="no" )
+# OSC support
+PKG_CHECK_MODULES(LIBLO, liblo >= 0.26, libloWorks="yes", libloWorks="no")
+LIBSsave=$LIBS
+CFLAGSsave=$CFLAGS
+CFLAGS=$LIBLO_CFLAGS
+LIBS=$LIBLO_LIBS
+# AC_MSG_CHECKING([for liblo OSC library])
+# AC_MSG_RESULT()
+# AC_CHECK_LIB(LIBLO,lo_address_new,[],[libloWorks=no])
+#echo "liblo OSC library: $LIBLO_LIBS"
+AC_SUBST(LIBLO_CFLAGS)
+AC_SUBST(LIBLO_LIBS)
+LIBS+=$LIBSsave
+CFLAGS+=$CFLAGSsave
+
+if test "$loinclude_found" = "no" -o "libloWorks" = "no"; then
+  AC_MSG_NOTICE(
+    [cannot find a liblo component for building. Will build without nsm support.])
+else
+    AC_DEFINE(NSM, 1, [Define to enable NSM session manager support])
+fi
+], [AC_MSG_NOTICE([NSM support is disabled])])
 
 # Checks for header files.
 AC_HEADER_STDC
