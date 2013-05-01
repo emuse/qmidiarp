@@ -1289,8 +1289,8 @@ void MainWindow::setupRecentFilesMenu()
     }
 #ifdef NSM
     if (nsm && nsm_is_active(nsm))
-#endif
       fileRecentlyOpenedFiles->setEnabled(false);
+#endif
 }
 
 void MainWindow::recentFileActivated(QAction *action)
