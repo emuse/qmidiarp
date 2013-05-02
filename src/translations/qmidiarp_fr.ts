@@ -4,73 +4,78 @@
 <context>
     <name>ArpWidget</name>
     <message>
-        <location filename="../arpwidget.cpp" line="65"/>
+        <location filename="../arpwidget.cpp" line="58"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="74"/>
+        <location filename="../arpwidget.cpp" line="67"/>
         <source>&amp;Note</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="131"/>
+        <location filename="../arpwidget.cpp" line="124"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="133"/>
+        <location filename="../arpwidget.cpp" line="126"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="177"/>
+        <location filename="../arpwidget.cpp" line="170"/>
         <source>Pattern</source>
         <translation>Motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="182"/>
+        <location filename="../arpwidget.cpp" line="175"/>
         <source>&amp;Edit Pattern</source>
         <translation>&amp;Editer le Motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="190"/>
+        <location filename="../arpwidget.cpp" line="183"/>
         <source>&amp;Remove Pattern</source>
         <translation>&amp;Supprimer le Motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="198"/>
+        <location filename="../arpwidget.cpp" line="191"/>
         <source>&amp;Store Pattern</source>
         <translation>&amp;Mémoriser le Motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="209"/>
+        <location filename="../arpwidget.cpp" line="202"/>
         <source>Pattern preset</source>
         <translation>Preset de motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="307"/>
-        <location filename="../arpwidget.cpp" line="708"/>
+        <location filename="../arpwidget.cpp" line="312"/>
+        <location filename="../arpwidget.cpp" line="728"/>
         <source>Random</source>
         <translation>Randomisation</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="226"/>
+        <location filename="../arpwidget.cpp" line="230"/>
         <source>Repeat mode</source>
         <translation>Mode de répétition</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="157"/>
+        <location filename="../arpwidget.cpp" line="150"/>
         <source>&amp;Show/hide in-out settings</source>
         <translation>&amp;Monter/Cacher les panneaux Entrée-Sortie</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="233"/>
+        <location filename="../arpwidget.cpp" line="218"/>
+        <source>Defer mute to pattern end</source>
+        <translation>N&apos;appliquer la fonction muet qu&apos;à la fin du motif</translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="237"/>
         <source>Kbd trigger</source>
         <translation>Déclenche</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="277"/>
+        <location filename="../arpwidget.cpp" line="282"/>
         <source>0..9  note played on keyboard, 0 is lowest
 ( ) numbers in parenthesis are stacked to chords
   + = -  octave up/reset/down
@@ -89,129 +94,129 @@ d h durée de note augm/dim
  p pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="311"/>
+        <location filename="../arpwidget.cpp" line="316"/>
         <source>&amp;Shift</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="316"/>
+        <location filename="../arpwidget.cpp" line="321"/>
         <source>Vel&amp;ocity</source>
         <translation>Vél&amp;ocité</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="321"/>
+        <location filename="../arpwidget.cpp" line="326"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="340"/>
-        <location filename="../arpwidget.cpp" line="734"/>
+        <location filename="../arpwidget.cpp" line="345"/>
+        <location filename="../arpwidget.cpp" line="754"/>
         <source>Envelope</source>
         <translation>Enveloppe</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="646"/>
+        <location filename="../arpwidget.cpp" line="666"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="704"/>
+        <location filename="../arpwidget.cpp" line="724"/>
         <source>Random - ACTIVE</source>
         <translation>Randomisation - ACTIVE</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="730"/>
+        <location filename="../arpwidget.cpp" line="750"/>
         <source>Envelope - ACTIVE</source>
         <translation>Enveloppe - ACTIVE</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="748"/>
+        <location filename="../arpwidget.cpp" line="768"/>
         <source>%1: Store pattern</source>
         <translation>%1: Mémoriser le motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="749"/>
+        <location filename="../arpwidget.cpp" line="769"/>
         <source>New pattern</source>
         <translation>Nouveau motif</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="749"/>
+        <location filename="../arpwidget.cpp" line="769"/>
         <source>Arp pattern</source>
         <translation>Motif d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="785"/>
+        <location filename="../arpwidget.cpp" line="805"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>Supprimer &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="67"/>
+        <location filename="../arpwidget.cpp" line="60"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="73"/>
-        <location filename="../arpwidget.cpp" line="423"/>
+        <location filename="../arpwidget.cpp" line="66"/>
+        <location filename="../arpwidget.cpp" line="439"/>
         <source>Note Filter</source>
         <translation>Filtre</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="88"/>
+        <location filename="../arpwidget.cpp" line="81"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="215"/>
+        <location filename="../arpwidget.cpp" line="208"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="139"/>
+        <location filename="../arpwidget.cpp" line="132"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="224"/>
+        <location filename="../arpwidget.cpp" line="228"/>
         <source>Static</source>
         <translation>Statique</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="224"/>
+        <location filename="../arpwidget.cpp" line="228"/>
         <source>Up</source>
         <translation>Monte</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="224"/>
+        <location filename="../arpwidget.cpp" line="228"/>
         <source>Down</source>
         <translation>Descend</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="233"/>
+        <location filename="../arpwidget.cpp" line="237"/>
         <source>No trigger</source>
         <translation>Continu</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="233"/>
+        <location filename="../arpwidget.cpp" line="237"/>
         <source>Kbd restart</source>
         <translation>Redémarre</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="234"/>
+        <location filename="../arpwidget.cpp" line="238"/>
         <source>Kbd restart legato</source>
         <translation>Redémarrer Légato</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="234"/>
+        <location filename="../arpwidget.cpp" line="238"/>
         <source>Kbd trigger legato</source>
         <translation>Déclenche legato</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="236"/>
+        <location filename="../arpwidget.cpp" line="240"/>
         <source>Trigger Mode</source>
         <translation>Mode de déclenchement par clavier</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="243"/>
+        <location filename="../arpwidget.cpp" line="247"/>
         <source>&amp;Latch Mode</source>
         <translation>Véroui&amp;llage clavier</translation>
     </message>
@@ -232,17 +237,17 @@ d h durée de note augm/dim
  p pause</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="343"/>
+        <location filename="../arpwidget.cpp" line="348"/>
         <source>&amp;Attack (beats)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="347"/>
+        <location filename="../arpwidget.cpp" line="352"/>
         <source>&amp;Release (beats)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="419"/>
+        <location filename="../arpwidget.cpp" line="435"/>
         <source>Note Filter - ACTIVE</source>
         <translation>Filtre - AKTIF</translation>
     </message>
@@ -265,12 +270,12 @@ d h durée de note augm/dim
         <translation>&amp;Supprimer</translation>
     </message>
     <message>
-        <location filename="../globstore.cpp" line="150"/>
+        <location filename="../globstore.cpp" line="159"/>
         <source>&amp;Store</source>
         <translation>&amp;Sauver</translation>
     </message>
     <message>
-        <location filename="../globstore.cpp" line="158"/>
+        <location filename="../globstore.cpp" line="167"/>
         <source>&amp;Restore</source>
         <translation>&amp;Rappeler</translation>
     </message>
@@ -296,83 +301,83 @@ d h durée de note augm/dim
 <context>
     <name>LfoWidget</name>
     <message>
-        <location filename="../lfowidget.cpp" line="136"/>
+        <location filename="../lfowidget.cpp" line="129"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="293"/>
+        <location filename="../lfowidget.cpp" line="286"/>
         <source>&amp;Mute</source>
         <translation>&amp;Muet</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="97"/>
-        <location filename="../lfowidget.cpp" line="138"/>
+        <location filename="../lfowidget.cpp" line="90"/>
+        <location filename="../lfowidget.cpp" line="131"/>
         <source>MIDI &amp;CC#</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="144"/>
+        <location filename="../lfowidget.cpp" line="137"/>
         <source>MIDI Controller number sent to output</source>
         <translation>Numéro du contrôleur envoyé à la sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="154"/>
+        <location filename="../lfowidget.cpp" line="147"/>
         <source>C&amp;hannel</source>
         <translation>C&amp;anal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="148"/>
+        <location filename="../lfowidget.cpp" line="141"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="66"/>
+        <location filename="../lfowidget.cpp" line="59"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="86"/>
+        <location filename="../lfowidget.cpp" line="79"/>
         <source>&amp;Legato</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="90"/>
+        <location filename="../lfowidget.cpp" line="83"/>
         <source>Retrigger / restart upon new legato note as well</source>
         <translation>Redémarrer / déclencher également sur des notes en legato</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="103"/>
+        <location filename="../lfowidget.cpp" line="96"/>
         <source>MIDI Controller number to record</source>
         <translation>Le numéro du contrôleur MIDI à enregistrer</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="108"/>
+        <location filename="../lfowidget.cpp" line="101"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="179"/>
+        <location filename="../lfowidget.cpp" line="172"/>
         <source>&amp;Show/hide in-out settings</source>
         <translation>&amp;Monter/Cacher les panneaux Entrée-Sortie</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="198"/>
+        <location filename="../lfowidget.cpp" line="191"/>
         <source>Wave</source>
         <translation>Forme</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="214"/>
+        <location filename="../lfowidget.cpp" line="207"/>
         <source>&amp;Waveform</source>
         <translation>Forme d&apos;&amp;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="226"/>
+        <location filename="../lfowidget.cpp" line="219"/>
         <source>Waveform Basis</source>
         <translation>Base de la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="202"/>
+        <location filename="../lfowidget.cpp" line="195"/>
         <source>Right button to mute points
 Left button to draw custom wave
 Wheel to change offset</source>
@@ -381,32 +386,32 @@ Bouton gauche pour dessiner la forme d&apos;onde
 Molette pour changer l&apos;offset</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="68"/>
+        <location filename="../lfowidget.cpp" line="61"/>
         <source>&amp;Note Off</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="72"/>
+        <location filename="../lfowidget.cpp" line="65"/>
         <source>Stop output when Note is released</source>
         <translation>Arrêter l&apos;envoi de notes quand la touche est relâchée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="74"/>
+        <location filename="../lfowidget.cpp" line="67"/>
         <source>&amp;Restart</source>
         <translation>&amp;Redémarre</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="78"/>
+        <location filename="../lfowidget.cpp" line="71"/>
         <source>Restart sequence when a new note is received</source>
         <translation>Redémarrer la séquence au départ quand une nouvelle note est reçue</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="80"/>
+        <location filename="../lfowidget.cpp" line="73"/>
         <source>&amp;Trigger</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="84"/>
+        <location filename="../lfowidget.cpp" line="77"/>
         <source>Retrigger sequence when a new note is received</source>
         <translation>Déclencher la séquence avec le timing des notes reçues</translation>
     </message>
@@ -419,88 +424,93 @@ Molette pour changer l&apos;offset</translation>
         <translation type="obsolete">Jouer la séquence en boucle au lieu d&apos;un passage unique</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="233"/>
+        <location filename="../lfowidget.cpp" line="226"/>
         <source>&amp;Frequency</source>
         <translation>&amp;Fréquence</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="245"/>
+        <location filename="../lfowidget.cpp" line="238"/>
         <source>Frequency (cycles/beat): Number of wave cycles produced every beat</source>
         <translation>Fréquence (cycles/beat): Nombre de cycles d&apos;onde produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="251"/>
+        <location filename="../lfowidget.cpp" line="244"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="261"/>
+        <location filename="../lfowidget.cpp" line="254"/>
         <source>Resolution (events/beat): Number of events produced every beat</source>
         <translation>Résolution (év/beat): Nombre d&apos;évênements produits à chaque quart de temps</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="267"/>
+        <location filename="../lfowidget.cpp" line="260"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="276"/>
+        <location filename="../lfowidget.cpp" line="269"/>
         <source>Length of LFO wave in beats</source>
         <translation>Longueur de la forme d&apos;onde du LFO en quarts de temps (beats)</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="287"/>
+        <location filename="../lfowidget.cpp" line="280"/>
         <source>Loop, bounce or play once going forward or backward</source>
         <translation>Répéter, jouer aller-retour ou jouer une seule fois, avant ou arrière</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="301"/>
-        <location filename="../lfowidget.cpp" line="302"/>
+        <location filename="../lfowidget.cpp" line="296"/>
+        <source>Defer mute to pattern end</source>
+        <translation>N&apos;appliquer la fonction muet qu&apos;à la fin du motif</translation>
+    </message>
+    <message>
+        <location filename="../lfowidget.cpp" line="304"/>
+        <location filename="../lfowidget.cpp" line="305"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Enregistrer</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="303"/>
+        <location filename="../lfowidget.cpp" line="306"/>
         <source>Record incoming controller</source>
         <translation>Enregistrer les évênements contrôleurs reçus à l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="312"/>
+        <location filename="../lfowidget.cpp" line="315"/>
         <source>&amp;Amplitude</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="319"/>
+        <location filename="../lfowidget.cpp" line="322"/>
         <source>&amp;Offset</source>
         <translation>&amp;Décalage</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="611"/>
+        <location filename="../lfowidget.cpp" line="627"/>
         <source>Sine</source>
         <translation>Sinus</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="611"/>
+        <location filename="../lfowidget.cpp" line="627"/>
         <source>Saw up</source>
         <translation>Scie montant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="611"/>
+        <location filename="../lfowidget.cpp" line="627"/>
         <source>Triangle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="612"/>
+        <location filename="../lfowidget.cpp" line="628"/>
         <source>Saw down</source>
         <translation>Scie descendant</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="612"/>
+        <location filename="../lfowidget.cpp" line="628"/>
         <source>Square</source>
         <translation>Créneau</translation>
     </message>
     <message>
-        <location filename="../lfowidget.cpp" line="612"/>
+        <location filename="../lfowidget.cpp" line="628"/>
         <source>Custom</source>
         <translation>Libre</translation>
     </message>
@@ -551,190 +561,190 @@ Molette pour changer l&apos;offset</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.cpp" line="122"/>
+        <location filename="../mainwindow.cpp" line="159"/>
         <source>Event Log</source>
         <translation>Journal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="84"/>
+        <location filename="../mainwindow.cpp" line="91"/>
         <source>Groove</source>
         <translation>Groove</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="93"/>
+        <location filename="../mainwindow.cpp" line="100"/>
         <source>Global Store</source>
         <translation>Stockage global</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="146"/>
+        <location filename="../mainwindow.cpp" line="183"/>
         <source>&amp;New LFO...</source>
         <translation>&amp;Nouveau LFO...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="151"/>
+        <location filename="../mainwindow.cpp" line="188"/>
         <source>&amp;New Sequencer...</source>
         <translation>&amp;Nouveau Séquenceur...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="152"/>
+        <location filename="../mainwindow.cpp" line="189"/>
         <source>Ctrl+T</source>
         <comment>Module|New Sequencer</comment>
         <translation>Ctrl+T</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="153"/>
+        <location filename="../mainwindow.cpp" line="190"/>
         <source>Add new Sequencer to tab bar</source>
         <translation>Ajouter un nouveau séquenceur</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="157"/>
+        <location filename="../mainwindow.cpp" line="194"/>
         <source>&amp;New</source>
         <translation>&amp;Nouveau</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="159"/>
+        <location filename="../mainwindow.cpp" line="196"/>
         <source>Create new arpeggiator file</source>
         <translation>Créer un nouveau fichier d&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="162"/>
+        <location filename="../mainwindow.cpp" line="199"/>
         <source>&amp;Open...</source>
         <translation>&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="167"/>
+        <location filename="../mainwindow.cpp" line="204"/>
         <source>&amp;Save</source>
         <translation>&amp;Enregistrer</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="169"/>
+        <location filename="../mainwindow.cpp" line="206"/>
         <source>Save current arpeggiator file</source>
         <translation>Enregistrer les arpèges actuels dans un fichier</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="173"/>
+        <location filename="../mainwindow.cpp" line="210"/>
         <source>Save &amp;as...</source>
         <translation>Enregistrer &amp;sous...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="176"/>
+        <location filename="../mainwindow.cpp" line="213"/>
         <source>Save current arpeggiator file with new name</source>
         <translation>Enregistrer les arpèges actuels avec un nouveau nom</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="180"/>
+        <location filename="../mainwindow.cpp" line="217"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="181"/>
+        <location filename="../mainwindow.cpp" line="218"/>
         <source>Ctrl+Q</source>
         <comment>File|Quit</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="182"/>
+        <location filename="../mainwindow.cpp" line="219"/>
         <source>Quit application</source>
         <translation>Quitter l&apos;application</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="185"/>
+        <location filename="../mainwindow.cpp" line="222"/>
         <source>&amp;Run with internal clock</source>
         <translation>&amp;Start/Stop avec horologe interne</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="209"/>
+        <location filename="../mainwindow.cpp" line="246"/>
         <source>&amp;Connect to Jack Transport</source>
         <translation>Connecter à &amp;Jack Transport</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="218"/>
+        <location filename="../mainwindow.cpp" line="255"/>
         <source>&amp;Show all IO panels</source>
         <translation>Montrer les &amp;panneaux E-S</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="223"/>
+        <location filename="../mainwindow.cpp" line="260"/>
         <source>&amp;Hide all IO panels</source>
         <translation>Cacher les p&amp;anneaux E-S</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="231"/>
+        <location filename="../mainwindow.cpp" line="268"/>
         <source>Ctrl+H</source>
         <comment>View|Event Log</comment>
         <translation>Ctrl+H</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="235"/>
+        <location filename="../mainwindow.cpp" line="272"/>
         <source>&amp;Groove Settings</source>
         <translation>&amp;Groove</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="236"/>
+        <location filename="../mainwindow.cpp" line="273"/>
         <source>Ctrl+G</source>
         <comment>View|Groove</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="246"/>
+        <location filename="../mainwindow.cpp" line="283"/>
         <source>&amp;Global Store</source>
         <translation>Stockage g&amp;lobal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="247"/>
+        <location filename="../mainwindow.cpp" line="284"/>
         <source>Ctrl+$</source>
         <comment>View|GlobalStore</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="253"/>
+        <location filename="../mainwindow.cpp" line="290"/>
         <source>Mod&amp;ule</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="259"/>
+        <location filename="../mainwindow.cpp" line="296"/>
         <source>&amp;Recently opened files</source>
         <translation>Fichiers &amp;récemment ouverts</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="275"/>
+        <location filename="../mainwindow.cpp" line="312"/>
         <source>&amp;MIDI Controllers...</source>
         <translation>&amp;Contrôles MIDI...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="277"/>
+        <location filename="../mainwindow.cpp" line="314"/>
         <source>Ctrl+M</source>
         <comment>View|MidiControllers</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="290"/>
+        <location filename="../mainwindow.cpp" line="327"/>
         <source>&amp;File Toolbar</source>
         <translation>Barre d&apos;outils &amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="300"/>
+        <location filename="../mainwindow.cpp" line="337"/>
         <source>&amp;Control Toolbar</source>
         <translation>&amp;Barre de contrôle</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="382"/>
-        <location filename="../mainwindow.cpp" line="395"/>
-        <location filename="../mainwindow.cpp" line="408"/>
+        <location filename="../mainwindow.cpp" line="429"/>
+        <location filename="../mainwindow.cpp" line="442"/>
+        <location filename="../mainwindow.cpp" line="455"/>
         <source>%1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="394"/>
+        <location filename="../mainwindow.cpp" line="441"/>
         <source>Add MIDI LFO</source>
         <translation>Ajouter un LFO MIDI</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="407"/>
+        <location filename="../mainwindow.cpp" line="454"/>
         <source>Add Step Sequencer</source>
         <translation>Ajouter un séquenceur</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="685"/>
+        <location filename="../mainwindow.cpp" line="732"/>
         <source>QMidiArp XML files</source>
         <translation>Fichiers QMidiArp XML</translation>
     </message>
@@ -743,12 +753,12 @@ Molette pour changer l&apos;offset</translation>
         <translation type="obsolete">Vieux fichiers texte QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="701"/>
+        <location filename="../mainwindow.cpp" line="756"/>
         <source>Could not read from file &apos;%1&apos;.</source>
         <translation>Erreur lors de la lecture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="719"/>
+        <location filename="../mainwindow.cpp" line="777"/>
         <source>This is not a valid xml file for </source>
         <translation>Ceci n&apos;est pas un fichier xml valide pour </translation>
     </message>
@@ -759,31 +769,31 @@ Molette pour changer l&apos;offset</translation>
  &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="873"/>
+        <location filename="../mainwindow.cpp" line="931"/>
         <source>Could not write to file &apos;%1&apos;.</source>
         <translation>Erreur lors de l&apos;écriture du fichier &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="974"/>
+        <location filename="../mainwindow.cpp" line="1032"/>
         <source>Unnamed file was changed.
 Save changes?</source>
         <translation>Le fichier sans nom a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="976"/>
+        <location filename="../mainwindow.cpp" line="1034"/>
         <source>File &apos;%1&apos; was changed.
 Save changes?</source>
         <translation>Le fichier &apos;%1&apos; a été modifié.
 Enregistrer les modifications?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="980"/>
+        <location filename="../mainwindow.cpp" line="1038"/>
         <source>Save changes</source>
         <translation>Enregistrer les modifications</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1065"/>
+        <location filename="../mainwindow.cpp" line="1129"/>
         <source>JACK has shut down or could not be started, but you are trying
 to run QMidiArp with JACK MIDI backend.
 
@@ -794,126 +804,126 @@ by calling qmidiarp -a</source>
 Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant avec qmidiarp -a</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1131"/>
+        <location filename="../mainwindow.cpp" line="1195"/>
         <source>Could not read from resource file</source>
         <translation>Erreur de lecture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="141"/>
+        <location filename="../mainwindow.cpp" line="178"/>
         <source>&amp;New Arp...</source>
         <translation>&amp;Nouvel Arpège...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="200"/>
+        <location filename="../mainwindow.cpp" line="237"/>
         <source>&amp;Use incoming MIDI Clock</source>
         <translation>&amp;Utiliser MIDI Clock entrant</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="230"/>
+        <location filename="../mainwindow.cpp" line="267"/>
         <source>&amp;Event Log</source>
         <translation>&amp;Journal</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="238"/>
+        <location filename="../mainwindow.cpp" line="275"/>
         <source>&amp;Settings</source>
         <translation>&amp;Paramètres</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="240"/>
+        <location filename="../mainwindow.cpp" line="277"/>
         <source>Ctrl+P</source>
         <comment>View|Settings</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="287"/>
+        <location filename="../mainwindow.cpp" line="324"/>
         <source>&amp;About Qt...</source>
         <translation>&amp;A propos de Qt...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="367"/>
+        <location filename="../mainwindow.cpp" line="414"/>
         <source>About %1</source>
         <translation>A propos de %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="372"/>
+        <location filename="../mainwindow.cpp" line="419"/>
         <source>About Qt</source>
         <translation>A propos de Qt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="381"/>
+        <location filename="../mainwindow.cpp" line="428"/>
         <source>Add MIDI Arpeggiator</source>
         <translation>Ajouter un arpège MIDI</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="164"/>
-        <location filename="../mainwindow.cpp" line="684"/>
+        <location filename="../mainwindow.cpp" line="201"/>
+        <location filename="../mainwindow.cpp" line="731"/>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="717"/>
+        <location filename="../mainwindow.cpp" line="775"/>
         <source>Not a QMidiArp xml file.</source>
         <translation>Pas un fichier xml QMidiArp.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="952"/>
+        <location filename="../mainwindow.cpp" line="1010"/>
         <source>Save arpeggiator</source>
         <translation>Enregistrer l&apos;arpège</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="952"/>
+        <location filename="../mainwindow.cpp" line="1010"/>
         <source>QMidiArp files</source>
         <translation>Fichiers QMidiArp</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1176"/>
+        <location filename="../mainwindow.cpp" line="1240"/>
         <source>Could not write to resource file</source>
         <translation>Erreur d&apos;écriture du fichier ressources</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="143"/>
+        <location filename="../mainwindow.cpp" line="180"/>
         <source>Add new arpeggiator to tab bar</source>
         <translation>Ajouter un nouvel arpège à la barre d&apos;onglets</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="148"/>
+        <location filename="../mainwindow.cpp" line="185"/>
         <source>Add new LFO to tab bar</source>
         <translation>Ajouter un nouveau LFO à la barre d&apos;onglets</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="142"/>
+        <location filename="../mainwindow.cpp" line="179"/>
         <source>Ctrl+A</source>
         <comment>Module|New Arp</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="147"/>
+        <location filename="../mainwindow.cpp" line="184"/>
         <source>Ctrl+L</source>
         <comment>Module|New LFO</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="195"/>
+        <location filename="../mainwindow.cpp" line="232"/>
         <source>Tempo of internal clock</source>
         <translation>Tempo de l&apos;horologe interne</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="251"/>
+        <location filename="../mainwindow.cpp" line="288"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="252"/>
+        <location filename="../mainwindow.cpp" line="289"/>
         <source>&amp;View</source>
         <translation>&amp;Affichage</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="254"/>
+        <location filename="../mainwindow.cpp" line="291"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="285"/>
+        <location filename="../mainwindow.cpp" line="322"/>
         <source>&amp;About %1...</source>
         <translation>&amp;A propos de %1...</translation>
     </message>
@@ -1026,27 +1036,32 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
 <context>
     <name>ParStore</name>
     <message>
-        <location filename="../parstore.cpp" line="100"/>
+        <location filename="../parstore.cpp" line="131"/>
         <source>&amp;Store here</source>
         <translation>&amp;Mémoriser ici</translation>
     </message>
     <message>
-        <location filename="../parstore.cpp" line="106"/>
+        <location filename="../parstore.cpp" line="137"/>
+        <source>&amp;Act on pattern only</source>
+        <translation>&amp;Ne changer que la séquence</translation>
+    </message>
+    <message>
+        <location filename="../parstore.cpp" line="143"/>
         <source>When finished</source>
         <translation>A la fin</translation>
     </message>
     <message>
-        <location filename="../parstore.cpp" line="112"/>
+        <location filename="../parstore.cpp" line="149"/>
         <source>Stay here</source>
         <translation>Rester ici</translation>
     </message>
     <message>
-        <location filename="../parstore.cpp" line="118"/>
+        <location filename="../parstore.cpp" line="155"/>
         <source>Jump back</source>
         <translation>Retourner au précédent</translation>
     </message>
     <message>
-        <location filename="../parstore.cpp" line="123"/>
+        <location filename="../parstore.cpp" line="160"/>
         <source>Jump to:</source>
         <translation>Enchaîner:</translation>
     </message>
@@ -1082,22 +1097,22 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
 <context>
     <name>SeqWidget</name>
     <message>
-        <location filename="../seqwidget.cpp" line="99"/>
+        <location filename="../seqwidget.cpp" line="92"/>
         <source>Transpose the sequence following incoming notes</source>
         <translation>Transposer la séquence suivant les notes entrants</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="169"/>
+        <location filename="../seqwidget.cpp" line="162"/>
         <source>Output</source>
         <translation>Sortie</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="233"/>
+        <location filename="../seqwidget.cpp" line="226"/>
         <source>&amp;Mute</source>
         <translation>M&amp;uet</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="57"/>
+        <location filename="../seqwidget.cpp" line="50"/>
         <source>Display</source>
         <translation>Affichage</translation>
     </message>
@@ -1118,32 +1133,32 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <translation type="obsolete">&amp;Bas</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="101"/>
+        <location filename="../seqwidget.cpp" line="94"/>
         <source>&amp;Note Off</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="105"/>
+        <location filename="../seqwidget.cpp" line="98"/>
         <source>Stop output when Note is released</source>
         <translation>Arrêter l&apos;envoi de notes quand la touche est relâchée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="113"/>
+        <location filename="../seqwidget.cpp" line="106"/>
         <source>&amp;Restart</source>
         <translation>&amp;Redémarre</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="117"/>
+        <location filename="../seqwidget.cpp" line="110"/>
         <source>Restart sequence when a new note is received</source>
         <translation>Redémarrer la séquence au départ quand une nouvelle note est reçue</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="119"/>
+        <location filename="../seqwidget.cpp" line="112"/>
         <source>&amp;Trigger</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="123"/>
+        <location filename="../seqwidget.cpp" line="116"/>
         <source>Retrigger sequence when a new note is received</source>
         <translation>Déclencher la séquence avec le timing des notes reçues</translation>
     </message>
@@ -1156,7 +1171,7 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <translation type="obsolete">Jouer la séquence en boucle au lieu d&apos;un passage unique</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="220"/>
+        <location filename="../seqwidget.cpp" line="213"/>
         <source>Sequence</source>
         <translation>Séquence</translation>
     </message>
@@ -1169,148 +1184,153 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <translation type="obsolete">Index Preset</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="252"/>
-        <location filename="../seqwidget.cpp" line="253"/>
+        <location filename="../seqwidget.cpp" line="256"/>
+        <location filename="../seqwidget.cpp" line="257"/>
         <source>Re&amp;cord</source>
         <translation>&amp;Enregistrer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="254"/>
+        <location filename="../seqwidget.cpp" line="258"/>
         <source>Record step by step</source>
         <translation>Enregistrer pas à pas les notes de l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="272"/>
+        <location filename="../seqwidget.cpp" line="276"/>
         <source>Resolution (notes/beat): Number of notes produced every beat</source>
         <translation>Résolution (notes/beat): Nombre de notes produites à chaque quart de mesure</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="286"/>
+        <location filename="../seqwidget.cpp" line="290"/>
         <source>Length of Sequence in beats</source>
         <translation>Durée de la séquence en quarts de mesure</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="294"/>
+        <location filename="../seqwidget.cpp" line="298"/>
         <source>Veloc&amp;ity</source>
         <translation>Véloc&amp;ité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="301"/>
+        <location filename="../seqwidget.cpp" line="305"/>
         <source>N&amp;ote Length</source>
         <translation>Du&amp;rée des Notes</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="107"/>
+        <location filename="../seqwidget.cpp" line="100"/>
         <source>&amp;Velocity</source>
         <translation>&amp;Vélocité</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="61"/>
+        <location filename="../seqwidget.cpp" line="54"/>
         <source>&amp;F</source>
         <translation>&amp;P</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="61"/>
+        <location filename="../seqwidget.cpp" line="54"/>
         <source>&amp;U</source>
         <translation>&amp;H</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="61"/>
+        <location filename="../seqwidget.cpp" line="54"/>
         <source>&amp;M</source>
         <translation>&amp;M</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="61"/>
+        <location filename="../seqwidget.cpp" line="54"/>
         <source>&amp;L</source>
         <translation>&amp;B</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="62"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>Full</source>
         <translation>Plein</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="62"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>Upper</source>
         <translation>Haut</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="62"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>Mid</source>
         <translation>Milieu</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="62"/>
+        <location filename="../seqwidget.cpp" line="55"/>
         <source>Lower</source>
         <translation>Bas</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="93"/>
+        <location filename="../seqwidget.cpp" line="86"/>
         <source>Input</source>
         <translation>Entrée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="95"/>
+        <location filename="../seqwidget.cpp" line="88"/>
         <source>&amp;Note</source>
         <translation>&amp;Note</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="111"/>
+        <location filename="../seqwidget.cpp" line="104"/>
         <source>Set sequence velocity to that of incoming notes</source>
         <translation>La vélocité de la séquence suit celle des notes à l&apos;entrée</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="125"/>
+        <location filename="../seqwidget.cpp" line="118"/>
         <source>&amp;Legato</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="129"/>
+        <location filename="../seqwidget.cpp" line="122"/>
         <source>Retrigger / restart upon new legato note as well</source>
         <translation>Redémarrer / déclencher également sur des notes en legato</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="138"/>
+        <location filename="../seqwidget.cpp" line="131"/>
         <source>&amp;Channel</source>
         <translation>&amp;Canal</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="200"/>
+        <location filename="../seqwidget.cpp" line="193"/>
         <source>&amp;Show/hide in-out settings</source>
         <translation>&amp;Monter/Cacher les panneaux Entrée-Sortie</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="246"/>
+        <location filename="../seqwidget.cpp" line="236"/>
+        <source>Defer mute, velocity, note length and transpose to pattern end</source>
+        <translation>N&apos;appliquer les fonctions muet, vélocité, durée et transposition qu&apos;à la fin du motif</translation>
+    </message>
+    <message>
+        <location filename="../seqwidget.cpp" line="250"/>
         <source>Loop, bounce or play once going forward or backward</source>
         <translation>Répéter, jouer aller-retour ou jouer une seule fois, avant ou arrière</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="307"/>
+        <location filename="../seqwidget.cpp" line="311"/>
         <source>&amp;Transpose</source>
         <translation>&amp;Transposer</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="171"/>
+        <location filename="../seqwidget.cpp" line="164"/>
         <source>&amp;Port</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="177"/>
+        <location filename="../seqwidget.cpp" line="170"/>
         <source>C&amp;hannel</source>
         <translation>Cana&amp;l</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="224"/>
+        <location filename="../seqwidget.cpp" line="217"/>
         <source>Right button to mute points, left button to draw custom wave</source>
         <translation>Bouton droit de la souris pour rendre muet chaque point, bouton gauche pour dessiner la forme d&apos;onde</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="262"/>
+        <location filename="../seqwidget.cpp" line="266"/>
         <source>&amp;Resolution</source>
         <translation>&amp;Résolution</translation>
     </message>
     <message>
-        <location filename="../seqwidget.cpp" line="278"/>
+        <location filename="../seqwidget.cpp" line="282"/>
         <source>&amp;Length</source>
         <translation>&amp;Durée</translation>
     </message>
