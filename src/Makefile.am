@@ -52,6 +52,7 @@ qmidiarp_SOURCES = \
 	midicctable.cpp midicctable.h \
 	midicontrol.cpp midicontrol.h \
 	midievent.h \
+	nsm.h \
 	driverbase.h \
 	parstore.cpp parstore.h \
 	passwidget.cpp passwidget.h \
