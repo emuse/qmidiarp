@@ -217,7 +217,7 @@ void SeqDriver::calcCurrentTick(double tmpTime) {
         jPos = jackSync->getCurrentPos();
         if (jPos.beats_per_minute > 0) requestedTempo = jPos.beats_per_minute;
 
-        m_current_tick = (long)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
+        m_current_tick = (uint64_t)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
                 / jPos.frame_rate / 60.
                 + tempoChangeTick;
 
@@ -397,7 +397,7 @@ double SeqDriver::aTimeToDelta(snd_seq_real_time_t* atime)
 const snd_seq_real_time_t* SeqDriver::deltaToATime(double curtime)
 {
     atime.tv_sec = (int)(curtime * 1e-9);
-    atime.tv_nsec = (long)(curtime - (double)atime.tv_sec * 1e9);
+    atime.tv_nsec = (uint64_t)(curtime - (double)atime.tv_sec * 1e9);
     return &atime;
 }
 
