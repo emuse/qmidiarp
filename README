@@ -22,6 +22,7 @@ You need the following development headers and libraries for building.
 libqt4-dev     (qt4-devel)
 libasound2-dev (libalsa-devel)
 libjack-dev    (jackit-devel)
+liblo-dev      (liblo-devel) for nsm support
 
 
 Installation

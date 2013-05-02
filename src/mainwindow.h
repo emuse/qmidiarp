@@ -60,6 +60,8 @@ static const char ABOUTMSG[] =
             "(C) 2011 Nedko Arnaudov<br/>"
             "(C) 2009 Guido Scholz<br/>"
             "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/></p>"
+            "<p><b>Contributions</b><br/>"
+            "Roy Vegard Ovesen (work on nsm support)<br/></p>"
             "<p><b>Translations</b><br/>"
             "Pavel Fric<br/>"
             "Pedro Lopez-Cabanillas<br/>"

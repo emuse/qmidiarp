@@ -9,6 +9,11 @@ New Features
     end using a new toolbutton
   o Modules in the Global Storage window have mute/defer buttons
   o Global Storage location switches can be set to affect only the pattern
+  o Non Session Manager support with "switch" capability (thanks to
+    Roy Vegard Ovesen)
+
+General Changes
+  o NSM support requires liblo development headers (liblo-dev package)
 
 
 qmidiarp-0.5.1 (2012-11-17)
