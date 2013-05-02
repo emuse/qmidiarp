@@ -123,6 +123,9 @@ else
 fi
 ], [AC_MSG_NOTICE([NSM support is disabled])])
 
+# Remove the following generated file during configure to avoid need for make clean
+rm -f src/mainwindow_moc.cpp
+
 # Checks for header files.
 AC_HEADER_STDC
 

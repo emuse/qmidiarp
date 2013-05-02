@@ -348,7 +348,9 @@ class MainWindow : public QMainWindow
 /* SIGNALS */
   signals:
     void newTempo(int);
+#ifdef NSM
     void nsmOpenFile(const QString & name);
+#endif
 
 /* PUBLIC SLOTS */
   public slots:
