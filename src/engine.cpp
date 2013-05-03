@@ -461,9 +461,8 @@ void Engine::setStatus(bool on)
     status = on;
     driver->setTransportStatus(on);
     if (on) {
-        uint64_t starttick = driver->getCurrentTick();
-        resetTicks(starttick);
-        driver->requestEchoAt(starttick);
+        resetTicks(driver->getCurrentTick());
+        driver->requestEchoAt(0);
     }
 }
 
@@ -778,6 +777,7 @@ void Engine::learnController(int ccnumber, int channel)
 void Engine::resetTicks(int curtick)
 {
     int l1;
+
     for (l1 = 0; l1 < midiArpCount(); l1++) {
         midiArp(l1)->foldReleaseTicks(driver->trStartingTick - curtick);
         midiArp(l1)->setNextTick(curtick);
