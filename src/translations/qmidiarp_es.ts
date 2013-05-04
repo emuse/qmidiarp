@@ -82,7 +82,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="218"/>
         <source>Defer mute to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Retrasar silenciar al final del patrón</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="228"/>
@@ -461,7 +461,7 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../lfowidget.cpp" line="296"/>
         <source>Defer mute to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Retrasar silenciar al final del patrón</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="304"/>
@@ -1041,7 +1041,7 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     <message>
         <location filename="../parstore.cpp" line="137"/>
         <source>&amp;Act on pattern only</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Actuar solo en patrón</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="143"/>
@@ -1271,7 +1271,7 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     <message>
         <location filename="../seqwidget.cpp" line="236"/>
         <source>Defer mute, velocity, note length and transpose to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Retrasar silenciar, velocidad, duración de nota y transporte al final del patrón</translation>
     </message>
     <message>
         <source>&amp;Sequence</source>
