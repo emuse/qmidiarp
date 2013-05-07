@@ -1,0 +1,34 @@
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix lv2ev: <http://lv2plug.in/ns/ext/event#> .
+
+<https://git.code.sf.net/p/qmidiarp/code>
+    a lv2:Plugin, lv2:InstrumentPlugin ;
+    doap:name "qmidiarp_lfo" ;
+    doap:maintainer [
+        foaf:name "Frank Kober" ;
+        foaf:homepage <http://qmidiarp.sourceforge.net> ;
+        foaf:mbox <mailto:qmidiarp-devel@lists.sourceforge.net> ;
+    ] ;
+    lv2:requiredFeature <http://lv2plug.in/ns/ext/urid#map> ;
+    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:port [
+        a lv2:InputPort, lv2ev:EventPort ;
+        lv2ev:supportsEvent <http://lv2plug.in/ns/ext/midi#MidiEvent> ;
+        lv2:index 0;
+        lv2:symbol "in";
+        lv2:name "MIDI In";
+    ] ;
+    lv2:port [
+        a lv2:OutputPort, lv2ev:EventPort ;
+        lv2ev:supportsEvent <http://lv2plug.in/ns/ext/midi#MidiEvent> ;
+        lv2:index 1;
+        lv2:symbol "out";
+        lv2:name "MIDI Out";
+    ]
+    .
+
+

@@ -1,7 +1,10 @@
 # Makefile.am for qmidiarp
 SUBDIRS = pixmaps
+plugindir = /usr/lib64/lv2/qmidiarp_lfo.lv2
 
 bin_PROGRAMS = qmidiarp
+# mark lv2 plugin noinst, only .so will be installed by install-exec-hook
+noinst_LTLIBRARIES= qmidiarp_lfo.la
 
 nodist_qmidiarp_SOURCES = \
 	cursor_moc.cpp \
@@ -61,7 +64,20 @@ qmidiarp_SOURCES = \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h
 
+qmidiarp_CXXFLAGS = $(AM_CXXFLAGS)
 qmidiarp_LDADD = $(QT_LIBS)
+
+nodist_qmidiarp_lfo_la_SOURCES = \
+	midilfo_moc.cpp \
+	qmidiarp_lfo_lv2_moc.cpp
+
+qmidiarp_lfo_la_SOURCES = \
+	qmidiarp_lfo_lv2.cpp qmidiarp_lfo_lv2.h \
+	midilfo.cpp midilfo.h
+
+qmidiarp_lfo_la_LDFLAGS = -module -avoid-version
+
+qmidiarp_lfo_la_LIBADD = $(QT_LIBS) -llv2-plugin
 
 if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
@@ -104,3 +120,9 @@ $(translations): $(qmidiarp_SOURCES)
 .ts.qm: $(translations)
 	$(LRELEASE) -verbose $< -qm $@
 endif
+
+# install LV2 .so only, not .la
+
+install-exec-hook:
+
+	install -c -D -m 755 $(top_builddir)/src/.libs/qmidiarp_lfo.so $(DESTDIR)$(plugindir)/qmidiarp_lfo.so

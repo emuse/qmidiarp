@@ -24,7 +24,10 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_RANLIB
+
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+LT_INIT([dlopen])
 
 # Qt lib check is broken on some distros
 # AC_CHECK_LIB([QtCore], qt_addObject, [],

@@ -40,7 +40,7 @@ MidiLfo::MidiLfo()
     noteCount = 0;
 
     queueTempo = 100.0;
-    amp = 0;
+    amp = 64;
     offs = 0;
     freq = 32;
     size = 1;
@@ -84,6 +84,8 @@ MidiLfo::MidiLfo()
     data.clear();
     frame.resize(32);
     frame.fill(sample);
+    updateWaveForm(waveFormIndex);
+    getData(&data);
     lastMouseLoc = 0;
     lastMouseY = 0;
     frameptr = 0;
