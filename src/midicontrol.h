@@ -109,6 +109,7 @@ class MidiControl : public QWidget
 * @param count Internal identifier of the controllable QWidget
 */
     void addMidiLearnMenu(const QString &name, QWidget *widget, int count = 0);
+    void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
 /*! @brief Connected to Engine::setMidiLearn() to listen for incoming events.

@@ -167,6 +167,7 @@ class ArpWidget : public QWidget
 *
 */
     void setModified(bool);
+    void skipXmlElement(QXmlStreamReader& xml);
 
     int getNextTick() { return midiWorker->nextTick; }
 

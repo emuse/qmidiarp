@@ -3,8 +3,8 @@ SUBDIRS = pixmaps
 plugindir = /usr/lib64/lv2/qmidiarp_lfo.lv2
 
 bin_PROGRAMS = qmidiarp
-# mark lv2 plugin noinst, only .so will be installed by install-exec-hook
-noinst_LTLIBRARIES= qmidiarp_lfo.la
+
+plugin_LTLIBRARIES = qmidiarp_lfo.la
 
 nodist_qmidiarp_SOURCES = \
 	cursor_moc.cpp \
@@ -68,15 +68,36 @@ qmidiarp_CXXFLAGS = $(AM_CXXFLAGS)
 qmidiarp_LDADD = $(QT_LIBS)
 
 nodist_qmidiarp_lfo_la_SOURCES = \
+	cursor_moc.cpp \
+	globstore_moc.cpp \
+	indicator_moc.cpp \
+	lfowidget_moc.cpp \
+	lfoscreen_moc.cpp \
+	managebox_moc.cpp \
+	midicontrol_moc.cpp \
 	midilfo_moc.cpp \
+	parstore_moc.cpp \
+	slider_moc.cpp \
+	storagebutton_moc.cpp \
+	qmidiarp_lfowidget_lv2_moc.cpp \
 	qmidiarp_lfo_lv2_moc.cpp
 
 qmidiarp_lfo_la_SOURCES = \
-	qmidiarp_lfo_lv2.cpp qmidiarp_lfo_lv2.h \
-	midilfo.cpp midilfo.h
+	cursor.cpp cursor.h \
+	globstore.cpp globstore.h \
+	indicator.cpp indicator.h \
+	lfowidget.cpp lfowidget.h \
+	lfoscreen.cpp lfoscreen.h \
+	managebox.cpp managebox.h \
+	midicontrol.cpp midicontrol.h \
+	midilfo.cpp midilfo.h \
+	parstore.cpp parstore.h \
+	slider.cpp slider.h \
+	storagebutton.cpp storagebutton.h \
+	qmidiarp_lfowidget_lv2.cpp qmidiarp_lfowidget_lv2.h \
+	qmidiarp_lfo_lv2.cpp qmidiarp_lfo_lv2.h
 
-qmidiarp_lfo_la_LDFLAGS = -module -avoid-version
-
+qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_lfo_la_LIBADD = $(QT_LIBS) -llv2-plugin
 
 if ENABLE_TRANSLATIONS
@@ -125,4 +146,4 @@ endif
 
 install-exec-hook:
 
-	install -c -D -m 755 $(top_builddir)/src/.libs/qmidiarp_lfo.so $(DESTDIR)$(plugindir)/qmidiarp_lfo.so
+	rm -f $(DESTDIR)$(plugindir)/qmidiarp_lfo.la

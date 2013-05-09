@@ -193,6 +193,7 @@ class LfoWidget : public QWidget
 *
 */
     void setModified(bool);
+    void skipXmlElement(QXmlStreamReader& xml);
 
 /* SIGNALS */
   signals:

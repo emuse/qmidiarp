@@ -178,6 +178,7 @@ class SeqWidget : public QWidget
 *
 */
     void setModified(bool);
+    void skipXmlElement(QXmlStreamReader& xml);
 
 /* SIGNALS */
   signals:

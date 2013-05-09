@@ -112,6 +112,7 @@ class MainWindow : public QMainWindow
 #ifdef NSM
     static nsm_client_t *nsm;
 #endif
+    void skipXmlElement(QXmlStreamReader& xml);
 /*!
 * @brief  opens a file dialog and calls either
 * MainWindow::openTextFile or

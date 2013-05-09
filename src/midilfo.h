@@ -68,7 +68,6 @@ class MidiLfo : public QObject  {
     double queueTempo;  /*!< current tempo of the transport, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
-    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     bool backward;       /*!< True when the sequence should start backward */
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
@@ -87,7 +86,6 @@ class MidiLfo : public QObject  {
  * @return The value clipped within the range
  */
     int clip(int value, int min, int max, bool *outOfRange);
-    QVector<Sample> data;
 /*! @brief This function recalculates the MidiLfo::customWave as a function
  * of a new offset value.
  *
@@ -124,6 +122,7 @@ class MidiLfo : public QObject  {
     int frameSize;  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
     int nPoints;        /*!< Number of steps to be played out */
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
+    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int waveFormIndex;          /*!< Index of the waveform to produce
                                     @par 0: Sine
                                     @par 1: Sawtooth Up
@@ -137,6 +136,7 @@ class MidiLfo : public QObject  {
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
     QVector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
+    QVector<Sample> data;
 
   public:
     MidiLfo();

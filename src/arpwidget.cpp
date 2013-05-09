@@ -1020,3 +1020,20 @@ void ArpWidget::updateDisplay()
     needsGUIUpdate = false;
     midiWorker->needsGUIUpdate = false;
 }
+
+void ArpWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
