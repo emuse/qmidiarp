@@ -383,9 +383,12 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 #ifdef NSM
     if (nsm && nsm_is_active(nsm))
     {
-        fileNewAction->setDisabled(true);
-        fileOpenAction->setDisabled(true);
-        fileSaveAsAction->setDisabled(true);
+        fileNewAction->setText(tr("Clear"));
+        fileNewAction->setToolTip(tr("Clear arpeggiator"));
+        fileOpenAction->setText(tr("Import to session..."));
+        fileOpenAction->setToolTip(tr("Import arpeggiator file to session"));
+        fileSaveAsAction->setText(tr("Export from session..."));
+        fileSaveAsAction->setToolTip(tr("Export arpeggiator file from session"));
         fileRecentlyOpenedFiles->setDisabled(true);
     }
 #endif
@@ -713,7 +716,16 @@ void MainWindow::fileNew()
 {
     if (isSave()) {
         clear();
+#ifdef NSM
+        if (nsm) {
+            filename = configFile;
+        }
+        else {
+            filename = "";
+        }
+#else
         filename = "";
+#endif
         updateWindowTitle();
         engine->setModified(false);
     }
@@ -721,8 +733,15 @@ void MainWindow::fileNew()
 
 void MainWindow::fileOpen()
 {
-    if (isSave())
+    if (isSave()) {
         chooseFile();
+#ifdef NSM
+        if (nsm) {
+            filename = configFile;
+            updateWindowTitle();
+        }
+#endif
+    }
 }
 
 void MainWindow::chooseFile()
@@ -1000,6 +1019,12 @@ bool MainWindow::saveFile()
 void MainWindow::fileSaveAs()
 {
     saveFileAs();
+#ifdef NSM
+    if (nsm) {
+        filename = configFile;
+        updateWindowTitle();
+    }
+#endif
 }
 
 bool MainWindow::saveFileAs()
@@ -1360,16 +1385,7 @@ void MainWindow::checkIfFirstModule()
         if (alsaMidi) midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
         fileSaveAction->setEnabled(true);
-#ifdef NSM
-        if (nsm && nsm_is_active(nsm)) {
-            fileSaveAsAction->setDisabled(true);
-        }
-        else {
-#endif
-            fileSaveAsAction->setEnabled(true);
-#ifdef NSM
-        }
-#endif
+        fileSaveAsAction->setEnabled(true);
         showAllIOAction->setEnabled(true);
         hideAllIOAction->setEnabled(true);
         runAction->setEnabled(!(midiClockAction->isChecked()
@@ -1512,7 +1528,7 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
     (void)out_msg;
     (void)display_name;
 
-    QString configFile = name;
+    configFile = name;
     if (!alsaMidi) {
         engine->driver->callJack(-1);
         engine->driver->callJack(engine->getPortCount(), client_id);

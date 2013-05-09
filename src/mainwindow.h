@@ -111,6 +111,7 @@ class MainWindow : public QMainWindow
 
 #ifdef NSM
     static nsm_client_t *nsm;
+    QString configFile;
 #endif
 /*!
 * @brief  opens a file dialog and calls either
