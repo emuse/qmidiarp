@@ -194,10 +194,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
         tr("Right button to mute points\nLeft button to draw custom wave\nWheel to change offset"));
     screen->setMinimumHeight(80);
 
-    connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
-            SLOT(mouseMoved(double, double, int)));
-    connect(screen, SIGNAL(mousePressed(double, double, int)), this,
-            SLOT(mousePressed(double, double, int)));
+    connect(screen, SIGNAL(mouseEvent(double, double, int, bool)), this,
+            SLOT(mouseEvent(double, double, int, bool)));
     connect(screen, SIGNAL(mouseWheel(int)), this,
             SLOT(mouseWheel(int)));
 
@@ -382,7 +380,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     setLayout(widgetLayout);
     updateAmp(64);
-    lastMute = false;
     dataChanged = false;
     needsGUIUpdate = false;
 }
@@ -762,36 +759,15 @@ void LfoWidget::copyToCustom()
     modified = true;
 }
 
-void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
+void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, bool pressed)
 {
-    if (buttons == 2) {
-        if (midiWorker) midiWorker->setMutePoint(mouseX, lastMute);
+    if (!midiWorker) {
+        emit mouseSig(mouseX, mouseY, buttons, pressed);
+        return;
     }
     else {
-        if (waveFormBox->currentIndex() < 5) {
-            copyToCustom();
-        }
-        if (midiWorker) midiWorker->setCustomWavePoint(mouseX, mouseY, false);
-        if (midiWorker) midiWorker->newCustomOffset();
+        midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
     }
-    if (midiWorker) midiWorker->dataChanged = true;
-    modified = true;
-}
-
-void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
-{
-    if (!midiWorker) return;
-    if (buttons == 2) {
-        lastMute = midiWorker->toggleMutePoint(mouseX);
-    }
-    else {
-        if (waveFormBox->currentIndex() < 5) {
-            copyToCustom();
-        }
-        midiWorker->setCustomWavePoint(mouseX, mouseY, true);
-        midiWorker->newCustomOffset();
-    }
-    midiWorker->dataChanged = true;
     modified = true;
 }
 

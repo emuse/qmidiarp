@@ -27,7 +27,6 @@
 #define QMIDIARP_LFO_LV2_H
 
 #include "midilfo.h"
-#include "globstore.h"
 #include "lfowidget.h"
 
 #include "lv2.h"
@@ -55,7 +54,37 @@ public:
                 SIZE = 5,
                 FREQUENCY = 6,
                 CH_OUT = 7,
-                CH_IN = 8
+                CH_IN = 8,
+                CURSOR_POS = 9,
+                WAVEDATA1 = 10,
+                WAVEDATA2 = 11,
+                WAVEDATA3 = 12,
+                WAVEDATA4 = 13,
+                WAVEDATA5 = 14,
+                WAVEDATA6 = 15,
+                WAVEDATA7 = 16,
+                WAVEDATA8 = 17,
+                WAVEDATA9 = 18,
+                WAVEDATA10 = 19,
+                WAVEDATA11 = 20,
+                WAVEDATA12 = 21,
+                WAVEDATA13 = 22,
+                WAVEDATA14 = 23,
+                WAVEDATA15 = 24,
+                WAVEDATA16 = 25,
+                WAVEFORM = 26,
+                LOOPMODE = 27,
+                MUTE = 28,
+                MOUSEX = 29,
+                MOUSEY = 30,
+                MOUSEBUTTON = 31,
+                MOUSEPRESSED = 32,
+                CC_OUT = 33,
+                CC_IN = 34,
+                ENABLE_NOTEOFF = 35,
+                ENABLE_RESTARTBYKBD = 36,
+                ENABLE_TRIGBYKBD = 37,
+                ENABLE_TRIGLEGATO = 38
         };
 
         void connect_port(uint32_t port, void *data);
@@ -67,12 +96,19 @@ public:
 
 private:
 
-        float *val[9];
+        float *val[50];
         uint32_t eventID;
         uint64_t curFrame;
         int inLfoFrame;
+        int waveIndex;
+        double mouseXCur;
+        double mouseYCur;
+        int lastMouseIndex;
+        int buttonsCur;
         double sampleRate;
         void updateParams();
+        void sendWave();
+        void sendSample(int ix, int port);
 
         LV2_Event_Buffer *inEventBuffer;
         LV2_Event_Buffer *outEventBuffer;

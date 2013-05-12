@@ -186,19 +186,15 @@ void LfoScreen::setMuted(bool on)
 
 void LfoScreen::mouseMoveEvent(QMouseEvent *event)
 {
-    mouseX = event->x();
-    mouseY = event->y();
-    bool cl = false;
-
-    mouseX = clip(mouseX, LFOSCR_HMARG, xMax, &cl);
-    mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
-    emit mouseMoved(((double)mouseX - LFOSCR_HMARG) /
-                            ((double)xMax - LFOSCR_HMARG + .2),
-                1. - ((double)mouseY - LFOSCR_VMARG) /
-                (h - 2 * LFOSCR_VMARG), event->buttons());
+    emitMouseEvent(event, false);
 }
 
 void LfoScreen::mousePressEvent(QMouseEvent *event)
+{
+    emitMouseEvent(event, true);
+}
+
+void LfoScreen::emitMouseEvent(QMouseEvent *event, bool pressed)
 {
     mouseX = event->x();
     mouseY = event->y();
@@ -207,10 +203,10 @@ void LfoScreen::mousePressEvent(QMouseEvent *event)
     mouseX = clip(mouseX, LFOSCR_HMARG, xMax, &cl);
     mouseY = clip(mouseY, LFOSCR_VMARG + 1, h - LFOSCR_VMARG, &cl);
 
-    emit mousePressed(((double)mouseX - LFOSCR_HMARG) /
+    emit mouseEvent(((double)mouseX - LFOSCR_HMARG) /
                             ((double)xMax - LFOSCR_HMARG + .2),
                 1. - ((double)mouseY - LFOSCR_VMARG) /
-                (h - 2 * LFOSCR_VMARG), event->buttons());
+                (h - 2 * LFOSCR_VMARG), event->buttons(), pressed);
 }
 
 void LfoScreen::wheelEvent(QWheelEvent *event)

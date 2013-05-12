@@ -28,10 +28,10 @@
 
 #include "lfowidget.h"
 #include "midilfo.h"
-#include "globstore.h"
 
 #include "lv2.h"
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
+#include "lv2/lv2plug.in/ns/ext/time/time.h"
 
 
 #define QMIDIARP_LFO_LV2UI_URI QMIDIARP_LFO_LV2_PREFIX "ui"
@@ -52,6 +52,8 @@ class qmidiarp_lfowidget_lv2 : public LfoWidget
 
   public slots:
     void mapParam(int value);
+    void mapBool(bool on);
+    void mapMouse(double mouseX, double mouseY, int buttons, bool pressed);
 
   protected:
     void updateParam(int index, float fValue) const;
@@ -59,6 +61,10 @@ class qmidiarp_lfowidget_lv2 : public LfoWidget
   private:
     LV2UI_Controller     m_controller;
     LV2UI_Write_Function writeFunction;
+    QVector<Sample> data1;
+
+    int waveIndex;
+    double mouseXCur, mouseYCur;
 };
 
 #endif

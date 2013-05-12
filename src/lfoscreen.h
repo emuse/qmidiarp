@@ -76,10 +76,10 @@ class LfoScreen : public QWidget
     ~LfoScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
+    void emitMouseEvent(QMouseEvent *event, bool pressed);
 
   signals:
-    void mousePressed(double, double, int);
-    void mouseMoved(double, double, int);
+    void mouseEvent(double, double, int, bool pressed);
     void mouseWheel(int);
 
   public slots:

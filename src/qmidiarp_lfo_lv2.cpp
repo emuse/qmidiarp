@@ -32,6 +32,7 @@
 #include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
 
 #define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
+#define LV2_TIME_URI "http://lv2plug.in/ns/ext/time"
 
 qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     double sample_rate, const LV2_Feature *const *host_features )
@@ -44,6 +45,9 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     inEventBuffer = NULL;
     outEventBuffer = NULL;
     getNextFrame(0);
+    waveIndex = 0;
+    mouseXCur = 0;
+    mouseYCur = 0;
 
     for (int i = 0; host_features[i]; ++i) {
         if (::strcmp(host_features[i]->URI, LV2_URID_MAP_URI) == 0) {
@@ -91,65 +95,160 @@ void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
 
 void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 {
-    LV2_Event_Iterator iter, iter_out;
-    lv2_event_begin(&iter, inEventBuffer);
+    LV2_Event_Iterator iter_out;
     lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
     lv2_event_begin(&iter_out, outEventBuffer);
 
-        if (inEventBuffer) {
-            while (lv2_event_is_valid(&iter)) {
-                uint8_t   *data;
-                LV2_Event *event = lv2_event_get(&iter, &data);
-                if (event && event->type == eventID) {
-                    uint64_t eventtime = (uint64_t)event->frames*nframes;
-                    MidiEvent inEv;
-                    inEv.type=data[0];
-                    inEv.data=data[1];
-                    inEv.value=data[2];
-                    int tick = eventtime*TPQN*120/60/sampleRate;
-                    (void)handleEvent(inEv, tick);
+    if (inEventBuffer) {
+        LV2_Event_Iterator iter;
+        lv2_event_begin(&iter, inEventBuffer);
+        while (lv2_event_is_valid(&iter)) {
+            uint8_t   *data;
+            LV2_Event *event = lv2_event_get(&iter, &data);
+            if (event && event->type == eventID) {
+                MidiEvent inEv;
+                if ( (data[0] & 0xf0) == 0x90 ) {
+                    inEv.type = EV_NOTEON;
+                    inEv.value = data[2];
                 }
-                lv2_event_increment(&iter);
-            }
-            inEventBuffer = NULL;
-        }
+                else if ( (data[0] & 0xf0) == 0x80 ) {
+                    inEv.type = EV_NOTEON;
+                    inEv.value = 0;
+                }
+                else if ( (data[0] & 0xf0) == 0xb0 ) {
+                    inEv.type = EV_CONTROLLER;
+                    inEv.value = data[2];
+                }
+                else inEv.type = EV_NONE;
 
-        for (uint f = 0 ; f < nframes; f++) {
-            int curtick = ((uint64_t)f + curFrame*nframes)*TPQN*120/60/sampleRate;
-            if (curtick >= nextTick) {
-                updateParams();
-                //frameptr = getFramePtr();
-                //lfoWidget(l1)->cursor->updatePosition(frameptr);
-                if (curtick > frame.at(inLfoFrame).tick) {
-                    //printf("inlfoframe %d curtick %d - nextTick %d\n", inLfoFrame, curtick, nextTick);
-                    if (!frame.at(inLfoFrame).muted && !isMuted) {
-                        unsigned char d[3];
-                        d[0] = 0xb0 + channelOut;
-                        d[1] = ccnumber;
-                        d[2] = frame.at(inLfoFrame).value;
-                        lv2_event_write(&iter_out, f, 0, eventID, 3, d);
-                    }
-                    inLfoFrame++;
-                    if (inLfoFrame >= frameSize) {
-                        getNextFrame(curtick);
-                        inLfoFrame = 0;
-                    }
+                inEv.channel = data[0] & 0x0f;
+                inEv.data=data[1];
+                int tick = (uint64_t)curFrame*nframes*TPQN*120/60/sampleRate;
+                (void)handleEvent(inEv, tick);
+            }
+            lv2_event_increment(&iter);
+        }
+    }
+
+    if ((curFrame % 12) == 5) updateParams();
+    if (!(curFrame % 12)) sendWave();
+
+    for (uint f = 0 ; f < nframes; f++) {
+        int curtick = ((uint64_t)f + curFrame*nframes)*TPQN*120/60/sampleRate;
+        if (curtick >= nextTick) {
+            if (curtick > frame.at(inLfoFrame).tick) {
+                //printf("inlfoframe %d curtick %d - nextTick %d\n", inLfoFrame, curtick, nextTick);
+                if (!frame.at(inLfoFrame).muted && !isMuted) {
+                    unsigned char d[3];
+                    d[0] = 0xb0 + channelOut;
+                    d[1] = ccnumber;
+                    d[2] = frame.at(inLfoFrame).value;
+                    lv2_event_write(&iter_out, f, 0, eventID, 3, d);
+                }
+                inLfoFrame++;
+                if (inLfoFrame >= frameSize) {
+                    frameptr = getFramePtr();
+                    float pos = (float)frameptr;
+                    *val[CURSOR_POS - 2] = pos;
+                    getNextFrame(curtick);
+                    inLfoFrame = 0;
                 }
             }
         }
-        curFrame++;
+    }
+    curFrame++;
 }
 
 void qmidiarp_lfo_lv2::updateParams()
 {
-    updateAmplitude(*val[0]);
-    updateOffset(*val[1]);
-    updateResolution(lfoResValues[(int)*val[2]]);
-    updateSize(1 + (int)*val[3]); // TODO: get correct size values
-    updateFrequency(lfoFreqValues[(int)*val[4]]);
+    bool changed = false;
+    if (mouseXCur != *val[27] || mouseYCur != *val[28]) {
+        changed = false;
+        mouseXCur = *val[27];
+        mouseYCur = *val[28];
+        int ix = mouseEvent(mouseXCur, mouseYCur, *val[29], *val[30]);
+        if (*val[30]) lastMouseIndex = ix; // mouse pressed
+        getData(&data);
+        // Update all wave data points since the last mouse event
+        int dir = (lastMouseIndex > ix) ? -1 : 1;
+        for (int l1 = lastMouseIndex; l1*dir < (ix + dir)*dir; l1+=dir) {
+            sendSample(l1, l1 % 16);
+        }
+        lastMouseIndex = ix; // mouse pressed
+        return;
+    }
+
+    if (amp != *val[0]) {
+        changed = true;
+        updateAmplitude(*val[0]);
+    }
+
+    if (offs != *val[1]) {
+        changed = true;
+        updateOffset(*val[1]);
+    }
+
+    if (res != lfoResValues[(int)*val[2]]) {
+        changed = true;
+        updateResolution(lfoResValues[(int)*val[2]]);
+    }
+
+    if (size != 1+ (int)*val[3]) {
+        changed = true;
+        updateSize(1 + (int)*val[3]);
+    } // TODO: get correct size values
+
+    if (freq != lfoFreqValues[(int)*val[4]]) {
+        changed = true;
+        updateFrequency(lfoFreqValues[(int)*val[4]]);
+    }
+
+    if (waveFormIndex != (int)*val[24]) {
+        changed = true;
+        updateWaveForm(*val[24]);
+    }
+
+    if (curLoopMode != (*val[25])) updateLoop(*val[25]);
+    isMuted = (bool)(*val[26]);
+
+    enableNoteOff = (bool)*val[33];
+    restartByKbd = (bool)(*val[34]);
+    trigByKbd = (bool)(*val[35]);
+    trigLegato = (bool)(*val[36]);
+
     channelOut = ((int)*val[5]);
     chIn = ((int)*val[6]);
-    getData(&data);
+    ccnumber = ((int)*val[31]);
+    ccnumberIn = ((int)*val[32]);
+
+    if (changed) {
+        getData(&data);
+        waveIndex = 0;
+        dataChanged = true;
+    }
+}
+
+void qmidiarp_lfo_lv2::sendWave()
+{
+    if (!dataChanged) return;
+    int ct = data.count();
+    // The 16 ports are swept to transmit the data in parallel
+    for (int l1 = 0; l1 < 16; l1++) {
+        waveIndex %= ct;
+        sendSample(waveIndex, l1);
+        if (!waveIndex && (l1 > 0)) {
+            dataChanged = false;
+            return;
+        }
+        waveIndex++;
+    }
+}
+
+void qmidiarp_lfo_lv2::sendSample(int ix, int port)
+{
+    // wave data and index are encodred into a single float
+        *val[WAVEDATA1 + port - 2] = (float)(data.at(ix).value
+             + ix*128) * ((data.at(ix).muted == false) ? 1 : -1);
 }
 
 void qmidiarp_lfo_lv2::activate (void)
@@ -209,7 +308,6 @@ static void qmidiarp_lfo_lv2_cleanup ( LV2_Handle instance )
     if (pPlugin)
         delete pPlugin;
 }
-
 
 static const void *qmidiarp_lfo_lv2_extension_data ( const char * )
 {
