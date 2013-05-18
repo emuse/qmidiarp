@@ -188,6 +188,33 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 39 ;
+        lv2:symbol "RECORD" ;
+        lv2:name "Record" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 40 ;
+        lv2:symbol "DEFER" ;
+        lv2:name "Defer mute" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:OutputPort, lv2:ControlPort ;
+        lv2:index 41 ;
+        lv2:symbol "CUSTOM_OFFSET" ;
+        lv2:name "Custom Offset" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
     ] ;
     lv2:port [
         a lv2:OutputPort, lv2:ControlPort ;
@@ -203,6 +230,7 @@
         lv2:index 10 ;
         lv2:symbol "WAVEDATA1" ;
         lv2:name "Wavedata1" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -211,6 +239,7 @@
         lv2:index 11 ;
         lv2:symbol "WAVEDATA2" ;
         lv2:name "Wavedata2" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -219,6 +248,7 @@
         lv2:index 12 ;
         lv2:symbol "WAVEDATA3" ;
         lv2:name "Wavedata3" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -227,6 +257,7 @@
         lv2:index 13 ;
         lv2:symbol "WAVEDATA4" ;
         lv2:name "Wavedata4" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -235,6 +266,7 @@
         lv2:index 14 ;
         lv2:symbol "WAVEDATA5" ;
         lv2:name "Wavedata5" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -243,6 +275,7 @@
         lv2:index 15 ;
         lv2:symbol "WAVEDATA6" ;
         lv2:name "Wavedata6" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -251,6 +284,7 @@
         lv2:index 16 ;
         lv2:symbol "WAVEDATA7" ;
         lv2:name "Wavedata7" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -259,6 +293,7 @@
         lv2:index 17 ;
         lv2:symbol "WAVEDATA8" ;
         lv2:name "Wavedata8" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -267,6 +302,7 @@
         lv2:index 18 ;
         lv2:symbol "WAVEDATA9" ;
         lv2:name "Wavedata9" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -275,6 +311,7 @@
         lv2:index 19 ;
         lv2:symbol "WAVEDATA10" ;
         lv2:name "Wavedata10" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -283,6 +320,7 @@
         lv2:index 20 ;
         lv2:symbol "WAVEDATA11" ;
         lv2:name "Wavedata11" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -291,6 +329,7 @@
         lv2:index 21 ;
         lv2:symbol "WAVEDATA12" ;
         lv2:name "Wavedata12" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -299,6 +338,7 @@
         lv2:index 22 ;
         lv2:symbol "WAVEDATA13" ;
         lv2:name "Wavedata13" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -307,6 +347,7 @@
         lv2:index 23 ;
         lv2:symbol "WAVEDATA14" ;
         lv2:name "Wavedata14" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -315,6 +356,7 @@
         lv2:index 24 ;
         lv2:symbol "WAVEDATA15" ;
         lv2:name "Wavedata15" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -323,6 +365,7 @@
         lv2:index 25 ;
         lv2:symbol "WAVEDATA16" ;
         lv2:name "Wavedata16" ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0 ;
         lv2:minimum -1048576 ;
         lv2:maximum 1048576 ;
@@ -399,20 +442,12 @@
         lv2:index 32 ;
         lv2:symbol "MOUSEPRESSED" ;
         lv2:name "Mouse was Pressed" ;
-        lv2:portProperty lv2:integer ;
+        lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
     ] .
 <https://git.code.sf.net/p/qmidiarp/code#ui>
     a lv2ui:Qt4UI ;
-    lv2ui:binary <qmidiarp_lfo.so> ;
-    lv2ui:portNotification [
-    lv2ui:plugin <https://git.code.sf.net/p/qmidiarp/code>  ;
-        lv2ui:portIndex 9 ;
-    ] ;
-    lv2ui:portNotification [
-    lv2ui:plugin <https://git.code.sf.net/p/qmidiarp/code>  ;
-        lv2ui:portIndex 10 ;
-    ] .
+    lv2ui:binary <qmidiarp_lfo.so> .
 

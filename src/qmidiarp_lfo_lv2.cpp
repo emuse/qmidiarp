@@ -106,6 +106,7 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
             uint8_t   *data;
             LV2_Event *event = lv2_event_get(&iter, &data);
             if (event && event->type == eventID) {
+                int eventtime = event->frames;
                 MidiEvent inEv;
                 if ( (data[0] & 0xf0) == 0x90 ) {
                     inEv.type = EV_NOTEON;
@@ -132,6 +133,10 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 
     if ((curFrame % 12) == 5) updateParams();
     if (!(curFrame % 12)) sendWave();
+    if (!(curFrame % 12) && isRecording) {
+        getData(&data);
+        //sendSample(frameptr, frameptr%16);
+    }
 
     for (uint f = 0 ; f < nframes; f++) {
         int curtick = ((uint64_t)f + curFrame*nframes)*TPQN*120/60/sampleRate;
@@ -162,12 +167,16 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 void qmidiarp_lfo_lv2::updateParams()
 {
     bool changed = false;
+
     if (mouseXCur != *val[27] || mouseYCur != *val[28]) {
+        int ix = 1;
         changed = false;
         mouseXCur = *val[27];
         mouseYCur = *val[28];
-        int ix = mouseEvent(mouseXCur, mouseYCur, *val[29], *val[30]);
-        if (*val[30]) lastMouseIndex = ix; // mouse pressed
+        if (*val[29] != -1) ix = mouseEvent(mouseXCur, mouseYCur, *val[29], *val[30]);
+        if (*val[30]) lastMouseIndex = ix; // mouse pressed (this doesn't always work, probably too slow...)
+        if (*val[30]) qWarning("pressed");
+        if (waveFormIndex == 5) *val[39] = offs;
         getData(&data);
         // Update all wave data points since the last mouse event
         int dir = (lastMouseIndex > ix) ? -1 : 1;
@@ -175,6 +184,7 @@ void qmidiarp_lfo_lv2::updateParams()
             sendSample(l1, l1 % 16);
         }
         lastMouseIndex = ix; // mouse pressed
+        waveIndex = 0;
         return;
     }
 
@@ -183,9 +193,11 @@ void qmidiarp_lfo_lv2::updateParams()
         updateAmplitude(*val[0]);
     }
 
+
     if (offs != *val[1]) {
         changed = true;
         updateOffset(*val[1]);
+        *val[39] = offs;
     }
 
     if (res != lfoResValues[(int)*val[2]]) {
@@ -209,8 +221,15 @@ void qmidiarp_lfo_lv2::updateParams()
     }
 
     if (curLoopMode != (*val[25])) updateLoop(*val[25]);
-    isMuted = (bool)(*val[26]);
+    if (recordMode != ((bool)*val[37])) {
+        waveIndex = frameptr;
+        setRecordMode((bool)*val[37]);
+    }
+    if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
+    if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
 
+    ccnumber = ((int)*val[31]);
+    ccnumberIn = ((int)*val[32]);
     enableNoteOff = (bool)*val[33];
     restartByKbd = (bool)(*val[34]);
     trigByKbd = (bool)(*val[35]);
@@ -218,10 +237,9 @@ void qmidiarp_lfo_lv2::updateParams()
 
     channelOut = ((int)*val[5]);
     chIn = ((int)*val[6]);
-    ccnumber = ((int)*val[31]);
-    ccnumberIn = ((int)*val[32]);
 
     if (changed) {
+        qWarning("changing");
         getData(&data);
         waveIndex = 0;
         dataChanged = true;
@@ -231,6 +249,7 @@ void qmidiarp_lfo_lv2::updateParams()
 void qmidiarp_lfo_lv2::sendWave()
 {
     if (!dataChanged) return;
+        qWarning("sending wave");
     int ct = data.count();
     // The 16 ports are swept to transmit the data in parallel
     for (int l1 = 0; l1 < 16; l1++) {

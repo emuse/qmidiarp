@@ -384,7 +384,7 @@ int MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     int loc = mouseX * (res * size);
     int Y = mouseY * 128;
 
-    if (newpt) {
+    if (newpt || (lastMouseLoc >= (res * size))) {
     // the mouse was just clicked so we can directly set the point
         lastMouseLoc = loc;
         lastMouseY = Y;
@@ -523,6 +523,8 @@ int MidiLfo::setMutePoint(double mouseX, bool on)
 {
     Sample sample;
     int loc = mouseX * (res * size);
+
+    if (lastMouseLoc >= (res * size)) lastMouseLoc = loc;
 
     do {
         if (waveFormIndex == 5) {

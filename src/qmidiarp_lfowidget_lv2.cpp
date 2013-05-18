@@ -26,6 +26,7 @@
 #include "qmidiarp_lfowidget_lv2.h"
 #include "qmidiarp_lfo_lv2.h"
 
+#include <unistd.h>
 
 #ifndef COMPACT_STYLE
 #define COMPACT_STYLE "QLabel { font: 7pt; } \
@@ -62,6 +63,8 @@ qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
         connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
         connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
         connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+        connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+        connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
 
         connect(this, SIGNAL(mouseSig(double, double, int, bool))
                 , this, SLOT(mapMouse(double, double, int, bool)));
@@ -71,6 +74,8 @@ qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
         waveIndex = 0;
         mouseXCur = 0.0;
         mouseYCur = 0.0;
+        // this does not cause a re-transmission of wave data when gui is instantiated
+        emit mouseSig(0,0,-1,true);
 }
 
 void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
@@ -81,6 +86,7 @@ void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
         float fValue = *(float *) buffer;
         int res = resBox->currentText().toInt();
         int size = sizeBox->currentText().toInt();
+                    //qWarning("got data on port %d", port_index);
         switch (port_index) {
             case 2:
                     amplitude->setValue(fValue);
@@ -119,7 +125,7 @@ void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
             case 28:
                     muteOutAction->setChecked((bool)fValue);
             break;
-            case 29:
+            case 29: // these are the mouse ports
             case 30:
             case 31:
             case 32:
@@ -142,19 +148,30 @@ void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
             case 38:
                     enableTrigLegato->setChecked((bool)fValue);
             break;
-            default: // ports 10 to 15 are the 16 wave TX ports
+            case 39:
+                    recordAction->setChecked((bool)fValue);
+            break;
+            case 40:
+                    deferChangesAction->setChecked((bool)fValue);
+            break;
+            case 41:
+                    //custom offset has changed
+                    if (waveFormBox->currentIndex() == 5)
+                        offset->setValue(fValue);
+            break;
+            default: // ports 10 to 25 are the 16 wave TX ports
+                if ((port_index < 26) && port_index >= 10) {
                     Sample sample;
-                    waveIndex = abs((int)fValue ) / 128;
-                    sample.value = ((int)fValue) % 128;
-                    if (sample.value < 0) {
+                    if (fValue < 0) {
                         sample.muted = true;
-                        sample.value = -sample.value;
+                        fValue = -fValue;
                     }
                     else sample.muted = false;
+                    waveIndex = (int)fValue  / 128;
+                    sample.value = ((int)fValue) % 128;
                     sample.tick = waveIndex * TPQN / res;
                     if (waveIndex >= data.count()) data.append(sample);
                     else data.replace(waveIndex, sample);
-                    //qWarning("data size %d - waveindex %d", data.count(), waveIndex);
                     if (data.count() > (res * size) + 1) {
                         data.resize(res * size);
                     }
@@ -165,8 +182,8 @@ void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
                     }
                     if (data.count() == ((res * size) + 1)) {
                         screen->updateData(data);
-                        screen->update();
                     }
+                }
             break;
         }
     }
@@ -180,14 +197,19 @@ void qmidiarp_lfowidget_lv2::mapBool(bool on)
     else if (enableRestartByKbd == sender()) updateParam(36, value);
     else if (enableTrigByKbd == sender()) updateParam(37, value);
     else if (enableTrigLegato == sender()) updateParam(38, value);
+    else if (recordAction == sender()) updateParam(39, value);
+    else if (deferChangesAction == sender()) updateParam(40, value);
 }
 
 void qmidiarp_lfowidget_lv2::mapMouse(double mouseX, double mouseY, int buttons, bool pressed)
 {
-    updateParam(29, (float)mouseX);
-    updateParam(30, (float)mouseY);
-    updateParam(31, (float)buttons);
-    updateParam(32, (float)(pressed)); //mouseMoved or pressed
+    updateParam(32, pressed); //mouseMoved or pressed
+    updateParam(29, mouseX);
+    updateParam(30, mouseY);
+    updateParam(31, buttons);
+    // this ensures that the press event has the time to get known and set by the host
+    // (with carla it works, with qtractor not)
+    if (pressed) usleep(300000);
 }
 
 void qmidiarp_lfowidget_lv2::mapParam(int value)

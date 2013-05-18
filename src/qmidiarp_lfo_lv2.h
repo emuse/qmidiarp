@@ -55,8 +55,8 @@ public:
                 FREQUENCY = 6,
                 CH_OUT = 7,
                 CH_IN = 8,
-                CURSOR_POS = 9,
-                WAVEDATA1 = 10,
+                CURSOR_POS = 9, //output
+                WAVEDATA1 = 10, //output
                 WAVEDATA2 = 11,
                 WAVEDATA3 = 12,
                 WAVEDATA4 = 13,
@@ -84,7 +84,10 @@ public:
                 ENABLE_NOTEOFF = 35,
                 ENABLE_RESTARTBYKBD = 36,
                 ENABLE_TRIGBYKBD = 37,
-                ENABLE_TRIGLEGATO = 38
+                ENABLE_TRIGLEGATO = 38,
+                RECORD = 39,
+                DEFER = 40,
+                CUSTOM_OFFSET = 41 //output
         };
 
         void connect_port(uint32_t port, void *data);
