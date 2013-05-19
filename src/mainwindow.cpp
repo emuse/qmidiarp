@@ -1091,6 +1091,12 @@ bool MainWindow::isSave()
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
+#ifdef NSM
+    if (nsm) {
+        writeRcFile();
+        e->accept();
+    } else
+#endif
     if (isSave()) {
         writeRcFile();
         e->accept();
