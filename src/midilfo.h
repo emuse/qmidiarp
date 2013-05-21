@@ -152,7 +152,7 @@ class MidiLfo : public QObject  {
     void updateQueueTempo(int);
     void record(int value);
     void setRecordMode(bool on);
-    int mouseEvent(double mouseX, double mouseY, int buttons, bool pressed);
+    int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
 /*!
 * @brief This function determines the minimum of the current waveform and
 * sets the LfoWidget::offset slider accordingly.

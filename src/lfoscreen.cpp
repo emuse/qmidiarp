@@ -73,15 +73,6 @@ void LfoScreen::paintEvent(QPaintEvent*)
     int grooveTmp = 0;
     l2 = 0;
 
-    //Grid
-    if (p_data.isEmpty()) return;
-    npoints = p_data.count() - 1;
-    nsteps = p_data.at(npoints).tick / TPQN;
-    beatRes = npoints / nsteps;
-    beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
-    xscale = (w - 2 * LFOSCR_HMARG);
-    yscale = h - 2 * LFOSCR_VMARG;
-
     //Beryll Filled Frame
     if (isMuted)
         p.fillRect(0, 0, w, h, QColor(70, 70, 70));
@@ -90,6 +81,15 @@ void LfoScreen::paintEvent(QPaintEvent*)
     p.setViewport(0, 0, w, h);
     p.setWindow(0, 0, w, h);
     p.setPen(QColor(160, 20, 20));
+
+    //Grid
+    if (p_data.isEmpty()) return;
+    npoints = p_data.count() - 1;
+    nsteps = p_data.at(npoints).tick / TPQN;
+    beatRes = npoints / nsteps;
+    beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
+    xscale = (w - 2 * LFOSCR_HMARG);
+    yscale = h - 2 * LFOSCR_VMARG;
 
     //Beat separators
     for (l1 = 0; l1 < nsteps + 1; l1++) {
@@ -186,15 +186,20 @@ void LfoScreen::setMuted(bool on)
 
 void LfoScreen::mouseMoveEvent(QMouseEvent *event)
 {
-    emitMouseEvent(event, false);
+    emitMouseEvent(event, 0);
 }
 
 void LfoScreen::mousePressEvent(QMouseEvent *event)
 {
-    emitMouseEvent(event, true);
+    emitMouseEvent(event, 1);
 }
 
-void LfoScreen::emitMouseEvent(QMouseEvent *event, bool pressed)
+void LfoScreen::mouseReleaseEvent(QMouseEvent *event)
+{
+    emitMouseEvent(event, 2);
+}
+
+void LfoScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
     mouseX = event->x();
     mouseY = event->y();

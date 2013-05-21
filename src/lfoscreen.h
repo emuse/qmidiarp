@@ -76,16 +76,17 @@ class LfoScreen : public QWidget
     ~LfoScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
-    void emitMouseEvent(QMouseEvent *event, bool pressed);
+    void emitMouseEvent(QMouseEvent *event, int pressed);
 
   signals:
-    void mouseEvent(double, double, int, bool pressed);
+    void mouseEvent(double, double, int, int pressed);
     void mouseWheel(int);
 
   public slots:
     void updateData(const QVector<Sample>& data);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     void setRecordMode(bool on);
     void wheelEvent(QWheelEvent* event);
     void newGrooveValues(int tick, int vel, int length);

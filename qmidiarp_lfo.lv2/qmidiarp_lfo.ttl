@@ -5,11 +5,14 @@
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
 @prefix lv2ev: <http://lv2plug.in/ns/ext/event#> .
 @prefix lv2ui: <http://lv2plug.in/ns/extensions/ui#> .
-@prefix lv2time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
 <https://git.code.sf.net/p/qmidiarp/code>
     a lv2:Plugin, lv2:InstrumentPlugin ;
     doap:name "qmidiarp_lfo" ;
+    doap:license <http://opensource.org/licenses/GPL-2.0> ;
     doap:maintainer [
         foaf:name "Frank Kober" ;
         foaf:homepage <http://qmidiarp.sourceforge.net> ;
@@ -411,6 +414,26 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 43 ;
+        lv2:symbol "TRANSPORT_MODE" ;
+        lv2:name "Transport Mode" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
+        lv2:default 1.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 44 ;
+        lv2:symbol "TEMPO" ;
+        lv2:name "Internal Tempo" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 120 ;
+        lv2:minimum  10 ;
+        lv2:maximum 400 ;
     ] ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
@@ -435,19 +458,28 @@
         lv2:name "Mouse Button" ;
         lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
+        lv2:minimum -1.0 ;
         lv2:maximum 2.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 32 ;
         lv2:symbol "MOUSEPRESSED" ;
         lv2:name "Mouse was Pressed" ;
-        lv2:portProperty lv2:toggled ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
+        lv2:maximum 2.0 ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort ,
+            atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports time:Position ;
+        lv2:index 42 ;
+        lv2:symbol "TRANSPORT_CONTROL" ;
+        lv2:name "Transport Control" ;
     ] .
 <https://git.code.sf.net/p/qmidiarp/code#ui>
     a lv2ui:Qt4UI ;
-    lv2ui:binary <qmidiarp_lfo.so> .
-
+    lv2ui:binary <qmidiarp_lfo.so> ;
+    .

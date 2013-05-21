@@ -199,7 +199,7 @@ class LfoWidget : public QWidget
 /*! @brief Currently not in use. */
     void patternChanged();
 /*! @brief Is re-emitted when received from screen and no MidiWorker present. */
-    void mouseSig(double, double, int, bool);
+    void mouseSig(double, double, int, int);
 
 /* PUBLIC SLOTS */
   public slots:
@@ -298,9 +298,10 @@ class LfoWidget : public QWidget
 * @param mouseY Normalized mouse position on LfoScreen in Y
 * direction (0.0 ... 1.0)
 * @param buttons 1 for left mouse button, 2 for right mouse button
+* @param pressed 0 for mouse moved, 1 for mouse pressed, 2 for mouse released
 *
 */
-    void mouseEvent(double, double, int, bool pressed);
+    void mouseEvent(double, double, int, int pressed);
 /*!
 * @brief Slot for the LfoScreen::mouseWheel signal. This function changes the
 * offset by the steps the mouse wheel was turned.

@@ -194,8 +194,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
         tr("Right button to mute points\nLeft button to draw custom wave\nWheel to change offset"));
     screen->setMinimumHeight(80);
 
-    connect(screen, SIGNAL(mouseEvent(double, double, int, bool)), this,
-            SLOT(mouseEvent(double, double, int, bool)));
+    connect(screen, SIGNAL(mouseEvent(double, double, int, int)), this,
+            SLOT(mouseEvent(double, double, int, int)));
     connect(screen, SIGNAL(mouseWheel(int)), this,
             SLOT(mouseWheel(int)));
 
@@ -386,7 +386,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
 LfoWidget::~LfoWidget()
 {
-    if (parStore) delete parStore;
 }
 
 MidiLfo *LfoWidget::getMidiWorker()
@@ -759,7 +758,7 @@ void LfoWidget::copyToCustom()
     modified = true;
 }
 
-void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, bool pressed)
+void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
     if (!midiWorker) {
         emit mouseSig(mouseX, mouseY, buttons, pressed);

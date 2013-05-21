@@ -53,7 +53,8 @@ class qmidiarp_lfowidget_lv2 : public LfoWidget
   public slots:
     void mapParam(int value);
     void mapBool(bool on);
-    void mapMouse(double mouseX, double mouseY, int buttons, bool pressed);
+    void mapMouse(double mouseX, double mouseY, int buttons, int pressed);
+    void receiveWavePoint(float fValue);
 
   protected:
     void updateParam(int index, float fValue) const;
@@ -62,9 +63,13 @@ class qmidiarp_lfowidget_lv2 : public LfoWidget
     LV2UI_Controller     m_controller;
     LV2UI_Write_Function writeFunction;
     QVector<Sample> data1;
+    QCheckBox* transportBox;
+    QSpinBox* tempoSpin;
 
     int waveIndex;
+    int res, size;
     double mouseXCur, mouseYCur;
+    bool startoff;
 };
 
 #endif

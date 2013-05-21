@@ -410,15 +410,15 @@ int MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     return (loc);
 }
 
-int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, bool pressed)
+int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
     int ix;
     if (buttons == 2) {
-        if (pressed) {
+        if (pressed == 1) {
             lastMute = toggleMutePoint(mouseX);
             ix = lastMute;
         }
-        else
+        else if (pressed == 0)
             ix = setMutePoint(mouseX, lastMute);
     }
     else {
