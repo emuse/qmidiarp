@@ -36,6 +36,7 @@
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/atom/util.h"
 #include "lv2/lv2plug.in/ns/ext/time/time.h"
+#include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
 #define QMIDIARP_LFO_LV2_URI "https://git.code.sf.net/p/qmidiarp/code"
@@ -46,14 +47,16 @@ typedef struct {
     LV2_URID atom_Blank;
     LV2_URID atom_Float;
     LV2_URID atom_Long;
-    LV2_URID atom_Path;
+    LV2_URID atom_String;
     LV2_URID atom_Resource;
     LV2_URID time_Position;
     LV2_URID time_frame;
     LV2_URID time_barBeat;
     LV2_URID time_beatsPerMinute;
     LV2_URID time_speed;
-} TransportURIs;
+    LV2_URID hex_customwave;
+    LV2_URID hex_mutemask;
+} QMidiArpURIs;
 
 class qmidiarp_lfo_lv2 : public MidiLfo
 {
@@ -116,6 +119,8 @@ public:
         void activate();
         void deactivate();
         void updatePos(const LV2_Atom_Object* obj);
+        LV2_URID_Map *uridMap;
+        QMidiArpURIs m_uris;
 
 private:
 
@@ -139,7 +144,6 @@ private:
         void sendSample(int ix, int port);
 
         uint32_t MidiEventID;
-        TransportURIs m_uris;
         uint64_t transportFramesDelta;  /**< Frames since last click start */
         float transportBpm;
         float transportSpeed;

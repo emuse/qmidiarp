@@ -77,18 +77,22 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     }
 
     /* Map URIS */
-    TransportURIs* const uris = &m_uris;
+    QMidiArpURIs* const uris = &m_uris;
 
     uris->atom_Blank          = urid_map->map(urid_map->handle, LV2_ATOM__Blank);
     uris->atom_Float          = urid_map->map(urid_map->handle, LV2_ATOM__Float);
     uris->atom_Long           = urid_map->map(urid_map->handle, LV2_ATOM__Long);
-    uris->atom_Path           = urid_map->map(urid_map->handle, LV2_ATOM__Path);
+    uris->atom_String         = urid_map->map(urid_map->handle, LV2_ATOM__String);
     uris->atom_Resource       = urid_map->map(urid_map->handle, LV2_ATOM__Resource);
     uris->time_Position       = urid_map->map(urid_map->handle, LV2_TIME__Position);
     uris->time_frame          = urid_map->map(urid_map->handle, LV2_TIME__frame);
     uris->time_barBeat        = urid_map->map(urid_map->handle, LV2_TIME__barBeat);
     uris->time_beatsPerMinute = urid_map->map(urid_map->handle, LV2_TIME__beatsPerMinute);
     uris->time_speed          = urid_map->map(urid_map->handle, LV2_TIME__speed);
+    uris->hex_customwave      = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "WAVEHEX");
+    uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "MUTEHEX");
+
+    uridMap = urid_map;
 }
 
 
@@ -116,7 +120,7 @@ void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
 
 void qmidiarp_lfo_lv2::updatePos(const LV2_Atom_Object* obj)
 {
-    TransportURIs* const uris = &m_uris;
+    QMidiArpURIs* const uris = &m_uris;
 
     bool changed = false;
 
@@ -169,7 +173,7 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
     lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
     lv2_event_begin(&iter_out, outEventBuffer);
 
-    const TransportURIs* uris = &m_uris;
+    const QMidiArpURIs* uris = &m_uris;
     const LV2_Atom_Sequence* atomIn = transportControl;
     LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
 
@@ -395,9 +399,127 @@ void qmidiarp_lfo_lv2::sendWave()
 void qmidiarp_lfo_lv2::sendSample(int ix, int port)
 {
     // wave data and index are encoded into a single float
+    if (ix >= data.count()) return;
     *val[WAVEDATA1 + port - 2] = (float)(abs(data.at(ix).value)
              + ix*128) * ((data.at(ix).muted == false) ? 1 : -1);
 }
+
+static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
+    LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
+    uint32_t flags, const LV2_Feature *const *features )
+{
+    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+
+    if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
+
+    QMidiArpURIs* const uris = &pPlugin->m_uris;
+
+    uint32_t type = uris->atom_String;
+
+    if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
+
+    size_t size = 0;
+    int l1;
+    uint32_t key = uris->hex_mutemask;
+    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
+
+    const char *value1
+        = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
+
+    QByteArray tmpArray1 = QByteArray::fromHex(value1);
+
+    if (size < 2) return LV2_STATE_ERR_UNKNOWN;
+
+    for (l1 = 0; l1 < tmpArray1.count(); l1++) {
+        pPlugin->muteMask.replace(l1, tmpArray1.at(l1));
+    }
+
+
+    key = uris->hex_customwave;
+    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
+
+    const char *value
+        = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
+
+    if (size < 2) return LV2_STATE_ERR_UNKNOWN;
+
+    QByteArray tmpArray = QByteArray::fromHex(value);
+
+
+
+    Sample sample;
+    int step = TPQN / pPlugin->res;
+    int lt = 0;
+    for (l1 = 0; l1 < tmpArray.count(); l1++) {
+        sample.value = tmpArray.at(l1);
+        sample.tick = lt;
+        sample.muted = pPlugin->muteMask.at(l1);
+        pPlugin->customWave.replace(l1, sample);
+        lt+=step;
+    }
+
+    pPlugin->maxNPoints = tmpArray1.count();
+    pPlugin->updateResolution(tmpArray1.count() / pPlugin->size);
+    pPlugin->getData(&pPlugin->data);
+    pPlugin->setFramePtr(0);
+
+    return LV2_STATE_SUCCESS;
+}
+
+static LV2_State_Status qmidiarp_lfo_lv2_state_save ( LV2_Handle instance,
+    LV2_State_Store_Function store, LV2_State_Handle handle,
+    uint32_t flags, const LV2_Feature *const *features )
+{
+    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+
+    if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
+
+    QMidiArpURIs* const uris = &pPlugin->m_uris;
+
+    uint32_t type = uris->atom_String;
+
+    if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
+
+    QByteArray tempArray;
+
+    tempArray.clear();
+    int l1;
+    for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
+        tempArray.append(pPlugin->customWave.at(l1).value);
+    }
+
+    const QByteArray hexArray = tempArray.toHex();
+    const char *value = hexArray.constData();
+
+    size_t size = strlen(value) + 1;
+    uint32_t key = uris->hex_customwave;
+    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
+
+    store(handle, key, value, size, type, flags);
+
+    tempArray.clear();
+
+    for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
+        tempArray.append(pPlugin->muteMask.at(l1));
+    }
+
+    const QByteArray hexArray1 = tempArray.toHex();
+    const char *value1 = hexArray1.constData();
+
+    size = strlen(value1) + 1;
+    key = uris->hex_mutemask;
+    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
+
+    LV2_State_Status result = (*store)(handle, key, value1, size, type, flags);
+
+    return result;
+}
+
+static const LV2_State_Interface qmidiarp_lfo_lv2_state_interface =
+{
+    qmidiarp_lfo_lv2_state_save,
+    qmidiarp_lfo_lv2_state_restore
+};
 
 void qmidiarp_lfo_lv2::activate (void)
 {
@@ -450,9 +572,14 @@ static void qmidiarp_lfo_lv2_cleanup ( LV2_Handle instance )
         delete pPlugin;
 }
 
-static const void *qmidiarp_lfo_lv2_extension_data ( const char * )
+static const void *qmidiarp_lfo_lv2_extension_data ( const char * uri)
 {
-    return NULL;
+    static const LV2_State_Interface state_iface =
+                { qmidiarp_lfo_lv2_state_save, qmidiarp_lfo_lv2_state_restore };
+    if (!strcmp(uri, LV2_STATE__interface)) {
+        return &state_iface;
+    }
+    else return NULL;
 }
 
 static LV2UI_Handle qmidiarp_lfo_lv2ui_instantiate (
