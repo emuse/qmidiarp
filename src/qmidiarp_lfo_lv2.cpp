@@ -56,7 +56,7 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     transportFramesDelta = 0;
     curTick = 0;
     tempoChangeTick = 0;
-    transportMode = true;
+    transportMode = false;
 
     LV2_URID_Map *urid_map;
 
@@ -428,7 +428,10 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
 
     QByteArray tmpArray1 = QByteArray::fromHex(value1);
 
-    if (size < 2) return LV2_STATE_ERR_UNKNOWN;
+    if (size < 2 || !tmpArray1.count()) return LV2_STATE_ERR_UNKNOWN;
+
+    pPlugin->setFramePtr(0);
+    pPlugin->maxNPoints = tmpArray1.count();
 
     for (l1 = 0; l1 < tmpArray1.count(); l1++) {
         pPlugin->muteMask.replace(l1, tmpArray1.at(l1));
@@ -445,8 +448,6 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
 
     QByteArray tmpArray = QByteArray::fromHex(value);
 
-
-
     Sample sample;
     int step = TPQN / pPlugin->res;
     int lt = 0;
@@ -457,11 +458,6 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
         pPlugin->customWave.replace(l1, sample);
         lt+=step;
     }
-
-    pPlugin->maxNPoints = tmpArray1.count();
-    pPlugin->updateResolution(tmpArray1.count() / pPlugin->size);
-    pPlugin->getData(&pPlugin->data);
-    pPlugin->setFramePtr(0);
 
     return LV2_STATE_SUCCESS;
 }

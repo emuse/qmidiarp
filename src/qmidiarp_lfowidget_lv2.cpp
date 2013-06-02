@@ -57,6 +57,9 @@ qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
     tempoSpin->setValue(120);
     tempoSpin->setKeyboardTracking(false);
     tempoSpin->setToolTip(tr("Tempo of internal clock"));
+    connect(transportBox, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
+    transportBox->setChecked(false);
 
     inOutBox->layout()->addWidget(transportBoxLabel);
     inOutBox->layout()->addWidget(transportBox);
@@ -82,8 +85,6 @@ qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
     connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(transportBox, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
 
     connect(this, SIGNAL(mouseSig(double, double, int, int))
             , this, SLOT(mapMouse(double, double, int, int)));
