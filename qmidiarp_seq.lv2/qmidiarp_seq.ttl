@@ -117,21 +117,17 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 33 ;
-        lv2:symbol "CC_OUT" ;
-        lv2:name "Output CC#" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 74 ;
-        lv2:minimum 0 ;
-        lv2:maximum 128 ;
+        lv2:symbol "ENABLE_NOTEIN" ;
+        lv2:name "Enable Note" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 34 ;
-        lv2:symbol "CC_IN" ;
-        lv2:name "Input CC#" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 74 ;
-        lv2:minimum 0 ;
-        lv2:maximum 128 ;
+        lv2:symbol "ENABLE_VELIN" ;
+        lv2:name "Enable Velocity" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 35 ;

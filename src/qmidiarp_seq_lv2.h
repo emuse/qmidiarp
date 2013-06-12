@@ -100,8 +100,8 @@ public:
             MOUSEY = 30,
             MOUSEBUTTON = 31,
             MOUSEPRESSED = 32,
-            CC_OUT = 33,
-            CC_IN = 34,
+            ENABLE_NOTEIN = 33,
+            ENABLE_VELIN = 34,
             ENABLE_NOTEOFF = 35,
             ENABLE_RESTARTBYKBD = 36,
             ENABLE_TRIGBYKBD = 37,
@@ -136,6 +136,8 @@ private:
         int mouseEvCur;
         int lastMouseIndex;
         int buttonsCur;
+        int transpFromGui;
+        int velFromGui;
         double internalTempo;
         double sampleRate;
         double tempo;

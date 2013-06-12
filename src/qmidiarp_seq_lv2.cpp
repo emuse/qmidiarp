@@ -44,7 +44,6 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     inEventBuffer = NULL;
     outEventBuffer = NULL;
     getData(&data);
-    getNextNote(&currentSample, 0);
     waveIndex = 0;
     mouseXCur = 0;
     mouseYCur = 0;
@@ -58,6 +57,9 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
+
+    transpFromGui = 0;
+    velFromGui = 256;
 
     bufPtr = 0;
     evQueue.resize(JQ_BUFSZ);
@@ -225,7 +227,7 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
                 inEv.data=data[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
-                (void)handleEvent(inEv, tick);
+                (void)handleEvent(inEv, tick - 2); //we don't need to pre-schedule
             }
             lv2_event_increment(&iter);
         }
@@ -237,6 +239,7 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
+            getNextNote(&currentSample, curTick);
             if (!currentSample.muted && !isMuted) {
                 unsigned char d[3];
                 d[0] = 0x90 + channelOut;
@@ -249,7 +252,6 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
             }
             float pos = (float)getCurrentIndex();
             *val[CURSOR_POS - 2] = pos;
-            getNextNote(&currentSample, curTick);
         }
 
         // Note Off Queue handling
@@ -318,23 +320,22 @@ void qmidiarp_seq_lv2::updateParams()
     }
 
     if (currentRecStep != *val[39]) {
-        *val[39] = currentRecStep;
         changed = true;
+        *val[39] = currentRecStep;
     }
 
-    if (vel != *val[0]) {
-        changed = true;
-        updateVelocity(*val[0]);
+    if (velFromGui != *val[0]) {
+        velFromGui = *val[0];
+        updateVelocity(velFromGui);
     }
 
     if (notelength != *val[1]) {
-        changed = true;
         updateNoteLength(*val[1]);
     }
 
-    if (res != lfoResValues[(int)*val[2]]) {
+    if (res != seqResValues[(int)*val[2]]) {
         changed = true;
-        updateResolution(lfoResValues[(int)*val[2]]);
+        updateResolution(seqResValues[(int)*val[2]]);
     }
 
     if (size != 1+ (int)*val[3]) {
@@ -342,8 +343,9 @@ void qmidiarp_seq_lv2::updateParams()
         updateSize(1 + (int)*val[3]);
     }
 
-    if (transp != (int)*val[4]) {
-        updateTranspose((int)*val[4]);
+    if (transpFromGui != (int)*val[4]) {
+        transpFromGui = (int)*val[4];
+        updateTranspose(transpFromGui);
     }
 
     if (curLoopMode != (*val[25])) updateLoop(*val[25]);
@@ -355,8 +357,8 @@ void qmidiarp_seq_lv2::updateParams()
     if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
     if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
 
-    //ccnumber =       (int)*val[31];
-    //ccnumberIn =     (int)*val[32];
+    enableNoteIn =   (int)*val[31];
+    enableVelIn =    (int)*val[32];
     enableNoteOff = (bool)*val[33];
     restartByKbd =  (bool)*val[34];
     trigByKbd =     (bool)*val[35];

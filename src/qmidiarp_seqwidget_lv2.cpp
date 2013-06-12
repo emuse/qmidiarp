@@ -76,6 +76,8 @@ qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
     connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
 
     connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableNoteIn, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableVelIn, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
@@ -157,10 +159,10 @@ void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
                 case 32:
                 break;
                 case 33:
-                        //ccnumberBox->setValue(fValue);
+                        enableNoteIn->setChecked((fValue > .5));
                 break;
                 case 34:
-                        //ccnumberInBox->setValue(fValue);
+                        enableVelIn->setChecked((fValue > .5));
                 break;
                 case 35:
                         enableNoteOff->setChecked((fValue > .5));
@@ -241,6 +243,8 @@ void qmidiarp_seqwidget_lv2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender()) updateParam(28, value);
+    else if (enableNoteIn == sender()) updateParam(33, value);
+    else if (enableVelIn == sender()) updateParam(34, value);
     else if (enableNoteOff == sender()) updateParam(35, value);
     else if (enableRestartByKbd == sender()) updateParam(36, value);
     else if (enableTrigByKbd == sender()) updateParam(37, value);
@@ -269,8 +273,6 @@ void qmidiarp_seqwidget_lv2::mapParam(int value)
     else if (channelOut == sender()) updateParam(7, value);
     else if (chIn == sender()) updateParam(8, value);
     else if (loopBox == sender()) updateParam(27, value);
-    //else if (ccnumberBox == sender()) updateParam(33, value);
-    //else if (ccnumberInBox == sender()) updateParam(34, value);
     else if (tempoSpin == sender()) updateParam(44, value);
 }
 
