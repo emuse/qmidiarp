@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_lfo_lv2.cpp
- * @brief Implements an LV2 plugin inheriting from MidiLfo
+ * @file qmidiarp_seq_lv2.cpp
+ * @brief Implements an LV2 plugin inheriting from MidiSeq
  *
  * @section LICENSE
  *
@@ -25,26 +25,26 @@
 
 #include <cstdio>
 #include <cmath>
-#include "qmidiarp_lfo_lv2.h"
-#include "qmidiarp_lfowidget_lv2.h"
+#include "qmidiarp_seq_lv2.h"
+#include "qmidiarp_seqwidget_lv2.h"
 
 #include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
 
 #define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
 #define LV2_TIME_URI "http://lv2plug.in/ns/ext/time"
 
-qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
+qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     double sample_rate, const LV2_Feature *const *host_features )
-    :MidiLfo()
+    :MidiSeq()
 {
     MidiEventID = 0;
     sampleRate = sample_rate;
     curFrame = 0;
     nCalls = 0;
-    inLfoFrame = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
-    getNextFrame(0);
+    getData(&data);
+    getNextNote(&currentSample, 0);
     waveIndex = 0;
     mouseXCur = 0;
     mouseYCur = 0;
@@ -58,6 +58,10 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
+
+    bufPtr = 0;
+    evQueue.resize(JQ_BUFSZ);
+    evTickQueue.resize(JQ_BUFSZ);
 
     LV2_URID_Map *urid_map;
 
@@ -90,18 +94,18 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     uris->time_barBeat        = urid_map->map(urid_map->handle, LV2_TIME__barBeat);
     uris->time_beatsPerMinute = urid_map->map(urid_map->handle, LV2_TIME__beatsPerMinute);
     uris->time_speed          = urid_map->map(urid_map->handle, LV2_TIME__speed);
-    uris->hex_customwave      = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "WAVEHEX");
-    uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "MUTEHEX");
+    uris->hex_customwave      = urid_map->map(urid_map->handle, QMIDIARP_SEQ_LV2_PREFIX "WAVEHEX");
+    uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_SEQ_LV2_PREFIX "MUTEHEX");
 
     uridMap = urid_map;
 }
 
 
-qmidiarp_lfo_lv2::~qmidiarp_lfo_lv2 (void)
+qmidiarp_seq_lv2::~qmidiarp_seq_lv2 (void)
 {
 }
 
-void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
+void qmidiarp_seq_lv2::connect_port ( uint32_t port, void *data )
 {
     switch(PortIndex(port)) {
     case MidiIn:
@@ -119,7 +123,7 @@ void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
     }
 }
 
-void qmidiarp_lfo_lv2::updatePos(const LV2_Atom_Object* obj)
+void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
 {
     QMidiArpURIs* const uris = &m_uris;
 
@@ -153,13 +157,12 @@ void qmidiarp_lfo_lv2::updatePos(const LV2_Atom_Object* obj)
             transportSpeed = ((LV2_Atom_Float*)speed)->body;
             if (transportSpeed) {
                 curFrame = transportFramesDelta;
-                inLfoFrame = 0;
                 setNextTick(tempoChangeTick);
-                getNextFrame(nextTick);
+                Sample sample;
+                getNextNote(&sample, nextTick);
             }
             else {
                 curFrame = transportFramesDelta;
-                inLfoFrame = 0;
             }
             changed = true;
         }
@@ -168,7 +171,7 @@ void qmidiarp_lfo_lv2::updatePos(const LV2_Atom_Object* obj)
         //~ , tempoChangeTick, transportBpm, transportSpeed);
 }
 
-void qmidiarp_lfo_lv2::run ( uint32_t nframes )
+void qmidiarp_seq_lv2::run ( uint32_t nframes )
 {
     LV2_Event_Iterator iter_out;
     lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
@@ -181,10 +184,6 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 
     if (!(nCalls % 12)) updateParams();
     if (!(nCalls % 24)) sendWave();
-    if (!(nCalls % 24) && isRecording) {
-        getData(&data);
-        //sendSample(frameptr, frameptr%16);
-    }
 
         // Position stuff
     while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
@@ -238,32 +237,59 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
-            if (curTick > frame.at(inLfoFrame).tick) {
-                if (!frame.at(inLfoFrame).muted && !isMuted) {
-                    unsigned char d[3];
-                    d[0] = 0xb0 + channelOut;
-                    d[1] = ccnumber;
-                    d[2] = frame.at(inLfoFrame).value;
-                    lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
-                }
-                inLfoFrame++;
-                if (inLfoFrame >= frameSize) {
-                    frameptr = getFramePtr();
-                    float pos = (float)frameptr;
-                    *val[CURSOR_POS - 2] = pos;
-                    getNextFrame(curTick);
-                    inLfoFrame = 0;
-                }
+            if (!currentSample.muted && !isMuted) {
+                unsigned char d[3];
+                d[0] = 0x90 + channelOut;
+                d[1] = currentSample.value;
+                d[2] = vel;
+                lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
+                evTickQueue.replace(bufPtr, curTick + notelength / 4);
+                evQueue.replace(bufPtr, currentSample.value);
+                bufPtr++;
             }
+            float pos = (float)getCurrentIndex();
+            *val[CURSOR_POS - 2] = pos;
+            getNextNote(&currentSample, curTick);
+        }
+
+        // Note Off Queue handling
+        int noteofftick = evTickQueue.first();
+        int tmptick = 0;
+        int idx = 0;
+        for (int l1 = 0; l1 < bufPtr; l1++) {
+            tmptick = evTickQueue.at(l1);
+            if (noteofftick > tmptick) {
+                idx = l1;
+                noteofftick = tmptick;
+            }
+        }
+        if ((bufPtr) && (curTick >= noteofftick) && (transportSpeed)) {
+            int outval = evQueue.at(idx);
+            for (int l4 = idx ; l4 < (bufPtr - 1);l4++) {
+                evQueue.replace(l4, evQueue.at(l4 + 1));
+                evTickQueue.replace(l4, evTickQueue.at(l4 + 1));
+            }
+            bufPtr--;
+
+            unsigned char d[3];
+            d[0] = 0x90 + channelOut;
+            d[1] = outval;
+            d[2] = 0;
+            lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
         }
         curFrame++;
     }
     nCalls++;
 }
 
-void qmidiarp_lfo_lv2::updateParams()
+void qmidiarp_seq_lv2::updateParams()
 {
     bool changed = false;
+
+    if (loopMarker != (int)*val[24]) {
+        changed = true;
+        setLoopMarker((int)*val[24]);
+    }
 
     if (mouseXCur != *val[27] || mouseYCur != *val[28] || mouseEvCur != *val[30]) {
         int ix = 1;
@@ -279,7 +305,6 @@ void qmidiarp_lfo_lv2::updateParams()
         ix = mouseEvent(mouseXCur, mouseYCur, *val[29], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
 
-        if (waveFormIndex == 5) *val[39] = offs;
         getData(&data);
 
         // Update all wave data points since the last mouse event
@@ -292,15 +317,19 @@ void qmidiarp_lfo_lv2::updateParams()
         return;
     }
 
-    if (amp != *val[0]) {
+    if (currentRecStep != *val[39]) {
+        *val[39] = currentRecStep;
         changed = true;
-        updateAmplitude(*val[0]);
     }
 
-    if (offs != *val[1]) {
+    if (vel != *val[0]) {
         changed = true;
-        updateOffset(*val[1]);
-        *val[39] = offs;
+        updateVelocity(*val[0]);
+    }
+
+    if (notelength != *val[1]) {
+        changed = true;
+        updateNoteLength(*val[1]);
     }
 
     if (res != lfoResValues[(int)*val[2]]) {
@@ -311,28 +340,23 @@ void qmidiarp_lfo_lv2::updateParams()
     if (size != 1+ (int)*val[3]) {
         changed = true;
         updateSize(1 + (int)*val[3]);
-    } // TODO: get correct size values
-
-    if (freq != lfoFreqValues[(int)*val[4]]) {
-        changed = true;
-        updateFrequency(lfoFreqValues[(int)*val[4]]);
     }
 
-    if (waveFormIndex != (int)*val[24]) {
-        changed = true;
-        updateWaveForm(*val[24]);
+    if (transp != (int)*val[4]) {
+        updateTranspose((int)*val[4]);
     }
 
     if (curLoopMode != (*val[25])) updateLoop(*val[25]);
+
     if (recordMode != ((bool)*val[37])) {
-        waveIndex = frameptr;
         setRecordMode((bool)*val[37]);
     }
+
     if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
     if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
 
-    ccnumber =       (int)*val[31];
-    ccnumberIn =     (int)*val[32];
+    //ccnumber =       (int)*val[31];
+    //ccnumberIn =     (int)*val[32];
     enableNoteOff = (bool)*val[33];
     restartByKbd =  (bool)*val[34];
     trigByKbd =     (bool)*val[35];
@@ -349,7 +373,7 @@ void qmidiarp_lfo_lv2::updateParams()
             transportBpm = internalTempo;
             tempo = internalTempo;
             setNextTick(tempoChangeTick);
-            getNextFrame(nextTick);
+            getNextNote(&currentSample, nextTick);
         }
     }
 
@@ -365,7 +389,7 @@ void qmidiarp_lfo_lv2::updateParams()
             transportBpm = internalTempo;
             tempo = internalTempo;
             setNextTick(tempoChangeTick);
-            getNextFrame(nextTick);
+            getNextNote(&currentSample, nextTick);
             transportSpeed = 1;
         }
     }
@@ -380,7 +404,7 @@ void qmidiarp_lfo_lv2::updateParams()
     }
 }
 
-void qmidiarp_lfo_lv2::sendWave()
+void qmidiarp_seq_lv2::sendWave()
 {
     if (!dataChanged) return;
     int ct = data.count();
@@ -397,7 +421,7 @@ void qmidiarp_lfo_lv2::sendWave()
     }
 }
 
-void qmidiarp_lfo_lv2::sendSample(int ix, int port)
+void qmidiarp_seq_lv2::sendSample(int ix, int port)
 {
     // wave data and index are encoded into a single float
     if (ix >= data.count()) return;
@@ -405,11 +429,11 @@ void qmidiarp_lfo_lv2::sendSample(int ix, int port)
              + ix*128) * ((data.at(ix).muted == false) ? 1 : -1);
 }
 
-static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
+static LV2_State_Status qmidiarp_seq_lv2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -431,7 +455,7 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
 
     if (size < 2 || !tmpArray1.count()) return LV2_STATE_ERR_UNKNOWN;
 
-    pPlugin->setFramePtr(0);
+    pPlugin->setCurrentIndex(0);
     pPlugin->maxNPoints = tmpArray1.count();
 
     for (l1 = 0; l1 < tmpArray1.count(); l1++) {
@@ -463,11 +487,11 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
     return LV2_STATE_SUCCESS;
 }
 
-static LV2_State_Status qmidiarp_lfo_lv2_state_save ( LV2_Handle instance,
+static LV2_State_Status qmidiarp_seq_lv2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -512,133 +536,133 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_save ( LV2_Handle instance,
     return result;
 }
 
-static const LV2_State_Interface qmidiarp_lfo_lv2_state_interface =
+static const LV2_State_Interface qmidiarp_seq_lv2_state_interface =
 {
-    qmidiarp_lfo_lv2_state_save,
-    qmidiarp_lfo_lv2_state_restore
+    qmidiarp_seq_lv2_state_save,
+    qmidiarp_seq_lv2_state_restore
 };
 
-void qmidiarp_lfo_lv2::activate (void)
+void qmidiarp_seq_lv2::activate (void)
 {
 }
 
-void qmidiarp_lfo_lv2::deactivate (void)
+void qmidiarp_seq_lv2::deactivate (void)
 {
 }
 
-static LV2_Handle qmidiarp_lfo_lv2_instantiate (
+static LV2_Handle qmidiarp_seq_lv2_instantiate (
     const LV2_Descriptor *, double sample_rate, const char *,
     const LV2_Feature *const *host_features )
 {
-    return new qmidiarp_lfo_lv2(sample_rate, host_features);
+    return new qmidiarp_seq_lv2(sample_rate, host_features);
 }
 
-static void qmidiarp_lfo_lv2_connect_port (
+static void qmidiarp_seq_lv2_connect_port (
     LV2_Handle instance, uint32_t port, void *data )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
     if (pPlugin)
         pPlugin->connect_port(port, data);
 }
 
-static void qmidiarp_lfo_lv2_run ( LV2_Handle instance, uint32_t nframes )
+static void qmidiarp_seq_lv2_run ( LV2_Handle instance, uint32_t nframes )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
     if (pPlugin)
         pPlugin->run(nframes);
 }
 
-static void qmidiarp_lfo_lv2_activate ( LV2_Handle instance )
+static void qmidiarp_seq_lv2_activate ( LV2_Handle instance )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
     if (pPlugin)
         pPlugin->activate();
 }
 
-static void qmidiarp_lfo_lv2_deactivate ( LV2_Handle instance )
+static void qmidiarp_seq_lv2_deactivate ( LV2_Handle instance )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
     if (pPlugin)
         pPlugin->deactivate();
 }
 
-static void qmidiarp_lfo_lv2_cleanup ( LV2_Handle instance )
+static void qmidiarp_seq_lv2_cleanup ( LV2_Handle instance )
 {
-    qmidiarp_lfo_lv2 *pPlugin = static_cast<qmidiarp_lfo_lv2 *> (instance);
+    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
     if (pPlugin)
         delete pPlugin;
 }
 
-static const void *qmidiarp_lfo_lv2_extension_data ( const char * uri)
+static const void *qmidiarp_seq_lv2_extension_data ( const char * uri)
 {
     static const LV2_State_Interface state_iface =
-                { qmidiarp_lfo_lv2_state_save, qmidiarp_lfo_lv2_state_restore };
+                { qmidiarp_seq_lv2_state_save, qmidiarp_seq_lv2_state_restore };
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state_iface;
     }
     else return NULL;
 }
 
-static LV2UI_Handle qmidiarp_lfo_lv2ui_instantiate (
+static LV2UI_Handle qmidiarp_seq_lv2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
     const LV2_Feature *const * )
 {
-    qmidiarp_lfowidget_lv2 *pWidget = new qmidiarp_lfowidget_lv2(controller, write_function);
+    qmidiarp_seqwidget_lv2 *pWidget = new qmidiarp_seqwidget_lv2(controller, write_function);
     *widget = pWidget;
     return pWidget;
 }
 
-static void qmidiarp_lfo_lv2ui_cleanup ( LV2UI_Handle ui )
+static void qmidiarp_seq_lv2ui_cleanup ( LV2UI_Handle ui )
 {
-    qmidiarp_lfowidget_lv2 *pWidget = static_cast<qmidiarp_lfowidget_lv2 *> (ui);
+    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
     if (pWidget)
         delete pWidget;
 }
 
-static void qmidiarp_lfo_lv2ui_port_event (
+static void qmidiarp_seq_lv2ui_port_event (
     LV2UI_Handle ui, uint32_t port_index,
     uint32_t buffer_size, uint32_t format, const void *buffer )
 {
-    qmidiarp_lfowidget_lv2 *pWidget = static_cast<qmidiarp_lfowidget_lv2 *> (ui);
+    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
     if (pWidget)
         pWidget->port_event(port_index, buffer_size, format, buffer);
 }
 
-static const void *qmidiarp_lfo_lv2ui_extension_data ( const char * )
+static const void *qmidiarp_seq_lv2ui_extension_data ( const char * )
 {
     return NULL;
 }
 
-static const LV2_Descriptor qmidiarp_lfo_lv2_descriptor =
+static const LV2_Descriptor qmidiarp_seq_lv2_descriptor =
 {
-    QMIDIARP_LFO_LV2_URI,
-    qmidiarp_lfo_lv2_instantiate,
-    qmidiarp_lfo_lv2_connect_port,
-    qmidiarp_lfo_lv2_activate,
-    qmidiarp_lfo_lv2_run,
-    qmidiarp_lfo_lv2_deactivate,
-    qmidiarp_lfo_lv2_cleanup,
-    qmidiarp_lfo_lv2_extension_data
+    QMIDIARP_SEQ_LV2_URI,
+    qmidiarp_seq_lv2_instantiate,
+    qmidiarp_seq_lv2_connect_port,
+    qmidiarp_seq_lv2_activate,
+    qmidiarp_seq_lv2_run,
+    qmidiarp_seq_lv2_deactivate,
+    qmidiarp_seq_lv2_cleanup,
+    qmidiarp_seq_lv2_extension_data
 };
 
-static const LV2UI_Descriptor qmidiarp_lfo_lv2ui_descriptor =
+static const LV2UI_Descriptor qmidiarp_seq_lv2ui_descriptor =
 {
-    QMIDIARP_LFO_LV2UI_URI,
-    qmidiarp_lfo_lv2ui_instantiate,
-    qmidiarp_lfo_lv2ui_cleanup,
-    qmidiarp_lfo_lv2ui_port_event,
-    qmidiarp_lfo_lv2ui_extension_data
+    QMIDIARP_SEQ_LV2UI_URI,
+    qmidiarp_seq_lv2ui_instantiate,
+    qmidiarp_seq_lv2ui_cleanup,
+    qmidiarp_seq_lv2ui_port_event,
+    qmidiarp_seq_lv2ui_extension_data
 };
 
 LV2_SYMBOL_EXPORT const LV2_Descriptor *lv2_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_lfo_lv2_descriptor : NULL);
+    return (index == 0 ? &qmidiarp_seq_lv2_descriptor : NULL);
 }
 
 LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_lfo_lv2ui_descriptor : NULL);
+    return (index == 0 ? &qmidiarp_seq_lv2ui_descriptor : NULL);
 }
 

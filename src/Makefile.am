@@ -1,10 +1,12 @@
 # Makefile.am for qmidiarp
 SUBDIRS = pixmaps
-plugindir = /usr/lib64/lv2/qmidiarp_lfo.lv2
+lfoplugindir = /usr/lib64/lv2/qmidiarp_lfo.lv2
+seqplugindir = /usr/lib64/lv2/qmidiarp_seq.lv2
 
 bin_PROGRAMS = qmidiarp
 
-plugin_LTLIBRARIES = qmidiarp_lfo.la
+lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
+seqplugin_LTLIBRARIES = qmidiarp_seq.la
 
 nodist_qmidiarp_SOURCES = \
 	cursor_moc.cpp \
@@ -100,6 +102,39 @@ qmidiarp_lfo_la_SOURCES = \
 qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_lfo_la_LIBADD = $(QT_LIBS) -llv2-plugin
 
+nodist_qmidiarp_seq_la_SOURCES = \
+	cursor_moc.cpp \
+	globstore_moc.cpp \
+	indicator_moc.cpp \
+	seqwidget_moc.cpp \
+	seqscreen_moc.cpp \
+	managebox_moc.cpp \
+	midicontrol_moc.cpp \
+	midiseq_moc.cpp \
+	parstore_moc.cpp \
+	slider_moc.cpp \
+	storagebutton_moc.cpp \
+	qmidiarp_seqwidget_lv2_moc.cpp \
+	qmidiarp_seq_lv2_moc.cpp
+
+qmidiarp_seq_la_SOURCES = \
+	cursor.cpp cursor.h \
+	globstore.cpp globstore.h \
+	indicator.cpp indicator.h \
+	seqwidget.cpp seqwidget.h \
+	seqscreen.cpp seqscreen.h \
+	managebox.cpp managebox.h \
+	midicontrol.cpp midicontrol.h \
+	midiseq.cpp midiseq.h \
+	parstore.cpp parstore.h \
+	slider.cpp slider.h \
+	storagebutton.cpp storagebutton.h \
+	qmidiarp_seqwidget_lv2.cpp qmidiarp_seqwidget_lv2.h \
+	qmidiarp_seq_lv2.cpp qmidiarp_seq_lv2.h
+
+qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_seq_la_LIBADD = $(QT_LIBS) -llv2-plugin
+
 if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
 translations = \
@@ -147,3 +182,4 @@ endif
 install-exec-hook:
 
 	rm -f $(DESTDIR)$(plugindir)/qmidiarp_lfo.la
+	rm -f $(DESTDIR)$(plugindir)/qmidiarp_seq.la

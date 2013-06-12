@@ -421,7 +421,7 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
         else if (pressed == 0)
             ix = setMutePoint(mouseX, lastMute);
     }
-    else {
+    else if (pressed != 2) {
         if (waveFormIndex < 5) {
             copyToCustom();
         }

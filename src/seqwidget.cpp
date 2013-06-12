@@ -42,9 +42,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 {
     int l1;
 
-    midiControl = new MidiControl(this);
+    if (midiWorker) midiControl = new MidiControl(this);
 
-    manageBox = new ManageBox("Seq:", true, this);
+    if (midiWorker) manageBox = new ManageBox("Seq:", true, this);
 
     // Display group box on right
     QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
@@ -161,12 +161,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     // Output group box on right bottom
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QComboBox(portBox);
-    portLabel->setBuddy(portOut);
-    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-    connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
-
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QComboBox(portBox);
     channelLabel->setBuddy(channelOut);
@@ -174,10 +168,18 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
 
-
     QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(portLabel, 0, 0);
-    portBoxLayout->addWidget(portOut, 0, 1);
+
+    if (midiWorker) {
+        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
+        portOut = new QComboBox(portBox);
+        portLabel->setBuddy(portOut);
+        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
+
+        portBoxLayout->addWidget(portLabel, 0, 0);
+        portBoxLayout->addWidget(portOut, 0, 1);
+    }
     portBoxLayout->addWidget(channelLabel, 1, 0);
     portBoxLayout->addWidget(channelOut, 1, 1);
 
@@ -200,7 +202,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    inOutBoxLayout->addWidget(manageBox);
+    if (midiWorker) inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
@@ -216,10 +218,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     screen->setToolTip(
         tr("Right button to mute points, left button to draw custom wave"));
     screen->setMinimumHeight(SEQSCR_MIN_H);
-    connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
-            SLOT(mouseMoved(double, double, int)));
-    connect(screen, SIGNAL(mousePressed(double, double, int)), this,
-            SLOT(mousePressed(double, double, int)));
+    connect(screen, SIGNAL(mouseEvent(double, double, int, int)), this,
+            SLOT(mouseEvent(double, double, int, int)));
 
     cursor = new Cursor('S', this);
 
@@ -230,7 +230,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+    if (midiWorker) midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     deferChangesAction = new QAction("D", this);
     deferChangesAction->setToolTip(tr("Defer mute, velocity, note length and transpose to pattern end"));
@@ -251,7 +251,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     loopBox->setMinimumContentsLength(5);
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
-    midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
+    if (midiWorker) midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
@@ -261,7 +261,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
+    if (midiWorker) midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);
@@ -277,7 +277,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    midiControl->addMidiLearnMenu("Resolution", resBox, 4);
+    if (midiWorker) midiControl->addMidiLearnMenu("Resolution", resBox, 4);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
     sizeBox = new QComboBox(seqBox);
@@ -291,21 +291,21 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    midiControl->addMidiLearnMenu("Size", sizeBox, 5);
+    if (midiWorker) midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
-    midiControl->addMidiLearnMenu("Velocity", velocity, 1);
+    if (midiWorker) midiControl->addMidiLearnMenu("Velocity", velocity, 1);
 
 
     notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
-    midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
+    if (midiWorker) midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
@@ -351,13 +351,14 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
 
-    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
-
+    if (midiWorker) {
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
+        connect(parStore, SIGNAL(store(int, bool)),
+                 this, SLOT(storeParams(int, bool)));
+        connect(parStore, SIGNAL(restore(int)),
+                 this, SLOT(restoreParams(int)));
+    }
     muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
@@ -371,7 +372,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
 SeqWidget::~SeqWidget()
 {
-    delete parStore;
 }
 
 MidiSeq *SeqWidget::getMidiWorker()
@@ -381,6 +381,8 @@ MidiSeq *SeqWidget::getMidiWorker()
 
 void SeqWidget::writeData(QXmlStreamWriter& xml)
 {
+    if (!midiWorker) return;
+
     QByteArray tempArray;
     int l1;
 
@@ -467,6 +469,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
 void SeqWidget::readData(QXmlStreamReader& xml)
 {
+    if (!midiWorker) return;
+
     int tmp;
     Sample sample;
 
@@ -644,56 +648,56 @@ void SeqWidget::setChIn(int value)
 
 void SeqWidget::updateChIn(int value)
 {
-    midiWorker->chIn = value;
+    if (midiWorker) midiWorker->chIn = value;
     modified = true;
 }
 
 void SeqWidget::updateEnableNoteIn(bool on)
 {
-    midiWorker->enableNoteIn = on;
+    if (midiWorker) midiWorker->enableNoteIn = on;
     modified = true;
 }
 
 void SeqWidget::updateEnableNoteOff(bool on)
 {
-    midiWorker->enableNoteOff = on;
+    if (midiWorker) midiWorker->enableNoteOff = on;
     modified = true;
 }
 
 void SeqWidget::updateEnableVelIn(bool on)
 {
-    midiWorker->enableVelIn = on;
+    if (midiWorker) midiWorker->enableVelIn = on;
     modified = true;
 }
 
 void SeqWidget::updateEnableRestartByKbd(bool on)
 {
-    midiWorker->restartByKbd = on;
+    if (midiWorker) midiWorker->restartByKbd = on;
     modified = true;
 }
 
 void SeqWidget::updateEnableTrigByKbd(bool on)
 {
-    midiWorker->trigByKbd = on;
+    if (midiWorker) midiWorker->trigByKbd = on;
     modified = true;
 }
 
 void SeqWidget::updateTrigLegato(bool on)
 {
-    midiWorker->trigLegato = on;
+    if (midiWorker) midiWorker->trigLegato = on;
     modified = true;
 }
 
 void SeqWidget::updateNoteLength(int val)
 {
-    midiWorker->updateNoteLength(val + val);
+    if (midiWorker) midiWorker->updateNoteLength(val + val);
     modified = true;
 }
 
 void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
-    midiWorker->getData(&data);
+    if (midiWorker) midiWorker->getData(&data);
     screen->updateData(data);
     modified = true;
 }
@@ -701,19 +705,19 @@ void SeqWidget::updateWaveForm(int val)
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
-    midiWorker->setRecordMode(on);
+    if (midiWorker) midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
 }
 
 void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
     resBoxIndex = val;
-    midiWorker->res = seqResValues[val];
-    midiWorker->resizeAll();
-    midiWorker->getData(&data);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (midiWorker) midiWorker->res = seqResValues[val];
+    if (midiWorker) midiWorker->resizeAll();
+    if (midiWorker) midiWorker->getData(&data);
+    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -722,10 +726,10 @@ void SeqWidget::updateSize(int val)
 {
     if (val > 7) return;
     sizeBoxIndex = val;
-    midiWorker->size = val + 1;
-    midiWorker->resizeAll();
-    midiWorker->getData(&data);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (midiWorker) midiWorker->size = val + 1;
+    if (midiWorker) midiWorker->resizeAll();
+    if (midiWorker) midiWorker->getData(&data);
+    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -733,59 +737,43 @@ void SeqWidget::updateSize(int val)
 void SeqWidget::updateLoop(int val)
 {
     if (val > 5) return;
-    midiWorker->updateLoop(val);
+    if (midiWorker) midiWorker->updateLoop(val);
     modified = true;
 }
 
 
 void SeqWidget::updateVelocity(int val)
 {
-    midiWorker->updateVelocity(val);
+    if (midiWorker) midiWorker->updateVelocity(val);
     modified = true;
 }
 
 void SeqWidget::updateTranspose(int val)
 {
-    midiWorker->updateTranspose(val);
+    if (midiWorker) midiWorker->updateTranspose(val);
     modified = true;
 }
 
-void SeqWidget::mouseMoved(double mouseX, double mouseY, int buttons)
+void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1)) return;
-    if (buttons == 2) {
-        midiWorker->setMutePoint(mouseX, lastMute);
+    if (!midiWorker) {
+        emit mouseSig(mouseX, mouseY, buttons, pressed);
     }
     else {
-        midiWorker->setCustomWavePoint(mouseX, mouseY);
-        screen->setCurrentRecStep(midiWorker->currentRecStep);
+        midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
     }
-    midiWorker->getData(&data);
-    screen->updateData(data);
-    modified = true;
-}
 
-void SeqWidget::mousePressed(double mouseX, double mouseY, int buttons)
-{
-    if (mouseY < 0) {
+    if ((mouseY < 0) && (pressed != 2)) { // we have to recalculate loopMarker for screen update
         if (mouseX < 0) mouseX = 0;
         if (buttons == 2) mouseX = - mouseX;
-        midiWorker->setLoopMarkerMouse(mouseX);
-        screen->setLoopMarker(midiWorker->loopMarker);
-        modified = true;
-        return;
+        const int npoints = data.count() - 1;
+        int lm;
+        if (mouseX > 0) lm = mouseX * (double)npoints + .5;
+        else lm = mouseX * (double)npoints - .5;
+        if (abs(lm) >= npoints) lm = 0;
+        screen->setLoopMarker(lm);
+        screen->updateDraw();
     }
-
-    if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1)) return;
-
-    if (buttons == 2) {
-        lastMute = midiWorker->toggleMutePoint(mouseX);
-    } else {
-        midiWorker->setCustomWavePoint(mouseX, mouseY);
-        screen->setCurrentRecStep(midiWorker->currentRecStep);
-    }
-    midiWorker->getData(&data);
-    screen->updateData(data);
     modified = true;
 }
 
@@ -797,6 +785,7 @@ void SeqWidget::setInOutBoxVisible(bool on)
 
 void SeqWidget::setMuted(bool on)
 {
+    if (!midiWorker) return;
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
@@ -805,7 +794,7 @@ void SeqWidget::setMuted(bool on)
 
 void SeqWidget::updateDeferChanges(bool on)
 {
-    midiWorker->updateDeferChanges(on);
+    if (midiWorker) midiWorker->updateDeferChanges(on);
     modified = true;
 }
 
@@ -823,13 +812,13 @@ void SeqWidget::setChannelOut(int value)
 
 void SeqWidget::updatePortOut(int value)
 {
-    midiWorker->portOut = value;
+    if (midiWorker) midiWorker->portOut = value;
     modified = true;
 }
 
 void SeqWidget::updateChannelOut(int value)
 {
-    midiWorker->channelOut = value;
+    if (midiWorker) midiWorker->channelOut = value;
     modified = true;
 }
 
@@ -876,8 +865,8 @@ void SeqWidget::updateDispVert(int mode)
     }
 
     dispVertical = mode;
-    midiWorker->nOctaves = noct;
-    midiWorker->baseOctave = baseoct;
+    if (midiWorker) midiWorker->nOctaves = noct;
+    if (midiWorker) midiWorker->baseOctave = baseoct;
     screen->nOctaves = noct;
     screen->baseOctave = baseoct;
     screen->update();

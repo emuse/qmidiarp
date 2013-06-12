@@ -75,6 +75,7 @@ MidiSeq::MidiSeq()
     isMutedDefer = false;
     deferChanges = false;
     parChangesPending = false;
+    lastMute = false;
     dataChanged = false;
     needsGUIUpdate = false;
 
@@ -273,6 +274,18 @@ int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
     return(tmp);
 }
 
+void MidiSeq::updateResolution(int val)
+{
+    res = val;
+    resizeAll();
+}
+
+void MidiSeq::updateSize(int val)
+{
+    size = val;
+    resizeAll();
+}
+
 void MidiSeq::updateLoop(int val)
 {
     backward = val&1;
@@ -321,10 +334,40 @@ void MidiSeq::updateQueueTempo(int val)
     queueTempo = (double)val;
 }
 
-void MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
+int MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 {
     currentRecStep = mouseX * res * size;
     setRecordedNote(12 * (mouseY * nOctaves + baseOctave));
+    return (currentRecStep);
+}
+
+int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
+{
+    int ix = 0;
+
+    if ((mouseY < 0) && (pressed != 2)) {
+        if (mouseX < 0) mouseX = 0;
+        if (buttons == 2) mouseX = - mouseX;
+        setLoopMarkerMouse(mouseX);
+        return (0);
+    }
+
+    if ((mouseX > 1) || (mouseX < 0) || (mouseY > 1) || (mouseY < 0)) return (0);
+
+    if (buttons == 2) {
+        if (pressed == 1) {
+            lastMute = toggleMutePoint(mouseX);
+            ix = lastMute;
+        }
+        else if (pressed == 0)
+            ix = setMutePoint(mouseX, lastMute);
+    }
+    else if (pressed != 2) {
+        ix = setCustomWavePoint(mouseX, mouseY);
+    }
+    dataChanged = true;
+
+    return (ix);
 }
 
 void MidiSeq::setLoopMarkerMouse(double mouseX)
@@ -400,7 +443,7 @@ bool MidiSeq::toggleMutePoint(double mouseX)
     return(!m);
 }
 
-void MidiSeq::setMutePoint(double mouseX, bool on)
+int MidiSeq::setMutePoint(double mouseX, bool on)
 {
     Sample sample;
     int loc = mouseX * (res * size);
@@ -409,6 +452,7 @@ void MidiSeq::setMutePoint(double mouseX, bool on)
     sample.muted = on;
     customWave.replace(loc, sample);
     muteMask.replace(loc, on);
+    return (loc);
 }
 
 void MidiSeq::setCurrentIndex(int ix)

@@ -62,7 +62,6 @@ class SeqScreen : public QWidget
     bool recordMode;
     int currentRecStep;
     int currentIndex;
-    int loopMarker;
     bool needsRedraw;
     bool isMuted;
     QPointF trg[3];
@@ -76,15 +75,17 @@ class SeqScreen : public QWidget
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
     int baseOctave, nOctaves;
+    int loopMarker;
+    void emitMouseEvent(QMouseEvent *event, int pressed);
 
   signals:
-    void mousePressed(double, double, int);
-    void mouseMoved(double, double, int);
+    void mouseEvent(double, double, int, int pressed);
 
   public slots:
     void updateData(const QVector<Sample>& data);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     void setRecordMode(bool on);
     void setCurrentRecStep(int currentRecStep);
     void setLoopMarker(int pos);
