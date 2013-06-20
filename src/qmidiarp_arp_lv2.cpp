@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_seq_lv2.cpp
- * @brief Implements an LV2 plugin inheriting from MidiSeq
+ * @file qmidiarp_arp_lv2.cpp
+ * @brief Implements an LV2 plugin inheriting from MidiArp
  *
  * @section LICENSE
  *
@@ -25,17 +25,17 @@
 
 #include <cstdio>
 #include <cmath>
-#include "qmidiarp_seq_lv2.h"
-#include "qmidiarp_seqwidget_lv2.h"
+#include "qmidiarp_arp_lv2.h"
+#include "qmidiarp_arpwidget_lv2.h"
 
 #include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
 
 #define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
 #define LV2_TIME_URI "http://lv2plug.in/ns/ext/time"
 
-qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
+qmidiarp_arp_lv2::qmidiarp_arp_lv2 (
     double sample_rate, const LV2_Feature *const *host_features )
-    :MidiSeq()
+    :MidiArp()
 {
     MidiEventID = 0;
     sampleRate = sample_rate;
@@ -43,23 +43,14 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     nCalls = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
-    getData(&data);
-    waveIndex = 0;
-    mouseXCur = 0;
-    mouseYCur = 0;
-    mouseEvCur = 0;
     tempo = 120.0f;
     internalTempo = 120.0f;
-    lastMouseIndex = 0;
 
     transportBpm = 120.0f;
     transportFramesDelta = 0;
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
-
-    transpFromGui = 0;
-    velFromGui = 256;
 
     bufPtr = 0;
     evQueue.resize(JQ_BUFSZ);
@@ -96,18 +87,17 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     uris->time_barBeat        = urid_map->map(urid_map->handle, LV2_TIME__barBeat);
     uris->time_beatsPerMinute = urid_map->map(urid_map->handle, LV2_TIME__beatsPerMinute);
     uris->time_speed          = urid_map->map(urid_map->handle, LV2_TIME__speed);
-    uris->hex_customwave      = urid_map->map(urid_map->handle, QMIDIARP_SEQ_LV2_PREFIX "WAVEHEX");
-    uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_SEQ_LV2_PREFIX "MUTEHEX");
+    uris->pattern_string      = urid_map->map(urid_map->handle, QMIDIARP_ARP_LV2_PREFIX "PATTERNSTRING");
 
     uridMap = urid_map;
 }
 
 
-qmidiarp_seq_lv2::~qmidiarp_seq_lv2 (void)
+qmidiarp_arp_lv2::~qmidiarp_arp_lv2 (void)
 {
 }
 
-void qmidiarp_seq_lv2::connect_port ( uint32_t port, void *data )
+void qmidiarp_arp_lv2::connect_port ( uint32_t port, void *data )
 {
     switch(PortIndex(port)) {
     case MidiIn:
@@ -125,11 +115,9 @@ void qmidiarp_seq_lv2::connect_port ( uint32_t port, void *data )
     }
 }
 
-void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
+void qmidiarp_arp_lv2::updatePos(const LV2_Atom_Object* obj)
 {
     QMidiArpURIs* const uris = &m_uris;
-
-    bool changed = false;
 
     LV2_Atom *bpm = NULL, *speed = NULL, *pos = NULL;
     lv2_atom_object_get(obj,
@@ -142,7 +130,6 @@ void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
             /* Tempo changed */
             transportBpm = ((LV2_Atom_Float*)bpm)->body;
             tempo = transportBpm;
-            changed = true;
         }
     }
     if (pos && pos->type == uris->atom_Long) {
@@ -160,20 +147,19 @@ void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
             if (transportSpeed) {
                 curFrame = transportFramesDelta;
                 setNextTick(tempoChangeTick);
-                Sample sample;
-                getNextNote(&sample, nextTick);
+                newRandomValues();
+                prepareCurrentNote(tempoChangeTick);
             }
             else {
                 curFrame = transportFramesDelta;
             }
-            changed = true;
         }
     }
     //~ if (changed) qWarning("frames %d ticks %d tempo %f status %f", transportFramesDelta
         //~ , tempoChangeTick, transportBpm, transportSpeed);
 }
 
-void qmidiarp_seq_lv2::run ( uint32_t nframes )
+void qmidiarp_arp_lv2::run ( uint32_t nframes )
 {
     LV2_Event_Iterator iter_out;
     lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
@@ -185,7 +171,6 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
 
 
     if (!(nCalls % 12)) updateParams();
-    if (!(nCalls % 24)) sendWave();
 
         // Position stuff
     while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
@@ -234,18 +219,27 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
-            getNextNote(&currentSample, curTick);
-            if (!currentSample.muted && !isMuted) {
-                unsigned char d[3];
-                d[0] = 0x90 + channelOut;
-                d[1] = currentSample.value;
-                d[2] = vel;
-                lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
-                evTickQueue.replace(bufPtr, curTick + notelength / 4);
-                evQueue.replace(bufPtr, currentSample.value);
-                bufPtr++;
+            newRandomValues();
+            prepareCurrentNote(curTick);
+            if (!isMuted) {
+                if (!returnNote.isEmpty()) {
+                    if (returnIsNew && returnVelocity.at(0)) {
+                        int l2 = 0;
+                        while(returnNote.at(l2) >= 0) {
+                            unsigned char d[3];
+                            d[0] = 0x90 + channelOut;
+                            d[1] = returnNote.at(l2);
+                            d[2] = returnVelocity.at(l2);
+                            lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
+                            evTickQueue.replace(bufPtr, curTick + returnLength);
+                            evQueue.replace(bufPtr, returnNote.at(l2));
+                            bufPtr++;
+                            l2++;
+                        }
+                    }
+                }
             }
-            float pos = (float)getCurrentIndex();
+            float pos = (float)getGrooveIndex();
             *val[CURSOR_POS - 2] = pos;
         }
 
@@ -279,86 +273,42 @@ void qmidiarp_seq_lv2::run ( uint32_t nframes )
     nCalls++;
 }
 
-void qmidiarp_seq_lv2::updateParams()
+void qmidiarp_arp_lv2::updateParams()
 {
-    bool changed = false;
-
-    if (loopMarker != (int)*val[24]) {
-        changed = true;
-        setLoopMarker((int)*val[24]);
+    if (attack_time != *val[0]) {
+        updateAttackTime(*val[0]);
     }
 
-    if (mouseXCur != *val[27] || mouseYCur != *val[28] || mouseEvCur != *val[30]) {
-        int ix = 1;
-        int evtype = 0;
-        changed = false;
-        mouseXCur = *val[27];
-        mouseYCur = *val[28];
-        if ((mouseEvCur == 2) && (*val[30] != 2)) evtype = 1; else evtype = *val[30];
-        mouseEvCur = *val[30];
-
-        if (mouseEvCur == 2) return; // mouse was released
-
-        ix = mouseEvent(mouseXCur, mouseYCur, *val[29], evtype);
-        if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
-
-        getData(&data);
-
-        // Update all wave data points since the last mouse event
-        int dir = (lastMouseIndex > ix) ? -1 : 1;
-        for (int l1 = lastMouseIndex; l1*dir < (ix + dir)*dir; l1+=dir) {
-            sendSample(l1, l1 % 16);
-        }
-        lastMouseIndex = ix; // mouse pressed
-        waveIndex = 0;
-        return;
+    if (release_time != *val[1]) {
+        updateReleaseTime(*val[1]);
     }
 
-    if (currentRecStep != *val[39]) {
-        changed = true;
-        *val[39] = currentRecStep;
+    if (randomTickAmp != *val[2]) {
+        updateRandomTickAmp(*val[2]);
     }
 
-    if (velFromGui != *val[0]) {
-        velFromGui = *val[0];
-        updateVelocity(velFromGui);
+    if (randomLengthAmp != *val[3]) {
+        updateRandomLengthAmp(*val[3]);
     }
 
-    if (notelength != *val[1]) {
-        updateNoteLength(*val[1]);
+    if (randomVelocityAmp != *val[4]) {
+        updateRandomVelocityAmp(*val[4]);
     }
 
-    if (res != seqResValues[(int)*val[2]]) {
-        changed = true;
-        updateResolution(seqResValues[(int)*val[2]]);
-    }
-
-    if (size != 1+ (int)*val[3]) {
-        changed = true;
-        updateSize(1 + (int)*val[3]);
-    }
-
-    if (transpFromGui != (int)*val[4]) {
-        transpFromGui = (int)*val[4];
-        updateTranspose(transpFromGui);
-    }
-
-    if (curLoopMode != (*val[25])) updateLoop(*val[25]);
-
-    if (recordMode != ((bool)*val[37])) {
-        setRecordMode((bool)*val[37]);
-    }
 
     if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
     if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
 
-    enableNoteIn =   (int)*val[31];
-    enableVelIn =    (int)*val[32];
-    enableNoteOff = (bool)*val[33];
-    restartByKbd =  (bool)*val[34];
-    trigByKbd =     (bool)*val[35];
-    trigLegato =    (bool)*val[36];
+    indexIn[0]   =   (int)*val[31];
+    indexIn[1]   =   (int)*val[32];
+    rangeIn[0]   =   (int)*val[33];
+    rangeIn[1]   =   (int)*val[34];
 
+    if (triggerMode != *val[35]) {
+        updateTriggerMode(*val[35]);
+    }
+
+    repeatPatternThroughChord = (int)*val[36];
     channelOut =      (int)*val[5];
     chIn =            (int)*val[6];
 
@@ -370,7 +320,7 @@ void qmidiarp_seq_lv2::updateParams()
             transportBpm = internalTempo;
             tempo = internalTempo;
             setNextTick(tempoChangeTick);
-            getNextNote(&currentSample, nextTick);
+            prepareCurrentNote(nextTick);
         }
     }
 
@@ -386,51 +336,35 @@ void qmidiarp_seq_lv2::updateParams()
             transportBpm = internalTempo;
             tempo = internalTempo;
             setNextTick(tempoChangeTick);
-            getNextNote(&currentSample, nextTick);
+            prepareCurrentNote(nextTick);
             transportSpeed = 1;
         }
     }
-
-    if (*val[29] == -1) dataChanged = true;
-
-
-    if (changed) {
-        getData(&data);
-        waveIndex = 0;
-        dataChanged = true;
-    }
-}
-
-void qmidiarp_seq_lv2::sendWave()
-{
-    if (!dataChanged) return;
-    int ct = data.count();
-    // The 16 ports are swept to transmit the data in parallel
-    int l1 = 0;
-    while (l1 < 16) {
-        waveIndex %= ct;
-        if (!waveIndex && (l1 > 0)) {
-            dataChanged = false;
+    QString newpattern;
+    QChar c1, c2;
+    uint32_t n;
+    unsigned char c[4];
+    for (int l1 = 0; l1 < 16; l1++) {
+        n = *val[l1 + WAVEDATA1 - 2];
+        c[0] = (n >> 24) & 0xff;
+        c[1] = (n >> 16) & 0xff;
+        c[2] = (n >> 8) & 0xff;
+        c[3] = n & 0xff;
+        for (int l2 = 0; l2 < 4; l2++) {
+            if (c[l2] != 0) newpattern.append(c[l2]);
         }
-        sendSample(waveIndex, l1);
-        waveIndex++;
-        l1++;
+    }
+
+    if (newpattern != pattern) {
+        updatePattern(newpattern);
     }
 }
 
-void qmidiarp_seq_lv2::sendSample(int ix, int port)
-{
-    // wave data and index are encoded into a single float
-    if (ix >= data.count()) return;
-    *val[WAVEDATA1 + port - 2] = (float)(abs(data.at(ix).value)
-             + ix*128) * ((data.at(ix).muted == false) ? 1 : -1);
-}
-
-static LV2_State_Status qmidiarp_seq_lv2_state_restore ( LV2_Handle instance,
+static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -441,54 +375,26 @@ static LV2_State_Status qmidiarp_seq_lv2_state_restore ( LV2_Handle instance,
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
     size_t size = 0;
-    int l1;
-    uint32_t key = uris->hex_mutemask;
+
+    uint32_t key = uris->pattern_string;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
     const char *value1
         = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
 
-    QByteArray tmpArray1 = QByteArray::fromHex(value1);
-
-    if (size < 2 || !tmpArray1.count()) return LV2_STATE_ERR_UNKNOWN;
-
-    pPlugin->setCurrentIndex(0);
-    pPlugin->maxNPoints = tmpArray1.count();
-
-    for (l1 = 0; l1 < tmpArray1.count(); l1++) {
-        pPlugin->muteMask.replace(l1, tmpArray1.at(l1));
-    }
-
-
-    key = uris->hex_customwave;
-    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
-
-    const char *value
-        = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
-
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
+    std::string tmpString1 = value1;
 
-    QByteArray tmpArray = QByteArray::fromHex(value);
-
-    Sample sample;
-    int step = TPQN / pPlugin->res;
-    int lt = 0;
-    for (l1 = 0; l1 < tmpArray.count(); l1++) {
-        sample.value = tmpArray.at(l1);
-        sample.tick = lt;
-        sample.muted = pPlugin->muteMask.at(l1);
-        pPlugin->customWave.replace(l1, sample);
-        lt+=step;
-    }
-
+    pPlugin->advancePatternIndex(true);
+    pPlugin->updatePattern(QString::fromStdString(tmpString1));
     return LV2_STATE_SUCCESS;
 }
 
-static LV2_State_Status qmidiarp_seq_lv2_state_save ( LV2_Handle instance,
+static LV2_State_Status qmidiarp_arp_lv2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -498,168 +404,146 @@ static LV2_State_Status qmidiarp_seq_lv2_state_save ( LV2_Handle instance,
 
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
-    QByteArray tempArray;
 
-    tempArray.clear();
-    int l1;
-    for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
-        tempArray.append(pPlugin->customWave.at(l1).value);
-    }
-
-    const QByteArray hexArray = tempArray.toHex();
-    const char *value = hexArray.constData();
+    const std::string tempString = pPlugin->pattern.toStdString();
+    const char *value = pPlugin->pattern.toLatin1();
 
     size_t size = strlen(value) + 1;
-    uint32_t key = uris->hex_customwave;
+    uint32_t key = uris->pattern_string;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
-    store(handle, key, value, size, type, flags);
-
-    tempArray.clear();
-
-    for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
-        tempArray.append(pPlugin->muteMask.at(l1));
-    }
-
-    const QByteArray hexArray1 = tempArray.toHex();
-    const char *value1 = hexArray1.constData();
-
-    size = strlen(value1) + 1;
-    key = uris->hex_mutemask;
-    if (!key) return LV2_STATE_ERR_NO_PROPERTY;
-
-    LV2_State_Status result = (*store)(handle, key, value1, size, type, flags);
+    LV2_State_Status result = (*store)(handle, key, value, size, type, flags);
 
     return result;
 }
 
-static const LV2_State_Interface qmidiarp_seq_lv2_state_interface =
+static const LV2_State_Interface qmidiarp_arp_lv2_state_interface =
 {
-    qmidiarp_seq_lv2_state_save,
-    qmidiarp_seq_lv2_state_restore
+    qmidiarp_arp_lv2_state_save,
+    qmidiarp_arp_lv2_state_restore
 };
 
-void qmidiarp_seq_lv2::activate (void)
+void qmidiarp_arp_lv2::activate (void)
 {
 }
 
-void qmidiarp_seq_lv2::deactivate (void)
+void qmidiarp_arp_lv2::deactivate (void)
 {
 }
 
-static LV2_Handle qmidiarp_seq_lv2_instantiate (
+static LV2_Handle qmidiarp_arp_lv2_instantiate (
     const LV2_Descriptor *, double sample_rate, const char *,
     const LV2_Feature *const *host_features )
 {
-    return new qmidiarp_seq_lv2(sample_rate, host_features);
+    return new qmidiarp_arp_lv2(sample_rate, host_features);
 }
 
-static void qmidiarp_seq_lv2_connect_port (
+static void qmidiarp_arp_lv2_connect_port (
     LV2_Handle instance, uint32_t port, void *data )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
     if (pPlugin)
         pPlugin->connect_port(port, data);
 }
 
-static void qmidiarp_seq_lv2_run ( LV2_Handle instance, uint32_t nframes )
+static void qmidiarp_arp_lv2_run ( LV2_Handle instance, uint32_t nframes )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
     if (pPlugin)
         pPlugin->run(nframes);
 }
 
-static void qmidiarp_seq_lv2_activate ( LV2_Handle instance )
+static void qmidiarp_arp_lv2_activate ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
     if (pPlugin)
         pPlugin->activate();
 }
 
-static void qmidiarp_seq_lv2_deactivate ( LV2_Handle instance )
+static void qmidiarp_arp_lv2_deactivate ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
     if (pPlugin)
         pPlugin->deactivate();
 }
 
-static void qmidiarp_seq_lv2_cleanup ( LV2_Handle instance )
+static void qmidiarp_arp_lv2_cleanup ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    qmidiarp_arp_lv2 *pPlugin = static_cast<qmidiarp_arp_lv2 *> (instance);
     if (pPlugin)
         delete pPlugin;
 }
 
-static const void *qmidiarp_seq_lv2_extension_data ( const char * uri)
+static const void *qmidiarp_arp_lv2_extension_data ( const char * uri)
 {
     static const LV2_State_Interface state_iface =
-                { qmidiarp_seq_lv2_state_save, qmidiarp_seq_lv2_state_restore };
+                { qmidiarp_arp_lv2_state_save, qmidiarp_arp_lv2_state_restore };
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state_iface;
     }
     else return NULL;
 }
 
-static LV2UI_Handle qmidiarp_seq_lv2ui_instantiate (
+static LV2UI_Handle qmidiarp_arp_lv2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
     const LV2_Feature *const * )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = new qmidiarp_seqwidget_lv2(controller, write_function);
+    qmidiarp_arpwidget_lv2 *pWidget = new qmidiarp_arpwidget_lv2(controller, write_function);
     *widget = pWidget;
     return pWidget;
 }
 
-static void qmidiarp_seq_lv2ui_cleanup ( LV2UI_Handle ui )
+static void qmidiarp_arp_lv2ui_cleanup ( LV2UI_Handle ui )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
+    qmidiarp_arpwidget_lv2 *pWidget = static_cast<qmidiarp_arpwidget_lv2 *> (ui);
     if (pWidget)
         delete pWidget;
 }
 
-static void qmidiarp_seq_lv2ui_port_event (
+static void qmidiarp_arp_lv2ui_port_event (
     LV2UI_Handle ui, uint32_t port_index,
     uint32_t buffer_size, uint32_t format, const void *buffer )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
+    qmidiarp_arpwidget_lv2 *pWidget = static_cast<qmidiarp_arpwidget_lv2 *> (ui);
     if (pWidget)
         pWidget->port_event(port_index, buffer_size, format, buffer);
 }
 
-static const void *qmidiarp_seq_lv2ui_extension_data ( const char * )
+static const void *qmidiarp_arp_lv2ui_extension_data ( const char * )
 {
     return NULL;
 }
 
-static const LV2_Descriptor qmidiarp_seq_lv2_descriptor =
+static const LV2_Descriptor qmidiarp_arp_lv2_descriptor =
 {
-    QMIDIARP_SEQ_LV2_URI,
-    qmidiarp_seq_lv2_instantiate,
-    qmidiarp_seq_lv2_connect_port,
-    qmidiarp_seq_lv2_activate,
-    qmidiarp_seq_lv2_run,
-    qmidiarp_seq_lv2_deactivate,
-    qmidiarp_seq_lv2_cleanup,
-    qmidiarp_seq_lv2_extension_data
+    QMIDIARP_ARP_LV2_URI,
+    qmidiarp_arp_lv2_instantiate,
+    qmidiarp_arp_lv2_connect_port,
+    qmidiarp_arp_lv2_activate,
+    qmidiarp_arp_lv2_run,
+    qmidiarp_arp_lv2_deactivate,
+    qmidiarp_arp_lv2_cleanup,
+    qmidiarp_arp_lv2_extension_data
 };
 
-static const LV2UI_Descriptor qmidiarp_seq_lv2ui_descriptor =
+static const LV2UI_Descriptor qmidiarp_arp_lv2ui_descriptor =
 {
-    QMIDIARP_SEQ_LV2UI_URI,
-    qmidiarp_seq_lv2ui_instantiate,
-    qmidiarp_seq_lv2ui_cleanup,
-    qmidiarp_seq_lv2ui_port_event,
-    qmidiarp_seq_lv2ui_extension_data
+    QMIDIARP_ARP_LV2UI_URI,
+    qmidiarp_arp_lv2ui_instantiate,
+    qmidiarp_arp_lv2ui_cleanup,
+    qmidiarp_arp_lv2ui_port_event,
+    qmidiarp_arp_lv2ui_extension_data
 };
 
 LV2_SYMBOL_EXPORT const LV2_Descriptor *lv2_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_seq_lv2_descriptor : NULL);
+    return (index == 0 ? &qmidiarp_arp_lv2_descriptor : NULL);
 }
 
 LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_seq_lv2ui_descriptor : NULL);
+    return (index == 0 ? &qmidiarp_arp_lv2ui_descriptor : NULL);
 }
 

@@ -28,7 +28,6 @@
 #include <QMutex>
 #include <QWidget>
 #include <QString>
-#include <QThread>
 #include <QVector>
 #include <main.h>
 
@@ -55,7 +54,7 @@
  * therefore be added or removed from the buffer as Engine transfers
  * them to this class.
  */
-class MidiArp : public QWidget  {
+class MidiArp : public QObject  {
 
   Q_OBJECT
 
@@ -221,6 +220,7 @@ class MidiArp : public QWidget  {
     bool isMutedDefer;   /*!< Deferred Global mute state */
     bool deferChanges;    /*!< set by ArpWidget to defer parameter changes to pattern end */
     bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
+    int triggerMode; /*!< Current Trigger mode index */
     bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
     bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
@@ -252,6 +252,7 @@ class MidiArp : public QWidget  {
   public:
     MidiArp();
     ~MidiArp();
+    QString stripPattern(const QString& p_pattern);
     void updatePattern(const QString&);
     void updateTriggerMode(int val);
     void updateRandomTickAmp(int);

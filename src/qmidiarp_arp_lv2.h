@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_seq_lv2.h
- * @brief Headers for the MidiSeq LV2 plugin class
+ * @file qmidiarp_arp_lv2.h
+ * @brief Headers for the MidiArp LV2 plugin class
  *
  * @section LICENSE
  *
@@ -23,25 +23,24 @@
  *
  */
 
-#ifndef QMIDIARP_SEQ_LV2_H
-#define QMIDIARP_SEQ_LV2_H
+#ifndef QMIDIARP_ARP_LV2_H
+#define QMIDIARP_ARP_LV2_H
 
-#include "midiseq.h"
-#include "seqwidget.h"
+#include "midiarp.h"
+#include "arpwidget.h"
 
 #include "lv2.h"
 #include "lv2/lv2plug.in/ns/ext/event/event.h"
 #include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 #include "lv2/lv2plug.in/ns/ext/urid/urid.h"
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/midi/midi.h"
 #include "lv2/lv2plug.in/ns/ext/atom/util.h"
 #include "lv2/lv2plug.in/ns/ext/time/time.h"
 #include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define QMIDIARP_SEQ_LV2_URI "https://git.code.sf.net/p/qmidiarp/seq"
-#define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
+#define QMIDIARP_ARP_LV2_URI "https://git.code.sf.net/p/qmidiarp/arp"
+#define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 
 
 typedef struct {
@@ -55,26 +54,25 @@ typedef struct {
     LV2_URID time_barBeat;
     LV2_URID time_beatsPerMinute;
     LV2_URID time_speed;
-    LV2_URID hex_customwave;
-    LV2_URID hex_mutemask;
+    LV2_URID pattern_string;
 } QMidiArpURIs;
 
-class qmidiarp_seq_lv2 : public MidiSeq
+class qmidiarp_arp_lv2 : public MidiArp
 {
 public:
 
-        qmidiarp_seq_lv2(double sample_rate, const LV2_Feature *const *host_features);
+        qmidiarp_arp_lv2(double sample_rate, const LV2_Feature *const *host_features);
 
-        ~qmidiarp_seq_lv2();
+        ~qmidiarp_arp_lv2();
 
         enum PortIndex {
             MidiIn = 0,
             MidiOut = 1,
-            VELOCITY = 2,
-            NOTELENGTH = 3,
-            RESOLUTION = 4,
-            SIZE = 5,
-            TRANSPOSE = 6,
+            ATTACK = 2,
+            RELEASE = 3,
+            RANDOM_TICK = 4,
+            RANDOM_LEN = 5,
+            RANDOM_VEL = 6,
             CH_OUT = 7,
             CH_IN = 8,
             CURSOR_POS = 9, //output
@@ -94,22 +92,22 @@ public:
             WAVEDATA14 = 23,
             WAVEDATA15 = 24,
             WAVEDATA16 = 25,
-            LOOPMARKER = 26,
-            LOOPMODE = 27,
+            SPARE3 = 26,
+            SPARE4 = 27,
             MUTE = 28,
             MOUSEX = 29,
             MOUSEY = 30,
             MOUSEBUTTON = 31,
             MOUSEPRESSED = 32,
-            ENABLE_NOTEIN = 33,
-            ENABLE_VELIN = 34,
-            ENABLE_NOTEOFF = 35,
-            ENABLE_RESTARTBYKBD = 36,
-            ENABLE_TRIGBYKBD = 37,
-            ENABLE_TRIGLEGATO = 38,
-            RECORD = 39,
+            INDEX_IN1 = 33,
+            INDEX_IN2 = 34,
+            RANGE_IN1 = 35,
+            RANGE_IN2 = 36,
+            TRIGGER_MODE = 37,
+            REPEAT_MODE = 38,
+            SPARE1 = 39,
             DEFER = 40,
-            CURR_RECSTEP = 41, //output
+            SPARE2 = 41, //output
             TRANSPORT_CONTROL = 42,
             TRANSPORT_MODE = 43,
             TEMPO = 44
@@ -130,21 +128,10 @@ private:
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
-        Sample currentSample;
-        int waveIndex;
-        double mouseXCur;
-        double mouseYCur;
-        int mouseEvCur;
-        int lastMouseIndex;
-        int buttonsCur;
-        int transpFromGui;
-        int velFromGui;
         double internalTempo;
         double sampleRate;
         double tempo;
         void updateParams();
-        void sendWave();
-        void sendSample(int ix, int port);
 
         uint32_t MidiEventID;
         uint64_t transportFramesDelta;  /**< Frames since last click start */

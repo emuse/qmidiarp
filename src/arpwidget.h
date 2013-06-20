@@ -63,27 +63,16 @@ class ArpWidget : public QWidget
   Q_OBJECT
 
   private:
-    QComboBox *chIn;                        // Channel of input events
-    QSpinBox *indexIn[2];                  // Index input
-    QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
+    MidiArp *midiWorker;
+    GlobStore *globStore;
+    bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
+    bool needsGUIUpdate;
+
     QLabel *rangeInLabel, *indexInLabel;
-    QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
-    QComboBox *repeatPatternThroughChord;
-    QComboBox *triggerMode;
-    QComboBox *patternPresetBox;
     QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
-    QWidget *inOutBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QToolButton *latchModeButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
-    QAction *latchModeAction;
-    MidiArp *midiWorker;
-    GlobStore *globStore;
-    QLineEdit *patternText;
-    Slider *randomVelocity, *randomTick, *randomLength;
-    Slider *attackTime, *releaseTime;
-    bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
-    bool needsGUIUpdate;
     int patternPresetBoxIndex;
 
     void loadPatternPresets();
@@ -110,11 +99,24 @@ class ArpWidget : public QWidget
     ArpScreen *screen;
     ManageBox *manageBox;
 
+    QComboBox *chIn;                        // Channel of input events
+    QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
+    QComboBox *repeatPatternThroughChord;
+    QComboBox *triggerMode;
+    QComboBox *patternPresetBox;
+    QWidget *inOutBox;
+    QSpinBox *indexIn[2];                  // Index input
+    QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
+    Slider *randomVelocity, *randomTick, *randomLength;
+    Slider *attackTime, *releaseTime;
+    QLineEdit *patternText;
+
     QStringList patternPresets, patternNames;
     QAction *muteOutAction;
     QAction *deferChangesAction;
     QToolButton *muteOut;
     QAction* hideInOutBoxAction;
+    QAction *latchModeAction;
 
     void setChIn(int value);
     void setIndexIn(int index, int value);

@@ -1,12 +1,14 @@
 # Makefile.am for qmidiarp
 SUBDIRS = pixmaps
-lfoplugindir = /usr/lib64/lv2/qmidiarp_lfo.lv2
-seqplugindir = /usr/lib64/lv2/qmidiarp_seq.lv2
+arpplugindir = @libdir@/lv2/qmidiarp_arp.lv2
+lfoplugindir = @libdir@/lv2/qmidiarp_lfo.lv2
+seqplugindir = @libdir@/lv2/qmidiarp_seq.lv2
 
-bin_PROGRAMS = qmidiarp
-
+arpplugin_LTLIBRARIES = qmidiarp_arp.la
 lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
 seqplugin_LTLIBRARIES = qmidiarp_seq.la
+
+bin_PROGRAMS = qmidiarp
 
 nodist_qmidiarp_SOURCES = \
 	cursor_moc.cpp \
@@ -135,6 +137,37 @@ qmidiarp_seq_la_SOURCES = \
 qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_seq_la_LIBADD = $(QT_LIBS) -llv2-plugin
 
+nodist_qmidiarp_arp_la_SOURCES = \
+	globstore_moc.cpp \
+	indicator_moc.cpp \
+	arpwidget_moc.cpp \
+	arpscreen_moc.cpp \
+	managebox_moc.cpp \
+	midicontrol_moc.cpp \
+	midiarp_moc.cpp \
+	parstore_moc.cpp \
+	slider_moc.cpp \
+	storagebutton_moc.cpp \
+	qmidiarp_arpwidget_lv2_moc.cpp \
+	qmidiarp_arp_lv2_moc.cpp
+
+qmidiarp_arp_la_SOURCES = \
+	globstore.cpp globstore.h \
+	indicator.cpp indicator.h \
+	arpwidget.cpp arpwidget.h \
+	arpscreen.cpp arpscreen.h \
+	managebox.cpp managebox.h \
+	midicontrol.cpp midicontrol.h \
+	midiarp.cpp midiarp.h \
+	parstore.cpp parstore.h \
+	slider.cpp slider.h \
+	storagebutton.cpp storagebutton.h \
+	qmidiarp_arpwidget_lv2.cpp qmidiarp_arpwidget_lv2.h \
+	qmidiarp_arp_lv2.cpp qmidiarp_arp_lv2.h
+
+qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_arp_la_LIBADD = $(QT_LIBS) -llv2-plugin
+
 if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
 translations = \
@@ -180,6 +213,6 @@ endif
 # install LV2 .so only, not .la
 
 install-exec-hook:
-
-	rm -f $(DESTDIR)$(plugindir)/qmidiarp_lfo.la
-	rm -f $(DESTDIR)$(plugindir)/qmidiarp_seq.la
+	rm -f $(arpplugindir)/qmidiarp_arp.la
+	rm -f $(lfoplugindir)/qmidiarp_lfo.la
+	rm -f $(seqplugindir)/qmidiarp_seq.la
