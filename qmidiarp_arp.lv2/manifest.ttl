@@ -3,5 +3,6 @@
 
 <https://git.code.sf.net/p/qmidiarp/arp>
     a lv2:Plugin ;
+    lv2:appliesTo <qmidiarp_arp.so> ;
     lv2:binary <qmidiarp_arp.so> ;
     rdfs:seeAlso <qmidiarp_arp.ttl> .

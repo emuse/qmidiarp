@@ -3,5 +3,6 @@
 
 <https://git.code.sf.net/p/qmidiarp/seq>
     a lv2:Plugin ;
+    lv2:appliesTo <qmidiarp_seq.so> ;
     lv2:binary <qmidiarp_seq.so> ;
     rdfs:seeAlso <qmidiarp_seq.ttl> .
