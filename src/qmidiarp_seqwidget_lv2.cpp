@@ -143,7 +143,7 @@ void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
                 break;
                 case 26:
                         screen->setLoopMarker((bool)fValue);
-                        screen->updateDraw();
+                        screen->update();
                 break;
                 case 27:
                         loopBox->setCurrentIndex(fValue);
@@ -151,7 +151,7 @@ void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
                 case 28:
                         muteOutAction->setChecked((bool)fValue);
                         screen->setMuted(fValue);
-                        screen->updateDraw();
+                        screen->update();
                 break;
                 case 29: // these are the mouse ports
                 case 30:
@@ -185,7 +185,7 @@ void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
                 case 41:
                         //record step has changed
                         screen->setCurrentRecStep((int)fValue);
-                        screen->updateDraw();
+                        screen->update();
                 break;
                 case 42: // metronome port
                 break;

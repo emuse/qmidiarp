@@ -58,6 +58,7 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
+    transportSpeed = 1;
 
     LV2_URID_Map *urid_map;
 

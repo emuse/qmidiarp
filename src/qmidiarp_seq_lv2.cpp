@@ -57,6 +57,7 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
+    transportSpeed = 1;
 
     transpFromGui = 0;
     velFromGui = 256;
