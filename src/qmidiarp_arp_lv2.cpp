@@ -51,6 +51,10 @@ qmidiarp_arp_lv2::qmidiarp_arp_lv2 (
     curTick = 0;
     tempoChangeTick = 0;
     transportMode = false;
+    transportSpeed = 1;
+
+    sendPatternFlag = false;
+    patternSendTrials = 0;
 
     bufPtr = 0;
     evQueue.resize(JQ_BUFSZ);
@@ -275,6 +279,31 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
 
 void qmidiarp_arp_lv2::updateParams()
 {
+    if (!sendPatternFlag) {
+        // decode from float into four pattern characters and append them
+        QString newpattern;
+        uint32_t n;
+        unsigned char c[4];
+        for (int l1 = 0; l1 < 16; l1++) {
+            n = *val[l1 + WAVEIN1 - 2] * 8192;
+            c[0] = (n >> 24) & 0xff;
+            c[1] = (n >> 16) & 0xff;
+            c[2] = (n >> 8) & 0xff;
+            c[3] = n & 0xff;
+            for (int l2 = 0; l2 < 4; l2++) {
+                if (c[l2] != 0) newpattern.append(c[l2]);
+            }
+        }
+
+        if (newpattern != pattern) {
+            updatePattern(newpattern);
+        }
+    }
+    else {
+        qWarning("sending pattern to GUI");
+        sendPattern(pattern);
+    }
+
     if (attack_time != *val[0]) {
         updateAttackTime(*val[0]);
     }
@@ -340,24 +369,33 @@ void qmidiarp_arp_lv2::updateParams()
             transportSpeed = 1;
         }
     }
-    QString newpattern;
-    QChar c1, c2;
+}
+
+void qmidiarp_arp_lv2::sendPattern(const QString & p)
+{
+    // encode into floats and send pattern to GUI via WAVEDATA ports
+    *val[37] = 1.0;
+
+    int l1, l2;
+    int ix = 0;
     uint32_t n;
-    unsigned char c[4];
-    for (int l1 = 0; l1 < 16; l1++) {
-        n = *val[l1 + WAVEDATA1 - 2];
-        c[0] = (n >> 24) & 0xff;
-        c[1] = (n >> 16) & 0xff;
-        c[2] = (n >> 8) & 0xff;
-        c[3] = n & 0xff;
-        for (int l2 = 0; l2 < 4; l2++) {
-            if (c[l2] != 0) newpattern.append(c[l2]);
+    for (l1 = 0; l1 < 16; l1++) {
+        n = 0;
+        for (l2 = 24; l2 > 0; l2-=8) {
+            if (ix >= p.count()) break;
+            n |= ( p.at(ix).cell() << l2 );
+            ix++;
         }
+        *val[l1 + WAVEDATA1 - 2] = (float)n / 8192. ;
+    }
+    patternSendTrials++;
+
+    if (patternSendTrials > 1) {
+        *val[37] = 0.0;
+        sendPatternFlag = false;
+        patternSendTrials = 0;
     }
 
-    if (newpattern != pattern) {
-        updatePattern(newpattern);
-    }
 }
 
 static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
@@ -384,9 +422,12 @@ static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
     std::string tmpString1 = value1;
-
+    qWarning("setting plugin pattern flag");
+    pPlugin->sendPatternFlag = true;
     pPlugin->advancePatternIndex(true);
     pPlugin->updatePattern(QString::fromStdString(tmpString1));
+    qWarning("restored pattern %s", qPrintable(pPlugin->pattern));
+
     return LV2_STATE_SUCCESS;
 }
 

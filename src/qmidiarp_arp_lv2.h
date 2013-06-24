@@ -105,12 +105,28 @@ public:
             RANGE_IN2 = 36,
             TRIGGER_MODE = 37,
             REPEAT_MODE = 38,
-            SPARE1 = 39,
+            RPATTERNFLAG = 39,
             DEFER = 40,
             SPARE2 = 41, //output
             TRANSPORT_CONTROL = 42,
             TRANSPORT_MODE = 43,
-            TEMPO = 44
+            TEMPO = 44,
+            WAVEIN1 = 45,
+            WAVEIN2 = 46,
+            WAVEIN3 = 47,
+            WAVEIN4 = 48,
+            WAVEIN5 = 49,
+            WAVEIN6 = 50,
+            WAVEIN7 = 51,
+            WAVEIN8 = 52,
+            WAVEIN9 = 53,
+            WAVEIN10 = 54,
+            WAVEIN11 = 55,
+            WAVEIN12 = 56,
+            WAVEIN13 = 57,
+            WAVEIN14 = 58,
+            WAVEIN15 = 59,
+            WAVEIN16 = 60
         };
 
         void connect_port(uint32_t port, void *data);
@@ -118,12 +134,15 @@ public:
         void activate();
         void deactivate();
         void updatePos(const LV2_Atom_Object* obj);
+        void sendPattern(const QString & p);
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
+        bool sendPatternFlag;
+        int patternSendTrials;
 
 private:
 
-        float *val[50];
+        float *val[61];
         uint64_t curFrame;
         uint64_t nCalls;
         uint64_t tempoChangeTick;

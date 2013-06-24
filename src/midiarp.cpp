@@ -856,6 +856,8 @@ void MidiArp::applyPendingParChanges()
 
 void MidiArp::setNextTick(int tick)
 {
+    if (nSteps == 0) return;
+
     returnTick = tick / (int)(nSteps*TPQN) * (int)(nSteps*TPQN);
     patternIndex = 0;
     currentNoteTick = returnTick;

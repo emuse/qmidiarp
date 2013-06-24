@@ -162,16 +162,16 @@
         lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
         lv2:default 1.0 ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 39 ;
-        lv2:symbol "SPARE1" ;
-        lv2:name "" ;
-        lv2:portProperty lv2:integer ;
+        lv2:symbol "RPATTERNFLAG" ;
+        lv2:name "Receive Pattern Flag" ;
+        lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 40 ;
         lv2:symbol "DEFER" ;
         lv2:name "Defer mute" ;
@@ -199,149 +199,262 @@
         lv2:minimum 0 ;
         lv2:maximum 8192 ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 10 ;
         lv2:symbol "WAVEDATA1" ;
         lv2:name "Wavedata1" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 11 ;
         lv2:symbol "WAVEDATA2" ;
         lv2:name "Wavedata2" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 12 ;
         lv2:symbol "WAVEDATA3" ;
         lv2:name "Wavedata3" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 13 ;
         lv2:symbol "WAVEDATA4" ;
         lv2:name "Wavedata4" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 14 ;
         lv2:symbol "WAVEDATA5" ;
         lv2:name "Wavedata5" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 15 ;
         lv2:symbol "WAVEDATA6" ;
         lv2:name "Wavedata6" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 16 ;
         lv2:symbol "WAVEDATA7" ;
         lv2:name "Wavedata7" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 17 ;
         lv2:symbol "WAVEDATA8" ;
         lv2:name "Wavedata8" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 18 ;
         lv2:symbol "WAVEDATA9" ;
         lv2:name "Wavedata9" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 19 ;
         lv2:symbol "WAVEDATA10" ;
         lv2:name "Wavedata10" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 20 ;
         lv2:symbol "WAVEDATA11" ;
         lv2:name "Wavedata11" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 21 ;
         lv2:symbol "WAVEDATA12" ;
         lv2:name "Wavedata12" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 22 ;
         lv2:symbol "WAVEDATA13" ;
         lv2:name "Wavedata13" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 23 ;
         lv2:symbol "WAVEDATA14" ;
         lv2:name "Wavedata14" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 24 ;
         lv2:symbol "WAVEDATA15" ;
         lv2:name "Wavedata15" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
+        a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 25 ;
         lv2:symbol "WAVEDATA16" ;
         lv2:name "Wavedata16" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 45 ;
+        lv2:symbol "WAVEIN1" ;
+        lv2:name "Wave In1" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 46 ;
+        lv2:symbol "WAVEIN2" ;
+        lv2:name "Wave In2" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 47 ;
+        lv2:symbol "WAVEIN3" ;
+        lv2:name "Wave In3" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 48 ;
+        lv2:symbol "WAVEIN4" ;
+        lv2:name "Wave In4" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 49 ;
+        lv2:symbol "WAVEIN5" ;
+        lv2:name "Wave In5" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 50 ;
+        lv2:symbol "WAVEIN6" ;
+        lv2:name "Wave In6" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 51 ;
+        lv2:symbol "WAVEIN7" ;
+        lv2:name "Wave In7" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 52 ;
+        lv2:symbol "WAVEIN8" ;
+        lv2:name "Wave In8" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 53 ;
+        lv2:symbol "WAVEIN9" ;
+        lv2:name "Wave In9" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 54 ;
+        lv2:symbol "WAVEIN10" ;
+        lv2:name "Wave In10" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 55 ;
+        lv2:symbol "WAVEIN11" ;
+        lv2:name "Wave In11" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 56 ;
+        lv2:symbol "WAVEIN12" ;
+        lv2:name "Wave In12" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 57 ;
+        lv2:symbol "WAVEIN13" ;
+        lv2:name "Wave In13" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 58 ;
+        lv2:symbol "WAVEIN14" ;
+        lv2:name "Wave In14" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 59 ;
+        lv2:symbol "WAVEIN15" ;
+        lv2:name "Wave In15" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 60 ;
+        lv2:symbol "WAVEIN16" ;
+        lv2:name "Wave In16" ;
+        lv2:default 0. ;
+        lv2:minimum -1048576. ;
+        lv2:maximum 1048576. ;
     ] ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;

@@ -46,7 +46,7 @@ qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
 {
     m_controller = ct;
     writeFunction = write_function;
-
+    receivePatternFlag = true;
 
     transportBox = new QCheckBox(this);
     QLabel *transportBoxLabel = new QLabel(tr("&Sync with Host"),this);
@@ -105,7 +105,7 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
 
         float fValue = *(float *) buffer;
 
-        if ((port_index < 26) && port_index >= 10) {
+        if ((port_index < 26) && (port_index >= 10)) {
             receivePattern(port_index, fValue);
         }
         else {
@@ -145,7 +145,7 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                 case 28:
                         muteOutAction->setChecked((bool)fValue);
                         screen->setMuted(fValue);
-                        screen->updateDraw();
+                        screen->update();
                 break;
                 case 29: // these are the mouse ports (not in use with arp)
                 case 30:
@@ -171,7 +171,10 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                         repeatPatternThroughChord->setCurrentIndex(fValue);
                 break;
                 case 39:
-                        //spare;
+                        if ((bool)fValue != receivePatternFlag) {
+                            qWarning("setting receive flag in GUI %d", (int)fValue);
+                            receivePatternFlag = (bool)fValue;
+                        }
                 break;
                 case 40:
                         deferChangesAction->setChecked((bool)fValue);
@@ -230,6 +233,8 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
         }
     }
 
+    // encode into floats and send pattern to GUI via WAVEDATA ports
+
     int l1, l2;
     int ix = 0;
     int32_t n;
@@ -240,7 +245,7 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
             n |= ( (char)pattern.at(ix).toLatin1() << l2 );
             ix++;
         }
-        updateParam(l1 + 10, (float)n);
+        updateParam(l1 + 45, (float)n / 8192.);
     }
 
     // determine some useful properties of the arp pattern,
@@ -312,11 +317,28 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
     }
     screen->updateScreen(pattern, minOctave, maxOctave, minStepWidth,
                     nsteps, patternMaxIndex);
+    screen->update();
 
 }
 
 void qmidiarp_arpwidget_lv2::receivePattern(int port_index, float fValue)
 {
+    int l1 = port_index - 10;
+    if (!l1) newPattern.fill(QChar(0), 64);
+
+    uint32_t n;
+    unsigned char c;
+    n = (uint32_t)(fValue*8192.);
+
+    for (int l2 = 0; l2 < 3; l2++) {
+        c = (n >> (24 - (l2 * 8))) & 0xff;
+        newPattern.replace(l1*3 + l2, 1, c);
+    }
+
+    QString txPattern = newPattern.remove(QChar(0));
+    updatePattern(txPattern);
+    patternText->setText(txPattern);
+    screen->update();
 }
 
 void qmidiarp_arpwidget_lv2::mapBool(bool on)
