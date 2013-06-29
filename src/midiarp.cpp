@@ -102,7 +102,7 @@ MidiArp::MidiArp()
     minStepWidth = 1.0;
     maxOctave = 0;
     minOctave = 0;
-    nSteps = 0;
+    nSteps = 1.0;
     nPoints = 1;
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
