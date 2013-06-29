@@ -39,6 +39,12 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     logTickBuffer.resize(128);
     logEventCount = 0;
 
+    midiControl = new MidiControl();
+    midiControl->ID = -3;
+    midiControl->parentDockID = -3;
+    connect(midiControl, SIGNAL(setMidiLearn(int, int, int)),
+            this, SLOT(setMidiLearn(int, int, int)));
+
     globStoreWidget = p_globStore;
     connect(globStoreWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             this, SLOT(setMidiLearn(int, int, int)));
@@ -729,6 +735,7 @@ void Engine::sendController(int ccnumber, int channel, int value)
 {
     int l1;
 
+    handleController(ccnumber, channel, value);
     grooveWidget->handleController(ccnumber, channel, value);
     globStoreWidget->handleController(ccnumber, channel, value);
 
@@ -756,6 +763,13 @@ void Engine::learnController(int ccnumber, int channel)
         return;
         }
 
+    if (midiLearnWindowID == -3) {
+        midiControl->requestAppendMidiCC(midiLearnID,
+                ccnumber, channel, 0, 127);
+        midiLearnFlag = false;
+        return;
+        }
+
     int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
 
     if (midiLearnWindowID == 1) {
@@ -772,6 +786,21 @@ void Engine::learnController(int ccnumber, int channel)
     }
 
     midiLearnFlag = false;
+}
+
+void Engine::handleController(int ccnumber, int channel, int value)
+{
+    if (!midiControl->ccList.count()) return;
+
+    MidiCC midiCC = midiControl->ccList.at(0);
+    int sval, min, max;
+
+    if ((ccnumber != midiCC.ccnumber) || (channel != midiCC.channel)) return;
+
+    min = midiCC.min;
+    max = midiCC.max;
+    sval = min + ((double)value * (max - min) / 127);
+    requestedTempo = sval;
 }
 
 void Engine::resetTicks(int curtick)
@@ -975,6 +1004,7 @@ void Engine::updateDisplay()
 
     globStoreWidget->updateDisplay();
     grooveWidget->updateDisplay();
+    midiControl->update();
 
     if ((sendLogEvents) && (logEventCount)) {
         for (l1 = 0; l1 < logEventCount; l1++) {

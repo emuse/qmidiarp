@@ -232,6 +232,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     tempoSpin->setToolTip(tr("Tempo of internal clock"));
     connect(tempoSpin, SIGNAL(valueChanged(int)), this,
             SLOT(updateTempo(int)));
+    engine->midiControl->addMidiLearnMenu("Tempo", tempoSpin, 0);
 
     midiClockAction = new QAction(QIcon(midiclock_xpm),
             tr("&Use incoming MIDI Clock"), this);
@@ -854,6 +855,8 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
         }
         else if (xml.isStartElement() && (xml.name() == "groove"))
             grooveWidget->readData(xml);
+        else if (xml.isStartElement() && (xml.name() == "midiControllers"))
+            engine->midiControl->readData(xml);
         else skipXmlElement(xml);
     }
     passWidget->setModified(false);
@@ -977,6 +980,7 @@ bool MainWindow::saveFile()
         xml.writeEndElement();
 
         grooveWidget->writeData(xml);
+        engine->midiControl->writeData(xml);
 
     xml.writeEndElement();
 

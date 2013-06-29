@@ -34,6 +34,7 @@
 #include "arpwidget.h"
 #include "midilfo.h"
 #include "lfowidget.h"
+#include "midicontrol.h"
 #include "midiseq.h"
 #include "seqwidget.h"
 #include "groovewidget.h"
@@ -130,6 +131,7 @@ class Engine : public QThread  {
     GrooveWidget *grooveWidget;
     JackDriver *jackSync;
     DriverBase *driver;
+    MidiControl *midiControl;
 
   public:
     Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget* parent=0);
@@ -214,6 +216,7 @@ class Engine : public QThread  {
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void sendController(int ccnumber, int channel, int value);
     void learnController(int ccnumber, int channel);
+    void handleController(int ccnumber, int channel, int value);
 /**
  * @brief Slot for MidiControl::setMidiLearn(). Sets Engine into MIDI Learn status for
  * moduleID and controlID.

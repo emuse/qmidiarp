@@ -79,7 +79,7 @@ class MidiControl : public QWidget
     MidiCC pendingCC;
 
   public:
-    MidiControl(QWidget *parent);
+    MidiControl(QWidget *parent = 0);
     ~MidiControl();
     QStringList names;      /**< Contains a list of convenient names
                                     of controllable widgets */
