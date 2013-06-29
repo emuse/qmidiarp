@@ -283,15 +283,12 @@ void qmidiarp_arp_lv2::updateParams()
         // decode from float into four pattern characters and append them
         QString newpattern;
         uint32_t n;
-        unsigned char c[4];
+        unsigned char c;
         for (int l1 = 0; l1 < 16; l1++) {
             n = *val[l1 + WAVEIN1 - 2] * 8192;
-            c[0] = (n >> 24) & 0xff;
-            c[1] = (n >> 16) & 0xff;
-            c[2] = (n >> 8) & 0xff;
-            c[3] = n & 0xff;
             for (int l2 = 0; l2 < 4; l2++) {
-                if (c[l2] != 0) newpattern.append(c[l2]);
+                c = (n >> (24 - (l2 * 8))) & 0xff;
+                if (c != 0) newpattern.append(c);
             }
         }
 
@@ -300,7 +297,6 @@ void qmidiarp_arp_lv2::updateParams()
         }
     }
     else {
-        qWarning("sending pattern to GUI");
         sendPattern(pattern);
     }
 
@@ -375,27 +371,31 @@ void qmidiarp_arp_lv2::sendPattern(const QString & p)
 {
     // encode into floats and send pattern to GUI via WAVEDATA ports
     *val[37] = 1.0;
+    if (patternSendTrials < 2) {
+        patternSendTrials++;
+        return;
+    }
 
     int l1, l2;
     int ix = 0;
     uint32_t n;
+    unsigned char c;
     for (l1 = 0; l1 < 16; l1++) {
         n = 0;
         for (l2 = 24; l2 > 0; l2-=8) {
-            if (ix >= p.count()) break;
-            n |= ( p.at(ix).cell() << l2 );
+            if (ix < p.count()) c = p.at(ix).cell(); else c = 0;
+            n |= ( c << l2 );
             ix++;
         }
         *val[l1 + WAVEDATA1 - 2] = (float)n / 8192. ;
     }
+
     patternSendTrials++;
-
-    if (patternSendTrials > 1) {
+    if (patternSendTrials > 3) {
         *val[37] = 0.0;
-        sendPatternFlag = false;
         patternSendTrials = 0;
+        sendPatternFlag = false;
     }
-
 }
 
 static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
@@ -422,11 +422,10 @@ static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
     std::string tmpString1 = value1;
-    qWarning("setting plugin pattern flag");
-    pPlugin->sendPatternFlag = true;
+
     pPlugin->advancePatternIndex(true);
     pPlugin->updatePattern(QString::fromStdString(tmpString1));
-    qWarning("restored pattern %s", qPrintable(pPlugin->pattern));
+    pPlugin->sendPatternFlag = true;
 
     return LV2_STATE_SUCCESS;
 }

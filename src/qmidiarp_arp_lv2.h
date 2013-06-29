@@ -138,7 +138,6 @@ public:
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
         bool sendPatternFlag;
-        int patternSendTrials;
 
 private:
 
@@ -147,6 +146,7 @@ private:
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
+        int patternSendTrials;
         double internalTempo;
         double sampleRate;
         double tempo;

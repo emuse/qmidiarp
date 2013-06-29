@@ -27,7 +27,6 @@
 #include "qmidiarp_arp_lv2.h"
 
 #include <unistd.h>
-#include <ctime>
 
 #ifndef COMPACT_STYLE
 #define COMPACT_STYLE "QLabel { font: 7pt; } \
@@ -171,9 +170,8 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                         repeatPatternThroughChord->setCurrentIndex(fValue);
                 break;
                 case 39:
-                        if ((bool)fValue != receivePatternFlag) {
-                            qWarning("setting receive flag in GUI %d", (int)fValue);
-                            receivePatternFlag = (bool)fValue;
+                        if ((int)fValue != receivePatternFlag) {
+                            receivePatternFlag = (int)fValue;
                         }
                 break;
                 case 40:
@@ -205,7 +203,6 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
 void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
 {
     if (p_pattern.count() > 64) return;
-
 
     QChar c;
     QString pattern = p_pattern;
@@ -323,9 +320,10 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
 
 void qmidiarp_arpwidget_lv2::receivePattern(int port_index, float fValue)
 {
+    if (!receivePatternFlag) return;
+
     int l1 = port_index - 10;
     if (!l1) newPattern.fill(QChar(0), 64);
-
     uint32_t n;
     unsigned char c;
     n = (uint32_t)(fValue*8192.);

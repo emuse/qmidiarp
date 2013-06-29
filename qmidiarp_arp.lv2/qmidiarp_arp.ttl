@@ -166,12 +166,12 @@
         lv2:index 39 ;
         lv2:symbol "RPATTERNFLAG" ;
         lv2:name "Receive Pattern Flag" ;
-        lv2:portProperty lv2:toggled ;
+        lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
     ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
+        a lv2:InputPort, lv2:ControlPort ;
         lv2:index 40 ;
         lv2:symbol "DEFER" ;
         lv2:name "Defer mute" ;
@@ -180,7 +180,7 @@
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
     ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
+        a lv2:InputPort, lv2:ControlPort ;
         lv2:index 41 ;
         lv2:symbol "SPARE2" ;
         lv2:name "" ;
@@ -553,4 +553,12 @@
 <https://git.code.sf.net/p/qmidiarp/arp#ui>
     a lv2ui:Qt4UI ;
     lv2ui:binary <qmidiarp_arp.so> ;
+    lv2ui:portNotification [
+        lv2ui:plugin <https://git.code.sf.net/p/qmidiarp/arp> ;
+        lv2:symbol "RPATTERNFLAG" ;
+    ] ;
+    lv2ui:portNotification [
+        lv2ui:plugin <https://git.code.sf.net/p/qmidiarp/arp> ;
+        lv2:symbol "CURSOR_POS" ;
+    ]
     .
