@@ -796,7 +796,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
     int sval, min, max;
 
     if ((ccnumber != midiCC.ccnumber) || (channel != midiCC.channel)) return;
-
+    if ((driver->useJackSync) || (driver->useMidiClock)) return;
     min = midiCC.min;
     max = midiCC.max;
     sval = min + ((double)value * (max - min) / 127);
