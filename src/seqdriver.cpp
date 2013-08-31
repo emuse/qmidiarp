@@ -215,7 +215,7 @@ void SeqDriver::calcCurrentTick(double tmpTime) {
     }
     else if (useJackSync) {
         jPos = jackSync->getCurrentPos();
-        if (jPos.beats_per_minute > 0) requestedTempo = jPos.beats_per_minute;
+        if (jPos.beats_per_minute > 0.01) requestedTempo = jPos.beats_per_minute;
 
         m_current_tick = (uint64_t)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
                 / jPos.frame_rate / 60.
@@ -240,7 +240,7 @@ void SeqDriver::initTempo()
 {
     if (useJackSync) {
         jPos = jackSync->getCurrentPos();
-        if (jPos.beats_per_minute > 0)
+        if (jPos.beats_per_minute > 0.01)
             tempo = jPos.beats_per_minute;
         else
             tempo = internalTempo;

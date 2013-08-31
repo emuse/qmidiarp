@@ -464,17 +464,16 @@ void JackDriver::handleEchoes(int nframes)
 
     jackNFrames = nframes;
     if (useJackSync) {
-        if (currentPos.beats_per_minute > 0.01) {
         m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
             * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
-            if (currentPos.beats_per_minute != tempo) {
+            if ((currentPos.beats_per_minute != tempo)
+                    && (currentPos.beats_per_minute > 0.01))  {
                 tempoChangeJPosFrame = currentPos.frame;
                 setTempo(currentPos.beats_per_minute);
                 // inform engine via callback about the tempo change
                 tempoCb(tempo, cbContext);
                 requestedTempo = currentPos.beats_per_minute;
             }
-        }
     }
     else {
         m_current_tick =  (uint64_t)curJFrame * TPQN * tempo * nframes
