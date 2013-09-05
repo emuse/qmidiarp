@@ -713,7 +713,7 @@ void LfoWidget::updateRes(int val)
     midiWorker->updateResolution(lfoResValues[val]);
     midiWorker->getData(&data);
     screen->updateData(data);
-    midiWorker->newCustomOffset();
+    if (waveFormBoxIndex == 5) midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -724,7 +724,7 @@ void LfoWidget::updateSize(int val)
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateData(data);
-    midiWorker->newCustomOffset();
+    if (waveFormBoxIndex == 5) midiWorker->newCustomOffset();
     modified = true;
 }
 
