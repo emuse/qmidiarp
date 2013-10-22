@@ -515,19 +515,18 @@ bool MidiArp::advancePatternIndex(bool reset)
         patternIndex = 0;
         restartFlag = false;
         applyPendingParChanges();
-        if (reset) noteOfs = 0;
 
         switch (repeatPatternThroughChord) {
             case 1:
                 noteOfs++;
-                if (noteCount - 1 < patternMaxIndex + noteOfs) {
+                if ((noteCount - 1 < patternMaxIndex + noteOfs) || reset) {
                     noteOfs = 0;
                 }
                 break;
             case 2:
                 noteOfs--;
                 if ((noteCount -1 < patternMaxIndex) ||
-                    (noteOfs < patternMaxIndex)) {
+                    (noteOfs < patternMaxIndex) || reset) {
                     noteOfs = noteCount - 1;
                 }
                 break;
