@@ -143,6 +143,7 @@ MidiArp::MidiArp()
     latchBuffer.resize(64);
     latchBufferCount = 0;
     lastLatchTick = 0;
+    trigDelayTicks = 2;
 
     returnNote.resize(128);
     returnVelocity.resize(128);
@@ -184,17 +185,13 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         if (!getPressedNoteCount() || trigLegato) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
-            if (trigByKbd) {
-                initArpTick(tick);
-                // if we have been triggered, remove pending release notes
-                if (release_time > 0) {
-                    for (int l1 = 0; l1 < noteCount; l1++) {
-                        if (notes[noteBufPtr][3][l1])
-                            removeNote(&notes[noteBufPtr][0][l1], -1, 0);
-                            releaseNoteCount--;
-                    }
+            // if we have been triggered, remove pending release notes
+            if (trigByKbd && release_time > 0) {
+                for (int l1 = 0; l1 < noteCount; l1++) {
+                    if (notes[noteBufPtr][3][l1])
+                        removeNote(&notes[noteBufPtr][0][l1], -1, 0);
+                        releaseNoteCount--;
                 }
-
             }
         }
         // modify buffer that is not accessed by arpeggio output
@@ -219,8 +216,8 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         noteCount++;
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
-        if (trigByKbd && ((noteCount == 1) || trigLegato)) {
-            nextTick = tick + 2; //schedDelayTicks;
+        if ((trigByKbd && (getPressedNoteCount() == 1)) || trigLegato) {
+            initArpTick(tick + trigDelayTicks);
             gotKbdTrig = true;
         }
     }
@@ -338,8 +335,8 @@ void MidiArp::copyNoteBuffer()
     noteBufPtr++;
     noteBufPtr%=2;
 
-    for (int l3 = 0; l3 < 4; l3++) {
-        for (int l2 = 0; l2 < noteCount; l2++) {
+    for (int l2 = 0; l2 < noteCount; l2++) {
+        for (int l3 = 0; l3 < 4; l3++) {
             notes[newBufPtr][l3][l2] = notes[noteBufPtr][l3][l2];
         }
     }
@@ -518,7 +515,7 @@ bool MidiArp::advancePatternIndex(bool reset)
         patternIndex = 0;
         restartFlag = false;
         applyPendingParChanges();
-
+        if (reset) noteOfs = 0;
 
         switch (repeatPatternThroughChord) {
             case 1:

@@ -231,6 +231,7 @@ class MidiArp : public QWidget  {
     int randomTickAmp; /*!< Amplitude of timing randomization, set by ArpWidget */
     int randomVelocityAmp; /*!< Amplitude of velocity randomization, set by ArpWidget */
     int randomLengthAmp; /*!< Amplitude of length randomization, set by ArpWidget */
+    int trigDelayTicks; /*!< Ticks to wait for playing out notes after trigger in delayed trig mode */
 
     QString pattern; /*!< Holds the the arpeggio pattern text */
     int maxOctave;      /*!< Maximum octave shift found in the pattern */

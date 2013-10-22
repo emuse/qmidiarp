@@ -72,6 +72,7 @@ class JackDriver : public DriverBase
     uint64_t curJFrame;
     uint64_t tempoChangeJPosFrame;
     QVector<uint> echoTickQueue;
+    QVector<bool> echoTrigFlagQueue;
     QVector<MidiEvent> evQueue;
     QVector<uint> evTickQueue;
     QVector<uint> evPortQueue;
