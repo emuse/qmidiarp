@@ -378,7 +378,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             else {
                 gotCC = true;
 
-                switch(c.toAscii()) {
+                switch(c.toLatin1()) {
                     case '(':
                         chordMode = true;
                         break;
@@ -657,7 +657,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
             if (c.digitValue() > patternMaxIndex)
                 patternMaxIndex = c.digitValue();
         }
-        switch(c.toAscii()) {
+        switch(c.toLatin1()) {
             case '(':
                 chordmd = true;
                 chordindex = 0;

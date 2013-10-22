@@ -355,7 +355,7 @@ bool JackDriver::jack_session_event()
     cmd += " --portCount "+QString::number(portCount);
     emit jsEvent(0);
 
-    jsEv->command_line = strdup(cmd.toAscii());
+    jsEv->command_line = strdup(cmd.toLatin1());
 
     jack_session_reply(jack_handle, jsEv);
 

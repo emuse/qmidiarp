@@ -182,7 +182,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
         }
         else
         {
-            switch (c.toAscii())
+            switch (c.toLatin1())
             {
                 case '(':
                     chordmd = true;
