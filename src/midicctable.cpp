@@ -74,6 +74,17 @@ void MidiCCTable::getCurrentControls()
 
     midiCCTable->clear();
 
+    ccList = engine->midiControl->ccList;
+
+    for (l2 = 0; l2 < engine->midiControl->ccList.count(); l2++) {
+
+        midiCCTable->setVerticalHeaderItem(nrows,
+                new QTableWidgetItem("Engine"));
+
+        fillControlRow(nrows, ccList.at(l2), -1);
+        nrows++;
+    }
+
     ccList = engine->globStoreWidget->midiControl->ccList;
 
     for (l2 = 0; l2 < engine->globStoreWidget->midiControl->ccList.count(); l2++) {
@@ -170,6 +181,7 @@ void MidiCCTable::apply()
     int l1;
     QChar moduleType;
 
+    engine->midiControl->ccList.clear();
     engine->globStoreWidget->midiControl->ccList.clear();
     engine->grooveWidget->midiControl->ccList.clear();
 
@@ -190,6 +202,10 @@ void MidiCCTable::apply()
         moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
 
         switch (moduleType.toLatin1()) {
+            case 'E':
+                    engine->midiControl
+                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
+            break;
             case 'P':
                     engine->globStoreWidget->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
@@ -228,9 +244,13 @@ void MidiCCTable::closeEvent(QCloseEvent *e)
 void MidiCCTable::itemChanged(QTableWidgetItem *item)
 {
     int test, row, comp;
+    QChar moduleType;
 
     row = midiCCTable->currentRow();
+    if (row < 0) return;
+
     test = item->text().toInt();
+    moduleType = midiCCTable->verticalHeaderItem(row)->text().at(0);
 
     switch (midiCCTable->currentColumn()) {
         case 1: // CC Number
@@ -244,11 +264,21 @@ void MidiCCTable::itemChanged(QTableWidgetItem *item)
         case 3: // min
                     comp = midiCCTable->item(row, 4)->text().toInt();
                     if (test > comp) item->setText(QString::number(comp));
-                    if (test < 1) item->setText("0");
+                    if (moduleType == 'E') {
+                        if (test < 11) item->setText("10");
+                    }
+                    else {
+                        if (test < 1) item->setText("0");
+                    }
         break;
         case 4: // max
                     comp = midiCCTable->item(row, 3)->text().toInt();
-                    if (test > 127) item->setText("127");
+                    if (moduleType == 'E') {
+                        if (test > 400) item->setText("400");
+                    }
+                    else {
+                        if (test > 127) item->setText("127");
+                    }
                     if (test < comp) item->setText(QString::number(comp));
         break;
         default:

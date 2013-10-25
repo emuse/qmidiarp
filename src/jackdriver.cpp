@@ -45,6 +45,7 @@ JackDriver::JackDriver(
     forwardUnmatched = false;
     useJackSync = false;
     echoTickQueue.resize(JQ_BUFSZ);
+    echoTrigFlagQueue.resize(JQ_BUFSZ);
     evQueue.resize(JQ_BUFSZ);
     evTickQueue.resize(JQ_BUFSZ);
     evPortQueue.resize(JQ_BUFSZ);
@@ -354,7 +355,7 @@ bool JackDriver::jack_session_event()
     cmd += " --portCount "+QString::number(portCount);
     emit jsEvent(0);
 
-    jsEv->command_line = strdup(cmd.toAscii());
+    jsEv->command_line = strdup(cmd.toLatin1());
 
     jack_session_reply(jack_handle, jsEv);
 
@@ -449,9 +450,9 @@ bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
     }
     if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
     echoTickQueue.replace(echoPtr, echo_tick);
+    echoTrigFlagQueue.replace(echoPtr, echo_from_trig);
     echoPtr++;
     lastSchedTick = echo_tick;
-    if (echo_from_trig) tick_callback(true);
 
     return true;
 
@@ -464,17 +465,16 @@ void JackDriver::handleEchoes(int nframes)
 
     jackNFrames = nframes;
     if (useJackSync) {
-        if (currentPos.beats_per_minute > 0.01) {
         m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
             * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
-            if (currentPos.beats_per_minute != tempo) {
+            if ((currentPos.beats_per_minute != tempo)
+                    && (currentPos.beats_per_minute > 0.01))  {
                 tempoChangeJPosFrame = currentPos.frame;
                 setTempo(currentPos.beats_per_minute);
                 // inform engine via callback about the tempo change
                 tempoCb(tempo, cbContext);
                 requestedTempo = currentPos.beats_per_minute;
             }
-        }
     }
     else {
         m_current_tick =  (uint64_t)curJFrame * TPQN * tempo * nframes
@@ -499,11 +499,12 @@ void JackDriver::handleEchoes(int nframes)
         }
     }
     if (m_current_tick >= echoTickQueue.at(idx)) {
+        tick_callback(echoTrigFlagQueue.at(idx));
         for (uint l4 = idx ; l4 < (echoPtr - 1); l4++) {
             echoTickQueue.replace(l4, echoTickQueue.at(l4 + 1));
+            echoTrigFlagQueue.replace(l4, echoTrigFlagQueue.at(l4 + 1));
         }
         echoPtr--;
-        tick_callback(false);
     }
 }
 

@@ -67,7 +67,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="218"/>
         <source>Defer mute to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozdržet ztlumení až na konec vzoru</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="237"/>
@@ -115,7 +115,7 @@
   t = g  Půltón nahoru/nastavit znovu/dolů
  &lt; . &gt; Tempo nahoru/běžná hodnota/dolů
  d h Délka noty nahoru/dolů
- / \ Rychlost nahoru/dolů
+ / \ Dynamika nahoru/dolů
  p Přestávka</translation>
     </message>
     <message>
@@ -173,7 +173,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="321"/>
         <source>Vel&amp;ocity</source>
-        <translation>&amp;Rychlost</translation>
+        <translation>&amp;Dynamika</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="326"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../arpwidget.cpp" line="81"/>
         <source>&amp;Velocity</source>
-        <translation>&amp;Rychlost</translation>
+        <translation>&amp;Dynamika</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="132"/>
@@ -290,7 +290,7 @@
     <message>
         <location filename="../groovewidget.cpp" line="55"/>
         <source>&amp;Velocity</source>
-        <translation>&amp;Rychlost</translation>
+        <translation>&amp;Dynamika</translation>
     </message>
     <message>
         <location filename="../groovewidget.cpp" line="61"/>
@@ -456,7 +456,7 @@ Kolečko myši: změna posunu</translation>
     <message>
         <location filename="../lfowidget.cpp" line="296"/>
         <source>Defer mute to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozdržet ztlumení až na konec vzoru</translation>
     </message>
     <message>
         <location filename="../lfowidget.cpp" line="304"/>
@@ -1045,7 +1045,7 @@ zavoláním qmidiarp -a</translation>
     <message>
         <location filename="../parstore.cpp" line="137"/>
         <source>&amp;Act on pattern only</source>
-        <translation type="unfinished"></translation>
+        <translation>Řídit se pouze vzorem</translation>
     </message>
     <message>
         <location filename="../parstore.cpp" line="143"/>
@@ -1209,7 +1209,7 @@ zavoláním qmidiarp -a</translation>
     <message>
         <location filename="../seqwidget.cpp" line="298"/>
         <source>Veloc&amp;ity</source>
-        <translation>&amp;Rychlost</translation>
+        <translation>&amp;Dynamika</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="305"/>
@@ -1219,7 +1219,7 @@ zavoláním qmidiarp -a</translation>
     <message>
         <location filename="../seqwidget.cpp" line="100"/>
         <source>&amp;Velocity</source>
-        <translation>&amp;Rychlost</translation>
+        <translation>&amp;Dynamika</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="54"/>
@@ -1274,7 +1274,7 @@ zavoláním qmidiarp -a</translation>
     <message>
         <location filename="../seqwidget.cpp" line="104"/>
         <source>Set sequence velocity to that of incoming notes</source>
-        <translation>Nastavit rychlost sekvence na rychlost příchozích not</translation>
+        <translation>Nastavit dynamiku sekvence na dynamiku příchozích not</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="118"/>
@@ -1299,7 +1299,7 @@ zavoláním qmidiarp -a</translation>
     <message>
         <location filename="../seqwidget.cpp" line="236"/>
         <source>Defer mute, velocity, note length and transpose to pattern end</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozdržet ztlumení, dynamiku, délku noty a transpozici až na konec vzoru</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="250"/>

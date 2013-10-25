@@ -28,7 +28,10 @@
 #include <QLabel>
 #include <QMessageBox>
 
+#include "midilfo.h"
 #include "lfowidget.h"
+#include "slider.h"
+#include "lfoscreen.h"
 
 #include "pixmaps/lfowsine.xpm"
 #include "pixmaps/lfowsawup.xpm"
@@ -712,7 +715,7 @@ void LfoWidget::updateRes(int val)
     if (midiWorker) midiWorker->updateResolution(lfoResValues[val]);
     if (midiWorker) midiWorker->getData(&data);
     screen->updateData(data);
-    if (midiWorker) midiWorker->newCustomOffset();
+    if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -723,7 +726,7 @@ void LfoWidget::updateSize(int val)
     if (midiWorker) midiWorker->updateSize(sizeBox->currentText().toInt());
     if (midiWorker) midiWorker->getData(&data);
     screen->updateData(data);
-    if (midiWorker) midiWorker->newCustomOffset();
+    if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
     modified = true;
 }
 

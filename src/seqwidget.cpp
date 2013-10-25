@@ -883,7 +883,7 @@ void SeqWidget::storeParams(int ix, bool empty)
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
-    parStore->temp.notelen = notelength->value();
+    parStore->temp.notelen = notelength->value() * 2;
     parStore->temp.transp = transpose->value();
     parStore->temp.vel = velocity->value();
     parStore->temp.dispVertical = dispVertical;

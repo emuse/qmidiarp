@@ -1,4 +1,19 @@
-qmidiarp-0.5.2 (2013-05-??)
+qmidiarp-0.5.3 (2013-11-??)
+
+Improvements
+  o NSM support now handles import/export/clear to facilitate
+    getting started (Roy Vegard Ovesen)
+  o Tempo is now MIDI-controllable (MIDI-learn)
+
+Fixed Bugs
+  o LFO offset jumped back to fixed value when MIDI controlled (ticket #6)
+  o Notelength in Seq module was not correctly stored in global storage
+  o Arp trigger behavior was not practical with chords pressed on keyboard
+  o JACK Transport no longer worked when no JT Master was present
+  o Deleting an arp pattern in text window while running caused crash
+
+
+qmidiarp-0.5.2 (2013-05-09)
 
 New Features
   o Tempo changes are again possible while running, both manually or by
