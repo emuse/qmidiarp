@@ -192,6 +192,14 @@ void MidiSeq::advancePatternIndex()
     int pivot = abs(loopMarker);
     reflect = pingpong;
 
+    if (curLoopMode == 6) {
+        if (pivot)
+            currentIndex = rand() % pivot;
+        else
+            currentIndex = rand() % npoints;
+        return;
+    }
+
     if (reverse) {
         if (!pivot) pivot = npoints;
         if (currentIndex == pivot - 1) applyPendingParChanges();

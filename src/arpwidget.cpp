@@ -225,7 +225,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
     repeatPatternThroughChord = new QComboBox(patternBox);
     QStringList repeatPatternNames;
-    repeatPatternNames << tr("Static") << tr("Up") << tr("Down");
+    repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Random");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
     connect(repeatPatternThroughChord, SIGNAL(currentIndexChanged(int)), this,

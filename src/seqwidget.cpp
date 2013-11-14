@@ -244,7 +244,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     loopBox = new QComboBox(seqBox);
     QStringList names;
     names.clear();
-    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-";
+    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-" << "RANDM";
     loopBox->insertItems(0, names);
     loopBox->setCurrentIndex(0);
     loopBox->setToolTip(tr("Loop, bounce or play once going forward or backward"));
@@ -732,7 +732,7 @@ void SeqWidget::updateSize(int val)
 
 void SeqWidget::updateLoop(int val)
 {
-    if (val > 5) return;
+    if (val > 6) return;
     midiWorker->updateLoop(val);
     modified = true;
 }
