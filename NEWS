@@ -8,9 +8,9 @@ Improvements
   o NSM support now handles import/export/clear to facilitate
     getting started (Roy Vegard Ovesen)
   o Tempo is now MIDI-controllable (MIDI-learn)
-  o Seqeuncer transpose slider is now MIDI controllable (MIDI-learn)
+  o Sequencer transpose slider is now MIDI controllable (MIDI-learn)
     (feature request #7)
-  o Seqeuncer pattern maximum length extended to 32 bars
+  o Sequencer pattern maximum length extended to 32 bars
     (feature request #6)
 
 Fixed Bugs
@@ -22,7 +22,8 @@ Fixed Bugs
     (bug #5 Barney Holmes)
   o Deleting an arp pattern in text window while running caused crash
   o Note lengths were not consistent between alsa and jack backends
-  o Note lengths did not account for current tempo.
+  o Note lengths did not account for current tempo
+  o Sequencer did not honor "D" button when MIDI controlled
   o Seq note length is now a 16th at half slider scale
 
 

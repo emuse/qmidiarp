@@ -1031,12 +1031,12 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->vel = sval;
+                        midiWorker->updateVelocity(sval);
                 break;
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->notelength = sliderToTickLen(sval);
+                        midiWorker->updateNoteLength(sliderToTickLen(sval));
                 break;
 
                 case 3: if (min == max) {
@@ -1081,7 +1081,7 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 8:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->transp = sval - 24;
+                        midiWorker->updateTranspose(sval - 24);
                 break;
 
                 default:
