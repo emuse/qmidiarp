@@ -391,6 +391,7 @@ void MidiSeq::resizeAll()
     }
 
     if (!loopMarker) nPoints = npoints;
+    if (abs(loopMarker) >= npoints) loopMarker = 0;
     dataChanged = true;
 }
 
