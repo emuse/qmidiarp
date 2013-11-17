@@ -436,7 +436,7 @@ void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsig
     if ((ev.type == EV_NOTEON) && (ev.value)) {
         ev.value = 0;
         evQueue.replace(bufPtr,ev);
-        evTickQueue.replace(bufPtr,n_tick + duration / 4);
+        evTickQueue.replace(bufPtr,n_tick + (duration / 4));
         evPortQueue.replace(bufPtr,outport);
         bufPtr++;
     }

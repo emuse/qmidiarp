@@ -431,7 +431,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("velocity", QString::number(
                 midiWorker->vel));
             xml.writeTextElement("noteLength", QString::number(
-                midiWorker->notelength));
+                tickLenToSlider(midiWorker->notelength)));
             xml.writeTextElement("transp", QString::number(
                 midiWorker->transp));
         xml.writeEndElement();
@@ -560,7 +560,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     updateVelocity(tmp);
                 }
                 else if (xml.name() == "noteLength") {
-                    notelength->setValue(xml.readElementText().toInt() / 2);
+                    notelength->setValue(xml.readElementText().toInt());
                 }
                 else if (xml.name() == "transp") {
                     tmp = xml.readElementText().toInt();
@@ -686,7 +686,7 @@ void SeqWidget::updateTrigLegato(bool on)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    midiWorker->updateNoteLength(val + val);
+    midiWorker->updateNoteLength(sliderToTickLen(val));
     modified = true;
 }
 
@@ -894,7 +894,7 @@ void SeqWidget::storeParams(int ix, bool empty)
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
-    parStore->temp.notelen = notelength->value() * 2;
+    parStore->temp.notelen = notelength->value();
     parStore->temp.transp = transpose->value();
     parStore->temp.vel = velocity->value();
     parStore->temp.dispVertical = dispVertical;
@@ -924,7 +924,7 @@ void SeqWidget::restoreParams(int ix)
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
     if (!parStore->onlyPatternList.at(ix)) {
-        midiWorker->notelength = parStore->list.at(ix).notelen;
+        midiWorker->notelength = sliderToTickLen(parStore->list.at(ix).notelen);
         midiWorker->transp = parStore->list.at(ix).transp;
         midiWorker->vel = parStore->list.at(ix).vel;
         setDispVert(parStore->list.at(ix).dispVertical);
@@ -1035,7 +1035,7 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->notelength = sval + sval;
+                        midiWorker->notelength = sliderToTickLen(sval);
                 break;
 
                 case 3: if (min == max) {
@@ -1108,7 +1108,7 @@ void SeqWidget::updateDisplay()
     if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
     transpose->setValue(midiWorker->transp);
-    notelength->setValue(midiWorker->notelength/2);
+    notelength->setValue(tickLenToSlider(midiWorker->notelength));
     velocity->setValue(midiWorker->vel);
     muteOutAction->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
