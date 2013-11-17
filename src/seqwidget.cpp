@@ -311,6 +311,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             tr("&Transpose"), seqBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
+    midiControl->addMidiLearnMenu("Transpose", transpose, 8);
 
 
     QGridLayout* sliderLayout = new QGridLayout;
@@ -1076,6 +1077,11 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                             parStore->restoreRunOnce = (parStore->jumpToList.at(sval) > -2);
                         }
                         else return;
+                break;
+
+                case 8:
+                        sval = min + ((double)value * (max - min) / 127);
+                        midiWorker->transp = sval - 24;
                 break;
 
                 default:
