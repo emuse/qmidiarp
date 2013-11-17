@@ -283,7 +283,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     sizeBox = new QComboBox(seqBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "16" << "32";
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
@@ -720,9 +720,9 @@ void SeqWidget::updateRes(int val)
 
 void SeqWidget::updateSize(int val)
 {
-    if (val > 7) return;
+    if (val > 9) return;
     sizeBoxIndex = val;
-    midiWorker->size = val + 1;
+    midiWorker->size = sizeBox->currentText().toInt();
     midiWorker->resizeAll();
     midiWorker->getData(&data);
     screen->setCurrentRecStep(midiWorker->currentRecStep);

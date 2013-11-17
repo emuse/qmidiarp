@@ -18,7 +18,8 @@ Fixed Bugs
     (bug #5 Barney Holmes)
   o Deleting an arp pattern in text window while running caused crash
   o Note lengths were not consistent between alsa and jack backends
-  o Note lengths did not account for current tempo
+  o Note lengths did not account for current tempo.
+  o Seq note length is now a 16th at half slider scale
 
 
 qmidiarp-0.5.2 (2013-05-09)
