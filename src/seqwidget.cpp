@@ -46,42 +46,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     manageBox = new ManageBox("Seq:", true, this);
 
-    // Display group box on right
-    QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
-
-    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
-    QLabel *dispLabel[4];
-    QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
-    QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
-    QGridLayout *dispBoxLayout = new QGridLayout;
-
-    for (int l1 = 0; l1 < 4; l1++) {
-        dispLabel[l1] = new QLabel(dispText[l1],dispBox);
-        dispVert[l1] = new QCheckBox(this);
-        connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-        dispSignalMapper->setMapping(dispVert[l1], l1);
-        dispVert[l1]->setAutoExclusive(true);
-        dispLabel[l1]->setBuddy(dispVert[l1]);
-        dispVert[l1]->setToolTip(dispToolTip[l1]);
-        dispBoxLayout->addWidget(dispLabel[l1], 0, l1);
-        dispBoxLayout->addWidget(dispVert[l1], 1, l1);
-    }
-
-    dispVert[0]->setChecked(true);
-    dispVertical = 0;
-    connect(dispSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(updateDispVert(int)));
-
-    QVBoxLayout* dispLayout = new QVBoxLayout;
-    dispLayout->addLayout(dispBoxLayout);
-
-    if (compactStyle) {
-        dispLayout->setSpacing(1);
-        dispLayout->setMargin(2);
-    }
-
-    dispBox->setLayout(dispLayout);
-
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
@@ -201,7 +165,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     inOutBoxLayout->addWidget(manageBox);
-    inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -293,6 +256,32 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             SLOT(updateSize(int)));
     midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 
+    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
+    QLabel *dispLabel[4];
+    QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
+    QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
+
+    QHBoxLayout *dispBoxLayout = new QHBoxLayout;
+
+    dispBoxLayout->addWidget(new QLabel(tr("Display")));
+    dispBoxLayout->addStretch(10);
+    for (int l1 = 0; l1 < 4; l1++) {
+        dispLabel[l1] = new QLabel(dispText[l1],this);
+        dispVert[l1] = new QCheckBox(this);
+        connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+        dispSignalMapper->setMapping(dispVert[l1], l1);
+        dispVert[l1]->setAutoExclusive(true);
+        dispLabel[l1]->setBuddy(dispVert[l1]);
+        dispVert[l1]->setToolTip(dispToolTip[l1]);
+        dispBoxLayout->addWidget(dispLabel[l1]);
+        dispBoxLayout->addWidget(dispVert[l1]);
+    }
+    dispBoxLayout->addStretch();
+
+    dispVert[0]->setChecked(true);
+    dispVertical = 0;
+    connect(dispSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(updateDispVert(int)));
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
@@ -315,9 +304,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
 
     QGridLayout* sliderLayout = new QGridLayout;
-    sliderLayout->addWidget(velocity, 1, 0);
-    sliderLayout->addWidget(notelength, 2, 0);
-    sliderLayout->addWidget(transpose, 3, 0);
+    sliderLayout->addLayout(dispBoxLayout, 1, 0);
+    sliderLayout->addWidget(velocity, 2, 0);
+    sliderLayout->addWidget(notelength, 3, 0);
+    sliderLayout->addWidget(transpose, 4, 0);
     sliderLayout->setRowStretch(4, 1);
     if (compactStyle) {
         sliderLayout->setSpacing(1);
