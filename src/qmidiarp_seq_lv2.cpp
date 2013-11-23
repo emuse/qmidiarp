@@ -334,9 +334,9 @@ void qmidiarp_seq_lv2::updateParams()
         updateResolution(seqResValues[(int)*val[2]]);
     }
 
-    if (size != 1+ (int)*val[3]) {
+    if (size != seqSizeValues[(int)*val[3]]) {
         changed = true;
-        updateSize(1 + (int)*val[3]);
+        updateResolution(seqSizeValues[(int)*val[3]]);
     }
 
     if (transpFromGui != (int)*val[4]) {

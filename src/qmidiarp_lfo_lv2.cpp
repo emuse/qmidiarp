@@ -60,6 +60,7 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     transportMode = false;
     transportSpeed = 1;
 
+
     LV2_URID_Map *urid_map;
 
     /* Scan host features for URID map */
@@ -309,10 +310,10 @@ void qmidiarp_lfo_lv2::updateParams()
         updateResolution(lfoResValues[(int)*val[2]]);
     }
 
-    if (size != 1+ (int)*val[3]) {
+    if (size != lfoSizeValues[(int)*val[3]]) {
         changed = true;
-        updateSize(1 + (int)*val[3]);
-    } // TODO: get correct size values
+        updateSize(lfoSizeValues[(int)*val[3]]);
+    }
 
     if (freq != lfoFreqValues[(int)*val[4]]) {
         changed = true;
