@@ -323,6 +323,8 @@ class SeqWidget : public QWidget
     int getLoopMarker() { return midiWorker->loopMarker; }
     int getNextTick() { return midiWorker->nextTick; }
     bool getReverse() { return midiWorker->reverse; }
+    int sliderToTickLen(int val) { return (val * TPQN / 64); }
+    int tickLenToSlider(int val) { return (val * 64 / TPQN); }
     void handleController(int ccnumber, int channel, int value);
 };
 

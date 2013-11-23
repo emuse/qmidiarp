@@ -274,7 +274,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     loopBox = new QComboBox(waveBox);
     names.clear();
-    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-";
+    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-" << "RANDM";
     loopBox->insertItems(0, names);
     loopBox->setCurrentIndex(0);
     loopBox->setToolTip(tr("Loop, bounce or play once going forward or backward"));
@@ -732,7 +732,7 @@ void LfoWidget::updateSize(int val)
 
 void LfoWidget::updateLoop(int val)
 {
-    if (val > 5) return;
+    if (val > 6) return;
     if (midiWorker) midiWorker->updateLoop(val);
     modified = true;
 }

@@ -46,42 +46,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     if (midiWorker) manageBox = new ManageBox("Seq:", true, this);
 
-    // Display group box on right
-    QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
-
-    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
-    QLabel *dispLabel[4];
-    QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
-    QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
-    QGridLayout *dispBoxLayout = new QGridLayout;
-
-    for (int l1 = 0; l1 < 4; l1++) {
-        dispLabel[l1] = new QLabel(dispText[l1],dispBox);
-        dispVert[l1] = new QCheckBox(this);
-        connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
-        dispSignalMapper->setMapping(dispVert[l1], l1);
-        dispVert[l1]->setAutoExclusive(true);
-        dispLabel[l1]->setBuddy(dispVert[l1]);
-        dispVert[l1]->setToolTip(dispToolTip[l1]);
-        dispBoxLayout->addWidget(dispLabel[l1], 0, l1);
-        dispBoxLayout->addWidget(dispVert[l1], 1, l1);
-    }
-
-    dispVert[0]->setChecked(true);
-    dispVertical = 0;
-    connect(dispSignalMapper, SIGNAL(mapped(int)),
-             this, SLOT(updateDispVert(int)));
-
-    QVBoxLayout* dispLayout = new QVBoxLayout;
-    dispLayout->addLayout(dispBoxLayout);
-
-    if (compactStyle) {
-        dispLayout->setSpacing(1);
-        dispLayout->setMargin(2);
-    }
-
-    dispBox->setLayout(dispLayout);
-
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
@@ -203,7 +167,6 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
     if (midiWorker) inOutBoxLayout->addWidget(manageBox);
-    inOutBoxLayout->addWidget(dispBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -244,7 +207,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     loopBox = new QComboBox(seqBox);
     QStringList names;
     names.clear();
-    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-";
+    names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-" << "RANDM";
     loopBox->insertItems(0, names);
     loopBox->setCurrentIndex(0);
     loopBox->setToolTip(tr("Loop, bounce or play once going forward or backward"));
@@ -283,7 +246,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     sizeBox = new QComboBox(seqBox);
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "16" << "32";
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
@@ -293,6 +256,32 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             SLOT(updateSize(int)));
     if (midiWorker) midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 
+    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
+    QLabel *dispLabel[4];
+    QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
+    QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
+
+    QHBoxLayout *dispBoxLayout = new QHBoxLayout;
+
+    dispBoxLayout->addWidget(new QLabel(tr("Display")));
+    dispBoxLayout->addStretch(10);
+    for (int l1 = 0; l1 < 4; l1++) {
+        dispLabel[l1] = new QLabel(dispText[l1],this);
+        dispVert[l1] = new QCheckBox(this);
+        connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
+        dispSignalMapper->setMapping(dispVert[l1], l1);
+        dispVert[l1]->setAutoExclusive(true);
+        dispLabel[l1]->setBuddy(dispVert[l1]);
+        dispVert[l1]->setToolTip(dispToolTip[l1]);
+        dispBoxLayout->addWidget(dispLabel[l1]);
+        dispBoxLayout->addWidget(dispVert[l1]);
+    }
+    dispBoxLayout->addStretch();
+
+    dispVert[0]->setChecked(true);
+    dispVertical = 0;
+    connect(dispSignalMapper, SIGNAL(mapped(int)),
+             this, SLOT(updateDispVert(int)));
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("Veloc&ity"), seqBox);
@@ -311,13 +300,15 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             tr("&Transpose"), seqBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
+    if (midiWorker) midiControl->addMidiLearnMenu("Transpose", transpose, 8);
 
 
     QGridLayout* sliderLayout = new QGridLayout;
-    sliderLayout->addWidget(velocity, 1, 0);
-    sliderLayout->addWidget(notelength, 2, 0);
-    sliderLayout->addWidget(transpose, 3, 0);
-    sliderLayout->setRowStretch(4, 1);
+    sliderLayout->addLayout(dispBoxLayout, 1, 0);
+    sliderLayout->addWidget(velocity, 2, 0);
+    sliderLayout->addWidget(notelength, 3, 0);
+    sliderLayout->addWidget(transpose, 4, 0);
+    sliderLayout->setRowStretch(5, 1);
     if (compactStyle) {
         sliderLayout->setSpacing(1);
         sliderLayout->setMargin(2);
@@ -564,7 +555,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     updateVelocity(tmp);
                 }
                 else if (xml.name() == "noteLength") {
-                    notelength->setValue(xml.readElementText().toInt() / 2);
+                    notelength->setValue(xml.readElementText().toInt());
                 }
                 else if (xml.name() == "transp") {
                     tmp = xml.readElementText().toInt();
@@ -690,7 +681,7 @@ void SeqWidget::updateTrigLegato(bool on)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    if (midiWorker) midiWorker->updateNoteLength(val + val);
+    if (midiWorker) midiWorker->updateNoteLength(val);
     modified = true;
 }
 
@@ -724,9 +715,9 @@ void SeqWidget::updateRes(int val)
 
 void SeqWidget::updateSize(int val)
 {
-    if (val > 7) return;
+    if (val > 9) return;
     sizeBoxIndex = val;
-    if (midiWorker) midiWorker->size = val + 1;
+    if (midiWorker) midiWorker->size = sizeBox->currentText().toInt();
     if (midiWorker) midiWorker->resizeAll();
     if (midiWorker) midiWorker->getData(&data);
     if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
@@ -736,7 +727,7 @@ void SeqWidget::updateSize(int val)
 
 void SeqWidget::updateLoop(int val)
 {
-    if (val > 5) return;
+    if (val > 6) return;
     if (midiWorker) midiWorker->updateLoop(val);
     modified = true;
 }
@@ -883,7 +874,7 @@ void SeqWidget::storeParams(int ix, bool empty)
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
-    parStore->temp.notelen = notelength->value() * 2;
+    parStore->temp.notelen = notelength->value();
     parStore->temp.transp = transpose->value();
     parStore->temp.vel = velocity->value();
     parStore->temp.dispVertical = dispVertical;
@@ -913,7 +904,7 @@ void SeqWidget::restoreParams(int ix)
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
     if (!parStore->onlyPatternList.at(ix)) {
-        midiWorker->notelength = parStore->list.at(ix).notelen;
+        midiWorker->notelength = sliderToTickLen(parStore->list.at(ix).notelen);
         midiWorker->transp = parStore->list.at(ix).transp;
         midiWorker->vel = parStore->list.at(ix).vel;
         setDispVert(parStore->list.at(ix).dispVertical);
@@ -1019,12 +1010,12 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->vel = sval;
+                        midiWorker->updateVelocity(sval);
                 break;
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->notelength = sval + sval;
+                        midiWorker->updateNoteLength(sliderToTickLen(sval));
                 break;
 
                 case 3: if (min == max) {
@@ -1067,6 +1058,11 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         else return;
                 break;
 
+                case 8:
+                        sval = min + ((double)value * (max - min) / 127);
+                        midiWorker->updateTranspose(sval - 24);
+                break;
+
                 default:
                 break;
             }
@@ -1097,7 +1093,7 @@ void SeqWidget::updateDisplay()
     if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
     transpose->setValue(midiWorker->transp);
-    notelength->setValue(midiWorker->notelength/2);
+    notelength->setValue(tickLenToSlider(midiWorker->notelength));
     velocity->setValue(midiWorker->vel);
     muteOutAction->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);

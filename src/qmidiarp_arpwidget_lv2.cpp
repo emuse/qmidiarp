@@ -73,7 +73,6 @@ qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
     connect(indexIn[1], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(rangeIn[0], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(rangeIn[1], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(triggerMode, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(channelOut, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(chIn, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
@@ -84,6 +83,9 @@ qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
 
     connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
 
     setStyleSheet(COMPACT_STYLE);
 
@@ -146,8 +148,10 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                         screen->setMuted(fValue);
                         screen->update();
                 break;
-                case 29: // these are the mouse ports (not in use with arp)
-                case 30:
+                case 29:
+                        enableTrigLegato->setChecked((bool)fValue);
+                break;
+                case 30: //spare
                 case 31:
                 case 32:
                 break;
@@ -164,7 +168,10 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                         rangeIn[1]->setValue(fValue);
                 break;
                 case 37:
-                        triggerMode->setCurrentIndex(fValue);
+                        enableRestartByKbd->setChecked((bool)fValue);
+                break;
+                case 41:
+                        enableTrigByKbd->setChecked((bool)fValue);
                 break;
                 case 38:
                         repeatPatternThroughChord->setCurrentIndex(fValue);
@@ -176,9 +183,6 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
                 break;
                 case 40:
                         deferChangesAction->setChecked((bool)fValue);
-                break;
-                case 41:
-                        //spare
                 break;
                 case 42: // metronome port
                 break;
@@ -346,6 +350,9 @@ void qmidiarp_arpwidget_lv2::mapBool(bool on)
     else if (deferChangesAction == sender()) updateParam(40, value);
     else if (latchModeAction == sender()) updateParam(41, value);
     else if (transportBox == sender()) updateParam(43, value);
+    else if (enableRestartByKbd == sender()) updateParam(35, value);
+    else if (enableTrigByKbd == sender()) updateParam(39, value);
+    else if (enableTrigLegato == sender()) updateParam(27, value);
 }
 
 void qmidiarp_arpwidget_lv2::mapParam(int value)
@@ -362,7 +369,6 @@ void qmidiarp_arpwidget_lv2::mapParam(int value)
     else if (indexIn[1] == sender()) updateParam(34, value);
     else if (rangeIn[0] == sender()) updateParam(35, value);
     else if (rangeIn[1] == sender()) updateParam(36, value);
-    else if (triggerMode == sender()) updateParam(37, value);
     else if (repeatPatternThroughChord == sender()) updateParam(38, value);
     else if (tempoSpin == sender()) updateParam(44, value);
 }

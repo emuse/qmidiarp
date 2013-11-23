@@ -268,7 +268,7 @@ void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, unsigned outport, uns
 
     ev.type = outEv.type;
     if (ev.type == EV_NOTEON) {
-        snd_seq_ev_set_note(&ev, 0, outEv.data, outEv.value, length);
+        snd_seq_ev_set_note(&ev, 0, outEv.data, outEv.value, length * 80 / tempo);
     }
     else if (ev.type == EV_CONTROLLER) {
         ev.data.control.param = outEv.data;

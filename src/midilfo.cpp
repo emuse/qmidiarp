@@ -175,29 +175,34 @@ void MidiLfo::getNextFrame(int tick)
     if ((!frameptr && !reverse)
         || (frameptr == npoints - l1 && reverse)) applyPendingParChanges();
 
-    if (reverse) {
-        frameptr-=l1;
-        if (frameptr < 0) {
-            if (!enableLoop) seqFinished = true;
-            frameptr = npoints - l1;
-            if (reflect  || !backward) {
-                reverse = false;
-                frameptr = 0;
-            }
-        }
+    if (curLoopMode == 6) {
+        frameptr = (rand() % npoints) / l1;
+        frameptr *= l1;
     }
     else {
-        frameptr+=l1;
-        if (frameptr >= npoints) {
-            if (!enableLoop) seqFinished = true;
-            frameptr = 0;
-            if (reflect || backward) {
-                reverse = true;
+        if (reverse) {
+            frameptr-=l1;
+            if (frameptr < 0) {
+                if (!enableLoop) seqFinished = true;
                 frameptr = npoints - l1;
+                if (reflect  || !backward) {
+                    reverse = false;
+                    frameptr = 0;
+                }
+            }
+        }
+        else {
+            frameptr+=l1;
+            if (frameptr >= npoints) {
+                if (!enableLoop) seqFinished = true;
+                frameptr = 0;
+                if (reflect || backward) {
+                    reverse = true;
+                    frameptr = npoints - l1;
+                }
             }
         }
     }
-
     int cur_grv_sft = 0.01 * (grooveTick * (step - 1));
     /* pairwise application of new groove shift */
     if (!(frameptr % 2)) {

@@ -531,6 +531,9 @@ bool MidiArp::advancePatternIndex(bool reset)
                     noteOfs = noteCount - 1;
                 }
                 break;
+            case 3:
+                if (noteCount) noteOfs = rand() % noteCount;
+                break;
             default:
                 noteOfs = 0;
         }

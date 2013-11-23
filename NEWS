@@ -1,16 +1,30 @@
 qmidiarp-0.5.3 (2013-11-??)
 
+New Features
+  o Random functions for sequencer and LFO steps and arp repeat mode
+    (feature request #5 Keith Milner)
+
 Improvements
   o NSM support now handles import/export/clear to facilitate
     getting started (Roy Vegard Ovesen)
   o Tempo is now MIDI-controllable (MIDI-learn)
+  o Sequencer transpose slider is now MIDI controllable (MIDI-learn)
+    (feature request #7)
+  o Sequencer pattern maximum length extended to 32 bars
+    (feature request #6)
 
 Fixed Bugs
-  o LFO offset jumped back to fixed value when MIDI controlled (ticket #6)
-  o Notelength in Seq module was not correctly stored in global storage
+  o LFO offset jumped back to fixed value when MIDI controlled
+    (bug #6 distrozapper)
   o Arp trigger behavior was not practical with chords pressed on keyboard
+    (bug #7 Burkhard Ritter)
   o JACK Transport no longer worked when no JT Master was present
+    (bug #5 Barney Holmes)
   o Deleting an arp pattern in text window while running caused crash
+  o Note lengths were not consistent between alsa and jack backends
+  o Note lengths did not account for current tempo
+  o Sequencer did not honor "D" button when MIDI controlled
+  o Seq note length is now a 16th at half slider scale
 
 
 qmidiarp-0.5.2 (2013-05-09)

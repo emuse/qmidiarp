@@ -142,15 +142,32 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 37 ;
-        lv2:symbol "TRIGGER_MODE" ;
-        lv2:name "Trigger Mode" ;
-        lv2:portProperty lv2:integer ;
-        lv2:scalePoint [ rdfs:label "No trigger"; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Kbd restart"; rdf:value 1 ] ;
-        lv2:scalePoint [ rdfs:label "Kbd trigger"; rdf:value 2 ] ;
-        lv2:scalePoint [ rdfs:label "Kbd restart legato"; rdf:value 3 ] ;
-        lv2:scalePoint [ rdfs:label "Kbd trigger legato"; rdf:value 4 ] ;
+        lv2:symbol "ENABLE_RESTARTBYKBD" ;
+        lv2:name "Restart" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
         lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 41 ;
+        lv2:symbol "ENABLE_TRIGBYKBD" ;
+        lv2:name "Trigger" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 29 ;
+        lv2:symbol "ENABLE_TRIGLEGATO" ;
+        lv2:name "Trigger Legato" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 38 ;
@@ -179,15 +196,6 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 1.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 41 ;
-        lv2:symbol "SPARE2" ;
-        lv2:name "" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 0.0 ;
     ] ;
     lv2:port [
         a lv2:OutputPort, lv2:ControlPort ;

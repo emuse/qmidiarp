@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     QString s;
 
     QTextStream out(stdout);
-
+    srand(getpid());
     while ((getopt_return = getopt_long(argc, argv, "vhajUp:", options,
                     &option_index)) >= 0) {
         switch(getopt_return) {

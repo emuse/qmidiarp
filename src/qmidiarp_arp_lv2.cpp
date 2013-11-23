@@ -329,9 +329,9 @@ void qmidiarp_arp_lv2::updateParams()
     rangeIn[0]   =   (int)*val[33];
     rangeIn[1]   =   (int)*val[34];
 
-    if (triggerMode != *val[35]) {
-        updateTriggerMode(*val[35]);
-    }
+    restartByKbd =  (bool)*val[35];
+    trigByKbd =     (bool)*val[39];
+    trigLegato =    (bool)*val[27];
 
     repeatPatternThroughChord = (int)*val[36];
     channelOut =      (int)*val[5];
