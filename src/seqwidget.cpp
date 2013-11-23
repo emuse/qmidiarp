@@ -905,9 +905,11 @@ void SeqWidget::restoreParams(int ix)
         midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
         midiWorker->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
     }
-    sizeBox->setCurrentIndex(parStore->list.at(ix).size);
+    sizeBoxIndex = parStore->list.at(ix).size;
+    sizeBox->setCurrentIndex(sizeBoxIndex);
     midiWorker->size = sizeBox->currentText().toInt();
-    midiWorker->res = seqResValues[parStore->list.at(ix).res];
+    resBoxIndex = parStore->list.at(ix).res;
+    midiWorker->res = seqResValues[resBoxIndex];
     midiWorker->resizeAll();
     midiWorker->setLoopMarker(parStore->list.at(ix).loopMarker);
     screen->setLoopMarker(parStore->list.at(ix).loopMarker);
