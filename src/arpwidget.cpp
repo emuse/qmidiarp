@@ -57,6 +57,24 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
 
+    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
+    enableRestartByKbd = new QCheckBox(this);
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
+    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
+    enableRestartByKbd->setToolTip(tr("Restart pattern when a new note is received"));
+
+    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
+    enableTrigByKbd = new QCheckBox(this);
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
+    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
+    enableTrigByKbd->setToolTip(tr("Retrigger pattern when a new note is received"));
+
+    QLabel *enableTrigLegatoLabel = new QLabel(tr("&Legato"),inBox);
+    enableTrigLegato = new QCheckBox(this);
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(updateTrigLegato(bool)));
+    enableTrigLegatoLabel->setBuddy(enableTrigLegato);
+    enableTrigLegato->setToolTip(tr("Retrigger / restart upon new legato note as well"));
+
     QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
     chIn = new QComboBox(inBox);
     for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
@@ -110,9 +128,15 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     inputFilterBox->setLayout(inputFilterBoxLayout);
 
     QGridLayout *inBoxLayout = new QGridLayout;
-    inBoxLayout->addWidget(chInLabel, 0, 0);
-    inBoxLayout->addWidget(chIn, 0, 1);
-    inBoxLayout->addWidget(inputFilterBox, 1, 0, 1, 2);
+    inBoxLayout->addWidget(enableRestartByKbdLabel, 0, 0);
+    inBoxLayout->addWidget(enableRestartByKbd, 0, 1);
+    inBoxLayout->addWidget(enableTrigByKbdLabel, 1, 0);
+    inBoxLayout->addWidget(enableTrigByKbd, 1, 1);
+    inBoxLayout->addWidget(enableTrigLegatoLabel, 2, 0);
+    inBoxLayout->addWidget(enableTrigLegato, 2, 1);
+    inBoxLayout->addWidget(chInLabel, 3, 0);
+    inBoxLayout->addWidget(chIn, 3, 1);
+    inBoxLayout->addWidget(inputFilterBox, 4, 0, 1, 2);
     if (compactStyle) {
         inBoxLayout->setMargin(2);
         inBoxLayout->setSpacing(1);
@@ -232,16 +256,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
 
-    triggerMode = new QComboBox(patternBox);
-    QStringList triggerModeNames;
-    triggerModeNames << tr("No trigger") << tr("Kbd restart") << tr("Kbd trigger")
-                        << tr("Kbd restart legato") << tr("Kbd trigger legato");
-    triggerMode->insertItems(0, triggerModeNames);
-    triggerMode->setToolTip(tr("Trigger Mode"));
-    connect(triggerMode, SIGNAL(currentIndexChanged(int)), this,
-            SLOT(updateTriggerMode(int)));
-    triggerMode->setCurrentIndex(0);
-
     latchModeButton = new QToolButton(this);
     latchModeAction = new QAction(QIcon(latchmodeon_xpm),
             tr("&Latch Mode"), this);
@@ -270,7 +284,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     modeLayout->addWidget(muteOut);
     modeLayout->addWidget(deferChangesButton);
     modeLayout->addWidget(repeatPatternThroughChord);
-    modeLayout->addWidget(triggerMode);
     modeLayout->addWidget(latchModeButton);
     modeLayout->addStretch(2);
 
@@ -449,8 +462,6 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
                 midiWorker->repeatPatternThroughChord));
-            xml.writeTextElement("triggerMode", QString::number(
-                triggerMode->currentIndex()));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));
         xml.writeEndElement();
@@ -466,6 +477,12 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->rangeIn[0]));
             xml.writeTextElement("rangeMax", QString::number(
                 midiWorker->rangeIn[1]));
+            xml.writeTextElement("restartByKbd", QString::number(
+                midiWorker->restartByKbd));
+            xml.writeTextElement("trigByKbd", QString::number(
+                midiWorker->trigByKbd));
+            xml.writeTextElement("trigLegato", QString::number(
+                midiWorker->trigLegato));
         xml.writeEndElement();
 
         xml.writeStartElement("output");
@@ -520,8 +537,6 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     patternText->setText(xml.readElementText());
                 else if (xml.name() == "repeatMode")
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
-                else if (xml.name() == "triggerMode")
-                    triggerMode->setCurrentIndex(xml.readElementText().toInt());
                 else if (xml.name() == "latchMode")
                     latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -546,6 +561,12 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     rangeIn[0]->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "rangeMax")
                     rangeIn[1]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "restartByKbd")
+                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigByKbd")
+                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigLegato")
+                    enableTrigLegato->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
@@ -689,9 +710,21 @@ void ArpWidget::updateRepeatPattern(int val)
     modified = true;
 }
 
-void ArpWidget::updateTriggerMode(int val)
+void ArpWidget::updateEnableRestartByKbd(bool on)
 {
-    midiWorker->updateTriggerMode(val);
+    midiWorker->restartByKbd = on;
+    modified = true;
+}
+
+void ArpWidget::updateEnableTrigByKbd(bool on)
+{
+    midiWorker->trigByKbd = on;
+    modified = true;
+}
+
+void ArpWidget::updateTrigLegato(bool on)
+{
+    midiWorker->trigLegato = on;
     modified = true;
 }
 

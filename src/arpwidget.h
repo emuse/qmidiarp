@@ -69,7 +69,9 @@ class ArpWidget : public QWidget
     QLabel *rangeInLabel, *indexInLabel;
     QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
-    QComboBox *triggerMode;
+    QCheckBox *enableRestartByKbd;
+    QCheckBox *enableTrigByKbd;
+    QCheckBox *enableTrigLegato;
     QComboBox *patternPresetBox;
     QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
     QWidget *inOutBox;
@@ -193,7 +195,6 @@ class ArpWidget : public QWidget
     void checkIfInputFilterSet();
     void updateText(const QString& newtext);
     void updateRepeatPattern(int);
-    void updateTriggerMode(int);
     void selectPatternPreset(int);
     void updatePatternPresets(const QString& n, const QString& p, int index);
     void openTextEditWindow(bool on);
@@ -205,6 +206,9 @@ class ArpWidget : public QWidget
     void setInOutBoxVisible(bool on);
 
     void updateChIn(int value);
+    void updateEnableRestartByKbd(bool on);
+    void updateEnableTrigByKbd(bool on);
+    void updateTrigLegato(bool on);
     void updateIndexIn(int value);
     void updateRangeIn(int value);
 
