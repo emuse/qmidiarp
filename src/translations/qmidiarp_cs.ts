@@ -751,7 +751,7 @@ Kolečko myši: změna posunu</translation>
     <message>
         <location filename="../mainwindow.cpp" line="387"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyprázdnit</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="433"/>
@@ -832,7 +832,7 @@ Uložit změny?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="196"/>
         <source>Create new QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvořit nové sezení QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="201"/>
@@ -842,12 +842,12 @@ Uložit změny?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="206"/>
         <source>Save current QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit nynější sezení QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="213"/>
         <source>Save current QMidiArp session with new name</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit nynější sezení QMidiArp pod novým názvem</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="268"/>
@@ -873,27 +873,27 @@ Uložit změny?</translation>
     <message>
         <location filename="../mainwindow.cpp" line="388"/>
         <source>Clear QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyprázdnit sezení QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="389"/>
         <source>Import file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Zavést soubor...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="390"/>
         <source>Import QMidiArp file to NSM session</source>
-        <translation type="unfinished"></translation>
+        <translation>Zavést soubor QMidiArp do sezení NSM</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="391"/>
         <source>Export session...</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyvést sezení...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="392"/>
         <source>Export QMidiArp NSM session to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyvést sezení NSM QMidiArp do souboru</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="418"/>
