@@ -18,7 +18,7 @@ Fixed Bugs
     (bug #6 distrozapper)
   o Arp trigger behavior was not practical with chords pressed on keyboard
     (bug #7 Burkhard Ritter)
-  o JACK Transport no longer worked when no JT Master was present
+  o JACK Transport no longer worked when no JT Master tempo was present
     (bug #5 Barney Holmes)
   o Deleting an arp pattern in text window while running caused crash
   o Note lengths were not consistent between alsa and jack backends

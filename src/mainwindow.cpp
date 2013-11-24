@@ -193,24 +193,24 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 
     fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
     fileNewAction->setShortcut(QKeySequence(QKeySequence::New));
-    fileNewAction->setToolTip(tr("Create new arpeggiator file"));
+    fileNewAction->setToolTip(tr("Create new QMidiArp session"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
 
     fileOpenAction = new QAction(QIcon(fileopen_xpm), tr("&Open..."), this);
     fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
-    fileOpenAction->setToolTip(tr("Open arpeggiator file"));
+    fileOpenAction->setToolTip(tr("Open QMidiArp file"));
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
 
     fileSaveAction = new QAction(QIcon(filesave_xpm), tr("&Save"), this);
     fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));
-    fileSaveAction->setToolTip(tr("Save current arpeggiator file"));
+    fileSaveAction->setToolTip(tr("Save current QMidiArp session"));
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setDisabled(true);
 
     fileSaveAsAction = new QAction(QIcon(filesaveas_xpm), tr("Save &as..."),
             this);
     fileSaveAsAction->setToolTip(
-            tr("Save current arpeggiator file with new name"));
+            tr("Save current QMidiArp session with new name"));
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
     fileSaveAsAction->setDisabled(true);
 
@@ -385,11 +385,11 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     if (nsm && nsm_is_active(nsm))
     {
         fileNewAction->setText(tr("Clear"));
-        fileNewAction->setToolTip(tr("Clear arpeggiator"));
-        fileOpenAction->setText(tr("Import to session..."));
-        fileOpenAction->setToolTip(tr("Import arpeggiator file to session"));
-        fileSaveAsAction->setText(tr("Export from session..."));
-        fileSaveAsAction->setToolTip(tr("Export arpeggiator file from session"));
+        fileNewAction->setToolTip(tr("Clear QMidiArp session"));
+        fileOpenAction->setText(tr("Import file..."));
+        fileOpenAction->setToolTip(tr("Import QMidiArp file to NSM session"));
+        fileSaveAsAction->setText(tr("Export session..."));
+        fileSaveAsAction->setToolTip(tr("Export QMidiArp NSM session to file"));
         fileRecentlyOpenedFiles->setDisabled(true);
     }
 #endif
