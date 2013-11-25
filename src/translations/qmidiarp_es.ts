@@ -665,27 +665,27 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="388"/>
         <source>Clear QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Vaciar la sesión de QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="389"/>
         <source>Import file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar archivo...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="390"/>
         <source>Import QMidiArp file to NSM session</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar archivo de QMidiArp en la sesión NSM</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="391"/>
         <source>Export session...</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar sesión...</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="392"/>
         <source>Export QMidiArp NSM session to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar a archivo sesion QMidiArp NSM </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="751"/>
@@ -713,7 +713,7 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="196"/>
         <source>Create new QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear nueva sesión QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="201"/>
@@ -723,12 +723,12 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="206"/>
         <source>Save current QMidiArp session</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar sesión actual de QMidiArp</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="213"/>
         <source>Save current QMidiArp session with new name</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar sesión actual de QMidiArp bajo un nuevo nombre</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="217"/>
@@ -879,7 +879,7 @@ Rueda para cambiar desplazamiento</translation>
     <message>
         <location filename="../mainwindow.cpp" line="387"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Vaciar</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="418"/>
@@ -1178,7 +1178,7 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     <message>
         <location filename="../seqwidget.cpp" line="56"/>
         <source>Transpose the sequence following incoming notes</source>
-        <translation type="unfinished">Transponer la secuencia siguiendo las notas siguientes</translation>
+        <translation>Transponer la secuencia siguiendo las notas entrantes</translation>
     </message>
     <message>
         <location filename="../seqwidget.cpp" line="64"/>
