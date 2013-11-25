@@ -542,9 +542,10 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 
     if (clonefrom >= 0) {
         midiWorker->reverse = engine->lfoWidget(clonefrom)->getReverse();
-        midiWorker->setFramePtr(engine->lfoWidget(clonefrom)->getFramePtr());
-        midiWorker->nextTick = engine->lfoWidget(clonefrom)->getNextTick();
+        midiWorker->setNextTick(engine->lfoWidget(clonefrom)->getNextTick());
     }
+    else if (engine->lfoWidgetCount())
+        midiWorker->setNextTick(engine->lfoWidget(0)->getNextTick());
 
     engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
@@ -591,9 +592,10 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 
     if (clonefrom >= 0) {
         midiWorker->reverse = engine->seqWidget(clonefrom)->getReverse();
-        midiWorker->setCurrentIndex(engine->seqWidget(clonefrom)->getCurrentIndex());
-        midiWorker->nextTick = engine->seqWidget(clonefrom)->getNextTick();
+        midiWorker->setNextTick(engine->seqWidget(clonefrom)->getNextTick());
     }
+    else if (engine->seqWidgetCount())
+        midiWorker->setNextTick(engine->seqWidget(0)->getNextTick());
 
     engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
