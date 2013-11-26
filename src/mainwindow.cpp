@@ -767,7 +767,7 @@ void MainWindow::openFile(const QString& fn)
     QFile f(fn);
     if (!f.open(QIODevice::ReadOnly)) {
 #ifdef NSM
-        if (nsm_is_active(nsm)) {
+        if (nsm && nsm_is_active(nsm)) {
             filename = fn;
             //updateWindowTitle();
             return;
