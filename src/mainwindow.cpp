@@ -549,6 +549,8 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 
     engine->addMidiLfo(midiWorker);
     engine->addLfoWidget(moduleWidget);
+    engine->sendGroove();
+
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
@@ -599,6 +601,8 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 
     engine->addMidiSeq(midiWorker);
     engine->addSeqWidget(moduleWidget);
+    engine->sendGroove();
+
     count = engine->moduleWindowCount();
     moduleWidget->manageBox->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
