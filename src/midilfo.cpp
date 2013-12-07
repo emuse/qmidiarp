@@ -164,7 +164,7 @@ void MidiLfo::getNextFrame(int tick)
         frame.replace(l1, sample);
         lt+=step;
         l1++;
-    } while ((l1 < frameSize) & (l1 < npoints));
+    } while ((l1 < frameSize) && (l1 < npoints));
 
 
     reflect = pingpong;
