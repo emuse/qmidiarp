@@ -120,77 +120,63 @@
         lv2:maximum 15.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 33 ;
+        lv2:index 17 ;
         lv2:symbol "ENABLE_NOTEIN" ;
         lv2:name "Enable Note" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 34 ;
+        lv2:index 18 ;
         lv2:symbol "ENABLE_VELIN" ;
         lv2:name "Enable Velocity" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 35 ;
+        lv2:index 19 ;
         lv2:symbol "ENABLE_NOTEOFF" ;
         lv2:name "Note Off" ;
         lv2:portProperty lv2:toggled ;
-        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 36 ;
+        lv2:index 20 ;
         lv2:symbol "ENABLE_RESTARTBYKBD" ;
         lv2:name "Restart" ;
         lv2:portProperty lv2:toggled ;
-        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 37 ;
+        lv2:index 21 ;
         lv2:symbol "ENABLE_TRIGBYKBD" ;
         lv2:name "Trigger" ;
         lv2:portProperty lv2:toggled ;
-        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 38 ;
+        lv2:index 22 ;
         lv2:symbol "ENABLE_TRIGLEGATO" ;
         lv2:name "Trigger Legato" ;
         lv2:portProperty lv2:toggled ;
-        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Enabled"; rdf:value 1 ] ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 39 ;
+        lv2:index 23 ;
         lv2:symbol "RECORD" ;
         lv2:name "Record" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 40 ;
+        lv2:index 24 ;
         lv2:symbol "DEFER" ;
         lv2:name "Defer mute" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
     ] , [
         a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 41 ;
+        lv2:index 25 ;
         lv2:symbol "CURR_RECSTEP" ;
         lv2:name "Current Recording Step" ;
         lv2:portProperty lv2:integer ;
@@ -207,154 +193,10 @@
         lv2:default 0 ;
         lv2:minimum 0 ;
         lv2:maximum 8192 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 10 ;
-        lv2:symbol "WAVEDATA1" ;
-        lv2:name "Wavedata1" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 11 ;
-        lv2:symbol "WAVEDATA2" ;
-        lv2:name "Wavedata2" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 12 ;
-        lv2:symbol "WAVEDATA3" ;
-        lv2:name "Wavedata3" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 13 ;
-        lv2:symbol "WAVEDATA4" ;
-        lv2:name "Wavedata4" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 14 ;
-        lv2:symbol "WAVEDATA5" ;
-        lv2:name "Wavedata5" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 15 ;
-        lv2:symbol "WAVEDATA6" ;
-        lv2:name "Wavedata6" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 16 ;
-        lv2:symbol "WAVEDATA7" ;
-        lv2:name "Wavedata7" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 17 ;
-        lv2:symbol "WAVEDATA8" ;
-        lv2:name "Wavedata8" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 18 ;
-        lv2:symbol "WAVEDATA9" ;
-        lv2:name "Wavedata9" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 19 ;
-        lv2:symbol "WAVEDATA10" ;
-        lv2:name "Wavedata10" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 20 ;
-        lv2:symbol "WAVEDATA11" ;
-        lv2:name "Wavedata11" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 21 ;
-        lv2:symbol "WAVEDATA12" ;
-        lv2:name "Wavedata12" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 22 ;
-        lv2:symbol "WAVEDATA13" ;
-        lv2:name "Wavedata13" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 23 ;
-        lv2:symbol "WAVEDATA14" ;
-        lv2:name "Wavedata14" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 24 ;
-        lv2:symbol "WAVEDATA15" ;
-        lv2:name "Wavedata15" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 25 ;
-        lv2:symbol "WAVEDATA16" ;
-        lv2:name "Wavedata16" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum -1048576 ;
-        lv2:maximum 1048576 ;
     ] ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 26 ;
+        lv2:index 10 ;
         lv2:symbol "LOOPMARKER" ;
         lv2:name "Loop Marker" ;
         lv2:portProperty lv2:integer ;
@@ -363,7 +205,7 @@
         lv2:maximum 256.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 27 ;
+        lv2:index 11 ;
         lv2:symbol "LOOPMODE" ;
         lv2:name "Loop Mode" ;
         lv2:portProperty lv2:integer ;
@@ -379,29 +221,23 @@
         lv2:maximum 6.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 28 ;
+        lv2:index 12 ;
         lv2:symbol "MUTE" ;
         lv2:name "Mute Output" ;
         lv2:portProperty lv2:toggled ;
-        lv2:scalePoint [ rdfs:label "     "; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Muted"; rdf:value 1 ] ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 43 ;
+        lv2:index 27 ;
         lv2:symbol "TRANSPORT_MODE" ;
         lv2:name "Transport Mode" ;
         lv2:portProperty lv2:toggled ;
         lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
         lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
         lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] , [
+   ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 44 ;
+        lv2:index 28 ;
         lv2:symbol "TEMPO" ;
         lv2:name "Internal Tempo" ;
         lv2:portProperty lv2:integer ;
@@ -411,7 +247,7 @@
     ] ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 29 ;
+        lv2:index 13 ;
         lv2:symbol "MOUSEX" ;
         lv2:name "Mouse X" ;
         lv2:default 0.0 ;
@@ -419,7 +255,7 @@
         lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 30 ;
+        lv2:index 14 ;
         lv2:symbol "MOUSEY" ;
         lv2:name "Mouse Y" ;
         lv2:default 0.0 ;
@@ -427,7 +263,7 @@
         lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 31 ;
+        lv2:index 15 ;
         lv2:symbol "MOUSEBUTTON" ;
         lv2:name "Mouse Button" ;
         lv2:portProperty lv2:integer ;
@@ -436,7 +272,7 @@
         lv2:maximum 2.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 32 ;
+        lv2:index 16 ;
         lv2:symbol "MOUSEPRESSED" ;
         lv2:name "Mouse was Pressed" ;
         lv2:portProperty lv2:integer ;
@@ -449,9 +285,30 @@
             atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports time:Position ;
-        lv2:index 42 ;
+        lv2:index 26 ;
         lv2:symbol "TRANSPORT_CONTROL" ;
         lv2:name "Transport Control" ;
+    ] ;
+    lv2:port [
+        a atom:AtomPort ,
+            lv2:InputPort ;
+        atom:bufferType atom:Sequence ;
+        lv2:designation lv2:control ;
+        lv2:index 29 ;
+        lv2:symbol "WAV_CONTROL" ;
+        lv2:name "Control" ;
+      rdfs:comment "GUI to plugin communication"
+    ] , [
+        a atom:AtomPort ,
+            lv2:OutputPort ;
+        atom:bufferType atom:Sequence ;
+        lv2:designation lv2:control ;
+        lv2:index 30 ;
+        lv2:symbol "WAV_NOTIFY" ;
+        lv2:name "Notify" ;
+        # 8192 * sizeof(int) + LV2-Atoms
+        rsz:minimumSize 33024;
+      rdfs:comment "Plugin to GUI communication"
     ] .
 <https://git.code.sf.net/p/qmidiarp/seq#ui>
     a lv2ui:Qt4UI ;

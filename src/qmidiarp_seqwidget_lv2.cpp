@@ -24,7 +24,6 @@
  */
 
 #include "qmidiarp_seqwidget_lv2.h"
-#include "qmidiarp_seq_lv2.h"
 
 #include <unistd.h>
 #include <ctime>
@@ -41,11 +40,35 @@
 
 qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
         LV2UI_Controller ct,
-        LV2UI_Write_Function write_function)
+        LV2UI_Write_Function write_function,
+        const LV2_Feature *const *host_features)
         : SeqWidget(NULL, NULL, 1, true, true, true, "SEQ-LV2", 0)
 {
     m_controller = ct;
     writeFunction = write_function;
+
+    /* Scan host features for URID map */
+
+    LV2_URID_Map *urid_map;
+    for (int i = 0; host_features[i]; ++i) {
+        if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
+            urid_map = (LV2_URID_Map *) host_features[i]->data;
+            if (urid_map) {
+                (void)urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
+                break;
+            }
+        }
+    }
+    if (!urid_map) {
+        qWarning("Host does not support urid:map.");
+        return;
+    }
+
+    lv2_atom_forge_init(&forge, urid_map);
+
+    /* Map URIS */
+    QMidiArpURIs* const uris = &m_uris;
+    map_uris(urid_map, uris);
 
 
     transportBox = new QCheckBox(this);
@@ -65,24 +88,24 @@ qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
     inOutBox->layout()->addWidget(transportBox);
     inOutBox->layout()->addWidget(tempoSpin);
 
-    connect(velocity, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(notelength, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(resBox, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(sizeBox, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(transpose, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(loopBox, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(channelOut, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(chIn, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(velocity,           SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(notelength,         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(resBox,             SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(sizeBox,            SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(transpose,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(loopBox,            SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(channelOut,         SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(chIn,               SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
 
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableNoteIn, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableVelIn, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(muteOutAction,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableNoteIn,       SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableVelIn,        SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableNoteOff,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigByKbd,    SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigLegato,   SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(recordAction,       SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
 
     connect(this, SIGNAL(mouseSig(double, double, int, int))
@@ -90,190 +113,219 @@ qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
 
     setStyleSheet(COMPACT_STYLE);
 
-    waveIndex = 0;
     res = 4;
     size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
-    startoff = true;
+    sendUIisUp(true);
+}
+
+qmidiarp_seqwidget_lv2::~qmidiarp_seqwidget_lv2()
+{
+    sendUIisUp(false);
 }
 
 void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
 
-    if (format == 0 && buffer_size == sizeof(float)) {
+    if ((format > 0) && (port_index == WAV_NOTIFY)) {
+        LV2_Atom* atom = (LV2_Atom*)buffer;
+        receiveWave(atom);
+    }
+    else if (format == 0 && buffer_size == sizeof(float)) {
 
-
-        float fValue = *(float *) buffer;
         res = resBox->currentText().toInt();
         size = sizeBox->currentText().toInt();
 
-        if ((port_index < 26) && port_index >= 10) {
-            receiveWavePoint(fValue);
-        }
-        else {
+        float fValue = *(float *) buffer;
 
-            switch (port_index) {
-                case 2:
-                        velocity->setValue(fValue);
-                break;
-                case 3:
-                        notelength->setValue(fValue);
-                break;
-                case 4:
-                        resBox->setCurrentIndex(fValue);
-                break;
-                case 5:
-                        sizeBox->setCurrentIndex(fValue);
-                break;
-                case 6:
-                        transpose->setValue(fValue);
-                break;
-                case 7:
-                        channelOut->setCurrentIndex(fValue);
-                break;
-                case 8:
-                        chIn->setCurrentIndex(fValue);
-                break;
-                case 9:
-                        cursor->updateNumbers(res, size);
-                        cursor->updatePosition(fValue);
-                        cursor->update();
-                break;
-                case 26:
-                        screen->setLoopMarker((bool)fValue);
-                        screen->update();
-                break;
-                case 27:
-                        loopBox->setCurrentIndex(fValue);
-                break;
-                case 28:
-                        muteOutAction->setChecked((bool)fValue);
-                        screen->setMuted(fValue);
-                        screen->update();
-                break;
-                case 29: // these are the mouse ports
-                case 30:
-                case 31:
-                case 32:
-                break;
-                case 33:
-                        enableNoteIn->setChecked((fValue > .5));
-                break;
-                case 34:
-                        enableVelIn->setChecked((fValue > .5));
-                break;
-                case 35:
-                        enableNoteOff->setChecked((fValue > .5));
-                break;
-                case 36:
-                        enableRestartByKbd->setChecked((bool)fValue);
-                break;
-                case 37:
-                        enableTrigByKbd->setChecked((bool)fValue);
-                break;
-                case 38:
-                        enableTrigLegato->setChecked((bool)fValue);
-                break;
-                case 39:
-                        recordAction->setChecked((bool)fValue);
-                break;
-                case 40:
-                        deferChangesAction->setChecked((bool)fValue);
-                break;
-                case 41:
-                        //record step has changed
-                        screen->setCurrentRecStep((int)fValue);
-                        screen->update();
-                break;
-                case 42: // metronome port
-                break;
-                case 43:
-                        transportBox->setChecked((bool)fValue);
-                break;
-                case 44:
-                        tempoSpin->setValue((int)fValue);
-                break;
-                default: // ports 10 to 25 are the 16 wave TX ports
-                break;
-            }
+        switch (port_index) {
+            case VELOCITY:
+                    velocity->setValue(fValue);
+            break;
+            case NOTELENGTH:
+                    notelength->setValue(fValue);
+            break;
+            case RESOLUTION:
+                    resBox->setCurrentIndex(fValue);
+            break;
+            case SIZE:
+                    sizeBox->setCurrentIndex(fValue);
+            break;
+            case TRANSPOSE:
+                    transpose->setValue(fValue);
+            break;
+            case CH_OUT:
+                    channelOut->setCurrentIndex(fValue);
+            break;
+            case CH_IN:
+                    chIn->setCurrentIndex(fValue);
+            break;
+            case CURSOR_POS:
+                    cursor->updateNumbers(res, size);
+                    cursor->updatePosition(fValue);
+                    cursor->update();
+            break;
+            case LOOPMARKER:
+                    screen->setLoopMarker((bool)fValue);
+                    screen->update();
+            break;
+            case LOOPMODE:
+                    loopBox->setCurrentIndex(fValue);
+            break;
+            case MUTE:
+                    muteOutAction->setChecked((bool)fValue);
+                    screen->setMuted(fValue);
+                    screen->update();
+            break;
+            case MOUSEX:
+            case MOUSEY:
+            case MOUSEBUTTON:
+            case MOUSEPRESSED:
+            break;
+            case ENABLE_NOTEIN:
+                    enableNoteIn->setChecked((fValue > .5));
+            break;
+            case ENABLE_VELIN:
+                    enableVelIn->setChecked((fValue > .5));
+            break;
+            case ENABLE_NOTEOFF:
+                    enableNoteOff->setChecked((fValue > .5));
+            break;
+            case ENABLE_RESTARTBYKBD:
+                    enableRestartByKbd->setChecked((bool)fValue);
+            break;
+            case ENABLE_TRIGBYKBD:
+                    enableTrigByKbd->setChecked((bool)fValue);
+            break;
+            case ENABLE_TRIGLEGATO:
+                    enableTrigLegato->setChecked((bool)fValue);
+            break;
+            case RECORD:
+                    recordAction->setChecked((bool)fValue);
+            break;
+            case DEFER:
+                    deferChangesAction->setChecked((bool)fValue);
+            break;
+            case CURR_RECSTEP:
+                    //record step has changed
+                    screen->setCurrentRecStep((int)fValue);
+                    screen->update();
+            break;
+            case TRANSPORT_CONTROL: // metronome port
+            break;
+            case TRANSPORT_MODE:
+                    transportBox->setChecked((bool)fValue);
+            break;
+            case TEMPO:
+                    tempoSpin->setValue((int)fValue);
+            break;
+            default:
+            break;
         }
     }
-    // this is a dirty way to provoke retransmission of wave data at
-    // ui start. Mouse button is set to -1 and reset to 0 when data has
-    // been received.
-    if (startoff) {
-    updateParam(31, -1);
 }
 
+void qmidiarp_seqwidget_lv2::sendUIisUp(bool on)
+{
+    const QMidiArpURIs* uris = &m_uris;
+    uint8_t obj_buf[64];
+    int state;
+
+    LV2_Atom_Forge_Frame frame;
+    lv2_atom_forge_frame_time(&forge, 0);
+
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, obj_buf, 16);
+
+    if (on) state = uris->ui_up; else state=uris->ui_down;
+
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, state);
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &frame);
+    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
-void qmidiarp_seqwidget_lv2::receiveWavePoint(float fValue)
+
+void qmidiarp_seqwidget_lv2::receiveWave(LV2_Atom* atom)
+{
+    QMidiArpURIs* const uris = &m_uris;
+    if (atom->type != uris->atom_Blank) return;
+
+    /* cast the buffer to Atom Object */
+    LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;
+    LV2_Atom *a0 = NULL;
+    lv2_atom_object_get(obj, uris->hex_customwave, &a0, NULL);
+    if (obj->body.otype != uris->hex_customwave) return;
+
+    /* handle wave' data vector */
+    LV2_Atom_Vector* vof = (LV2_Atom_Vector*)LV2_ATOM_BODY(a0);
+    /* check if atom is indeed a vector of the expected type*/
+    if (vof->atom.type != uris->atom_Int) return;
+
+    /* get number of elements in vector
+    * = (raw 8bit data-length - header-length) / sizeof(expected data type:int) */
+    const size_t n_elem = (a0->size - sizeof(LV2_Atom_Vector_Body)) / vof->atom.size;
+    /* typecast, dereference pointer to vector */
+    const int *recdata = (int*) LV2_ATOM_BODY(&vof->atom);
+    for (uint l1 = 0; l1 < n_elem; l1++) {
+        receiveWavePoint(l1, recdata[l1]);
+    }
+    if (n_elem < (uint)data.count()) data.resize(res * size + 1);
+    screen->updateData(data);
+    screen->update();
+}
+
+void qmidiarp_seqwidget_lv2::receiveWavePoint(int index, int value)
 {
     Sample sample;
-    if (fValue < 0) {
+    if (value < 0) {
         sample.muted = true;
-        fValue = -fValue;
+        value = -value;
     }
     else sample.muted = false;
-    waveIndex = (int)fValue  / 128;
-    sample.value = ((int)fValue) % 128;
-    sample.tick = waveIndex * TPQN / res;
-    if (waveIndex >= data.count()) data.append(sample);
-    else data.replace(waveIndex, sample);
-    if (data.count() > (res * size) + 1) {
-        data.resize(res * size);
-    }
-    if (data.count() == (res * size)) {
-        sample.value = -1;
-        sample.tick = size * TPQN;
-        data.append(sample);
-    }
-    if ((data.count() == ((res * size) + 1)) && (screen)) {
-        if (startoff) {
-            startoff = false;
-            updateParam(31, 0);
-        }
-        screen->updateData(data);
-        screen->update();
-    }
+    sample.value = value;
+    sample.tick = index * TPQN / res;
+    if (index >= data.count()) data.append(sample);
+    else data.replace(index, sample);
 }
 
 void qmidiarp_seqwidget_lv2::mapBool(bool on)
 {
     float value = (float)on;
-    if (muteOutAction == sender()) updateParam(28, value);
-    else if (enableNoteIn == sender()) updateParam(33, value);
-    else if (enableVelIn == sender()) updateParam(34, value);
-    else if (enableNoteOff == sender()) updateParam(35, value);
-    else if (enableRestartByKbd == sender()) updateParam(36, value);
-    else if (enableTrigByKbd == sender()) updateParam(37, value);
-    else if (enableTrigLegato == sender()) updateParam(38, value);
-    else if (recordAction == sender()) updateParam(39, value);
-    else if (deferChangesAction == sender()) updateParam(40, value);
-    else if (transportBox == sender()) updateParam(43, value);
+    if (muteOutAction == sender())              updateParam(MUTE, value);
+    else if (enableNoteIn == sender())          updateParam(ENABLE_NOTEIN, value);
+    else if (enableVelIn == sender())           updateParam(ENABLE_VELIN, value);
+    else if (enableNoteOff == sender())         updateParam(ENABLE_NOTEOFF, value);
+    else if (enableRestartByKbd == sender())    updateParam(ENABLE_RESTARTBYKBD, value);
+    else if (enableTrigByKbd == sender())       updateParam(ENABLE_TRIGBYKBD, value);
+    else if (enableTrigLegato == sender())      updateParam(ENABLE_TRIGLEGATO, value);
+    else if (recordAction == sender())          updateParam(RECORD, value);
+    else if (deferChangesAction == sender())    updateParam(DEFER, value);
+    else if (transportBox == sender())          updateParam(TRANSPORT_MODE, value);
 }
 
 void qmidiarp_seqwidget_lv2::mapMouse(double mouseX, double mouseY, int buttons, int pressed)
 {
-    updateParam(29, mouseX);
-    updateParam(30, mouseY);
-    updateParam(31, buttons);
-    updateParam(32, pressed); //mouseMoved or pressed
-    updateParam(26, screen->loopMarker);
+    updateParam(MOUSEX, mouseX);
+    updateParam(MOUSEY, mouseY);
+    updateParam(MOUSEBUTTON, buttons);
+    updateParam(MOUSEPRESSED, pressed); //mouseMoved or pressed
+    updateParam(LOOPMARKER, screen->loopMarker);
 }
 
 void qmidiarp_seqwidget_lv2::mapParam(int value)
 {
-    if (velocity == sender()) updateParam(2, value);
-    else if (notelength == sender()) updateParam(3, value);
-    else if (resBox == sender()) updateParam(4, value);
-    else if (sizeBox == sender()) updateParam(5, value);
-    else if (transpose == sender()) updateParam(6, value);
-    else if (channelOut == sender()) updateParam(7, value);
-    else if (chIn == sender()) updateParam(8, value);
-    else if (loopBox == sender()) updateParam(27, value);
-    else if (tempoSpin == sender()) updateParam(44, value);
+    if (velocity == sender())           updateParam(VELOCITY, value);
+    else if (notelength == sender())    updateParam(NOTELENGTH, value);
+    else if (resBox == sender())        updateParam(RESOLUTION, value);
+    else if (sizeBox == sender())       updateParam(SIZE, value);
+    else if (transpose == sender())     updateParam(TRANSPOSE, value);
+    else if (channelOut == sender())    updateParam(CH_OUT, value);
+    else if (chIn == sender())          updateParam(CH_IN, value);
+    else if (loopBox == sender())       updateParam(LOOPMODE, value);
+    else if (tempoSpin == sender())     updateParam(TEMPO, value);
 }
 
 void qmidiarp_seqwidget_lv2::updateParam(int index, float fValue) const

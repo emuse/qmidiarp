@@ -481,7 +481,6 @@ void MidiLfo::newCustomOffset()
         if (value < min) min = value;
     }
     cwmin = min;
-    offs = min;
 }
 
 void MidiLfo::updateCustomWaveOffset(int cwoffs)

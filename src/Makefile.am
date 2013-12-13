@@ -92,6 +92,7 @@ qmidiarp_lfo_la_SOURCES = \
 	indicator.cpp indicator.h \
 	lfowidget.cpp lfowidget.h \
 	lfoscreen.cpp lfoscreen.h \
+	lv2_common.h \
 	managebox.cpp managebox.h \
 	midicontrol.cpp midicontrol.h \
 	midilfo.cpp midilfo.h \
@@ -123,6 +124,7 @@ qmidiarp_seq_la_SOURCES = \
 	cursor.cpp cursor.h \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
+	lv2_common.h \
 	seqwidget.cpp seqwidget.h \
 	seqscreen.cpp seqscreen.h \
 	managebox.cpp managebox.h \
@@ -154,6 +156,7 @@ nodist_qmidiarp_arp_la_SOURCES = \
 qmidiarp_arp_la_SOURCES = \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
+	lv2_common.h \
 	arpwidget.cpp arpwidget.h \
 	arpscreen.cpp arpscreen.h \
 	managebox.cpp managebox.h \

@@ -54,13 +54,14 @@ qmidiarp_arp_lv2::qmidiarp_arp_lv2 (
     transportSpeed = 1;
 
     sendPatternFlag = false;
-    patternSendTrials = 0;
+    ui_up = false;
 
     bufPtr = 0;
     evQueue.resize(JQ_BUFSZ);
     evTickQueue.resize(JQ_BUFSZ);
 
     LV2_URID_Map *urid_map;
+
 
     /* Scan host features for URID map */
 
@@ -78,20 +79,11 @@ qmidiarp_arp_lv2::qmidiarp_arp_lv2 (
         return;
     }
 
+    lv2_atom_forge_init(&forge, urid_map);
+
     /* Map URIS */
     QMidiArpURIs* const uris = &m_uris;
-
-    uris->atom_Blank          = urid_map->map(urid_map->handle, LV2_ATOM__Blank);
-    uris->atom_Float          = urid_map->map(urid_map->handle, LV2_ATOM__Float);
-    uris->atom_Long           = urid_map->map(urid_map->handle, LV2_ATOM__Long);
-    uris->atom_String         = urid_map->map(urid_map->handle, LV2_ATOM__String);
-    uris->atom_Resource       = urid_map->map(urid_map->handle, LV2_ATOM__Resource);
-    uris->time_Position       = urid_map->map(urid_map->handle, LV2_TIME__Position);
-    uris->time_frame          = urid_map->map(urid_map->handle, LV2_TIME__frame);
-    uris->time_barBeat        = urid_map->map(urid_map->handle, LV2_TIME__barBeat);
-    uris->time_beatsPerMinute = urid_map->map(urid_map->handle, LV2_TIME__beatsPerMinute);
-    uris->time_speed          = urid_map->map(urid_map->handle, LV2_TIME__speed);
-    uris->pattern_string      = urid_map->map(urid_map->handle, QMIDIARP_ARP_LV2_PREFIX "PATTERNSTRING");
+    map_uris(urid_map, uris);
 
     uridMap = urid_map;
 }
@@ -103,15 +95,21 @@ qmidiarp_arp_lv2::~qmidiarp_arp_lv2 (void)
 
 void qmidiarp_arp_lv2::connect_port ( uint32_t port, void *data )
 {
-    switch(PortIndex(port)) {
-    case MidiIn:
+    switch(port) {
+    case 0:
         inEventBuffer = (LV2_Atom_Sequence*)data;
         break;
-    case MidiOut:
+    case 1:
         outEventBuffer = (LV2_Event_Buffer *) data;
         break;
-    case TRANSPORT_CONTROL:
+    case TRANSPORT_CONTROL + 2:
         transportControl = (LV2_Atom_Sequence*)data;
+        break;
+    case WAV_CONTROL + 2:
+        control = (const LV2_Atom_Sequence*)data;
+        break;
+    case WAV_NOTIFY + 2:
+        notify = (LV2_Atom_Sequence*)data;
         break;
     default:
         val[port - 2] = (float *) data;
@@ -171,20 +169,56 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
 
     const QMidiArpURIs* uris = &m_uris;
     const LV2_Atom_Sequence* atomIn = transportControl;
-    LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
 
 
     if (!(nCalls % 12)) updateParams();
 
         // Position stuff
-    while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
-        if (atomEv->body.type == uris->atom_Blank) {
-            const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
-            if (obj->body.otype == uris->time_Position) {
-                /* Received position information, update */
-                if (transportMode) updatePos(obj);
+    if (transportControl) {
+        LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
+        while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
+            if (atomEv->body.type == uris->atom_Blank) {
+                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
+                if (obj->body.otype == uris->time_Position) {
+                    /* Received position information, update */
+                    if (transportMode) updatePos(obj);
+                }
             }
             atomEv = lv2_atom_sequence_next(atomEv);
+        }
+    }
+
+        // Process incoming events from GUI
+    if (control) {
+        LV2_Atom_Event* ev = lv2_atom_sequence_begin(&control->body);
+        /* for each message from UI... */
+        while(!lv2_atom_sequence_is_end(&control->body, control->atom.size, ev)) {
+            if (ev->body.type == uris->atom_Blank) {
+                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&ev->body;
+                /* interpret atom-objects: */
+                if (obj->body.otype == uris->ui_up) {
+                    /* UI was activated */
+                    ui_up = true;
+                    sendPatternFlag = true;
+                }
+                else if (obj->body.otype == uris->ui_down) {
+                    /* UI was closed */
+                    ui_up = false;
+                }
+                else if (obj->body.otype == uris->pattern_string) {
+                    /* UI sends pattern string */
+                    const LV2_Atom* a0 = NULL;
+                    lv2_atom_object_get(obj, uris->pattern_string, &a0, 0);
+                    if (a0 && a0->type == uris->atom_String) {
+                        const char* p = (const char*)LV2_ATOM_BODY(a0);
+                        QString newPattern = QString::fromUtf8(p);
+                        QString txPattern = newPattern.remove(QChar(0));
+                        updatePattern(txPattern);
+                        sendPatternFlag = false;
+                    }
+                }
+            }
+            ev = lv2_atom_sequence_next(ev);
         }
     }
 
@@ -244,7 +278,7 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
                 }
             }
             float pos = (float)getGrooveIndex();
-            *val[CURSOR_POS - 2] = pos;
+            *val[CURSOR_POS] = pos;
         }
 
         // Note Off Queue handling
@@ -279,66 +313,47 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
 
 void qmidiarp_arp_lv2::updateParams()
 {
-    if (!sendPatternFlag) {
-        // decode from float into four pattern characters and append them
-        QString newpattern;
-        uint32_t n;
-        unsigned char c;
-        for (int l1 = 0; l1 < 16; l1++) {
-            n = *val[l1 + WAVEIN1 - 2] * 8192;
-            for (int l2 = 0; l2 < 4; l2++) {
-                c = (n >> (24 - (l2 * 8))) & 0xff;
-                if (c != 0) newpattern.append(c);
-            }
-        }
+    sendPattern(pattern);
 
-        if (newpattern != pattern) {
-            updatePattern(newpattern);
-        }
-    }
-    else {
-        sendPattern(pattern);
+    if (attack_time != *val[ATTACK]) {
+        updateAttackTime(*val[ATTACK]);
     }
 
-    if (attack_time != *val[0]) {
-        updateAttackTime(*val[0]);
+    if (release_time != *val[RELEASE]) {
+        updateReleaseTime(*val[RELEASE]);
     }
 
-    if (release_time != *val[1]) {
-        updateReleaseTime(*val[1]);
+    if (randomTickAmp != *val[RANDOM_TICK]) {
+        updateRandomTickAmp(*val[RANDOM_TICK]);
     }
 
-    if (randomTickAmp != *val[2]) {
-        updateRandomTickAmp(*val[2]);
+    if (randomLengthAmp != *val[RANDOM_LEN]) {
+        updateRandomLengthAmp(*val[RANDOM_LEN]);
     }
 
-    if (randomLengthAmp != *val[3]) {
-        updateRandomLengthAmp(*val[3]);
-    }
-
-    if (randomVelocityAmp != *val[4]) {
-        updateRandomVelocityAmp(*val[4]);
+    if (randomVelocityAmp != *val[RANDOM_VEL]) {
+        updateRandomVelocityAmp(*val[RANDOM_VEL]);
     }
 
 
-    if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
-    if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
+    if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);
+    if (isMuted != (bool)*val[MUTE] && !parChangesPending) setMuted((bool)(*val[MUTE]));
 
-    indexIn[0]   =   (int)*val[31];
-    indexIn[1]   =   (int)*val[32];
-    rangeIn[0]   =   (int)*val[33];
-    rangeIn[1]   =   (int)*val[34];
+    indexIn[0]   =   (int)*val[INDEX_IN1];
+    indexIn[1]   =   (int)*val[INDEX_IN2];
+    rangeIn[0]   =   (int)*val[RANGE_IN1];
+    rangeIn[1]   =   (int)*val[RANGE_IN2];
 
-    restartByKbd =  (bool)*val[35];
-    trigByKbd =     (bool)*val[39];
-    trigLegato =    (bool)*val[27];
+    restartByKbd =  (bool)*val[ENABLE_RESTARTBYKBD];
+    trigByKbd =     (bool)*val[ENABLE_TRIGBYKBD];
+    trigLegato =    (bool)*val[ENABLE_TRIGLEGATO];
 
-    repeatPatternThroughChord = (int)*val[36];
-    channelOut =      (int)*val[5];
-    chIn =            (int)*val[6];
+    repeatPatternThroughChord = (int)*val[REPEAT_MODE];
+    channelOut =      (int)*val[CH_OUT];
+    chIn =            (int)*val[CH_IN];
 
-    if (internalTempo != *val[42]) {
-        internalTempo = *val[42];
+    if (internalTempo != *val[TEMPO]) {
+        internalTempo = *val[TEMPO];
         if (!transportMode) {
             transportFramesDelta = curFrame;
             tempoChangeTick = curTick;
@@ -349,13 +364,10 @@ void qmidiarp_arp_lv2::updateParams()
         }
     }
 
-    if (transportMode != (bool)(*val[41])) {
-        transportMode = (bool)(*val[41]);
-        if (transportMode) {
-            transportSpeed = 0;
-        }
-        else {
-            transportSpeed = 0;
+    if (transportMode != (bool)(*val[TRANSPORT_MODE])) {
+        transportMode = (bool)(*val[TRANSPORT_MODE]);
+        transportSpeed = 0;
+        if (!transportMode) {
             transportFramesDelta = curFrame;
             tempoChangeTick = curTick;
             transportBpm = internalTempo;
@@ -369,33 +381,30 @@ void qmidiarp_arp_lv2::updateParams()
 
 void qmidiarp_arp_lv2::sendPattern(const QString & p)
 {
-    // encode into floats and send pattern to GUI via WAVEDATA ports
-    *val[37] = 1.0;
-    if (patternSendTrials < 2) {
-        patternSendTrials++;
-        return;
-    }
+    if (!(ui_up && sendPatternFlag)) return;
 
-    int l1, l2;
-    int ix = 0;
-    uint32_t n;
-    unsigned char c;
-    for (l1 = 0; l1 < 16; l1++) {
-        n = 0;
-        for (l2 = 24; l2 > 0; l2-=8) {
-            if (ix < p.count()) c = p.at(ix).cell(); else c = 0;
-            n |= ( c << l2 );
-            ix++;
-        }
-        *val[l1 + WAVEDATA1 - 2] = (float)n / 8192. ;
-    }
+    sendPatternFlag = false;
+    qWarning("sending pattern to GUI");
+    const QMidiArpURIs* uris = &m_uris;
+    const uint32_t capacity = notify->atom.size;
+    QByteArray byteArray = p.toUtf8();
+    const char* c = byteArray.constData();
 
-    patternSendTrials++;
-    if (patternSendTrials > 3) {
-        *val[37] = 0.0;
-        patternSendTrials = 0;
-        sendPatternFlag = false;
-    }
+
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)notify, capacity);
+    lv2_atom_forge_sequence_head(&forge, &frame, 0);
+
+    LV2_Atom_Forge_Frame frame;
+    lv2_atom_forge_frame_time(&forge, 0);
+    lv2_atom_forge_blank(&forge, &frame, 1, uris->pattern_string);
+
+    /* forge container object of type 'pattern_string' */
+    lv2_atom_forge_property_head(&forge, uris->pattern_string, 0);
+    lv2_atom_forge_string(&forge, c, strlen(c));
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &frame);
 }
 
 static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
@@ -421,10 +430,10 @@ static LV2_State_Status qmidiarp_arp_lv2_state_restore ( LV2_Handle instance,
         = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
-    std::string tmpString1 = value1;
 
     pPlugin->advancePatternIndex(true);
-    pPlugin->updatePattern(QString::fromStdString(tmpString1));
+    QString newpattern = QString::fromUtf8(value1);
+    pPlugin->updatePattern(newpattern);
     pPlugin->sendPatternFlag = true;
 
     return LV2_STATE_SUCCESS;
@@ -445,14 +454,14 @@ static LV2_State_Status qmidiarp_arp_lv2_state_save ( LV2_Handle instance,
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
 
-    const std::string tempString = pPlugin->pattern.toStdString();
-    const char *value = pPlugin->pattern.toLatin1();
+    QByteArray byteArray = pPlugin->pattern.toUtf8();
+    const char* c = byteArray.constData();
 
-    size_t size = strlen(value) + 1;
+    size_t size = strlen(c) + 1;
     uint32_t key = uris->pattern_string;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
-    LV2_State_Status result = (*store)(handle, key, value, size, type, flags);
+    LV2_State_Status result = (*store)(handle, key, c, size, type, flags);
 
     return result;
 }
@@ -528,9 +537,10 @@ static LV2UI_Handle qmidiarp_arp_lv2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
-    const LV2_Feature *const * )
+    const LV2_Feature *const *host_features )
 {
-    qmidiarp_arpwidget_lv2 *pWidget = new qmidiarp_arpwidget_lv2(controller, write_function);
+    qmidiarp_arpwidget_lv2 *pWidget = new qmidiarp_arpwidget_lv2(
+                    controller, write_function, host_features);
     *widget = pWidget;
     return pWidget;
 }

@@ -45,7 +45,6 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     inEventBuffer = NULL;
     outEventBuffer = NULL;
     getNextFrame(0);
-    waveIndex = 0;
     mouseXCur = 0;
     mouseYCur = 0;
     mouseEvCur = 0;
@@ -59,6 +58,8 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     tempoChangeTick = 0;
     transportMode = false;
     transportSpeed = 1;
+    dataChanged = true;
+    ui_up = false;
 
 
     LV2_URID_Map *urid_map;
@@ -79,22 +80,11 @@ qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
         return;
     }
 
+    lv2_atom_forge_init(&forge, urid_map);
+
     /* Map URIS */
     QMidiArpURIs* const uris = &m_uris;
-
-    uris->atom_Blank          = urid_map->map(urid_map->handle, LV2_ATOM__Blank);
-    uris->atom_Float          = urid_map->map(urid_map->handle, LV2_ATOM__Float);
-    uris->atom_Long           = urid_map->map(urid_map->handle, LV2_ATOM__Long);
-    uris->atom_String         = urid_map->map(urid_map->handle, LV2_ATOM__String);
-    uris->atom_Resource       = urid_map->map(urid_map->handle, LV2_ATOM__Resource);
-    uris->time_Position       = urid_map->map(urid_map->handle, LV2_TIME__Position);
-    uris->time_frame          = urid_map->map(urid_map->handle, LV2_TIME__frame);
-    uris->time_barBeat        = urid_map->map(urid_map->handle, LV2_TIME__barBeat);
-    uris->time_beatsPerMinute = urid_map->map(urid_map->handle, LV2_TIME__beatsPerMinute);
-    uris->time_speed          = urid_map->map(urid_map->handle, LV2_TIME__speed);
-    uris->hex_customwave      = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "WAVEHEX");
-    uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_LFO_LV2_PREFIX "MUTEHEX");
-
+    map_uris(urid_map, uris);
     uridMap = urid_map;
 }
 
@@ -105,15 +95,21 @@ qmidiarp_lfo_lv2::~qmidiarp_lfo_lv2 (void)
 
 void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
 {
-    switch(PortIndex(port)) {
-    case MidiIn:
-        inEventBuffer = (LV2_Event_Buffer *) data;
+    switch(port) {
+    case 0:
+        inEventBuffer = (LV2_Event_Buffer *)data;
         break;
-    case MidiOut:
+    case 1:
         outEventBuffer = (LV2_Event_Buffer *) data;
         break;
-    case TRANSPORT_CONTROL:
+    case TRANSPORT_CONTROL + 2:
         transportControl = (LV2_Atom_Sequence*)data;
+        break;
+    case WAV_CONTROL + 2:
+        control = (const LV2_Atom_Sequence*)data;
+        break;
+    case WAV_NOTIFY + 2:
+        notify = (LV2_Atom_Sequence*)data;
         break;
     default:
         val[port - 2] = (float *) data;
@@ -178,25 +174,48 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 
     const QMidiArpURIs* uris = &m_uris;
     const LV2_Atom_Sequence* atomIn = transportControl;
-    LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
 
 
-    if (!(nCalls % 12)) updateParams();
-    if (!(nCalls % 24)) sendWave();
-    if (!(nCalls % 24) && isRecording) {
+    updateParams();
+    if (isRecording) {
         getData(&data);
-        //sendSample(frameptr, frameptr%16);
     }
+    sendWave();
 
         // Position stuff
-    while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
-        if (atomEv->body.type == uris->atom_Blank) {
-            const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
-            if (obj->body.otype == uris->time_Position) {
-                /* Received position information, update */
-                if (transportMode) updatePos(obj);
+    if (transportControl) {
+        LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
+        while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
+            if (atomEv->body.type == uris->atom_Blank) {
+                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
+                if (obj->body.otype == uris->time_Position) {
+                    /* Received position information, update */
+                    if (transportMode) updatePos(obj);
+                }
             }
             atomEv = lv2_atom_sequence_next(atomEv);
+        }
+    }
+
+        // Process incoming events from GUI
+    if (control) {
+        LV2_Atom_Event* ev = lv2_atom_sequence_begin(&control->body);
+        /* for each message from UI... */
+        while(!lv2_atom_sequence_is_end(&control->body, control->atom.size, ev)) {
+            if (ev->body.type == uris->atom_Blank) {
+                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&ev->body;
+                /* interpret atom-objects: */
+                if (obj->body.otype == uris->ui_up) {
+                    /* UI was activated */
+                    ui_up = true;
+                    dataChanged = true;
+                }
+                else if (obj->body.otype == uris->ui_down) {
+                    /* UI was closed */
+                    ui_up = false;
+                }
+            }
+            ev = lv2_atom_sequence_next(ev);
         }
     }
 
@@ -252,7 +271,7 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
                 if (inLfoFrame >= frameSize) {
                     frameptr = getFramePtr();
                     float pos = (float)frameptr;
-                    *val[CURSOR_POS - 2] = pos;
+                    *val[CURSOR_POS] = pos;
                     getNextFrame(curTick);
                     inLfoFrame = 0;
                 }
@@ -267,84 +286,78 @@ void qmidiarp_lfo_lv2::updateParams()
 {
     bool changed = false;
 
-    if (mouseXCur != *val[27] || mouseYCur != *val[28] || mouseEvCur != *val[30]) {
+
+    if (amp != *val[AMPLITUDE]) {
+        changed = true;
+        updateAmplitude(*val[AMPLITUDE]);
+    }
+
+    if (offs != *val[OFFSET]) {
+        changed = true;
+        updateOffset(*val[OFFSET]);
+        *val[OFFSET] = offs;
+    }
+
+    if (mouseXCur != *val[MOUSEX] || mouseYCur != *val[MOUSEY]
+                || mouseEvCur != *val[MOUSEPRESSED]) {
         int ix = 1;
         int evtype = 0;
-        changed = false;
-        mouseXCur = *val[27];
-        mouseYCur = *val[28];
-        if ((mouseEvCur == 2) && (*val[30] != 2)) evtype = 1; else evtype = *val[30];
-        mouseEvCur = *val[30];
+        changed = true;
+        mouseXCur = *val[MOUSEX];
+        mouseYCur = *val[MOUSEY];
+        if ((mouseEvCur == 2) && (*val[MOUSEPRESSED] != 2) )
+            evtype = 1;
+        else if (*val[MOUSEPRESSED] != -1)
+            evtype = *val[MOUSEPRESSED];
+
+        if (*val[MOUSEPRESSED] != -1) mouseEvCur = *val[MOUSEPRESSED];
 
         if (mouseEvCur == 2) return; // mouse was released
-
-        ix = mouseEvent(mouseXCur, mouseYCur, *val[29], evtype);
+        //qWarning("mouse event X: %f - Y: %f - Type: %d - Button %d",
+        //    mouseXCur, mouseYCur, (int)*val[MOUSEBUTTON], mouseEvCur);
+        if (*val[MOUSEPRESSED] != -1) ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
-
-        if (waveFormIndex == 5) *val[39] = offs;
-        getData(&data);
-
-        // Update all wave data points since the last mouse event
-        int dir = (lastMouseIndex > ix) ? -1 : 1;
-        for (int l1 = lastMouseIndex; l1*dir < (ix + dir)*dir; l1+=dir) {
-            sendSample(l1, l1 % 16);
-        }
-        lastMouseIndex = ix; // mouse pressed
-        waveIndex = 0;
-        return;
     }
 
-    if (amp != *val[0]) {
+    if (res != lfoResValues[(int)*val[RESOLUTION]]) {
         changed = true;
-        updateAmplitude(*val[0]);
+        updateResolution(lfoResValues[(int)*val[RESOLUTION]]);
     }
 
-    if (offs != *val[1]) {
+    if (size != lfoSizeValues[(int)*val[SIZE]]) {
         changed = true;
-        updateOffset(*val[1]);
-        *val[39] = offs;
+        updateSize(lfoSizeValues[(int)*val[SIZE]]);
     }
 
-    if (res != lfoResValues[(int)*val[2]]) {
+    if (freq != lfoFreqValues[(int)*val[FREQUENCY]]) {
         changed = true;
-        updateResolution(lfoResValues[(int)*val[2]]);
+        updateFrequency(lfoFreqValues[(int)*val[FREQUENCY]]);
     }
 
-    if (size != lfoSizeValues[(int)*val[3]]) {
+    if (waveFormIndex != (int)*val[WAVEFORM]) {
         changed = true;
-        updateSize(lfoSizeValues[(int)*val[3]]);
+        updateWaveForm(*val[WAVEFORM]);
     }
 
-    if (freq != lfoFreqValues[(int)*val[4]]) {
-        changed = true;
-        updateFrequency(lfoFreqValues[(int)*val[4]]);
+    if (curLoopMode != (*val[LOOPMODE])) updateLoop(*val[LOOPMODE]);
+    if (recordMode != ((bool)*val[RECORD])) {
+        setRecordMode((bool)*val[RECORD]);
     }
+    if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);
+    if (isMuted != (bool)*val[MUTE] && !parChangesPending) setMuted((bool)(*val[MUTE]));
 
-    if (waveFormIndex != (int)*val[24]) {
-        changed = true;
-        updateWaveForm(*val[24]);
-    }
+    ccnumber =       (int)*val[CC_OUT];
+    ccnumberIn =     (int)*val[CC_IN];
+    enableNoteOff = (bool)*val[ENABLE_NOTEOFF];
+    restartByKbd =  (bool)*val[ENABLE_RESTARTBYKBD];
+    trigByKbd =     (bool)*val[ENABLE_TRIGBYKBD];
+    trigLegato =    (bool)*val[ENABLE_TRIGLEGATO];
 
-    if (curLoopMode != (*val[25])) updateLoop(*val[25]);
-    if (recordMode != ((bool)*val[37])) {
-        waveIndex = frameptr;
-        setRecordMode((bool)*val[37]);
-    }
-    if (deferChanges != ((bool)*val[38])) deferChanges = ((bool)*val[38]);
-    if (isMuted != (bool)*val[26] && !parChangesPending) setMuted((bool)(*val[26]));
+    channelOut =      (int)*val[CH_OUT];
+    chIn =            (int)*val[CH_IN];
 
-    ccnumber =       (int)*val[31];
-    ccnumberIn =     (int)*val[32];
-    enableNoteOff = (bool)*val[33];
-    restartByKbd =  (bool)*val[34];
-    trigByKbd =     (bool)*val[35];
-    trigLegato =    (bool)*val[36];
-
-    channelOut =      (int)*val[5];
-    chIn =            (int)*val[6];
-
-    if (internalTempo != *val[42]) {
-        internalTempo = *val[42];
+    if (internalTempo != *val[TEMPO]) {
+        internalTempo = *val[TEMPO];
         if (!transportMode) {
             transportFramesDelta = curFrame;
             tempoChangeTick = curTick;
@@ -355,13 +368,10 @@ void qmidiarp_lfo_lv2::updateParams()
         }
     }
 
-    if (transportMode != (bool)(*val[41])) {
-        transportMode = (bool)(*val[41]);
-        if (transportMode) {
-            transportSpeed = 0;
-        }
-        else {
-            transportSpeed = 0;
+    if (transportMode != (bool)(*val[TRANSPORT_MODE])) {
+        transportMode = (bool)(*val[TRANSPORT_MODE]);
+        transportSpeed = 0;
+        if (!transportMode) {
             transportFramesDelta = curFrame;
             tempoChangeTick = curTick;
             transportBpm = internalTempo;
@@ -372,39 +382,43 @@ void qmidiarp_lfo_lv2::updateParams()
         }
     }
 
-    if (*val[29] == -1) dataChanged = true;
-
-
     if (changed) {
         getData(&data);
-        waveIndex = 0;
         dataChanged = true;
     }
 }
 
 void qmidiarp_lfo_lv2::sendWave()
 {
-    if (!dataChanged) return;
-    int ct = data.count();
-    // The 16 ports are swept to transmit the data in parallel
-    int l1 = 0;
-    while (l1 < 16) {
-        waveIndex %= ct;
-        if (!waveIndex && (l1 > 0)) {
-            dataChanged = false;
-        }
-        sendSample(waveIndex, l1);
-        waveIndex++;
-        l1++;
-    }
-}
+    if (!(dataChanged && ui_up)) return;
+    dataChanged = false;
 
-void qmidiarp_lfo_lv2::sendSample(int ix, int port)
-{
-    // wave data and index are encoded into a single float
-    if (ix >= data.count()) return;
-    *val[WAVEDATA1 + port - 2] = (float)(abs(data.at(ix).value)
-             + ix*128) * ((data.at(ix).muted == false) ? 1 : -1);
+    const QMidiArpURIs* uris = &m_uris;
+    const uint32_t capacity = notify->atom.size;
+    int ct = res * size + 1; // last element in wave is an end tag
+    int tempArray[ct];
+
+    for (int l1 = 0; l1 < ct; l1++) {
+        tempArray[l1]=data.at(l1).value*((data.at(l1).muted) ? -1 : 1);
+    }
+
+    //size_t size = strlen(value) + 1;
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)notify, capacity);
+    lv2_atom_forge_sequence_head(&forge, &lv2frame, 0);
+
+    /* forge container object of type 'ui_state' */
+    LV2_Atom_Forge_Frame lv2frame;
+    lv2_atom_forge_frame_time(&forge, 0);
+    lv2_atom_forge_blank(&forge, &lv2frame, 1, uris->hex_customwave);
+
+    /* Send customWave to UI */
+    lv2_atom_forge_property_head(&forge, uris->hex_customwave, 0);
+    lv2_atom_forge_vector(&forge, sizeof(int), uris->atom_Int,
+        ct, tempArray);
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &lv2frame);
 }
 
 static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
@@ -461,6 +475,8 @@ static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,
         pPlugin->customWave.replace(l1, sample);
         lt+=step;
     }
+    pPlugin->getData(&pPlugin->data);
+    pPlugin->sendWave();
 
     return LV2_STATE_SUCCESS;
 }
@@ -585,9 +601,10 @@ static LV2UI_Handle qmidiarp_lfo_lv2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
-    const LV2_Feature *const * )
+    const LV2_Feature *const *host_features )
 {
-    qmidiarp_lfowidget_lv2 *pWidget = new qmidiarp_lfowidget_lv2(controller, write_function);
+    qmidiarp_lfowidget_lv2 *pWidget = new qmidiarp_lfowidget_lv2(
+                controller, write_function, host_features);
     *widget = pWidget;
     return pWidget;
 }

@@ -26,13 +26,10 @@
 #ifndef QMIDIARP_ARPWIDGET_LV2_H
 #define QMIDIARP_ARPWIDGET_LV2_H
 
+#include "lv2_common.h"
 #include "arpwidget.h"
 #include "midiarp.h"
-
-#include "lv2.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
-#include "lv2/lv2plug.in/ns/ext/time/time.h"
-
+#include "qmidiarp_lfo_lv2.h"
 
 #define QMIDIARP_ARP_LV2UI_URI QMIDIARP_ARP_LV2_PREFIX "ui"
 
@@ -42,10 +39,46 @@ class qmidiarp_arpwidget_lv2 : public ArpWidget
 
   public:
 
+    enum PortIndex {
+            MidiIn = 0,
+            MidiOut = 1,
+            ATTACK = 2,
+            RELEASE = 3,
+            RANDOM_TICK = 4,
+            RANDOM_LEN = 5,
+            RANDOM_VEL = 6,
+            CH_OUT = 7,
+            CH_IN = 8,
+            CURSOR_POS = 9, //output
+            ENABLE_RESTARTBYKBD = 10,
+            ENABLE_TRIGBYKBD = 11,
+            MUTE = 12,
+            LATCH_MODE = 13,
+            MOUSEY = 14,
+            MOUSEBUTTON = 15,
+            MOUSEPRESSED = 16,
+            INDEX_IN1 = 17,
+            INDEX_IN2 = 18,
+            RANGE_IN1 = 19,
+            RANGE_IN2 = 20,
+            ENABLE_TRIGLEGATO = 21,
+            REPEAT_MODE = 22,
+            RPATTERNFLAG = 23,
+            DEFER = 24,
+            PATTERN_PRESET = 25,
+            TRANSPORT_CONTROL = 26,
+            TRANSPORT_MODE = 27,
+            TEMPO = 28,
+            WAV_CONTROL = 29,
+            WAV_NOTIFY = 30
+    };
+
     qmidiarp_arpwidget_lv2(
         LV2UI_Controller ct,
-        LV2UI_Write_Function write_function
+        LV2UI_Write_Function write_function,
+        const LV2_Feature *const *host_features
         );
+    ~qmidiarp_arpwidget_lv2();
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
@@ -54,23 +87,26 @@ class qmidiarp_arpwidget_lv2 : public ArpWidget
     void mapParam(int value);
     void mapBool(bool on);
     void updatePattern(const QString&);
-    void receivePattern(int port_index, float fValue);
+    void receivePattern(LV2_Atom* atom);
+    void sendPattern(const QString & p);
 
   protected:
     void updateParam(int index, float fValue) const;
 
   private:
+    void sendUIisUp(bool on);
     LV2UI_Controller     m_controller;
     LV2UI_Write_Function writeFunction;
     QVector<Sample> data1;
     QCheckBox* transportBox;
     QSpinBox* tempoSpin;
-    QString newPattern;
+    QMidiArpURIs m_uris;
+    LV2_Atom_Forge forge;
+    LV2_Atom_Forge_Frame frame;
 
-    int waveIndex;
+    QString newPattern;
     int res, size;
     double mouseXCur, mouseYCur;
-    bool startoff;
     bool receivePatternFlag;
 };
 

@@ -24,7 +24,6 @@
  */
 
 #include "qmidiarp_arpwidget_lv2.h"
-#include "qmidiarp_arp_lv2.h"
 
 #include <unistd.h>
 
@@ -40,12 +39,37 @@
 
 qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
         LV2UI_Controller ct,
-        LV2UI_Write_Function write_function)
+        LV2UI_Write_Function write_function,
+        const LV2_Feature *const *host_features)
         : ArpWidget(NULL, NULL, 1, true, true, true, "ARP-LV2", 0)
 {
     m_controller = ct;
     writeFunction = write_function;
-    receivePatternFlag = true;
+
+    /* Scan host features for URID map */
+
+    LV2_URID_Map *urid_map;
+    for (int i = 0; host_features[i]; ++i) {
+        if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
+            urid_map = (LV2_URID_Map *) host_features[i]->data;
+            if (urid_map) {
+                (void)urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
+                break;
+            }
+        }
+    }
+    if (!urid_map) {
+        qWarning("Host does not support urid:map.");
+        return;
+    }
+
+    lv2_atom_forge_init(&forge, urid_map);
+
+    /* Map URIS */
+    QMidiArpURIs* const uris = &m_uris;
+    map_uris(urid_map, uris);
+
+    receivePatternFlag = false;
 
     transportBox = new QCheckBox(this);
     QLabel *transportBoxLabel = new QLabel(tr("&Sync with Host"),this);
@@ -64,150 +88,145 @@ qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
     inOutBox->layout()->addWidget(transportBox);
     inOutBox->layout()->addWidget(tempoSpin);
 
-    connect(attackTime, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(releaseTime, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(randomTick, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(randomLength, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(randomVelocity, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(indexIn[0], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(indexIn[1], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(rangeIn[0], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(rangeIn[1], SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(channelOut, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(chIn, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(tempoSpin, SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(patternPresetBox, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(attackTime,         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(releaseTime,        SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(randomTick,         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(randomLength,       SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(randomVelocity,     SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(indexIn[0],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(indexIn[1],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(rangeIn[0],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(rangeIn[1],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(channelOut,         SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(chIn,               SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(patternPresetBox,   SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(repeatPatternThroughChord, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(patternText, SIGNAL(textChanged(const QString&)), this,
+    connect(patternText,        SIGNAL(textChanged(const QString&)), this,
             SLOT(updatePattern(const QString&)));
 
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(muteOutAction,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigByKbd,    SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(enableTrigLegato,   SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
 
     setStyleSheet(COMPACT_STYLE);
 
-    waveIndex = 0;
     res = 4;
     size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
-    startoff = true;
+    sendUIisUp(true);
+}
+
+qmidiarp_arpwidget_lv2::~qmidiarp_arpwidget_lv2()
+{
+    sendUIisUp(false);
 }
 
 void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
 
-    if (format == 0 && buffer_size == sizeof(float)) {
+    if ((format > 0) && (port_index == WAV_NOTIFY)) {
+        LV2_Atom* atom = (LV2_Atom*)buffer;
+        receivePattern(atom);
+    }
+    else if (format == 0 && buffer_size == sizeof(float)) {
 
 
-        float fValue = *(float *) buffer;
+    float fValue = *(float *) buffer;
 
-        if ((port_index < 26) && (port_index >= 10)) {
-            receivePattern(port_index, fValue);
-        }
-        else {
-
-            switch (port_index) {
-                case 2:
-                        attackTime->setValue(fValue);
-                break;
-                case 3:
-                        releaseTime->setValue(fValue);
-                break;
-                case 4:
-                        randomTick->setValue(fValue);
-                break;
-                case 5:
-                        randomLength->setValue(fValue);
-                break;
-                case 6:
-                        randomVelocity->setValue(fValue);
-                break;
-                case 7:
-                        channelOut->setCurrentIndex(fValue);
-                break;
-                case 8:
-                        chIn->setCurrentIndex(fValue);
-                break;
-                case 9:
-                        screen->updateScreen((int)fValue);
-                        screen->update();
-                break;
-                case 26:
-
-                break;
-                case 27:
-                        patternPresetBox->setCurrentIndex(fValue);
-                break;
-                case 28:
-                        muteOutAction->setChecked((bool)fValue);
-                        screen->setMuted(fValue);
-                        screen->update();
-                break;
-                case 29:
-                        enableTrigLegato->setChecked((bool)fValue);
-                break;
-                case 30: //spare
-                case 31:
-                case 32:
-                break;
-                case 33:
-                        indexIn[0]->setValue(fValue);
-                break;
-                case 34:
-                        indexIn[1]->setValue(fValue);
-                break;
-                case 35:
-                        rangeIn[0]->setValue(fValue);
-                break;
-                case 36:
-                        rangeIn[1]->setValue(fValue);
-                break;
-                case 37:
-                        enableRestartByKbd->setChecked((bool)fValue);
-                break;
-                case 41:
-                        enableTrigByKbd->setChecked((bool)fValue);
-                break;
-                case 38:
-                        repeatPatternThroughChord->setCurrentIndex(fValue);
-                break;
-                case 39:
-                        if ((int)fValue != receivePatternFlag) {
-                            receivePatternFlag = (int)fValue;
-                        }
-                break;
-                case 40:
-                        deferChangesAction->setChecked((bool)fValue);
-                break;
-                case 42: // metronome port
-                break;
-                case 43:
-                        transportBox->setChecked((bool)fValue);
-                break;
-                case 44:
-                        tempoSpin->setValue((int)fValue);
-                break;
-                default: // ports 10 to 25 are the 16 wave TX ports
-                break;
-            }
+        switch (port_index) {
+            case ATTACK:
+                    attackTime->setValue(fValue);
+            break;
+            case RELEASE:
+                    releaseTime->setValue(fValue);
+            break;
+            case RANDOM_TICK:
+                    randomTick->setValue(fValue);
+            break;
+            case RANDOM_LEN:
+                    randomLength->setValue(fValue);
+            break;
+            case RANDOM_VEL:
+                    randomVelocity->setValue(fValue);
+            break;
+            case CH_OUT:
+                    channelOut->setCurrentIndex(fValue);
+            break;
+            case CH_IN:
+                    chIn->setCurrentIndex(fValue);
+            break;
+            case CURSOR_POS:
+                    screen->updateScreen((int)fValue);
+                    screen->update();
+            break;
+            case PATTERN_PRESET:
+                    //patternPresetBox->setCurrentIndex(fValue);
+                    //updatePattern(patternPresets.at(fValue));
+            break;
+            case MUTE:
+                    muteOutAction->setChecked((bool)fValue);
+                    screen->setMuted(fValue);
+                    screen->update();
+            break;
+            case LATCH_MODE:
+                    latchModeAction->setChecked((bool)fValue);
+            case MOUSEY:
+            case MOUSEBUTTON:
+            case MOUSEPRESSED:
+            break;
+            case INDEX_IN1:
+                    indexIn[0]->setValue(fValue);
+            break;
+            case INDEX_IN2:
+                    indexIn[1]->setValue(fValue);
+            break;
+            case RANGE_IN1:
+                    rangeIn[0]->setValue(fValue);
+            break;
+            case RANGE_IN2:
+                    rangeIn[1]->setValue(fValue);
+            break;
+            case ENABLE_RESTARTBYKBD:
+                    enableTrigLegato->setChecked((bool)fValue);
+            break;
+            case ENABLE_TRIGLEGATO:
+                    enableRestartByKbd->setChecked((bool)fValue);
+            break;
+            case ENABLE_TRIGBYKBD:
+                    enableTrigByKbd->setChecked((bool)fValue);
+            break;
+            case REPEAT_MODE:
+                    repeatPatternThroughChord->setCurrentIndex(fValue);
+            break;
+            case RPATTERNFLAG:
+                    //~ if ((int)fValue != receivePatternFlag) {
+                        //~ receivePatternFlag = (int)fValue;
+                    //~ }
+            break;
+            case DEFER:
+                    deferChangesAction->setChecked((bool)fValue);
+            break;
+            case TRANSPORT_CONTROL: // metronome port
+            break;
+            case TRANSPORT_MODE:
+                    transportBox->setChecked((bool)fValue);
+            break;
+            case TEMPO:
+                    tempoSpin->setValue((int)fValue);
+            break;
+            default:
+            break;
         }
     }
-    // this is a dirty way to provoke retransmission of wave data at
-    // ui start. Mouse button is set to -1 and reset to 0 when data has
-    // been received.
-    if (startoff) {
-    }
-
 }
+
 void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
 {
-    if (p_pattern.count() > 64) return;
-
     QChar c;
     QString pattern = p_pattern;
     int patternLen = p_pattern.length();
@@ -234,26 +253,13 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
         }
     }
 
-    // encode into floats and send pattern to GUI via WAVEDATA ports
-
-    int l1, l2;
-    int ix = 0;
-    int32_t n;
-    for (l1 = 0; l1 < 16; l1++) {
-        n = 0;
-        for (l2 = 24; l2 > 0; l2-=8) {
-            if (ix >= pattern.count()) break;
-            n |= ( (char)pattern.at(ix).toLatin1() << l2 );
-            ix++;
-        }
-        updateParam(l1 + 45, (float)n / 8192.);
-    }
+    if (!receivePatternFlag) sendPattern(pattern);
 
     // determine some useful properties of the arp pattern,
     // number of octaves, step width and number of steps in beats and
     // number of points
 
-    for (l1 = 0; l1 < patternLen; l1++) {
+    for (int l1 = 0; l1 < patternLen; l1++) {
         c = pattern.at(l1);
 
         if (c.isDigit()) {
@@ -319,58 +325,104 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
     screen->updateScreen(pattern, minOctave, maxOctave, minStepWidth,
                     nsteps, patternMaxIndex);
     screen->update();
-
 }
 
-void qmidiarp_arpwidget_lv2::receivePattern(int port_index, float fValue)
+void qmidiarp_arpwidget_lv2::sendPattern(const QString & p)
 {
-    if (!receivePatternFlag) return;
+    qWarning("sending pattern to backend");
+    const QMidiArpURIs* uris = &m_uris;
+    uint8_t obj_buf[1024];
+    QByteArray byteArray = p.toUtf8();
+    const char* c = byteArray.constData();
 
-    int l1 = port_index - 10;
-    if (!l1) newPattern.fill(QChar(0), 64);
-    uint32_t n;
-    unsigned char c;
-    n = (uint32_t)(fValue*8192.);
+    LV2_Atom_Forge_Frame frame;
+    lv2_atom_forge_frame_time(&forge, 0);
 
-    for (int l2 = 0; l2 < 3; l2++) {
-        c = (n >> (24 - (l2 * 8))) & 0xff;
-        newPattern.replace(l1*3 + l2, 1, c);
-    }
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, obj_buf, 256);
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, uris->pattern_string);
 
+    /* forge container object of type 'pattern_string' */
+    lv2_atom_forge_property_head(&forge, uris->pattern_string, 0);
+    lv2_atom_forge_string(&forge, c, strlen(c));
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &frame);
+    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
+}
+
+void qmidiarp_arpwidget_lv2::sendUIisUp(bool on)
+{
+    const QMidiArpURIs* uris = &m_uris;
+    uint8_t obj_buf[64];
+    int state;
+
+    LV2_Atom_Forge_Frame frame;
+    lv2_atom_forge_frame_time(&forge, 0);
+
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, obj_buf, 16);
+
+    if (on) state = uris->ui_up; else state=uris->ui_down;
+
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, state);
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &frame);
+    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
+}
+
+void qmidiarp_arpwidget_lv2::receivePattern(LV2_Atom* atom)
+{
+    QMidiArpURIs* const uris = &m_uris;
+    if (atom->type != uris->atom_Blank) return;
+
+    /* cast the buffer to Atom Object */
+    LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;
+    LV2_Atom *a0 = NULL;
+    lv2_atom_object_get(obj, uris->pattern_string, &a0, NULL);
+    if (obj->body.otype != uris->pattern_string) return;
+
+    /* handle pattern string as atom body */
+    const char* p = (const char*)LV2_ATOM_BODY(a0);
+    if (!strlen(p)) return;
+    QString newPattern = QString::fromUtf8(p);
     QString txPattern = newPattern.remove(QChar(0));
+    receivePatternFlag = true;
     updatePattern(txPattern);
     patternText->setText(txPattern);
     screen->update();
+    receivePatternFlag = false;
 }
 
 void qmidiarp_arpwidget_lv2::mapBool(bool on)
 {
     float value = (float)on;
-    if (muteOutAction == sender()) updateParam(28, value);
-    else if (deferChangesAction == sender()) updateParam(40, value);
-    else if (latchModeAction == sender()) updateParam(41, value);
-    else if (transportBox == sender()) updateParam(43, value);
-    else if (enableRestartByKbd == sender()) updateParam(35, value);
-    else if (enableTrigByKbd == sender()) updateParam(39, value);
-    else if (enableTrigLegato == sender()) updateParam(27, value);
+    if (muteOutAction == sender())              updateParam(MUTE, value);
+    else if (deferChangesAction == sender())    updateParam(DEFER, value);
+    else if (latchModeAction == sender())       updateParam(LATCH_MODE, value);
+    else if (transportBox == sender())          updateParam(TRANSPORT_MODE, value);
+    else if (enableRestartByKbd == sender())    updateParam(ENABLE_RESTARTBYKBD, value);
+    else if (enableTrigByKbd == sender())       updateParam(ENABLE_TRIGBYKBD, value);
+    else if (enableTrigLegato == sender())      updateParam(ENABLE_TRIGLEGATO, value);
 }
 
 void qmidiarp_arpwidget_lv2::mapParam(int value)
 {
     if (attackTime == sender()) updateParam(2, value);
-    else if (releaseTime == sender()) updateParam(3, value);
-    else if (randomTick == sender()) updateParam(4, value);
-    else if (randomLength == sender()) updateParam(5, value);
-    else if (randomVelocity == sender()) updateParam(6, value);
-    else if (channelOut == sender()) updateParam(7, value);
-    else if (chIn == sender()) updateParam(8, value);
-    else if (patternPresetBox == sender()) updateParam(27, value);
-    else if (indexIn[0] == sender()) updateParam(33, value);
-    else if (indexIn[1] == sender()) updateParam(34, value);
-    else if (rangeIn[0] == sender()) updateParam(35, value);
-    else if (rangeIn[1] == sender()) updateParam(36, value);
-    else if (repeatPatternThroughChord == sender()) updateParam(38, value);
-    else if (tempoSpin == sender()) updateParam(44, value);
+    else if (releaseTime == sender())       updateParam(RELEASE, value);
+    else if (randomTick == sender())        updateParam(RANDOM_TICK, value);
+    else if (randomLength == sender())      updateParam(RANDOM_LEN, value);
+    else if (randomVelocity == sender())    updateParam(RANDOM_VEL, value);
+    else if (channelOut == sender())        updateParam(CH_OUT, value);
+    else if (chIn == sender())              updateParam(CH_IN, value);
+    //else if (patternPresetBox == sender())  updateParam(PATTERN_PRESET, value);
+    else if (indexIn[0] == sender())        updateParam(INDEX_IN1, value);
+    else if (indexIn[1] == sender())        updateParam(INDEX_IN2, value);
+    else if (rangeIn[0] == sender())        updateParam(RANGE_IN1, value);
+    else if (rangeIn[1] == sender())        updateParam(RANGE_IN2, value);
+    else if (repeatPatternThroughChord == sender()) updateParam(REPEAT_MODE, value);
+    else if (tempoSpin == sender())         updateParam(TEMPO, value);
 }
 
 void qmidiarp_arpwidget_lv2::updateParam(int index, float fValue) const

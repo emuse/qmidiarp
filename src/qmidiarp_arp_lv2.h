@@ -28,34 +28,11 @@
 
 #include "midiarp.h"
 #include "arpwidget.h"
+#include "lv2_common.h"
 
-#include "lv2.h"
-#include "lv2/lv2plug.in/ns/ext/event/event.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
-#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
-#include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/atom/util.h"
-#include "lv2/lv2plug.in/ns/ext/time/time.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-
-#define QMIDIARP_ARP_LV2_URI "https://git.code.sf.net/p/qmidiarp/arp"
+#define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
 #define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 
-
-typedef struct {
-    LV2_URID atom_Blank;
-    LV2_URID atom_Float;
-    LV2_URID atom_Long;
-    LV2_URID atom_String;
-    LV2_URID atom_Resource;
-    LV2_URID time_Position;
-    LV2_URID time_frame;
-    LV2_URID time_barBeat;
-    LV2_URID time_beatsPerMinute;
-    LV2_URID time_speed;
-    LV2_URID pattern_string;
-} QMidiArpURIs;
 
 class qmidiarp_arp_lv2 : public MidiArp
 {
@@ -65,68 +42,36 @@ public:
 
         ~qmidiarp_arp_lv2();
 
-        enum PortIndex {
-            MidiIn = 0,
-            MidiOut = 1,
-            ATTACK = 2,
-            RELEASE = 3,
-            RANDOM_TICK = 4,
-            RANDOM_LEN = 5,
-            RANDOM_VEL = 6,
-            CH_OUT = 7,
-            CH_IN = 8,
-            CURSOR_POS = 9, //output
-            WAVEDATA1 = 10, //output
-            WAVEDATA2 = 11,
-            WAVEDATA3 = 12,
-            WAVEDATA4 = 13,
-            WAVEDATA5 = 14,
-            WAVEDATA6 = 15,
-            WAVEDATA7 = 16,
-            WAVEDATA8 = 17,
-            WAVEDATA9 = 18,
-            WAVEDATA10 = 19,
-            WAVEDATA11 = 20,
-            WAVEDATA12 = 21,
-            WAVEDATA13 = 22,
-            WAVEDATA14 = 23,
-            WAVEDATA15 = 24,
-            WAVEDATA16 = 25,
-            SPARE3 = 26,
-            SPARE4 = 27,
-            MUTE = 28,
-            MOUSEX = 29,
-            MOUSEY = 30,
-            MOUSEBUTTON = 31,
-            MOUSEPRESSED = 32,
-            INDEX_IN1 = 33,
-            INDEX_IN2 = 34,
-            RANGE_IN1 = 35,
-            RANGE_IN2 = 36,
-            TRIGGER_MODE = 37,
-            REPEAT_MODE = 38,
-            RPATTERNFLAG = 39,
-            DEFER = 40,
-            SPARE2 = 41, //output
-            TRANSPORT_CONTROL = 42,
-            TRANSPORT_MODE = 43,
-            TEMPO = 44,
-            WAVEIN1 = 45,
-            WAVEIN2 = 46,
-            WAVEIN3 = 47,
-            WAVEIN4 = 48,
-            WAVEIN5 = 49,
-            WAVEIN6 = 50,
-            WAVEIN7 = 51,
-            WAVEIN8 = 52,
-            WAVEIN9 = 53,
-            WAVEIN10 = 54,
-            WAVEIN11 = 55,
-            WAVEIN12 = 56,
-            WAVEIN13 = 57,
-            WAVEIN14 = 58,
-            WAVEIN15 = 59,
-            WAVEIN16 = 60
+        enum FloatField {
+            ATTACK = 0,
+            RELEASE = 1,
+            RANDOM_TICK = 2,
+            RANDOM_LEN = 3,
+            RANDOM_VEL = 4,
+            CH_OUT = 5,
+            CH_IN = 6,
+            CURSOR_POS = 7, //output
+            ENABLE_RESTARTBYKBD = 8,
+            ENABLE_TRIGBYKBD = 9,
+            MUTE = 10,
+            LATCH_MODE = 11,
+            MOUSEY = 12,
+            MOUSEBUTTON = 13,
+            MOUSEPRESSED = 14,
+            INDEX_IN1 = 15,
+            INDEX_IN2 = 16,
+            RANGE_IN1 = 17,
+            RANGE_IN2 = 18,
+            ENABLE_TRIGLEGATO = 19,
+            REPEAT_MODE = 20,
+            RPATTERNFLAG = 21,
+            DEFER = 22,
+            PATTERN_PRESET = 23,
+            TRANSPORT_CONTROL = 24,
+            TRANSPORT_MODE = 25,
+            TEMPO = 26,
+            WAV_CONTROL = 27,
+            WAV_NOTIFY = 28
         };
 
         void connect_port(uint32_t port, void *data);
@@ -137,19 +82,22 @@ public:
         void sendPattern(const QString & p);
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
+        LV2_Atom_Forge forge;
+        LV2_Atom_Forge_Frame frame;
+
         bool sendPatternFlag;
 
 private:
 
-        float *val[61];
+        float *val[30];
         uint64_t curFrame;
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
-        int patternSendTrials;
         double internalTempo;
         double sampleRate;
         double tempo;
+        bool ui_up;
         void updateParams();
 
         uint32_t MidiEventID;
@@ -164,6 +112,8 @@ private:
         LV2_Atom_Sequence *inEventBuffer;
         LV2_Event_Buffer *outEventBuffer;
         LV2_Atom_Sequence *transportControl;
+        const LV2_Atom_Sequence *control;
+        LV2_Atom_Sequence *notify;
 };
 
 #endif

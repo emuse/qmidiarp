@@ -405,7 +405,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
 ArpWidget::~ArpWidget()
 {
-    delete parStore;
 }
 
 MidiArp *ArpWidget::getMidiWorker()

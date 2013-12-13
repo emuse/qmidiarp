@@ -28,36 +28,11 @@
 
 #include "midiseq.h"
 #include "seqwidget.h"
+#include "lv2_common.h"
 
-#include "lv2.h"
-#include "lv2/lv2plug.in/ns/ext/event/event.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
-#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
-#include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/midi/midi.h"
-#include "lv2/lv2plug.in/ns/ext/atom/util.h"
-#include "lv2/lv2plug.in/ns/ext/time/time.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-
-#define QMIDIARP_SEQ_LV2_URI "https://git.code.sf.net/p/qmidiarp/seq"
+#define QMIDIARP_SEQ_LV2_URI QMIDIARP_LV2_URI "/seq"
 #define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
 
-
-typedef struct {
-    LV2_URID atom_Blank;
-    LV2_URID atom_Float;
-    LV2_URID atom_Long;
-    LV2_URID atom_String;
-    LV2_URID atom_Resource;
-    LV2_URID time_Position;
-    LV2_URID time_frame;
-    LV2_URID time_barBeat;
-    LV2_URID time_beatsPerMinute;
-    LV2_URID time_speed;
-    LV2_URID hex_customwave;
-    LV2_URID hex_mutemask;
-} QMidiArpURIs;
 
 class qmidiarp_seq_lv2 : public MidiSeq
 {
@@ -66,53 +41,38 @@ public:
         qmidiarp_seq_lv2(double sample_rate, const LV2_Feature *const *host_features);
 
         ~qmidiarp_seq_lv2();
-
-        enum PortIndex {
-            MidiIn = 0,
-            MidiOut = 1,
-            VELOCITY = 2,
-            NOTELENGTH = 3,
-            RESOLUTION = 4,
-            SIZE = 5,
-            TRANSPOSE = 6,
-            CH_OUT = 7,
-            CH_IN = 8,
-            CURSOR_POS = 9, //output
-            WAVEDATA1 = 10, //output
-            WAVEDATA2 = 11,
-            WAVEDATA3 = 12,
-            WAVEDATA4 = 13,
-            WAVEDATA5 = 14,
-            WAVEDATA6 = 15,
-            WAVEDATA7 = 16,
-            WAVEDATA8 = 17,
-            WAVEDATA9 = 18,
-            WAVEDATA10 = 19,
-            WAVEDATA11 = 20,
-            WAVEDATA12 = 21,
-            WAVEDATA13 = 22,
-            WAVEDATA14 = 23,
-            WAVEDATA15 = 24,
-            WAVEDATA16 = 25,
-            LOOPMARKER = 26,
-            LOOPMODE = 27,
-            MUTE = 28,
-            MOUSEX = 29,
-            MOUSEY = 30,
-            MOUSEBUTTON = 31,
-            MOUSEPRESSED = 32,
-            ENABLE_NOTEIN = 33,
-            ENABLE_VELIN = 34,
-            ENABLE_NOTEOFF = 35,
-            ENABLE_RESTARTBYKBD = 36,
-            ENABLE_TRIGBYKBD = 37,
-            ENABLE_TRIGLEGATO = 38,
-            RECORD = 39,
-            DEFER = 40,
-            CURR_RECSTEP = 41, //output
-            TRANSPORT_CONTROL = 42,
-            TRANSPORT_MODE = 43,
-            TEMPO = 44
+        /* this enum is for the float value array and shifted by 2 compared with the
+         * float port indices */
+        enum FloatField {
+            VELOCITY = 0,
+            NOTELENGTH = 1,
+            RESOLUTION = 2,
+            SIZE = 3,
+            TRANSPOSE = 4,
+            CH_OUT = 5,
+            CH_IN = 6,
+            CURSOR_POS = 7, //output
+            LOOPMARKER = 8,
+            LOOPMODE = 9,
+            MUTE = 10,
+            MOUSEX = 11,
+            MOUSEY = 12,
+            MOUSEBUTTON = 13,
+            MOUSEPRESSED = 14,
+            ENABLE_NOTEIN = 15,
+            ENABLE_VELIN = 16,
+            ENABLE_NOTEOFF = 17,
+            ENABLE_RESTARTBYKBD = 18,
+            ENABLE_TRIGBYKBD = 19,
+            ENABLE_TRIGLEGATO = 20,
+            RECORD = 21,
+            DEFER = 22,
+            CURR_RECSTEP = 23, //output
+            TRANSPORT_CONTROL = 24,
+            TRANSPORT_MODE = 25,
+            TEMPO = 26,
+            WAV_CONTROL = 27,
+            WAV_NOTIFY = 28
         };
 
         void connect_port(uint32_t port, void *data);
@@ -122,16 +82,17 @@ public:
         void updatePos(const LV2_Atom_Object* obj);
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
+        LV2_Atom_Forge forge;
+        LV2_Atom_Forge_Frame frame;
 
 private:
 
-        float *val[50];
+        float *val[30];
         uint64_t curFrame;
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
         Sample currentSample;
-        int waveIndex;
         double mouseXCur;
         double mouseYCur;
         int mouseEvCur;
@@ -142,9 +103,9 @@ private:
         double internalTempo;
         double sampleRate;
         double tempo;
+        bool ui_up;
         void updateParams();
         void sendWave();
-        void sendSample(int ix, int port);
 
         uint32_t MidiEventID;
         uint64_t transportFramesDelta;  /**< Frames since last click start */
@@ -158,6 +119,8 @@ private:
         LV2_Atom_Sequence *inEventBuffer;
         LV2_Event_Buffer *outEventBuffer;
         LV2_Atom_Sequence *transportControl;
+        const LV2_Atom_Sequence *control;
+        LV2_Atom_Sequence *notify;
 };
 
 #endif
