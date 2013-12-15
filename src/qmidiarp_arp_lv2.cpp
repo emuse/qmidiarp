@@ -28,11 +28,6 @@
 #include "qmidiarp_arp_lv2.h"
 #include "qmidiarp_arpwidget_lv2.h"
 
-#include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
-
-#define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
-#define LV2_TIME_URI "http://lv2plug.in/ns/ext/time"
-
 qmidiarp_arp_lv2::qmidiarp_arp_lv2 (
     double sample_rate, const LV2_Feature *const *host_features )
     :MidiArp()
@@ -93,26 +88,26 @@ qmidiarp_arp_lv2::~qmidiarp_arp_lv2 (void)
 {
 }
 
-void qmidiarp_arp_lv2::connect_port ( uint32_t port, void *data )
+void qmidiarp_arp_lv2::connect_port ( uint32_t port, void *seqdata )
 {
     switch(port) {
     case 0:
-        inEventBuffer = (LV2_Atom_Sequence*)data;
+        inEventBuffer = (LV2_Atom_Sequence*)seqdata;
         break;
     case 1:
-        outEventBuffer = (LV2_Event_Buffer *) data;
+        outEventBuffer = (const LV2_Atom_Sequence*)seqdata;
         break;
     case TRANSPORT_CONTROL + 2:
-        transportControl = (LV2_Atom_Sequence*)data;
+        transportControl = (LV2_Atom_Sequence*)seqdata;
         break;
     case WAV_CONTROL + 2:
-        control = (const LV2_Atom_Sequence*)data;
+        control = (const LV2_Atom_Sequence*)seqdata;
         break;
     case WAV_NOTIFY + 2:
-        notify = (LV2_Atom_Sequence*)data;
+        notify = (LV2_Atom_Sequence*)seqdata;
         break;
     default:
-        val[port - 2] = (float *) data;
+        val[port - 2] = (float *) seqdata;
         break;
     }
 }
@@ -163,12 +158,12 @@ void qmidiarp_arp_lv2::updatePos(const LV2_Atom_Object* obj)
 
 void qmidiarp_arp_lv2::run ( uint32_t nframes )
 {
-    LV2_Event_Iterator iter_out;
-    lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
-    lv2_event_begin(&iter_out, outEventBuffer);
-
     const QMidiArpURIs* uris = &m_uris;
     const LV2_Atom_Sequence* atomIn = transportControl;
+
+    const uint32_t capacity = outEventBuffer->atom.size;
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
+    lv2_atom_forge_sequence_head(&forge, &frame, 0);
 
 
     if (!(nCalls % 12)) updateParams();
@@ -226,24 +221,24 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
     if (inEventBuffer) {
         LV2_ATOM_SEQUENCE_FOREACH(inEventBuffer, event) {
             if (event && event->body.type == MidiEventID) {
-                uint8_t *data = (uint8_t *) LV2_ATOM_BODY(&event->body);
+                uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
                 MidiEvent inEv;
-                if ( (data[0] & 0xf0) == 0x90 ) {
+                if ( (di[0] & 0xf0) == 0x90 ) {
                     inEv.type = EV_NOTEON;
-                    inEv.value = data[2];
+                    inEv.value = di[2];
                 }
-                else if ( (data[0] & 0xf0) == 0x80 ) {
+                else if ( (di[0] & 0xf0) == 0x80 ) {
                     inEv.type = EV_NOTEON;
                     inEv.value = 0;
                 }
-                else if ( (data[0] & 0xf0) == 0xb0 ) {
+                else if ( (di[0] & 0xf0) == 0xb0 ) {
                     inEv.type = EV_CONTROLLER;
-                    inEv.value = data[2];
+                    inEv.value = di[2];
                 }
                 else inEv.type = EV_NONE;
 
-                inEv.channel = data[0] & 0x0f;
-                inEv.data=data[1];
+                inEv.channel = di[0] & 0x0f;
+                inEv.data=di[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
                 (void)handleEvent(inEv, tick - 2); //we don't need to pre-schedule
@@ -268,7 +263,7 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
                             d[0] = 0x90 + channelOut;
                             d[1] = returnNote.at(l2);
                             d[2] = returnVelocity.at(l2);
-                            lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
+                            forgeMidiEvent(f, d, 3);
                             evTickQueue.replace(bufPtr, curTick + returnLength);
                             evQueue.replace(bufPtr, returnNote.at(l2));
                             bufPtr++;
@@ -304,11 +299,23 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
             d[0] = 0x90 + channelOut;
             d[1] = outval;
             d[2] = 0;
-            lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
+            forgeMidiEvent(f, d, 3);
         }
         curFrame++;
     }
     nCalls++;
+}
+
+void qmidiarp_arp_lv2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size)
+{
+    QMidiArpURIs* const uris = &m_uris;
+    LV2_Atom midiatom;
+    midiatom.type = uris->midi_MidiEvent;
+    midiatom.size = size;
+    lv2_atom_forge_frame_time(&forge, f);
+    lv2_atom_forge_raw(&forge, &midiatom, sizeof(LV2_Atom));
+    lv2_atom_forge_raw(&forge, buffer, size);
+    lv2_atom_forge_pad(&forge, sizeof(LV2_Atom) + size);
 }
 
 void qmidiarp_arp_lv2::updateParams()

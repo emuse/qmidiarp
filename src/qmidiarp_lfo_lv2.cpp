@@ -28,11 +28,6 @@
 #include "qmidiarp_lfo_lv2.h"
 #include "qmidiarp_lfowidget_lv2.h"
 
-#include "lv2/lv2plug.in/ns/ext/event/event-helpers.h"
-
-#define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
-#define LV2_TIME_URI "http://lv2plug.in/ns/ext/time"
-
 qmidiarp_lfo_lv2::qmidiarp_lfo_lv2 (
     double sample_rate, const LV2_Feature *const *host_features )
     :MidiLfo()
@@ -93,26 +88,26 @@ qmidiarp_lfo_lv2::~qmidiarp_lfo_lv2 (void)
 {
 }
 
-void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *data )
+void qmidiarp_lfo_lv2::connect_port ( uint32_t port, void *seqdata )
 {
     switch(port) {
     case 0:
-        inEventBuffer = (LV2_Event_Buffer *)data;
+        inEventBuffer = (LV2_Atom_Sequence*)seqdata;
         break;
     case 1:
-        outEventBuffer = (LV2_Event_Buffer *) data;
+        outEventBuffer = (const LV2_Atom_Sequence*)seqdata;
         break;
     case TRANSPORT_CONTROL + 2:
-        transportControl = (LV2_Atom_Sequence*)data;
+        transportControl = (LV2_Atom_Sequence*)seqdata;
         break;
     case WAV_CONTROL + 2:
-        control = (const LV2_Atom_Sequence*)data;
+        control = (const LV2_Atom_Sequence*)seqdata;
         break;
     case WAV_NOTIFY + 2:
-        notify = (LV2_Atom_Sequence*)data;
+        notify = (LV2_Atom_Sequence*)seqdata;
         break;
     default:
-        val[port - 2] = (float *) data;
+        val[port - 2] = (float *) seqdata;
         break;
     }
 }
@@ -168,9 +163,7 @@ void qmidiarp_lfo_lv2::updatePos(const LV2_Atom_Object* obj)
 
 void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 {
-    LV2_Event_Iterator iter_out;
-    lv2_event_buffer_reset(outEventBuffer, outEventBuffer->stamp_type, outEventBuffer->data);
-    lv2_event_begin(&iter_out, outEventBuffer);
+    const uint32_t capacity = outEventBuffer->atom.size;
 
     const QMidiArpURIs* uris = &m_uris;
     const LV2_Atom_Sequence* atomIn = transportControl;
@@ -221,40 +214,37 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
 
         // MIDI Input
     if (inEventBuffer) {
-        LV2_Event_Iterator iter;
-        lv2_event_begin(&iter, inEventBuffer);
-        while (lv2_event_is_valid(&iter)) {
-            uint8_t   *data;
-            LV2_Event *event = lv2_event_get(&iter, &data);
-            if (event && event->type == MidiEventID) {
-
+        LV2_ATOM_SEQUENCE_FOREACH(inEventBuffer, event) {
+            if (event && event->body.type == MidiEventID) {
+                uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
                 MidiEvent inEv;
-                if ( (data[0] & 0xf0) == 0x90 ) {
+                if ( (di[0] & 0xf0) == 0x90 ) {
                     inEv.type = EV_NOTEON;
-                    inEv.value = data[2];
+                    inEv.value = di[2];
                 }
-                else if ( (data[0] & 0xf0) == 0x80 ) {
+                else if ( (di[0] & 0xf0) == 0x80 ) {
                     inEv.type = EV_NOTEON;
                     inEv.value = 0;
                 }
-                else if ( (data[0] & 0xf0) == 0xb0 ) {
+                else if ( (di[0] & 0xf0) == 0xb0 ) {
                     inEv.type = EV_CONTROLLER;
-                    inEv.value = data[2];
+                    inEv.value = di[2];
                 }
                 else inEv.type = EV_NONE;
 
-                inEv.channel = data[0] & 0x0f;
-                inEv.data=data[1];
+                inEv.channel = di[0] & 0x0f;
+                inEv.data=di[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
                 (void)handleEvent(inEv, tick);
             }
-            lv2_event_increment(&iter);
         }
     }
 
 
         // MIDI Output
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
+    lv2_atom_forge_sequence_head(&forge, &lv2frame, 0);
     for (uint f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
@@ -265,7 +255,7 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
                     d[0] = 0xb0 + channelOut;
                     d[1] = ccnumber;
                     d[2] = frame.at(inLfoFrame).value;
-                    lv2_event_write(&iter_out, f, 0, MidiEventID, 3, d);
+                    forgeMidiEvent(f, d, 3);
                 }
                 inLfoFrame++;
                 if (inLfoFrame >= frameSize) {
@@ -280,6 +270,18 @@ void qmidiarp_lfo_lv2::run ( uint32_t nframes )
         curFrame++;
     }
     nCalls++;
+}
+
+void qmidiarp_lfo_lv2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size)
+{
+    QMidiArpURIs* const uris = &m_uris;
+    LV2_Atom midiatom;
+    midiatom.type = uris->midi_MidiEvent;
+    midiatom.size = size;
+    lv2_atom_forge_frame_time(&forge, f);
+    lv2_atom_forge_raw(&forge, &midiatom, sizeof(LV2_Atom));
+    lv2_atom_forge_raw(&forge, buffer, size);
+    lv2_atom_forge_pad(&forge, sizeof(LV2_Atom) + size);
 }
 
 void qmidiarp_lfo_lv2::updateParams()
@@ -407,7 +409,7 @@ void qmidiarp_lfo_lv2::sendWave()
     lv2_atom_forge_set_buffer(&forge, (uint8_t*)notify, capacity);
     lv2_atom_forge_sequence_head(&forge, &lv2frame, 0);
 
-    /* forge container object of type 'ui_state' */
+    /* forge container object of type 'hex_customwave' */
     LV2_Atom_Forge_Frame lv2frame;
     lv2_atom_forge_frame_time(&forge, 0);
     lv2_atom_forge_blank(&forge, &lv2frame, 1, uris->hex_customwave);
@@ -419,6 +421,7 @@ void qmidiarp_lfo_lv2::sendWave()
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &lv2frame);
+    qWarning("sent wave");
 }
 
 static LV2_State_Status qmidiarp_lfo_lv2_state_restore ( LV2_Handle instance,

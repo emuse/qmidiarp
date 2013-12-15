@@ -3,7 +3,6 @@
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
-@prefix lv2ev: <http://lv2plug.in/ns/ext/event#> .
 @prefix lv2ui: <http://lv2plug.in/ns/extensions/ui#> .
 @prefix time:  <http://lv2plug.in/ns/ext/time#> .
 @prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
@@ -24,15 +23,17 @@
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
     lv2ui:ui <https://git.code.sf.net/p/qmidiarp/lfo#ui> ;
     lv2:port [
-        a lv2:InputPort, lv2ev:EventPort ;
-        lv2ev:supportsEvent <http://lv2plug.in/ns/ext/midi#MidiEvent> ;
+        a lv2:InputPort, atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports midi:MidiEvent ;
         lv2:index 0;
         lv2:symbol "in";
         lv2:name "MIDI In";
     ] ;
     lv2:port [
-        a lv2:OutputPort, lv2ev:EventPort ;
-        lv2ev:supportsEvent <http://lv2plug.in/ns/ext/midi#MidiEvent> ;
+        a lv2:OutputPort, atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports midi:MidiEvent ;
         lv2:index 1;
         lv2:symbol "out";
         lv2:name "MIDI Out";

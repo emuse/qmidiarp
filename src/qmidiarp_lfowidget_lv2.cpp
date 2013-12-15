@@ -245,6 +245,7 @@ void qmidiarp_lfowidget_lv2::sendUIisUp(bool on)
 void qmidiarp_lfowidget_lv2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
+    qWarning("receiving wave");
     if (atom->type != uris->atom_Blank) return;
 
     /* cast the buffer to Atom Object */

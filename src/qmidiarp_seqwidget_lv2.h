@@ -32,7 +32,6 @@
 #include "lv2_common.h"
 
 #define QMIDIARP_SEQ_LV2UI_URI QMIDIARP_SEQ_LV2_PREFIX "ui"
-#define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
 
 class qmidiarp_seqwidget_lv2 : public SeqWidget
 {

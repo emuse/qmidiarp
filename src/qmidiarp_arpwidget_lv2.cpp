@@ -376,6 +376,7 @@ void qmidiarp_arpwidget_lv2::receivePattern(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
     if (atom->type != uris->atom_Blank) return;
+    //qWarning("receiving pattern from backend");
 
     /* cast the buffer to Atom Object */
     LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;
@@ -386,6 +387,7 @@ void qmidiarp_arpwidget_lv2::receivePattern(LV2_Atom* atom)
     /* handle pattern string as atom body */
     const char* p = (const char*)LV2_ATOM_BODY(a0);
     if (!strlen(p)) return;
+    qWarning("received pattern string from backend");
     QString newPattern = QString::fromUtf8(p);
     QString txPattern = newPattern.remove(QChar(0));
     receivePatternFlag = true;

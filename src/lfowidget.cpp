@@ -704,7 +704,7 @@ void LfoWidget::updateFreq(int val)
     freqBoxIndex = val;
     if (midiWorker) midiWorker->updateFrequency(lfoFreqValues[val]);
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     modified = true;
 }
 
@@ -714,7 +714,7 @@ void LfoWidget::updateRes(int val)
     resBoxIndex = val;
     if (midiWorker) midiWorker->updateResolution(lfoResValues[val]);
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
     modified = true;
 }
@@ -725,7 +725,7 @@ void LfoWidget::updateSize(int val)
     sizeBoxIndex = val;
     if (midiWorker) midiWorker->updateSize(sizeBox->currentText().toInt());
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
     modified = true;
 }
@@ -741,7 +741,7 @@ void LfoWidget::updateAmp(int val)
 {
     if (midiWorker) midiWorker->updateAmplitude(val);
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     modified = true;
 }
 
@@ -749,7 +749,7 @@ void LfoWidget::updateOffs(int val)
 {
     if (midiWorker) midiWorker->updateOffset(val);
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     modified = true;
 }
 

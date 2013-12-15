@@ -104,6 +104,7 @@ private:
         double tempo;
         bool ui_up;
         void updateParams();
+        void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
         uint32_t MidiEventID;
         uint64_t transportFramesDelta;  /**< Frames since last click start */
@@ -111,8 +112,8 @@ private:
         float transportSpeed;
         bool transportMode;
 
-        LV2_Event_Buffer *inEventBuffer;
-        LV2_Event_Buffer *outEventBuffer;
+        LV2_Atom_Sequence *inEventBuffer;
+        const LV2_Atom_Sequence *outEventBuffer;
         LV2_Atom_Sequence *transportControl;
         const LV2_Atom_Sequence *control;
         LV2_Atom_Sequence *notify;

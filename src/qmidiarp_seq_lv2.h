@@ -106,6 +106,7 @@ private:
         bool ui_up;
         void updateParams();
         void sendWave();
+        void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
         uint32_t MidiEventID;
         uint64_t transportFramesDelta;  /**< Frames since last click start */
@@ -117,7 +118,7 @@ private:
         int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;
-        LV2_Event_Buffer *outEventBuffer;
+        const LV2_Atom_Sequence *outEventBuffer;
         LV2_Atom_Sequence *transportControl;
         const LV2_Atom_Sequence *control;
         LV2_Atom_Sequence *notify;
