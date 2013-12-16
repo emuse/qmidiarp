@@ -8,6 +8,7 @@
 @prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
 @prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
 
 <https://git.code.sf.net/p/qmidiarp/arp>
     a lv2:Plugin, lv2:InstrumentPlugin ;
@@ -297,7 +298,6 @@
         lv2:index 30 ;
         lv2:symbol "WAV_NOTIFY" ;
         lv2:name "Notify" ;
-        # 8192 * sizeof(int) + LV2-Atoms
         rsz:minimumSize 1024;
       rdfs:comment "Plugin to GUI communication"
     ] .
