@@ -162,8 +162,6 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
     const LV2_Atom_Sequence* atomIn = transportControl;
 
     const uint32_t capacity = outEventBuffer->atom.size;
-    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
-    lv2_atom_forge_sequence_head(&forge, &frame, 0);
 
 
     if (!(nCalls % 12)) updateParams();
@@ -248,6 +246,8 @@ void qmidiarp_arp_lv2::run ( uint32_t nframes )
 
 
         // MIDI Output
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
+    lv2_atom_forge_sequence_head(&forge, &m_frame, 0);
     for (uint f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
@@ -400,7 +400,7 @@ void qmidiarp_arp_lv2::sendPattern(const QString & p)
 
     /* prepare forge buffer and initialize atom-sequence */
     lv2_atom_forge_set_buffer(&forge, (uint8_t*)notify, capacity);
-    lv2_atom_forge_sequence_head(&forge, &frame, 0);
+    lv2_atom_forge_sequence_head(&forge, &m_frame, 0);
 
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);

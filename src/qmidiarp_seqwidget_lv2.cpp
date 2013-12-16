@@ -128,9 +128,12 @@ qmidiarp_seqwidget_lv2::~qmidiarp_seqwidget_lv2()
 void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
+    const QMidiArpURIs* uris = &m_uris;
+    LV2_Atom* atom = (LV2_Atom*)buffer;
 
-    if ((format > 0) && (port_index == WAV_NOTIFY)) {
-        LV2_Atom* atom = (LV2_Atom*)buffer;
+    if (format == uris->atom_eventTransfer
+      && atom->type == uris->atom_Blank) {
+    //if ((format > 0) && (port_index == WAV_NOTIFY)) {
         receiveWave(atom);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {

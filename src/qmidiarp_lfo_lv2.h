@@ -84,7 +84,7 @@ public:
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
         LV2_Atom_Forge forge;
-        LV2_Atom_Forge_Frame lv2frame;
+        LV2_Atom_Forge_Frame m_lv2frame;
 
 private:
 
