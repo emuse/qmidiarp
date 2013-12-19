@@ -159,17 +159,14 @@ void qmidiarp_arp_lv2::updatePos(const LV2_Atom_Object* obj)
 void qmidiarp_arp_lv2::run ( uint32_t nframes )
 {
     const QMidiArpURIs* uris = &m_uris;
-    const LV2_Atom_Sequence* atomIn = transportControl;
-
     const uint32_t capacity = outEventBuffer->atom.size;
-
 
     if (!(nCalls % 12)) updateParams();
 
         // Position stuff
     if (transportControl) {
-        LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&atomIn->body);
-        while (!lv2_atom_sequence_is_end(&atomIn->body, atomIn->atom.size, atomEv)) {
+        LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&transportControl->body);
+        while (!lv2_atom_sequence_is_end(&transportControl->body, transportControl->atom.size, atomEv)) {
             if (atomEv->body.type == uris->atom_Blank) {
                 const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
                 if (obj->body.otype == uris->time_Position) {
