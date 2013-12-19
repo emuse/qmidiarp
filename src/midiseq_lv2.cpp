@@ -1,5 +1,5 @@
 /*!
- * @file qmidiarp_seq_lv2.cpp
+ * @file midiseq_lv2.cpp
  * @brief Implements an LV2 plugin inheriting from MidiSeq
  *
  * @section LICENSE
@@ -25,10 +25,10 @@
 
 #include <cstdio>
 #include <cmath>
-#include "qmidiarp_seq_lv2.h"
-#include "qmidiarp_seqwidget_lv2.h"
+#include "midiseq_lv2.h"
+#include "seqwidget_lv2.h"
 
-qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
+MidiSeqLV2::MidiSeqLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
     :MidiSeq()
 {
@@ -89,11 +89,11 @@ qmidiarp_seq_lv2::qmidiarp_seq_lv2 (
 }
 
 
-qmidiarp_seq_lv2::~qmidiarp_seq_lv2 (void)
+MidiSeqLV2::~MidiSeqLV2 (void)
 {
 }
 
-void qmidiarp_seq_lv2::connect_port ( uint32_t port, void *seqdata )
+void MidiSeqLV2::connect_port ( uint32_t port, void *seqdata )
 {
     switch(port) {
     case 0:
@@ -117,7 +117,7 @@ void qmidiarp_seq_lv2::connect_port ( uint32_t port, void *seqdata )
     }
 }
 
-void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
+void MidiSeqLV2::updatePos(const LV2_Atom_Object* obj)
 {
     QMidiArpURIs* const uris = &m_uris;
 
@@ -165,7 +165,7 @@ void qmidiarp_seq_lv2::updatePos(const LV2_Atom_Object* obj)
         //~ , tempoChangeTick, transportBpm, transportSpeed);
 }
 
-void qmidiarp_seq_lv2::run (uint32_t nframes )
+void MidiSeqLV2::run (uint32_t nframes )
 {
     const QMidiArpURIs* uris = &m_uris;
     const uint32_t capacity = outEventBuffer->atom.size;
@@ -291,7 +291,7 @@ void qmidiarp_seq_lv2::run (uint32_t nframes )
     nCalls++;
 }
 
-void qmidiarp_seq_lv2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size)
+void MidiSeqLV2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size)
 {
     QMidiArpURIs* const uris = &m_uris;
     LV2_Atom midiatom;
@@ -303,7 +303,7 @@ void qmidiarp_seq_lv2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, u
     lv2_atom_forge_pad(&forge, sizeof(LV2_Atom) + size);
 }
 
-void qmidiarp_seq_lv2::updateParams()
+void MidiSeqLV2::updateParams()
 {
     bool changed = false;
 
@@ -413,7 +413,7 @@ void qmidiarp_seq_lv2::updateParams()
     }
 }
 
-void qmidiarp_seq_lv2::sendWave()
+void MidiSeqLV2::sendWave()
 {
     if (!(dataChanged && ui_up)) return;
     dataChanged = false;
@@ -446,11 +446,11 @@ void qmidiarp_seq_lv2::sendWave()
     lv2_atom_forge_pop(&forge, &frame);
 }
 
-static LV2_State_Status qmidiarp_seq_lv2_state_restore ( LV2_Handle instance,
+static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -505,11 +505,11 @@ static LV2_State_Status qmidiarp_seq_lv2_state_restore ( LV2_Handle instance,
     return LV2_STATE_SUCCESS;
 }
 
-static LV2_State_Status qmidiarp_seq_lv2_state_save ( LV2_Handle instance,
+static LV2_State_Status MidiSeqLV2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const *features )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
 
     if (pPlugin == NULL) return LV2_STATE_ERR_UNKNOWN;
 
@@ -554,134 +554,134 @@ static LV2_State_Status qmidiarp_seq_lv2_state_save ( LV2_Handle instance,
     return result;
 }
 
-static const LV2_State_Interface qmidiarp_seq_lv2_state_interface =
+static const LV2_State_Interface MidiSeqLV2_state_interface =
 {
-    qmidiarp_seq_lv2_state_save,
-    qmidiarp_seq_lv2_state_restore
+    MidiSeqLV2_state_save,
+    MidiSeqLV2_state_restore
 };
 
-void qmidiarp_seq_lv2::activate (void)
+void MidiSeqLV2::activate (void)
 {
 }
 
-void qmidiarp_seq_lv2::deactivate (void)
+void MidiSeqLV2::deactivate (void)
 {
 }
 
-static LV2_Handle qmidiarp_seq_lv2_instantiate (
+static LV2_Handle MidiSeqLV2_instantiate (
     const LV2_Descriptor *, double sample_rate, const char *,
     const LV2_Feature *const *host_features )
 {
-    return new qmidiarp_seq_lv2(sample_rate, host_features);
+    return new MidiSeqLV2(sample_rate, host_features);
 }
 
-static void qmidiarp_seq_lv2_connect_port (
+static void MidiSeqLV2_connect_port (
     LV2_Handle instance, uint32_t port, void *data )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         pPlugin->connect_port(port, data);
 }
 
-static void qmidiarp_seq_lv2_run ( LV2_Handle instance, uint32_t nframes )
+static void MidiSeqLV2_run ( LV2_Handle instance, uint32_t nframes )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         pPlugin->run(nframes);
 }
 
-static void qmidiarp_seq_lv2_activate ( LV2_Handle instance )
+static void MidiSeqLV2_activate ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         pPlugin->activate();
 }
 
-static void qmidiarp_seq_lv2_deactivate ( LV2_Handle instance )
+static void MidiSeqLV2_deactivate ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         pPlugin->deactivate();
 }
 
-static void qmidiarp_seq_lv2_cleanup ( LV2_Handle instance )
+static void MidiSeqLV2_cleanup ( LV2_Handle instance )
 {
-    qmidiarp_seq_lv2 *pPlugin = static_cast<qmidiarp_seq_lv2 *> (instance);
+    MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         delete pPlugin;
 }
 
-static const void *qmidiarp_seq_lv2_extension_data ( const char * uri)
+static const void *MidiSeqLV2_extension_data ( const char * uri)
 {
     static const LV2_State_Interface state_iface =
-                { qmidiarp_seq_lv2_state_save, qmidiarp_seq_lv2_state_restore };
+                { MidiSeqLV2_state_save, MidiSeqLV2_state_restore };
     if (!strcmp(uri, LV2_STATE__interface)) {
         return &state_iface;
     }
     else return NULL;
 }
 
-static LV2UI_Handle qmidiarp_seq_lv2ui_instantiate (
+static LV2UI_Handle MidiSeqLV2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
     const LV2_Feature *const *host_features )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = new qmidiarp_seqwidget_lv2(
+    SeqWidgetLV2 *pWidget = new SeqWidgetLV2(
                     controller, write_function, host_features);
     *widget = pWidget;
     return pWidget;
 }
 
-static void qmidiarp_seq_lv2ui_cleanup ( LV2UI_Handle ui )
+static void MidiSeqLV2ui_cleanup ( LV2UI_Handle ui )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
+    SeqWidgetLV2 *pWidget = static_cast<SeqWidgetLV2 *> (ui);
     if (pWidget)
         delete pWidget;
 }
 
-static void qmidiarp_seq_lv2ui_port_event (
+static void MidiSeqLV2ui_port_event (
     LV2UI_Handle ui, uint32_t port_index,
     uint32_t buffer_size, uint32_t format, const void *buffer )
 {
-    qmidiarp_seqwidget_lv2 *pWidget = static_cast<qmidiarp_seqwidget_lv2 *> (ui);
+    SeqWidgetLV2 *pWidget = static_cast<SeqWidgetLV2 *> (ui);
     if (pWidget)
         pWidget->port_event(port_index, buffer_size, format, buffer);
 }
 
-static const void *qmidiarp_seq_lv2ui_extension_data ( const char * )
+static const void *MidiSeqLV2ui_extension_data ( const char * )
 {
     return NULL;
 }
 
-static const LV2_Descriptor qmidiarp_seq_lv2_descriptor =
+static const LV2_Descriptor MidiSeqLV2_descriptor =
 {
     QMIDIARP_SEQ_LV2_URI,
-    qmidiarp_seq_lv2_instantiate,
-    qmidiarp_seq_lv2_connect_port,
-    qmidiarp_seq_lv2_activate,
-    qmidiarp_seq_lv2_run,
-    qmidiarp_seq_lv2_deactivate,
-    qmidiarp_seq_lv2_cleanup,
-    qmidiarp_seq_lv2_extension_data
+    MidiSeqLV2_instantiate,
+    MidiSeqLV2_connect_port,
+    MidiSeqLV2_activate,
+    MidiSeqLV2_run,
+    MidiSeqLV2_deactivate,
+    MidiSeqLV2_cleanup,
+    MidiSeqLV2_extension_data
 };
 
-static const LV2UI_Descriptor qmidiarp_seq_lv2ui_descriptor =
+static const LV2UI_Descriptor MidiSeqLV2ui_descriptor =
 {
     QMIDIARP_SEQ_LV2UI_URI,
-    qmidiarp_seq_lv2ui_instantiate,
-    qmidiarp_seq_lv2ui_cleanup,
-    qmidiarp_seq_lv2ui_port_event,
-    qmidiarp_seq_lv2ui_extension_data
+    MidiSeqLV2ui_instantiate,
+    MidiSeqLV2ui_cleanup,
+    MidiSeqLV2ui_port_event,
+    MidiSeqLV2ui_extension_data
 };
 
 LV2_SYMBOL_EXPORT const LV2_Descriptor *lv2_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_seq_lv2_descriptor : NULL);
+    return (index == 0 ? &MidiSeqLV2_descriptor : NULL);
 }
 
 LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &qmidiarp_seq_lv2ui_descriptor : NULL);
+    return (index == 0 ? &MidiSeqLV2ui_descriptor : NULL);
 }
 

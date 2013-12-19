@@ -1,5 +1,5 @@
 /*!
- * @file qmidiarp_seqwidget_lv2.cpp
+ * @file seqwidget_lv2.cpp
  * @brief Implements the the LV2 GUI for the QMidiArp Seq plugin.
  *
  * @section LICENSE
@@ -23,7 +23,7 @@
  *
  */
 
-#include "qmidiarp_seqwidget_lv2.h"
+#include "seqwidget_lv2.h"
 
 #include <unistd.h>
 #include <ctime>
@@ -38,7 +38,7 @@
 
 #endif
 
-qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
+SeqWidgetLV2::SeqWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
@@ -120,12 +120,12 @@ qmidiarp_seqwidget_lv2::qmidiarp_seqwidget_lv2 (
     sendUIisUp(true);
 }
 
-qmidiarp_seqwidget_lv2::~qmidiarp_seqwidget_lv2()
+SeqWidgetLV2::~SeqWidgetLV2()
 {
     sendUIisUp(false);
 }
 
-void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
+void SeqWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
     if ((format > 0) && (port_index == WAV_NOTIFY)) {
@@ -226,7 +226,7 @@ void qmidiarp_seqwidget_lv2::port_event ( uint32_t port_index,
     }
 }
 
-void qmidiarp_seqwidget_lv2::sendUIisUp(bool on)
+void SeqWidgetLV2::sendUIisUp(bool on)
 {
     const QMidiArpURIs* uris = &m_uris;
     uint8_t obj_buf[64];
@@ -247,7 +247,7 @@ void qmidiarp_seqwidget_lv2::sendUIisUp(bool on)
     writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
-void qmidiarp_seqwidget_lv2::receiveWave(LV2_Atom* atom)
+void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
     if (atom->type != uris->atom_Blank) return;
@@ -276,7 +276,7 @@ void qmidiarp_seqwidget_lv2::receiveWave(LV2_Atom* atom)
     screen->update();
 }
 
-void qmidiarp_seqwidget_lv2::receiveWavePoint(int index, int value)
+void SeqWidgetLV2::receiveWavePoint(int index, int value)
 {
     Sample sample;
     if (value < 0) {
@@ -290,7 +290,7 @@ void qmidiarp_seqwidget_lv2::receiveWavePoint(int index, int value)
     else data.replace(index, sample);
 }
 
-void qmidiarp_seqwidget_lv2::mapBool(bool on)
+void SeqWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender())              updateParam(MUTE, value);
@@ -305,7 +305,7 @@ void qmidiarp_seqwidget_lv2::mapBool(bool on)
     else if (transportBox == sender())          updateParam(TRANSPORT_MODE, value);
 }
 
-void qmidiarp_seqwidget_lv2::mapMouse(double mouseX, double mouseY, int buttons, int pressed)
+void SeqWidgetLV2::mapMouse(double mouseX, double mouseY, int buttons, int pressed)
 {
     updateParam(MOUSEX, mouseX);
     updateParam(MOUSEY, mouseY);
@@ -314,7 +314,7 @@ void qmidiarp_seqwidget_lv2::mapMouse(double mouseX, double mouseY, int buttons,
     updateParam(LOOPMARKER, screen->loopMarker);
 }
 
-void qmidiarp_seqwidget_lv2::mapParam(int value)
+void SeqWidgetLV2::mapParam(int value)
 {
     if (velocity == sender())           updateParam(VELOCITY, value);
     else if (notelength == sender())    updateParam(NOTELENGTH, value);
@@ -327,7 +327,7 @@ void qmidiarp_seqwidget_lv2::mapParam(int value)
     else if (tempoSpin == sender())     updateParam(TEMPO, value);
 }
 
-void qmidiarp_seqwidget_lv2::updateParam(int index, float fValue) const
+void SeqWidgetLV2::updateParam(int index, float fValue) const
 {
         writeFunction(m_controller, index, sizeof(float), 0, &fValue);
 }

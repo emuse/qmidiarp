@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_lfo_lv2.h
- * @brief Headers for the MidiLfo LV2 plugin class
+ * @file midiseq_lv2.h
+ * @brief Headers for the MidiSeq LV2 plugin class
  *
  * @section LICENSE
  *
@@ -23,51 +23,51 @@
  *
  */
 
-#ifndef QMIDIARP_LFO_LV2_H
-#define QMIDIARP_LFO_LV2_H
+#ifndef QMIDIARP_SEQ_LV2_H
+#define QMIDIARP_SEQ_LV2_H
 
-#include "midilfo.h"
-#include "lfowidget.h"
+#include "midiseq.h"
+#include "seqwidget.h"
 #include "lv2_common.h"
 
-#define QMIDIARP_LFO_LV2_URI QMIDIARP_LV2_URI "/lfo"
-#define QMIDIARP_LFO_LV2_PREFIX QMIDIARP_LFO_LV2_URI "#"
+#define QMIDIARP_SEQ_LV2_URI QMIDIARP_LV2_URI "/seq"
+#define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
 
 
-
-class qmidiarp_lfo_lv2 : public MidiLfo
+class MidiSeqLV2 : public MidiSeq
 {
 public:
 
-        qmidiarp_lfo_lv2(double sample_rate, const LV2_Feature *const *host_features);
+        MidiSeqLV2(double sample_rate, const LV2_Feature *const *host_features);
 
-        ~qmidiarp_lfo_lv2();
-
+        ~MidiSeqLV2();
+        /* this enum is for the float value array and shifted by 2 compared with the
+         * float port indices */
         enum FloatField {
-            AMPLITUDE = 0,
-            OFFSET = 1,
+            VELOCITY = 0,
+            NOTELENGTH = 1,
             RESOLUTION = 2,
             SIZE = 3,
-            FREQUENCY = 4,
+            TRANSPOSE = 4,
             CH_OUT = 5,
             CH_IN = 6,
             CURSOR_POS = 7, //output
-            WAVEFORM = 8,
+            LOOPMARKER = 8,
             LOOPMODE = 9,
             MUTE = 10,
             MOUSEX = 11,
             MOUSEY = 12,
             MOUSEBUTTON = 13,
             MOUSEPRESSED = 14,
-            CC_OUT = 15,
-            CC_IN = 16,
+            ENABLE_NOTEIN = 15,
+            ENABLE_VELIN = 16,
             ENABLE_NOTEOFF = 17,
             ENABLE_RESTARTBYKBD = 18,
             ENABLE_TRIGBYKBD = 19,
             ENABLE_TRIGLEGATO = 20,
             RECORD = 21,
             DEFER = 22,
-            SPARE = 23, //output
+            CURR_RECSTEP = 23, //output
             TRANSPORT_CONTROL = 24,
             TRANSPORT_MODE = 25,
             TEMPO = 26,
@@ -80,11 +80,10 @@ public:
         void activate();
         void deactivate();
         void updatePos(const LV2_Atom_Object* obj);
-        void sendWave();
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
         LV2_Atom_Forge forge;
-        LV2_Atom_Forge_Frame m_lv2frame;
+        LV2_Atom_Forge_Frame m_frame;
 
 private:
 
@@ -93,17 +92,20 @@ private:
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
-        int inLfoFrame;
+        Sample currentSample;
         double mouseXCur;
         double mouseYCur;
         int mouseEvCur;
         int lastMouseIndex;
         int buttonsCur;
+        int transpFromGui;
+        int velFromGui;
         double internalTempo;
         double sampleRate;
         double tempo;
         bool ui_up;
         void updateParams();
+        void sendWave();
         void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
         uint32_t MidiEventID;
@@ -111,6 +113,9 @@ private:
         float transportBpm;
         float transportSpeed;
         bool transportMode;
+        QVector<uint> evQueue;
+        QVector<uint> evTickQueue;
+        int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;

@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_seqwidget_lv2.cpp
- * @brief Headers for the LV2 GUI for the QMidiArp Seq plugin.
+ * @file lfowidget_lv2.h
+ * @brief Headers for the LV2 GUI for the QMidiArp Lfo plugin.
  *
  * @section LICENSE
  *
@@ -23,64 +23,61 @@
  *
  */
 
-#ifndef QMIDIARP_SEQWIDGET_LV2_H
-#define QMIDIARP_SEQWIDGET_LV2_H
+#ifndef QMIDIARP_LFOWIDGET_LV2_H
+#define QMIDIARP_LFOWIDGET_LV2_H
 
-#include "seqwidget.h"
-#include "midiseq.h"
-#include "qmidiarp_seq_lv2.h"
+#include "lfowidget.h"
+#include "midilfo.h"
+#include "midilfo_lv2.h"
 #include "lv2_common.h"
 
-#define QMIDIARP_SEQ_LV2UI_URI QMIDIARP_SEQ_LV2_PREFIX "ui"
+#define QMIDIARP_LFO_LV2UI_URI QMIDIARP_LFO_LV2_PREFIX "ui"
 
-class qmidiarp_seqwidget_lv2 : public SeqWidget
+class LfoWidgetLV2 : public LfoWidget
 {
   Q_OBJECT
 
   public:
-        /* this enum is for the port indices and shifted by 2 with respect to the
-         * float array indices used for data transfer */
-
-    enum PortIndex {
+        enum PortIndex {
             MidiIn = 0,
             MidiOut = 1,
-            VELOCITY = 2,
-            NOTELENGTH = 3,
+            AMPLITUDE = 2,
+            OFFSET = 3,
             RESOLUTION = 4,
             SIZE = 5,
-            TRANSPOSE = 6,
+            FREQUENCY = 6,
             CH_OUT = 7,
             CH_IN = 8,
             CURSOR_POS = 9, //output
-            LOOPMARKER = 10,
+            WAVEFORM = 10,
             LOOPMODE = 11,
             MUTE = 12,
             MOUSEX = 13,
             MOUSEY = 14,
             MOUSEBUTTON = 15,
             MOUSEPRESSED = 16,
-            ENABLE_NOTEIN = 17,
-            ENABLE_VELIN = 18,
+            CC_OUT = 17,
+            CC_IN = 18,
             ENABLE_NOTEOFF = 19,
             ENABLE_RESTARTBYKBD = 20,
             ENABLE_TRIGBYKBD = 21,
             ENABLE_TRIGLEGATO = 22,
             RECORD = 23,
             DEFER = 24,
-            CURR_RECSTEP = 25, //output
+            SPARE = 25,
             TRANSPORT_CONTROL = 26,
             TRANSPORT_MODE = 27,
             TEMPO = 28,
             WAV_CONTROL = 29,
             WAV_NOTIFY = 30
-    };
+        };
 
-    qmidiarp_seqwidget_lv2(
+    LfoWidgetLV2(
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features
         );
-    ~qmidiarp_seqwidget_lv2();
+    ~LfoWidgetLV2();
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);

@@ -1,6 +1,6 @@
 /*!
- * @file qmidiarp_seq_lv2.h
- * @brief Headers for the MidiSeq LV2 plugin class
+ * @file midiarp_lv2.h
+ * @brief Headers for the MidiArp LV2 plugin class
  *
  * @section LICENSE
  *
@@ -23,51 +23,50 @@
  *
  */
 
-#ifndef QMIDIARP_SEQ_LV2_H
-#define QMIDIARP_SEQ_LV2_H
+#ifndef QMIDIARP_ARP_LV2_H
+#define QMIDIARP_ARP_LV2_H
 
-#include "midiseq.h"
-#include "seqwidget.h"
+#include "midiarp.h"
+#include "arpwidget.h"
 #include "lv2_common.h"
 
-#define QMIDIARP_SEQ_LV2_URI QMIDIARP_LV2_URI "/seq"
-#define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
+#define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
+#define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 
 
-class qmidiarp_seq_lv2 : public MidiSeq
+class MidiArpLV2 : public MidiArp
 {
 public:
 
-        qmidiarp_seq_lv2(double sample_rate, const LV2_Feature *const *host_features);
+        MidiArpLV2(double sample_rate, const LV2_Feature *const *host_features);
 
-        ~qmidiarp_seq_lv2();
-        /* this enum is for the float value array and shifted by 2 compared with the
-         * float port indices */
+        ~MidiArpLV2();
+
         enum FloatField {
-            VELOCITY = 0,
-            NOTELENGTH = 1,
-            RESOLUTION = 2,
-            SIZE = 3,
-            TRANSPOSE = 4,
+            ATTACK = 0,
+            RELEASE = 1,
+            RANDOM_TICK = 2,
+            RANDOM_LEN = 3,
+            RANDOM_VEL = 4,
             CH_OUT = 5,
             CH_IN = 6,
             CURSOR_POS = 7, //output
-            LOOPMARKER = 8,
-            LOOPMODE = 9,
+            ENABLE_RESTARTBYKBD = 8,
+            ENABLE_TRIGBYKBD = 9,
             MUTE = 10,
-            MOUSEX = 11,
+            LATCH_MODE = 11,
             MOUSEY = 12,
             MOUSEBUTTON = 13,
             MOUSEPRESSED = 14,
-            ENABLE_NOTEIN = 15,
-            ENABLE_VELIN = 16,
-            ENABLE_NOTEOFF = 17,
-            ENABLE_RESTARTBYKBD = 18,
-            ENABLE_TRIGBYKBD = 19,
-            ENABLE_TRIGLEGATO = 20,
-            RECORD = 21,
+            INDEX_IN1 = 15,
+            INDEX_IN2 = 16,
+            RANGE_IN1 = 17,
+            RANGE_IN2 = 18,
+            ENABLE_TRIGLEGATO = 19,
+            REPEAT_MODE = 20,
+            RPATTERNFLAG = 21,
             DEFER = 22,
-            CURR_RECSTEP = 23, //output
+            PATTERN_PRESET = 23,
             TRANSPORT_CONTROL = 24,
             TRANSPORT_MODE = 25,
             TEMPO = 26,
@@ -85,6 +84,8 @@ public:
         LV2_Atom_Forge forge;
         LV2_Atom_Forge_Frame m_frame;
 
+        bool sendPatternFlag;
+
 private:
 
         float *val[30];
@@ -92,20 +93,12 @@ private:
         uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
-        Sample currentSample;
-        double mouseXCur;
-        double mouseYCur;
-        int mouseEvCur;
-        int lastMouseIndex;
-        int buttonsCur;
-        int transpFromGui;
-        int velFromGui;
         double internalTempo;
         double sampleRate;
         double tempo;
         bool ui_up;
         void updateParams();
-        void sendWave();
+        void sendPattern(const QString & p);
         void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
         uint32_t MidiEventID;

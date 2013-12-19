@@ -1,5 +1,5 @@
 /*!
- * @file qmidiarp_arpwidget_lv2.cpp
+ * @file arpwidget_lv2.cpp
  * @brief Implements the the LV2 GUI for the QMidiArp Arp plugin.
  *
  * @section LICENSE
@@ -23,7 +23,7 @@
  *
  */
 
-#include "qmidiarp_arpwidget_lv2.h"
+#include "arpwidget_lv2.h"
 
 #include <unistd.h>
 
@@ -37,7 +37,7 @@
 
 #endif
 
-qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
+ArpWidgetLV2::ArpWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
@@ -120,12 +120,12 @@ qmidiarp_arpwidget_lv2::qmidiarp_arpwidget_lv2 (
     sendUIisUp(true);
 }
 
-qmidiarp_arpwidget_lv2::~qmidiarp_arpwidget_lv2()
+ArpWidgetLV2::~ArpWidgetLV2()
 {
     sendUIisUp(false);
 }
 
-void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
+void ArpWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
 
@@ -225,7 +225,7 @@ void qmidiarp_arpwidget_lv2::port_event ( uint32_t port_index,
     }
 }
 
-void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
+void ArpWidgetLV2::updatePattern(const QString& p_pattern)
 {
     QChar c;
     QString pattern = p_pattern;
@@ -327,7 +327,7 @@ void qmidiarp_arpwidget_lv2::updatePattern(const QString& p_pattern)
     screen->update();
 }
 
-void qmidiarp_arpwidget_lv2::sendPattern(const QString & p)
+void ArpWidgetLV2::sendPattern(const QString & p)
 {
     qWarning("sending pattern to backend");
     const QMidiArpURIs* uris = &m_uris;
@@ -351,7 +351,7 @@ void qmidiarp_arpwidget_lv2::sendPattern(const QString & p)
     writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
-void qmidiarp_arpwidget_lv2::sendUIisUp(bool on)
+void ArpWidgetLV2::sendUIisUp(bool on)
 {
     const QMidiArpURIs* uris = &m_uris;
     uint8_t obj_buf[64];
@@ -372,7 +372,7 @@ void qmidiarp_arpwidget_lv2::sendUIisUp(bool on)
     writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
-void qmidiarp_arpwidget_lv2::receivePattern(LV2_Atom* atom)
+void ArpWidgetLV2::receivePattern(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
     if (atom->type != uris->atom_Blank) return;
@@ -397,7 +397,7 @@ void qmidiarp_arpwidget_lv2::receivePattern(LV2_Atom* atom)
     receivePatternFlag = false;
 }
 
-void qmidiarp_arpwidget_lv2::mapBool(bool on)
+void ArpWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender())              updateParam(MUTE, value);
@@ -409,7 +409,7 @@ void qmidiarp_arpwidget_lv2::mapBool(bool on)
     else if (enableTrigLegato == sender())      updateParam(ENABLE_TRIGLEGATO, value);
 }
 
-void qmidiarp_arpwidget_lv2::mapParam(int value)
+void ArpWidgetLV2::mapParam(int value)
 {
     if (attackTime == sender()) updateParam(2, value);
     else if (releaseTime == sender())       updateParam(RELEASE, value);
@@ -427,7 +427,7 @@ void qmidiarp_arpwidget_lv2::mapParam(int value)
     else if (tempoSpin == sender())         updateParam(TEMPO, value);
 }
 
-void qmidiarp_arpwidget_lv2::updateParam(int index, float fValue) const
+void ArpWidgetLV2::updateParam(int index, float fValue) const
 {
         writeFunction(m_controller, index, sizeof(float), 0, &fValue);
 }

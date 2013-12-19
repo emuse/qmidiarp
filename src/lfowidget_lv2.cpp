@@ -1,5 +1,5 @@
 /*!
- * @file qmidiarp_lfowidget_lv2.cpp
+ * @file lfowidget_lv2.cpp
  * @brief Implements the the LV2 GUI for the QMidiArp Lfo plugin.
  *
  * @section LICENSE
@@ -23,7 +23,7 @@
  *
  */
 
-#include "qmidiarp_lfowidget_lv2.h"
+#include "lfowidget_lv2.h"
 
 #include <unistd.h>
 #include <ctime>
@@ -38,7 +38,7 @@
 
 #endif
 
-qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
+LfoWidgetLV2::LfoWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
@@ -120,12 +120,12 @@ qmidiarp_lfowidget_lv2::qmidiarp_lfowidget_lv2 (
     sendUIisUp(true);
 }
 
-qmidiarp_lfowidget_lv2::~qmidiarp_lfowidget_lv2()
+LfoWidgetLV2::~LfoWidgetLV2()
 {
     sendUIisUp(false);
 }
 
-void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
+void LfoWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
 
@@ -221,7 +221,7 @@ void qmidiarp_lfowidget_lv2::port_event ( uint32_t port_index,
     }
 }
 
-void qmidiarp_lfowidget_lv2::sendUIisUp(bool on)
+void LfoWidgetLV2::sendUIisUp(bool on)
 {
     const QMidiArpURIs* uris = &m_uris;
     uint8_t obj_buf[64];
@@ -242,7 +242,7 @@ void qmidiarp_lfowidget_lv2::sendUIisUp(bool on)
     writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
-void qmidiarp_lfowidget_lv2::receiveWave(LV2_Atom* atom)
+void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
     qWarning("receiving wave");
@@ -277,7 +277,7 @@ void qmidiarp_lfowidget_lv2::receiveWave(LV2_Atom* atom)
     screen->update();
 }
 
-void qmidiarp_lfowidget_lv2::receiveWavePoint(int index, int value)
+void LfoWidgetLV2::receiveWavePoint(int index, int value)
 {
     Sample sample;
     if (value < 0) {
@@ -291,7 +291,7 @@ void qmidiarp_lfowidget_lv2::receiveWavePoint(int index, int value)
     else data.replace(index, sample);
 }
 
-void qmidiarp_lfowidget_lv2::mapBool(bool on)
+void LfoWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender())              updateParam(MUTE, value);
@@ -304,7 +304,7 @@ void qmidiarp_lfowidget_lv2::mapBool(bool on)
     else if (transportBox == sender())          updateParam(TRANSPORT_MODE, value);
 }
 
-void qmidiarp_lfowidget_lv2::mapMouse(double mouseX, double mouseY, int buttons, int pressed)
+void LfoWidgetLV2::mapMouse(double mouseX, double mouseY, int buttons, int pressed)
 {
     updateParam(MOUSEX, mouseX);
     updateParam(MOUSEY, mouseY);
@@ -312,7 +312,7 @@ void qmidiarp_lfowidget_lv2::mapMouse(double mouseX, double mouseY, int buttons,
     updateParam(MOUSEPRESSED, pressed); //mouseMoved or pressed
 }
 
-void qmidiarp_lfowidget_lv2::mapParam(int value)
+void LfoWidgetLV2::mapParam(int value)
 {
     if (amplitude == sender())          updateParam(AMPLITUDE, value);
     else if (offset == sender())        updateParam(OFFSET, value);
@@ -328,7 +328,7 @@ void qmidiarp_lfowidget_lv2::mapParam(int value)
     else if (tempoSpin == sender())     updateParam(TEMPO, value);
 }
 
-void qmidiarp_lfowidget_lv2::updateParam(int index, float fValue) const
+void LfoWidgetLV2::updateParam(int index, float fValue) const
 {
         writeFunction(m_controller, index, sizeof(float), 0, &fValue);
 }

@@ -83,8 +83,8 @@ nodist_qmidiarp_lfo_la_SOURCES = \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	qmidiarp_lfowidget_lv2_moc.cpp \
-	qmidiarp_lfo_lv2_moc.cpp
+	lfowidget_lv2_moc.cpp \
+	midilfo_lv2_moc.cpp
 
 qmidiarp_lfo_la_SOURCES = \
 	cursor.cpp cursor.h \
@@ -99,8 +99,8 @@ qmidiarp_lfo_la_SOURCES = \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	qmidiarp_lfowidget_lv2.cpp qmidiarp_lfowidget_lv2.h \
-	qmidiarp_lfo_lv2.cpp qmidiarp_lfo_lv2.h
+	lfowidget_lv2.cpp lfowidget_lv2.h \
+	midilfo_lv2.cpp midilfo_lv2.h
 
 qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_lfo_la_LIBADD = $(QT_LIBS) -llv2-plugin
@@ -117,8 +117,8 @@ nodist_qmidiarp_seq_la_SOURCES = \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	qmidiarp_seqwidget_lv2_moc.cpp \
-	qmidiarp_seq_lv2_moc.cpp
+	seqwidget_lv2_moc.cpp \
+	midiseq_lv2_moc.cpp
 
 qmidiarp_seq_la_SOURCES = \
 	cursor.cpp cursor.h \
@@ -133,8 +133,8 @@ qmidiarp_seq_la_SOURCES = \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	qmidiarp_seqwidget_lv2.cpp qmidiarp_seqwidget_lv2.h \
-	qmidiarp_seq_lv2.cpp qmidiarp_seq_lv2.h
+	seqwidget_lv2.cpp seqwidget_lv2.h \
+	midiseq_lv2.cpp midiseq_lv2.h
 
 qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_seq_la_LIBADD = $(QT_LIBS) -llv2-plugin
@@ -150,8 +150,8 @@ nodist_qmidiarp_arp_la_SOURCES = \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	qmidiarp_arpwidget_lv2_moc.cpp \
-	qmidiarp_arp_lv2_moc.cpp
+	arpwidget_lv2_moc.cpp \
+	midiarp_lv2_moc.cpp
 
 qmidiarp_arp_la_SOURCES = \
 	globstore.cpp globstore.h \
@@ -165,8 +165,8 @@ qmidiarp_arp_la_SOURCES = \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	qmidiarp_arpwidget_lv2.cpp qmidiarp_arpwidget_lv2.h \
-	qmidiarp_arp_lv2.cpp qmidiarp_arp_lv2.h
+	arpwidget_lv2.cpp arpwidget_lv2.h \
+	midiarp_lv2.cpp midiarp_lv2.h
 
 qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_arp_la_LIBADD = $(QT_LIBS) -llv2-plugin
