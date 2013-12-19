@@ -696,19 +696,21 @@ void SeqWidget::updateWaveForm(int val)
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
-    if (midiWorker) midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
-    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiWorker) return;
+    midiWorker->setRecordMode(on);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
 }
 
 void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
     resBoxIndex = val;
-    if (midiWorker) midiWorker->res = seqResValues[val];
-    if (midiWorker) midiWorker->resizeAll();
-    if (midiWorker) midiWorker->getData(&data);
-    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiWorker) return;
+    midiWorker->res = seqResValues[val];
+    midiWorker->resizeAll();
+    midiWorker->getData(&data);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -717,10 +719,11 @@ void SeqWidget::updateSize(int val)
 {
     if (val > 9) return;
     sizeBoxIndex = val;
-    if (midiWorker) midiWorker->size = sizeBox->currentText().toInt();
-    if (midiWorker) midiWorker->resizeAll();
-    if (midiWorker) midiWorker->getData(&data);
-    if (midiWorker) screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiWorker) return;
+    midiWorker->size = sizeBox->currentText().toInt();
+    midiWorker->resizeAll();
+    midiWorker->getData(&data);
+    screen->setCurrentRecStep(midiWorker->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -984,6 +987,7 @@ QVector<Sample> SeqWidget::getCustomWave()
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
 {
+    if (!midiWorker) return;
     bool m;
     int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;

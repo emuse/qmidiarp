@@ -97,7 +97,6 @@ class ArpWidgetLV2 : public ArpWidget
     void sendUIisUp(bool on);
     LV2UI_Controller     m_controller;
     LV2UI_Write_Function writeFunction;
-    QVector<Sample> data1;
     QCheckBox* transportBox;
     QSpinBox* tempoSpin;
     QMidiArpURIs m_uris;

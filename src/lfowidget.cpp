@@ -723,10 +723,11 @@ void LfoWidget::updateSize(int val)
 {
     if (val > 11) return;
     sizeBoxIndex = val;
-    if (midiWorker) midiWorker->updateSize(sizeBox->currentText().toInt());
-    if (midiWorker) midiWorker->getData(&data);
-    if (midiWorker) screen->updateData(data);
-    if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
+    if (!midiWorker) return;
+    midiWorker->updateSize(sizeBox->currentText().toInt());
+    midiWorker->getData(&data);
+    screen->updateData(data);
+    if (waveFormBoxIndex == 5) midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -739,17 +740,19 @@ void LfoWidget::updateLoop(int val)
 
 void LfoWidget::updateAmp(int val)
 {
-    if (midiWorker) midiWorker->updateAmplitude(val);
-    if (midiWorker) midiWorker->getData(&data);
-    if (midiWorker) screen->updateData(data);
+    if (!midiWorker) return;
+    midiWorker->updateAmplitude(val);
+    midiWorker->getData(&data);
+    screen->updateData(data);
     modified = true;
 }
 
 void LfoWidget::updateOffs(int val)
 {
-    if (midiWorker) midiWorker->updateOffset(val);
-    if (midiWorker) midiWorker->getData(&data);
-    if (midiWorker) screen->updateData(data);
+    if (!midiWorker) return;
+    midiWorker->updateOffset(val);
+    midiWorker->getData(&data);
+    screen->updateData(data);
     modified = true;
 }
 
