@@ -49,6 +49,7 @@ ltmain.sh
 /config.log
 /config.status
 /configure
+m4
 /depcomp
 /install-sh
 /missing

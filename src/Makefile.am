@@ -1,12 +1,5 @@
 # Makefile.am for qmidiarp
 SUBDIRS = pixmaps
-arpplugindir = @libdir@/lv2/qmidiarp_arp.lv2
-lfoplugindir = @libdir@/lv2/qmidiarp_lfo.lv2
-seqplugindir = @libdir@/lv2/qmidiarp_seq.lv2
-
-arpplugin_LTLIBRARIES = qmidiarp_arp.la
-lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
-seqplugin_LTLIBRARIES = qmidiarp_seq.la
 
 bin_PROGRAMS = qmidiarp
 
@@ -71,6 +64,16 @@ qmidiarp_SOURCES = \
 qmidiarp_CXXFLAGS = $(AM_CXXFLAGS)
 qmidiarp_LDADD = $(QT_LIBS)
 
+if BUILD_LV2
+
+arpplugindir = @libdir@/lv2/qmidiarp_arp.lv2
+lfoplugindir = @libdir@/lv2/qmidiarp_lfo.lv2
+seqplugindir = @libdir@/lv2/qmidiarp_seq.lv2
+
+arpplugin_LTLIBRARIES = qmidiarp_arp.la
+lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
+seqplugin_LTLIBRARIES = qmidiarp_seq.la
+
 nodist_qmidiarp_lfo_la_SOURCES = \
 	cursor_moc.cpp \
 	globstore_moc.cpp \
@@ -103,7 +106,7 @@ qmidiarp_lfo_la_SOURCES = \
 	midilfo_lv2.cpp midilfo_lv2.h
 
 qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_lfo_la_LIBADD = $(QT_LIBS) -llv2-plugin
+qmidiarp_lfo_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_seq_la_SOURCES = \
 	cursor_moc.cpp \
@@ -137,7 +140,7 @@ qmidiarp_seq_la_SOURCES = \
 	midiseq_lv2.cpp midiseq_lv2.h
 
 qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_seq_la_LIBADD = $(QT_LIBS) -llv2-plugin
+qmidiarp_seq_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_arp_la_SOURCES = \
 	globstore_moc.cpp \
@@ -169,7 +172,9 @@ qmidiarp_arp_la_SOURCES = \
 	midiarp_lv2.cpp midiarp_lv2.h
 
 qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_arp_la_LIBADD = $(QT_LIBS) -llv2-plugin
+qmidiarp_arp_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+
+endif
 
 if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
@@ -214,8 +219,9 @@ $(translations): $(qmidiarp_SOURCES)
 endif
 
 # install LV2 .so only, not .la
-
+if BUILD_LV2
 install-exec-hook:
 	rm -f $(arpplugindir)/qmidiarp_arp.la
 	rm -f $(lfoplugindir)/qmidiarp_lfo.la
 	rm -f $(seqplugindir)/qmidiarp_seq.la
+endif
