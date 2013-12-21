@@ -24,4 +24,11 @@ dist_lfo_lv2data_DATA = qmidiarp_lfo.lv2/manifest.ttl \
 	qmidiarp_lfo.lv2/qmidiarp_lfo.ttl
 dist_seq_lv2data_DATA = qmidiarp_seq.lv2/manifest.ttl \
 	qmidiarp_seq.lv2/qmidiarp_seq.ttl
+
+# install LV2 .so only, not .la
+
+install-exec-hook:
+	rm -f $(arp_lv2datadir)/qmidiarp_arp.la
+	rm -f $(lfo_lv2datadir)/qmidiarp_lfo.la
+	rm -f $(seq_lv2datadir)/qmidiarp_seq.la
 endif

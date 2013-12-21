@@ -217,11 +217,3 @@ $(translations): $(qmidiarp_SOURCES)
 .ts.qm: $(translations)
 	$(LRELEASE) -verbose $< -qm $@
 endif
-
-# install LV2 .so only, not .la
-if BUILD_LV2
-install-exec-hook:
-	rm -f $(arpplugindir)/qmidiarp_arp.la
-	rm -f $(lfoplugindir)/qmidiarp_lfo.la
-	rm -f $(seqplugindir)/qmidiarp_seq.la
-endif
