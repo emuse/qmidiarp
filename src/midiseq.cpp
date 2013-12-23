@@ -114,7 +114,7 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
     if (inEv.type != EV_NOTEON) return(true);
     if (inEv.channel != chIn) return(true);
     if ((inEv.data < 36) || (inEv.data >= 84)) return(true);
-    qWarning("midiseq got event");
+
     if (inEv.value) {
         /*This is a NOTE ON event*/
         if (recordMode) {

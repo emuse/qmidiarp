@@ -38,6 +38,9 @@ MidiLfoLV2::MidiLfoLV2 (
     nCalls = 0;
     inLfoFrame = 0;
     inEventBuffer = NULL;
+    control = NULL;
+    notify = NULL;
+    transportControl = NULL;
     outEventBuffer = NULL;
     getNextFrame(0);
     mouseXCur = 0;

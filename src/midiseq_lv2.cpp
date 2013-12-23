@@ -38,6 +38,9 @@ MidiSeqLV2::MidiSeqLV2 (
     nCalls = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
+    control = NULL;
+    notify = NULL;
+    transportControl = NULL;
     getData(&data);
     mouseXCur = 0;
     mouseYCur = 0;

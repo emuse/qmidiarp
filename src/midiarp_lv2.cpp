@@ -38,6 +38,9 @@ MidiArpLV2::MidiArpLV2 (
     nCalls = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
+    control = NULL;
+    notify = NULL;
+    transportControl = NULL;
     tempo = 120.0f;
     internalTempo = 120.0f;
 
