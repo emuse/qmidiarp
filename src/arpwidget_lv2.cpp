@@ -191,10 +191,10 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
             case RANGE_IN2:
                     rangeIn[1]->setValue(fValue);
             break;
-            case ENABLE_RESTARTBYKBD:
+            case ENABLE_TRIGLEGATO:
                     enableTrigLegato->setChecked((bool)fValue);
             break;
-            case ENABLE_TRIGLEGATO:
+            case ENABLE_RESTARTBYKBD:
                     enableRestartByKbd->setChecked((bool)fValue);
             break;
             case ENABLE_TRIGBYKBD:
