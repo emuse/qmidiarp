@@ -150,11 +150,11 @@ LIBS+=$LIBSsave
 CFLAGS+=$CFLAGSsave
 
 if test "$lv2coreinclude_found" = "no" -o "lv2coreWorks" = "no"; then
-  AC_MSG_NOTICE(
-    [cannot find a lv2core component for building. Will not build LV2 plugins.])
-else
-    AC_DEFINE(BUILD_LV2, 1, [Define to build LV2 plugins])
+    AC_MSG_NOTICE(
+        [cannot find an lv2core component for building. Will not build LV2 plugins.])
+    AM_CONDITIONAL([BUILD_LV2], 0)
 fi
+
 ], [AC_MSG_NOTICE([LV2 plugins will not be built])])
 
 # Remove the following generated file during configure to avoid need for make clean
