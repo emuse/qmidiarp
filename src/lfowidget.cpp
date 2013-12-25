@@ -682,7 +682,7 @@ void LfoWidget::updateWaveForm(int val)
     waveFormBoxIndex = val;
     if (midiWorker) midiWorker->updateWaveForm(val);
     if (midiWorker) midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) screen->updateData(data);
     bool isCustom = (val == 5);
     if (isCustom && midiWorker) midiWorker->newCustomOffset();
     amplitude->setDisabled(isCustom);
@@ -766,12 +766,12 @@ void LfoWidget::copyToCustom()
 
 void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if (!midiWorker) {
-        emit mouseSig(mouseX, mouseY, buttons, pressed);
-        return;
-    }
-    else {
-        midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
+    if (!midiWorker) emit mouseSig(mouseX, mouseY, buttons, pressed);
+    else midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
+
+    if (waveFormBox->currentIndex() != 5) {
+        waveFormBox->setCurrentIndex(5);
+        updateWaveForm(5);
     }
     modified = true;
 }

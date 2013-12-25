@@ -310,6 +310,11 @@ void LfoWidgetLV2::mapMouse(double mouseX, double mouseY, int buttons, int press
     updateParam(MOUSEY, mouseY);
     updateParam(MOUSEBUTTON, buttons);
     updateParam(MOUSEPRESSED, pressed); //mouseMoved or pressed
+    if (pressed && waveFormBox->currentIndex() != 5) {
+        waveFormBox->setCurrentIndex(5);
+        updateWaveForm(5);
+    }
+    if (!pressed) updateParam(WAVEFORM, 5);
 }
 
 void LfoWidgetLV2::mapParam(int value)

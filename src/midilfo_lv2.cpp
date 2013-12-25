@@ -421,7 +421,6 @@ void MidiLfoLV2::sendWave()
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &lv2frame);
-    qWarning("sent wave");
 }
 
 static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
