@@ -300,6 +300,10 @@ void MidiSeq::updateLoop(int val)
     pingpong = val&2;
     enableLoop = !(val&4);
     curLoopMode = val;
+    if (seqFinished) {
+        seqFinished = false;
+        setCurrentIndex(0);
+    }
 }
 
 void MidiSeq::updateNoteLength(int val)
