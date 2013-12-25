@@ -128,6 +128,7 @@ LfoWidgetLV2::~LfoWidgetLV2()
 void LfoWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
+    if (!data.count()) sendUIisUp(true);
 
     if ((format > 0) && (port_index == WAV_NOTIFY)) {
         LV2_Atom* atom = (LV2_Atom*)buffer;
@@ -245,7 +246,6 @@ void LfoWidgetLV2::sendUIisUp(bool on)
 void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
-    qWarning("receiving wave");
     if (atom->type != uris->atom_Blank) return;
 
     /* cast the buffer to Atom Object */

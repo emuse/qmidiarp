@@ -128,6 +128,8 @@ SeqWidgetLV2::~SeqWidgetLV2()
 void SeqWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
+    if (!data.count()) sendUIisUp(true);
+
     if ((format > 0) && (port_index == WAV_NOTIFY)) {
         LV2_Atom* atom = (LV2_Atom*)buffer;
         receiveWave(atom);
