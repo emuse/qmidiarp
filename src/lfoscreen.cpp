@@ -86,6 +86,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
     if (p_data.isEmpty()) return;
     npoints = p_data.count() - 1;
     nsteps = p_data.at(npoints).tick / TPQN;
+    if (!nsteps) nsteps = 1;
     beatRes = npoints / nsteps;
     beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
     xscale = (w - 2 * LFOSCR_HMARG);
