@@ -387,7 +387,7 @@ void ArpWidgetLV2::receivePattern(LV2_Atom* atom)
     /* handle pattern string as atom body */
     const char* p = (const char*)LV2_ATOM_BODY(a0);
     if (!strlen(p)) return;
-    qWarning("received pattern string from backend");
+
     QString newPattern = QString::fromUtf8(p);
     QString txPattern = newPattern.remove(QChar(0));
     receivePatternFlag = true;

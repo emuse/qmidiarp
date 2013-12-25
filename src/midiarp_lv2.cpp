@@ -391,7 +391,7 @@ void MidiArpLV2::sendPattern(const QString & p)
     if (!(ui_up && sendPatternFlag)) return;
 
     sendPatternFlag = false;
-    qWarning("sending pattern to GUI");
+
     const QMidiArpURIs* uris = &m_uris;
     const uint32_t capacity = notify->atom.size;
     QByteArray byteArray = p.toUtf8();
@@ -442,7 +442,6 @@ static LV2_State_Status MidiArpLV2_state_restore ( LV2_Handle instance,
     QString newpattern = QString::fromUtf8(value1);
     pPlugin->updatePattern(newpattern);
     pPlugin->sendPatternFlag = true;
-
     return LV2_STATE_SUCCESS;
 }
 
