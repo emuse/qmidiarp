@@ -376,6 +376,10 @@ void MidiLfo::updateLoop(int val)
     pingpong = val&2;
     enableLoop = !(val&4);
     curLoopMode = val;
+    if (seqFinished) {
+        seqFinished = false;
+        setFramePtr(0);
+    }
 }
 
 void MidiLfo::updateQueueTempo(int val)
