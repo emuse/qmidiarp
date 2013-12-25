@@ -122,6 +122,9 @@ private:
         LV2_Atom_Sequence *transportControl;
         const LV2_Atom_Sequence *control;
         LV2_Atom_Sequence *notify;
+
+        int sliderToTickLen(int val) { return (val * TPQN / 64); }
+        int tickLenToSlider(int val) { return (val * 64 / TPQN); }
 };
 
 #endif

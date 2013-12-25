@@ -291,6 +291,7 @@ void MidiSeqLV2::run (uint32_t nframes )
         }
         curFrame++;
     }
+
     nCalls++;
 }
 
@@ -346,8 +347,8 @@ void MidiSeqLV2::updateParams()
         updateVelocity(velFromGui);
     }
 
-    if (notelength != *val[NOTELENGTH]) {
-        updateNoteLength(*val[NOTELENGTH]);
+    if (notelength != sliderToTickLen(*val[NOTELENGTH])) {
+        updateNoteLength(sliderToTickLen(*val[NOTELENGTH]));
     }
 
     if (res != seqResValues[(int)*val[RESOLUTION]]) {
