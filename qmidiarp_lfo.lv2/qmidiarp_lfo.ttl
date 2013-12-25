@@ -349,7 +349,7 @@
         lv2:symbol "WAV_NOTIFY" ;
         lv2:name "Notify" ;
         # 192 * 32 * sizeof(int) + LV2-Atoms
-        rsz:minimumSize 13161;
+        rsz:minimumSize 24776;
       rdfs:comment "Plugin to GUI communication"
     ] .
 <https://git.code.sf.net/p/qmidiarp/lfo#ui>
