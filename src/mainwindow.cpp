@@ -1528,6 +1528,23 @@ void MainWindow::ftb_update_orientation(Qt::Orientation orient)
     }
 }
 
+void MainWindow::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+
 #ifdef NSM
 int MainWindow::cb_nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg, void *userdata)
 {
@@ -1561,22 +1578,5 @@ int MainWindow::nsm_save(char **out_msg)
     int err = ERR_OK;
     if (!saveFile()) err = ERR_GENERAL;
     return err;
-}
-
-void MainWindow::skipXmlElement(QXmlStreamReader& xml)
-{
-    if (xml.isStartElement()) {
-        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
-        while (!xml.atEnd()) {
-            xml.readNext();
-
-            if (xml.isEndElement())
-                break;
-
-            if (xml.isStartElement()) {
-                skipXmlElement(xml);
-            }
-        }
-    }
 }
 #endif
