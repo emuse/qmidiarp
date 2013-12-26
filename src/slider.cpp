@@ -77,6 +77,7 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
         sliderLayout->setAlignment(Qt::AlignTop);
     }
     setMinimumWidth(155 + sliderLabel->width() + sliderLabel->fontMetrics().maxWidth() * 3);
+    valueChangedSignalSuppressed = false;
     setLayout(sliderLayout);
 }
 
@@ -96,7 +97,8 @@ int Slider::value()
 
 void Slider::updateSpinBox(int val)
 {
-    emit(valueChanged(val));
+    if (!valueChangedSignalSuppressed)
+        emit(valueChanged(val));
     sliderSpin->setValue(val);
 }
 

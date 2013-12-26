@@ -272,7 +272,9 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
     }
     if (n_elem < (uint)data.count()) data.resize(res * size + 1);
     if (waveFormBox->currentIndex() == 5) {
+        offset->valueChangedSignalSuppressed = true;
         offset->setValue(ofs);
+        offset->valueChangedSignalSuppressed = false;
     }
     screen->updateData(data);
     screen->update();
