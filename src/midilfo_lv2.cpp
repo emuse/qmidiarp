@@ -242,7 +242,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
     }
 
 
-        // MIDI Output
+        // MIDI and Wave Control Output
     lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
     lv2_atom_forge_sequence_head(&forge, &m_lv2frame, 0);
     for (uint f = 0 ; f < nframes; f++) {
@@ -256,6 +256,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
                     d[1] = ccnumber;
                     d[2] = frame.at(inLfoFrame).value;
                     forgeMidiEvent(f, d, 3);
+                    *val[WaveOut] = (float)d[2] / 128;
                 }
                 inLfoFrame++;
                 if (inLfoFrame >= frameSize) {

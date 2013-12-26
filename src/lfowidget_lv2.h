@@ -69,7 +69,8 @@ class LfoWidgetLV2 : public LfoWidget
             TRANSPORT_MODE = 27,
             TEMPO = 28,
             WAV_CONTROL = 29,
-            WAV_NOTIFY = 30
+            WAV_NOTIFY = 30,
+            WaveOut = 31
         };
 
     LfoWidgetLV2(

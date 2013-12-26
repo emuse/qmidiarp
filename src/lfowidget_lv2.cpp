@@ -310,6 +310,9 @@ void LfoWidgetLV2::mapMouse(double mouseX, double mouseY, int buttons, int press
     updateParam(MOUSEY, mouseY);
     updateParam(MOUSEBUTTON, buttons);
     updateParam(MOUSEPRESSED, pressed); //mouseMoved or pressed
+    /* in case we get a mouse click and waveform is not "custom", the
+     * backend will perform copyToCustom(), and we have to set the
+     * index to custom here as well */
     if (pressed && waveFormBox->currentIndex() != 5) {
         waveFormBox->setCurrentIndex(5);
         updateWaveForm(5);

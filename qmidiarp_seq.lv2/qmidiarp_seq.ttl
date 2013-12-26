@@ -33,16 +33,16 @@
         atom:bufferType atom:Sequence ;
         atom:supports midi:MidiEvent ;
         lv2:index 0;
-        lv2:symbol "in";
-        lv2:name "MIDI In";
+        lv2:symbol "MidiIn";
+        lv2:name "Midi In";
     ] ;
     lv2:port [
         a lv2:OutputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports midi:MidiEvent ;
         lv2:index 1;
-        lv2:symbol "out";
-        lv2:name "MIDI Out";
+        lv2:symbol "MidiOut";
+        lv2:name "Midi Out";
     ]  ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;

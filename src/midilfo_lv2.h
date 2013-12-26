@@ -72,7 +72,8 @@ public:
             TRANSPORT_MODE = 25,
             TEMPO = 26,
             WAV_CONTROL = 27,
-            WAV_NOTIFY = 28
+            WAV_NOTIFY = 28,
+            WaveOut = 29
         };
 
         void connect_port(uint32_t port, void *data);
