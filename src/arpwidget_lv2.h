@@ -104,6 +104,7 @@ class ArpWidgetLV2 : public ArpWidget
     int res, size;
     double mouseXCur, mouseYCur;
     bool receivePatternFlag;
+    bool receivedPatternOnce;
 };
 
 #endif

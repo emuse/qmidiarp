@@ -117,6 +117,7 @@ ArpWidgetLV2::ArpWidgetLV2 (
     size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
+    receivedPatternOnce = false;
     sendUIisUp(true);
 }
 
@@ -131,6 +132,8 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
 
     const QMidiArpURIs* uris = &m_uris;
     LV2_Atom* atom = (LV2_Atom*)buffer;
+
+    if (!receivedPatternOnce) sendUIisUp(true);
 
     if (format == uris->atom_eventTransfer
       && atom->type == uris->atom_Blank) {
@@ -330,7 +333,7 @@ void ArpWidgetLV2::updatePattern(const QString& p_pattern)
 
 void ArpWidgetLV2::sendPattern(const QString & p)
 {
-    qWarning("sending pattern to backend");
+
     const QMidiArpURIs* uris = &m_uris;
     uint8_t obj_buf[1024];
     QByteArray byteArray = p.toUtf8();
@@ -377,7 +380,8 @@ void ArpWidgetLV2::receivePattern(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
     if (atom->type != uris->atom_Blank) return;
-    //qWarning("receiving pattern from backend");
+
+    receivedPatternOnce = true;
 
     /* cast the buffer to Atom Object */
     LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;
