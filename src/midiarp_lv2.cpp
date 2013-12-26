@@ -38,9 +38,6 @@ MidiArpLV2::MidiArpLV2 (
     nCalls = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
-    control = NULL;
-    notify = NULL;
-    transportControl = NULL;
     tempo = 120.0f;
     internalTempo = 120.0f;
 
@@ -100,15 +97,6 @@ void MidiArpLV2::connect_port ( uint32_t port, void *seqdata )
     case 1:
         outEventBuffer = (const LV2_Atom_Sequence*)seqdata;
         break;
-    case TRANSPORT_CONTROL + 2:
-        transportControl = (LV2_Atom_Sequence*)seqdata;
-        break;
-    case WAV_CONTROL + 2:
-        control = (const LV2_Atom_Sequence*)seqdata;
-        break;
-    case WAV_NOTIFY + 2:
-        notify = (LV2_Atom_Sequence*)seqdata;
-        break;
     default:
         val[port - 2] = (float *) seqdata;
         break;
@@ -164,32 +152,24 @@ void MidiArpLV2::run ( uint32_t nframes )
     const QMidiArpURIs* uris = &m_uris;
     const uint32_t capacity = outEventBuffer->atom.size;
 
-    if (!(nCalls % 12)) updateParams();
+    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
+    lv2_atom_forge_sequence_head(&forge, &m_frame, 0);
 
-        // Position stuff
-    if (transportControl) {
-        LV2_Atom_Event* atomEv = lv2_atom_sequence_begin(&transportControl->body);
-        while (!lv2_atom_sequence_is_end(&transportControl->body, transportControl->atom.size, atomEv)) {
-            if (atomEv->body.type == uris->atom_Blank) {
-                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&atomEv->body;
+    sendPattern(pattern);
+    updateParams();
+
+
+    if (inEventBuffer) {
+        LV2_ATOM_SEQUENCE_FOREACH(inEventBuffer, event) {
+            // Control Atom Input
+            if (event && event->body.type == uris->atom_Blank) {
+                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&event->body;
+                /* interpret atom-objects: */
                 if (obj->body.otype == uris->time_Position) {
                     /* Received position information, update */
                     if (transportMode) updatePos(obj);
                 }
-            }
-            atomEv = lv2_atom_sequence_next(atomEv);
-        }
-    }
-
-        // Process incoming events from GUI
-    if (control) {
-        LV2_Atom_Event* ev = lv2_atom_sequence_begin(&control->body);
-        /* for each message from UI... */
-        while(!lv2_atom_sequence_is_end(&control->body, control->atom.size, ev)) {
-            if (ev->body.type == uris->atom_Blank) {
-                const LV2_Atom_Object* obj = (LV2_Atom_Object*)&ev->body;
-                /* interpret atom-objects: */
-                if (obj->body.otype == uris->ui_up) {
+                else if (obj->body.otype == uris->ui_up) {
                     /* UI was activated */
                     ui_up = true;
                     sendPatternFlag = true;
@@ -211,13 +191,7 @@ void MidiArpLV2::run ( uint32_t nframes )
                     }
                 }
             }
-            ev = lv2_atom_sequence_next(ev);
-        }
-    }
-
-        // MIDI Input
-    if (inEventBuffer) {
-        LV2_ATOM_SEQUENCE_FOREACH(inEventBuffer, event) {
+            // MIDI Input
             if (event && event->body.type == MidiEventID) {
                 uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
                 MidiEvent inEv;
@@ -246,8 +220,6 @@ void MidiArpLV2::run ( uint32_t nframes )
 
 
         // MIDI Output
-    lv2_atom_forge_set_buffer(&forge, (uint8_t*)outEventBuffer, capacity);
-    lv2_atom_forge_sequence_head(&forge, &m_frame, 0);
     for (uint f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
@@ -320,8 +292,6 @@ void MidiArpLV2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_
 
 void MidiArpLV2::updateParams()
 {
-    sendPattern(pattern);
-
     if (attack_time != *val[ATTACK]) {
         updateAttackTime(*val[ATTACK]);
     }
@@ -393,15 +363,11 @@ void MidiArpLV2::sendPattern(const QString & p)
     sendPatternFlag = false;
 
     const QMidiArpURIs* uris = &m_uris;
-    const uint32_t capacity = notify->atom.size;
     QByteArray byteArray = p.toUtf8();
     const char* c = byteArray.constData();
 
 
     /* prepare forge buffer and initialize atom-sequence */
-    lv2_atom_forge_set_buffer(&forge, (uint8_t*)notify, capacity);
-    lv2_atom_forge_sequence_head(&forge, &m_frame, 0);
-
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);
     lv2_atom_forge_blank(&forge, &frame, 1, uris->pattern_string);

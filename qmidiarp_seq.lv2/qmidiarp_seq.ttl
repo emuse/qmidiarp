@@ -23,15 +23,12 @@
     lv2:optionalFeature lv2:hardRTCapable ;
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
     lv2ui:ui <https://git.code.sf.net/p/qmidiarp/seq#ui> ;
-    lv2ui:portNotification [
-        lv2ui:plugin <https://git.code.sf.net/p/qmidiarp/seq>;
-        lv2:symbol "WAV_NOTIFY" ;
-        lv2ui:notifyType atom:Blank
-    ] ;
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports midi:MidiEvent ;
+        atom:supports time:Position ;
+        lv2:designation lv2:control ;
         lv2:index 0;
         lv2:symbol "MidiIn";
         lv2:name "Midi In";
@@ -40,6 +37,8 @@
         a lv2:OutputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports midi:MidiEvent ;
+        rsz:minimumSize 2248;
+        lv2:designation lv2:control ;
         lv2:index 1;
         lv2:symbol "MidiOut";
         lv2:name "Midi Out";
@@ -234,7 +233,7 @@
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 27 ;
+        lv2:index 26 ;
         lv2:symbol "TRANSPORT_MODE" ;
         lv2:name "Transport Mode" ;
         lv2:portProperty lv2:toggled ;
@@ -243,7 +242,7 @@
         lv2:default 0.0 ;
    ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 28 ;
+        lv2:index 27 ;
         lv2:symbol "TEMPO" ;
         lv2:name "Internal Tempo" ;
         lv2:portProperty lv2:integer ;
@@ -285,36 +284,6 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 2.0 ;
-    ] ;
-    lv2:port [
-        a lv2:InputPort ,
-            atom:AtomPort ;
-        atom:bufferType atom:Sequence ;
-        atom:supports time:Position ;
-        lv2:index 26 ;
-        lv2:symbol "TRANSPORT_CONTROL" ;
-        lv2:name "Transport Control" ;
-    ] ;
-    lv2:port [
-        a atom:AtomPort ,
-            lv2:InputPort ;
-        atom:bufferType atom:Sequence ;
-        lv2:designation lv2:control ;
-        lv2:index 29 ;
-        lv2:symbol "WAV_CONTROL" ;
-        lv2:name "Control" ;
-      rdfs:comment "GUI to plugin communication"
-    ] , [
-        a atom:AtomPort ,
-            lv2:OutputPort ;
-        atom:bufferType atom:Sequence ;
-        lv2:designation lv2:control ;
-        lv2:index 30 ;
-        lv2:symbol "WAV_NOTIFY" ;
-        lv2:name "Notify" ;
-        # 16 * 32 * sizeof(int) + LV2-Atoms
-        rsz:minimumSize 2248;
-      rdfs:comment "Plugin to GUI communication"
     ] .
 <https://git.code.sf.net/p/qmidiarp/seq#ui>
     a lv2ui:Qt4UI ;

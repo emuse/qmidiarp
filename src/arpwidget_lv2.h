@@ -66,11 +66,8 @@ class ArpWidgetLV2 : public ArpWidget
             RPATTERNFLAG = 23,
             DEFER = 24,
             PATTERN_PRESET = 25,
-            TRANSPORT_CONTROL = 26,
-            TRANSPORT_MODE = 27,
-            TEMPO = 28,
-            WAV_CONTROL = 29,
-            WAV_NOTIFY = 30
+            TRANSPORT_MODE = 26,
+            TEMPO = 27
     };
 
     ArpWidgetLV2(

@@ -65,12 +65,9 @@ class LfoWidgetLV2 : public LfoWidget
             RECORD = 23,
             DEFER = 24,
             SPARE = 25,
-            TRANSPORT_CONTROL = 26,
-            TRANSPORT_MODE = 27,
-            TEMPO = 28,
-            WAV_CONTROL = 29,
-            WAV_NOTIFY = 30,
-            WaveOut = 31
+            TRANSPORT_MODE = 26,
+            TEMPO = 27,
+            WaveOut = 28
         };
 
     LfoWidgetLV2(

@@ -129,8 +129,11 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
 
-    if ((format > 0) && (port_index == WAV_NOTIFY)) {
-        LV2_Atom* atom = (LV2_Atom*)buffer;
+    const QMidiArpURIs* uris = &m_uris;
+    LV2_Atom* atom = (LV2_Atom*)buffer;
+
+    if (format == uris->atom_eventTransfer
+      && atom->type == uris->atom_Blank) {
         receivePattern(atom);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
@@ -210,8 +213,6 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
             break;
             case DEFER:
                     deferChangesAction->setChecked((bool)fValue);
-            break;
-            case TRANSPORT_CONTROL: // metronome port
             break;
             case TRANSPORT_MODE:
                     transportBox->setChecked((bool)fValue);
@@ -348,7 +349,7 @@ void ArpWidgetLV2::sendPattern(const QString & p)
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &frame);
-    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
+    writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
 void ArpWidgetLV2::sendUIisUp(bool on)
@@ -369,7 +370,7 @@ void ArpWidgetLV2::sendUIisUp(bool on)
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &frame);
-    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
+    writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
 void ArpWidgetLV2::receivePattern(LV2_Atom* atom)

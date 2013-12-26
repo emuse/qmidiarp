@@ -68,11 +68,8 @@ class SeqWidgetLV2 : public SeqWidget
             RECORD = 23,
             DEFER = 24,
             CURR_RECSTEP = 25, //output
-            TRANSPORT_CONTROL = 26,
-            TRANSPORT_MODE = 27,
-            TEMPO = 28,
-            WAV_CONTROL = 29,
-            WAV_NOTIFY = 30
+            TRANSPORT_MODE = 26,
+            TEMPO = 27
     };
 
     SeqWidgetLV2(

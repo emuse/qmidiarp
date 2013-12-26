@@ -68,11 +68,8 @@ public:
             RECORD = 21,
             DEFER = 22,
             CURR_RECSTEP = 23, //output
-            TRANSPORT_CONTROL = 24,
-            TRANSPORT_MODE = 25,
-            TEMPO = 26,
-            WAV_CONTROL = 27,
-            WAV_NOTIFY = 28
+            TRANSPORT_MODE = 24,
+            TEMPO = 25
         };
 
         void connect_port(uint32_t port, void *data);
@@ -119,9 +116,6 @@ private:
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;
-        LV2_Atom_Sequence *transportControl;
-        const LV2_Atom_Sequence *control;
-        LV2_Atom_Sequence *notify;
 
         int sliderToTickLen(int val) { return (val * TPQN / 64); }
         int tickLenToSlider(int val) { return (val * 64 / TPQN); }

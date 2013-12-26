@@ -67,11 +67,8 @@ public:
             RPATTERNFLAG = 21,
             DEFER = 22,
             PATTERN_PRESET = 23,
-            TRANSPORT_CONTROL = 24,
-            TRANSPORT_MODE = 25,
-            TEMPO = 26,
-            WAV_CONTROL = 27,
-            WAV_NOTIFY = 28
+            TRANSPORT_MODE = 24,
+            TEMPO = 25
         };
 
         void connect_port(uint32_t port, void *data);
@@ -112,9 +109,6 @@ private:
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;
-        LV2_Atom_Sequence *transportControl;
-        const LV2_Atom_Sequence *control;
-        LV2_Atom_Sequence *notify;
 };
 
 #endif

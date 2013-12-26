@@ -128,10 +128,13 @@ LfoWidgetLV2::~LfoWidgetLV2()
 void LfoWidgetLV2::port_event ( uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer )
 {
+    const QMidiArpURIs* uris = &m_uris;
+    LV2_Atom* atom = (LV2_Atom*)buffer;
+
     if (!data.count()) sendUIisUp(true);
 
-    if ((format > 0) && (port_index == WAV_NOTIFY)) {
-        LV2_Atom* atom = (LV2_Atom*)buffer;
+    if (format == uris->atom_eventTransfer
+      && atom->type == uris->atom_Blank) {
         receiveWave(atom);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
@@ -208,8 +211,6 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
             case DEFER:
                     deferChangesAction->setChecked((bool)fValue);
             break;
-            case TRANSPORT_CONTROL: // metronome port
-            break;
             case TRANSPORT_MODE:
                     transportBox->setChecked((bool)fValue);
             break;
@@ -240,7 +241,7 @@ void LfoWidgetLV2::sendUIisUp(bool on)
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &frame);
-    writeFunction(m_controller, WAV_CONTROL, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
+    writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
 void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
