@@ -262,15 +262,15 @@ void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
     if (obj->body.otype != uris->hex_customwave) return;
 
     /* handle wave' data vector */
-    LV2_Atom_Vector* vof = (LV2_Atom_Vector*)LV2_ATOM_BODY(a0);
+    LV2_Atom_Vector* voi = (LV2_Atom_Vector*)LV2_ATOM_BODY(a0);
     /* check if atom is indeed a vector of the expected type*/
-    if (vof->atom.type != uris->atom_Int) return;
+    if (voi->atom.type != uris->atom_Int) return;
 
     /* get number of elements in vector
     * = (raw 8bit data-length - header-length) / sizeof(expected data type:int) */
-    const size_t n_elem = (a0->size - sizeof(LV2_Atom_Vector_Body)) / vof->atom.size;
+    const size_t n_elem = (a0->size - sizeof(LV2_Atom_Vector_Body)) / voi->atom.size;
     /* typecast, dereference pointer to vector */
-    const int *recdata = (int*) LV2_ATOM_BODY(&vof->atom);
+    const int *recdata = (int*) LV2_ATOM_BODY(&voi->atom);
     for (uint l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
     }

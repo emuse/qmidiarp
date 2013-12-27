@@ -101,7 +101,6 @@ class ArpWidgetLV2 : public ArpWidget
     LV2_Atom_Forge_Frame frame;
 
     QString newPattern;
-    int res, size;
     double mouseXCur, mouseYCur;
     bool receivePatternFlag;
     bool receivedPatternOnce;

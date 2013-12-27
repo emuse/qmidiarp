@@ -113,8 +113,6 @@ ArpWidgetLV2::ArpWidgetLV2 (
 
     setStyleSheet(COMPACT_STYLE);
 
-    res = 4;
-    size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
     receivedPatternOnce = false;
