@@ -5,6 +5,7 @@ dnl AC_PREREQ([2.63])
 AC_INIT([qmidiarp], [0.5.4], [qmidiarp-devel@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS(src/config.h)
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_DEFINE(APP_NAME, "QMidiArp", [application name])
 
@@ -24,7 +25,10 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_RANLIB
+
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+LT_INIT([dlopen])
 
 # Qt lib check is broken on some distros
 # AC_CHECK_LIB([QtCore], qt_addObject, [],
@@ -42,7 +46,7 @@ AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
 if test "x$HAVE_QT4" = "xyes"; then
   dnl Check needed because in some cases the QtGui includedir
-  dnl doesn't contain the subsystem dir.
+  dnl does not contain the subsystem dir.
   QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir QtGui`
   QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui`
   EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
@@ -123,6 +127,36 @@ else
 fi
 ], [AC_MSG_NOTICE([NSM support is disabled])])
 
+# Build LV2 plugins
+AC_ARG_ENABLE(lv2plugins,
+  AC_HELP_STRING([--enable-lv2plugins], [build LV2 plugins (default=yes)]),
+  [ac_lv2plugins="$enableval"],
+  [ac_lv2plugins="yes"])
+
+AM_CONDITIONAL([BUILD_LV2], [test "x$ac_lv2plugins" = "xyes"])
+
+AM_COND_IF([BUILD_LV2],[
+dnl check for lv2core
+AC_CHECK_HEADER( lv2/lv2plug.in/ns/lv2core/lv2.h, lv2coreinclude_found="yes", lv2coreinclude_found="no" )
+PKG_CHECK_MODULES(LV2CORE, lv2core >= 0.26, lv2coreWorks="yes", lv2coreWorks="no")
+LIBSsave=$LIBS
+CFLAGSsave=$CFLAGS
+CFLAGS=$LV2CORE_CFLAGS
+LIBS=$LV2CORE_LIBS
+
+AC_SUBST(LV2CORE_CFLAGS)
+AC_SUBST(LV2CORE_LIBS)
+LIBS+=$LIBSsave
+CFLAGS+=$CFLAGSsave
+
+if test "$lv2coreinclude_found" = "no" -o "lv2coreWorks" = "no"; then
+    AC_MSG_NOTICE(
+        [cannot find an lv2core component for building. Will not build LV2 plugins.])
+    AM_CONDITIONAL([BUILD_LV2], 0)
+fi
+
+], [AC_MSG_NOTICE([LV2 plugins will not be built])])
+
 # Remove the following generated file during configure to avoid need for make clean
 rm -f src/mainwindow_moc.cpp
 
@@ -162,9 +196,9 @@ AC_OUTPUT
 
 echo
 if test "x$ac_translations" = "xno" ; then
-echo "Translation file generation disabled."
-echo "Use ./configure --enable-translations=yes to enable."
+    echo "Translation file generation disabled."
+    echo "Use ./configure --enable-translations=yes to enable."
 else
-echo "Translation file generation enabled."
+    echo "Translation file generation enabled."
 fi
 echo

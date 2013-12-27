@@ -57,6 +57,7 @@ class Slider : public QWidget
            Qt::Orientation orientation, const QString& label, QWidget * parent);
     ~Slider();
     int value();
+    bool valueChangedSignalSuppressed;
 
   signals:
     void valueChanged(int);

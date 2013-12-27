@@ -1,8 +1,18 @@
 *.o
+*.la
+*.so
+*.a
+*.lo
+*~
 *_moc.cpp
 Makefile
 Makefile.in
 .deps
+*/.libs/
+config.guess
+config.sub
+libtool
+ltmain.sh
 /aclocal.m4
 /autom4te.cache
 /config.log
@@ -39,6 +49,7 @@ ltmain.sh
 /config.log
 /config.status
 /configure
+m4
 /depcomp
 /install-sh
 /missing

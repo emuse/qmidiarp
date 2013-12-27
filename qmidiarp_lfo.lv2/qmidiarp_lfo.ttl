@@ -1,0 +1,336 @@
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix lv2ui: <http://lv2plug.in/ns/extensions/ui#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
+
+<https://git.code.sf.net/p/qmidiarp/lfo>
+    a lv2:Plugin, lv2:InstrumentPlugin, lv2:ModulatorPlugin;
+    doap:name "QMidiArp LFO" ;
+    doap:license <http://opensource.org/licenses/GPL-2.0> ;
+    doap:maintainer [
+        foaf:name "Frank Kober" ;
+        foaf:homepage <http://qmidiarp.sourceforge.net> ;
+        foaf:mbox <mailto:qmidiarp-devel@lists.sourceforge.net> ;
+    ] ;
+    lv2:minorVersion 0;
+    lv2:requiredFeature <http://lv2plug.in/ns/ext/urid#map> ;
+    lv2:optionalFeature lv2:hardRTCapable ;
+    lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
+    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/lfo#ui> ;
+    lv2:port [
+        a lv2:InputPort, atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports midi:MidiEvent ;
+        atom:supports time:Position ;
+        lv2:designation lv2:control ;
+        lv2:index 0;
+        lv2:symbol "MidiIn";
+        lv2:name "Midi In";
+    ] ;
+    lv2:port [
+        a lv2:OutputPort, atom:AtomPort ;
+        atom:bufferType atom:Sequence ;
+        atom:supports midi:MidiEvent ;
+        rsz:minimumSize 24776;
+        lv2:designation lv2:control ;
+        lv2:index 1;
+        lv2:symbol "MidiOut";
+        lv2:name "Midi Out";
+    ]  ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 2 ;
+        lv2:symbol "AMPLITUDE" ;
+        lv2:name "Amplitude" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 64.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 128.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 3 ;
+        lv2:symbol "OFFSET" ;
+        lv2:name "Offset" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 64.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 128.0 ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 4 ;
+        lv2:symbol "RESOLUTION" ;
+        lv2:name "Resolution" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "1"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "2"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "4"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "8"; rdf:value 3 ] ;
+        lv2:scalePoint [ rdfs:label "16"; rdf:value 4 ] ;
+        lv2:scalePoint [ rdfs:label "32"; rdf:value 5 ] ;
+        lv2:scalePoint [ rdfs:label "64"; rdf:value 6 ] ;
+        lv2:scalePoint [ rdfs:label "96"; rdf:value 7 ] ;
+        lv2:scalePoint [ rdfs:label "192"; rdf:value 8 ] ;
+        lv2:default 4.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 8.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 5 ;
+        lv2:symbol "LENGTH" ;
+        lv2:name "Length" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "1"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "2"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "3"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "4"; rdf:value 3 ] ;
+        lv2:scalePoint [ rdfs:label "5"; rdf:value 4 ] ;
+        lv2:scalePoint [ rdfs:label "6"; rdf:value 5 ] ;
+        lv2:scalePoint [ rdfs:label "7"; rdf:value 6 ] ;
+        lv2:scalePoint [ rdfs:label "8"; rdf:value 7 ] ;
+        lv2:scalePoint [ rdfs:label "12"; rdf:value 8 ] ;
+        lv2:scalePoint [ rdfs:label "16"; rdf:value 9 ] ;
+        lv2:scalePoint [ rdfs:label "24"; rdf:value 10 ] ;
+        lv2:scalePoint [ rdfs:label "32"; rdf:value 11 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 11.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 6 ;
+        lv2:symbol "FREQUENCY" ;
+        lv2:name "Frequency" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "1/32"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "1/16"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "1/8"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "1/4"; rdf:value 3 ] ;
+        lv2:scalePoint [ rdfs:label "1/2"; rdf:value 4 ] ;
+        lv2:scalePoint [ rdfs:label "3/4"; rdf:value 5 ] ;
+        lv2:scalePoint [ rdfs:label "1"; rdf:value 6 ] ;
+        lv2:scalePoint [ rdfs:label "2"; rdf:value 7 ] ;
+        lv2:scalePoint [ rdfs:label "3"; rdf:value 8 ] ;
+        lv2:scalePoint [ rdfs:label "4"; rdf:value 9 ] ;
+        lv2:scalePoint [ rdfs:label "5"; rdf:value 10 ] ;
+        lv2:scalePoint [ rdfs:label "6"; rdf:value 11 ] ;
+        lv2:scalePoint [ rdfs:label "7"; rdf:value 12 ] ;
+        lv2:scalePoint [ rdfs:label "8"; rdf:value 13 ] ;
+        lv2:default 6.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 13.0 ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 7 ;
+        lv2:symbol "CH_IN" ;
+        lv2:name "Input Channel" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 15.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 8 ;
+        lv2:symbol "CH_OUT" ;
+        lv2:name "Output Channel" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 15.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 17 ;
+        lv2:symbol "CC_OUT" ;
+        lv2:name "Output CC#" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 74 ;
+        lv2:minimum 0 ;
+        lv2:maximum 128 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 18 ;
+        lv2:symbol "CC_IN" ;
+        lv2:name "Input CC#" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 74 ;
+        lv2:minimum 0 ;
+        lv2:maximum 128 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 19 ;
+        lv2:symbol "ENABLE_NOTEOFF" ;
+        lv2:name "Note Off" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 20 ;
+        lv2:symbol "ENABLE_RESTARTBYKBD" ;
+        lv2:name "Restart" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 21 ;
+        lv2:symbol "ENABLE_TRIGBYKBD" ;
+        lv2:name "Trigger" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 22 ;
+        lv2:symbol "ENABLE_TRIGLEGATO" ;
+        lv2:name "Trigger Legato" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 23 ;
+        lv2:symbol "RECORD" ;
+        lv2:name "Record" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 24 ;
+        lv2:symbol "DEFER" ;
+        lv2:name "Defer mute" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 25 ;
+        lv2:symbol "SPARE" ;
+        lv2:name "Spare" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
+    ] ;
+    lv2:port [
+        a lv2:OutputPort, lv2:ControlPort ;
+        lv2:index 9 ;
+        lv2:symbol "CURSOR_POS" ;
+        lv2:name "Cursor position" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 8192 ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 10 ;
+        lv2:symbol "WAVEFORM" ;
+        lv2:name "Waveform" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "Sine"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Saw Up"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "Triangle"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "Saw Down"; rdf:value 3 ] ;
+        lv2:scalePoint [ rdfs:label "Rectangle"; rdf:value 4 ] ;
+        lv2:scalePoint [ rdfs:label "Custom"; rdf:value 5 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 5.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 11 ;
+        lv2:symbol "LOOPMODE" ;
+        lv2:name "Loop Mode" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "->_>"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label " <_<-"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "->_<"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label " >_<-"; rdf:value 3 ] ;
+        lv2:scalePoint [ rdfs:label "->_|"; rdf:value 4 ] ;
+        lv2:scalePoint [ rdfs:label " |_<-"; rdf:value 5 ] ;
+        lv2:scalePoint [ rdfs:label "RANDM"; rdf:value 6 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 6.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 12 ;
+        lv2:symbol "MUTE" ;
+        lv2:name "Mute Output" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:default 0.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 26 ;
+        lv2:symbol "TRANSPORT_MODE" ;
+        lv2:name "Transport Mode" ;
+        lv2:portProperty lv2:toggled ;
+        lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 27 ;
+        lv2:symbol "TEMPO" ;
+        lv2:name "Internal Tempo" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 120 ;
+        lv2:minimum  10 ;
+        lv2:maximum 400 ;
+    ] ;
+    lv2:port [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 13 ;
+        lv2:portProperty pprop:notOnGUI ;
+        lv2:symbol "MOUSEX" ;
+        lv2:name "Mouse X" ;
+        lv2:default 0.0 ;
+        lv2:minimum -1.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 14 ;
+        lv2:portProperty pprop:notOnGUI ;
+        lv2:symbol "MOUSEY" ;
+        lv2:name "Mouse Y" ;
+        lv2:default 0.0 ;
+        lv2:minimum -1.0 ;
+        lv2:maximum 1.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 15 ;
+        lv2:portProperty pprop:notOnGUI ;
+        lv2:symbol "MOUSEBUTTON" ;
+        lv2:name "Mouse Button" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0.0 ;
+        lv2:minimum -1.0 ;
+        lv2:maximum 2.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 16 ;
+        lv2:portProperty pprop:notOnGUI ;
+        lv2:symbol "MOUSEPRESSED" ;
+        lv2:name "Mouse was Pressed" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 2.0 ;
+    ] ;
+    lv2:port [
+        a lv2:OutputPort, lv2:ControlPort;
+        lv2:designation lv2:control ;
+        lv2:index 28 ;
+        lv2:symbol "WaveOut" ;
+        lv2:name "Wave Out" ;
+      rdfs:comment "Waveform control output"
+    ] .
+<https://git.code.sf.net/p/qmidiarp/lfo#ui>
+    a lv2ui:Qt4UI ;
+    lv2ui:binary <qmidiarp_lfo.so> ;
+    .

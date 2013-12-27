@@ -237,29 +237,30 @@ void SeqScreen::setMuted(bool on)
     needsRedraw = true;
 }
 
-void SeqScreen::mouseMoveEvent(QMouseEvent *event)
+void SeqScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
     mouseX = event->x();
     mouseY = event->y();
-    if ((mouseX < SEQSCR_HMARG)|| (mouseX >= w - SEQSCR_HMARG))
-        return;
-    if ((mouseY <= SEQSCR_VMARG)|| (mouseY > h - SEQSCR_VMARG))
-        return;
-    emit mouseMoved(((double)mouseX - SEQSCR_HMARG) /
+
+    emit mouseEvent(((double)mouseX - SEQSCR_HMARG) /
                             (w - 2 * SEQSCR_HMARG),
                 1. - ((double)mouseY - SEQSCR_VMARG) /
-                (h - 2 * SEQSCR_VMARG), event->buttons());
+                (h - 2 * SEQSCR_VMARG), event->buttons(), pressed);
+}
 
+void SeqScreen::mouseMoveEvent(QMouseEvent *event)
+{
+    emitMouseEvent(event, 0);
 }
 
 void SeqScreen::mousePressEvent(QMouseEvent *event)
 {
-    mouseX = event->x();
-    mouseY = event->y();
-    emit mousePressed(((double)mouseX - SEQSCR_HMARG) /
-                            (w - 2 * SEQSCR_HMARG),
-                1. - ((double)mouseY - SEQSCR_VMARG) /
-                (h - 2 * SEQSCR_VMARG), event->buttons());
+    emitMouseEvent(event, 1);
+}
+
+void SeqScreen::mouseReleaseEvent(QMouseEvent *event)
+{
+    emitMouseEvent(event, 2);
 }
 
 void SeqScreen::setRecordMode(bool on)

@@ -59,6 +59,10 @@ const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
  */
 const int seqResValues[5] = {1, 2, 4, 8, 16};
 
+/*! @brief This array holds the currently available Seq size values.
+ */
+const int seqSizeValues[11] = {1, 2, 3, 4, 5, 6, 7, 8, 16, 32};
+
 /*!
  * @brief Provides a parameter storage for QMidiArp module widgets.
  *
@@ -196,6 +200,7 @@ class ParStore : public QWidget
 * @param reverse Set to true if the parent module currently plays backward
 */
     void updateDisplay(int frame, bool reverse);
+    void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
 /*!

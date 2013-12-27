@@ -93,6 +93,7 @@ MidiArp::MidiArp()
     noteBufPtr = 0;
     noteCount = 0;
     releaseNoteCount = 0;
+    triggerMode = 0;
     restartByKbd = false;
     trigByKbd = false;
     trigLegato = false;
@@ -613,13 +614,31 @@ void MidiArp::initArpTick(int tick)
     grooveIndex = 0;
 }
 
+QString MidiArp::stripPattern(const QString& p_pattern)
+{
+    QString p = p_pattern;
+    patternLen = 0;
+    if (!p.count()) return (p);
+
+    QChar c = (p.at(p.count() - 1));
+    while (!c.isDigit() && (c != 'p') && (c != ')')) {
+        p = p.left(p.count() - 1);
+        if (p.count() < 1) break;
+        c = (p.at(p.count() - 1));
+    }
+
+    patternLen = p.count();
+
+    return (p);
+}
+
+
 void MidiArp::updatePattern(const QString& p_pattern)
 {
     int l1;
     QChar c;
 
     pattern = p_pattern;
-    patternLen = pattern.length();
     patternMaxIndex = 0;
     minStepWidth = 1.0;
     minOctave = 0;
@@ -632,16 +651,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
     int oct = 0;
     int npoints = 0;
 
-    // strip off trailing control tokens
-    if (patternLen) {
-        c = (pattern.at(patternLen - 1));
-        while (!c.isDigit() && (c != 'p') && (c != ')')) {
-            pattern = pattern.left(patternLen - 1);
-            patternLen--;
-            if (patternLen < 1) break;
-            c = (pattern.at(patternLen - 1));
-        }
-    }
+    pattern = stripPattern(pattern);
 
     // determine some useful properties of the arp pattern,
     // number of octaves, step width and number of steps in beats and
@@ -771,6 +781,7 @@ void MidiArp::updateReleaseTime(int val)
 
 void MidiArp::updateTriggerMode(int val)
 {
+    triggerMode = val;
     trigByKbd = ((val == 2) || (val == 4));
     restartByKbd = (val > 0);
     trigLegato = (val > 2);
@@ -844,6 +855,8 @@ void MidiArp::applyPendingParChanges()
 
 void MidiArp::setNextTick(int tick)
 {
+    if (nSteps == 0) return;
+
     returnTick = tick / (int)(nSteps*TPQN) * (int)(nSteps*TPQN);
     patternIndex = 0;
     currentNoteTick = returnTick;

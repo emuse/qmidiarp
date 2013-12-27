@@ -50,9 +50,9 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 {
     int l1;
 
-    midiControl = new MidiControl(this);
+    if (midiWorker) midiControl = new MidiControl(this);
 
-    manageBox = new ManageBox("Arp:", false, this);
+    if (midiWorker) manageBox = new ManageBox("Arp:", false, this);
 
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
@@ -147,12 +147,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     // Output group box on right side
     QGroupBox *portBox = new QGroupBox(tr("Output"), this);
 
-    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QComboBox(portBox);
-    portLabel->setBuddy(portOut);
-    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-    connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
-
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QComboBox(portBox);
     channelLabel->setBuddy(channelOut);
@@ -161,8 +155,15 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
             SLOT(updateChannelOut(int)));
 
     QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(portLabel, 0, 0);
-    portBoxLayout->addWidget(portOut, 0, 1);
+    if (midiWorker) {
+        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
+        portOut = new QComboBox(portBox);
+        portLabel->setBuddy(portOut);
+        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
+        portBoxLayout->addWidget(portLabel, 0, 0);
+        portBoxLayout->addWidget(portOut, 0, 1);
+    }
     portBoxLayout->addWidget(channelLabel, 1, 0);
     portBoxLayout->addWidget(channelOut, 1, 1);
     if (compactStyle) {
@@ -182,7 +183,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
     // Layout for left/right placements of in/out group boxes
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout();
-    inOutBoxLayout->addWidget(manageBox);
+    if (midiWorker) inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -227,7 +228,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     patternPresetBox->setMinimumContentsLength(20);
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
-    midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
+    if (midiWorker) midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
 
     muteOutAction = new QAction(tr("&Mute"),this);
     muteOutAction->setCheckable(true);
@@ -236,7 +237,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+    if (midiWorker) midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     deferChangesAction = new QAction("D", this);
     deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
@@ -304,7 +305,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
     QWidget *screenBox = new QWidget(patternBox);
     QHBoxLayout *screenBoxLayout = new QHBoxLayout;
-    screen = new ArpScreen(patternBox);
+    screen = new ArpScreen(this);
     screenBox->setMinimumHeight(80);
     screenBoxLayout->addWidget(screen);
     screenBoxLayout->setMargin(2);
@@ -380,14 +381,14 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
-
-    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
-
+    if (midiWorker) {
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
+        connect(parStore, SIGNAL(store(int, bool)),
+                 this, SLOT(storeParams(int, bool)));
+        connect(parStore, SIGNAL(restore(int)),
+                 this, SLOT(restoreParams(int)));
+    }
     muteOutAction->setChecked(mutedAdd);
 
     QGridLayout *widgetLayout = new QGridLayout;
@@ -404,7 +405,6 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
 
 ArpWidget::~ArpWidget()
 {
-    delete parStore;
 }
 
 MidiArp *ArpWidget::getMidiWorker()
@@ -414,16 +414,16 @@ MidiArp *ArpWidget::getMidiWorker()
 
 void ArpWidget::updateChIn(int value)
 {
-    midiWorker->chIn = value;
+    if (midiWorker) midiWorker->chIn = value;
     modified = true;
 }
 
 void ArpWidget::updateIndexIn(int value)
 {
     if (indexIn[0] == sender()) {
-        midiWorker->indexIn[0] = value;
+        if (midiWorker) midiWorker->indexIn[0] = value;
     } else {
-        midiWorker->indexIn[1] = value;
+        if (midiWorker) midiWorker->indexIn[1] = value;
     }
     checkIfInputFilterSet();
     modified = true;
@@ -432,9 +432,9 @@ void ArpWidget::updateIndexIn(int value)
 void ArpWidget::updateRangeIn(int value)
 {
     if (rangeIn[0] == sender()) {
-        midiWorker->rangeIn[0] = value;
+        if (midiWorker) midiWorker->rangeIn[0] = value;
     } else {
-        midiWorker->rangeIn[1] = value;
+        if (midiWorker) midiWorker->rangeIn[1] = value;
     }
     checkIfInputFilterSet();
     modified = true;
@@ -652,10 +652,12 @@ void ArpWidget::updateText(const QString& newtext)
     patternPresetBox->setCurrentIndex(0);
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    midiWorker->updatePattern(newtext);
-    screen->updateScreen(newtext, midiWorker->minOctave,
-                            midiWorker->maxOctave, midiWorker->minStepWidth,
-                            midiWorker->nSteps, midiWorker->patternMaxIndex);
+    if (midiWorker) {
+        midiWorker->updatePattern(newtext);
+        screen->updateScreen(newtext, midiWorker->minOctave,
+                        midiWorker->maxOctave, midiWorker->minStepWidth,
+                        midiWorker->nSteps, midiWorker->patternMaxIndex);
+    }
     modified = true;
 }
 
@@ -706,45 +708,45 @@ void ArpWidget::loadPatternPresets()
 
 void ArpWidget::updateRepeatPattern(int val)
 {
-    midiWorker->repeatPatternThroughChord = val;
+    if (midiWorker) midiWorker->repeatPatternThroughChord = val;
     modified = true;
 }
 
 void ArpWidget::updateEnableRestartByKbd(bool on)
 {
-    midiWorker->restartByKbd = on;
+    if (midiWorker) midiWorker->restartByKbd = on;
     modified = true;
 }
 
 void ArpWidget::updateEnableTrigByKbd(bool on)
 {
-    midiWorker->trigByKbd = on;
+    if (midiWorker) midiWorker->trigByKbd = on;
     modified = true;
 }
 
 void ArpWidget::updateTrigLegato(bool on)
 {
-    midiWorker->trigLegato = on;
+    if (midiWorker) midiWorker->trigLegato = on;
     modified = true;
 }
 
 void ArpWidget::updateRandomLengthAmp(int val)
 {
-    midiWorker->updateRandomLengthAmp(val);
+    if (midiWorker) midiWorker->updateRandomLengthAmp(val);
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomTickAmp(int val)
 {
-    midiWorker->updateRandomTickAmp(val);
+    if (midiWorker) midiWorker->updateRandomTickAmp(val);
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomVelocityAmp(int val)
 {
-    midiWorker->updateRandomVelocityAmp(val);
+    if (midiWorker) midiWorker->updateRandomVelocityAmp(val);
     checkIfRandomSet();
     modified = true;
 }
@@ -764,14 +766,14 @@ void ArpWidget::checkIfRandomSet()
 
 void ArpWidget::updateAttackTime(int val)
 {
-    midiWorker->updateAttackTime(val);
+    if (midiWorker) midiWorker->updateAttackTime(val);
     checkIfEnvelopeSet();
     modified = true;
 }
 
 void ArpWidget::updateReleaseTime(int val)
 {
-    midiWorker->updateReleaseTime(val);
+    if (midiWorker) midiWorker->updateReleaseTime(val);
     checkIfEnvelopeSet();
     modified = true;
 }
@@ -878,6 +880,7 @@ void ArpWidget::setInOutBoxVisible(bool on)
 
 void ArpWidget::setMuted(bool on)
 {
+    if (!midiWorker) return;
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
@@ -886,13 +889,13 @@ void ArpWidget::setMuted(bool on)
 
 void ArpWidget::updateDeferChanges(bool on)
 {
-    midiWorker->updateDeferChanges(on);
+    if (midiWorker) midiWorker->updateDeferChanges(on);
     modified = true;
 }
 
 void ArpWidget::setLatchMode(bool on)
 {
-    midiWorker->setLatchMode(on);
+    if (midiWorker) midiWorker->setLatchMode(on);
     modified = true;
 }
 
@@ -910,29 +913,33 @@ void ArpWidget::setChannelOut(int value)
 
 void ArpWidget::updatePortOut(int value)
 {
-    midiWorker->portOut = value;
+    if (midiWorker) midiWorker->portOut = value;
     modified = true;
 }
 
 void ArpWidget::updateChannelOut(int value)
 {
-    midiWorker->channelOut = value;
+    if (midiWorker) midiWorker->channelOut = value;
     modified = true;
 }
 
 bool ArpWidget::isModified()
 {
-    return (modified || midiControl->isModified());
+    if (midiWorker)
+        return (modified || midiControl->isModified());
+    else
+        return modified;
 }
 
 void ArpWidget::setModified(bool m)
 {
     modified = m;
-    midiControl->setModified(m);
+    if (midiWorker) midiControl->setModified(m);
 }
 
 void ArpWidget::storeParams(int ix, bool empty)
 {
+    if (!midiWorker) return;
     parStore->temp.empty = empty;
     parStore->temp.muteOut = muteOut->isChecked();
     parStore->temp.chIn = chIn->currentIndex();
@@ -954,6 +961,8 @@ void ArpWidget::storeParams(int ix, bool empty)
 
 void ArpWidget::restoreParams(int ix)
 {
+    if (!midiWorker) return;
+
     midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     patternText->setText(parStore->list.at(ix).pattern);
@@ -983,6 +992,7 @@ void ArpWidget::restoreParams(int ix)
 
 void ArpWidget::handleController(int ccnumber, int channel, int value)
 {
+    if (!midiWorker) return;
     bool m;
     int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;
@@ -1035,6 +1045,8 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 
 void ArpWidget::updateDisplay()
 {
+    if (!midiWorker) return;
+
     int frame = (getGrooveIndex() > 0) ? getGrooveIndex() - 1 : 0;
 
     parStore->updateDisplay(frame, false);
@@ -1052,4 +1064,21 @@ void ArpWidget::updateDisplay()
 
     needsGUIUpdate = false;
     midiWorker->needsGUIUpdate = false;
+}
+
+void ArpWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
 }

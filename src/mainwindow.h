@@ -113,6 +113,7 @@ class MainWindow : public QMainWindow
     static nsm_client_t *nsm;
     QString configFile;
 #endif
+    void skipXmlElement(QXmlStreamReader& xml);
 /*!
 * @brief  opens a file dialog and calls either
 * MainWindow::openTextFile or

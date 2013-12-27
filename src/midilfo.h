@@ -68,7 +68,6 @@ class MidiLfo : public QObject  {
     double queueTempo;  /*!< current tempo of the transport, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
-    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     bool backward;       /*!< True when the sequence should start backward */
     bool pingpong;      /*!< True when the play direction should alternate */
     bool reflect;      /*!< True when the current play direction will change at the next reflect point */
@@ -87,7 +86,6 @@ class MidiLfo : public QObject  {
  * @return The value clipped within the range
  */
     int clip(int value, int min, int max, bool *outOfRange);
-    QVector<Sample> data;
 /*! @brief This function recalculates the MidiLfo::customWave as a function
  * of a new offset value.
  *
@@ -111,6 +109,7 @@ class MidiLfo : public QObject  {
     bool recordMode, isRecording;
     bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
     bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
+    bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool needsGUIUpdate;
     int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int old_res;
@@ -124,6 +123,7 @@ class MidiLfo : public QObject  {
     int frameSize;  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
     int nPoints;        /*!< Number of steps to be played out */
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
+    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int waveFormIndex;          /*!< Index of the waveform to produce
                                     @par 0: Sine
                                     @par 1: Sawtooth Up
@@ -137,6 +137,7 @@ class MidiLfo : public QObject  {
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
     QVector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
+    QVector<Sample> data;
 
   public:
     MidiLfo();
@@ -151,6 +152,7 @@ class MidiLfo : public QObject  {
     void updateQueueTempo(int);
     void record(int value);
     void setRecordMode(bool on);
+    int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
 /*!
 * @brief This function determines the minimum of the current waveform and
 * sets the LfoWidget::offset slider accordingly.
@@ -182,6 +184,7 @@ class MidiLfo : public QObject  {
  * interpolates potentially missing waveform points between two events
  * if the mouse buttons were not released.
  *
+ * @returns index in the wave vector that has been set
  * @param mouseX Normalized horizontal location of the mouse on the
  * LfoScreen (0.0 ... 1.0)
  * @param mouseY Normalized verical location of the mouse on the
@@ -191,7 +194,7 @@ class MidiLfo : public QObject  {
  *
  * @see MidiLfo::toggleMutePoint(), MidiLfo::setMutePoint()
  */
-    void setCustomWavePoint(double mouseX, double mouseY, bool newpt);
+    int setCustomWavePoint(double mouseX, double mouseY, bool newpt);
 /*! @brief This function sets the mute state of one point of the
  * MidiLfo::muteMask array to the given state.
  *
@@ -201,13 +204,14 @@ class MidiLfo : public QObject  {
  * changed. If a custom waveform is active, the Sample.mute status
  * at the given position is changed as well.
  *
+ * @returns index in the wave vector that has been set
  * @param mouseX Normalized Horizontal location of the mouse on the
  * LfoScreen (0.0 ... 1.0)
  * @param muted mute state to set for the given position
  *
  * @see MidiLfo::toggleMutePoint()
  */
-    void setMutePoint(double mouseX, bool muted);
+    int setMutePoint(double mouseX, bool muted);
 /*! @brief This function recalculates the MidiLfo::customWave as a
  * function of the current MidiLfo::res and MidiLfo::size values.
  *

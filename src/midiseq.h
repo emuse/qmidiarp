@@ -109,6 +109,7 @@ class MidiSeq : public QObject  {
     bool isMutedDefer;   /*!< Deferred Global mute state */
     bool deferChanges;  /*!< set by SeqWidget to defer parameter changes to pattern end */
     bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
+    bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;
     bool dataChanged;
     bool needsGUIUpdate;
@@ -126,6 +127,7 @@ class MidiSeq : public QObject  {
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave;
     QVector<bool> muteMask;
+    QVector<Sample> data;
 
   public:
     MidiSeq();
@@ -133,6 +135,8 @@ class MidiSeq : public QObject  {
     void updateWaveForm(int val);
     void updateNoteLength(int);
     void updateVelocity(int);
+    void updateResolution(int);
+    void updateSize(int);
     void updateLoop(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
@@ -175,7 +179,7 @@ class MidiSeq : public QObject  {
  * SeqScreen (0.0 ... 1.0)
  * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint()
  */
-    void setCustomWavePoint(double mouseX, double mouseY);
+    int setCustomWavePoint(double mouseX, double mouseY);
 /*! @brief This function sets the MidiSeq::loopMarker member variable
  * used as a supplemental return point within the sequence.
  *
@@ -216,7 +220,7 @@ class MidiSeq : public QObject  {
  *
  * @see MidiSeq::toggleMutePoint()
  */
-    void setMutePoint(double mouseX, bool muted);
+    int setMutePoint(double mouseX, bool muted);
 /*! @brief This function recalculates the MidiSeq::customWave as a
  * function of the current MidiSeq::res and MidiSeq::size values.
  *
@@ -226,6 +230,7 @@ class MidiSeq : public QObject  {
  */
     void resizeAll();
     void setRecordMode(int on);
+    int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
     void setRecordedNote(int note);
 
 /*! @brief This function is called upon every change of parameters in

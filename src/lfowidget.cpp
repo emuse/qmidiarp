@@ -21,7 +21,7 @@
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *      MA 02110-1301, USA.
  */
-
+#include <cstdio>
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -51,9 +51,9 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 {
     int l1;
 
-    midiControl = new MidiControl(this);
+    if (midiWorker) midiControl = new MidiControl(this);
 
-    manageBox = new ManageBox("LFO:", true, this);
+    if (midiWorker) manageBox = new ManageBox("LFO:", true, this);
 
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
@@ -138,11 +138,6 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     connect(ccnumberBox, SIGNAL(valueChanged(int)), this,
             SLOT(updateCcnumber(int)));
 
-    QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-    portOut = new QComboBox(portBox);
-    portLabel->setBuddy(portOut);
-    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-    connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
 
     QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
     channelOut = new QComboBox(portBox);
@@ -155,8 +150,15 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(ccnumberLabel, 0, 0);
     portBoxLayout->addWidget(ccnumberBox, 0, 1);
-    portBoxLayout->addWidget(portLabel, 1, 0);
-    portBoxLayout->addWidget(portOut, 1, 1);
+    if (midiWorker) {
+        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
+        portOut = new QComboBox(portBox);
+        portLabel->setBuddy(portOut);
+        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
+        portBoxLayout->addWidget(portLabel, 1, 0);
+        portBoxLayout->addWidget(portOut, 1, 1);
+    }
     portBoxLayout->addWidget(channelLabel, 2, 0);
     portBoxLayout->addWidget(channelOut, 2, 1);
 
@@ -179,7 +181,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    inOutBoxLayout->addWidget(manageBox);
+    if (midiWorker) inOutBoxLayout->addWidget(manageBox);
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -195,10 +197,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
         tr("Right button to mute points\nLeft button to draw custom wave\nWheel to change offset"));
     screen->setMinimumHeight(80);
 
-    connect(screen, SIGNAL(mouseMoved(double, double, int)), this,
-            SLOT(mouseMoved(double, double, int)));
-    connect(screen, SIGNAL(mousePressed(double, double, int)), this,
-            SLOT(mousePressed(double, double, int)));
+    connect(screen, SIGNAL(mouseEvent(double, double, int, int)), this,
+            SLOT(mouseEvent(double, double, int, int)));
     connect(screen, SIGNAL(mouseWheel(int)), this,
             SLOT(mouseWheel(int)));
 
@@ -220,7 +220,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
 
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
-    midiControl->addMidiLearnMenu("WaveForm", waveFormBox, 3);
+    if (midiWorker) midiControl->addMidiLearnMenu("WaveForm", waveFormBox, 3);
 
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
@@ -239,7 +239,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     freqBox->setMinimumContentsLength(3);
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
-    midiControl->addMidiLearnMenu("Frequency", freqBox, 4);
+    if (midiWorker) midiControl->addMidiLearnMenu("Frequency", freqBox, 4);
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             waveBox);
@@ -255,7 +255,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    midiControl->addMidiLearnMenu("Resolution", resBox, 6);
+    if (midiWorker) midiControl->addMidiLearnMenu("Resolution", resBox, 6);
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
     sizeBox = new QComboBox(waveBox);
@@ -270,7 +270,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    midiControl->addMidiLearnMenu("Size", sizeBox, 7);
+    if (midiWorker) midiControl->addMidiLearnMenu("Size", sizeBox, 7);
 
     loopBox = new QComboBox(waveBox);
     names.clear();
@@ -281,7 +281,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     loopBox->setMinimumContentsLength(5);
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
-    midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
+    if (midiWorker) midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
 
     muteOutAction = new QAction(tr("&Mute"),this);
     muteOutAction->setCheckable(true);
@@ -290,7 +290,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+    if (midiWorker) midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
     deferChangesAction = new QAction("D", this);
     deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
@@ -309,20 +309,20 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 5);
+    if (midiWorker) midiControl->addMidiLearnMenu("RecordToggle", recordButton, 5);
 
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), waveBox);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
-    midiControl->addMidiLearnMenu("Amplitude", amplitude, 1);
+    if (midiWorker) midiControl->addMidiLearnMenu("Amplitude", amplitude, 1);
 
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Offset"), waveBox);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
-    midiControl->addMidiLearnMenu("Offset", offset, 2);
+    if (midiWorker) midiControl->addMidiLearnMenu("Offset", offset, 2);
 
     QVBoxLayout* sliderLayout = new QVBoxLayout;
     sliderLayout->addWidget(amplitude);
@@ -370,27 +370,25 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(waveBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
-
-    parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
-    connect(parStore, SIGNAL(store(int, bool)),
-             this, SLOT(storeParams(int, bool)));
-    connect(parStore, SIGNAL(restore(int)),
-             this, SLOT(restoreParams(int)));
+    if (midiWorker) {
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
+        connect(parStore, SIGNAL(store(int, bool)),
+                 this, SLOT(storeParams(int, bool)));
+        connect(parStore, SIGNAL(restore(int)),
+                 this, SLOT(restoreParams(int)));
+    }
 
     muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
     updateAmp(64);
-
-    lastMute = false;
     dataChanged = false;
     needsGUIUpdate = false;
 }
 
 LfoWidget::~LfoWidget()
 {
-    delete parStore;
 }
 
 MidiLfo *LfoWidget::getMidiWorker()
@@ -400,9 +398,9 @@ MidiLfo *LfoWidget::getMidiWorker()
 
 void LfoWidget::writeData(QXmlStreamWriter& xml)
 {
+    if (!midiWorker) return;
     QByteArray tempArray;
     int l1;
-
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
     xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
@@ -480,6 +478,8 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 
 void LfoWidget::readData(QXmlStreamReader& xml)
 {
+    if (!midiWorker) return;
+
     int tmp;
     int wvtmp = 0;
     Sample sample;
@@ -630,7 +630,8 @@ void LfoWidget::loadWaveForms()
 
 void LfoWidget::updateCcnumber(int val)
 {
-    midiWorker->ccnumber = val;
+    if (midiWorker)
+        midiWorker->ccnumber = val;
     modified = true;
 }
 
@@ -642,36 +643,36 @@ void LfoWidget::setChIn(int value)
 
 void LfoWidget::updateChIn(int val)
 {
-    midiWorker->chIn = val;
+    if (midiWorker) midiWorker->chIn = val;
     modified = true;
 }
 
 void LfoWidget::updateCcnumberIn(int val)
 {
-    midiWorker->ccnumberIn = val;
+    if (midiWorker) midiWorker->ccnumberIn = val;
     modified = true;
 }
 void LfoWidget::updateEnableNoteOff(bool on)
 {
-    midiWorker->enableNoteOff = on;
+    if (midiWorker) midiWorker->enableNoteOff = on;
     modified = true;
 }
 
 void LfoWidget::updateEnableRestartByKbd(bool on)
 {
-    midiWorker->restartByKbd = on;
+    if (midiWorker) midiWorker->restartByKbd = on;
     modified = true;
 }
 
 void LfoWidget::updateEnableTrigByKbd(bool on)
 {
-    midiWorker->trigByKbd = on;
+    if (midiWorker) midiWorker->trigByKbd = on;
     modified = true;
 }
 
 void LfoWidget::updateTrigLegato(bool on)
 {
-    midiWorker->trigLegato = on;
+    if (midiWorker) midiWorker->trigLegato = on;
     modified = true;
 }
 
@@ -679,11 +680,11 @@ void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
     waveFormBoxIndex = val;
-    midiWorker->updateWaveForm(val);
-    midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) midiWorker->updateWaveForm(val);
+    if (midiWorker) midiWorker->getData(&data);
+    if (midiWorker) screen->updateData(data);
     bool isCustom = (val == 5);
-    if (isCustom) midiWorker->newCustomOffset();
+    if (isCustom && midiWorker) midiWorker->newCustomOffset();
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
     modified = true;
@@ -692,6 +693,7 @@ void LfoWidget::updateWaveForm(int val)
 
 void LfoWidget::updateScreen(int val)
 {
+    if (!midiWorker) return;
     if (!midiWorker->isRecording)
         cursor->updatePosition(val);
 }
@@ -700,9 +702,9 @@ void LfoWidget::updateFreq(int val)
 {
     if (val > 13) return;
     freqBoxIndex = val;
-    midiWorker->updateFrequency(lfoFreqValues[val]);
-    midiWorker->getData(&data);
-    screen->updateData(data);
+    if (midiWorker) midiWorker->updateFrequency(lfoFreqValues[val]);
+    if (midiWorker) midiWorker->getData(&data);
+    if (midiWorker) screen->updateData(data);
     modified = true;
 }
 
@@ -710,10 +712,10 @@ void LfoWidget::updateRes(int val)
 {
     if (val > 8) return;
     resBoxIndex = val;
-    midiWorker->updateResolution(lfoResValues[val]);
-    midiWorker->getData(&data);
-    screen->updateData(data);
-    if (waveFormBoxIndex == 5) midiWorker->newCustomOffset();
+    if (midiWorker) midiWorker->updateResolution(lfoResValues[val]);
+    if (midiWorker) midiWorker->getData(&data);
+    if (midiWorker) screen->updateData(data);
+    if (midiWorker && (waveFormBoxIndex == 5)) midiWorker->newCustomOffset();
     modified = true;
 }
 
@@ -721,6 +723,7 @@ void LfoWidget::updateSize(int val)
 {
     if (val > 11) return;
     sizeBoxIndex = val;
+    if (!midiWorker) return;
     midiWorker->updateSize(sizeBox->currentText().toInt());
     midiWorker->getData(&data);
     screen->updateData(data);
@@ -731,12 +734,13 @@ void LfoWidget::updateSize(int val)
 void LfoWidget::updateLoop(int val)
 {
     if (val > 6) return;
-    midiWorker->updateLoop(val);
+    if (midiWorker) midiWorker->updateLoop(val);
     modified = true;
 }
 
 void LfoWidget::updateAmp(int val)
 {
+    if (!midiWorker) return;
     midiWorker->updateAmplitude(val);
     midiWorker->getData(&data);
     screen->updateData(data);
@@ -745,6 +749,7 @@ void LfoWidget::updateAmp(int val)
 
 void LfoWidget::updateOffs(int val)
 {
+    if (!midiWorker) return;
     midiWorker->updateOffset(val);
     midiWorker->getData(&data);
     screen->updateData(data);
@@ -753,41 +758,21 @@ void LfoWidget::updateOffs(int val)
 
 void LfoWidget::copyToCustom()
 {
-    midiWorker->copyToCustom();
+    if (midiWorker) midiWorker->copyToCustom();
     waveFormBox->setCurrentIndex(5);
     updateWaveForm(5);
     modified = true;
 }
 
-void LfoWidget::mouseMoved(double mouseX, double mouseY, int buttons)
+void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if (buttons == 2) {
-        midiWorker->setMutePoint(mouseX, lastMute);
-    }
-    else {
-        if (waveFormBox->currentIndex() < 5) {
-            copyToCustom();
-        }
-        midiWorker->setCustomWavePoint(mouseX, mouseY, false);
-        midiWorker->newCustomOffset();
-    }
-    midiWorker->dataChanged = true;
-    modified = true;
-}
+    if (!midiWorker) emit mouseSig(mouseX, mouseY, buttons, pressed);
+    else midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
 
-void LfoWidget::mousePressed(double mouseX, double mouseY, int buttons)
-{
-    if (buttons == 2) {
-        lastMute = midiWorker->toggleMutePoint(mouseX);
+    if (waveFormBox->currentIndex() != 5) {
+        waveFormBox->setCurrentIndex(5);
+        updateWaveForm(5);
     }
-    else {
-        if (waveFormBox->currentIndex() < 5) {
-            copyToCustom();
-        }
-        midiWorker->setCustomWavePoint(mouseX, mouseY, true);
-        midiWorker->newCustomOffset();
-    }
-    midiWorker->dataChanged = true;
     modified = true;
 }
 
@@ -807,6 +792,7 @@ void LfoWidget::setInOutBoxVisible(bool on)
 
 void LfoWidget::setMuted(bool on)
 {
+    if (!midiWorker) return;
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
@@ -815,13 +801,13 @@ void LfoWidget::setMuted(bool on)
 
 void LfoWidget::updateDeferChanges(bool on)
 {
-    midiWorker->updateDeferChanges(on);
+    if (midiWorker) midiWorker->updateDeferChanges(on);
     modified = true;
 }
 
 void LfoWidget::setRecord(bool on)
 {
-    midiWorker->setRecordMode(on);
+    if (midiWorker) midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
 }
 
@@ -839,13 +825,13 @@ void LfoWidget::setChannelOut(int value)
 
 void LfoWidget::updatePortOut(int value)
 {
-    midiWorker->portOut = value;
+    if (midiWorker) midiWorker->portOut = value;
     modified = true;
 }
 
 void LfoWidget::updateChannelOut(int value)
 {
-    midiWorker->channelOut = value;
+    if (midiWorker) midiWorker->channelOut = value;
     modified = true;
 }
 
@@ -877,14 +863,15 @@ void LfoWidget::storeParams(int ix, bool empty)
     parStore->temp.offs = offset->value();
     parStore->temp.waveForm = waveFormBox->currentIndex();
 
-    parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
-    parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
+    if (midiWorker) parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
+    if (midiWorker) parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
 
     parStore->tempToList(ix);
 }
 
 void LfoWidget::restoreParams(int ix)
 {
+    if (!midiWorker) return;
     midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
@@ -980,6 +967,8 @@ QVector<Sample> LfoWidget::getCustomWave()
 
 void LfoWidget::handleController(int ccnumber, int channel, int value)
 {
+    if (!midiWorker) return;
+
     bool m;
     int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;
@@ -1074,6 +1063,7 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
 
 void LfoWidget::updateDisplay()
 {
+    if (!midiWorker) return;
     QVector<Sample> data;
 
     parStore->updateDisplay(getFramePtr()/midiWorker->frameSize, midiWorker->reverse);
@@ -1111,4 +1101,21 @@ void LfoWidget::updateDisplay()
     }
     needsGUIUpdate = false;
     midiWorker->needsGUIUpdate = false;
+}
+
+void LfoWidget::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
 }
