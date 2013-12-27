@@ -59,7 +59,7 @@
         lv2:symbol "NOTELENGTH" ;
         lv2:name "Note Length" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 64.0 ;
+        lv2:default 60.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 128.0 ;
     ] ;
