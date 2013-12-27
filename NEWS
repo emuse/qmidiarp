@@ -1,3 +1,23 @@
+qmidiarp-0.6.0 (2014-01-??)
+
+New Features
+  o LV2 Plugins are now available for Arp, LFO and Seq modules
+    - They have full functionality as known from the standalone
+      application except MIDI control, which can be provided by the hosts
+    - The LFO plugin also has a LV2 control output scaled from 0 to 1
+    - When the 'Sync to host' option is checked, the plugins support
+      transport LV2 atom data from hosts.
+    - On hosts with small atom port capacities that do not honor the
+      lv2 rsz:MinimumSize property, there might be issues with displaying
+      very large LFO waveforms.
+    - Functions of QMidiArp beyond the modules themselves (including
+      global storage) are not available
+
+Fixed Bugs
+  o Trying to open an inexistent file from the recent files menu led to
+    crash (reported by Frank Neumann)
+
+
 qmidiarp-0.5.3 (2013-11-26)
 
 New Features
