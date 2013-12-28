@@ -28,8 +28,6 @@
 
 #include "midievent.h"
 
-extern QString global_jack_session_uuid;
-
 #define CT_FOOTSW       0x40
 
 #define MAX_PORTS         64
@@ -50,5 +48,43 @@ extern QString global_jack_session_uuid;
     QSpinBox { font: 7pt; max-height: 20px;} \
     QCheckBox { font: 7pt; max-height: 20px;} \
     QGroupBox { font: 7pt; }"
+
+#ifndef SAMPLE_H
+#define SAMPLE_H
+/*! @brief Structure holding elements of a MIDI note or controller representing
+ * one point of a waveform
+ */
+    struct Sample {
+        int value;
+        int tick;
+        bool muted;
+    };
+#endif
+
+/*! This array holds the currently available frequency values.
+ */
+const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};
+
+/*! @brief This array holds the currently available LFO size values.
+ */
+const int lfoSizeValues[12] = {1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32};
+
+/*! @brief This array holds the currently available LFO resolution values.
+ */
+const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
+
+/*! @brief This array holds the currently available Seq resolution values.
+ */
+const int seqResValues[5] = {1, 2, 4, 8, 16};
+
+/*! @brief This array holds the currently available Seq size values.
+ */
+const int seqSizeValues[11] = {1, 2, 3, 4, 5, 6, 7, 8, 16, 32};
+
+/*!
+ * @brief Provides a parameter storage for QMidiArp module widgets.
+ *
+ * ParStore is used by each of QMidiArp's module widgets.
+ */
 
 #endif

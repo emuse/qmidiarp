@@ -505,39 +505,6 @@ static const void *MidiArpLV2_extension_data ( const char * uri)
     else return NULL;
 }
 
-static LV2UI_Handle MidiArpLV2ui_instantiate (
-    const LV2UI_Descriptor *, const char *, const char *,
-    LV2UI_Write_Function write_function,
-    LV2UI_Controller controller, LV2UI_Widget *widget,
-    const LV2_Feature *const *host_features )
-{
-    ArpWidgetLV2 *pWidget = new ArpWidgetLV2(
-                    controller, write_function, host_features);
-    *widget = pWidget;
-    return pWidget;
-}
-
-static void MidiArpLV2ui_cleanup ( LV2UI_Handle ui )
-{
-    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
-    if (pWidget)
-        delete pWidget;
-}
-
-static void MidiArpLV2ui_port_event (
-    LV2UI_Handle ui, uint32_t port_index,
-    uint32_t buffer_size, uint32_t format, const void *buffer )
-{
-    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
-    if (pWidget)
-        pWidget->port_event(port_index, buffer_size, format, buffer);
-}
-
-static const void *MidiArpLV2ui_extension_data ( const char * )
-{
-    return NULL;
-}
-
 static const LV2_Descriptor MidiArpLV2_descriptor =
 {
     QMIDIARP_ARP_LV2_URI,
@@ -550,22 +517,7 @@ static const LV2_Descriptor MidiArpLV2_descriptor =
     MidiArpLV2_extension_data
 };
 
-static const LV2UI_Descriptor MidiArpLV2ui_descriptor =
-{
-    QMIDIARP_ARP_LV2UI_URI,
-    MidiArpLV2ui_instantiate,
-    MidiArpLV2ui_cleanup,
-    MidiArpLV2ui_port_event,
-    MidiArpLV2ui_extension_data
-};
-
 LV2_SYMBOL_EXPORT const LV2_Descriptor *lv2_descriptor ( uint32_t index )
 {
     return (index == 0 ? &MidiArpLV2_descriptor : NULL);
 }
-
-LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
-{
-    return (index == 0 ? &MidiArpLV2ui_descriptor : NULL);
-}
-

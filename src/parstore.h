@@ -37,37 +37,9 @@
 
 #include "globstore.h"
 #include "indicator.h"
+#include "main.h"
 
-#ifndef SAMPLE_H
-#define SAMPLE_H
 
-/*! @brief Structure holding elements of a MIDI note or controller representing
- * one point of a waveform
- */
-    struct Sample {
-        int value;
-        int tick;
-        bool muted;
-    };
-#endif
-
-/*! @brief This array holds the currently available LFO resolution values.
- */
-const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
-
-/*! @brief This array holds the currently available Seq resolution values.
- */
-const int seqResValues[5] = {1, 2, 4, 8, 16};
-
-/*! @brief This array holds the currently available Seq size values.
- */
-const int seqSizeValues[11] = {1, 2, 3, 4, 5, 6, 7, 8, 16, 32};
-
-/*!
- * @brief Provides a parameter storage for QMidiArp module widgets.
- *
- * ParStore is used by each of QMidiArp's module widgets.
- */
 class ParStore : public QWidget
 {
   Q_OBJECT

@@ -1,0 +1,10 @@
+@prefix lv2:     <http://lv2plug.in/ns/lv2core#> .
+@prefix lv2ui:   <http://lv2plug.in/ns/extensions/ui#> .
+
+<https://git.code.sf.net/p/qmidiarp/arp#ui>
+    a lv2ui:Qt4UI ;
+    lv2ui:binary <qmidiarp_arp_ui.so> .
+
+<https://git.code.sf.net/p/qmidiarp/arp#ui_external>
+    a <http://lv2plug.in/ns/extensions/ui#external> ;
+    lv2ui:binary <qmidiarp_arp_ui.so> .

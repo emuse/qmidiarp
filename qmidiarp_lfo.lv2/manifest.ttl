@@ -5,4 +5,4 @@
     a lv2:Plugin ;
     lv2:appliesTo <qmidiarp_lfo.so> ;
     lv2:binary <qmidiarp_lfo.so> ;
-    rdfs:seeAlso <qmidiarp_lfo.ttl> .
+    rdfs:seeAlso <qmidiarp_lfo.ttl>, <qmidiarp_lfo_ui.ttl> .

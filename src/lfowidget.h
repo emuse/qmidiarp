@@ -45,14 +45,6 @@
 #include "parstore.h"
 #include "cursor.h"
 
-/*! This array holds the currently available frequency values.
- */
-const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};
-
-/*! @brief This array holds the currently available LFO size values.
- */
-const int lfoSizeValues[12] = {1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32};
-
 /*!
  * @brief GUI class associated with and controlling a MidiLfo worker
 

@@ -69,12 +69,33 @@ if BUILD_LV2
 arpplugindir = @libdir@/lv2/qmidiarp_arp.lv2
 lfoplugindir = @libdir@/lv2/qmidiarp_lfo.lv2
 seqplugindir = @libdir@/lv2/qmidiarp_seq.lv2
+arppluginuidir = @libdir@/lv2/qmidiarp_arp.lv2
+lfopluginuidir = @libdir@/lv2/qmidiarp_lfo.lv2
+seqpluginuidir = @libdir@/lv2/qmidiarp_seq.lv2
 
 arpplugin_LTLIBRARIES = qmidiarp_arp.la
 lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
 seqplugin_LTLIBRARIES = qmidiarp_seq.la
 
+arppluginui_LTLIBRARIES = qmidiarp_arp_ui.la
+lfopluginui_LTLIBRARIES = qmidiarp_lfo_ui.la
+seqpluginui_LTLIBRARIES = qmidiarp_seq_ui.la
+
 nodist_qmidiarp_lfo_la_SOURCES = \
+	midilfo_moc.cpp \
+	midilfo_lv2_moc.cpp
+
+qmidiarp_lfo_la_SOURCES = \
+	lv2_common.h \
+	main.h \
+	midilfo.cpp midilfo.h \
+	midilfo_lv2.cpp midilfo_lv2.h
+
+qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_lfo_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+
+nodist_qmidiarp_lfo_ui_la_SOURCES = \
+	midilfo_moc.cpp \
 	cursor_moc.cpp \
 	globstore_moc.cpp \
 	indicator_moc.cpp \
@@ -82,14 +103,12 @@ nodist_qmidiarp_lfo_la_SOURCES = \
 	lfoscreen_moc.cpp \
 	managebox_moc.cpp \
 	midicontrol_moc.cpp \
-	midilfo_moc.cpp \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	lfowidget_lv2_moc.cpp \
-	midilfo_lv2_moc.cpp
+	lfowidget_lv2_moc.cpp
 
-qmidiarp_lfo_la_SOURCES = \
+qmidiarp_lfo_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
@@ -97,18 +116,31 @@ qmidiarp_lfo_la_SOURCES = \
 	lfoscreen.cpp lfoscreen.h \
 	lv2_common.h \
 	managebox.cpp managebox.h \
-	midicontrol.cpp midicontrol.h \
+	main.h \
 	midilfo.cpp midilfo.h \
+	midicontrol.cpp midicontrol.h \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	lfowidget_lv2.cpp lfowidget_lv2.h \
-	midilfo_lv2.cpp midilfo_lv2.h
+	lfowidget_lv2.cpp lfowidget_lv2.h
 
-qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_lfo_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_lfo_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_seq_la_SOURCES = \
+	midiseq_moc.cpp \
+	midiseq_lv2_moc.cpp
+
+qmidiarp_seq_la_SOURCES = \
+	lv2_common.h \
+	main.h \
+	midiseq.cpp midiseq.h \
+	midiseq_lv2.cpp midiseq_lv2.h
+
+qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_seq_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+
+nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	globstore_moc.cpp \
 	indicator_moc.cpp \
@@ -120,10 +152,9 @@ nodist_qmidiarp_seq_la_SOURCES = \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	seqwidget_lv2_moc.cpp \
-	midiseq_lv2_moc.cpp
+	seqwidget_lv2_moc.cpp
 
-qmidiarp_seq_la_SOURCES = \
+qmidiarp_seq_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
@@ -136,13 +167,26 @@ qmidiarp_seq_la_SOURCES = \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	seqwidget_lv2.cpp seqwidget_lv2.h \
-	midiseq_lv2.cpp midiseq_lv2.h
+	seqwidget_lv2.cpp seqwidget_lv2.h
 
-qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_seq_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_seq_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_arp_la_SOURCES = \
+	midiarp_moc.cpp \
+	midiarp_lv2_moc.cpp
+
+qmidiarp_arp_la_SOURCES = \
+	lv2_common.h \
+	main.h \
+	midiarp.cpp midiarp.h \
+	midiarp_lv2.cpp midiarp_lv2.h
+
+qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_arp_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+
+nodist_qmidiarp_arp_ui_la_SOURCES = \
+	cursor_moc.cpp \
 	globstore_moc.cpp \
 	indicator_moc.cpp \
 	arpwidget_moc.cpp \
@@ -153,10 +197,10 @@ nodist_qmidiarp_arp_la_SOURCES = \
 	parstore_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp \
-	arpwidget_lv2_moc.cpp \
-	midiarp_lv2_moc.cpp
+	arpwidget_lv2_moc.cpp
 
-qmidiarp_arp_la_SOURCES = \
+qmidiarp_arp_ui_la_SOURCES = \
+	cursor.cpp cursor.h \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
 	lv2_common.h \
@@ -168,11 +212,10 @@ qmidiarp_arp_la_SOURCES = \
 	parstore.cpp parstore.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h \
-	arpwidget_lv2.cpp arpwidget_lv2.h \
-	midiarp_lv2.cpp midiarp_lv2.h
+	arpwidget_lv2.cpp arpwidget_lv2.h
 
-qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_arp_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -E
+qmidiarp_arp_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
 
 endif
 

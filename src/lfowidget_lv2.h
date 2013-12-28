@@ -29,6 +29,8 @@
 #include "lfowidget.h"
 #include "lv2_common.h"
 
+#define QMIDIARP_LFO_LV2_URI QMIDIARP_LV2_URI "/lfo"
+#define QMIDIARP_LFO_LV2_PREFIX QMIDIARP_LFO_LV2_URI "#"
 #define QMIDIARP_LFO_LV2UI_URI QMIDIARP_LFO_LV2_PREFIX "ui"
 
 class LfoWidgetLV2 : public LfoWidget

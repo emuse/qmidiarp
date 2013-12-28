@@ -29,6 +29,8 @@
 #include "lv2_common.h"
 #include "arpwidget.h"
 
+#define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
+#define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 #define QMIDIARP_ARP_LV2UI_URI QMIDIARP_ARP_LV2_PREFIX "ui"
 
 class ArpWidgetLV2 : public ArpWidget

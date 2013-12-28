@@ -39,6 +39,8 @@
 #include "main.h"
 #include "driverbase.h"
 
+extern QString global_jack_session_uuid;
+
 /*!
  * The JackDriver class is a QObject providing access to the MIDI interface
  * of the Jack Audio Connection Kit (JACK) transport system. It provides

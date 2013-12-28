@@ -27,7 +27,6 @@
 #define QMIDIARP_LFO_LV2_H
 
 #include "midilfo.h"
-#include "lfowidget.h"
 #include "lv2_common.h"
 
 #define QMIDIARP_LFO_LV2_URI QMIDIARP_LV2_URI "/lfo"

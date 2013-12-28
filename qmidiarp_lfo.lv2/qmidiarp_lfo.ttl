@@ -23,7 +23,8 @@
     lv2:requiredFeature <http://lv2plug.in/ns/ext/urid#map> ;
     lv2:optionalFeature lv2:hardRTCapable ;
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
-    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/lfo#ui> ;
+    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/lfo#ui> ,
+             <https://git.code.sf.net/p/qmidiarp/lfo#ui_external> ;
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
@@ -330,7 +331,3 @@
         lv2:name "Wave Out" ;
       rdfs:comment "Waveform control output"
     ] .
-<https://git.code.sf.net/p/qmidiarp/lfo#ui>
-    a lv2ui:Qt4UI ;
-    lv2ui:binary <qmidiarp_lfo.so> ;
-    .

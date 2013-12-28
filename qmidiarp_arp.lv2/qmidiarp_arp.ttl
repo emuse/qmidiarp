@@ -23,7 +23,8 @@
     lv2:requiredFeature <http://lv2plug.in/ns/ext/urid#map> ;
     lv2:optionalFeature lv2:hardRTCapable ;
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
-    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui> ;
+    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui> ,
+             <https://git.code.sf.net/p/qmidiarp/arp#ui_external> ;
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
@@ -276,7 +277,3 @@
         lv2:minimum 0.0 ;
         lv2:maximum 2.0 ;
     ] .
-<https://git.code.sf.net/p/qmidiarp/arp#ui>
-    a lv2ui:Qt4UI ;
-    lv2ui:binary <qmidiarp_arp.so> ;
-    .

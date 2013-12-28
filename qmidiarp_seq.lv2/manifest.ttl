@@ -5,4 +5,4 @@
     a lv2:Plugin ;
     lv2:appliesTo <qmidiarp_seq.so> ;
     lv2:binary <qmidiarp_seq.so> ;
-    rdfs:seeAlso <qmidiarp_seq.ttl> .
+    rdfs:seeAlso <qmidiarp_seq.ttl>, <qmidiarp_seq_ui.ttl>  .

@@ -26,7 +26,6 @@
 #include <cstdio>
 #include <cmath>
 #include "midiseq_lv2.h"
-#include "seqwidget_lv2.h"
 
 MidiSeqLV2::MidiSeqLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
@@ -583,39 +582,6 @@ static const void *MidiSeqLV2_extension_data ( const char * uri)
     else return NULL;
 }
 
-static LV2UI_Handle MidiSeqLV2ui_instantiate (
-    const LV2UI_Descriptor *, const char *, const char *,
-    LV2UI_Write_Function write_function,
-    LV2UI_Controller controller, LV2UI_Widget *widget,
-    const LV2_Feature *const *host_features )
-{
-    SeqWidgetLV2 *pWidget = new SeqWidgetLV2(
-                    controller, write_function, host_features);
-    *widget = pWidget;
-    return pWidget;
-}
-
-static void MidiSeqLV2ui_cleanup ( LV2UI_Handle ui )
-{
-    SeqWidgetLV2 *pWidget = static_cast<SeqWidgetLV2 *> (ui);
-    if (pWidget)
-        delete pWidget;
-}
-
-static void MidiSeqLV2ui_port_event (
-    LV2UI_Handle ui, uint32_t port_index,
-    uint32_t buffer_size, uint32_t format, const void *buffer )
-{
-    SeqWidgetLV2 *pWidget = static_cast<SeqWidgetLV2 *> (ui);
-    if (pWidget)
-        pWidget->port_event(port_index, buffer_size, format, buffer);
-}
-
-static const void *MidiSeqLV2ui_extension_data ( const char * )
-{
-    return NULL;
-}
-
 static const LV2_Descriptor MidiSeqLV2_descriptor =
 {
     QMIDIARP_SEQ_LV2_URI,
@@ -628,22 +594,8 @@ static const LV2_Descriptor MidiSeqLV2_descriptor =
     MidiSeqLV2_extension_data
 };
 
-static const LV2UI_Descriptor MidiSeqLV2ui_descriptor =
-{
-    QMIDIARP_SEQ_LV2UI_URI,
-    MidiSeqLV2ui_instantiate,
-    MidiSeqLV2ui_cleanup,
-    MidiSeqLV2ui_port_event,
-    MidiSeqLV2ui_extension_data
-};
-
 LV2_SYMBOL_EXPORT const LV2_Descriptor *lv2_descriptor ( uint32_t index )
 {
     return (index == 0 ? &MidiSeqLV2_descriptor : NULL);
-}
-
-LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
-{
-    return (index == 0 ? &MidiSeqLV2ui_descriptor : NULL);
 }
 
