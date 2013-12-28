@@ -114,7 +114,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
     setStyleSheet(COMPACT_STYLE);
 
     res = 4;
-    size = 1;
+    size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
     sendUIisUp(true);

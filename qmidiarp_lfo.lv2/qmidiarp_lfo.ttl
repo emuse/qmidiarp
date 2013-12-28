@@ -78,7 +78,7 @@
         lv2:scalePoint [ rdfs:label "64"; rdf:value 6 ] ;
         lv2:scalePoint [ rdfs:label "96"; rdf:value 7 ] ;
         lv2:scalePoint [ rdfs:label "192"; rdf:value 8 ] ;
-        lv2:default 4.0 ;
+        lv2:default 2.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 8.0 ;
     ] , [
@@ -99,7 +99,7 @@
         lv2:scalePoint [ rdfs:label "16"; rdf:value 9 ] ;
         lv2:scalePoint [ rdfs:label "24"; rdf:value 10 ] ;
         lv2:scalePoint [ rdfs:label "32"; rdf:value 11 ] ;
-        lv2:default 0.0 ;
+        lv2:default 3.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 11.0 ;
     ] , [
@@ -122,7 +122,7 @@
         lv2:scalePoint [ rdfs:label "6"; rdf:value 11 ] ;
         lv2:scalePoint [ rdfs:label "7"; rdf:value 12 ] ;
         lv2:scalePoint [ rdfs:label "8"; rdf:value 13 ] ;
-        lv2:default 6.0 ;
+        lv2:default 3.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 13.0 ;
     ] ;

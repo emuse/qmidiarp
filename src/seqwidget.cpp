@@ -290,7 +290,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     if (midiWorker) midiControl->addMidiLearnMenu("Velocity", velocity, 1);
 
 
-    notelength = new Slider(0, 127, 1, 16, 64, Qt::Horizontal,
+    notelength = new Slider(0, 127, 1, 16, 60, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));

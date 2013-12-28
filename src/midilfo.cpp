@@ -42,9 +42,9 @@ MidiLfo::MidiLfo()
     queueTempo = 100.0;
     amp = 64;
     offs = 0;
-    freq = 32;
-    size = 1;
-    res = 16;
+    freq = 8;
+    size = 4;
+    res = 4;
     nPoints = 16;
     maxNPoints = 16;
     old_res = 0;

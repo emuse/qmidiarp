@@ -232,8 +232,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
         << "1/2" << "3/4" << "1" << "2" << "3"
         << "4" << "5" << "6" << "7" << "8";
     freqBox->insertItems(0, names);
-    freqBox->setCurrentIndex(6);
-    freqBoxIndex = 6;
+    freqBox->setCurrentIndex(4);
+    freqBoxIndex = 4;
     freqBox->setToolTip(
             tr("Frequency (cycles/beat): Number of wave cycles produced every beat"));
     freqBox->setMinimumContentsLength(3);
@@ -248,8 +248,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     names.clear();
     names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
     resBox->insertItems(0, names);
-    resBox->setCurrentIndex(4);
-    resBoxIndex = 4;
+    resBox->setCurrentIndex(2);
+    resBoxIndex = 2;
     resBox->setToolTip(
             tr("Resolution (events/beat): Number of events produced every beat"));
     resBox->setMinimumContentsLength(3);
@@ -264,8 +264,8 @@ LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8"
             << "12" << "16" << "24" << "32" ;
     sizeBox->insertItems(0, names);
-    sizeBox->setCurrentIndex(0);
-    sizeBoxIndex = 0;
+    sizeBox->setCurrentIndex(3);
+    sizeBoxIndex = 3;
     sizeBox->setToolTip(tr("Length of LFO wave in beats"));
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
