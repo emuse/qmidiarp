@@ -27,8 +27,6 @@
 #define QMIDIARP_SEQWIDGET_LV2_H
 
 #include "seqwidget.h"
-#include "midiseq.h"
-#include "midiseq_lv2.h"
 #include "lv2_common.h"
 
 #define QMIDIARP_SEQ_LV2UI_URI QMIDIARP_SEQ_LV2_PREFIX "ui"

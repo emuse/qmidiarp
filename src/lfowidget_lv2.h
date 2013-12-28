@@ -27,8 +27,6 @@
 #define QMIDIARP_LFOWIDGET_LV2_H
 
 #include "lfowidget.h"
-#include "midilfo.h"
-#include "midilfo_lv2.h"
 #include "lv2_common.h"
 
 #define QMIDIARP_LFO_LV2UI_URI QMIDIARP_LFO_LV2_PREFIX "ui"

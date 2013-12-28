@@ -28,8 +28,6 @@
 
 #include "lv2_common.h"
 #include "arpwidget.h"
-#include "midiarp.h"
-#include "midilfo_lv2.h"
 
 #define QMIDIARP_ARP_LV2UI_URI QMIDIARP_ARP_LV2_PREFIX "ui"
 
