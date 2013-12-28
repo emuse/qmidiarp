@@ -1451,9 +1451,11 @@ bool MainWindow::installSignalHandlers()
         return false;
     }
 #ifdef NSM
-    if (sigaction(SIGTERM, &action, NULL) == -1) {
-        qWarning("sigaction() failed: %s", std::strerror(errno));
-        return false;
+    if (nsm && nsm_is_active(nsm)) {
+        if (sigaction(SIGTERM, &action, NULL) == -1) {
+            qWarning("sigaction() failed: %s", std::strerror(errno));
+            return false;
+        }
     }
 #endif
 
