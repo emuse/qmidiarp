@@ -4,7 +4,7 @@ static const char * lfowavcp_xpm[] = {
 "   c None",
 ".  c #666666",
 "+  c #EDB632",
-"@  c #000000",
+"@  c #003099",
 "#  c #612324",
 "                      ",
 "                      ",
