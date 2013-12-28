@@ -112,8 +112,6 @@ void MidiSeqLV2::updatePos(const LV2_Atom_Object* obj)
 {
     QMidiArpURIs* const uris = &m_uris;
 
-    bool changed = false;
-
     LV2_Atom *bpm = NULL, *speed = NULL, *pos = NULL;
     lv2_atom_object_get(obj,
                         uris->time_frame, &pos,
@@ -125,7 +123,6 @@ void MidiSeqLV2::updatePos(const LV2_Atom_Object* obj)
             /* Tempo changed */
             transportBpm = ((LV2_Atom_Float*)bpm)->body;
             tempo = transportBpm;
-            changed = true;
         }
     }
     if (pos && pos->type == uris->atom_Long) {
@@ -149,11 +146,8 @@ void MidiSeqLV2::updatePos(const LV2_Atom_Object* obj)
             else {
                 curFrame = transportFramesDelta;
             }
-            changed = true;
         }
     }
-    //~ if (changed) qWarning("frames %d ticks %d tempo %f status %f", transportFramesDelta
-        //~ , tempoChangeTick, transportBpm, transportSpeed);
 }
 
 void MidiSeqLV2::run (uint32_t nframes )
@@ -416,7 +410,7 @@ void MidiSeqLV2::sendWave()
 
 static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature* const* )
 {
     MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
 
@@ -475,7 +469,7 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
 
 static LV2_State_Status MidiSeqLV2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature* const* )
 {
     MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
 

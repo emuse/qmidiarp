@@ -382,7 +382,7 @@ void MidiArpLV2::sendPattern(const QString & p)
 
 static LV2_State_Status MidiArpLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature *const * )
 {
     MidiArpLV2 *pPlugin = static_cast<MidiArpLV2 *> (instance);
 
@@ -413,7 +413,7 @@ static LV2_State_Status MidiArpLV2_state_restore ( LV2_Handle instance,
 
 static LV2_State_Status MidiArpLV2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature *const * )
 {
     MidiArpLV2 *pPlugin = static_cast<MidiArpLV2 *> (instance);
 

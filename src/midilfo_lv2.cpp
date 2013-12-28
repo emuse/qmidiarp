@@ -107,8 +107,6 @@ void MidiLfoLV2::updatePos(const LV2_Atom_Object* obj)
 {
     QMidiArpURIs* const uris = &m_uris;
 
-    bool changed = false;
-
     LV2_Atom *bpm = NULL, *speed = NULL, *pos = NULL;
     lv2_atom_object_get(obj,
                         uris->time_frame, &pos,
@@ -120,7 +118,6 @@ void MidiLfoLV2::updatePos(const LV2_Atom_Object* obj)
             /* Tempo changed */
             transportBpm = ((LV2_Atom_Float*)bpm)->body;
             tempo = transportBpm;
-            changed = true;
         }
     }
     if (pos && pos->type == uris->atom_Long) {
@@ -145,11 +142,8 @@ void MidiLfoLV2::updatePos(const LV2_Atom_Object* obj)
                 curFrame = transportFramesDelta;
                 inLfoFrame = 0;
             }
-            changed = true;
         }
     }
-    //~ if (changed) qWarning("frames %d ticks %d tempo %f status %f", transportFramesDelta
-        //~ , tempoChangeTick, transportBpm, transportSpeed);
 }
 
 void MidiLfoLV2::run ( uint32_t nframes )
@@ -390,7 +384,7 @@ void MidiLfoLV2::sendWave()
 
 static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature *const * )
 {
     MidiLfoLV2 *pPlugin = static_cast<MidiLfoLV2 *> (instance);
 
@@ -450,7 +444,7 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
 
 static LV2_State_Status MidiLfoLV2_state_save ( LV2_Handle instance,
     LV2_State_Store_Function store, LV2_State_Handle handle,
-    uint32_t flags, const LV2_Feature *const *features )
+    uint32_t flags, const LV2_Feature *const * )
 {
     MidiLfoLV2 *pPlugin = static_cast<MidiLfoLV2 *> (instance);
 
