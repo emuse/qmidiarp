@@ -428,13 +428,16 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     Sample sample;
     int step = TPQN / pPlugin->res;
     int lt = 0;
+    int min = 127;
     for (l1 = 0; l1 < tmpArray.count(); l1++) {
         sample.value = tmpArray.at(l1);
         sample.tick = lt;
         sample.muted = pPlugin->muteMask.at(l1);
         pPlugin->customWave.replace(l1, sample);
         lt+=step;
+        if (sample.value < min) min = sample.value;
     }
+    pPlugin->cwmin = min;
     pPlugin->getData(&pPlugin->data);
     pPlugin->sendWave();
 
