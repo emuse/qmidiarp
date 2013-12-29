@@ -26,6 +26,7 @@
 #ifndef QMIDIARP_ARPWIDGET_LV2_H
 #define QMIDIARP_ARPWIDGET_LV2_H
 
+#include <QBoxLayout>
 #include "lv2_common.h"
 #include "arpwidget.h"
 

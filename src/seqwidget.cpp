@@ -34,17 +34,27 @@
 #include "pixmaps/seqrecord.xpm"
 
 
+#ifdef APPBUILD
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
-    QWidget(parent), midiWorker(p_midiWorker),
-    globStore(p_globStore), modified(false)
+    QWidget(parent),
+    midiWorker(p_midiWorker),
+    globStore(p_globStore),
+    modified(false)
 {
+    midiControl = new MidiControl(this);
+    manageBox = new ManageBox("Seq:", true, this);
+#else
+SeqWidget::SeqWidget(
+    bool compactStyle,
+    bool mutedAdd, bool inOutVisible, QWidget *parent):
+    QWidget(parent),
+    modified(false)
+{
+    midiWorker = NULL;
+#endif
     int l1;
-
-    if (midiWorker) midiControl = new MidiControl(this);
-
-    if (midiWorker) manageBox = new ManageBox("Seq:", true, this);
 
     // Input group box on right top
     QGroupBox *inBox = new QGroupBox(tr("Input"), this);
@@ -134,7 +144,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
     QGridLayout *portBoxLayout = new QGridLayout;
 
-    if (midiWorker) {
+#ifdef APPBUILD
         QLabel *portLabel = new QLabel(tr("&Port"), portBox);
         portOut = new QComboBox(portBox);
         portLabel->setBuddy(portOut);
@@ -143,7 +153,8 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
 
         portBoxLayout->addWidget(portLabel, 0, 0);
         portBoxLayout->addWidget(portOut, 0, 1);
-    }
+#endif
+
     portBoxLayout->addWidget(channelLabel, 1, 0);
     portBoxLayout->addWidget(channelOut, 1, 1);
 
@@ -166,7 +177,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
 
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-    if (midiWorker) inOutBoxLayout->addWidget(manageBox);
+#ifdef APPBUILD
+    inOutBoxLayout->addWidget(manageBox);
+#endif
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
     inOutBoxLayout->addStretch();
@@ -193,8 +206,10 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
-    if (midiWorker) midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
 
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+#endif
     deferChangesAction = new QAction("D", this);
     deferChangesAction->setToolTip(tr("Defer mute, velocity, note length and transpose to pattern end"));
     deferChangesAction->setCheckable(true);
@@ -214,8 +229,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     loopBox->setMinimumContentsLength(5);
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
-
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
+#endif
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
     recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
     recordAction->setToolTip(tr("Record step by step"));
@@ -224,7 +240,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
-    if (midiWorker) midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
+#endif
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             seqBox);
@@ -240,7 +258,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     resBox->setMinimumContentsLength(3);
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("Resolution", resBox, 4);
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Resolution", resBox, 4);
+#endif
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
     sizeBox = new QComboBox(seqBox);
@@ -254,7 +274,9 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("Size", sizeBox, 5);
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Size", sizeBox, 5);
+#endif
 
     QSignalMapper *dispSignalMapper = new QSignalMapper(this);
     QLabel *dispLabel[4];
@@ -287,21 +309,25 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             tr("Veloc&ity"), seqBox);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("Velocity", velocity, 1);
-
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Velocity", velocity, 1);
+#endif
 
     notelength = new Slider(0, 127, 1, 16, 60, Qt::Horizontal,
             tr("N&ote Length"), seqBox);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
+#endif
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), seqBox);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
-    if (midiWorker) midiControl->addMidiLearnMenu("Transpose", transpose, 8);
-
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Transpose", transpose, 8);
+#endif
 
     QGridLayout* sliderLayout = new QGridLayout;
     sliderLayout->addLayout(dispBoxLayout, 1, 0);
@@ -342,14 +368,15 @@ SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBox, 0);
 
-    if (midiWorker) {
+#ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
         midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));
         connect(parStore, SIGNAL(restore(int)),
                  this, SLOT(restoreParams(int)));
-    }
+#endif
+
     muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
@@ -365,6 +392,7 @@ SeqWidget::~SeqWidget()
 {
 }
 
+#ifdef APPBUILD
 MidiSeq *SeqWidget::getMidiWorker()
 {
     return (midiWorker);
@@ -618,6 +646,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
     }
     modified = false;
 }
+#endif
 
 void SeqWidget::setEnableNoteIn(bool on)
 {
@@ -782,7 +811,9 @@ void SeqWidget::setMuted(bool on)
     if (!midiWorker) return;
     midiWorker->setMuted(on);
     screen->setMuted(midiWorker->isMuted);
+#ifdef APPBUILD
     parStore->ndc->setMuted(midiWorker->isMuted);
+#endif
     modified = true;
 }
 
@@ -814,17 +845,6 @@ void SeqWidget::updateChannelOut(int value)
 {
     if (midiWorker) midiWorker->channelOut = value;
     modified = true;
-}
-
-bool SeqWidget::isModified()
-{
-    return (modified || midiControl->isModified());
-}
-
-void SeqWidget::setModified(bool m)
-{
-    modified = m;
-    midiControl->setModified(m);
 }
 
 void SeqWidget::setDispVert(int mode)
@@ -869,6 +889,34 @@ void SeqWidget::updateDispVert(int mode)
 
 void SeqWidget::storeParams(int ix, bool empty)
 {
+#ifdef APPBUILD
+    // have to do this for moc not caring for APPBUILD flag
+    doStoreParams(ix, empty);
+#endif
+}
+
+void SeqWidget::restoreParams(int ix)
+{
+#ifdef APPBUILD
+    // have to do this for moc not caring for APPBUILD flag
+    doRestoreParams(ix);
+#endif
+}
+
+#ifdef APPBUILD
+bool SeqWidget::isModified()
+{
+    return (modified || midiControl->isModified());
+}
+
+void SeqWidget::setModified(bool m)
+{
+    modified = m;
+    midiControl->setModified(m);
+}
+
+void SeqWidget::doStoreParams(int ix, bool empty)
+{
     parStore->temp.empty = empty;
     parStore->temp.muteOut = muteOut->isChecked();
     parStore->temp.chIn = chIn->currentIndex();
@@ -889,7 +937,7 @@ void SeqWidget::storeParams(int ix, bool empty)
     parStore->tempToList(ix);
 }
 
-void SeqWidget::restoreParams(int ix)
+void SeqWidget::doRestoreParams(int ix)
 {
     midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
@@ -1130,3 +1178,4 @@ void SeqWidget::skipXmlElement(QXmlStreamReader& xml)
         }
     }
 }
+#endif

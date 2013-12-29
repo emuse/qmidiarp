@@ -26,6 +26,7 @@
 #ifndef QMIDIARP_SEQWIDGET_LV2_H
 #define QMIDIARP_SEQWIDGET_LV2_H
 
+#include <QBoxLayout>
 #include "seqwidget.h"
 #include "lv2_common.h"
 

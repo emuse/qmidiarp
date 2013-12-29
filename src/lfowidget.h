@@ -36,14 +36,17 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#ifdef APPBUILD
 #include "globstore.h"
-#include "midilfo.h"
-#include "slider.h"
-#include "lfoscreen.h"
 #include "midicontrol.h"
 #include "managebox.h"
 #include "parstore.h"
+#endif
+
+#include "midilfo.h"
 #include "cursor.h"
+#include "slider.h"
+#include "lfoscreen.h"
 
 /*!
  * @brief GUI class associated with and controlling a MidiLfo worker
@@ -63,7 +66,9 @@ class LfoWidget : public QWidget
     Q_OBJECT
 
     MidiLfo *midiWorker;
+#ifdef APPBUILD
     GlobStore *globStore;
+#endif
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool dataChanged;
     bool needsGUIUpdate;
@@ -94,19 +99,26 @@ class LfoWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
+#ifdef APPBUILD
     LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "", QWidget* parent=0);
-    ~LfoWidget();
 
-    QVector<Sample> data;
     ParStore *parStore;
     MidiControl *midiControl;
+    ManageBox *manageBox;
+#else
+    LfoWidget(
+            bool compactStyle,
+            bool mutedAdd = false, bool inOutVisible = true,
+            QWidget* parent=0);
+#endif
+
+    ~LfoWidget();
     LfoScreen *screen;
     Cursor *cursor;
-    ManageBox *manageBox;
-
+    QVector<Sample> data;
     QStringList waveForms;
     QComboBox *chIn;
     QSpinBox  *ccnumberInBox;
@@ -134,6 +146,22 @@ class LfoWidget : public QWidget
     int freqBoxIndex;
     int waveFormBoxIndex;
 
+/*!
+* @brief Settor for the LfoWidget::channelOut spinbox setting the output
+* channel of this module.
+* @param value Number of the output channel to send data to
+*
+*/
+    void setChannelOut(int value);
+/*!
+* @brief Settor for the LfoWidget::portOut spinbox setting the output
+* port of this module.
+* @param value Number of the output port to send data to
+*
+*/
+    void setPortOut(int value);
+
+#ifdef APPBUILD
 /*!
 * @brief This function returns the MidiLfo instance associated with this GUI
 * Widget.
@@ -163,20 +191,6 @@ class LfoWidget : public QWidget
 */
     void copyParamsFrom(LfoWidget *fromWidget);
 /*!
-* @brief Settor for the LfoWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void setChannelOut(int value);
-/*!
-* @brief Settor for the LfoWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
-/*!
 * @brief Accessor for LfoWidget::modified.
 * @return True if unsaved parameter modifications exist
 *
@@ -189,6 +203,21 @@ class LfoWidget : public QWidget
 */
     void setModified(bool);
     void skipXmlElement(QXmlStreamReader& xml);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doStoreParams(int ix, bool empty);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doRestoreParams(int ix);
+#endif
 
 /* SIGNALS */
   signals:
@@ -208,8 +237,6 @@ class LfoWidget : public QWidget
     void updateEnableTrigByKbd(bool on);
     void updateTrigLegato(bool on);
     void setInOutBoxVisible(bool on);
-
-    void updateDisplay();
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
@@ -353,25 +380,17 @@ class LfoWidget : public QWidget
 * @param on Set to True for deferring parameter changes to pattern end
 */
     void updateDeferChanges(bool on);
-/*!
-* @brief This function stores some module parameters in a parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
+
     void storeParams(int ix, bool empty = false);
-/*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
     void restoreParams(int ix);
 
+#ifdef APPBUILD
+    void handleController(int ccnumber, int channel, int value);
+    void updateDisplay();
+#endif
     int getFramePtr() { return midiWorker->getFramePtr(); }
     int getNextTick() { return midiWorker->nextTick; }
     bool getReverse() { return midiWorker->reverse; }
-    void handleController(int ccnumber, int channel, int value);
 };
 
 #endif

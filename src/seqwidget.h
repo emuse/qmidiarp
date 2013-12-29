@@ -33,17 +33,21 @@
 #include <QAction>
 #include <QToolButton>
 #include <QPushButton>
+#include <QSignalMapper>
 #include <QVector>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#ifdef APPBUILD
 #include "globstore.h"
-#include "midiseq.h"
-#include "slider.h"
-#include "seqscreen.h"
 #include "midicontrol.h"
 #include "managebox.h"
 #include "parstore.h"
+#endif
+
+#include "midiseq.h"
+#include "slider.h"
+#include "seqscreen.h"
 #include "cursor.h"
 
 
@@ -64,7 +68,9 @@ class SeqWidget : public QWidget
     Q_OBJECT
 
     MidiSeq *midiWorker;
+#ifdef APPBUILD
     GlobStore *globStore;
+#endif
     bool modified;      /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
@@ -83,18 +89,26 @@ class SeqWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
+#ifdef APPBUILD
     SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "", QWidget* parent=0);
+
+    ParStore *parStore;
+    MidiControl *midiControl;
+    ManageBox *manageBox;
+#else
+    SeqWidget(
+            bool compactStyle,
+            bool mutedAdd = false, bool inOutVisible = true,
+            QWidget* parent=0);
+#endif
     ~SeqWidget();
 
     QVector<Sample> data;
-    ParStore *parStore;
-    MidiControl *midiControl;
     SeqScreen *screen;
     Cursor *cursor;
-    ManageBox *manageBox;
 
     QComboBox *chIn;
     QComboBox *channelOut, *portOut;
@@ -124,6 +138,23 @@ class SeqWidget : public QWidget
     QVector<Sample> getCustomWave();
 
 /*!
+* @brief This function is obsolete.
+* It writes to an old QMidiArp .qma text file passed as a stream
+* by MainWindow.
+*
+* @param arpText QTextStream to write to
+*/
+    void setChannelOut(int value);
+/*!
+* @brief Settor for the SeqWidget::portOut spinbox setting the output
+* port of this module.
+* @param value Number of the output port to send data to
+*
+*/
+    void setPortOut(int value);
+
+#ifdef APPBUILD
+/*!
 * @brief This function returns the MidiSeq instance associated with this GUI
 * Widget.
 * @return MidiSeq instance associated with this GUI
@@ -152,21 +183,6 @@ class SeqWidget : public QWidget
 */
     void copyParamsFrom(SeqWidget *fromWidget);
 /*!
-* @brief This function is obsolete.
-* It writes to an old QMidiArp .qma text file passed as a stream
-* by MainWindow.
-*
-* @param arpText QTextStream to write to
-*/
-    void setChannelOut(int value);
-/*!
-* @brief Settor for the SeqWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
-/*!
 * @brief Accessor for SeqWidget::modified.
 * @return True if unsaved parameter modifications exist
 *
@@ -179,6 +195,21 @@ class SeqWidget : public QWidget
 */
     void setModified(bool);
     void skipXmlElement(QXmlStreamReader& xml);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doStoreParams(int ix, bool empty);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doRestoreParams(int ix);
+#endif
 
 /* SIGNALS */
   signals:
@@ -252,8 +283,6 @@ class SeqWidget : public QWidget
     void updateDispVert(int mode);
     void setInOutBoxVisible(bool on);
 
-    void updateDisplay();
-
 /*!
 * @brief Slot for the SeqScreen::mouseMoved signal. This function
 * mutes or sets a wave point when the mouse is moved with held buttons.
@@ -304,20 +333,14 @@ class SeqWidget : public QWidget
 * @param on Set to True for deferring parameter changes to pattern end
 */
     void updateDeferChanges(bool on);
-/*!
-* @brief This function stores some module parameters in a parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
+
     void storeParams(int ix, bool empty = false);
-/*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
     void restoreParams(int ix);
+
+#ifdef APPBUILD
+    void handleController(int ccnumber, int channel, int value);
+    void updateDisplay();
+#endif
 
     int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
     int getLoopMarker() { return midiWorker->loopMarker; }
@@ -325,7 +348,6 @@ class SeqWidget : public QWidget
     bool getReverse() { return midiWorker->reverse; }
     int sliderToTickLen(int val) { return (val * TPQN / 64); }
     int tickLenToSlider(int val) { return (val * 64 / TPQN); }
-    void handleController(int ccnumber, int channel, int value);
 };
 
 #endif

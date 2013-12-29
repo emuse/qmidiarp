@@ -42,7 +42,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
-        : LfoWidget(NULL, NULL, 1, true, true, true, "LFO-LV2", 0)
+        : LfoWidget(true, true, true, 0)
 {
     m_controller = ct;
     writeFunction = write_function;

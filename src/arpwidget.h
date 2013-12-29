@@ -39,13 +39,16 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#ifdef APPBUILD
 #include "globstore.h"
-#include "midiarp.h"
-#include "slider.h"
-#include "arpscreen.h"
 #include "midicontrol.h"
 #include "managebox.h"
 #include "parstore.h"
+#endif
+
+#include "midiarp.h"
+#include "slider.h"
+#include "arpscreen.h"
 
 /*! @brief GUI class associated with and controlling a MidiArp worker
  *
@@ -62,9 +65,11 @@ class ArpWidget : public QWidget
 {
   Q_OBJECT
 
-  private:
     MidiArp *midiWorker;
+#ifdef APPBUILD
     GlobStore *globStore;
+#endif
+
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     bool needsGUIUpdate;
 
@@ -88,16 +93,24 @@ class ArpWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
+#ifdef APPBUILD
     ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "", QWidget* parent=0);
-    ~ArpWidget();
 
     ParStore *parStore;
     MidiControl *midiControl;
-    ArpScreen *screen;
     ManageBox *manageBox;
+#else
+    ArpWidget(
+            bool compactStyle,
+            bool mutedAdd = false, bool inOutVisible = true,
+            QWidget* parent=0);
+#endif
+    ~ArpWidget();
+
+    ArpScreen *screen;
 
     QComboBox *chIn;                        // Channel of input events
     QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
@@ -124,6 +137,23 @@ class ArpWidget : public QWidget
     void setIndexIn(int index, int value);
     void setRangeIn(int index, int value);
 
+/*!
+* @brief Settor for the ArpWidget::channelOut spinbox setting the output
+* channel of this module.
+* @param value Number of the output channel to send data to
+*
+*/
+
+    void setChannelOut(int value);
+/*!
+* @brief Settor for the ArpWidget::portOut spinbox setting the output
+* port of this module.
+* @param value Number of the output port to send data to
+*
+*/
+    void setPortOut(int value);
+
+#ifdef APPBUILD
     //these members are common to all modules
 /*!
 * @brief This function reads all parameters of this module from an XML stream
@@ -146,20 +176,6 @@ class ArpWidget : public QWidget
 */
     MidiArp *getMidiWorker();
 /*!
-* @brief Settor for the ArpWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void setChannelOut(int value);
-/*!
-* @brief Settor for the ArpWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
-/*!
 * @brief Accessor for ArpWidget::modified.
 * @return True if unsaved parameter modifications exist
 *
@@ -172,6 +188,21 @@ class ArpWidget : public QWidget
 */
     void setModified(bool);
     void skipXmlElement(QXmlStreamReader& xml);
+/*!
+* @brief This function stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doStoreParams(int ix, bool empty);
+/*!
+* @brief This function restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    void doRestoreParams(int ix);
+#endif
 
     int getNextTick() { return midiWorker->nextTick; }
 
@@ -215,8 +246,6 @@ class ArpWidget : public QWidget
     void updateIndexIn(int value);
     void updateRangeIn(int value);
 
-    void updateDisplay();
-
  /*! @brief Slot for ArpWidget::latchModeAction.
   * Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received */
@@ -256,21 +285,15 @@ class ArpWidget : public QWidget
 * @param on Set to True for deferring parameter changes to pattern end
 */
     void updateDeferChanges(bool on);
-/*!
-* @brief This function stores some module parameters in a parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
+
     void storeParams(int ix, bool empty = false);
-/*!
-* @brief This function restores some module parameters from the parameter
-* list object
-*
-* @param Position index in the parameter list
-*/
     void restoreParams(int ix);
+
+#ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);
+    void updateDisplay();
+#endif
+
     int getGrooveIndex() { return midiWorker->getGrooveIndex(); }
 };
 
