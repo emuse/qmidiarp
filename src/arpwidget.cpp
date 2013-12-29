@@ -420,6 +420,9 @@ ArpWidget::ArpWidget(
 
 ArpWidget::~ArpWidget()
 {
+#ifdef APPBUILD
+    delete parStore;
+#endif
 }
 
 #ifdef APPBUILD

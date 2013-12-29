@@ -390,6 +390,9 @@ SeqWidget::SeqWidget(
 
 SeqWidget::~SeqWidget()
 {
+#ifdef APPBUILD
+    delete parStore;
+#endif
 }
 
 #ifdef APPBUILD

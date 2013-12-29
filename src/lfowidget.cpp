@@ -408,6 +408,9 @@ LfoWidget::LfoWidget(
 
 LfoWidget::~LfoWidget()
 {
+#ifdef APPBUILD
+    delete parStore;
+#endif
 }
 
 #ifdef APPBUILD
