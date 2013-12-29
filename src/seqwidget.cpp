@@ -709,7 +709,7 @@ void SeqWidget::updateTrigLegato(bool on)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    if (midiWorker) midiWorker->updateNoteLength(val);
+    if (midiWorker) midiWorker->updateNoteLength(sliderToTickLen(val));
     modified = true;
 }
 
