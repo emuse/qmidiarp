@@ -947,6 +947,9 @@ void ArpWidget::storeParams(int ix, bool empty)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doStoreParams(ix, empty);
+#else
+    (void)ix;
+    (void)empty;
 #endif
 }
 
@@ -955,6 +958,8 @@ void ArpWidget::restoreParams(int ix)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doRestoreParams(ix);
+#else
+    (void)ix;
 #endif
 }
 
@@ -975,7 +980,6 @@ void ArpWidget::setModified(bool m)
 
 void ArpWidget::doStoreParams(int ix, bool empty)
 {
-    if (!midiWorker) return;
     parStore->temp.empty = empty;
     parStore->temp.muteOut = muteOut->isChecked();
     parStore->temp.chIn = chIn->currentIndex();
@@ -997,8 +1001,6 @@ void ArpWidget::doStoreParams(int ix, bool empty)
 
 void ArpWidget::doRestoreParams(int ix)
 {
-    if (!midiWorker) return;
-
     midiWorker->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     patternText->setText(parStore->list.at(ix).pattern);
@@ -1028,7 +1030,6 @@ void ArpWidget::doRestoreParams(int ix)
 
 void ArpWidget::handleController(int ccnumber, int channel, int value)
 {
-    if (!midiWorker) return;
     bool m;
     int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;
@@ -1081,8 +1082,6 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 
 void ArpWidget::updateDisplay()
 {
-    if (!midiWorker) return;
-
     int frame = (getGrooveIndex() > 0) ? getGrooveIndex() - 1 : 0;
 
     parStore->updateDisplay(frame, false);

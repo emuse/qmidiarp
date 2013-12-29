@@ -400,8 +400,6 @@ MidiSeq *SeqWidget::getMidiWorker()
 
 void SeqWidget::writeData(QXmlStreamWriter& xml)
 {
-    if (!midiWorker) return;
-
     QByteArray tempArray;
     int l1;
 
@@ -488,8 +486,6 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
 void SeqWidget::readData(QXmlStreamReader& xml)
 {
-    if (!midiWorker) return;
-
     int tmp;
     Sample sample;
 
@@ -892,6 +888,9 @@ void SeqWidget::storeParams(int ix, bool empty)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doStoreParams(ix, empty);
+#else
+    (void)ix;
+    (void)empty;
 #endif
 }
 
@@ -900,6 +899,8 @@ void SeqWidget::restoreParams(int ix)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doRestoreParams(ix);
+#else
+    (void)ix;
 #endif
 }
 
@@ -1035,7 +1036,6 @@ QVector<Sample> SeqWidget::getCustomWave()
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
 {
-    if (!midiWorker) return;
     bool m;
     int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;

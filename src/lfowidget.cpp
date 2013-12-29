@@ -859,6 +859,9 @@ void LfoWidget::storeParams(int ix, bool empty)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doStoreParams(ix, empty);
+#else
+    (void)ix;
+    (void)empty;
 #endif
 }
 
@@ -867,6 +870,8 @@ void LfoWidget::restoreParams(int ix)
 #ifdef APPBUILD
     // have to do this for moc not caring for APPBUILD flag
     doRestoreParams(ix);
+#else
+    (void)ix;
 #endif
 }
 

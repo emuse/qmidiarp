@@ -8,7 +8,7 @@ New Features
     - When the 'Sync to host' option is checked, the plugins support
       transport LV2 atom data from hosts.
     - On hosts with small atom port capacities that do not honor the
-      lv2 rsz:MinimumSize property, there might be issues with displaying
+      lv2 rsz:MinimumSize property, there will be issues with displaying
       very large LFO waveforms.
     - Functions of QMidiArp beyond the modules themselves (including
       global storage) are not available
