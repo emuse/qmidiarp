@@ -275,4 +275,31 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 2.0 ;
+    ], [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 28 ;
+        lv2:symbol "HOST_TEMPO" ;
+        lv2:name "Host Tempo" ;
+        lv2:default 120.0 ;
+        lv2:minimum 2.0 ;
+        lv2:maximum 400.0 ;
+        lv2:designation time:beatsPerMinute ;
+    ], [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 29 ;
+        lv2:symbol "HOST_POSITION" ;
+        lv2:name "Host Position" ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 100000000000.0 ;
+        lv2:designation time:frame ;
+    ], [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 30 ;
+        lv2:symbol "HOST_SPEED" ;
+        lv2:name "Host Speed (Start/Stop)" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:designation time:speed ;
     ] .

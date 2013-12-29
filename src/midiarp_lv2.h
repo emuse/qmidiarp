@@ -68,14 +68,18 @@ public:
             DEFER = 22,
             PATTERN_PRESET = 23,
             TRANSPORT_MODE = 24,
-            TEMPO = 25
+            TEMPO = 25,
+            HOST_TEMPO = 26,
+            HOST_POSITION = 27,
+            HOST_SPEED = 28
         };
 
         void connect_port(uint32_t port, void *data);
         void run(uint32_t nframes);
         void activate();
         void deactivate();
-        void updatePos(const LV2_Atom_Object* obj);
+        void updatePosAtom(const LV2_Atom_Object* obj);
+        void updatePos(uint64_t position, float bpm, int speed, bool ignore_pos=false);
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
         LV2_Atom_Forge forge;
@@ -94,6 +98,7 @@ private:
         double sampleRate;
         double tempo;
         bool ui_up;
+        bool transportAtomReceived;
         void updateParams();
         void sendPattern(const QString & p);
         void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);

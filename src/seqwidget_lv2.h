@@ -70,7 +70,10 @@ class SeqWidgetLV2 : public SeqWidget
             DEFER = 24,
             CURR_RECSTEP = 25, //output
             TRANSPORT_MODE = 26,
-            TEMPO = 27
+            TEMPO = 27,
+            HOST_TEMPO = 28,
+            HOST_POSITION = 29,
+            HOST_SPEED = 30
     };
 
     SeqWidgetLV2(

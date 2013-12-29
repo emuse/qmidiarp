@@ -68,7 +68,10 @@ class LfoWidgetLV2 : public LfoWidget
             SPARE = 25,
             TRANSPORT_MODE = 26,
             TEMPO = 27,
-            WaveOut = 28
+            WaveOut = 28,
+            HOST_TEMPO = 29,
+            HOST_POSITION = 30,
+            HOST_SPEED = 31
         };
 
     LfoWidgetLV2(

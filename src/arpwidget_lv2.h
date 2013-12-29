@@ -68,7 +68,10 @@ class ArpWidgetLV2 : public ArpWidget
             DEFER = 24,
             PATTERN_PRESET = 25,
             TRANSPORT_MODE = 26,
-            TEMPO = 27
+            TEMPO = 27,
+            HOST_TEMPO = 28,
+            HOST_POSITION = 29,
+            HOST_SPEED = 30
     };
 
     ArpWidgetLV2(

@@ -52,6 +52,8 @@ MidiLfoLV2::MidiLfoLV2 (
     tempoChangeTick = 0;
     transportMode = false;
     transportSpeed = 1;
+    transportAtomReceived = false;
+
     dataChanged = true;
     ui_up = false;
 
@@ -102,9 +104,19 @@ void MidiLfoLV2::connect_port ( uint32_t port, void *seqdata )
     }
 }
 
-void MidiLfoLV2::updatePos(const LV2_Atom_Object* obj)
+void MidiLfoLV2::updatePosAtom(const LV2_Atom_Object* obj)
 {
+    if (!transportMode) return;
+
     QMidiArpURIs* const uris = &m_uris;
+
+    uint64_t pos1 = transportFramesDelta;
+    float bpm1 = tempo;
+    int speed1 = transportSpeed;
+
+    // flag that the host sends transport information via atom port and
+    // that we will no longer process designated port events
+    transportAtomReceived = true;
 
     LV2_Atom *bpm = NULL, *speed = NULL, *pos = NULL;
     lv2_atom_object_get(obj,
@@ -112,35 +124,38 @@ void MidiLfoLV2::updatePos(const LV2_Atom_Object* obj)
                         uris->time_beatsPerMinute, &bpm,
                         uris->time_speed, &speed,
                         NULL);
-    if (bpm && bpm->type == uris->atom_Float) {
-        if (transportBpm != ((LV2_Atom_Float*)bpm)->body) {
-            /* Tempo changed */
-            transportBpm = ((LV2_Atom_Float*)bpm)->body;
-            tempo = transportBpm;
-        }
-    }
-    if (pos && pos->type == uris->atom_Long) {
-        /* Position changed */
-        const float frames_per_beat = 60.0f / transportBpm * sampleRate;
-        const uint64_t position = ((LV2_Atom_Long*)pos)->body;
 
-        transportFramesDelta = position;
-        tempoChangeTick = position / frames_per_beat * TPQN;
+    if (bpm && bpm->type == uris->atom_Float) bpm1 = ((LV2_Atom_Float*)bpm)->body;
+    if (pos && pos->type == uris->atom_Long)  pos1 = ((LV2_Atom_Long*)pos)->body;
+    if (speed && speed->type == uris->atom_Float) speed1 = ((LV2_Atom_Float*)speed)->body;
+
+    updatePos(pos1, bpm1, speed1);
+}
+
+void MidiLfoLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
+{
+    if (transportBpm != bpm) {
+        /* Tempo changed */
+        transportBpm = bpm;
+        tempo = transportBpm;
     }
-    if (speed && speed->type == uris->atom_Float) {
-        if (transportSpeed != ((LV2_Atom_Float*)speed)->body) {
-            /* Speed changed, e.g. 0 (stop) to 1 (play) */
-            transportSpeed = ((LV2_Atom_Float*)speed)->body;
-            if (transportSpeed) {
-                curFrame = transportFramesDelta;
-                inLfoFrame = 0;
-                setNextTick(tempoChangeTick);
-                getNextFrame(nextTick);
-            }
-            else {
-                curFrame = transportFramesDelta;
-                inLfoFrame = 0;
-            }
+
+    if (!ignore_pos) {
+        const float frames_per_beat = 60.0f / transportBpm * sampleRate;
+        transportFramesDelta = pos;
+        tempoChangeTick = pos * TPQN / frames_per_beat;
+    }
+    if (transportSpeed != speed) {
+        /* Speed changed, e.g. 0 (stop) to 1 (play) */
+        transportSpeed = speed;
+        curFrame = transportFramesDelta;
+        if (transportSpeed) {
+            inLfoFrame = 0;
+            setNextTick(tempoChangeTick);
+            getNextFrame(nextTick);
+        }
+        else {
+            inLfoFrame = 0;
         }
     }
 }
@@ -166,7 +181,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
                 const LV2_Atom_Object* obj = (LV2_Atom_Object*)&event->body;
                 if (obj->body.otype == uris->time_Position) {
                     /* Received position information, update */
-                    if (transportMode) updatePos(obj);
+                    if (transportMode) updatePosAtom(obj);
                 }
                 else if (obj->body.otype == uris->ui_up) {
                     /* UI was activated */
@@ -346,6 +361,13 @@ void MidiLfoLV2::updateParams()
             getNextFrame(nextTick);
             transportSpeed = 1;
         }
+    }
+
+    if (transportMode && !transportAtomReceived) {
+        updatePos(  (uint64_t)*val[HOST_POSITION],
+                    (float)*val[HOST_TEMPO],
+                    (int)*val[HOST_SPEED],
+                    false);
     }
 
     if (changed) {
