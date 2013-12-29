@@ -276,12 +276,12 @@ void MidiLfoLV2::updateParams()
         else if (*val[MOUSEPRESSED] != -1)
             evtype = *val[MOUSEPRESSED];
 
-        if (*val[MOUSEPRESSED] != -1) mouseEvCur = *val[MOUSEPRESSED];
+        mouseEvCur = *val[MOUSEPRESSED];
 
         if (mouseEvCur == 2) return; // mouse was released
         //qWarning("mouse event X: %f - Y: %f - Type: %d - Button %d",
         //    mouseXCur, mouseYCur, (int)*val[MOUSEBUTTON], mouseEvCur);
-        if (*val[MOUSEPRESSED] != -1) ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
+        ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
     }
 
