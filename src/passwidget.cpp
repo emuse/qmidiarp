@@ -26,7 +26,7 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 
-#include "mainwindow.h"
+#include "engine.h"
 #include "passwidget.h"
 
 PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)

@@ -34,7 +34,6 @@
 
 #include "groovewidget.h"
 #include "slider.h"
-#include "main.h"
 
 
 GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)

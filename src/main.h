@@ -24,8 +24,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include <QXmlStreamReader>
-
 #include "midievent.h"
 
 #define CT_FOOTSW       0x40
