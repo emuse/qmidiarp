@@ -214,7 +214,8 @@ void MidiSeqLV2::run (uint32_t nframes )
                 inEv.data=di[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
-                (void)handleEvent(inEv, tick - 2); //we don't need to pre-schedule
+                if (handleEvent(inEv, tick - 2)) //if event is unmatched, forward it
+                    forgeMidiEvent((int)((uint64_t)(&event->time.frames) % nframes), di, 3);
             }
         }
     }

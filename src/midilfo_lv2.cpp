@@ -215,7 +215,8 @@ void MidiLfoLV2::run ( uint32_t nframes )
                 inEv.data=di[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
-                (void)handleEvent(inEv, tick);
+                if (handleEvent(inEv, tick)) //if event is unmatched, forward it
+                    forgeMidiEvent((int)((uint64_t)(&event->time.frames) % nframes), di, 3);
             }
         }
     }
