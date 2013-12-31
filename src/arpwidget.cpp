@@ -36,9 +36,11 @@
 #include "config.h"
 
 #include "pixmaps/editmodeon.xpm"
+#include "pixmaps/latchmodeon.xpm"
+#ifdef APPBUILD
 #include "pixmaps/patternremove.xpm"
 #include "pixmaps/patternstore.xpm"
-#include "pixmaps/latchmodeon.xpm"
+#endif
 
 
 
@@ -215,6 +217,7 @@ ArpWidget::ArpWidget(
     textEditAction->setCheckable(true);
     textEditButton->setDefaultAction(textEditAction);
 
+#ifdef APPBUILD
     textRemoveButton = new QToolButton(this);
     textRemoveAction = new QAction(QIcon(patternremove_xpm),
             tr("&Remove Pattern"), this);
@@ -230,6 +233,7 @@ ArpWidget::ArpWidget(
             SLOT(storeCurrentPattern()));
     textStoreAction->setEnabled(false);
     textStoreButton->setDefaultAction(textStoreAction);
+#endif
 
     patternPresetBox = new QComboBox(patternBox);
     loadPatternPresets();
@@ -286,8 +290,10 @@ ArpWidget::ArpWidget(
     }
     patternPresetLayout->addWidget(patternPresetBox);
     patternPresetLayout->addWidget(textEditButton);
+#ifdef APPBUILD
     patternPresetLayout->addWidget(textStoreButton);
     patternPresetLayout->addWidget(textRemoveButton);
+#endif
     patternPresetLayout->addStretch(2);
 
     QHBoxLayout *modeLayout = new QHBoxLayout;
@@ -670,14 +676,14 @@ void ArpWidget::setRangeIn(int index, int value)
 void ArpWidget::updateText(const QString& newtext)
 {
     patternPresetBox->setCurrentIndex(0);
+    if (!midiWorker) return;
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    if (midiWorker) {
-        midiWorker->updatePattern(newtext);
-        screen->updateScreen(newtext, midiWorker->minOctave,
-                        midiWorker->maxOctave, midiWorker->minStepWidth,
-                        midiWorker->nSteps, midiWorker->patternMaxIndex);
-    }
+    midiWorker->updatePattern(newtext);
+    screen->updateScreen(newtext, midiWorker->minOctave,
+                    midiWorker->maxOctave, midiWorker->minStepWidth,
+                    midiWorker->nSteps, midiWorker->patternMaxIndex);
+
     modified = true;
 }
 
@@ -686,11 +692,15 @@ void ArpWidget::selectPatternPreset(int val)
     if (val < patternPresets.count()) {
         if (val) {
             patternText->setText(patternPresets.at(val));
+            if (!midiWorker) return;
             patternPresetBox->setCurrentIndex(val);
             textStoreAction->setEnabled(false);
             textRemoveAction->setEnabled(true);
-        } else
+        }
+        else {
+            if (!midiWorker) return;
             textRemoveAction->setEnabled(false);
+        }
         modified = true;
     }
 }
