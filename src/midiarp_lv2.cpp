@@ -303,14 +303,8 @@ void MidiArpLV2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_
 
 void MidiArpLV2::updateParams()
 {
-    if (attack_time != *val[ATTACK]) {
-        updateAttackTime(*val[ATTACK]);
-    }
-
-    if (release_time != *val[RELEASE]) {
-        updateReleaseTime(*val[RELEASE]);
-
-    }
+    attack_time     = *val[ATTACK];
+    release_time    = *val[RELEASE];
 
     if (randomTickAmp != *val[RANDOM_TICK]) {
         updateRandomTickAmp(*val[RANDOM_TICK]);

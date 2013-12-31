@@ -50,7 +50,6 @@
         lv2:index 2 ;
         lv2:symbol "ATTACK" ;
         lv2:name "Attack" ;
-        lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 20.0 ;
@@ -59,7 +58,6 @@
         lv2:index 3 ;
         lv2:symbol "RELEASE" ;
         lv2:name "Release" ;
-        lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 20.0 ;
