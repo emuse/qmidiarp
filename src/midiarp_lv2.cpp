@@ -270,7 +270,8 @@ void MidiArpLV2::run ( uint32_t nframes )
                 noteofftick = tmptick;
             }
         }
-        if ((bufPtr) && (curTick >= noteofftick)) {
+        if ( (bufPtr) && ((curTick >= noteofftick)
+                || (transportMode && !transportSpeed)) ) {
             int outval = evQueue.at(idx);
             for (int l4 = idx ; l4 < (bufPtr - 1);l4++) {
                 evQueue.replace(l4, evQueue.at(l4 + 1));
