@@ -108,7 +108,6 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	lfowidget.cpp lfowidget.h \
 	lfoscreen.cpp lfoscreen.h \
 	lv2_common.h \
-	main.h \
 	slider.cpp slider.h \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 

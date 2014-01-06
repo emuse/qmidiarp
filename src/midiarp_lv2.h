@@ -27,7 +27,6 @@
 #define QMIDIARP_ARP_LV2_H
 
 #include "midiarp.h"
-#include "arpwidget.h"
 #include "lv2_common.h"
 
 #define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
