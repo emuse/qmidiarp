@@ -139,7 +139,6 @@ void MidiSeqLV2::updatePosAtom(const LV2_Atom_Object* obj)
 void MidiSeqLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
 {
     if (transportBpm != bpm) {
-        qWarning("tempo changed");
         /* Tempo changed */
         transportBpm = bpm;
         tempo = transportBpm;
