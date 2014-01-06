@@ -9,6 +9,7 @@
 @prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 @prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
 @prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
 
 <https://git.code.sf.net/p/qmidiarp/seq>
     a lv2:Plugin, lv2:InstrumentPlugin;
@@ -254,6 +255,7 @@
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 13 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "MOUSEX" ;
         lv2:name "Mouse X" ;
         lv2:default 0.0 ;
@@ -262,6 +264,7 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 14 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "MOUSEY" ;
         lv2:name "Mouse Y" ;
         lv2:default 0.0 ;
@@ -270,6 +273,7 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 15 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "MOUSEBUTTON" ;
         lv2:name "Mouse Button" ;
         lv2:portProperty lv2:integer ;
@@ -279,6 +283,7 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 16 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "MOUSEPRESSED" ;
         lv2:name "Mouse was Pressed" ;
         lv2:portProperty lv2:integer ;
@@ -288,6 +293,7 @@
     ], [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 28 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_TEMPO" ;
         lv2:name "Host Tempo" ;
         lv2:default 120.0 ;
@@ -297,6 +303,7 @@
     ], [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 29 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_POSITION" ;
         lv2:name "Host Position" ;
         lv2:default 0.0 ;
@@ -306,6 +313,7 @@
     ], [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 30 ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_SPEED" ;
         lv2:name "Host Speed (Start/Stop)" ;
         lv2:default 0 ;
