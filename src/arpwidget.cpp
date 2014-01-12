@@ -716,7 +716,9 @@ void ArpWidget::loadPatternPresets()
 
     if (!f.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(this, PACKAGE,
-                tr("Could not read from resource file"));
+                tr("Could not read the pattern presets from the \n"
+                   ".qmidiarprc resource file. To create this file \n"
+                    "please just run the qmidiarp main application once."));
         return;
     }
     QTextStream loadText(&f);
