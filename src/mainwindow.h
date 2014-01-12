@@ -115,10 +115,8 @@ class MainWindow : public QMainWindow
 #endif
     void skipXmlElement(QXmlStreamReader& xml);
 /*!
-* @brief  opens a file dialog and calls either
-* MainWindow::openTextFile or
-* MainWindow::openFile depending on the selected file extension.
-* It is called by MainWindow::fileOpen.
+* @brief  opens a file dialog and calls MainWindow::openFile().
+* It is called by MainWindow::fileOpen().
 */
     void chooseFile();
 /*! @brief  checks whether parameter modifications
@@ -156,8 +154,8 @@ class MainWindow : public QMainWindow
 *
 * It also creates and adds the associated ArpWidget
 * and DockWidget to the corresponding lists in Engine. It sets
-* the ArpWidget::name and ArpWidget::ID as the current count of the
-* Engine::MidiArpList.
+* the ManageBox::name and ManageBox::ID as the current count of the
+* Engine::midiArpList.
 *
 * @param name Name attribute of the created arpeggiator module
 * @param fromfile Set to True if module is added by a file read
@@ -168,8 +166,8 @@ class MainWindow : public QMainWindow
 *
 * It also creates and adds the associated LfoWidget
 * and DockWidget to the corresponding lists in Engine. It sets
-* the LfoWidget::name and SeqWidget::ID as the current count of the
-* Engine::MidiLfoList.
+* the ManageBox::name and ManageBox::ID as the current count of the
+* Engine::midiLfoList.
 *
 * @param name Name attribute of this LFO module
 * @param fromfile Set to True if module is added by a file read
@@ -182,8 +180,8 @@ class MainWindow : public QMainWindow
 *
 * It also creates and adds the associated SeqWidget
 * and DockWidget to the corresponding lists in Engine. It sets
-* the SeqWidget::name and SeqWidget::ID as the current count of the
-* Engine::MidiSeqList.
+* the ManageBox::name and ManageBox::ID as the current count of the
+* Engine::midiSeqList.
 *
 * @param name Name attribute of this arpeggiator module
 * @param fromfile Set to True if module is added by a file read
@@ -444,7 +442,7 @@ class MainWindow : public QMainWindow
 * It removes all components MidiSeq, SeqWidget and
 * DockWidget from the corresponding lists in Engine.
 *
-* @param index The Engine::MidiSeqList index of the sequencer to remove
+* @param index The Engine::midiSeqList index of the sequencer to remove
 */
     void removeSeq(int index);
 /*!
@@ -463,7 +461,7 @@ class MainWindow : public QMainWindow
     void helpAbout();
     void helpAboutQt();
 /*! @brief Slot for tempo spinBox changes.
-* This function forwards a new tempo value to SeqDriver.
+* This function forwards a new tempo value to the driver.
 * @param tempo The new tempo to be set
 *
 */
@@ -491,7 +489,7 @@ class MainWindow : public QMainWindow
 */
     void midiClockToggle(bool on);
 /*! @brief Slot for jackSync ToolButton.
-* This function toggles SeqDriver between Jack Transport and internal
+* This function toggles the driver between Jack Transport and internal
 * clock operation.
 * @param on True sets driver to JACK Transport operation, false
 * returns to internal clock.

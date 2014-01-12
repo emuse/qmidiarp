@@ -138,7 +138,7 @@ class ArpWidget : public QWidget
     void setRangeIn(int index, int value);
 
 /*!
-* @brief Settor for the ArpWidget::channelOut spinbox setting the output
+* @brief Setter for the ArpWidget::channelOut spinbox setting the output
 * channel of this module.
 * @param value Number of the output channel to send data to
 *
@@ -146,7 +146,7 @@ class ArpWidget : public QWidget
 
     void setChannelOut(int value);
 /*!
-* @brief Settor for the ArpWidget::portOut spinbox setting the output
+* @brief Setter for the ArpWidget::portOut spinbox setting the output
 * port of this module.
 * @param value Number of the output port to send data to
 *
@@ -156,21 +156,21 @@ class ArpWidget : public QWidget
 #ifdef APPBUILD
     //these members are common to all modules
 /*!
-* @brief This function reads all parameters of this module from an XML stream
+* @brief reads all parameters of this module from an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to read from
 */
     void readData(QXmlStreamReader& xml);
 /*!
-* @brief This function writes all parameters of this module to an XML stream
+* @brief writes all parameters of this module to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
 /*!
-* @brief This function returns the MidiArp instance associated with this GUI
+* @brief returns the MidiArp instance associated with this GUI
 * Widget.
 * @return MidiArp instance associated with this GUI
 */
@@ -182,21 +182,21 @@ class ArpWidget : public QWidget
 */
     bool isModified();
 /*!
-* @brief This function sets ArpWidget::modified.
+* @brief sets ArpWidget::modified.
 * @param m Set to True if unsaved parameter modifications appear
 *
 */
     void setModified(bool);
     void skipXmlElement(QXmlStreamReader& xml);
 /*!
-* @brief This function stores some module parameters in a parameter
+* @brief stores some module parameters in a parameter
 * list object
 *
 * @param Position index in the parameter list
 */
     void doStoreParams(int ix, bool empty);
 /*!
-* @brief This function restores some module parameters from the parameter
+* @brief restores some module parameters from the parameter
 * list object
 *
 * @param Position index in the parameter list
@@ -268,7 +268,7 @@ class ArpWidget : public QWidget
     void updatePortOut(int value);
 /*!
 * @brief Slot for the ArpWidget::muteOut checkbox.
-* This function suppresses output of Arp data.
+* Suppresses output of Arp data.
 *
 * It calls
 * MidiArp::setMuted and ArpScreen::setMuted
@@ -291,6 +291,19 @@ class ArpWidget : public QWidget
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);
+/*!
+ * @brief Updates the ArpScreen and other GUI elements with data from
+ * the MidiSeq instance.
+ *
+ * It is called by Engine::updateDisplay(), which itself is
+ * connected to the MTimer::timeout event. It runs in the MTimer thread.
+ * It reads the waveform data and other settings from the MidiArp instance
+ * and sets GUI cursor, wave display and other elements accordingly. This
+ * way, no memory allocations are done within the jack run thread, for
+ * instance by MIDI controllers, since the Qt widgets are not called directly.
+ * This function also checks whether parameter chages from ParStore are
+ * pending and causes them to get transferred if so.
+ */
     void updateDisplay();
 #endif
 

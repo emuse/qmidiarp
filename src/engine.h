@@ -317,10 +317,8 @@ class Engine : public QThread  {
     void resetTicks(int curtick);
     void updateDisplay();
 /*!
-* @brief causes the module of type Engine::restoreModType at position
-* Engine::restoreModIx in the moduleWidgetList to restore its current
-* parameters from its ParStore::list at index ix. If Engine::restoreModType
-* is set to -1, all modules are called for restore.
+* @brief causes all modules to restore their parameters from its
+* ParStore::list at index ix.
 *
 * @param ix ParStore::list index from which all module parameters are to be restored
 */
@@ -338,21 +336,17 @@ class Engine : public QThread  {
 * @brief causes all modules to store their current parameters in their
 * ParStore::list at index ix
 *
-* @param moduleID module window list index of the module to store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
     void store(int ix);
 /*!
 * @brief causes Engine to call Engine::restore() when the timing and
 * restore type conditions are met
-* @param windowIndex Engine::moduleWindowList index of the module which should
-* restore its parameters. If windowIndex is set to -1, all modules are called
 * @param ix ParStore::list index from which all module parameters are to be restored
-* @param runOnce Set this to true to provoke a return to previous location after one run
 */
     void requestRestore(int ix);
 /*!
-* @brief signal slot for GlobStore::updateGlobRestoreTimeModule signal
+* @brief slot for GlobStore::updateGlobRestoreTimeModule signal
 *
 * Makes the module with index windowIndex trigger global store switches when its cursor
 * reaches the end. It determines the type (Arp, LFO, Seq) and the index of the selected
