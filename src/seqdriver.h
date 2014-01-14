@@ -76,7 +76,7 @@ class SeqDriver : public DriverBase {
         double aTimeToDelta(snd_seq_real_time_t* atime);
         const snd_seq_real_time_t* deltaToATime(double curtime);
         snd_seq_remove_events_t *remove_ev;
-        void calcClockRatio(double realtime);
+        void calcMidiClockTempo(double realtime);
 
         void initTempo();
         bool callJack(int portcount, const QString & clientname=PACKAGE);
@@ -92,7 +92,6 @@ class SeqDriver : public DriverBase {
         int tempoChangeTick;
         uint64_t tempoChangeFrame;
 
-        double clockRatio;         /* duration of one tick, in nanoseconds; based on current tempo */
         double tempoChangeTime;
         snd_seq_real_time_t atime;
 
