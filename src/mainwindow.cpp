@@ -227,7 +227,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 
     tempoSpin = new QSpinBox(this);
     tempoSpin->setRange(10, 400);
-    tempoSpin->setValue(100);
+    tempoSpin->setValue(120);
     tempoSpin->setKeyboardTracking(false);
     tempoSpin->setToolTip(tr("Tempo of internal clock"));
     connect(tempoSpin, SIGNAL(valueChanged(int)), this,

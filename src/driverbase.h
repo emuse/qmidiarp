@@ -90,6 +90,7 @@ public:
 
     virtual void requestTempo(double bpm)
     {
+        if (!queueStatus) setTempo(bpm);
         requestedTempo = bpm;
     }
 
