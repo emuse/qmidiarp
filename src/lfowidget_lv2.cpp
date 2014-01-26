@@ -28,16 +28,6 @@
 #include <unistd.h>
 #include <ctime>
 
-#ifndef COMPACT_STYLE
-#define COMPACT_STYLE "QLabel { font: 7pt; } \
-    QComboBox { font: 7pt; max-height: 15px;} \
-    QToolButton { max-height: 20px;} \
-    QSpinBox { font: 7pt; max-height: 20px;} \
-    QCheckBox { font: 7pt; max-height: 20px;} \
-    QGroupBox { font: 7pt; }"
-
-#endif
-
 LfoWidgetLV2::LfoWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
@@ -111,7 +101,12 @@ LfoWidgetLV2::LfoWidgetLV2 (
     connect(this, SIGNAL(mouseSig(double, double, int, int))
             , this, SLOT(mapMouse(double, double, int, int)));
 
-    setStyleSheet(COMPACT_STYLE);
+    setStyleSheet("QLabel { font: 7pt; } \
+    QComboBox { font: 7pt; max-height: 15px;} \
+    QToolButton { max-height: 20px;} \
+    QSpinBox { font: 7pt; max-height: 20px;} \
+    QCheckBox { font: 7pt; max-height: 20px;} \
+    QGroupBox { font: 7pt; }");
 
     res = 4;
     size = 4;
