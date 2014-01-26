@@ -471,8 +471,8 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         else {
             l1++;
         }
-    } while (  (tmpIndex[l1] >= 0)
-            && (l1 < MAXCHORD - 1)
+    } while (  (l1 < MAXCHORD - 1)
+            && (tmpIndex[l1] >= 0)
             && ((l1 < noteCount) || (tmpIndex[l1] == 0))
             && (noteCount));
 
@@ -558,7 +558,7 @@ void MidiArp::prepareCurrentNote(int askedTick)
     int l1 = 0;
     updateNotes();
     returnTick = currentNoteTick;
-    while ((currentNote[l1] >= 0) && (l1 < MAXCHORD - 1)) {
+    while ((l1 < MAXCHORD - 1) && (currentNote[l1] >= 0)) {
         returnNote.replace(l1, currentNote[l1]);
         returnVelocity.replace(l1, currentVelocity[l1]);
         l1++;
@@ -577,7 +577,7 @@ void MidiArp::updateNotes()
     if ((currentTick + 8) >= currentNoteTick) {
         currentNoteTick = nextTick;
         getNote(&nextTick, nextNote, nextVelocity, &nextLength);
-        while ((nextNote[l1] >= 0) && (l1 < MAXCHORD - 1)) {
+        while ((l1 < MAXCHORD - 1) && (nextNote[l1] >= 0)) {
             currentNote[l1] = nextNote[l1];
             currentVelocity[l1] = nextVelocity[l1];
             l1++;
