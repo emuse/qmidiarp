@@ -81,6 +81,7 @@ public:
         void deactivate();
         void updatePosAtom(const LV2_Atom_Object* obj);
         void updatePos(uint64_t position, float bpm, int speed, bool ignore_pos=false);
+        void initTransport();
         void sendWave();
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
@@ -112,7 +113,7 @@ private:
         uint64_t transportFramesDelta;  /**< Frames since last click start */
         float transportBpm;
         float transportSpeed;
-        bool transportMode;
+        bool hostTransport;
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;

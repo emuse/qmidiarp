@@ -108,6 +108,7 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	lfowidget.cpp lfowidget.h \
 	lfoscreen.cpp lfoscreen.h \
 	lv2_common.h \
+	main.h \
 	slider.cpp slider.h \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 
@@ -138,6 +139,7 @@ nodist_qmidiarp_seq_ui_la_SOURCES = \
 qmidiarp_seq_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
+	main.h \
 	midiseq.cpp midiseq.h \
 	seqwidget.cpp seqwidget.h \
 	seqscreen.cpp seqscreen.h \
@@ -171,6 +173,7 @@ nodist_qmidiarp_arp_ui_la_SOURCES = \
 qmidiarp_arp_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
+	main.h \
 	midiarp.cpp midiarp.h \
 	arpwidget.cpp arpwidget.h \
 	arpscreen.cpp arpscreen.h \

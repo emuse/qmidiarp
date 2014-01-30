@@ -50,13 +50,14 @@ MidiLfoLV2::MidiLfoLV2 (
     transportFramesDelta = 0;
     curTick = 0;
     tempoChangeTick = 0;
-    transportMode = false;
-    transportSpeed = 1;
+    hostTransport = true;
+    transportSpeed = 0;
     transportAtomReceived = false;
 
     dataChanged = true;
     ui_up = false;
 
+    getNextFrame(0);
 
     LV2_URID_Map *urid_map;
 
@@ -106,7 +107,7 @@ void MidiLfoLV2::connect_port ( uint32_t port, void *seqdata )
 
 void MidiLfoLV2::updatePosAtom(const LV2_Atom_Object* obj)
 {
-    if (!transportMode) return;
+    if (!hostTransport) return;
 
     QMidiArpURIs* const uris = &m_uris;
 
@@ -138,6 +139,7 @@ void MidiLfoLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         /* Tempo changed */
         transportBpm = bpm;
         tempo = transportBpm;
+        transportSpeed = 0;
     }
 
     if (!ignore_pos) {
@@ -149,13 +151,10 @@ void MidiLfoLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         /* Speed changed, e.g. 0 (stop) to 1 (play) */
         transportSpeed = speed;
         curFrame = transportFramesDelta;
+        inLfoFrame = 0;
         if (transportSpeed) {
-            inLfoFrame = 0;
             setNextTick(tempoChangeTick);
-            getNextFrame(nextTick);
-        }
-        else {
-            inLfoFrame = 0;
+            getNextFrame(tempoChangeTick);
         }
     }
 }
@@ -181,7 +180,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
                 const LV2_Atom_Object* obj = (LV2_Atom_Object*)&event->body;
                 if (obj->body.otype == uris->time_Position) {
                     /* Received position information, update */
-                    if (transportMode) updatePosAtom(obj);
+                    if (hostTransport) updatePosAtom(obj);
                 }
                 else if (obj->body.otype == uris->ui_up) {
                     /* UI was activated */
@@ -227,24 +226,23 @@ void MidiLfoLV2::run ( uint32_t nframes )
     for (uint f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
-        if ((curTick >= nextTick) && (transportSpeed)) {
-            if (curTick > frame.at(inLfoFrame).tick) {
-                if (!frame.at(inLfoFrame).muted && !isMuted) {
-                    unsigned char d[3];
-                    d[0] = 0xb0 + channelOut;
-                    d[1] = ccnumber;
-                    d[2] = frame.at(inLfoFrame).value;
-                    forgeMidiEvent(f, d, 3);
-                    *val[WaveOut] = (float)d[2] / 128;
-                }
-                inLfoFrame++;
-                if (inLfoFrame >= frameSize) {
-                    frameptr = getFramePtr();
-                    float pos = (float)frameptr;
-                    *val[CURSOR_POS] = pos;
-                    getNextFrame(curTick);
-                    inLfoFrame = 0;
-                }
+        if ((curTick >= frame.at(inLfoFrame).tick)
+            && (transportSpeed)) {
+            if (!frame.at(inLfoFrame).muted && !isMuted) {
+                unsigned char d[3];
+                d[0] = 0xb0 + channelOut;
+                d[1] = ccnumber;
+                d[2] = frame.at(inLfoFrame).value;
+                forgeMidiEvent(f, d, 3);
+                *val[WaveOut] = (float)d[2] / 128;
+            }
+            inLfoFrame++;
+            inLfoFrame%=frameSize;
+            if (!inLfoFrame) {
+                frameptr = getFramePtr();
+                float pos = (float)frameptr;
+                *val[CURSOR_POS] = pos;
+                getNextFrame(curTick);
             }
         }
         curFrame++;
@@ -295,8 +293,6 @@ void MidiLfoLV2::updateParams()
         mouseEvCur = *val[MOUSEPRESSED];
 
         if (mouseEvCur == 2) return; // mouse was released
-        //qWarning("mouse event X: %f - Y: %f - Type: %d - Button %d",
-        //    mouseXCur, mouseYCur, (int)*val[MOUSEBUTTON], mouseEvCur);
         ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
     }
@@ -340,31 +336,15 @@ void MidiLfoLV2::updateParams()
 
     if (internalTempo != *val[TEMPO]) {
         internalTempo = *val[TEMPO];
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            getNextFrame(nextTick);
-        }
+        initTransport();
     }
 
-    if (transportMode != (bool)(*val[TRANSPORT_MODE])) {
-        transportMode = (bool)(*val[TRANSPORT_MODE]);
-        transportSpeed = 0;
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            getNextFrame(nextTick);
-            transportSpeed = 1;
-        }
+    if (hostTransport != (bool)(*val[TRANSPORT_MODE])) {
+        hostTransport = (bool)(*val[TRANSPORT_MODE]);
+        initTransport();
     }
 
-    if (transportMode && !transportAtomReceived) {
+    if (hostTransport && !transportAtomReceived) {
         updatePos(  (uint64_t)*val[HOST_POSITION],
                     (float)*val[HOST_TEMPO],
                     (int)*val[HOST_SPEED],
@@ -375,6 +355,22 @@ void MidiLfoLV2::updateParams()
         getData(&data);
         dataChanged = true;
     }
+}
+
+void MidiLfoLV2::initTransport()
+{
+    if (!hostTransport) {
+        transportFramesDelta = curFrame;
+        tempoChangeTick = curTick;
+        transportBpm = internalTempo;
+        tempo = internalTempo;
+        transportSpeed = 1;
+    }
+    else transportSpeed = 0;
+
+    setNextTick(tempoChangeTick);
+    getNextFrame(tempoChangeTick);
+    inLfoFrame = 0;
 }
 
 void MidiLfoLV2::sendWave()
@@ -481,6 +477,8 @@ static LV2_State_Status MidiLfoLV2_state_save ( LV2_Handle instance,
 
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
+    flags |= (LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+
     QByteArray tempArray;
 
     tempArray.clear();
@@ -524,10 +522,12 @@ static const LV2_State_Interface MidiLfoLV2_state_interface =
 
 void MidiLfoLV2::activate (void)
 {
+    initTransport();
 }
 
 void MidiLfoLV2::deactivate (void)
 {
+    transportSpeed = 0;
 }
 
 static LV2_Handle MidiLfoLV2_instantiate (

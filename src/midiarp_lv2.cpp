@@ -45,8 +45,8 @@ MidiArpLV2::MidiArpLV2 (
     transportFramesDelta = 0;
     curTick = 0;
     tempoChangeTick = 0;
-    transportMode = false;
-    transportSpeed = 1;
+    hostTransport = true;
+    transportSpeed = 0;
     transportAtomReceived = false;
 
     sendPatternFlag = false;
@@ -106,7 +106,7 @@ void MidiArpLV2::connect_port ( uint32_t port, void *seqdata )
 
 void MidiArpLV2::updatePosAtom(const LV2_Atom_Object* obj)
 {
-    if (!transportMode) return;
+    if (!hostTransport) return;
 
     QMidiArpURIs* const uris = &m_uris;
 
@@ -138,6 +138,7 @@ void MidiArpLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         /* Tempo changed */
         transportBpm = bpm;
         tempo = transportBpm;
+        transportSpeed = 0;
     }
 
     if (!ignore_pos) {
@@ -152,7 +153,6 @@ void MidiArpLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
             curFrame = transportFramesDelta;
             setNextTick(tempoChangeTick);
             newRandomValues();
-            prepareCurrentNote(tempoChangeTick);
         }
     }
 }
@@ -177,7 +177,7 @@ void MidiArpLV2::run ( uint32_t nframes )
                 /* interpret atom-objects: */
                 if (obj->body.otype == uris->time_Position) {
                     /* Received position information, update */
-                    if (transportMode) updatePosAtom(obj);
+                    if (hostTransport) updatePosAtom(obj);
                 }
                 else if (obj->body.otype == uris->ui_up) {
                     /* UI was activated */
@@ -271,7 +271,7 @@ void MidiArpLV2::run ( uint32_t nframes )
             }
         }
         if ( (bufPtr) && ((curTick >= noteofftick)
-                || (transportMode && !transportSpeed)) ) {
+                || (hostTransport && !transportSpeed)) ) {
             int outval = evQueue.at(idx);
             for (int l4 = idx ; l4 < (bufPtr - 1);l4++) {
                 evQueue.replace(l4, evQueue.at(l4 + 1));
@@ -338,37 +338,34 @@ void MidiArpLV2::updateParams()
 
     if (internalTempo != *val[TEMPO]) {
         internalTempo = *val[TEMPO];
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            prepareCurrentNote(nextTick);
-        }
+        initTransport();
     }
 
-    if (transportMode != (bool)(*val[TRANSPORT_MODE])) {
-        transportMode = (bool)(*val[TRANSPORT_MODE]);
-        transportSpeed = 0;
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            prepareCurrentNote(nextTick);
-            transportSpeed = 1;
-        }
+    if (hostTransport != (bool)(*val[TRANSPORT_MODE])) {
+        hostTransport = (bool)(*val[TRANSPORT_MODE]);
+        initTransport();
     }
 
-    if (transportMode && !transportAtomReceived) {
+    if (hostTransport && !transportAtomReceived) {
         updatePos(  (uint64_t)*val[HOST_POSITION],
                     (float)*val[HOST_TEMPO],
                     (int)*val[HOST_SPEED],
                     false);
     }
+}
 
+void MidiArpLV2::initTransport()
+{
+    if (!hostTransport) {
+        transportFramesDelta = curFrame;
+        tempoChangeTick = curTick;
+        transportBpm = internalTempo;
+        tempo = internalTempo;
+        transportSpeed = 1;
+    }
+    else transportSpeed = 0;
+
+    setNextTick(tempoChangeTick);
 }
 
 void MidiArpLV2::sendPattern(const QString & p)
@@ -440,6 +437,7 @@ static LV2_State_Status MidiArpLV2_state_save ( LV2_Handle instance,
 
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
+    flags |= (LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 
     QByteArray byteArray = pPlugin->pattern.toUtf8();
     const char* c = byteArray.constData();
@@ -461,10 +459,12 @@ static const LV2_State_Interface MidiArpLV2_state_interface =
 
 void MidiArpLV2::activate (void)
 {
+    initTransport();
 }
 
 void MidiArpLV2::deactivate (void)
 {
+    transportSpeed = 0;
 }
 
 static LV2_Handle MidiArpLV2_instantiate (

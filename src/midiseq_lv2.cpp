@@ -49,8 +49,8 @@ MidiSeqLV2::MidiSeqLV2 (
     transportFramesDelta = 0;
     curTick = 0;
     tempoChangeTick = 0;
-    transportMode = false;
-    transportSpeed = 1;
+    hostTransport = true;
+    transportSpeed = 0;
     transportAtomReceived = false;
 
     transpFromGui = 0;
@@ -110,7 +110,7 @@ void MidiSeqLV2::connect_port ( uint32_t port, void *seqdata )
 
 void MidiSeqLV2::updatePosAtom(const LV2_Atom_Object* obj)
 {
-    if (!transportMode) return;
+    if (!hostTransport) return;
 
     QMidiArpURIs* const uris = &m_uris;
 
@@ -142,9 +142,10 @@ void MidiSeqLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         /* Tempo changed */
         transportBpm = bpm;
         tempo = transportBpm;
+        transportSpeed = 0;
     }
 
-    if (!ignore_pos) {
+    if (!ignore_pos && (transportBpm > 0)) {
         const float frames_per_beat = 60.0f / transportBpm * sampleRate;
         transportFramesDelta = pos;
         tempoChangeTick = pos * TPQN / frames_per_beat;
@@ -155,8 +156,6 @@ void MidiSeqLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         curFrame = transportFramesDelta;
         if (transportSpeed) {
             setNextTick(tempoChangeTick);
-            Sample sample;
-            getNextNote(&sample, nextTick);
         }
     }
 }
@@ -179,7 +178,7 @@ void MidiSeqLV2::run (uint32_t nframes )
                 const LV2_Atom_Object* obj = (LV2_Atom_Object*)&event->body;
                 if (obj->body.otype == uris->time_Position) {
                     /* Received position information, update */
-                    if (transportMode) updatePosAtom(obj);
+                    if (hostTransport) updatePosAtom(obj);
                 }
                 else if (obj->body.otype == uris->ui_up) {
                     /* UI was activated */
@@ -252,7 +251,7 @@ void MidiSeqLV2::run (uint32_t nframes )
             }
         }
         if ( (bufPtr) && ((curTick >= noteofftick)
-                || (transportMode && !transportSpeed)) ) {
+                || (hostTransport && !transportSpeed)) ) {
             int outval = evQueue.at(idx);
             for (int l4 = idx ; l4 < (bufPtr - 1);l4++) {
                 evQueue.replace(l4, evQueue.at(l4 + 1));
@@ -308,8 +307,6 @@ void MidiSeqLV2::updateParams()
         mouseEvCur = *val[MOUSEPRESSED];
 
         if (mouseEvCur == 2) return; // mouse was released
-        //qWarning("mouse event X: %f - Y: %f - Type: %d - Button %d",
-        //    mouseXCur, mouseYCur, (int)*val[MOUSEBUTTON], mouseEvCur);
         ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
     }
@@ -364,31 +361,15 @@ void MidiSeqLV2::updateParams()
 
     if (internalTempo != *val[TEMPO]) {
         internalTempo = *val[TEMPO];
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            getNextNote(&currentSample, nextTick);
-        }
+        initTransport();
     }
 
-    if (transportMode != (bool)(*val[TRANSPORT_MODE])) {
-        transportMode = (bool)(*val[TRANSPORT_MODE]);
-        transportSpeed = 0;
-        if (!transportMode) {
-            transportFramesDelta = curFrame;
-            tempoChangeTick = curTick;
-            transportBpm = internalTempo;
-            tempo = internalTempo;
-            setNextTick(tempoChangeTick);
-            getNextNote(&currentSample, nextTick);
-            transportSpeed = 1;
-        }
+    if (hostTransport != (bool)(*val[TRANSPORT_MODE])) {
+        hostTransport = (bool)(*val[TRANSPORT_MODE]);
+        initTransport();
     }
 
-    if (transportMode && !transportAtomReceived) {
+    if (hostTransport && !transportAtomReceived) {
         updatePos(  (uint64_t)*val[HOST_POSITION],
                     (float)*val[HOST_TEMPO],
                     (int)*val[HOST_SPEED],
@@ -399,6 +380,20 @@ void MidiSeqLV2::updateParams()
         getData(&data);
         dataChanged = true;
     }
+}
+
+void MidiSeqLV2::initTransport()
+{
+    if (!hostTransport) {
+        transportFramesDelta = curFrame;
+        if (curTick > 0) tempoChangeTick = curTick;
+        transportBpm = internalTempo;
+        tempo = internalTempo;
+        transportSpeed = 1;
+    }
+    else transportSpeed = 0;
+
+    setNextTick(tempoChangeTick);
 }
 
 void MidiSeqLV2::sendWave()
@@ -516,6 +511,8 @@ static LV2_State_Status MidiSeqLV2_state_save ( LV2_Handle instance,
     uint32_t key = uris->hex_customwave;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
+    flags |= (LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+
     store(handle, key, value, size, type, flags);
 
     tempArray.clear();
@@ -544,10 +541,12 @@ static const LV2_State_Interface MidiSeqLV2_state_interface =
 
 void MidiSeqLV2::activate (void)
 {
+    initTransport();
 }
 
 void MidiSeqLV2::deactivate (void)
 {
+    transportSpeed = 0;
 }
 
 static LV2_Handle MidiSeqLV2_instantiate (

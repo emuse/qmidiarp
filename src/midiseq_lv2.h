@@ -80,6 +80,7 @@ public:
         void deactivate();
         void updatePosAtom(const LV2_Atom_Object* obj);
         void updatePos(uint64_t position, float bpm, int speed, bool ignore_pos=false);
+        void initTransport();
         LV2_URID_Map *uridMap;
         QMidiArpURIs m_uris;
         LV2_Atom_Forge forge;
@@ -113,7 +114,7 @@ private:
         uint64_t transportFramesDelta;  /**< Frames since last click start */
         float transportBpm;
         float transportSpeed;
-        bool transportMode;
+        bool hostTransport;
         QVector<uint> evQueue;
         QVector<uint> evTickQueue;
         int bufPtr;

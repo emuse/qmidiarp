@@ -73,7 +73,7 @@ SeqWidgetLV2::SeqWidgetLV2 (
     tempoSpin->setToolTip(tr("Tempo of internal clock"));
     connect(transportBox, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
-    transportBox->setChecked(false);
+    transportBox->setChecked(true);
 
     inOutBox->layout()->addWidget(transportBoxLabel);
     inOutBox->layout()->addWidget(transportBox);
