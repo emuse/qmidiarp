@@ -138,7 +138,7 @@ AM_CONDITIONAL([BUILD_LV2], [test "x$ac_lv2plugins" = "xyes"])
 AM_COND_IF([BUILD_LV2],[
 dnl check for lv2core
 AC_CHECK_HEADER( lv2/lv2plug.in/ns/lv2core/lv2.h, lv2coreinclude_found="yes", lv2coreinclude_found="no" )
-PKG_CHECK_MODULES(LV2CORE, lv2core >= 0.26, lv2coreWorks="yes", lv2coreWorks="no")
+PKG_CHECK_MODULES(LV2CORE, lv2core >= 6.0, lv2coreWorks="yes", lv2coreWorks="no")
 LIBSsave=$LIBS
 CFLAGSsave=$CFLAGS
 CFLAGS=$LV2CORE_CFLAGS
@@ -149,7 +149,7 @@ AC_SUBST(LV2CORE_LIBS)
 LIBS+=$LIBSsave
 CFLAGS+=$CFLAGSsave
 
-if test "$lv2coreinclude_found" = "no" -o "lv2coreWorks" = "no"; then
+if test $lv2coreinclude_found = "no" -o $lv2coreWorks = "no"; then
     AC_MSG_NOTICE(
         [cannot find an lv2core component for building. Will not build LV2 plugins.])
     AM_CONDITIONAL([BUILD_LV2], 0)
