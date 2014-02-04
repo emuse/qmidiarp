@@ -56,7 +56,7 @@
 
 static const char ABOUTMSG[] =
             "<html> <p><b><big>" APP_NAME " " PACKAGE_VERSION "</big></b></p>"
-            "<p>(C) 2009-2013 Frank Kober<br/>"
+            "<p>(C) 2009-2014 Frank Kober<br/>"
             "(C) 2011 Nedko Arnaudov<br/>"
             "(C) 2009 Guido Scholz<br/>"
             "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/></p>"
