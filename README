@@ -1,4 +1,4 @@
-QMidiArp by Frank Kober 2009 - 2013
+QMidiArp by Frank Kober 2009 - 2014
             Nedko Arnaudov 2011
             Guido Scholz 2009
             Matthias Nagorni          (c)2004 by Novell
@@ -23,7 +23,7 @@ libqt4-dev     (qt4-devel)
 libasound2-dev (libalsa-devel)
 libjack-dev    (jackit-devel)
 liblo-dev      (liblo-devel) for nsm support
-
+lv2-dev        (lv2-devel) for building the LV2 modules
 
 Installation
 -------------
