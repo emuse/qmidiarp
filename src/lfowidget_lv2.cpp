@@ -117,7 +117,6 @@ LfoWidgetLV2::LfoWidgetLV2 (
 
 LfoWidgetLV2::~LfoWidgetLV2()
 {
-    sendUIisUp(false);
 }
 
 void LfoWidgetLV2::port_event ( uint32_t port_index,
@@ -355,8 +354,10 @@ static LV2UI_Handle MidiLfoLV2ui_instantiate (
 static void MidiLfoLV2ui_cleanup ( LV2UI_Handle ui )
 {
     LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
-    if (pWidget)
+    if (pWidget) {
+        pWidget->sendUIisUp(false);
         delete pWidget;
+    }
 }
 
 static void MidiLfoLV2ui_port_event (

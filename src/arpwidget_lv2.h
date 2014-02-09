@@ -83,6 +83,7 @@ class ArpWidgetLV2 : public ArpWidget
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
+    void sendUIisUp(bool on);
 
   public slots:
     void mapParam(int value);
@@ -95,7 +96,6 @@ class ArpWidgetLV2 : public ArpWidget
     void updateParam(int index, float fValue) const;
 
   private:
-    void sendUIisUp(bool on);
     LV2UI_Controller     m_controller;
     LV2UI_Write_Function writeFunction;
     QCheckBox* transportBox;

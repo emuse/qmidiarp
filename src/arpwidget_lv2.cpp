@@ -116,7 +116,6 @@ ArpWidgetLV2::ArpWidgetLV2 (
 
 ArpWidgetLV2::~ArpWidgetLV2()
 {
-    sendUIisUp(false);
 }
 
 void ArpWidgetLV2::port_event ( uint32_t port_index,
@@ -445,8 +444,10 @@ static LV2UI_Handle MidiArpLV2ui_instantiate (
 static void MidiArpLV2ui_cleanup ( LV2UI_Handle ui )
 {
     ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
-    if (pWidget)
+    if (pWidget) {
+        pWidget->sendUIisUp(false);
         delete pWidget;
+    }
 }
 
 static void MidiArpLV2ui_port_event (

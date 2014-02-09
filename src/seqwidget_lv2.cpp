@@ -118,7 +118,6 @@ SeqWidgetLV2::SeqWidgetLV2 (
 
 SeqWidgetLV2::~SeqWidgetLV2()
 {
-    sendUIisUp(false);
 }
 
 void SeqWidgetLV2::port_event ( uint32_t port_index,
@@ -346,8 +345,10 @@ static LV2UI_Handle MidiSeqLV2ui_instantiate (
 static void MidiSeqLV2ui_cleanup ( LV2UI_Handle ui )
 {
     SeqWidgetLV2 *pWidget = static_cast<SeqWidgetLV2 *> (ui);
-    if (pWidget)
+    if (pWidget) {
+        pWidget->sendUIisUp(false);
         delete pWidget;
+    }
 }
 
 static void MidiSeqLV2ui_port_event (
