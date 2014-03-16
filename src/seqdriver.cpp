@@ -174,6 +174,7 @@ void SeqDriver::run()
 
                 if ((inEv.type == EV_NOTEON) || (inEv.type == EV_NOTEOFF)) {
                     inEv.data = evIn->data.note.note;
+                    inEv.value = evIn->data.note.velocity;
                     calcCurrentTick(tmpTime);
                 }
                 else inEv.value = evIn->data.control.value;
