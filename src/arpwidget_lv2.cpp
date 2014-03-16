@@ -267,7 +267,7 @@ void ArpWidgetLV2::updatePattern(const QString& p_pattern)
             if (c.digitValue() > patternMaxIndex)
                 patternMaxIndex = c.digitValue();
         }
-        switch(c.toAscii()) {
+        switch(c.toLatin1()) {
             case '(':
                 chordmd = true;
                 chordindex = 0;

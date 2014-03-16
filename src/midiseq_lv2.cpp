@@ -158,6 +158,7 @@ void MidiSeqLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
             setNextTick(tempoChangeTick);
         }
     }
+    //qWarning("transportBpm %f, transportFramesDelta %d", transportBpm, transportFramesDelta);
 }
 
 void MidiSeqLV2::run (uint32_t nframes )

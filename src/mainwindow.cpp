@@ -25,7 +25,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
-#include <QIcon>
+#include <QPixmap>
 #include <QInputDialog>
 #include <QMainWindow>
 #include <QMenu>
@@ -175,51 +175,51 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 
     passWidget = new PassWidget(engine, p_portCount, this);
 
-    addArpAction = new QAction(QIcon(arpadd_xpm), tr("&New Arp..."), this);
+    addArpAction = new QAction(QPixmap(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
     addArpAction->setToolTip(tr("Add new arpeggiator to tab bar"));
     connect(addArpAction, SIGNAL(triggered()), this, SLOT(arpNew()));
 
-    addLfoAction = new QAction(QIcon(lfoadd_xpm), tr("&New LFO..."), this);
+    addLfoAction = new QAction(QPixmap(lfoadd_xpm), tr("&New LFO..."), this);
     addLfoAction->setShortcut(QKeySequence(tr("Ctrl+L", "Module|New LFO")));
     addLfoAction->setToolTip(tr("Add new LFO to tab bar"));
     connect(addLfoAction, SIGNAL(triggered()), this, SLOT(lfoNew()));
 
-    addSeqAction = new QAction(QIcon(seqadd_xpm), tr("&New Sequencer..."), this);
+    addSeqAction = new QAction(QPixmap(seqadd_xpm), tr("&New Sequencer..."), this);
     addSeqAction->setShortcut(QKeySequence(tr("Ctrl+T", "Module|New Sequencer")));
     addSeqAction->setToolTip(tr("Add new Sequencer to tab bar"));
     connect(addSeqAction, SIGNAL(triggered()), this, SLOT(seqNew()));
 
 
-    fileNewAction = new QAction(QIcon(filenew_xpm), tr("&New"), this);
+    fileNewAction = new QAction(QPixmap(filenew_xpm), tr("&New"), this);
     fileNewAction->setShortcut(QKeySequence(QKeySequence::New));
     fileNewAction->setToolTip(tr("Create new QMidiArp session"));
     connect(fileNewAction, SIGNAL(triggered()), this, SLOT(fileNew()));
 
-    fileOpenAction = new QAction(QIcon(fileopen_xpm), tr("&Open..."), this);
+    fileOpenAction = new QAction(QPixmap(fileopen_xpm), tr("&Open..."), this);
     fileOpenAction->setShortcut(QKeySequence(QKeySequence::Open));
     fileOpenAction->setToolTip(tr("Open QMidiArp file"));
     connect(fileOpenAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
 
-    fileSaveAction = new QAction(QIcon(filesave_xpm), tr("&Save"), this);
+    fileSaveAction = new QAction(QPixmap(filesave_xpm), tr("&Save"), this);
     fileSaveAction->setShortcut(QKeySequence(QKeySequence::Save));
     fileSaveAction->setToolTip(tr("Save current QMidiArp session"));
     connect(fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
     fileSaveAction->setDisabled(true);
 
-    fileSaveAsAction = new QAction(QIcon(filesaveas_xpm), tr("Save &as..."),
+    fileSaveAsAction = new QAction(QPixmap(filesaveas_xpm), tr("Save &as..."),
             this);
     fileSaveAsAction->setToolTip(
             tr("Save current QMidiArp session with new name"));
     connect(fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
     fileSaveAsAction->setDisabled(true);
 
-    fileQuitAction = new QAction(QIcon(filequit_xpm), tr("&Quit"), this);
+    fileQuitAction = new QAction(QPixmap(filequit_xpm), tr("&Quit"), this);
     fileQuitAction->setShortcut(QKeySequence(tr("Ctrl+Q", "File|Quit")));
     fileQuitAction->setToolTip(tr("Quit application"));
     connect(fileQuitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-    runAction = new QAction(QIcon(play_xpm), tr("&Run with internal clock"), this);
+    runAction = new QAction(QPixmap(play_xpm), tr("&Run with internal clock"), this);
     connect(runAction, SIGNAL(toggled(bool)), this, SLOT(updateTransportStatus(bool)));
     runAction->setCheckable(true);
     runAction->setChecked(false);
@@ -234,7 +234,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
             SLOT(updateTempo(int)));
     engine->midiControl->addMidiLearnMenu("Tempo", tempoSpin, 0);
 
-    midiClockAction = new QAction(QIcon(midiclock_xpm),
+    midiClockAction = new QAction(QPixmap(midiclock_xpm),
             tr("&Use incoming MIDI Clock"), this);
     midiClockAction->setCheckable(true);
     midiClockAction->setChecked(false);
@@ -243,7 +243,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
             SLOT(midiClockToggle(bool)));
 
 
-    jackSyncAction = new QAction(QIcon(jacktr_xpm),
+    jackSyncAction = new QAction(QPixmap(jacktr_xpm),
             tr("&Connect to Jack Transport"), this);
     jackSyncAction->setCheckable(true);
     connect(jackSyncAction, SIGNAL(toggled(bool)), this,
@@ -254,33 +254,33 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     updateTransportStatus(false);
 
     showAllIOAction = new QAction(tr("&Show all IO panels"), this);
-    showAllIOAction->setIcon(QIcon(iopanelshow_xpm));
+    showAllIOAction->setIcon(QPixmap(iopanelshow_xpm));
     connect(showAllIOAction, SIGNAL(triggered()), this, SLOT(showIO()));
     showAllIOAction->setDisabled(true);
 
     hideAllIOAction = new QAction(tr("&Hide all IO panels"), this);
-    hideAllIOAction->setIcon(QIcon(iopanelhide_xpm));
+    hideAllIOAction->setIcon(QPixmap(iopanelhide_xpm));
     connect(hideAllIOAction, SIGNAL(triggered()), this, SLOT(hideIO()));
     hideAllIOAction->setDisabled(true);
 
     QAction* viewLogAction = logWindow->toggleViewAction();
-    viewLogAction->setIcon(QIcon(eventlog_xpm));
+    viewLogAction->setIcon(QPixmap(eventlog_xpm));
     viewLogAction->setText(tr("&Event Log"));
     viewLogAction->setShortcut(QKeySequence(tr("Ctrl+H", "View|Event Log")));
 
     QAction* viewGrooveAction = grooveWindow->toggleViewAction();
-    viewGrooveAction->setIcon(QIcon(groovetog_xpm));
+    viewGrooveAction->setIcon(QPixmap(groovetog_xpm));
     viewGrooveAction->setText(tr("&Groove Settings"));
     viewGrooveAction->setShortcut(QKeySequence(tr("Ctrl+G", "View|Groove")));
 
     QAction* viewSettingsAction = new QAction(tr("&Settings"), this);
-    viewSettingsAction->setIcon(QIcon(settings_xpm));
+    viewSettingsAction->setIcon(QPixmap(settings_xpm));
     viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P",
                     "View|Settings")));
     connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
 
     QAction* viewGlobAction = globStoreWindow->toggleViewAction();
-    viewGlobAction->setIcon(QIcon(globtog_xpm));
+    viewGlobAction->setIcon(QPixmap(globtog_xpm));
     viewGlobAction->setText(tr("&Global Store"));
     viewGlobAction->setShortcut(QKeySequence(tr("Ctrl+$",
                     "View|GlobalStore")));
@@ -310,7 +310,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     viewMenu->addAction(viewLogAction);
     viewMenu->addAction(viewGrooveAction);
     viewMenu->addAction(viewGlobAction);
-    viewMenu->addAction(QIcon(midicontrol_xpm), tr("&MIDI Controllers..."),
+    viewMenu->addAction(QPixmap(midicontrol_xpm), tr("&MIDI Controllers..."),
             this, SLOT(showMidiCCDialog()))
             ->setShortcut(QKeySequence(tr("Ctrl+M", "View|MidiControllers")));
     viewMenu->addAction(viewSettingsAction);

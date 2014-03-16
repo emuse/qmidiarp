@@ -210,7 +210,7 @@ ArpWidget::ArpWidget(
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
 
     textEditButton = new QToolButton(this);
-    textEditAction = new QAction(QIcon(editmodeon_xpm),
+    textEditAction = new QAction(QPixmap(editmodeon_xpm),
             tr("&Edit Pattern"), this);
     connect(textEditAction, SIGNAL(toggled(bool)), this,
             SLOT(openTextEditWindow(bool)));
@@ -219,7 +219,7 @@ ArpWidget::ArpWidget(
 
 #ifdef APPBUILD
     textRemoveButton = new QToolButton(this);
-    textRemoveAction = new QAction(QIcon(patternremove_xpm),
+    textRemoveAction = new QAction(QPixmap(patternremove_xpm),
             tr("&Remove Pattern"), this);
     connect(textRemoveAction, SIGNAL(triggered()), this,
             SLOT(removeCurrentPattern()));
@@ -227,7 +227,7 @@ ArpWidget::ArpWidget(
     textRemoveAction->setEnabled(false);
 
     textStoreButton = new QToolButton(this);
-    textStoreAction = new QAction(QIcon(patternstore_xpm),
+    textStoreAction = new QAction(QPixmap(patternstore_xpm),
             tr("&Store Pattern"), this);
     connect(textStoreAction, SIGNAL(triggered()), this,
             SLOT(storeCurrentPattern()));
@@ -276,7 +276,7 @@ ArpWidget::ArpWidget(
     repeatPatternThroughChord->setCurrentIndex(1);
 
     latchModeButton = new QToolButton(this);
-    latchModeAction = new QAction(QIcon(latchmodeon_xpm),
+    latchModeAction = new QAction(QPixmap(latchmodeon_xpm),
             tr("&Latch Mode"), this);
     connect(latchModeAction, SIGNAL(toggled(bool)), this,
             SLOT(setLatchMode(bool)));

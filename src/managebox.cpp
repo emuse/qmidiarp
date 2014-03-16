@@ -50,23 +50,23 @@ ManageBox::ManageBox(const QString & nameprefix, bool enable_clone, QWidget *par
     QToolButton *cloneButton = new QToolButton(this);
     if (enable_clone) {
         if (namePrefix.startsWith('S')) {
-            cloneAction = new QAction(QIcon(seqwavcp_xpm), tr("&Clone..."), this);
+            cloneAction = new QAction(QPixmap(seqwavcp_xpm), tr("&Clone..."), this);
         }
         else {
-            cloneAction = new QAction(QIcon(lfowavcp_xpm), tr("&Clone..."), this);
+            cloneAction = new QAction(QPixmap(lfowavcp_xpm), tr("&Clone..."), this);
         }
         cloneAction->setToolTip(tr("Duplicate this Module in muted state"));
         cloneButton->setDefaultAction(cloneAction);
         connect(cloneAction, SIGNAL(triggered()), this, SLOT(moduleClone()));
     }
     else cloneButton->hide();
-    renameAction = new QAction(QIcon(arprename_xpm), tr("&Rename..."), this);
+    renameAction = new QAction(QPixmap(arprename_xpm), tr("&Rename..."), this);
     renameAction->setToolTip(tr("Rename this Module"));
     QToolButton *renameButton = new QToolButton(this);
     renameButton->setDefaultAction(renameAction);
     connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
 
-    deleteAction = new QAction(QIcon(arpremove_xpm), tr("&Delete..."), this);
+    deleteAction = new QAction(QPixmap(arpremove_xpm), tr("&Delete..."), this);
     deleteAction->setToolTip(tr("Delete this Module"));
     QToolButton *deleteButton = new QToolButton(this);
     deleteButton->setDefaultAction(deleteAction);

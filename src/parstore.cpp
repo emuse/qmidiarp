@@ -130,7 +130,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
 
     QAction *storeHereAction = new QAction(tr("&Store here"), this);
     storeHereAction->setProperty("index", list.count());
-    storeHereAction->setIcon(QIcon(filesave_xpm));
+    storeHereAction->setIcon(QPixmap(filesave_xpm));
     locContextMenu->addAction(storeHereAction);
     connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
 

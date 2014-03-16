@@ -160,7 +160,7 @@ void GlobStore::addLocation()
     QToolButton *storeButton = new QToolButton(this);
     storeButton->setDefaultAction(storeAction);
     storeButton->setFixedSize(15, 25);
-    storeAction->setIcon(QIcon(filesave_xpm));
+    storeAction->setIcon(QPixmap(filesave_xpm));
     connect(storeAction, SIGNAL(triggered()), storeSignalMapper, SLOT(map()));
     storeSignalMapper->setMapping(storeAction, widgetList.count());
 

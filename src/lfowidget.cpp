@@ -218,12 +218,12 @@ LfoWidget::LfoWidget(
     waveFormBox = new QComboBox(waveBox);
     waveFormBoxLabel->setBuddy(waveFormBox);
     //loadWaveForms();
-    waveFormBox->addItem(QIcon(lfowsine_xpm),"");
-    waveFormBox->addItem(QIcon(lfowsawup_xpm),"");
-    waveFormBox->addItem(QIcon(lfowtri_xpm),"");
-    waveFormBox->addItem(QIcon(lfowsawdn_xpm),"");
-    waveFormBox->addItem(QIcon(lfowsquare_xpm),"");
-    waveFormBox->addItem(QIcon(lfowcustm_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowsine_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowsawup_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowtri_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowsawdn_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowsquare_xpm),"");
+    waveFormBox->addItem(QPixmap(lfowcustm_xpm),"");
     waveFormBox->setCurrentIndex(0);
     waveFormBoxIndex = 0;
     waveFormBox->setToolTip(tr("Waveform Basis"));
@@ -318,7 +318,7 @@ LfoWidget::LfoWidget(
     deferChangesButton->setFixedSize(20, 20);
 
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
-    recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), waveBox);
+    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), waveBox);
     recordAction->setToolTip(tr("Record incoming controller"));
     recordAction->setCheckable(true);
     QToolButton *recordButton = new QToolButton(waveBox);

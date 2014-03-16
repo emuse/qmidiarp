@@ -233,7 +233,7 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
 #endif
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
-    recordAction = new QAction(QIcon(seqrecord_xpm), tr("Re&cord"), seqBox);
+    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), seqBox);
     recordAction->setToolTip(tr("Record step by step"));
     recordAction->setCheckable(true);
     QToolButton *recordButton = new QToolButton(seqBox);
