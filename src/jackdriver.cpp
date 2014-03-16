@@ -275,8 +275,17 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 
                 buffer[2] = outEv.value;        /* velocity / value **/
                 buffer[1] = outEv.data;         /* note / controller **/
-                if (outEv.type == EV_NOTEON) buffer[0] = 0x90;
-                if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
+                if (outEv.type == EV_NOTEON) {
+                    if (outEv.value) {
+                        buffer[0] = 0x90;
+                        buffer[2] = outEv.value;
+                    }
+                    else {
+                        buffer[0] = 0x80;
+                        buffer[2] = 127;
+                    }
+                }
+                else if (outEv.type == EV_CONTROLLER) buffer[0] = 0xb0;
                 buffer[0] += outEv.channel;
             }
         }
@@ -288,8 +297,8 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                 inEv.value = *(in_event.buffer + 2);
             }
             else if( ((*(in_event.buffer)) & 0xf0) == 0x80 ) {
-                inEv.type = EV_NOTEON;
-                inEv.value = 0;
+                inEv.type = EV_NOTEOFF;
+                inEv.value = *(in_event.buffer + 2);
             }
             else if( ((*(in_event.buffer)) & 0xf0) == 0xa0 ) {
                 inEv.type = EV_KEYPRESS;

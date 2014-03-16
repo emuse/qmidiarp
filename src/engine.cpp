@@ -670,6 +670,12 @@ bool Engine::eventCallback(MidiEvent inEv)
         logEventCount++;
     }
 
+    /* from here on we handle Note Off events as Note On / Vel 0 events */
+    if (inEv.type == EV_NOTEOFF) {
+        inEv.type = EV_NOTEON;
+        inEv.value = 0;
+    }
+
     if (useMidiClock){
         if (inEv.type == EV_START) {
             setStatus(true);

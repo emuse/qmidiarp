@@ -280,9 +280,9 @@ void MidiArpLV2::run ( uint32_t nframes )
             bufPtr--;
 
             unsigned char d[3];
-            d[0] = 0x90 + channelOut;
+            d[0] = 0x80 + channelOut;
             d[1] = outval;
-            d[2] = 0;
+            d[2] = 127;
             forgeMidiEvent(f, d, 3);
         }
         curFrame++;
