@@ -209,7 +209,15 @@ DEFS = -Wall -Wextra -D_REENTRANT $(TRANSLATION_DEFS) @DEFS@
 EXTRA_DIST = qmidiarp.pro $(translations)
 
 # all generated files to be removed by "make clean"
-CLEANFILES = $(nodist_qmidiarp_SOURCES)  $(translations_DATA)
+CLEANFILES = \
+	$(nodist_qmidiarp_SOURCES) \
+	$(nodist_qmidiarp_arp_la_SOURCES) \
+	$(nodist_qmidiarp_lfo_la_SOURCES) \
+	$(nodist_qmidiarp_seq_la_SOURCES) \
+	$(nodist_qmidiarp_arp_ui_la_SOURCES) \
+	$(nodist_qmidiarp_lfo_ui_la_SOURCES) \
+	$(nodist_qmidiarp_seq_ui_la_SOURCES) \
+	$(translations_DATA)
 
 # rule for moc-file generation
 SUFFIXES = _moc.cpp
