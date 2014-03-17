@@ -167,14 +167,9 @@ AM_COND_IF([BUILD_LV2],[
 dnl check for lv2core
 AC_CHECK_HEADER( lv2/lv2plug.in/ns/lv2core/lv2.h, lv2coreinclude_found="yes", lv2coreinclude_found="no" )
 PKG_CHECK_MODULES(LV2CORE, lv2core >= 6.0, lv2coreWorks="yes", lv2coreWorks="no")
-LIBSsave=$LIBS
 CFLAGSsave=$CFLAGS
 CFLAGS=$LV2CORE_CFLAGS
-LIBS=$LV2CORE_LIBS
-
 AC_SUBST(LV2CORE_CFLAGS)
-AC_SUBST(LV2CORE_LIBS)
-LIBS+=$LIBSsave
 CFLAGS+=$CFLAGSsave
 
 if test $lv2coreinclude_found = "no" -o $lv2coreWorks = "no"; then
