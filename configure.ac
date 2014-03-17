@@ -30,11 +30,6 @@ AC_ENABLE_SHARED
 AC_DISABLE_STATIC
 LT_INIT([dlopen])
 
-# Qt lib check is broken on some distros
-# AC_CHECK_LIB([QtCore], qt_addObject, [],
-#              [AC_MSG_ERROR(QtCore is required)])
-# AC_CHECK_LIB([QtGui], _init, [],
-#              [AC_MSG_ERROR(QtGui is required)])
 
 # Checks for libraries
 AC_CHECK_LIB([asound], [snd_pcm_open], ,
@@ -43,7 +38,14 @@ AC_CHECK_LIB([jack], [jack_client_open], ,
              [AC_MSG_ERROR(JACK library (jack) is required)])
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
-PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
+AC_ARG_ENABLE(qt5, AC_HELP_STRING([--enable-qt5],
+                          [enable Qt5 instead of Qt4 library]),,
+                          enable_qt4=yes)
+
+AS_IF([test x$enable_qt4 = xyes],
+dnl Check for Qt4 library files
+[
+PKG_CHECK_MODULES(Qt4, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
 if test "x$HAVE_QT4" = "xyes"; then
   dnl Check needed because in some cases the QtGui includedir
   dnl does not contain the subsystem dir.
@@ -58,12 +60,41 @@ if test "x$HAVE_QT4" = "xyes"; then
 
   AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])
   AC_SUBST(QT_CXXFLAGS)
+  AC_SUBST(Qt4_LIBS)
 else
   AC_MSG_ERROR([cannot find Qt4 library >= 4.2])
 fi
+ac_qtversion=qt4],
+dnl ... or use Qt5
+[
+PKG_CHECK_MODULES(Qt5, Qt5Core Qt5Gui Qt5Widgets >= 5.0,
+                  HAVE_QT5="yes", HAVE_QT5="no")
+if test "x$HAVE_QT5" = "xyes"; then
+  dnl Check needed because in some cases the QtGui includedir
+  dnl doesnt contain the subsystem dir.
+  QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir Qt5Gui`
+  QT_CXXFLAGS=`$PKG_CONFIG --cflags Qt5Core Qt5Gui Qt5Widgets`
+  QT_CXXFLAGS="$QT_CXXFLAGS -fPIC"
+  EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
+  AC_CHECK_FILE([$QT_INCLUDE_DIR/QtWidgets/QWidget],
+    AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
+      AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
+        QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
+          AC_MSG_WARN([QWidget not found])))
+
+  AC_SUBST(QT_CXXFLAGS)
+  AC_SUBST(Qt5_LIBS)
+  AC_DEFINE([HAVE_QT5], [1],[Define to 1 if you have Qt5.])
+
+else
+  AC_MSG_ERROR([cannot find Qt5 library >= 5.0])
+fi
+ac_qtversion=qt5
+])
+dnl endo of qt version test
 
 dnl check for moc
-AC_PATH_PROGS(MOC, moc-qt4 moc, no, [$PATH:$QTDIR/bin])
+AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$PATH:$QTDIR/bin])
 if test "x$MOC" = "xno" ; then
   AC_MSG_ERROR(
     [cannot find 'moc', please install the Qt4 development tools package.])
@@ -79,7 +110,7 @@ AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test "x$ac_translations" = "xyes"])
 
 AM_COND_IF([ENABLE_TRANSLATIONS],[
 dnl check for lupdate
-AC_PATH_PROGS(LUPDATE, lupdate-qt4 lupdate, no, [$PATH:$QTDIR/bin])
+AC_PATH_PROGS(LUPDATE, lupdate-$ac_qtversion lupdate, no, [$PATH:$QTDIR/bin])
 if test "x$LUPDATE" = "xno" ; then
   AC_MSG_ERROR(
     [cannot find 'lupdate', please install the Qt4 development tools package.])
@@ -110,10 +141,7 @@ LIBSsave=$LIBS
 CFLAGSsave=$CFLAGS
 CFLAGS=$LIBLO_CFLAGS
 LIBS=$LIBLO_LIBS
-# AC_MSG_CHECKING([for liblo OSC library])
-# AC_MSG_RESULT()
-# AC_CHECK_LIB(LIBLO,lo_address_new,[],[libloWorks=no])
-#echo "liblo OSC library: $LIBLO_LIBS"
+
 AC_SUBST(LIBLO_CFLAGS)
 AC_SUBST(LIBLO_LIBS)
 LIBS+=$LIBSsave
@@ -193,6 +221,9 @@ AC_CONFIG_FILES([Makefile] [examples/Makefile] [src/Makefile])
 AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
 AC_CONFIG_FILES([man/de/Makefile])
 AC_OUTPUT
+
+echo
+echo "Will use the following QT libs:" $Qt4_LIBS $Qt5_LIBS
 
 echo
 if test "x$ac_translations" = "xno" ; then

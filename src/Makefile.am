@@ -62,7 +62,7 @@ qmidiarp_SOURCES = \
 	storagebutton.cpp storagebutton.h
 
 qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD
-qmidiarp_LDADD = $(QT_LIBS)
+qmidiarp_LDADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 if BUILD_LV2
 
@@ -92,7 +92,7 @@ qmidiarp_lfo_la_SOURCES = \
 	midilfo_lv2.cpp midilfo_lv2.h
 
 qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_lfo_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_lfo_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -113,7 +113,7 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 
 qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_lfo_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_seq_la_SOURCES = \
 	midiseq_moc.cpp \
@@ -126,7 +126,7 @@ qmidiarp_seq_la_SOURCES = \
 	midiseq_lv2.cpp midiseq_lv2.h
 
 qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_seq_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_seq_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -147,7 +147,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	seqwidget_lv2.cpp seqwidget_lv2.h
 
 qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_seq_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_arp_la_SOURCES = \
 	midiarp_moc.cpp \
@@ -160,7 +160,7 @@ qmidiarp_arp_la_SOURCES = \
 	midiarp_lv2.cpp midiarp_lv2.h
 
 qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_arp_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_arp_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -181,7 +181,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	arpwidget_lv2.cpp arpwidget_lv2.h
 
 qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_arp_ui_la_LIBADD = $(QT_LIBS) $(LV2CORE_LIBS)
+qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS) $(LV2CORE_LIBS)
 
 endif
 
