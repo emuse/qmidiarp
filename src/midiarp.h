@@ -109,6 +109,8 @@ class MidiArp : public QObject  {
     int noteCount;      /*!< The number of notes in the MidiArp::notes buffer */
     int patternLen;     /*!< Length of the arp text pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
+    int octOfs;        /*!< The currently active octave shift. @see repeatPatternThroughChord */
+    int octIncr;        /*!< The octave increment at repeat end. @see repeatPatternThroughChord */
     int releaseNoteCount; /*!< The number of notes currently in release stage */
 
 /**
@@ -126,10 +128,10 @@ class MidiArp : public QObject  {
  * @param value The value to be checked
  * @param min The minimum allowed return value
  * @param max The maximum allowed return value
- * @param outOfRange Is set to True if value was outside min|max range
+ * @param outOfRange Is set to -1|1 if value was outside min|max range
  * @return The value clipped within the range
  */
-    int clip(int value, int min, int max, bool *outOfRange);
+    int clip(int value, int min, int max, int *outOfRange);
 /**
  * @brief This function updates the current note arrays with new values
  * obtained from MidiArp::getNote
@@ -209,6 +211,12 @@ class MidiArp : public QObject  {
  * currently active index to the inactive index
  */
     void copyNoteBuffer();
+/**
+ * @brief Advances octOfs according to the settings. Called when the octave
+ * reaches an edge condition (at octave range or outside permitted range)
+ * @param reset Set to True in order to set the octave shift to zero
+ */
+    void checkOctaveAtEdge(bool reset);
 
   public:
     int chIn;       /*!< Input channel state set by ArpWidget */
@@ -240,6 +248,8 @@ class MidiArp : public QObject  {
     double nSteps;      /*!< Musical length of the pattern in beats */
     int nPoints;        /*!< Number of steps to be played out */
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
+    int octMode;        /*!< The octave Mode 0=up, 1=down, 2=pingpong. @see repeatPatternThroughChord */
+    int octRange;        /*!< The maximum range of octaves. @see repeatPatternThroughChord */
 
     QVector<int> returnNote; /*!< Holds the notes of the currently active arpeggio step */
     QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */
@@ -379,6 +389,11 @@ class MidiArp : public QObject  {
  * them if so
  */
     void applyPendingParChanges();
+
+/*! @brief Sets octave mode and octave increment accordingly, resets the
+ * current octave shift
+ */
+    void updateOctaveMode(int val);
 
   public slots:
  /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for

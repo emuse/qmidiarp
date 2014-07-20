@@ -103,6 +103,12 @@ MidiArp::MidiArp()
     minStepWidth = 1.0;
     maxOctave = 0;
     minOctave = 0;
+    
+    octMode = 0;
+    octRange = 1;
+    octOfs = 0;
+    octIncr = 0;
+
     nSteps = 1.0;
     nPoints = 1;
     len = 0.5;       // note length
@@ -217,9 +223,12 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         noteCount++;
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+        //qWarning("pressed notes %d - buffered notes %d", getPressedNoteCount(), noteCount);
+
         if ((trigByKbd && (getPressedNoteCount() == 1)) || trigLegato) {
             initArpTick(tick + trigDelayTicks);
             gotKbdTrig = true;
+            //qWarning("got triggered");
         }
     }
     else {
@@ -347,7 +356,9 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 {
     QChar c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
-    bool gotCC, outOfRange, pause;
+    int current_octave = 0;
+    int outOfRange = 0;
+    bool gotCC, pause;
     double attackfn, releasefn;
 
 
@@ -429,13 +440,16 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 chordSemitone[chordIndex] = semitone;
             }
         }
+        current_octave = octOfs;
     } while (advancePatternIndex(false) && (gotCC || chordMode));
 
     l1 = 0;
     if (noteCount) do {
         noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0;
-        note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]]
+        note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]] + current_octave * 12
                 + chordSemitone[l1], 0, 127, &outOfRange);
+        if (outOfRange != 0) checkOctaveAtEdge(false);
+
         grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
 
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
@@ -506,6 +520,33 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     grooveIndex++;
 }
 
+void MidiArp::checkOctaveAtEdge(bool reset)
+{
+    if (reset) {
+        octOfs = 0;
+        if (octMode == 2) octIncr = -1; else octIncr = 1;
+        return;
+    }
+    if (octOfs > octRange) {
+        if (octMode == 3){
+            octIncr = - octIncr;
+            octOfs--;
+        }
+        else {
+            octOfs = -octRange;
+        }
+    }
+    if (octOfs < -octRange) {
+        if (octMode == 3) {
+            octIncr = - octIncr;
+            octOfs++;
+        }
+        else {
+            octOfs = octRange;
+        }
+    }
+}
+
 bool MidiArp::advancePatternIndex(bool reset)
 {
     if (patternLen) {
@@ -522,6 +563,8 @@ bool MidiArp::advancePatternIndex(bool reset)
                 noteOfs++;
                 if ((noteCount - 1 < patternMaxIndex + noteOfs) || reset) {
                     noteOfs = 0;
+                    octOfs+=octIncr;
+                    checkOctaveAtEdge(reset);
                 }
                 break;
             case 2:
@@ -529,6 +572,8 @@ bool MidiArp::advancePatternIndex(bool reset)
                 if ((noteCount -1 < patternMaxIndex) ||
                     (noteOfs < patternMaxIndex) || reset) {
                     noteOfs = noteCount - 1;
+                    octOfs+=octIncr;
+                    checkOctaveAtEdge(reset);
                 }
                 break;
             case 3:
@@ -729,17 +774,17 @@ void MidiArp::updatePattern(const QString& p_pattern)
     nPoints = npoints;
 }
 
-int MidiArp::clip(int value, int min, int max, bool *outOfRange)
+int MidiArp::clip(int value, int min, int max, int *outOfRange)
 {
     int tmp = value;
 
     *outOfRange = false;
     if (tmp > max) {
         tmp = max;
-        *outOfRange = true;
+        *outOfRange = 1;
     } else if (tmp < min) {
         tmp = min;
-        *outOfRange = true;
+        *outOfRange = -1;
     }
     return(tmp);
 }
@@ -757,6 +802,30 @@ void MidiArp::newRandomValues()
 void MidiArp::updateRandomTickAmp(int val)
 {
     randomTickAmp = val;
+}
+
+void MidiArp::updateOctaveMode(int val)
+{
+    octMode = val;
+    octOfs = 0;
+    
+    switch (val) {
+        case 0: 
+            octIncr = 0;
+        break;
+
+        case 1:
+            octIncr = 1;
+        break;
+
+        case 2:
+            octIncr = -1;
+        break;
+
+        case 3:
+            octIncr = 1;
+        break;
+    }
 }
 
 void MidiArp::updateRandomVelocityAmp(int val)
