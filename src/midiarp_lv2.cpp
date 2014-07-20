@@ -318,6 +318,11 @@ void MidiArpLV2::updateParams()
     if (randomVelocityAmp != *val[RANDOM_VEL]) {
         updateRandomVelocityAmp(*val[RANDOM_VEL]);
     }
+    if (octMode != *val[OCTAVE_MODE]) {
+        updateOctaveMode(*val[OCTAVE_MODE]);
+    }
+    
+    octRange     =   (int)*val[OCTAVE_RANGE];
 
 
     if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);

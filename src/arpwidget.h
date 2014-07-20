@@ -116,6 +116,8 @@ class ArpWidget : public QWidget
     QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
+    QComboBox *octaveModeBox;
+    QComboBox *octaveRangeBox;
     QWidget *inOutBox;
     QSpinBox *indexIn[2];                  // Index input
     QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
@@ -219,6 +221,8 @@ class ArpWidget : public QWidget
 /* PUBLIC SLOTS */
   public slots:
     //these slots are specific for the Arp module
+    void updateOctaveMode(int value);
+    void updateOctaveRange(int value);
     void updateRandomVelocityAmp(int value);
     void updateRandomTickAmp(int value);
     void updateRandomLengthAmp(int value);

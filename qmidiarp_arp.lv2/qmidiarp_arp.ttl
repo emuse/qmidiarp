@@ -252,22 +252,25 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 14 ;
-        lv2:portProperty pprop:notOnGUI ;
-        lv2:symbol "MOUSEY" ;
-        lv2:name "Mouse Y" ;
+        lv2:symbol "OCTAVE_MODE" ;
+        lv2:name "Octave Mode" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "Static"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Up"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "Bounce"; rdf:value 3 ] ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
+        lv2:maximum 3.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 15 ;
-        lv2:portProperty pprop:notOnGUI ;
-        lv2:symbol "MOUSEBUTTON" ;
-        lv2:name "Mouse Button" ;
+        lv2:symbol "OCTAVE_RANGE" ;
+        lv2:name "Octave Range" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 2.0 ;
+        lv2:default 1.0 ;
+        lv2:minimum 1.0 ;
+        lv2:maximum 3.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 16 ;

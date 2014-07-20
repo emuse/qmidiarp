@@ -270,10 +270,31 @@ ArpWidget::ArpWidget(
     QStringList repeatPatternNames;
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Random");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
-    repeatPatternThroughChord->setToolTip(tr("Repeat mode"));
+    repeatPatternThroughChord->setToolTip(tr("Repeat mode - This is how notes are sequenced\n"
+                            "when a chord is pressed"));
     connect(repeatPatternThroughChord, SIGNAL(currentIndexChanged(int)), this,
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
+
+    octaveModeBox = new QComboBox(patternBox);
+    repeatPatternNames.clear();
+    repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Bounce");
+    octaveModeBox->insertItems(0, repeatPatternNames);
+    octaveModeBox->setToolTip(tr("Octave mode - The overall octave changes like this\n"
+                            "once all pressed notes were played through"));
+    connect(octaveModeBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(updateOctaveMode(int)));
+    octaveModeBox->setCurrentIndex(0);
+
+    octaveRangeBox = new QComboBox(patternBox);
+    repeatPatternNames.clear();
+    repeatPatternNames << "1" << "2" << "3";
+    octaveRangeBox->insertItems(0, repeatPatternNames);
+    octaveRangeBox->setToolTip(tr("Octave range - the range above and below the played note\n"
+                            "if Octave mode is not static"));
+    connect(octaveRangeBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(updateOctaveRange(int)));
+    octaveRangeBox->setCurrentIndex(0);
 
     latchModeButton = new QToolButton(this);
     latchModeAction = new QAction(QPixmap(latchmodeon_xpm),
@@ -305,6 +326,8 @@ ArpWidget::ArpWidget(
     modeLayout->addWidget(muteOut);
     modeLayout->addWidget(deferChangesButton);
     modeLayout->addWidget(repeatPatternThroughChord);
+    modeLayout->addWidget(octaveModeBox);
+    modeLayout->addWidget(octaveRangeBox);
     modeLayout->addWidget(latchModeButton);
     modeLayout->addStretch(2);
 
@@ -446,6 +469,10 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
                 midiWorker->repeatPatternThroughChord));
+            xml.writeTextElement("octaveMode", QString::number(
+                midiWorker->octMode));
+            xml.writeTextElement("octaveRange", QString::number(
+                midiWorker->octRange));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));
         xml.writeEndElement();
@@ -521,6 +548,10 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     patternText->setText(xml.readElementText());
                 else if (xml.name() == "repeatMode")
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "octaveMode")
+                    octaveModeBox->setCurrentIndex(xml.readElementText().toInt());
+                else if (xml.name() == "octaveRange")
+                    octaveRangeBox->setCurrentIndex(xml.readElementText().toInt() - 1);
                 else if (xml.name() == "latchMode")
                     latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -741,6 +772,18 @@ void ArpWidget::loadPatternPresets()
 void ArpWidget::updateRepeatPattern(int val)
 {
     if (midiWorker) midiWorker->repeatPatternThroughChord = val;
+    modified = true;
+}
+
+void ArpWidget::updateOctaveMode(int val)
+{
+    if (midiWorker) midiWorker->updateOctaveMode(val);
+    modified = true;
+}
+
+void ArpWidget::updateOctaveRange(int val)
+{
+    if (midiWorker) midiWorker->octRange = val + 1;
     modified = true;
 }
 

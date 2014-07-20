@@ -92,6 +92,8 @@ ArpWidgetLV2::ArpWidgetLV2 (
     connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(patternPresetBox,   SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(repeatPatternThroughChord, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(octaveModeBox,      SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(octaveRangeBox,      SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(patternText,        SIGNAL(textChanged(const QString&)), this,
             SLOT(updatePattern(const QString&)));
 
@@ -173,8 +175,13 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
             break;
             case LATCH_MODE:
                     latchModeAction->setChecked((bool)fValue);
-            case MOUSEY:
-            case MOUSEBUTTON:
+            break;
+            case OCTAVE_MODE:
+                    octaveModeBox->setCurrentIndex(fValue);
+            break;
+            case OCTAVE_RANGE:
+                    octaveRangeBox->setCurrentIndex((int)fValue - 1);
+            break;
             case MOUSEPRESSED:
             break;
             case INDEX_IN1:
@@ -408,7 +415,7 @@ void ArpWidgetLV2::mapBool(bool on)
 
 void ArpWidgetLV2::mapParam(int value)
 {
-    if (attackTime == sender()) updateParam(2, value);
+    if      (attackTime == sender())        updateParam(ATTACK, value);
     else if (releaseTime == sender())       updateParam(RELEASE, value);
     else if (randomTick == sender())        updateParam(RANDOM_TICK, value);
     else if (randomLength == sender())      updateParam(RANDOM_LEN, value);
@@ -421,6 +428,8 @@ void ArpWidgetLV2::mapParam(int value)
     else if (rangeIn[0] == sender())        updateParam(RANGE_IN1, value);
     else if (rangeIn[1] == sender())        updateParam(RANGE_IN2, value);
     else if (repeatPatternThroughChord == sender()) updateParam(REPEAT_MODE, value);
+    else if (octaveModeBox == sender())     updateParam(OCTAVE_MODE, value);
+    else if (octaveRangeBox == sender())    updateParam(OCTAVE_RANGE, value + 1);
     else if (tempoSpin == sender())         updateParam(TEMPO, value);
 }
 
