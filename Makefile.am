@@ -10,6 +10,9 @@ dist_svgdata_DATA = qmidiarp.svg
 applicationsdir = @datadir@/applications
 dist_applications_DATA = qmidiarp.desktop
 
+appdatadir = @datadir@/appdata
+dist_appdata_DATA = qmidiarp.appdata.xml
+
 include $(top_srcdir)/aminclude.am
 EXTRA_DIST = Doxyfile html/qmidiarp_logo_med2.png
 

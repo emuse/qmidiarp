@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Frank Kober <emuse@users.sourceforge.net> -->
+<application>
+ <id type="desktop">qmidiarp.desktop</id>
+ <metadata_license>CC0-1.0</metadata_license>
+ <project_license>GPL-2.0</project_license>
+ <name>QMidiArp</name>
+ <summary>MIDI Arpeggiator, Step Sequencer and LFO</summary>
+ <description>
+  <p>
+  QMidiArp is an advanced MIDI arpeggiator, programmable step sequencer
+  and LFO for Linux. It can hold any number of arpeggiator, sequencer,
+  or LFO modules running in parallel. 
+  Arpeggiator modules produce sequences depending on the notes sent to
+  their input port, which is typically connected to a keyboard or
+  another sequencer.
+  Step sequencer modules allow you to create simple linear, monophonic
+  and globally transposable sequences similar to the first analog
+  sequencers.
+  MIDI LFO modules produce MIDI controller data of
+  adjustable waveform, time resolution, amplitude and duration.
+  A Global Storage Tool can store different setups and switch between
+  them at a given time. It allows you to dynamically combine patterns
+  and LFO wave forms. This combination makes QMidiArp a handy
+  MIDI phrase generator for live performance and composition.
+  </p>
+  <p>Highlighted Features:</p>
+  <ul>
+   <li>JACK or ALSA MIDI backends</li>
+   <li>MIDI-learnable controls</li>
+   <li>JACK Transport or MIDI Clock synchronization</li>
+   <li>NSM support</li>
+   <li>Modules available as LV2 Plugins</li>
+  </ul>
+  <p>
+  </p>
+ </description>
+ <screenshots>
+  <screenshot type="default" width="800" height="600">http://qmidiarp.sourceforge.net/qmidiarp_doc_en_html.png</screenshot>
+  <screenshot width="800" height="600">http://qmidiarp.sourceforge.net/qmidiarp_doc_en_html_seq.png</screenshot>
+ </screenshots>
+ <url type="homepage">http://qmidiarp.sourceforge.net</url>
+ <updatecontact>qmidiarp-devel@lists.sourceforge.net</updatecontact>
+</application>
