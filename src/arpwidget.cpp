@@ -54,7 +54,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     modified(false)
 {
     midiControl = new MidiControl(this);
-    manageBox = new ManageBox("Arp:", true, this);
+    manageBox = new ManageBox("Arp:", false, this);
 #else
 ArpWidget::ArpWidget(
     bool compactStyle,
