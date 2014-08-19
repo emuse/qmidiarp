@@ -42,6 +42,7 @@
 #define QMIDIARP_LV2_PREFIX QMIDIARP_LV2_URI "#"
 
 typedef struct {
+    LV2_URID atom_Object;
     LV2_URID atom_Blank;
     LV2_URID atom_Float;
     LV2_URID atom_Int;
@@ -65,6 +66,7 @@ typedef struct {
 } QMidiArpURIs;
 
 static inline void map_uris(LV2_URID_Map* urid_map, QMidiArpURIs* uris) {
+    uris->atom_Object         = urid_map->map(urid_map->handle, LV2_ATOM__Object);
     uris->atom_Blank          = urid_map->map(urid_map->handle, LV2_ATOM__Blank);
     uris->atom_Float          = urid_map->map(urid_map->handle, LV2_ATOM__Float);
     uris->atom_Int            = urid_map->map(urid_map->handle, LV2_ATOM__Int);

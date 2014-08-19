@@ -172,7 +172,8 @@ void MidiArpLV2::run ( uint32_t nframes )
     if (inEventBuffer) {
         LV2_ATOM_SEQUENCE_FOREACH(inEventBuffer, event) {
             // Control Atom Input
-            if (event && event->body.type == uris->atom_Blank) {
+            if (event && (event->body.type == uris->atom_Object
+                        || event->body.type == uris->atom_Blank)) {
                 const LV2_Atom_Object* obj = (LV2_Atom_Object*)&event->body;
                 /* interpret atom-objects: */
                 if (obj->body.otype == uris->time_Position) {
