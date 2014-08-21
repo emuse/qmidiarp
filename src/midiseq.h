@@ -73,7 +73,7 @@ class MidiSeq : public QObject  {
     int noteCount;
     bool seqFinished;
 /**
- * @brief This function allows forcing an integer value within the
+ * @brief  allows forcing an integer value within the
  * specified range (clip).
  *
  * @param value The value to be checked
@@ -84,7 +84,7 @@ class MidiSeq : public QObject  {
  */
     int clip(int value, int min, int max, bool *outOfRange);
 /**
- * @brief This function calulates the next MidiSeq::currentIndex as a
+ * @brief  calulates the next MidiSeq::currentIndex as a
  * function of the current value, play direction, loop marker position
  * and orientation. It is called by MidiSeq::getNextNote() so that upon
  * every new output note, the sequence pointer advances.
@@ -142,20 +142,20 @@ class MidiSeq : public QObject  {
     void updateQueueTempo(int);
 
     void recordNote(int note);
-/*! @brief This function sets MidiLfo::isMuted, which is checked by
+/*! @brief  sets MidiLfo::isMuted, which is checked by
  * SeqDriver and which suppresses data output globally if set to True.
  *
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
-/*! @brief This function sets MidiSeq::deferChanges, which will cause a
+/*! @brief  sets MidiSeq::deferChanges, which will cause a
  * parameter changes only at pattern end.
  *
  * @param on Set to True to defer changes to pattern end
  */
     void updateDeferChanges(bool on) { deferChanges = on; }
 /**
- * @brief This function does the actions related to a newly received note.
+ * @brief  does the actions related to a newly received note.
  *
  * It is called by Engine when a new note is received on the MIDI input port.
 
@@ -164,10 +164,10 @@ class MidiSeq : public QObject  {
  * @param tick The time the note was received in internal ticks
  */
     bool handleEvent(MidiEvent inEv, int tick);
-/*! @brief This function sets the (controller) value of one point of the
+/*! @brief  sets the (controller) value of one point of the
  * MidiSeq::customWave array. It is used for handling drawing functionality.
  *
- * The member is called by SeqWidget::mouseMoved or SeqWidget::mousePressed.
+ * It is called by SeqWidget::mouseMoved or SeqWidget::mousePressed.
  * The normalized mouse coordinates are scaled to the waveform size and
  * resolution and to the controller range (0 ... 127). The function
  * interpolates potentially missing waveform points between two events
@@ -180,7 +180,7 @@ class MidiSeq : public QObject  {
  * @see MidiSeq::toggleMutePoint(), MidiSeq::setMutePoint()
  */
     int setCustomWavePoint(double mouseX, double mouseY);
-/*! @brief This function sets the MidiSeq::loopMarker member variable
+/*! @brief  sets the MidiSeq::loopMarker member variable
  * used as a supplemental return point within the sequence.
  *
  * @param ix Absolute pattern index position of the marker. NOTE:
@@ -191,7 +191,7 @@ class MidiSeq : public QObject  {
  * MidiSeq::setLoopMarkerMouse()
  */
     void setLoopMarker(int ix);
-/*! @brief This function sets the MidiSeq::loopMarker member variable
+/*! @brief  sets the MidiSeq::loopMarker member variable
  * used as a supplemental return point within the sequence. It is called
  *  by SeqWidget::mousePressed().
  * The normalized mouse coordinates are scaled to the waveform size and
@@ -205,10 +205,10 @@ class MidiSeq : public QObject  {
  * MidiSeq::setLoopMarker()
  */
     void setLoopMarkerMouse(double mouseX);
-/*! @brief This function sets the mute state of one point of the
+/*! @brief  sets the mute state of one point of the
  * MidiSeq::muteMask array to the given state.
  *
- * The member is called when the right mouse button is clicked on the
+ * It is called when the right mouse button is clicked on the
  * SeqScreen.
  * If calculated waveforms are active, only the MidiSeq::muteMask is
  * changed. If a custom waveform is active, the Sample.mute status
@@ -221,7 +221,7 @@ class MidiSeq : public QObject  {
  * @see MidiSeq::toggleMutePoint()
  */
     int setMutePoint(double mouseX, bool muted);
-/*! @brief This function recalculates the MidiSeq::customWave as a
+/*! @brief  recalculates the MidiSeq::customWave as a
  * function of the current MidiSeq::res and MidiSeq::size values.
  *
  * It is called upon every change of MidiSeq::size and MidiSeq::res. It
@@ -233,7 +233,7 @@ class MidiSeq : public QObject  {
     int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
     void setRecordedNote(int note);
 
-/*! @brief This function is called upon every change of parameters in
+/*! @brief  is called upon every change of parameters in
  * SeqWidget or upon input by mouse clicks on the SeqScreen.
  *
  * It fills the
@@ -243,16 +243,16 @@ class MidiSeq : public QObject  {
  * @param data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
-/*! @brief This function transfers one Sample of data taken from
+/*! @brief  transfers one Sample of data taken from
  * the currently active waveform MidiLfo::data at the index frameptr.
  *
  * @param p_sample reference to a Sample structure receiving the data point
  */
     void getNextNote(Sample *p_sample, int tick);
-/*! @brief This function toggles the mute state of one point of the
+/*! @brief  toggles the mute state of one point of the
  * MidiSeq::muteMask array.
  *
- * The member is called when the right mouse button is clicked on the
+ * It is called when the right mouse button is clicked on the
  * SeqScreen. The Sample.mute status at the given position in
  * MidiSeq::customWave is changed as well.
  *
@@ -262,7 +262,7 @@ class MidiSeq : public QObject  {
  */
     bool toggleMutePoint(double);
 /**
- * @brief This function copies the new values transferred from the
+ * @brief  copies the new values transferred from the
  * GrooveWidget into variables used by MidiArp::getNote.
  *
  * @param p_grooveTick Groove amount for timing displacements

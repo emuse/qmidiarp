@@ -43,7 +43,7 @@
 
 /*! @brief Drawing widget for visualization of waveforms using QPainter
  *
- * LfoScreen is created and embedded by SeqWidget. The painter callback
+ * LfoScreen is created and embedded by LfoWidget. The painter callback
  * produces a streak map of a sequence as a piano roll display. The
  * display is updated by calling LfoScreen::updateData() with the
  * Sample vector as argument followed by updateDraw().

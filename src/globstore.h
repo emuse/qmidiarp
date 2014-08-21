@@ -92,14 +92,14 @@ class GlobStore : public QWidget
 */
     void removeModule(int moduleWindowIndex);
 /*!
-* @brief This function reads all parameters of this Object from an XML stream
+* @brief reads all parameters of this Object from an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to read from
 */
     void readData(QXmlStreamReader& xml);
 /*!
-* @brief This function writes all parameters of this Object to an XML stream
+* @brief writes all parameters of this Object to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
@@ -114,34 +114,37 @@ class GlobStore : public QWidget
 
 /*!
 * @brief emitted to Engine::store()
+
+* Causes Engine to store all modules' parameters at their ParStore::list
+* at index ix
 *
-* @param moduleID moduleID in the DockWidget that should store its parameters, -1 for all
 * @param ix ParStore::list index at which all module parameters are to be stored
 */
   void store(int ix);
 /*!
-* @brief emitted to Engine::requestRestore(int)
+* @brief signel emitted to Engine::requestRestore(int)
 *
-* Causes the module with moduleID in the DockWidget to restore its
-* parameters from its ParStore::list at index ix
+* Causes Engine to restore all modules' parameters from their
+* ParStore::list at index ix when the restore condition is given
 *
-* @param moduleWidget moduleID in the DockWidget which should restore its
-* parameters. If ix = -1, all modules are called
 * @param ix ParStore::list index from which the parameters are restored
-* @param runOnce Set this to true to provoke a return to previous location after one run
 */
   void requestRestore(int ix);
 /*!
-* @brief emitted to Engine::updateGlobRestoreTimeModule(), which will make the
-* module at index windowIndex in the Engine::moduleWindowList trigger
-* store switches when its cursor reaches the end.
+* @brief signel emitted to Engine::updateGlobRestoreTimeModule()
+* 
+* Causes Engine to make the module at index windowIndex in the
+* Engine::moduleWindowList to trigger a global restore when its cursor
+* reaches the end.
 *
 * @param windowIndex Engine::moduleWindowList index of the module to become
 * switch trigger
 */
   void updateGlobRestoreTimeModule(int windowIndex);
 /*!
-* @brief emitted to Engine::removeParStores(int)
+* @brief signal emitted to Engine::removeParStores(int)
+*
+* Causes Engine to remove one ParStore::list location from all modules
 *
 * @param ix ParStore::list index to be removed from all modules
 */
@@ -157,14 +160,15 @@ class GlobStore : public QWidget
 */
     void removeLocation(int ix = -1);
 /*!
-* @brief causes all module widgets to store their current
-* parameters in a global parameter store list setup in each module widget.
+* @brief slot for the global save buttons
 *
-* @param ix Index in the module store lists
+* Adds a storage location if needed and emits store() to Engine
+*
+* @param ix Index in the ParStore::list
 */
     void storeAll(int ix);
 /*!
-* @brief emits the GlobStore::updateGlobRestoreTimeModule() signal to
+* @brief emits the updateGlobRestoreTimeModule() signal to
 * Engine::updateGlobRestoreTimeModule()
 *
 * It determines the name of the module and transfers this to Engine by
@@ -177,7 +181,7 @@ class GlobStore : public QWidget
 *
 * Updates the restoring condition type which can be 0 (restore at end of
 * module patterns) or 1 (switch after a number of beats chosen by the
-* GlobStore::switchAtBeatBox).
+* switchAtBeatBox).
 *
 * @param ix set to 0 for switching at end of modules, 1 for switching after
 * a fixed number of beats
@@ -186,7 +190,7 @@ class GlobStore : public QWidget
 /*!
 * @brief slot for the SwitchAtBeatBox ComboBox
 *
-* Updates the GlobRestore::switchAtBeat attribute.
+* Updates the switchAtBeat attribute.
 *
 * @param ix an integer number of beats after which restoring is done in
 * Engine
@@ -205,10 +209,10 @@ class GlobStore : public QWidget
 */
     void setDispState(int ix, int selected);
 /*!
-* @brief will cause a flag to be set, which causes GlobStore::updateDisplay()
-*  to call GlobStore::setDispState() at the next occasion.
+* @brief will cause a flag to be set, which causes updateDisplay()
+*  to call setDispState() at the next occasion.
 *
-* This function is used by GlobStore::handleController(), since setDispState()
+* This function is used by handleController(), since setDispState()
 * cannot be called directly from the realtime thread which sends the controller.
 *
 * @param ix Storage index of the storage button to act on
@@ -227,24 +231,21 @@ class GlobStore : public QWidget
 * @brief slot for each location's global restore button
 *
 * Sets the location index to restore from the caller widget "index" property and
-* emits the GlobStore::restore() signal to Engine.
+* emits the restore() signal to Engine.
 */
     void mapRestoreSignal();
 /*!
 * @brief slot for each location's global store button
 *
 * Sets the location index to restore from the caller widget "index" property and
-* emits the GlobStore::store() signal to Engine.
+* emits the store() signal to Engine.
 */
     void mapStoreSignal();
 /*!
-* @brief is called by the parent widget and part of the display timer event loop.
+* @brief Called by the parent widget as part of the display MTimer event loop
 
-* sets the indicator position and handles storage requests as a function of the
+* Sets the indicator position and handles storage requests as a function of the
 * GUI requests and series parameters
-*
-* @param frame Current frame position of the parent module
-* @param reverse Set to true if the parent module currently plays backward
 */
     void updateDisplay();
 };

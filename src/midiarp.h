@@ -114,7 +114,7 @@ class MidiArp : public QObject  {
     int releaseNoteCount; /*!< The number of notes currently in release stage */
 
 /**
- * @brief This function resets all attributes the pattern
+ * @brief  resets all attributes the pattern
  * accumulates during run.
  *
  * It is called when the currentIndex revolves to restart the loop with
@@ -122,7 +122,7 @@ class MidiArp : public QObject  {
 */
     void initLoop();
 /**
- * @brief This function allows forcing an integer value within the
+ * @brief  allows forcing an integer value within the
  * specified range (clip).
  *
  * @param value The value to be checked
@@ -133,7 +133,7 @@ class MidiArp : public QObject  {
  */
     int clip(int value, int min, int max, int *outOfRange);
 /**
- * @brief This function updates the current note arrays with new values
+ * @brief  updates the current note arrays with new values
  * obtained from MidiArp::getNote
  *
  * It is called by Engine::echoCallback() and calls MidiArp::getNote if the given
@@ -158,7 +158,7 @@ class MidiArp : public QObject  {
  */
     void getNote(int *tick, int note[], int velocity[], int *length);
 /**
- * @brief This function returns the number of notes present at the MIDI
+ * @brief  returns the number of notes present at the MIDI
  * input port.
  *
  * This is the number of notes currently pressed on the keyboard. Note
@@ -170,7 +170,7 @@ class MidiArp : public QObject  {
  */
     int getPressedNoteCount();
 /**
- * @brief This function returns the number of notes present at the MIDI
+ * @brief  returns the number of notes present at the MIDI
  * input port.
  *
  * This is the number of notes currently pressed on the keyboard. Note
@@ -182,7 +182,7 @@ class MidiArp : public QObject  {
  */
     void removeNote(int *noteptr, int tick, int keep_rel);
 /**
- * @brief This function removes a note inside the MidiArp::notes input
+ * @brief  removes a note inside the MidiArp::notes input
  * note buffer.
  *
  * The note  at the given index is deleted from the buffer with the
@@ -193,7 +193,7 @@ class MidiArp : public QObject  {
  */
     void deleteNoteAt(int index, int bufPtr);
 /**
- * @brief This function sets the released flag (value 1) for the note
+ * @brief  sets the released flag (value 1) for the note
  * at the given index
  *
  * This operation is done for the buffer with given bufPtr index (0 or 1).
@@ -207,7 +207,7 @@ class MidiArp : public QObject  {
  */
     void tagAsReleased(int note, int tick, int bufPtr);
 /**
- * @brief This function performs a copy within MidiArp::notes from the
+ * @brief  performs a copy within MidiArp::notes from the
  * currently active index to the inactive index
  */
     void copyNoteBuffer();
@@ -271,20 +271,20 @@ class MidiArp : public QObject  {
     void updateRandomLengthAmp(int);
     void updateAttackTime(int);
     void updateReleaseTime(int);
-/*! @brief This function sets MidiArp::isMuted, which is checked by
+/*! @brief  sets MidiArp::isMuted, which is checked by
  * Engine and which suppresses data output globally if set to True.
  *
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool);
-/*! @brief This function sets MidiArp::deferChanges, which will cause a
+/*! @brief  sets MidiArp::deferChanges, which will cause a
  * parameter changes only at pattern end.
  *
  * @param on Set to True to defer changes to pattern end
  */
     void updateDeferChanges(bool on) { deferChanges = on; }
 /**
- * @brief This function calculates the index of the next arpeggio
+ * @brief  calculates the index of the next arpeggio
  * step and revolves it if necessary.
  *
  * The next step depends on the MidiArp::repeatPatternThrough chord mode.
@@ -295,7 +295,7 @@ class MidiArp : public QObject  {
  */
     bool advancePatternIndex(bool reset);
 /**
- * @brief This function does the actions related to a newly received event.
+ * @brief  does the actions related to a newly received event.
  *
  * It is called by Engine when a new event is received on the MIDI input port.
 
@@ -305,7 +305,7 @@ class MidiArp : public QObject  {
  */
     bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
 /**
- * @brief This function represents the external interface to the
+ * @brief  represents the external interface to the
  * core of the arpeggiator engine.
  *
  * It is called by Engine when a previously scheduled echo
@@ -322,7 +322,7 @@ class MidiArp : public QObject  {
  */
     void prepareCurrentNote(int askedTick);
 /**
- * @brief This function resets the pattern index and sets the current
+ * @brief  resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.
  *
  * It is called by Engine when the transport is started, or when
@@ -333,7 +333,7 @@ class MidiArp : public QObject  {
  */
     void initArpTick(int tick);
 /**
- * @brief This function ensures continuity of the release function
+ * @brief  ensures continuity of the release function
  * when the currentTick position jumps into
  * the past.
  *
@@ -344,10 +344,10 @@ class MidiArp : public QObject  {
  */
     void foldReleaseTicks(int tick);
 /**
- * @brief This function seeds new random values for the three parameters
+ * @brief  seeds new random values for the three parameters
  * concerned, timing (tick), velocity and length.
  *
- * This function is
+ * It is
  * called by MidiArp::getNote at every new note. It uses the
  * MidiArp::randomTickAmp, MidiArp::randomVelocityAmp and
  * MidiArp::randomLengthAmp settings coming from ArpWidget.
@@ -355,7 +355,7 @@ class MidiArp : public QObject  {
  */
     void newRandomValues();
 /**
- * @brief This function copies the new values transferred from the
+ * @brief  copies the new values transferred from the
  * GrooveWidget into variables used by MidiArp::getNote.
  *
  * @param p_grooveTick Groove amount for timing displacements
@@ -374,13 +374,13 @@ class MidiArp : public QObject  {
  /*! @brief Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received
   *
-  * This function is called by ArpWidget::setLatchMode
+  *  It is called by ArpWidget::setLatchMode
   */
     void setLatchMode(bool);
  /*! @brief Calls MidiArp::removeNote for all notes in MidiArp::sustainBuffer
   * and then clears sustainBuffer.
   *
-  * This function is called by MidiArp::setSustain
+  *  It is called by MidiArp::setSustain
   * @param sustick Time in internal ticks at which the controller was received */
     void purgeSustainBuffer(int sustick);
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */

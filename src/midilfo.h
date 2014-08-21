@@ -37,7 +37,7 @@
  *
  * The parameters of MidiLfo are controlled by the LfoWidget class.
  * A pointer to MidiLfo is passed to the Engine, which calls
- * the MidiLfo::getNextFrame member as a function of the position of
+ * the MidiLfo::getNextFrame method as a function of the position of
  * the Driver's queue. MidiLfo will return an array of controller values
  * representing a frame of its internal MidiLfo::data buffer. This frame
  * has size 1 except for resolution higher than 16th notes.
@@ -64,7 +64,7 @@ class MidiLfo : public QObject  {
     bool seqFinished;   /*!< When True, all output events are muted, used when NOTE OFF is received */
     int noteCount;      /*!< The number of keys currently pressed on keyboard */
 /**
- * @brief This function allows forcing an integer value within the
+ * @brief  allows forcing an integer value within the
  * specified range (clip).
  *
  * @param value The value to be checked
@@ -74,7 +74,7 @@ class MidiLfo : public QObject  {
  * @return The value clipped within the range
  */
     int clip(int value, int min, int max, bool *outOfRange);
-/*! @brief This function recalculates the MidiLfo::customWave as a function
+/*! @brief  recalculates the MidiLfo::customWave as a function
  * of a new offset value.
  *
  * It is called by MidiLfo::updateOffset() in case a custom wave is active.
@@ -142,7 +142,7 @@ class MidiLfo : public QObject  {
     void setRecordMode(bool on);
     int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
 /*!
-* @brief This function determines the minimum of the current waveform and
+* @brief  determines the minimum of the current waveform and
 * sets the LfoWidget::offset slider accordingly.
 *
 * It also sets MidiLfo::cwmin. When a new waveform is drawn, its minimum
@@ -151,22 +151,22 @@ class MidiLfo : public QObject  {
 */
     void newCustomOffset();
 
-/*! @brief This function sets MidiLfo::isMuted, which is checked by
+/*! @brief  sets MidiLfo::isMuted, which is checked by
  * Engine and which suppresses data output globally if set to True.
  *
  * @param on Set to True to suppress data output to the Driver
  */
     void setMuted(bool on);
-/*! @brief This function sets MidiLfo::deferChanges, which will cause a
+/*! @brief  sets MidiLfo::deferChanges, which will cause a
  * parameter changes only at pattern end.
  *
  * @param on Set to True to defer changes to pattern end
  */
     void updateDeferChanges(bool on) { deferChanges = on; }
-/*! @brief This function sets the (controller) value of one point of the
+/*! @brief  sets the (controller) value of one point of the
  * MidiLfo::customWave array. It is used for handling drawing functionality.
  *
- * The member is called by LfoWidget::mouseMoved or LfoWidget::mousePressed.
+ * It is called by LfoWidget::mouseMoved or LfoWidget::mousePressed.
  * The normalized mouse coordinates are scaled to the waveform size and
  * resolution and to the controller range (0 ... 127). The function
  * interpolates potentially missing waveform points between two events
@@ -183,10 +183,10 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::toggleMutePoint(), MidiLfo::setMutePoint()
  */
     int setCustomWavePoint(double mouseX, double mouseY, bool newpt);
-/*! @brief This function sets the mute state of one point of the
+/*! @brief  sets the mute state of one point of the
  * MidiLfo::muteMask array to the given state.
  *
- * The member is called when the right mouse button is clicked on the
+ * The method is called when the right mouse button is clicked on the
  * LfoScreen.
  * If calculated waveforms are active, only the MidiLfo::muteMask is
  * changed. If a custom waveform is active, the Sample.mute status
@@ -200,7 +200,7 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::toggleMutePoint()
  */
     int setMutePoint(double mouseX, bool muted);
-/*! @brief This function recalculates the MidiLfo::customWave as a
+/*! @brief  recalculates the MidiLfo::customWave as a
  * function of the current MidiLfo::res and MidiLfo::size values.
  *
  * It is called upon every change of MidiLfo::size and MidiLfo::res. It
@@ -208,21 +208,21 @@ class MidiLfo : public QObject  {
  * lead to a bigger size data array.
  */
     void resizeAll();
-/*! @brief This function copies the current MidiLfo::data array into
+/*! @brief  copies the current MidiLfo::data array into
  * MidiLfo::customWave.
  *
  * It is called when a waveform modification by the user is attempted
  * while in calculated waveform mode. (MidiLfo::waveFormIndex 1 ... 4).
  */
     void copyToCustom();
-/*! @brief This function sets the MidiLfo::frameptr to the given value.
+/*! @brief  sets the MidiLfo::frameptr to the given value.
  *
  * It is called when the Transport starts.
  * @param idx Index to which the frameptr is set
  */
     void setFramePtr(int idx);
 /**
- * @brief This function does the actions related to a newly received event.
+ * @brief  does the actions related to a newly received event.
  *
  * It is called by Engine when a new event is received on the MIDI input port.
 
@@ -231,7 +231,7 @@ class MidiLfo : public QObject  {
  * @return True if inEv is in not the input range of the module (event is unmatched)
  */
     bool handleEvent(MidiEvent inEv, int tick);
-/*! @brief This function is the main calculator for the data contained
+/*! @brief  is the main calculator for the data contained
  * in a waveform.
  *
  * It is called upon every change of parameters in LfoWidget or upon
@@ -242,16 +242,16 @@ class MidiLfo : public QObject  {
  * @param *data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
-/*! @brief This function transfers a frame of Sample data points taken from
+/*! @brief  transfers a frame of Sample data points taken from
  * the currently active waveform MidiLfo::data.
  *
  * @param tick current tick
  */
     void getNextFrame(int tick);
-/*! @brief This function toggles the mute state of one point of the
+/*! @brief  toggles the mute state of one point of the
  * MidiLfo::muteMask array.
  *
- * The member is called when the right mouse button is clicked on the
+ * The function is called when the right mouse button is clicked on the
  * LfoScreen.
  * If calculated waveforms are active, only the MidiLfo::muteMask is
  * changed. If a custom waveform is active, the Sample.mute status
@@ -263,7 +263,7 @@ class MidiLfo : public QObject  {
  */
     bool toggleMutePoint(double mouseX);
 /**
- * @brief This function copies the new values transferred from the
+ * @brief  copies the new values transferred from the
  * GrooveWidget into variables used by MidiArp::getNote.
  *
  * @param p_grooveTick Groove amount for timing displacements
