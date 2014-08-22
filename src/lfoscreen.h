@@ -47,7 +47,7 @@
  * produces a streak map of a sequence as a piano roll display. The
  * display is updated by calling LfoScreen::updateData() with the
  * Sample vector as argument followed by updateDraw().
- * LfoScreen emits mouse events corresponding to the Qt mousePressed()
+ * LfoScreen emits mouse events combining the Qt mousePressed()
  * and mouseMoved() events. The mouse position is transferred as a
  * double from 0 ... 1.0 representing the relative mouse position on the
  * entire LfoScreen display area.

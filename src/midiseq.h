@@ -48,11 +48,12 @@
  * step sequencer as a QObject.
  *
  * The parameters of MidiSeq are controlled by the SeqWidget class.
- * A pointer to MidiSeq is passed to the SeqDriver thread, which calls
- * the MidiSeq::getNextNote member as a function of the position of
- * the Driver's queue. MidiSeq will return a note from its internal
- * MidiSeq::data buffer. The MidiSeq::data buffer is populated by the
- * MidiSeq::getData function at each modification done via
+ * The backend driver thread calls the Engine::echoCallback(), which will
+ * query each module, in this case via
+ * the MidiSeq::getNextNote() method. MidiSeq will return a note from
+ * its internal MidiSeq::data buffer as a function of the position of
+ * the driver's transport. The MidiSeq::data buffer is populated by the
+ * MidiSeq::getData() function at each modification done via
  * the SeqWidget. It is modified by drawing a sequence of notes on the
  * SeqWidget display or by recording incoming notes step by step. In all
  * cases the sequence has resolution, velocity, note length and
@@ -166,7 +167,7 @@ class MidiSeq : public QObject  {
 /*! @brief  sets the (controller) value of one point of the
  * MidiSeq::customWave array. It is used for handling drawing functionality.
  *
- * It is called by SeqWidget::mouseMoved or SeqWidget::mousePressed.
+ * It is called by mouseEvent() function.
  * The normalized mouse coordinates are scaled to the waveform size and
  * resolution and to the controller range (0 ... 127). The function
  * interpolates potentially missing waveform points between two events
@@ -192,7 +193,7 @@ class MidiSeq : public QObject  {
     void setLoopMarker(int ix);
 /*! @brief  sets the MidiSeq::loopMarker member variable
  * used as a supplemental return point within the sequence. It is called
- *  by SeqWidget::mousePressed().
+ *  by the mouseEvent() function.
  * The normalized mouse coordinates are scaled to the waveform size and
  * resolution and then MidiSeq::setLoopMarker() is called
  *
@@ -208,7 +209,7 @@ class MidiSeq : public QObject  {
  * MidiSeq::muteMask array to the given state.
  *
  * It is called when the right mouse button is clicked on the
- * SeqScreen.
+ * SeqScreen via the mouseEvent() function.
  * If calculated waveforms are active, only the MidiSeq::muteMask is
  * changed. If a custom waveform is active, the Sample.mute status
  * at the given position is changed as well.
@@ -229,6 +230,8 @@ class MidiSeq : public QObject  {
  */
     void resizeAll();
     void setRecordMode(int on);
+/*! @brief  Called by SeqWidget::mouseEvent()
+ */
     int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
     void setRecordedNote(int note);
 

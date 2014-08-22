@@ -36,12 +36,13 @@
  * for controller data as a QObject.
  *
  * The parameters of MidiLfo are controlled by the LfoWidget class.
- * A pointer to MidiLfo is passed to the Engine, which calls
- * the MidiLfo::getNextFrame method as a function of the position of
- * the Driver's queue. MidiLfo will return an array of controller values
- * representing a frame of its internal MidiLfo::data buffer. This frame
+ * The backend driver thread calls the Engine::echoCallback(), which will
+ * query each module, in this case via
+ * the MidiLfo::getNextFrame() method. MidiLfo will fill a frame from
+ * its internal MidiLfo::data buffer as a function of the position of
+ * the driver's transport. MidiLfo::frame is then accessed by Engine. It
  * has size 1 except for resolution higher than 16th notes.
- * The MidiLfo::data buffer is populated by the MidiLfo::getData function
+ * The MidiLfo::data buffer is populated by the getData() function
  * at each modification done via the LfoWidget. It can consist of
  * a classic waveform calculation or a hand-drawn waveform. In all cases
  * the waveform has resolution, offset and size attributes and single
@@ -140,6 +141,8 @@ class MidiLfo : public QObject  {
     void updateQueueTempo(int);
     void record(int value);
     void setRecordMode(bool on);
+/*! @brief  Called by LfoWidget::mouseEvent()
+ */
     int mouseEvent(double mouseX, double mouseY, int buttons, int pressed);
 /*!
 * @brief  determines the minimum of the current waveform and
@@ -166,7 +169,7 @@ class MidiLfo : public QObject  {
 /*! @brief  sets the (controller) value of one point of the
  * MidiLfo::customWave array. It is used for handling drawing functionality.
  *
- * It is called by LfoWidget::mouseMoved or LfoWidget::mousePressed.
+ * It is called by the mouseEvent() function.
  * The normalized mouse coordinates are scaled to the waveform size and
  * resolution and to the controller range (0 ... 127). The function
  * interpolates potentially missing waveform points between two events
@@ -187,7 +190,7 @@ class MidiLfo : public QObject  {
  * MidiLfo::muteMask array to the given state.
  *
  * The method is called when the right mouse button is clicked on the
- * LfoScreen.
+ * LfoScreen via the mouseEvent() function.
  * If calculated waveforms are active, only the MidiLfo::muteMask is
  * changed. If a custom waveform is active, the Sample.mute status
  * at the given position is changed as well.
@@ -242,8 +245,11 @@ class MidiLfo : public QObject  {
  * @param *data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
-/*! @brief  transfers a frame of Sample data points taken from
+/*! @brief fills the MidiLfo::frame with Sample data points taken from
  * the currently active waveform MidiLfo::data.
+ *
+ * MidiLfo::frame is then accessed by Engine::echoCallback() and sequenced
+ * to the driver backend.
  *
  * @param tick current tick
  */

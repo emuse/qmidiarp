@@ -231,7 +231,7 @@ class GlobStore : public QWidget
 * @brief slot for each location's global restore button
 *
 * Sets the location index to restore from the caller widget "index" property and
-* emits the restore() signal to Engine.
+* emits the requestRestore() signal to Engine.
 */
     void mapRestoreSignal();
 /*!
