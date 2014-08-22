@@ -57,10 +57,14 @@ class ParStore : public QWidget
     QToolButton *muteOut;
     QToolButton *deferChanges;
     Indicator *ndc;
-    QList<int> jumpToList; /**< List of jumpTo configurations for each location
-                            @see ParStore::updateRunOnce()*/
-    QList<bool> onlyPatternList; /**< List of switch configuration for each location
-                            @see ParStore::updateOnlyPattern()*/
+/*! List of jumpTo configurations for each location
+*    @see ParStore::updateRunOnce()
+*/
+    QList<int> jumpToList; 
+/*! List of switch configuration for each location
+*   @see ParStore::updateOnlyPattern()
+*/
+    QList<bool> onlyPatternList;
     QMenu *locContextMenu;
     QMenu *jumpToIndexMenu;
     QActionGroup *jumpToGroup;
@@ -106,21 +110,28 @@ class ParStore : public QWidget
         QString pattern;
     };
     TempStore temp; /**< Structure to which all module parameters are copied
-                        before being appended to the TempStore::list*/
+                        * before being appended to the TempStore::list*/
     QList<TempStore> list; /**< List of TempStore::temp structures for
                         parameter storage*/
 
-    int restoreRequest; /**< When this variable is greater than -1,
-                        ParStore::updateDisplay() will cause
-                        ParStore::restoreParams(restoreRequest) at pattern
-                        end*/
+/**< When this variable is greater than -1, ParStore::updateDisplay() will cause
+* ParStore::restoreParams(restoreRequest) at pattern end
+*/
+    int restoreRequest;
     int oldRestoreRequest; /**< Contains the last active location for jumping back*/
-    bool restoreRunOnce; /**< Signals to ParStore::updateDisplay() that only one
-                        run is done and then a restore is required */
-    bool needsGUIUpdate; /**< Signals to ParStore::updateDisplay() that the location
-                        button color has to be updated*/
-    int dispReqIx, dispReqSelected; /**< When ParStore::needsGUIUpdate is true,
-                        ParStore::updateDisplay() sets colors to these values*/
+/*!
+* Signals to ParStore::updateDisplay() that only one
+* run is done and then a restore is required.
+*/
+    bool restoreRunOnce; 
+/*! Signals to ParStore::updateDisplay() that the location
+* button color has to be updated.
+*/
+    bool needsGUIUpdate; 
+/*! When ParStore::needsGUIUpdate is true, ParStore::updateDisplay()
+* sets colors to these values
+*/
+    int dispReqIx, dispReqSelected; 
 
 /*!
 * @brief stores all module parameters to TempStore::temp and stores temp

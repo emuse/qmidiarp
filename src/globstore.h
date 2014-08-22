@@ -88,7 +88,7 @@ class GlobStore : public QWidget
 /*!
 * @brief removes the module with name name from GlobStore
 *
-* @param moduleWindow Index index in the Engine::moduleWindowList of the module to remove
+* @param moduleWindowIndex index in the Engine::moduleWindowList of the module to remove
 */
     void removeModule(int moduleWindowIndex);
 /*!
@@ -148,7 +148,7 @@ class GlobStore : public QWidget
 *
 * @param ix ParStore::list index to be removed from all modules
 */
-  void removeParStores(int);
+  void removeParStores(int ix);
 
   public slots:
 /*!

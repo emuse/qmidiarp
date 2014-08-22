@@ -89,17 +89,20 @@ class LfoWidget : public QWidget
 
 /* PUBLIC MEMBERS */
   public:
+#ifdef APPBUILD
 /*!
  * @brief Constructor for LfoWidget. It creates the GUI and an LfoScreen
  * instance.
  *
- * @param p_midiWorker Associated MidiLfo Object
+ * @param *p_midiWorker Pointer to the associated MidiLfo object
+ * @param *p_globStore Pointer to the GlobStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
+ * @param inOutVisible If set to True, the module will show its In-Out panel
+ * @param name Name string of the module
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-#ifdef APPBUILD
     LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,

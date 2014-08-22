@@ -79,6 +79,7 @@ class SeqWidget : public QWidget
 
 /* PUBLIC MEMBERS */
   public:
+#ifdef APPBUILD
 /*!
  * @brief Constructor for SeqWidget. It creates the GUI and an SeqScreen
  * instance.
@@ -89,7 +90,6 @@ class SeqWidget : public QWidget
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param parent The parent widget of this module, i.e. MainWindow
  */
-#ifdef APPBUILD
     SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,

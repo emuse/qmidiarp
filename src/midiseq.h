@@ -159,8 +159,7 @@ class MidiSeq : public QObject  {
  *
  * It is called by Engine when a new note is received on the MIDI input port.
 
- * @param note The note value of the received note
- * @param velocity The note velocity
+ * @param inEv MidiEvent to check and process or not
  * @param tick The time the note was received in internal ticks
  */
     bool handleEvent(MidiEvent inEv, int tick);
@@ -247,6 +246,8 @@ class MidiSeq : public QObject  {
  * the currently active waveform MidiLfo::data at the index frameptr.
  *
  * @param p_sample reference to a Sample structure receiving the data point
+ * @param tick the current tick at which we request a note. This tick will be
+ * used to calculate the nextTick which is quantized to the pattern
  */
     void getNextNote(Sample *p_sample, int tick);
 /*! @brief  toggles the mute state of one point of the

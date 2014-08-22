@@ -301,6 +301,8 @@ class MidiArp : public QObject  {
 
  * @param inEv MidiEvent to check and process or not
  * @param tick The time the event was received in internal ticks
+ * @param keep_rel If set to True, a NOTE_OFF event should cause the note to
+ * remain in the release buffer. It will definitely be removed if keep_rel is false
  * @return True if inEv is in not the input range of the module (event is unmatched)
  */
     bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
@@ -328,7 +330,7 @@ class MidiArp : public QObject  {
  * It is called by Engine when the transport is started, or when
  * a stakato note is received while MidiArp::restartByKbd is set.
  *
- * @param currentTick The timing in internal ticks, relative to which
+ * @param tick The timing in internal ticks, relative to which
  * the following arpeggio notes are calculated.
  */
     void initArpTick(int tick);

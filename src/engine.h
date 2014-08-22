@@ -209,7 +209,8 @@ class Engine : public QThread  {
 * with the passed name
 *
 * @param name New name attribute of the DockWidget
-* @param index The widget ID of the DockWidget to rename
+* @param windowID window ID of the DockWidget to rename
+* @param widgetID widgetID of the module to rename
 */
     void renameDock(const QString& name, int windowID, int widgetID);
 /*!

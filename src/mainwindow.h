@@ -159,8 +159,10 @@ class MainWindow : public QMainWindow
 *
 * @param name Name attribute of the created arpeggiator module
 * @param fromfile Set to True if module is added by a file read
+* @param inOutVisible Set to True if In-Out panel should be shown
 */
-    void addArp(const QString&, bool fromfile = false, bool inOutVisible = true);
+    void addArp(const QString& name, bool fromfile = false,
+                bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiLfo to Engine.
 *
@@ -173,8 +175,10 @@ class MainWindow : public QMainWindow
 * @param fromfile Set to True if module is added by a file read
 * @param clonefrom Set to the ID to clone this module from,
 * -1 for a new module (default)
+* @param inOutVisible Set to True if In-Out panel should be shown
 */
-    void addLfo(const QString&, bool fromfile = false, int clonefrom = -1, bool inOutVisible = true);
+    void addLfo(const QString& name, bool fromfile = false,
+                int clonefrom = -1, bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiSeq to Engine.
 *
@@ -183,18 +187,21 @@ class MainWindow : public QMainWindow
 * the ManageBox::name and ManageBox::ID as the current count of the
 * Engine::midiSeqList.
 *
-* @param name Name attribute of this arpeggiator module
+* @param name Name attribute of this module
 * @param fromfile Set to True if module is added by a file read
 * @param clonefrom Set to the ID to clone this module from,
 * -1 for a new module (default)
+* @param inOutVisible Set to True if In-Out panel should be shown
 */
-    void addSeq(const QString&, bool fromfile = false, int clonefrom = -1, bool inOutVisible = true);
+    void addSeq(const QString& name, bool fromfile = false,
+                int clonefrom = -1, bool inOutVisible = true);
 /*!
 * @brief  wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
 *
 * @param *moduleWidget The QWidget to be embedded
-*
+* @param name Name attribute of this module
+* @param count DockWidget list location at which the window is insertet
 */
     void appendDock(QWidget *moduleWidget, const QString& name, int count);
 /*!
@@ -339,6 +346,8 @@ class MainWindow : public QMainWindow
   public:
 /*!
 * @param p_portCount Number of registered MIDI output ports
+* @param p_alsamidi Start as ALSA MIDI client
+* @param *execName Name of the application's executable
 */
     MainWindow(int p_portCount, bool p_alsamidi, char *execName);
     ~MainWindow();
@@ -469,7 +478,7 @@ class MainWindow : public QMainWindow
 /*! @brief Slot for Engine::tempoUpdated() signal.
 *
 * This function displays a new tempo value in the tempo spin box.
-* @param tempo The new tempo to be displayed
+* @param p_tempo The new tempo to be displayed
 *
 */
     void displayTempo(double p_tempo);
