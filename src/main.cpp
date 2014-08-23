@@ -5,9 +5,37 @@
  *      construction.
  *   @mainpage A MIDI Arpeggiator, LFO and Step Sequencer
  *   @section Description
- *      This attempts to give an overview of the architecture of this
- *      software.
+ * This functional documentation attempts to give an overview of the
+ * architecture of QMidiArp.
+ * QMidiArp is an advanced MIDI arpeggiator, programmable step sequencer
+ * and LFO for Linux. It can hold any number of arpeggiator, sequencer,
+ * or LFO modules running in parallel. It has support for
+ * JACK MIDI and ALSA MIDI backends. The modules are also available as
+ * LV2 MIDI plugins. QMidiArp runs on Linux and uses the Qt toolkit.
+ * Arpeggiator modules produce
+ * sequences depending on the notes sent to their input port, which is
+ * typically connected to a keyboard or another sequencer.
+ * Step sequencer modules allow you to create simple linear, monophonic
+ * and globally transposable sequences similar to the first analog
+ * sequencers. MIDI LFO modules independently produce MIDI controller
+ * data of adjustable waveform, time resolution, amplitude and duration.
+ * A Global Storage Tool can store different setups and switch between
+ * them at a given time. It allows you to dynamically combine patterns
+ * and LFO wave forms. For each module, an input note filter is
+ * available, and the output port and channel can be set independently.
+ * QMidiArp works with an internal tick resolution of 192 ticks per beat.
+ * It can be synchronized to an incoming MIDI realtime clock or as a
+ * JACK transport client. Most of the relevant control elements are
+ * accessible via MIDI controller through a MIDI-learn infrastructure.
+ * QMidiArp also has a log tool displaying the history of incoming MIDI
+ * events in colors depending on their type. 
  *
+ *   @section AUTHORS
+ * Frank Kober 2009-2014 <BR> 
+ * Nedko Arnaudov 2011 <BR> 
+ * Guido Scholz 2009 <BR> 
+ * Matthias Nagorni 2003 <BR> 
+ * 
  *   @section LICENSE
  *
  *      Copyright 2009 - 2014 <qmidiarp-devel@lists.sourceforge.net>
