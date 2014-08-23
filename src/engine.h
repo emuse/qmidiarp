@@ -69,7 +69,7 @@ protected:
 };
 
 /*!
- * @brief Core Engine Thread. Instantiates SeqDriver and JackDriver.
+ * @brief Core Engine Class. Instantiates SeqDriver and JackDriver.
  *
  * For each module type there is a QList for each of
  * its components (for example MidiArp and ArpWidget). In parallel there is
@@ -77,11 +77,11 @@ protected:
  * Engine also instantiates the MIDI Driver backend and processes MIDI
  * events coming in and going out. It dispatches incoming events to the
  * worker modules and schedules resulting events back to the driver.
- * Controller events are dispatched to the modules as requiered by their
- * MIDI Learn MidiCCList.
+ * Controller events are dispatched to the modules as required by their
+ * MidiControl::ccList.
  *
  */
-class Engine : public QThread  {
+class Engine : public QObject  {
 
   Q_OBJECT
 

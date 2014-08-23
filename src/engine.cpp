@@ -31,7 +31,7 @@
 #include "engine.h"
 
 
-Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QThread(parent), modified(false)
+Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QObject(parent), modified(false)
 {
     ready = false;
 
