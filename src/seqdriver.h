@@ -36,19 +36,21 @@
 #include "main.h"
 #include "driverbase.h"
 
-/*! @brief ALSA sequencer backend QThread class. Also creates JackDriver
+/*! @brief ALSA sequencer backend QThread class.
  *
  * SeqDriver is created by Engine at the moment of program start. Its
  * constructor registers ALSA seq input port and the requested number of
- * output ports. It is called with a portless JackDriver instance.
+ * output ports. It is called with a portless JackDriver instance for
+ * connection to JACK Transport.
  * The SeqDriver::run() thread is the ALSA sequencer "callback" process
  * handling all incoming and outgoing sequencer events.
- * When the SeqDriver::setTransportStatus() member is called with True argument,
- * a so called "echo event" is scheduled with zero time. Echo events go back
- * to the callback process and allow output and reception of sequencer
- * events depending on the ALSA queue timing. Depending on the event types,
- * the Engine and its modules are called in series and return their
- * data to be output to the queue. After the data output, a new echo
+ * When the SeqDriver::setTransportStatus() function is called with True
+ * argument, a so called "echo event" is scheduled to ALSA with zero time.
+ * ALSA will send the echo events back
+ * to the process and call Engine::echoCallback() regularly to query for
+ * events to be scheduled. Incoming MIDI events from ALSA are transferred
+ * to the Engine::eventCallback(). Engine will use the sendMidiEvent()
+ * function to schedule events. After the event output, a new echo
  * event is requested for the next MIDI event to be output, which will
  * again call the SeqDriver::run() thread, and so on.
  * In order to provide accurate synchronization with external sources
@@ -56,7 +58,7 @@
  * SeqDriver works with snd_seq_real_time timing information when it
  * communicates with the ALSA queue. Internally, the real time information
  * is rescaled to a simpler tick-based timing, which is currently 192 tpqn
- * using the SeqDriver::deltaToTick and SeqDriver::tickToDelta functions.
+ * using the deltaToTick() and tickToDelta() functions.
  */
 class SeqDriver : public DriverBase {
 

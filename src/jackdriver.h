@@ -1,6 +1,6 @@
 /*!
  * @file jackdriver.h
- * @brief Headers for the JackDriver QObject class.
+ * @brief Headers for the JackDriver class.
  *
  * @section LICENSE
  *
@@ -42,14 +42,27 @@
 extern QString global_jack_session_uuid;
 
 /*!
- * The JackDriver class is a QObject providing access to the MIDI interface
- * of the Jack Audio Connection Kit (JACK) transport system. It provides
+ * The JackDriver class provides access from Engine to the MIDI interface
+ * of the Jack Audio Connection Kit (JACK) system. It provides
  * functions to register and initialise a jack client and to read the
  * current frame position of a transport master. It establishes input and
  * output ports if requested and implements a sequencer queue based on
- * QQueue objects.
+ * QVectors.
+ * When the JackDriver::setTransportStatus() function is called with True
+ * argument, a so called "echo event" is added to the
+ * JackDriver::echoTickQueue with zero time. The JACK process will be used
+ * to check the timing of all scheduled echoes. When the transport time
+ * matches a scheduled echo time, it will call Engine::echoCallback() to
+ * query the modules for events to be scheduled. Incoming MIDI events are
+ * transferred to the Engine::eventCallback(). Engine will call the
+ * sendMidiEvent() function to schedule events and their timing into
+ * the JackDriver::evQueue. After the
+ * event output, a new echo event is scheduled for the next MIDI event
+ * to be output, which will again call the Engine, and so on.
+ * JackDriver derives from DriverBase, which is a QThread
+ * class, but it does not implement other threads than the JACK process.
  *
- * @brief QObject class implementing a JACK MIDI and transport interface.
+ * @brief Implements a JACK MIDI and transport interface to Engine.
  */
 class JackDriver : public DriverBase
 {

@@ -28,6 +28,12 @@
 #define DRIVERBASE_H__9383DA6E_DCDB_4840_86DA_6A36E87653D2__INCLUDED
 
 #include <QThread>
+/*! @brief Base class for the JackDriver and SeqDriver backends
+ *
+ * Defines some useful functions and member variables common to both
+ * backends. DriverBase derives from QThread, only because it is a base
+ * class for SeqDriver, which implements a thread.
+ */
 
 class DriverBase : public QThread
 {

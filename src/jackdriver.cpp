@@ -1,6 +1,6 @@
 /*!
  * @file jackdriver.cpp
- * @brief Implements the JackDriver QObject class.
+ * @brief Implements the JackDriver class.
  *
  * @section LICENSE
  *
