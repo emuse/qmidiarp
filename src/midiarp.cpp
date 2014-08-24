@@ -522,6 +522,8 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 
 void MidiArp::checkOctaveAtEdge(bool reset)
 {
+    if (!octMode) return;
+    
     if (reset) {
         octOfs = 0;
         if (octMode == 2) octIncr = -1; else octIncr = 1;
