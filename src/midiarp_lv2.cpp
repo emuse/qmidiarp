@@ -150,6 +150,7 @@ void MidiArpLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         /* Speed changed, e.g. 0 (stop) to 1 (play) */
         transportSpeed = speed;
         if (transportSpeed) {
+            clearNoteBuffer();
             curFrame = transportFramesDelta;
             setNextTick(tempoChangeTick);
             newRandomValues();
