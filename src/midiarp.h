@@ -38,7 +38,7 @@
  * The parameters of MidiArp are controlled by the ArpWidget class.
  * The backend driver thread calls the Engine::echoCallback(), which will
  * query each module, in this case via
- * the MidiArp::getNextNote() method. MidiArp will then call its
+ * the MidiArp::prepareCurrentNote() method. MidiArp will then call its
  * internal MidiArp::getNote() function which produces an array of notes
  * stored in its internal output buffer. The notes in the array depend
  * on the active MidiArp::pattern, envelope, random and groove settings.
@@ -58,10 +58,9 @@ class MidiArp : public QObject  {
                                 @see MidiArp::updateNotes */
     int nextVelocity[MAXCHORD]; /*!< Holds the associated velocities to be output next
                                     @see MidiArp::updateNotes, MidiArp::nextNote */
-    int currentNoteTick, currentTick, arpTick;
-    int currentNote[MAXCHORD], currentVelocity[MAXCHORD];
-    int currentLength, nextLength;
-    bool newCurrent, newNext, chordMode;
+    int currentNoteTick, arpTick;
+    int nextLength;
+    bool chordMode;
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     int patternIndex; /*!< Holds the current position within the pattern text*/
     int grooveIndex; /*!< Holds the current position within the sequence*/
@@ -128,15 +127,6 @@ class MidiArp : public QObject  {
  */
     int clip(int value, int min, int max, int *outOfRange);
 /**
- * @brief updates the current note arrays with new values
- * obtained from MidiArp::getNote()
- *
- * It is called by prepareCurrentNote() and calls MidiArp::getNote() if
- * the given timing is ahead of the last timing information. 
- *
- */
-    void updateNotes();
-/**
  * @brief This is MidiArp's main note processor producing output notes
  * from input notes.
  *
@@ -146,7 +136,7 @@ class MidiArp : public QObject  {
  * prepareCurrentNote() and the copy is accessed by Engine::echoCallback().
  * Only in case of an arpeggio step involving chords, these arrays have
  * sizes > 1.
- * @param tick The timing of the requested arpeggio step
+ * @param tick The timing of the notes to be scheduled
  * @param note The array of notes to be filled
  * @param velocity The associated array of velocites to be filled
  * @param length The note length for this arpeggio step
@@ -228,6 +218,7 @@ class MidiArp : public QObject  {
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
     bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
     bool gotKbdTrig; /*!< Is set when a keyboard trigger is activated by a note */
+    bool hasNewNotes; /*!< True when prepareCurrentNote() was called with a tick causing new note calculation */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
@@ -250,7 +241,6 @@ class MidiArp : public QObject  {
     QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
-    int returnIsNew;
     int nextTick; /*!< Holds the next tick at which note events will be played out */
 
     bool needsGUIUpdate;
@@ -302,17 +292,16 @@ class MidiArp : public QObject  {
  */
     bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
 /**
- * @brief causes calculation of a new note set at a step and transfers it
- * to a copy arrays accessed by Engine.
+ * @brief Causes calculation of a new note set at a step and copies it
+ * to arrays accessed by Engine.
  *
  * It is called by Engine::echoCallback() when a previously scheduled echo
- * event is received from the driver. It calls updateNotes(), which
- * in turn calls MidiArp::getNote(). It copies the new
- * new data to MidiArp::returnNote, MidiArp::returnVelocity,
+ * event is received from the driver. It calls MidiArp::getNote().
+ * It copies the new data to MidiArp::returnNote, MidiArp::returnVelocity,
  * MidiArp::returnLength. Engine::echoCallback() then accesses this
  * data directly and transfers it to the driver.
  *
- * @param askedTick the timing of the note(s) to be output
+ * @param askedTick the current transport position in ticks.
  *
  */
     void prepareCurrentNote(int askedTick);

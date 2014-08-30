@@ -118,8 +118,6 @@ MidiArp::MidiArp()
     grooveIndex = 0;
     patternLen = 0;
     semitone = 0;
-    newCurrent = false;
-    newNext = false;
     currentNoteTick = 0;
     nextTick = 0;
     patternMaxIndex = 0;
@@ -134,6 +132,7 @@ MidiArp::MidiArp()
     randomLengthAmp = 0;
     grooveTick = 0;
     newGrooveTick = 0;
+    hasNewNotes = false;
     grooveVelocity = 0;
     grooveLength = 0;
     repeatPatternThroughChord = 1;
@@ -150,7 +149,7 @@ MidiArp::MidiArp()
     latchBuffer.resize(64);
     latchBufferCount = 0;
     lastLatchTick = 0;
-    trigDelayTicks = 2;
+    trigDelayTicks = 4;
 
     returnNote.resize(128);
     returnVelocity.resize(128);
@@ -601,39 +600,25 @@ void MidiArp::initLoop()
 void MidiArp::prepareCurrentNote(int askedTick)
 {
     gotKbdTrig = false;
-    currentTick = askedTick;
-    int l1 = 0;
-    updateNotes();
-    returnTick = currentNoteTick;
-    while ((l1 < MAXCHORD - 1) && (currentNote[l1] >= 0)) {
-        returnNote.replace(l1, currentNote[l1]);
-        returnVelocity.replace(l1, currentVelocity[l1]);
-        l1++;
-    }
-    returnNote.replace(l1, -1); // mark end of chord
-    returnLength = currentLength;
-    returnIsNew = newCurrent;
-    newCurrent = false;
-}
 
-void MidiArp::updateNotes()
-{
     int l1 = 0;
-
     //allow 8 ticks of tolerance for echo tick for external sync
-    if ((currentTick + 8) >= currentNoteTick) {
+    if ((askedTick + 8) >= currentNoteTick) {
         currentNoteTick = nextTick;
         getNote(&nextTick, nextNote, nextVelocity, &nextLength);
         while ((l1 < MAXCHORD - 1) && (nextNote[l1] >= 0)) {
-            currentNote[l1] = nextNote[l1];
-            currentVelocity[l1] = nextVelocity[l1];
+            returnNote.replace(l1, nextNote[l1]);
+            returnVelocity.replace(l1, nextVelocity[l1]);
             l1++;
         }
-        currentNote[l1] = -1; // mark end of chord
-        currentLength = nextLength;
-        newCurrent = true;
-        newNext = true;
+        returnLength = nextLength;
+        hasNewNotes = true;
     }
+    else hasNewNotes = false;
+    
+    returnNote.replace(l1, -1); // mark end of chord
+
+    returnTick = currentNoteTick;
 }
 
 void MidiArp::foldReleaseTicks(int tick)
@@ -652,7 +637,7 @@ void MidiArp::foldReleaseTicks(int tick)
 void MidiArp::initArpTick(int tick)
 {
     arpTick = tick;
-    currentVelocity[0] = 0;
+    returnVelocity.first() = 0;
     currentNoteTick = tick;
     nextTick  = tick;
     nextVelocity[0] = 0;

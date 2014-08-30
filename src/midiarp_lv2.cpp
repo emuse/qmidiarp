@@ -239,20 +239,19 @@ void MidiArpLV2::run ( uint32_t nframes )
             newRandomValues();
             prepareCurrentNote(curTick);
             if (!isMuted) {
-                if (!returnNote.isEmpty()) {
-                    if (returnIsNew && returnVelocity.at(0)) {
-                        int l2 = 0;
-                        while(returnNote.at(l2) >= 0) {
-                            unsigned char d[3];
-                            d[0] = 0x90 + channelOut;
-                            d[1] = returnNote.at(l2);
-                            d[2] = returnVelocity.at(l2);
-                            forgeMidiEvent(f, d, 3);
-                            evTickQueue.replace(bufPtr, curTick + returnLength);
-                            evQueue.replace(bufPtr, returnNote.at(l2));
-                            bufPtr++;
-                            l2++;
-                        }
+                if (hasNewNotes && !returnNote.isEmpty()
+                    && returnVelocity.at(0)) {
+                    int l2 = 0;
+                    while(returnNote.at(l2) >= 0) {
+                        unsigned char d[3];
+                        d[0] = 0x90 + channelOut;
+                        d[1] = returnNote.at(l2);
+                        d[2] = returnVelocity.at(l2);
+                        forgeMidiEvent(f, d, 3);
+                        evTickQueue.replace(bufPtr, curTick + returnLength);
+                        evQueue.replace(bufPtr, returnNote.at(l2));
+                        bufPtr++;
+                        l2++;
                     }
                 }
             }

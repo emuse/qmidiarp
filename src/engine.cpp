@@ -486,7 +486,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int outport;
     int frameptr;
     int percent;
-    bool isNew;
     bool restoreFlag = (restoreRequest >= 0);
     MidiEvent outEv;
 
@@ -594,17 +593,15 @@ void Engine::echoCallback(bool echo_from_trig)
                     note_tick = midiArp(l1)->returnTick;
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
-                    isNew = midiArp(l1)->returnIsNew;
                     arpWidget(l1)->screen->updateScreen(midiArp(l1)->getGrooveIndex());
-                    if (!midiArp(l1)->returnNote.isEmpty()) {
-                        if (isNew && midiArp(l1)->returnVelocity.at(0)) {
-                            l2 = 0;
-                            while(midiArp(l1)->returnNote.at(l2) >= 0) {
-                                outEv.data = midiArp(l1)->returnNote.at(l2);
-                                outEv.value = midiArp(l1)->returnVelocity.at(l2);
-                                driver->sendMidiEvent(outEv, note_tick, outport, length);
-                                l2++;
-                            }
+                    if (midiArp(l1)->hasNewNotes && !midiArp(l1)->returnNote.isEmpty()
+                        && midiArp(l1)->returnVelocity.at(0)) {
+                        l2 = 0;
+                        while(midiArp(l1)->returnNote.at(l2) >= 0) {
+                            outEv.data = midiArp(l1)->returnNote.at(l2);
+                            outEv.value = midiArp(l1)->returnVelocity.at(l2);
+                            driver->sendMidiEvent(outEv, note_tick, outport, length);
+                            l2++;
                         }
                     }
                     frameptr = midiArp(l1)->getGrooveIndex() - 1;
