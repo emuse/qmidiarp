@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="96"/>
-        <location filename="../arpwidget.cpp" line="654"/>
+        <location filename="../arpwidget.cpp" line="685"/>
         <source>Note Filter</source>
         <translation>Filtro de nota</translation>
     </message>
@@ -116,23 +116,32 @@
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="271"/>
+        <location filename="../arpwidget.cpp" line="281"/>
         <source>Static</source>
         <translation>Estático</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="271"/>
+        <location filename="../arpwidget.cpp" line="281"/>
         <source>Up</source>
         <translation>Subiendo</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="271"/>
+        <location filename="../arpwidget.cpp" line="281"/>
         <source>Down</source>
         <translation>Bajando</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="273"/>
+        <location filename="../arpwidget.cpp" line="750"/>
+        <source>Could not read the pattern presets from the 
+.qmidiarprc resource file. To create this file 
+please just run the qmidiarp main application once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Repeat mode</source>
-        <translation>Modo repetición</translation>
+        <translation type="obsolete">Modo repetición</translation>
     </message>
     <message>
         <source>No trigger</source>
@@ -159,12 +168,12 @@
         <translation type="obsolete">Modo disparador</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="280"/>
+        <location filename="../arpwidget.cpp" line="301"/>
         <source>&amp;Latch Mode</source>
         <translation>&amp;Modo bloqueo</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="316"/>
+        <location filename="../arpwidget.cpp" line="339"/>
         <source>0..9  note played on keyboard, 0 is lowest
 ( ) numbers in parenthesis are stacked to chords
   + = -  octave up/reset/down
@@ -200,79 +209,101 @@
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="271"/>
-        <location filename="../arpwidget.cpp" line="346"/>
-        <location filename="../arpwidget.cpp" line="793"/>
+        <location filename="../arpwidget.cpp" line="369"/>
+        <location filename="../arpwidget.cpp" line="838"/>
         <source>Random</source>
         <translation>Al azar</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="350"/>
+        <location filename="../arpwidget.cpp" line="273"/>
+        <source>Repeat mode - This is how notes are sequenced
+when a chord is pressed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="281"/>
+        <source>Bounce</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="283"/>
+        <source>Octave mode - The overall octave changes like this
+once all pressed notes were played through</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="293"/>
+        <source>Octave range - the range above and below the played note
+if Octave mode is not static</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../arpwidget.cpp" line="373"/>
         <source>&amp;Shift</source>
         <translation>&amp;Desfase</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="355"/>
+        <location filename="../arpwidget.cpp" line="378"/>
         <source>Vel&amp;ocity</source>
         <translation>&amp;Velocidad</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="360"/>
+        <location filename="../arpwidget.cpp" line="383"/>
         <source>&amp;Length</source>
         <translation>&amp;Longitud</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="379"/>
-        <location filename="../arpwidget.cpp" line="819"/>
+        <location filename="../arpwidget.cpp" line="402"/>
+        <location filename="../arpwidget.cpp" line="864"/>
         <source>Envelope</source>
         <translation>Envoltura</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="382"/>
+        <location filename="../arpwidget.cpp" line="405"/>
         <source>&amp;Attack (beats)</source>
         <translation>&amp;Ataque (beats)</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="386"/>
+        <location filename="../arpwidget.cpp" line="409"/>
         <source>&amp;Release (beats)</source>
         <translation>&amp;Liberación (beats)</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="650"/>
+        <location filename="../arpwidget.cpp" line="681"/>
         <source>Note Filter - ACTIVE</source>
         <translation>Filtro de notas - ACTIVO</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="719"/>
         <source>Could not read from resource file</source>
-        <translation>No se ha podido leer el archivo de recursos</translation>
+        <translation type="obsolete">No se ha podido leer el archivo de recursos</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="789"/>
+        <location filename="../arpwidget.cpp" line="834"/>
         <source>Random - ACTIVE</source>
         <translation>Aleatorización - ACTIVADA</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="815"/>
+        <location filename="../arpwidget.cpp" line="860"/>
         <source>Envelope - ACTIVE</source>
         <translation>Envoltura - ACTIVADA</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="833"/>
+        <location filename="../arpwidget.cpp" line="878"/>
         <source>%1: Store pattern</source>
         <translation>%1: Guardar patrón</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="834"/>
+        <location filename="../arpwidget.cpp" line="879"/>
         <source>New pattern</source>
         <translation>Nuevo patrón</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="834"/>
+        <location filename="../arpwidget.cpp" line="879"/>
         <source>Arp pattern</source>
         <translation>Patrón de Arp</translation>
     </message>
     <message>
-        <location filename="../arpwidget.cpp" line="870"/>
+        <location filename="../arpwidget.cpp" line="915"/>
         <source>Remove &quot;%1&quot;?</source>
         <translation>¿Borrar &quot;%1&quot;?</translation>
     </message>
