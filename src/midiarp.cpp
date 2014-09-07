@@ -185,23 +185,25 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
         return(true);
     }
+    
+    // modify buffer that is not accessed by arpeggio output
+    bufPtr = (noteBufPtr) ? 0 : 1;
 
     if (inEv.value) {
         // This is a NOTE ON event
+
         if (!getPressedNoteCount() || trigLegato) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
             // if we have been triggered, remove pending release notes
             if (trigByKbd && release_time > 0) {
                 for (int l1 = 0; l1 < noteCount; l1++) {
-                    if (notes[noteBufPtr][3][l1])
-                        removeNote(&notes[noteBufPtr][0][l1], -1, 0);
+                    if (notes[bufPtr][3][l1])
+                        removeNote(&notes[bufPtr][0][l1], -1, 0);
                         releaseNoteCount--;
                 }
             }
         }
-        // modify buffer that is not accessed by arpeggio output
-        bufPtr = (noteBufPtr) ? 0 : 1;
 
         if (!noteCount || (inEv.data > notes[bufPtr][0][noteCount - 1]))
             index = noteCount;
@@ -222,18 +224,17 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         noteCount++;
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
-        //qWarning("pressed notes %d - buffered notes %d", getPressedNoteCount(), noteCount);
 
-        if ((trigByKbd && (getPressedNoteCount() == 1)) || trigLegato) {
+        if ((trigByKbd
+                && ((noteCount - latchBufferCount - releaseNoteCount) == 1))
+                    || trigLegato) {
             initArpTick(tick + trigDelayTicks);
             gotKbdTrig = true;
-            //qWarning("got triggered");
         }
     }
     else {
         // This is a NOTE OFF event
-        // modify buffer that is not accessed by arpeggio output
-        bufPtr = (noteBufPtr) ? 0 : 1;
+
         if (!noteCount) {
             return(false);
         }
