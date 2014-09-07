@@ -103,31 +103,36 @@
         <location filename="../arpwidget.cpp" line="273"/>
         <source>Repeat mode - This is how notes are sequenced
 when a chord is pressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Režim opakování - Toto je o tom, jak jsou noty seřazeny,
+když je stisknut akord</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="281"/>
         <source>Bounce</source>
-        <translation type="unfinished"></translation>
+        <translation>Hrát tam a zpět</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="283"/>
         <source>Octave mode - The overall octave changes like this
 once all pressed notes were played through</source>
-        <translation type="unfinished"></translation>
+        <translation>Režim oktávy - Celkové změny oktávy jako tato,
+hned jak byly přehrány všechny stisknuté noty</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="293"/>
         <source>Octave range - the range above and below the played note
 if Octave mode is not static</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozsah oktávy - Rozsah nad a pod zahranou notou,
+pokud není Režim oktávy stálý</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="750"/>
         <source>Could not read the pattern presets from the 
 .qmidiarprc resource file. To create this file 
 please just run the qmidiarp main application once.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se přečíst přednastavení vzorů ze
+zdrojového souboru .qmidiarprc. K vytvoření
+tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
     <message>
         <source>No trigger</source>
