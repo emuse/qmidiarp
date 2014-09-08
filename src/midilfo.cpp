@@ -119,6 +119,9 @@ void MidiLfo::getNextFrame(int tick)
     //this function is called by engine and returns one sample
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
     //The FRAMELIMIT avoids excessive cursor updating
+
+    if (frameptr >= data.size()) return;
+    
     Sample sample;
     const int step = TPQN / res;
     const int npoints = size * res;
