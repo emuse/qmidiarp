@@ -137,7 +137,9 @@
         <source>Could not read the pattern presets from the 
 .qmidiarprc resource file. To create this file 
 please just run the qmidiarp main application once.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se han podido leer los patrones predefinidos del 
+archivo de recursos .qmidiarprc. Para crear este archivo 
+por favor simplemente ejecuta la aplicación principal qmidiarp una vez.</translation>
     </message>
     <message>
         <source>Repeat mode</source>
@@ -218,24 +220,27 @@ please just run the qmidiarp main application once.</source>
         <location filename="../arpwidget.cpp" line="273"/>
         <source>Repeat mode - This is how notes are sequenced
 when a chord is pressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de repetición - Así es como son secuenciadas las notas
+cuando se pulsa un acorde</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="281"/>
         <source>Bounce</source>
-        <translation type="unfinished"></translation>
+        <translation>Rebote</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="283"/>
         <source>Octave mode - The overall octave changes like this
 once all pressed notes were played through</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo de octava - La octava global cambia de esta forma
+cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="293"/>
         <source>Octave range - the range above and below the played note
 if Octave mode is not static</source>
-        <translation type="unfinished"></translation>
+        <translation>Rango de octavas - el rango superior e inferior a la nota tocada
+is la el modo de octava no es estático</translation>
     </message>
     <message>
         <location filename="../arpwidget.cpp" line="373"/>
