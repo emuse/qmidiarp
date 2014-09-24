@@ -1,3 +1,27 @@
+qmidiarp-0.6.1 (2014-09-24)
+
+New Features
+  o Arp: There is now an octave mode allowing for cycling up and down
+    octaves after finishing a pattern, a somewhat long missing feature
+  o Build on Qt5 is now supported via configure option: --enable-qt5
+
+Fixed Bugs
+  o MIDI 'Note Off' events are now sent as such as required by JACK MIDI
+    and LV2 specification, in which 'Note On - Velocity zero' is not
+    equivalent and not even allowed
+  o LV2
+    - On transport stop, currently active notes were not switched off
+    - Muted LFO wave points caused the offset slider to not work properly
+    - Removal of .la files did not account for DESTDIR (bug #8, thanks to
+      Karl Lindèn)
+  o MIDI Clock Sync sometimes got off the hook after several measures
+  o Better autoconf library checks
+
+Changes
+  o LV2 module Transport Mode is now set to Host Transport by default so
+    that the modules come up in stopped state
+
+  
 qmidiarp-0.6.0 (2014-01-01)
 
 New Features
