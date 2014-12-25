@@ -172,7 +172,8 @@ void MidiArp::setMuted(bool on)
 
 bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 {
-    int bufPtr, index;
+    int bufPtr = 0;
+    int index = 0;
 
     if (inEv.channel != chIn) return(true);
     if ((inEv.type == EV_CONTROLLER) && (inEv.data == CT_FOOTSW)) {
@@ -185,13 +186,10 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
         return(true);
     }
-    
-    // modify buffer that is not accessed by arpeggio output
-    bufPtr = (noteBufPtr) ? 0 : 1;
 
     if (inEv.value) {
         // This is a NOTE ON event
-
+        
         if (!getPressedNoteCount() || trigLegato) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
@@ -199,11 +197,12 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             if (trigByKbd && release_time > 0) {
                 for (int l1 = 0; l1 < noteCount; l1++) {
                     if (notes[bufPtr][3][l1])
-                        removeNote(&notes[bufPtr][0][l1], -1, 0);
-                        releaseNoteCount--;
+                        removeNote(&notes[noteBufPtr][0][l1], -1, 0);
                 }
             }
         }
+        // modify buffer that is not accessed by arpeggio output
+        bufPtr = (noteBufPtr) ? 0 : 1;
 
         if (!noteCount || (inEv.data > notes[bufPtr][0][noteCount - 1]))
             index = noteCount;
@@ -226,7 +225,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
 
         if ((trigByKbd
-                && ((noteCount - latchBufferCount - releaseNoteCount) == 1))
+                && (getPressedNoteCount() == 1))
                     || trigLegato) {
             initArpTick(tick + trigDelayTicks);
             gotKbdTrig = true;
@@ -234,6 +233,8 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     }
     else {
         // This is a NOTE OFF event
+        // modify buffer that is not accessed by arpeggio output
+        bufPtr = (noteBufPtr) ? 0 : 1;
 
         if (!noteCount) {
             return(false);
@@ -270,6 +271,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         }
         else tagAsReleased(inEv.data, tick, bufPtr);
     }
+    
     copyNoteBuffer();
     return(false);
 }
@@ -289,6 +291,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
         if (note == notes[bufPtr][0][noteCount - 1]) {
             // note is on top of buffer: only decrement noteCount
             noteCount--;
+            if (tick == -1) releaseNoteCount--;
             if ((repeatPatternThroughChord == 2) && (noteOfs)) noteOfs--;
         }
         else {
@@ -305,6 +308,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
 
             if (note == notes[bufPtr][0][index]) {
                 deleteNoteAt(index, bufPtr);
+                if (tick == -1) releaseNoteCount--;
                 for (int l2 = index; l2 < noteCount; l2++) {
                     old_attackfn[l2] = old_attackfn[l2 + 1];
                 }
@@ -478,9 +482,8 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 * vel * (1.0 + 0.005 * (double)(randomVelocity + grooveTmp))
                 * releasefn * attackfn, 0, 127, &outOfRange);
 
-        if ((notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1])) {
+        if ((release_time > 0.) && (notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1])) {
             removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
-            releaseNoteCount--;
         }
         else {
             l1++;
