@@ -191,7 +191,12 @@ void SeqScreen::paintEvent(QPaintEvent*)
                             xpos + (xscale / beatRes) - pen.width(), ypos);
         }
     }
-    ypos = int((mouseY - SEQSCR_VMARG + 3)/4) * 4 + SEQSCR_VMARG - 2;
+    
+    // Helper tickline on keyboard
+    ypos = yscale - yscale * (int)((1. - ((double)mouseY - SEQSCR_VMARG)
+            / (h - 2 * SEQSCR_VMARG)) * nOctaves * 12) / nOctaves / 12
+            + SEQSCR_VMARG - 1 - pen.width() / 2;
+
     pen.setWidth(2);
     pen.setColor(QColor(50, 160, 220));
     p.setPen(pen);
