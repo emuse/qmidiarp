@@ -126,7 +126,8 @@ class SeqWidget : public QWidget
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
     QAction* hideInOutBoxAction;
-    int dispVertical;
+    QSignalMapper *dispSignalMapper;
+    int dispVertIndex;
     int resBoxIndex;
     int sizeBoxIndex;
 

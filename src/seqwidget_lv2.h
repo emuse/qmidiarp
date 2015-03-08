@@ -73,7 +73,8 @@ class SeqWidgetLV2 : public SeqWidget
             TEMPO = 27,
             HOST_TEMPO = 28,
             HOST_POSITION = 29,
-            HOST_SPEED = 30
+            HOST_SPEED = 30,
+            DISPLAY_ZOOM = 31
     };
 
     SeqWidgetLV2(

@@ -95,7 +95,7 @@ class ParStore : public QWidget
         int notelen;
         int vel;
         int transp;
-        int dispVertical;
+        int dispVertIndex;
         /* Arp Modules */
         int indexIn0;
         int indexIn1;

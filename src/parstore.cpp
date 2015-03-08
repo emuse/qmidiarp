@@ -57,7 +57,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     temp.notelen = 0;
     temp.vel = 0;
     temp.transp = 0;
-    temp.dispVertical = 0;
+    temp.dispVertIndex = 0;
     /* Arp Modules */
     temp.indexIn0 = 0;
     temp.indexIn1 = 0;
@@ -214,7 +214,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("loopMarker", QString::number(list.at(ix).loopMarker));
             xml.writeTextElement("notelen", QString::number(list.at(ix).notelen));
             xml.writeTextElement("vel", QString::number(list.at(ix).vel));
-            xml.writeTextElement("dispVertical", QString::number(list.at(ix).dispVertical));
+            xml.writeTextElement("dispVertical", QString::number(list.at(ix).dispVertIndex));
             xml.writeTextElement("transp", QString::number(list.at(ix).transp));
             xml.writeTextElement("indexIn0", QString::number(list.at(ix).indexIn0));
             xml.writeTextElement("indexIn1", QString::number(list.at(ix).indexIn1));
@@ -303,7 +303,7 @@ void ParStore::readData(QXmlStreamReader& xml)
                 else if (xml.name() == "vel")
                     temp.vel = xml.readElementText().toInt();
                 else if (xml.name() == "dispVertical")
-                    temp.dispVertical = xml.readElementText().toInt();
+                    temp.dispVertIndex = xml.readElementText().toInt();
                 else if (xml.name() == "transp")
                     temp.transp = xml.readElementText().toInt();
                 else if (xml.name() == "notelen")

@@ -293,6 +293,32 @@ void SeqScreen::updateDraw()
     update();
 }
 
+void SeqScreen::updateDispVert(int mode)
+{
+    switch (mode) {
+        case 0:
+            nOctaves = 4;
+            baseOctave = 3;
+        break;
+        case 1:
+            nOctaves = 2;
+            baseOctave = 5;
+        break;
+        case 2:
+            nOctaves = 2;
+            baseOctave = 4;
+        break;
+        case 3:
+            nOctaves = 2;
+            baseOctave = 3;
+        break;
+        default:
+            nOctaves = 4;
+            baseOctave = 3;
+    }
+    update();
+}
+
 QSize SeqScreen::sizeHint() const
 {
     return QSize(SEQSCR_MIN_W, SEQSCR_MIN_H);

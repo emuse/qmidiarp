@@ -92,6 +92,7 @@ class SeqScreen : public QWidget
     void newGrooveValues(int tick, int vel, int length);
     void setMuted(bool on);
     void updateDraw();
+    void updateDispVert(int mode);
 };
 
 #endif

@@ -88,6 +88,7 @@ SeqWidgetLV2::SeqWidgetLV2 (
     connect(channelOut,         SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(chIn,               SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(dispSignalMapper,   SIGNAL(mapped(int)),   this, SLOT(mapParam(int)));
 
     connect(muteOutAction,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableNoteIn,       SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
@@ -177,6 +178,9 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
                     muteOutAction->setChecked((bool)fValue);
                     screen->setMuted(fValue);
                     screen->update();
+            break;
+            case DISPLAY_ZOOM:
+                    setDispVert((int)fValue);
             break;
             case MOUSEX:
             case MOUSEY:
@@ -323,6 +327,7 @@ void SeqWidgetLV2::mapParam(int value)
     else if (chIn == sender())          updateParam(CH_IN, value);
     else if (loopBox == sender())       updateParam(LOOPMODE, value);
     else if (tempoSpin == sender())     updateParam(TEMPO, value);
+    else if (dispSignalMapper == sender())     updateParam(DISPLAY_ZOOM, value);
 }
 
 void SeqWidgetLV2::updateParam(int index, float fValue) const

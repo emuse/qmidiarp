@@ -44,6 +44,7 @@ MidiSeqLV2::MidiSeqLV2 (
     tempo = 120.0f;
     internalTempo = 120.0f;
     lastMouseIndex = 0;
+    dispVertIndex = 0;
 
     transportBpm = 120.0f;
     transportFramesDelta = 0;
@@ -292,6 +293,12 @@ void MidiSeqLV2::updateParams()
     if (loopMarker != (int)*val[LOOPMARKER]) {
         changed = true;
         setLoopMarker((int)*val[LOOPMARKER]);
+    }
+    
+    if (dispVertIndex != (int)*val[DISPLAY_ZOOM]) {
+        changed = true;
+        dispVertIndex = (int)*val[DISPLAY_ZOOM];
+        updateDispVert(dispVertIndex);
     }
 
     if (mouseXCur != *val[MOUSEX] || mouseYCur != *val[MOUSEY]

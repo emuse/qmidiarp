@@ -141,6 +141,7 @@ class MidiSeq : public QObject  {
     void updateLoop(int);
     void updateTranspose(int);
     void updateQueueTempo(int);
+    void updateDispVert(int mode);
 
     void recordNote(int note);
 /*! @brief  sets MidiLfo::isMuted, which is checked by

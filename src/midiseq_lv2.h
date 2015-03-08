@@ -71,7 +71,8 @@ public:
             TEMPO = 25,
             HOST_TEMPO = 26,
             HOST_POSITION = 27,
-            HOST_SPEED = 28
+            HOST_SPEED = 28,
+            DISPLAY_ZOOM = 29
         };
 
         void connect_port(uint32_t port, void *data);
@@ -99,6 +100,7 @@ private:
         int mouseEvCur;
         int lastMouseIndex;
         int buttonsCur;
+        int dispVertIndex;
         int transpFromGui;
         int velFromGui;
         double internalTempo;

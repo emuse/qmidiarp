@@ -398,6 +398,31 @@ void MidiSeq::setLoopMarker(int ix)
     else nPoints = abs(loopMarker);
 }
 
+void MidiSeq::updateDispVert(int mode)
+{
+    switch (mode) {
+        case 0:
+            nOctaves = 4;
+            baseOctave = 3;
+        break;
+        case 1:
+            nOctaves = 2;
+            baseOctave = 5;
+        break;
+        case 2:
+            nOctaves = 2;
+            baseOctave = 4;
+        break;
+        case 3:
+            nOctaves = 2;
+            baseOctave = 3;
+        break;
+        default:
+            nOctaves = 4;
+            baseOctave = 3;
+    }
+}
+
 void MidiSeq::setRecordMode(int on)
 {
     recordMode = on;

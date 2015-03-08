@@ -278,7 +278,7 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 #endif
 
-    QSignalMapper *dispSignalMapper = new QSignalMapper(this);
+    dispSignalMapper = new QSignalMapper(this);
     QLabel *dispLabel[4];
     QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
     QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
@@ -301,7 +301,7 @@ SeqWidget::SeqWidget(
     dispBoxLayout->addStretch();
 
     dispVert[0]->setChecked(true);
-    dispVertical = 0;
+    dispVertIndex = 0;
     connect(dispSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(updateDispVert(int)));
 
@@ -412,7 +412,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
         xml.writeStartElement("display");
             xml.writeTextElement("vertical", QString::number(
-                dispVertical));
+                dispVertIndex));
         xml.writeEndElement();
 
         xml.writeStartElement("input");
@@ -853,36 +853,9 @@ void SeqWidget::setDispVert(int mode)
 
 void SeqWidget::updateDispVert(int mode)
 {
-    int noct, baseoct;
-
-    switch (mode) {
-        case 0:
-            noct = 4;
-            baseoct = 3;
-        break;
-        case 1:
-            noct = 2;
-            baseoct = 5;
-        break;
-        case 2:
-            noct = 2;
-            baseoct = 4;
-        break;
-        case 3:
-            noct = 2;
-            baseoct = 3;
-        break;
-        default:
-            noct = 4;
-            baseoct = 3;
-    }
-
-    dispVertical = mode;
-    if (midiWorker) midiWorker->nOctaves = noct;
-    if (midiWorker) midiWorker->baseOctave = baseoct;
-    screen->nOctaves = noct;
-    screen->baseOctave = baseoct;
-    screen->update();
+    dispVertIndex = mode;
+    if (midiWorker) midiWorker->updateDispVert(mode);
+    screen->updateDispVert(mode);
     modified = true;
 }
 
@@ -932,7 +905,7 @@ void SeqWidget::doStoreParams(int ix, bool empty)
     parStore->temp.notelen = notelength->value();
     parStore->temp.transp = transpose->value();
     parStore->temp.vel = velocity->value();
-    parStore->temp.dispVertical = dispVertical;
+    parStore->temp.dispVertIndex = dispVertIndex;
     parStore->temp.loopMode = loopBox->currentIndex();
     parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
     parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
@@ -964,7 +937,7 @@ void SeqWidget::doRestoreParams(int ix)
         midiWorker->notelength = sliderToTickLen(parStore->list.at(ix).notelen);
         midiWorker->transp = parStore->list.at(ix).transp;
         midiWorker->vel = parStore->list.at(ix).vel;
-        setDispVert(parStore->list.at(ix).dispVertical);
+        setDispVert(parStore->list.at(ix).dispVertIndex);
 
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
         chIn->setCurrentIndex(parStore->list.at(ix).chIn);
@@ -984,7 +957,7 @@ void SeqWidget::doRestoreParams(int ix)
 void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 {
     int tmp;
-    setDispVert(fromWidget->dispVertical);
+    setDispVert(fromWidget->dispVertIndex);
     enableNoteIn->setChecked(fromWidget->enableNoteIn->isChecked());
     enableNoteOff->setChecked(fromWidget->enableNoteOff->isChecked());
     enableVelIn->setChecked(fromWidget->enableVelIn->isChecked());

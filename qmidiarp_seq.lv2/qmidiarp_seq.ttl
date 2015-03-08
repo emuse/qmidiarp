@@ -320,4 +320,17 @@
         lv2:minimum 0 ;
         lv2:maximum 1 ;
         lv2:designation time:speed ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 31 ;
+        lv2:symbol "DISPLAY_ZOOM" ;
+        lv2:name "Display Zoom" ;
+        lv2:portProperty lv2:integer ;
+        lv2:scalePoint [ rdfs:label "F"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "U"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "M"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "L"; rdf:value 3 ] ;
+        lv2:default 0.0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
     ] .
