@@ -453,7 +453,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("velocity", QString::number(
                 midiWorker->vel));
             xml.writeTextElement("noteLength", QString::number(
-                midiWorker->notelength));
+                tickLenToSlider(midiWorker->notelength)));
             xml.writeTextElement("transp", QString::number(
                 midiWorker->transp));
         xml.writeEndElement();
