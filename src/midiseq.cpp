@@ -61,8 +61,8 @@ MidiSeq::MidiSeq()
     res = 4;
     nPoints = 16;
     maxNPoints = 16;
-    notelength = 60;
-    notelengthDefer = 60;
+    notelength = 180;
+    notelengthDefer = 180;
     portOut = 0;
     channelOut = 0;
     currentIndex = 0;
