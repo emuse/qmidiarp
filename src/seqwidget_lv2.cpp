@@ -267,11 +267,11 @@ void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
     const size_t n_elem = (a0->size - sizeof(LV2_Atom_Vector_Body)) / voi->atom.size;
     /* typecast, dereference pointer to vector */
     const int *recdata = (int*) LV2_ATOM_BODY(&voi->atom);
+    res = resBox->currentText().toInt();
+    size = sizeBox->currentText().toInt();
     for (uint l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
     }
-    res = resBox->currentText().toInt();
-    size = sizeBox->currentText().toInt();
     if (n_elem < (uint)data.count()) data.resize(res * size + 1);
     screen->updateData(data);
     screen->update();

@@ -258,12 +258,12 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
     /* typecast, dereference pointer to vector */
     const int *recdata = (int*) LV2_ATOM_BODY(&voi->atom);
     int ofs = 127;
+    res = resBox->currentText().toInt();
+    size = sizeBox->currentText().toInt();
     for (uint l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
         if ((l1 < n_elem - 1) && (recdata[l1] > -1) && (recdata[l1] < ofs)) ofs = recdata[l1];
     }
-    res = resBox->currentText().toInt();
-    size = sizeBox->currentText().toInt();
     if (n_elem < (uint)data.count()) data.resize(res * size + 1);
     if (waveFormBox->currentIndex() == 5) {
         offset->valueChangedSignalSuppressed = true;
