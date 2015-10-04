@@ -135,9 +135,6 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
 
-        res = resBox->currentText().toInt();
-        size = sizeBox->currentText().toInt();
-
         float fValue = *(float *) buffer;
 
         switch (port_index) {
@@ -273,6 +270,8 @@ void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
     for (uint l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
     }
+    res = resBox->currentText().toInt();
+    size = sizeBox->currentText().toInt();
     if (n_elem < (uint)data.count()) data.resize(res * size + 1);
     screen->updateData(data);
     screen->update();
