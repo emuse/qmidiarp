@@ -135,8 +135,6 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
 
 
         float fValue = *(float *) buffer;
-        res = resBox->currentText().toInt();
-        size = sizeBox->currentText().toInt();
 
         switch (port_index) {
             case AMPLITUDE:
@@ -264,6 +262,8 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
         receiveWavePoint(l1, recdata[l1]);
         if ((l1 < n_elem - 1) && (recdata[l1] > -1) && (recdata[l1] < ofs)) ofs = recdata[l1];
     }
+    res = resBox->currentText().toInt();
+    size = sizeBox->currentText().toInt();
     if (n_elem < (uint)data.count()) data.resize(res * size + 1);
     if (waveFormBox->currentIndex() == 5) {
         offset->valueChangedSignalSuppressed = true;
