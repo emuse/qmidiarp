@@ -1,3 +1,20 @@
+qmidiarp-0.6.2 (2015-10-??)
+
+Fixed Bugs
+  o Arp: Regression: Latch mode caused the first note playing on 
+    forever and other annoyances (Bug #12 reported by Alois Cochard)
+  o Seq: Small position error of the helper tick line relative to the
+    notes placed
+  o Seq: Note length values saved to file were not correct and had no
+    correct default (Bug #14 reported by Steve Grace)
+  o LV2 Seq and Lfo: Display was not correct when diminishing resolution
+    or length in plugin UI
+    
+Minor improvement
+  o LV2 Seq: Vertical zoom values are part of the controls and therefore
+    saved in presets as well 
+
+
 qmidiarp-0.6.1 (2014-09-24)
 
 New Features
