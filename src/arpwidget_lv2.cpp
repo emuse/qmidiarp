@@ -130,7 +130,7 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
     if (!receivedPatternOnce) sendUIisUp(true);
 
     if (format == uris->atom_eventTransfer
-      && atom->type == uris->atom_Blank) {
+      && atom->type == uris->atom_Object) {
         receivePattern(atom);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
@@ -343,7 +343,7 @@ void ArpWidgetLV2::sendPattern(const QString & p)
 
     /* prepare forge buffer and initialize atom-sequence */
     lv2_atom_forge_set_buffer(&forge, obj_buf, 256);
-    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, uris->pattern_string);
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 1, uris->pattern_string);
 
     /* forge container object of type 'pattern_string' */
     lv2_atom_forge_property_head(&forge, uris->pattern_string, 0);
@@ -368,7 +368,7 @@ void ArpWidgetLV2::sendUIisUp(bool on)
 
     if (on) state = uris->ui_up; else state=uris->ui_down;
 
-    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, state);
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 1, state);
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &frame);

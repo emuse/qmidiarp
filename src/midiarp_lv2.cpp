@@ -388,7 +388,7 @@ void MidiArpLV2::sendPattern(const QString & p)
     /* prepare forge buffer and initialize atom-sequence */
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);
-    lv2_atom_forge_blank(&forge, &frame, 1, uris->pattern_string);
+    lv2_atom_forge_object(&forge, &frame, 1, uris->pattern_string);
 
     /* forge container object of type 'pattern_string' */
     lv2_atom_forge_property_head(&forge, uris->pattern_string, 0);

@@ -421,7 +421,7 @@ void MidiSeqLV2::sendWave()
     /* forge container object of type 'hex_customwave' */
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);
-    lv2_atom_forge_blank(&forge, &frame, 1, uris->hex_customwave);
+    lv2_atom_forge_object(&forge, &frame, 1, uris->hex_customwave);
 
     /* Send customWave to UI */
     lv2_atom_forge_property_head(&forge, uris->hex_customwave, 0);

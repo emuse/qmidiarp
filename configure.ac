@@ -166,7 +166,7 @@ AM_CONDITIONAL([BUILD_LV2], [test "x$ac_lv2plugins" = "xyes"])
 AM_COND_IF([BUILD_LV2],[
 dnl check for lv2atom
 AC_CHECK_HEADER( lv2/lv2plug.in/ns/ext/atom/atom.h, lv2include_found="yes", lv2include_found="no" )
-PKG_CHECK_MODULES(LV2, lv2 >= 1.8, lv2Works="yes", lv2Works="no")
+PKG_CHECK_MODULES(LV2, lv2 >= 1.10, lv2Works="yes", lv2Works="no")
 CFLAGSsave=$CFLAGS
 CFLAGS=$LV2_CFLAGS
 AC_SUBST(LV2_CFLAGS)

@@ -128,7 +128,7 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
     if (!data.count()) sendUIisUp(true);
 
     if (format == uris->atom_eventTransfer
-      && atom->type == uris->atom_Blank) {
+      && atom->type == uris->atom_Object) {
         receiveWave(atom);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
@@ -229,7 +229,7 @@ void LfoWidgetLV2::sendUIisUp(bool on)
 
     if (on) state = uris->ui_up; else state=uris->ui_down;
 
-    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_blank(&forge, &frame, 1, state);
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 1, state);
 
     /* close-off frame */
     lv2_atom_forge_pop(&forge, &frame);
@@ -239,7 +239,7 @@ void LfoWidgetLV2::sendUIisUp(bool on)
 void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
-    if (atom->type != uris->atom_Blank) return;
+    if (atom->type != uris->atom_Object) return;
 
     /* cast the buffer to Atom Object */
     LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;
