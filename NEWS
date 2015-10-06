@@ -1,4 +1,4 @@
-qmidiarp-0.6.2 (2015-10-??)
+qmidiarp-0.6.2 (2015-10-06)
 
 Fixed Bugs
   o Arp: Regression: Latch mode caused the first note playing on 
