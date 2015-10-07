@@ -227,4 +227,18 @@ if test "x$ac_translations" = "xno" ; then
 else
     echo "Translation file generation enabled."
 fi
+
+# Modify the entries in the LV2 ttl files according to Qt version
+
+if test "x$ac_qtversion" = "xqt5"; then
+    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+fi
+if test "x$ac_qtversion" = "xqt4"; then
+    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+fi
+
 echo
