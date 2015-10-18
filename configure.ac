@@ -144,8 +144,8 @@ LIBS=$LIBLO_LIBS
 
 AC_SUBST(LIBLO_CFLAGS)
 AC_SUBST(LIBLO_LIBS)
-LIBS+=$LIBSsave
-CFLAGS+=$CFLAGSsave
+LIBS="$LIBS $LIBSsave"
+CFLAGS="$CFLAGS $CFLAGSsave"
 
 if test "$loinclude_found" = "no" -o "libloWorks" = "no"; then
   AC_MSG_NOTICE(
@@ -170,7 +170,7 @@ PKG_CHECK_MODULES(LV2, lv2 >= 1.10, lv2Works="yes", lv2Works="no")
 CFLAGSsave=$CFLAGS
 CFLAGS=$LV2_CFLAGS
 AC_SUBST(LV2_CFLAGS)
-CFLAGS+=$CFLAGSsave
+CFLAGS="$CFLAGS $CFLAGSsave"
 
 if test $lv2include_found = "no" -o $lv2Works = "no"; then
     AC_MSG_NOTICE(
@@ -194,9 +194,8 @@ AC_TYPE_SSIZE_T
 AC_STRUCT_TM
 
 # Checks for library functions.
-AC_FUNC_MALLOC
 AC_FUNC_STAT
-AC_CHECK_FUNCS([floor ftruncate getcwd memset mkdir pow rint sqrt])
+AC_CHECK_FUNCS([floor ftruncate getcwd memset malloc mkdir pow rint sqrt])
 
 
 # Checks for header files.
