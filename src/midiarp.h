@@ -72,7 +72,7 @@ class MidiArp : public QObject  {
     QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
     QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
 
-    bool sustain, latch_mode;
+    bool sustain;
     int noteIndex[MAXCHORD], chordSemitone[MAXCHORD];
     int semitone;
  /*! @brief The input note buffer array of the Arpeggiator, which has
@@ -218,6 +218,7 @@ class MidiArp : public QObject  {
     bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
     bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
     bool gotKbdTrig; /*!< Is set when a keyboard trigger is activated by a note */
+    bool latch_mode; /*!< If True hold notes released earlier than latch delay in latch buffer */
     bool hasNewNotes; /*!< True when prepareCurrentNote() was called with a tick causing new note calculation */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */

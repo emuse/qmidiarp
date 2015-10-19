@@ -322,6 +322,9 @@ void MidiArpLV2::updateParams()
     if (octMode != *val[OCTAVE_MODE]) {
         updateOctaveMode(*val[OCTAVE_MODE]);
     }
+    if (latch_mode != (bool)*val[LATCH_MODE]) {
+        setLatchMode((bool)*val[LATCH_MODE]);
+    }
     
     octRange     =   (int)*val[OCTAVE_RANGE];
 

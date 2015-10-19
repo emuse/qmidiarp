@@ -98,6 +98,7 @@ ArpWidgetLV2::ArpWidgetLV2 (
             SLOT(updatePattern(const QString&)));
 
     connect(muteOutAction,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
+    connect(latchModeAction,    SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableTrigByKbd,    SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
