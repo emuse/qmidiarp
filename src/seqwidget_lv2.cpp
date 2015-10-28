@@ -249,7 +249,8 @@ void SeqWidgetLV2::sendUIisUp(bool on)
 void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
-    if (atom->type != uris->atom_Object) return;
+    if ( (atom->type != uris->atom_Blank) 
+            && (atom->type != uris->atom_Object)) return;
 
     /* cast the buffer to Atom Object */
     LV2_Atom_Object* obj = (LV2_Atom_Object*)atom;

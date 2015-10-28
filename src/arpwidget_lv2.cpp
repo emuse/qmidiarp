@@ -379,7 +379,8 @@ void ArpWidgetLV2::sendUIisUp(bool on)
 void ArpWidgetLV2::receivePattern(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
-    if (atom->type != uris->atom_Blank) return;
+    if ( (atom->type != uris->atom_Blank) 
+            && (atom->type != uris->atom_Object)) return;
 
     receivedPatternOnce = true;
 
