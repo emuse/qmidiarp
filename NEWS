@@ -1,3 +1,17 @@
+qmidiarp-0.6.3 (2015-11-01)
+
+Fixed Bugs
+  o LV2 Arp: Regression: Display updates no longer worked when changing
+    arp patterns
+  o Configure script caused trouble on certain build systems (bug #15
+    raised by the Mageia team)
+  o LV2: Qt5 UIs did not have the correct UI type entry in ttl files
+  
+Improvements
+  o LV2 Arp: Factory pattern presets are now accessible as LV2 presets
+  o LV2 Arp: Latch mode now also available in LV2 plugin
+
+
 qmidiarp-0.6.2 (2015-10-06)
 
 Fixed Bugs
