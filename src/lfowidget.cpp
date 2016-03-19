@@ -789,7 +789,7 @@ void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, int presse
     if (!midiWorker) emit mouseSig(mouseX, mouseY, buttons, pressed);
     else midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
 
-    if (waveFormBox->currentIndex() != 5) {
+    if ((buttons == 1) && (waveFormBox->currentIndex() != 5)) {
         waveFormBox->setCurrentIndex(5);
         updateWaveForm(5);
     }
