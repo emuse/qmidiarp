@@ -93,7 +93,8 @@ ArpWidgetLV2::ArpWidgetLV2 (
     connect(patternPresetBox,   SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(repeatPatternThroughChord, SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(octaveModeBox,      SIGNAL(activated(int)), this, SLOT(mapParam(int)));
-    connect(octaveRangeBox,      SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(octaveLowBox,       SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(octaveHighBox,      SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(patternText,        SIGNAL(textChanged(const QString&)), this,
             SLOT(updatePattern(const QString&)));
 
@@ -180,10 +181,11 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
             case OCTAVE_MODE:
                     octaveModeBox->setCurrentIndex(fValue);
             break;
-            case OCTAVE_RANGE:
-                    octaveRangeBox->setCurrentIndex((int)fValue - 1);
+            case OCTAVE_LOW:
+                    octaveLowBox->setCurrentIndex(-(int)fValue);
             break;
-            case MOUSEPRESSED:
+            case OCTAVE_HIGH:
+                    octaveHighBox->setCurrentIndex((int)fValue);
             break;
             case INDEX_IN1:
                     indexIn[0]->setValue(fValue);
@@ -431,7 +433,8 @@ void ArpWidgetLV2::mapParam(int value)
     else if (rangeIn[1] == sender())        updateParam(RANGE_IN2, value);
     else if (repeatPatternThroughChord == sender()) updateParam(REPEAT_MODE, value);
     else if (octaveModeBox == sender())     updateParam(OCTAVE_MODE, value);
-    else if (octaveRangeBox == sender())    updateParam(OCTAVE_RANGE, value + 1);
+    else if (octaveLowBox == sender())      updateParam(OCTAVE_LOW, -value);
+    else if (octaveHighBox == sender())     updateParam(OCTAVE_HIGH, value);
     else if (tempoSpin == sender())         updateParam(TEMPO, value);
 }
 

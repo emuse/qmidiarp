@@ -236,7 +236,8 @@ class MidiArp : public QObject  {
     int nPoints;        /*!< Number of steps to be played out */
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int octMode;        /*!< The octave Mode 0=up, 1=down, 2=pingpong. @see repeatPatternThroughChord */
-    int octRange;        /*!< The maximum range of octaves. @see repeatPatternThroughChord */
+    int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */
+    int octHigh;        /*!< The higher octave limit. @see repeatPatternThroughChord */
 
     QVector<int> returnNote; /*!< Holds the notes of the currently active arpeggio step */
     QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */

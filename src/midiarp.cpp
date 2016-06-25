@@ -105,7 +105,8 @@ MidiArp::MidiArp()
     minOctave = 0;
     
     octMode = 0;
-    octRange = 1;
+    octLow = 0;
+    octHigh = 0;
     octOfs = 0;
     octIncr = 0;
 
@@ -526,28 +527,41 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 void MidiArp::checkOctaveAtEdge(bool reset)
 {
     if (!octMode) return;
-    
-    if (reset) {
+    if (!octHigh && !octLow) {
         octOfs = 0;
-        if (octMode == 2) octIncr = -1; else octIncr = 1;
         return;
     }
-    if (octOfs > octRange) {
+    
+    if (reset) {
+        octOfs = octLow;
+        if (octMode == 2) {
+            octOfs = octHigh;
+            octIncr = -1;
+        }
+        else {
+            octOfs = octLow;
+            octIncr = 1;
+        }
+        return;
+    }
+    if (octOfs > octHigh) {
         if (octMode == 3){
             octIncr = - octIncr;
             octOfs--;
+            octOfs--;
         }
         else {
-            octOfs = -octRange;
+            octOfs = octLow;
         }
     }
-    if (octOfs < -octRange) {
+    if (octOfs < octLow) {
         if (octMode == 3) {
             octIncr = - octIncr;
             octOfs++;
+            octOfs++;
         }
         else {
-            octOfs = octRange;
+            octOfs = octHigh;
         }
     }
 }

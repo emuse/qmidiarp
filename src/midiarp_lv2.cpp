@@ -326,7 +326,8 @@ void MidiArpLV2::updateParams()
         setLatchMode((bool)*val[LATCH_MODE]);
     }
     
-    octRange     =   (int)*val[OCTAVE_RANGE];
+    octLow     =   (int)*val[OCTAVE_LOW];
+    octHigh     =   (int)*val[OCTAVE_HIGH];
 
 
     if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);

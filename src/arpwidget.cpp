@@ -286,15 +286,23 @@ ArpWidget::ArpWidget(
             SLOT(updateOctaveMode(int)));
     octaveModeBox->setCurrentIndex(0);
 
-    octaveRangeBox = new QComboBox(patternBox);
+    octaveLowBox = new QComboBox(patternBox);
     repeatPatternNames.clear();
-    repeatPatternNames << "1" << "2" << "3";
-    octaveRangeBox->insertItems(0, repeatPatternNames);
-    octaveRangeBox->setToolTip(tr("Octave range - the range above and below the played note\n"
-                            "if Octave mode is not static"));
-    connect(octaveRangeBox, SIGNAL(currentIndexChanged(int)), this,
-            SLOT(updateOctaveRange(int)));
-    octaveRangeBox->setCurrentIndex(0);
+    repeatPatternNames << "0" << "-1" << "-2" << "-3";
+    octaveLowBox->insertItems(0, repeatPatternNames);
+    octaveLowBox->setToolTip(tr("Low octave limit"));
+    connect(octaveLowBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(updateOctaveLow(int)));
+    octaveLowBox->setCurrentIndex(0);
+
+    octaveHighBox = new QComboBox(patternBox);
+    repeatPatternNames.clear();
+    repeatPatternNames << "0" << "1" << "2" << "3";
+    octaveHighBox->insertItems(0, repeatPatternNames);
+    octaveHighBox->setToolTip(tr("High octave limit"));
+    connect(octaveHighBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(updateOctaveHigh(int)));
+    octaveHighBox->setCurrentIndex(0);
 
     latchModeButton = new QToolButton(this);
     latchModeAction = new QAction(QPixmap(latchmodeon_xpm),
@@ -327,7 +335,8 @@ ArpWidget::ArpWidget(
     modeLayout->addWidget(deferChangesButton);
     modeLayout->addWidget(repeatPatternThroughChord);
     modeLayout->addWidget(octaveModeBox);
-    modeLayout->addWidget(octaveRangeBox);
+    modeLayout->addWidget(octaveLowBox);
+    modeLayout->addWidget(octaveHighBox);
     modeLayout->addWidget(latchModeButton);
     modeLayout->addStretch(2);
 
@@ -471,8 +480,10 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->repeatPatternThroughChord));
             xml.writeTextElement("octaveMode", QString::number(
                 midiWorker->octMode));
-            xml.writeTextElement("octaveRange", QString::number(
-                midiWorker->octRange));
+            xml.writeTextElement("octaveLow", QString::number(
+                midiWorker->octLow));
+            xml.writeTextElement("octaveHigh", QString::number(
+                midiWorker->octHigh));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));
         xml.writeEndElement();
@@ -550,8 +561,10 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
                 else if (xml.name() == "octaveMode")
                     octaveModeBox->setCurrentIndex(xml.readElementText().toInt());
-                else if (xml.name() == "octaveRange")
-                    octaveRangeBox->setCurrentIndex(xml.readElementText().toInt() - 1);
+                else if (xml.name() == "octaveLow")
+                    octaveLowBox->setCurrentIndex(-xml.readElementText().toInt());
+                else if (xml.name() == "octaveHigh")
+                    octaveHighBox->setCurrentIndex(xml.readElementText().toInt());
                 else if (xml.name() == "latchMode")
                     latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -781,9 +794,15 @@ void ArpWidget::updateOctaveMode(int val)
     modified = true;
 }
 
-void ArpWidget::updateOctaveRange(int val)
+void ArpWidget::updateOctaveLow(int val)
 {
-    if (midiWorker) midiWorker->octRange = val + 1;
+    if (midiWorker) midiWorker->octLow = -val;
+    modified = true;
+}
+
+void ArpWidget::updateOctaveHigh(int val)
+{
+    if (midiWorker) midiWorker->octHigh = val;
     modified = true;
 }
 
