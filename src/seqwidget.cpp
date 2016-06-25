@@ -141,6 +141,10 @@ SeqWidget::SeqWidget(
     for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+            
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
+#endif
 
     QGridLayout *portBoxLayout = new QGridLayout;
 
@@ -1092,6 +1096,11 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         sval = min + ((double)value * (max - min) / 127);
                         midiWorker->updateTranspose(sval - 24);
                 break;
+                
+                case 9:
+                        sval = min + ((double)value * (max - min) / 127);
+                        if (sval < 16) midiWorker->channelOut = sval;
+                break;
 
                 default:
                 break;
@@ -1134,7 +1143,7 @@ void SeqWidget::updateDisplay()
     sizeBox->setCurrentIndex(sizeBoxIndex);
     updateSize(sizeBoxIndex);
     loopBox->setCurrentIndex(midiWorker->curLoopMode);
-
+    channelOut->setCurrentIndex(midiWorker->channelOut);
     needsGUIUpdate = false;
     midiWorker->needsGUIUpdate = false;
 }
