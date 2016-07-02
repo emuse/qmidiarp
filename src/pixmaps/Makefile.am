@@ -8,6 +8,6 @@ pixmaps = \
 	lfowcustm.xpm lfowsawdn.xpm lfowsawup.xpm lfowsine.xpm lfowtri.xpm\
 	lfowsquare.xpm settings.xpm groovetog.xpm eventlog.xpm \
 	filenew.xpm filesave.xpm filesaveas.xpm fileopen.xpm filequit.xpm \
-	iopanelshow.xpm iopanelhide.xpm midicontrol.xpm
+	iopanelshow.xpm iopanelhide.xpm midicontrol.xpm lfowflip.xpm
 
 EXTRA_DIST = $(pixmaps)

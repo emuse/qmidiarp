@@ -98,6 +98,8 @@ LfoWidgetLV2::LfoWidgetLV2 (
     connect(recordAction,       SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
 
+    connect(flipWaveVerticalAction, SIGNAL(triggered()), this, SLOT(sendFlipWaveVertical()));
+    
     connect(this, SIGNAL(mouseSig(double, double, int, int))
             , this, SLOT(mapMouse(double, double, int, int)));
 
@@ -113,6 +115,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
     mouseXCur = 0.0;
     mouseYCur = 0.0;
     sendUIisUp(true);
+    copiedToCustomFlag = false;
 }
 
 LfoWidgetLV2::~LfoWidgetLV2()
@@ -165,6 +168,9 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
             break;
             case WAVEFORM:
                     waveFormBox->setCurrentIndex(fValue);
+                    updateWaveForm(fValue);
+                    screen->updateData(data);
+                    screen->update();
             break;
             case LOOPMODE:
                     loopBox->setCurrentIndex(fValue);
@@ -236,6 +242,28 @@ void LfoWidgetLV2::sendUIisUp(bool on)
     writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
 
+void LfoWidgetLV2::sendFlipWaveVertical()
+{
+    const QMidiArpURIs* uris = &m_uris;
+    uint8_t obj_buf[64];
+    int state;
+
+    LV2_Atom_Forge_Frame frame;
+    lv2_atom_forge_frame_time(&forge, 0);
+
+    /* prepare forge buffer and initialize atom-sequence */
+    lv2_atom_forge_set_buffer(&forge, obj_buf, 16);
+
+    state = uris->flip_wave;
+
+    LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&forge, &frame, 1, state);
+
+    /* close-off frame */
+    lv2_atom_forge_pop(&forge, &frame);
+    writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);        
+    if (waveFormBox->currentIndex() != 5) copiedToCustomFlag = true;
+}
+
 void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
 {
     QMidiArpURIs* const uris = &m_uris;
@@ -271,6 +299,13 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
         offset->setValue(ofs);
         offset->valueChangedSignalSuppressed = false;
     }
+    if (copiedToCustomFlag) {
+        waveFormBox->setCurrentIndex(5);
+        updateWaveForm(5);
+        updateParam(WAVEFORM, 5);
+        copiedToCustomFlag = false;
+    }
+
     screen->updateData(data);
     screen->update();
 }

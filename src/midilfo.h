@@ -218,6 +218,11 @@ class MidiLfo : public QObject  {
  * while in calculated waveform mode. (MidiLfo::waveFormIndex 1 ... 4).
  */
     void copyToCustom();
+/*! @brief  flips the MidiLfo::customWave array about its middle value
+ *
+ * It is called by LfoWidget when the vertical flip button is pressed.
+ */
+    void flipWaveVertical();
 /*! @brief  sets the MidiLfo::frameptr to the given value.
  *
  * It is called when the Transport starts.

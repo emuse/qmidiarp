@@ -490,6 +490,34 @@ void MidiLfo::newCustomOffset()
     cwmin = min;
 }
 
+void MidiLfo::flipWaveVertical()
+{
+    Sample sample;
+    int min = 127;
+    int max = 0;
+    int value, mid, l1;
+    const int npoints = res * size;
+    
+    if (waveFormIndex < 5) {
+        copyToCustom();
+    }
+    
+    for (l1 = 0; l1 < npoints; l1++) {
+        value = customWave.at(l1).value;
+        if (value < min) min = value;
+        if (value > max) max = value;
+    }
+
+    mid = min + (max - min) / 2;
+
+    for (l1 = 0; l1 < npoints; l1++) {
+        sample = customWave.at(l1);
+        sample.value = mid + mid - sample.value;
+        customWave.replace(l1, sample);
+    }
+    cwmin = mid + mid - max;
+}
+
 void MidiLfo::updateCustomWaveOffset(int cwoffs)
 {
     Sample sample;

@@ -137,6 +137,7 @@ class LfoWidget : public QWidget
     QAction* hideInOutBoxAction;
     QAction *muteOutAction;
     QAction *deferChangesAction;
+    QAction *flipWaveVerticalAction;
     QToolButton *muteOut;
     QComboBox *waveFormBox, *freqBox;
 
@@ -349,6 +350,16 @@ class LfoWidget : public QWidget
 *
 */
     void copyToCustom();
+
+/*!
+* @brief Slot for the LfoWidget::flipWaveVerticalAction().
+*
+* If waveform is custom it calls the midi worker
+* MidiLfo::flipWaveVertical() function, which flips the MidiLfo::customWave
+* about its mid value.
+*
+*/
+    void updateFlipWaveVertical();
 
 /*!
 * @brief Slot for the LfoWidget::channelOut spinbox setting the output

@@ -193,6 +193,13 @@ void MidiLfoLV2::run ( uint32_t nframes )
                     /* UI was closed */
                     ui_up = false;
                 }
+                else if (obj->body.otype == uris->flip_wave) {
+                    /* LFO wave was vertically flipped */
+                    flipWaveVertical();
+                    getData(&data);
+                    updateWaveForm(5);
+                    dataChanged = true;
+                }
             }
             // MIDI Input
             else if (event && event->body.type == MidiEventID) {
@@ -324,7 +331,10 @@ void MidiLfoLV2::updateParams()
         setRecordMode((bool)*val[RECORD]);
     }
     if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);
-    if (isMuted != (bool)*val[MUTE] && !parChangesPending) setMuted((bool)(*val[MUTE]));
+    if (isMuted != (bool)*val[MUTE] && !parChangesPending) {
+        setMuted((bool)(*val[MUTE]));
+        changed = true;
+    }
 
     ccnumber =       (int)*val[CC_OUT];
     ccnumberIn =     (int)*val[CC_IN];

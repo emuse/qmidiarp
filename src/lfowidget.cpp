@@ -36,6 +36,7 @@
 #include "pixmaps/lfowtri.xpm"
 #include "pixmaps/lfowsquare.xpm"
 #include "pixmaps/lfowcustm.xpm"
+#include "pixmaps/lfowflip.xpm"
 #include "pixmaps/seqrecord.xpm"
 #include "config.h"
 
@@ -317,6 +318,14 @@ LfoWidget::LfoWidget(
     deferChangesButton->setDefaultAction(deferChangesAction);
     deferChangesButton->setFixedSize(20, 20);
 
+    flipWaveVerticalAction = new QAction(QPixmap(lfowflip_xpm),tr("&Flip"), this);
+    flipWaveVerticalAction->setToolTip(tr("Do a vertical flip of the wave about its mid value"));
+    connect(flipWaveVerticalAction, SIGNAL(triggered(bool)), this, SLOT(updateFlipWaveVertical()));
+
+    QToolButton *flipWaveVerticalButton = new QToolButton(this);
+    flipWaveVerticalButton->setDefaultAction(flipWaveVerticalAction);
+    flipWaveVerticalButton->setFixedSize(20, 20);
+
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
     recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), waveBox);
     recordAction->setToolTip(tr("Record incoming controller"));
@@ -366,7 +375,8 @@ LfoWidget::LfoWidget(
     paramBoxLayout->addWidget(resBox, 0, 5);
     paramBoxLayout->addWidget(sizeBoxLabel, 1, 4);
     paramBoxLayout->addWidget(sizeBox, 1, 5);
-    paramBoxLayout->setColumnStretch(6, 6);
+    paramBoxLayout->addWidget(flipWaveVerticalButton, 0, 6);
+    paramBoxLayout->setColumnStretch(7, 7);
 
     if (compactStyle) {
         paramBoxLayout->setSpacing(1);
@@ -781,6 +791,17 @@ void LfoWidget::copyToCustom()
     if (midiWorker) midiWorker->copyToCustom();
     waveFormBox->setCurrentIndex(5);
     updateWaveForm(5);
+    modified = true;
+}
+
+void LfoWidget::updateFlipWaveVertical()
+{
+    if (midiWorker) {
+        if (waveFormBox->currentIndex() != 5) copyToCustom();
+        midiWorker->flipWaveVertical();
+        midiWorker->getData(&data);
+        screen->updateData(data);
+    }
     modified = true;
 }
 

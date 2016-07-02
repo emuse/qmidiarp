@@ -91,6 +91,7 @@ class LfoWidgetLV2 : public LfoWidget
     void mapMouse(double mouseX, double mouseY, int buttons, int pressed);
     void receiveWave(LV2_Atom* atom);
     void receiveWavePoint(int index, int value);
+    void sendFlipWaveVertical();
 
   protected:
     void updateParam(int index, float fValue) const;
@@ -107,6 +108,7 @@ class LfoWidgetLV2 : public LfoWidget
 
     int res, size;
     double mouseXCur, mouseYCur;
+    bool copiedToCustomFlag;
 };
 
 #endif
