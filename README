@@ -38,12 +38,20 @@ does the trick. Please refer to the INSTALL file for more information.
 
 Git check-out
 -------------
-If you start with a fresh Git checkout, please first apply
+If you start with a fresh Git checkout, please first make sure you have
+the following packages installed: 
+
+autoconf
+automake
+libtool
+
+If this is the case, run
 
   autoreconf -i
 
-to get a proper configure script. For more instructions about compiling
-and installing this application please refer to the INSTALL file.
+in the top of the source tree to get a proper configure script. For more 
+instructions about compiling and installing this application please 
+refer to the INSTALL file.
 
 
 Doxygen documentation
