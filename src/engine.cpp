@@ -604,16 +604,16 @@ void Engine::echoCallback(bool echo_from_trig)
                             l2++;
                         }
                     }
-                    frameptr = midiArp(l1)->getGrooveIndex() - 1;
+                    frameptr = midiArp(l1)->getGrooveIndex();
                     if (midiArp(l1)->nPoints)
-                        percent = frameptr * 100 / (midiArp(l1)->nPoints);
+                        percent = (frameptr - 1) * 100 / (midiArp(l1)->nPoints);
                     else
                         percent = 0;
                     arpWidget(l1)->parStore->ndc->updatePercent(percent);
                     if ((restoreModType == 'A') && (l1 == restoreModIx)
                             && (!globStoreWidget->timeModeBox->currentIndex())) {
                         globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && restoreFlag) {
+                        if ((!frameptr || (frameptr == midiArp(l1)->nPoints)) && restoreFlag) {
                             restoreTick = note_tick;
                             restoreFlag = false;
                         }
