@@ -46,6 +46,7 @@
 #include "parstore.h"
 #endif
 
+#include "main.h"
 #include "midiarp.h"
 #include "inoutbox.h"
 #include "slider.h"
@@ -162,7 +163,6 @@ class ArpWidget :  public InOutBox
 *
 */
     void setModified(bool);
-    void skipXmlElement(QXmlStreamReader& xml);
 /*!
 * @brief stores some module parameters in a parameter
 * list object

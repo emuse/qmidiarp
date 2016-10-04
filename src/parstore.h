@@ -183,7 +183,6 @@ class ParStore : public QWidget
 * @param reverse Set to true if the parent module currently plays backward
 */
     void updateDisplay(int frame, bool reverse);
-    void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
 /*!

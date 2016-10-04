@@ -179,7 +179,6 @@ class LfoWidget : public InOutBox
 *
 */
     void setModified(bool);
-    void skipXmlElement(QXmlStreamReader& xml);
 /*!
 * @brief stores some module parameters in a parameter
 * list object

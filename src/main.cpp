@@ -83,6 +83,23 @@ static struct option options[] = {
 
 QString global_jack_session_uuid = "";
 
+void skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     int getopt_return;

@@ -108,7 +108,6 @@ class GlobStore : public QWidget
     void handleController(int ccnumber, int channel, int value);
     bool isModified() { return modified;};
     void setModified(bool on) { modified = on; };
-    void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
 
