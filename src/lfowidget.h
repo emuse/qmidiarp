@@ -44,6 +44,7 @@
 #endif
 
 #include "midilfo.h"
+#include "inoutbox.h"
 #include "cursor.h"
 #include "slider.h"
 #include "lfoscreen.h"
@@ -59,7 +60,7 @@
  *
  *
 */
-class LfoWidget : public QWidget
+class LfoWidget : public InOutBox
 {
     Q_OBJECT
 
@@ -104,16 +105,14 @@ class LfoWidget : public QWidget
     LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
-            const QString& name = "", QWidget* parent=0);
+            const QString& name = "");
 
     ParStore *parStore;
     MidiControl *midiControl;
-    ManageBox *manageBox;
 #else
     LfoWidget(
             bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
-            QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true);
 #endif
 
     ~LfoWidget();
@@ -121,17 +120,8 @@ class LfoWidget : public QWidget
     Cursor *cursor;
     QVector<Sample> data;
     QStringList waveForms;
-    QComboBox *chIn;
-    QSpinBox  *ccnumberInBox;
-    QSpinBox  *ccnumberBox;
-    QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox;
     QComboBox *loopBox;
-    QWidget *inOutBox;
-    QCheckBox *enableNoteOff;
-    QCheckBox *enableRestartByKbd;
-    QCheckBox *enableTrigByKbd;
-    QCheckBox *enableTrigLegato;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
     QAction* hideInOutBoxAction;
@@ -141,27 +131,12 @@ class LfoWidget : public QWidget
     QToolButton *muteOut;
     QComboBox *waveFormBox, *freqBox;
 
-    void setChIn(int value);
     QVector<Sample> getCustomWave();
     int resBoxIndex;
     int sizeBoxIndex;
     int freqBoxIndex;
     int waveFormBoxIndex;
 
-/*!
-* @brief Setter for the LfoWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void setChannelOut(int value);
-/*!
-* @brief Setter for the LfoWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
 
 #ifdef APPBUILD
 /*!

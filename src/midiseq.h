@@ -94,6 +94,8 @@ class MidiSeq : public QObject  {
 
   public:
     int chIn;           /**< Channel of input events */
+    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by ArpWidget */
+    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by ArpWidget */
     bool enableNoteIn;
     bool enableNoteOff;
     bool enableVelIn;

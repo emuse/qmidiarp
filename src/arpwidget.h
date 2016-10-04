@@ -47,6 +47,7 @@
 #endif
 
 #include "midiarp.h"
+#include "inoutbox.h"
 #include "slider.h"
 #include "arpscreen.h"
 
@@ -59,7 +60,7 @@
  * and interacts with it.
 class ArpWidget : public QWidget
 */
-class ArpWidget : public QWidget
+class ArpWidget :  public InOutBox
 {
   Q_OBJECT
 
@@ -67,12 +68,10 @@ class ArpWidget : public QWidget
 #ifdef APPBUILD
     GlobStore *globStore;
 #endif
-
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     bool needsGUIUpdate;
 
-    QLabel *rangeInLabel, *indexInLabel;
-    QGroupBox *inputFilterBox, *randomBox, *envelopeBox;
+    QGroupBox *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
     QToolButton *latchModeButton;
     QAction *textEditAction, *textStoreAction, *textRemoveAction;
@@ -81,7 +80,6 @@ class ArpWidget : public QWidget
     void loadPatternPresets();
 /* PUBLIC MEMBERS */
   public:
-#ifdef APPBUILD
 /*!
  * @brief Constructor for ArpWidget. It creates the GUI and an ArpScreen
  * instance.
@@ -95,67 +93,40 @@ class ArpWidget : public QWidget
  * @param name Name string of the module
  * @param parent The parent widget of this module, i.e. MainWindow
  */
+#ifdef APPBUILD
     ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
-            const QString& name = "", QWidget* parent=0);
+            const QString& name = "");
 
     ParStore *parStore;
     MidiControl *midiControl;
-    ManageBox *manageBox;
 #else
     ArpWidget(
             bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
-            QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true);
 #endif
     ~ArpWidget();
 
     ArpScreen *screen;
 
-    QComboBox *chIn;                        // Channel of input events
-    QComboBox *channelOut, *portOut;        // Output channel / port (ALSA Sequencer)
     QComboBox *repeatPatternThroughChord;
     QComboBox *patternPresetBox;
     QComboBox *octaveModeBox;
     QComboBox *octaveLowBox;
     QComboBox *octaveHighBox;
-    QWidget *inOutBox;
-    QSpinBox *indexIn[2];                  // Index input
-    QSpinBox *rangeIn[2];                  // Parameter that is mapped, [0] low, [1] high boundary
     Slider *randomVelocity, *randomTick, *randomLength;
     Slider *attackTime, *releaseTime;
     QLineEdit *patternText;
 
     QStringList patternPresets, patternNames;
     QAction *muteOutAction;
+    QAction* hideInOutBoxAction;
     QAction *deferChangesAction;
     QToolButton *muteOut;
-    QAction* hideInOutBoxAction;
     QAction *latchModeAction;
-    QCheckBox *enableRestartByKbd;
-    QCheckBox *enableTrigByKbd;
-    QCheckBox *enableTrigLegato;
 
-    void setChIn(int value);
-    void setIndexIn(int index, int value);
-    void setRangeIn(int index, int value);
 
-/*!
-* @brief Setter for the ArpWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-
-    void setChannelOut(int value);
-/*!
-* @brief Setter for the ArpWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
 
 #ifdef APPBUILD
     //these members are common to all modules
@@ -233,7 +204,6 @@ class ArpWidget : public QWidget
     void updateReleaseTime(int value);
     void checkIfRandomSet();
     void checkIfEnvelopeSet();
-    void checkIfInputFilterSet();
     void updateText(const QString& newtext);
     void updateRepeatPattern(int);
     void selectPatternPreset(int);
@@ -243,8 +213,6 @@ class ArpWidget : public QWidget
     void removeCurrentPattern();
     void setRandomVisible(bool on);
     void setEnvelopeVisible(bool on);
-    void setInputFilterVisible(bool on);
-    void setInOutBoxVisible(bool on);
 
     void updateChIn(int value);
     void updateEnableRestartByKbd(bool on);

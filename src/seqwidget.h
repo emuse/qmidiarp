@@ -46,6 +46,7 @@
 #endif
 
 #include "midiseq.h"
+#include "inoutbox.h"
 #include "slider.h"
 #include "seqscreen.h"
 #include "cursor.h"
@@ -61,7 +62,7 @@
  * and interacts with it.
  *
 */
-class SeqWidget : public QWidget
+class SeqWidget : public InOutBox
 {
     Q_OBJECT
 
@@ -91,16 +92,14 @@ class SeqWidget : public QWidget
     SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
-            const QString& name = "", QWidget* parent=0);
+            const QString& name = "");
 
     ParStore *parStore;
     MidiControl *midiControl;
-    ManageBox *manageBox;
 #else
     SeqWidget(
             bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
-            QWidget* parent=0);
+            bool mutedAdd = false, bool inOutVisible = true);
 #endif
     ~SeqWidget();
 
@@ -108,20 +107,11 @@ class SeqWidget : public QWidget
     SeqScreen *screen;
     Cursor *cursor;
 
-    QComboBox *chIn;
-    QComboBox *channelOut, *portOut;
     QComboBox *resBox, *sizeBox, *freqBox;
     QComboBox *loopBox;
-    QWidget *inOutBox;
     QAction *muteOutAction;
     QAction *deferChangesAction;
     QToolButton *muteOut;
-    QCheckBox *enableNoteIn;
-    QCheckBox *enableNoteOff;
-    QCheckBox *enableVelIn;
-    QCheckBox *enableRestartByKbd;
-    QCheckBox *enableTrigByKbd;
-    QCheckBox *enableTrigLegato;
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
@@ -131,25 +121,8 @@ class SeqWidget : public QWidget
     int resBoxIndex;
     int sizeBoxIndex;
 
-    void setChIn(int value);
-    void setEnableNoteIn(bool on);
-    void setEnableVelIn(bool on);
     QVector<Sample> getCustomWave();
 
-/*!
-* @brief Setter for the SeqWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void setChannelOut(int value);
-/*!
-* @brief Setter for the SeqWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void setPortOut(int value);
 
 #ifdef APPBUILD
 /*!
@@ -271,6 +244,8 @@ class SeqWidget : public QWidget
     void updateTranspose(int val);
 
     void updateChIn(int value);
+    void updateIndexIn(int value);
+    void updateRangeIn(int value);
     void updateEnableNoteIn(bool on);
     void updateEnableVelIn(bool on);
     void updateEnableNoteOff(bool on);
@@ -280,7 +255,6 @@ class SeqWidget : public QWidget
     void setRecord(bool on);
     void setDispVert(int mode);
     void updateDispVert(int mode);
-    void setInOutBoxVisible(bool on);
 
 /*!
 * @brief Slot for the SeqScreen::mouseEvent signal.

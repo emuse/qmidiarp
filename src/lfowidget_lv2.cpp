@@ -32,7 +32,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
-        : LfoWidget(true, true, true, 0)
+        : LfoWidget(true, true, true)
 {
     m_controller = ct;
     writeFunction = write_function;
@@ -73,9 +73,9 @@ LfoWidgetLV2::LfoWidgetLV2 (
     connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
     transportBox->setChecked(true);
 
-    inOutBox->layout()->addWidget(transportBoxLabel);
-    inOutBox->layout()->addWidget(transportBox);
-    inOutBox->layout()->addWidget(tempoSpin);
+    inOutBoxWidget->layout()->addWidget(transportBoxLabel);
+    inOutBoxWidget->layout()->addWidget(transportBox);
+    inOutBoxWidget->layout()->addWidget(tempoSpin);
 
     connect(amplitude,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(offset,             SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));

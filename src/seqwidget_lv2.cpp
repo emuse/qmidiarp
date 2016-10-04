@@ -33,7 +33,7 @@ SeqWidgetLV2::SeqWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
-        : SeqWidget(true, true, true, 0)
+        : SeqWidget(true, true, true)
 {
     m_controller = ct;
     writeFunction = write_function;
@@ -75,9 +75,9 @@ SeqWidgetLV2::SeqWidgetLV2 (
     connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
     transportBox->setChecked(true);
 
-    inOutBox->layout()->addWidget(transportBoxLabel);
-    inOutBox->layout()->addWidget(transportBox);
-    inOutBox->layout()->addWidget(tempoSpin);
+    inOutBoxWidget->layout()->addWidget(transportBoxLabel);
+    inOutBoxWidget->layout()->addWidget(transportBox);
+    inOutBoxWidget->layout()->addWidget(tempoSpin);
 
     connect(velocity,           SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(notelength,         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));

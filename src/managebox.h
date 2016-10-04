@@ -44,7 +44,7 @@ class ManageBox : public QWidget
     QAction *deleteAction, *renameAction, *cloneAction;
 
   public:
-    ManageBox(const QString & nameprefix, bool enable_clone = true, QWidget* parent=0);
+    ManageBox(const QString & nameprefix);
     ~ManageBox();
 
     QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */

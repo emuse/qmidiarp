@@ -47,169 +47,62 @@
 #ifdef APPBUILD
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible, const QString& name):
+    InOutBox(portCount, compactStyle, inOutVisible, "Arp:"),
     midiWorker(p_midiWorker),
     globStore(p_globStore),
     modified(false)
 {
     midiControl = new MidiControl(this);
-    manageBox = new ManageBox("Arp:", false, this);
 #else
 ArpWidget::ArpWidget(
     bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible):
+    InOutBox(compactStyle, inOutVisible, "Arp:"),
+    midiWorker(NULL),
     modified(false)
 {
-    midiWorker = NULL;
 #endif
-    int l1;
-
-    // Input group box on left side
-    QGroupBox *inBox = new QGroupBox(tr("Input"), this);
-
-    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
-    enableRestartByKbd = new QCheckBox(this);
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
-    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
-    enableRestartByKbd->setToolTip(tr("Restart pattern when a new note is received"));
-
-    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
-    enableTrigByKbd = new QCheckBox(this);
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
-    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
-    enableTrigByKbd->setToolTip(tr("Retrigger pattern when a new note is received"));
-
-    QLabel *enableTrigLegatoLabel = new QLabel(tr("&Legato"),inBox);
-    enableTrigLegato = new QCheckBox(this);
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(updateTrigLegato(bool)));
-    enableTrigLegatoLabel->setBuddy(enableTrigLegato);
-    enableTrigLegato->setToolTip(tr("Retrigger / restart upon new legato note as well"));
-
-    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QComboBox(inBox);
-    for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
-    chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(activated(int)), this, SLOT(updateChIn(int)));
-
-    inputFilterBox = new QGroupBox(tr("Note Filter"));
-    indexInLabel = new QLabel(tr("&Note"), inputFilterBox);
-    indexIn[0] = new QSpinBox(inputFilterBox);
-    indexIn[1] = new QSpinBox(inputFilterBox);
-    indexInLabel->setBuddy(indexIn[0]);
-    indexIn[0]->setRange(0, 127);
-    indexIn[1]->setRange(0, 127);
-    indexIn[1]->setValue(127);
-    indexIn[0]->setKeyboardTracking(false);
-    indexIn[1]->setKeyboardTracking(false);
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableRestartByKbd(bool)));
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableTrigByKbd(bool)));
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
+            SLOT(updateTrigLegato(bool)));
+    connect(chIn, SIGNAL(activated(int)), this, 
+            SLOT(updateChIn(int)));
     connect(indexIn[0], SIGNAL(valueChanged(int)), this,
             SLOT(updateIndexIn(int)));
     connect(indexIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateIndexIn(int)));
-
-    rangeInLabel = new QLabel(tr("&Velocity"), inputFilterBox);
-    rangeIn[0] = new QSpinBox(inputFilterBox);
-    rangeIn[1] = new QSpinBox(inputFilterBox);
-    rangeInLabel->setBuddy(rangeIn[0]);
-    rangeIn[0]->setRange(0, 127);
-    rangeIn[1]->setRange(0, 127);
-    rangeIn[1]->setValue(127);
-    rangeIn[0]->setKeyboardTracking(false);
-    rangeIn[1]->setKeyboardTracking(false);
     connect(rangeIn[0], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
     connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
             SLOT(updateRangeIn(int)));
-
-
-    QGridLayout *inputFilterBoxLayout = new QGridLayout;
-    inputFilterBoxLayout->addWidget(indexInLabel, 0, 0);
-    inputFilterBoxLayout->addWidget(indexIn[0], 0, 1);
-    inputFilterBoxLayout->addWidget(indexIn[1], 0, 2);
-    inputFilterBoxLayout->addWidget(rangeInLabel, 1, 0);
-    inputFilterBoxLayout->addWidget(rangeIn[0], 1, 1);
-    inputFilterBoxLayout->addWidget(rangeIn[1], 1, 2);
-    inputFilterBoxLayout->setMargin(2);
-    inputFilterBoxLayout->setSpacing(2);
-    inputFilterBox->setCheckable(true);
-    connect(inputFilterBox, SIGNAL(toggled(bool)), this,
-            SLOT(setInputFilterVisible(bool)));
-    inputFilterBox->setChecked(false);
-    inputFilterBox->setFlat(true);
-    inputFilterBox->setLayout(inputFilterBoxLayout);
-
-    QGridLayout *inBoxLayout = new QGridLayout;
-    inBoxLayout->addWidget(enableRestartByKbdLabel, 0, 0);
-    inBoxLayout->addWidget(enableRestartByKbd, 0, 1);
-    inBoxLayout->addWidget(enableTrigByKbdLabel, 1, 0);
-    inBoxLayout->addWidget(enableTrigByKbd, 1, 1);
-    inBoxLayout->addWidget(enableTrigLegatoLabel, 2, 0);
-    inBoxLayout->addWidget(enableTrigLegato, 2, 1);
-    inBoxLayout->addWidget(chInLabel, 3, 0);
-    inBoxLayout->addWidget(chIn, 3, 1);
-    inBoxLayout->addWidget(inputFilterBox, 4, 0, 1, 2);
-    if (compactStyle) {
-        inBoxLayout->setMargin(2);
-        inBoxLayout->setSpacing(1);
-    }
-    inBox->setLayout(inBoxLayout);
-
-
-    // Output group box on right side
-    QGroupBox *portBox = new QGroupBox(tr("Output"), this);
-
-    QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
-    channelOut = new QComboBox(portBox);
-    channelLabel->setBuddy(channelOut);
-    for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
-
-    QGridLayout *portBoxLayout = new QGridLayout;
 #ifdef APPBUILD
-        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-        portOut = new QComboBox(portBox);
-        portLabel->setBuddy(portOut);
-        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
-        portBoxLayout->addWidget(portLabel, 0, 0);
-        portBoxLayout->addWidget(portOut, 0, 1);
+    connect(portOut, SIGNAL(activated(int)), this, 
+            SLOT(updatePortOut(int)));
+    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
+    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
-    portBoxLayout->addWidget(channelLabel, 1, 0);
-    portBoxLayout->addWidget(channelOut, 1, 1);
-    if (compactStyle) {
-        portBoxLayout->setMargin(2);
-        portBoxLayout->setSpacing(1);
-    }
-    portBox->setLayout(portBoxLayout);
 
     hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    QToolButton *hideInOutBoxButton = new QToolButton;
     hideInOutBoxAction->setCheckable(true);
     hideInOutBoxAction->setChecked(inOutVisible);
     hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
     hideInOutBoxButton->setFixedSize(10, 80);
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
-    // Layout for left/right placements of in/out group boxes
-    QVBoxLayout *inOutBoxLayout = new QVBoxLayout();
-#ifdef APPBUILD
-    inOutBoxLayout->addWidget(manageBox);
-#endif
-    inOutBoxLayout->addWidget(inBox);
-    inOutBoxLayout->addWidget(portBox);
-    inOutBoxLayout->addStretch();
-    inOutBox = new QWidget(this);
-    inOutBox->setLayout(inOutBoxLayout);
-    inOutBox->setVisible(inOutVisible);
 
     // group box for pattern setup
-    QGroupBox *patternBox = new QGroupBox(tr("Pattern"), this);
+    QGroupBox *patternBox = new QGroupBox(tr("Pattern"));
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
 
-    textEditButton = new QToolButton(this);
+    textEditButton = new QToolButton;
     textEditAction = new QAction(QPixmap(editmodeon_xpm),
             tr("&Edit Pattern"), this);
     connect(textEditAction, SIGNAL(toggled(bool)), this,
@@ -218,7 +111,7 @@ ArpWidget::ArpWidget(
     textEditButton->setDefaultAction(textEditAction);
 
 #ifdef APPBUILD
-    textRemoveButton = new QToolButton(this);
+    textRemoveButton = new QToolButton;
     textRemoveAction = new QAction(QPixmap(patternremove_xpm),
             tr("&Remove Pattern"), this);
     connect(textRemoveAction, SIGNAL(triggered()), this,
@@ -226,7 +119,7 @@ ArpWidget::ArpWidget(
     textRemoveButton->setDefaultAction(textRemoveAction);
     textRemoveAction->setEnabled(false);
 
-    textStoreButton = new QToolButton(this);
+    textStoreButton = new QToolButton;
     textStoreAction = new QAction(QPixmap(patternstore_xpm),
             tr("&Store Pattern"), this);
     connect(textStoreAction, SIGNAL(triggered()), this,
@@ -235,7 +128,7 @@ ArpWidget::ArpWidget(
     textStoreButton->setDefaultAction(textStoreAction);
 #endif
 
-    patternPresetBox = new QComboBox(patternBox);
+    patternPresetBox = new QComboBox;
     loadPatternPresets();
     patternPresetBox->insertItems(0, patternNames);
     patternPresetBox->setCurrentIndex(0);
@@ -250,7 +143,7 @@ ArpWidget::ArpWidget(
     muteOutAction = new QAction(tr("&Mute"),this);
     muteOutAction->setCheckable(true);
     connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteOut = new QToolButton(this);
+    muteOut = new QToolButton;
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
@@ -262,11 +155,11 @@ ArpWidget::ArpWidget(
     deferChangesAction->setCheckable(true);
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
 
-    QToolButton *deferChangesButton = new QToolButton(this);
+    QToolButton *deferChangesButton = new QToolButton;
     deferChangesButton->setDefaultAction(deferChangesAction);
     deferChangesButton->setFixedSize(20, 20);
 
-    repeatPatternThroughChord = new QComboBox(patternBox);
+    repeatPatternThroughChord = new QComboBox;
     QStringList repeatPatternNames;
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Random");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
@@ -276,7 +169,7 @@ ArpWidget::ArpWidget(
             SLOT(updateRepeatPattern(int)));
     repeatPatternThroughChord->setCurrentIndex(1);
 
-    octaveModeBox = new QComboBox(patternBox);
+    octaveModeBox = new QComboBox;
     repeatPatternNames.clear();
     repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Bounce");
     octaveModeBox->insertItems(0, repeatPatternNames);
@@ -286,7 +179,7 @@ ArpWidget::ArpWidget(
             SLOT(updateOctaveMode(int)));
     octaveModeBox->setCurrentIndex(0);
 
-    octaveLowBox = new QComboBox(patternBox);
+    octaveLowBox = new QComboBox;
     repeatPatternNames.clear();
     repeatPatternNames << "0" << "-1" << "-2" << "-3";
     octaveLowBox->insertItems(0, repeatPatternNames);
@@ -295,7 +188,7 @@ ArpWidget::ArpWidget(
             SLOT(updateOctaveLow(int)));
     octaveLowBox->setCurrentIndex(0);
 
-    octaveHighBox = new QComboBox(patternBox);
+    octaveHighBox = new QComboBox;
     repeatPatternNames.clear();
     repeatPatternNames << "0" << "1" << "2" << "3";
     octaveHighBox->insertItems(0, repeatPatternNames);
@@ -304,7 +197,7 @@ ArpWidget::ArpWidget(
             SLOT(updateOctaveHigh(int)));
     octaveHighBox->setCurrentIndex(0);
 
-    latchModeButton = new QToolButton(this);
+    latchModeButton = new QToolButton;
     latchModeAction = new QAction(QPixmap(latchmodeon_xpm),
             tr("&Latch Mode"), this);
     connect(latchModeAction, SIGNAL(toggled(bool)), this,
@@ -340,7 +233,7 @@ ArpWidget::ArpWidget(
     modeLayout->addWidget(latchModeButton);
     modeLayout->addStretch(2);
 
-    patternText = new QLineEdit(patternBox);
+    patternText = new QLineEdit;
     connect(patternText, SIGNAL(textChanged(const QString&)), this,
             SLOT(updateText(const QString&)));
     patternText->setHidden(true);
@@ -355,7 +248,7 @@ ArpWidget::ArpWidget(
             "   p   pause"));
 
 
-    QWidget *screenBox = new QWidget(patternBox);
+    QWidget *screenBox = new QWidget;
     QHBoxLayout *screenBoxLayout = new QHBoxLayout;
     screen = new ArpScreen(this);
     screenBox->setMinimumHeight(80);
@@ -375,7 +268,7 @@ ArpWidget::ArpWidget(
     patternBox->setLayout(patternBoxLayout);
 
     // group box for random settings
-    randomBox = new QGroupBox(tr("Random"), this);
+    randomBox = new QGroupBox(tr("Random"));
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
 
     randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
@@ -408,14 +301,14 @@ ArpWidget::ArpWidget(
     randomBox->setFlat(true);
     randomBox->setLayout(randomBoxLayout);
 
-    envelopeBox = new QGroupBox(tr("Envelope"), this);
+    envelopeBox = new QGroupBox(tr("Envelope"));
     QVBoxLayout *envelopeBoxLayout = new QVBoxLayout;
     attackTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
-            tr("&Attack (beats)"), envelopeBox);
+            tr("&Attack (beats)"), this);
     connect(attackTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateAttackTime(int)));
     releaseTime = new Slider(0, 20, 1, 1, 0, Qt::Horizontal,
-            tr("&Release (beats)"), envelopeBox);
+            tr("&Release (beats)"), this);
     connect(releaseTime, SIGNAL(valueChanged(int)), this,
             SLOT(updateReleaseTime(int)));
 
@@ -449,7 +342,7 @@ ArpWidget::ArpWidget(
     widgetLayout->addWidget(randomBox, 1, 0);
     widgetLayout->addWidget(envelopeBox, 2, 0);
     widgetLayout->addWidget(hideInOutBoxButton, 0, 1);
-    widgetLayout->addWidget(inOutBox, 0, 2, 3, 1);
+    widgetLayout->addWidget(inOutBoxWidget, 0, 2, 3, 1);
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
     setLayout(widgetLayout);
@@ -473,7 +366,7 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
 {
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
@@ -683,37 +576,6 @@ void ArpWidget::updateRangeIn(int value)
         if (midiWorker) midiWorker->rangeIn[1] = value;
     }
     checkIfInputFilterSet();
-    modified = true;
-}
-
-void ArpWidget::checkIfInputFilterSet()
-{
-    if (((indexIn[1]->value() - indexIn[0]->value()) < 127)
-            || ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
-        inputFilterBox->setFlat(false);
-        inputFilterBox->setTitle(tr("Note Filter - ACTIVE"));
-    }
-    else {
-        inputFilterBox->setFlat(true);
-        inputFilterBox->setTitle(tr("Note Filter"));
-    }
-}
-
-void ArpWidget::setChIn(int value)
-{
-    chIn->setCurrentIndex(value);
-    modified = true;
-}
-
-void ArpWidget::setIndexIn(int index, int value)
-{
-    indexIn[index]->setValue(value);
-    modified = true;
-}
-
-void ArpWidget::setRangeIn(int index, int value)
-{
-    rangeIn[index]->setValue(value);
     modified = true;
 }
 
@@ -943,16 +805,6 @@ void ArpWidget::removeCurrentPattern()
     emit presetsChanged("", "", currentIndex);
 }
 
-void ArpWidget::setInputFilterVisible(bool on)
-{
-    rangeIn[0]->setVisible(on);
-    rangeIn[1]->setVisible(on);
-    rangeInLabel->setVisible(on);
-    indexIn[0]->setVisible(on);
-    indexIn[1]->setVisible(on);
-    indexInLabel->setVisible(on);
-}
-
 void ArpWidget::setRandomVisible(bool on)
 {
     randomTick->setVisible(on);
@@ -964,12 +816,6 @@ void ArpWidget::setEnvelopeVisible(bool on)
 {
     attackTime->setVisible(on);
     releaseTime->setVisible(on);
-}
-
-void ArpWidget::setInOutBoxVisible(bool on)
-{
-    inOutBox->setVisible(on);
-    modified=true;
 }
 
 void ArpWidget::setMuted(bool on)
@@ -995,17 +841,6 @@ void ArpWidget::setLatchMode(bool on)
     modified = true;
 }
 
-void ArpWidget::setPortOut(int value)
-{
-    portOut->setCurrentIndex(value);
-    modified = true;
-}
-
-void ArpWidget::setChannelOut(int value)
-{
-    channelOut->setCurrentIndex(value);
-    modified = true;
-}
 
 void ArpWidget::updatePortOut(int value)
 {

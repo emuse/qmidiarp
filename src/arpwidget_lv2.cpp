@@ -31,7 +31,7 @@ ArpWidgetLV2::ArpWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
-        : ArpWidget(true, true, true, 0)
+        : ArpWidget(true, true, true)
 {
     m_controller = ct;
     writeFunction = write_function;
@@ -74,9 +74,9 @@ ArpWidgetLV2::ArpWidgetLV2 (
     connect(transportBox, SIGNAL(toggled(bool)), tempoSpin, SLOT(setDisabled(bool)));
     transportBox->setChecked(true);
 
-    inOutBox->layout()->addWidget(transportBoxLabel);
-    inOutBox->layout()->addWidget(transportBox);
-    inOutBox->layout()->addWidget(tempoSpin);
+    inOutBoxWidget->layout()->addWidget(transportBoxLabel);
+    inOutBoxWidget->layout()->addWidget(transportBox);
+    inOutBoxWidget->layout()->addWidget(tempoSpin);
 
     connect(attackTime,         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(releaseTime,        SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));

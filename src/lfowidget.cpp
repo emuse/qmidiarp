@@ -44,164 +44,55 @@
 #ifdef APPBUILD
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible, const QString& name):
+    InOutBox(portCount, compactStyle, inOutVisible, "LFO:"),
     midiWorker(p_midiWorker),
     globStore(p_globStore),
     modified(false)
 {
     midiControl = new MidiControl(this);
-    manageBox = new ManageBox("LFO:", true, this);
 #else
 LfoWidget::LfoWidget(
     bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible):
+    InOutBox(compactStyle, inOutVisible, "LFO:"),
+    midiWorker(NULL),
     modified(false)
 {
-    midiWorker = NULL;
 #endif
-    int l1;
 
-    // Input group box on right top
-    QGroupBox *inBox = new QGroupBox(tr("Input"), this);
-
-    QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"),inBox);
-    enableNoteOff = new QCheckBox(this);
-    connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteOff(bool)));
-    enableNoteOffLabel->setBuddy(enableNoteOff);
-    enableNoteOff->setToolTip(tr("Stop output when Note is released"));
-
-    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
-    enableRestartByKbd = new QCheckBox(this);
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
-    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
-    enableRestartByKbd->setToolTip(tr("Restart sequence when a new note is received"));
-
-    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
-    enableTrigByKbd = new QCheckBox(this);
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
-    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
-    enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
-
-    QLabel *enableTrigLegatoLabel = new QLabel(tr("&Legato"),inBox);
-    enableTrigLegato = new QCheckBox(this);
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(updateTrigLegato(bool)));
-    enableTrigLegatoLabel->setBuddy(enableTrigLegato);
-    enableTrigLegato->setToolTip(tr("Retrigger / restart upon new legato note as well"));
-
-    enableNoteOff->setChecked(false);
-    enableRestartByKbd->setChecked(false);
-    enableTrigByKbd->setChecked(false);
-    enableTrigLegato->setChecked(false);
-
-    QLabel *ccnumberInLabel = new QLabel(tr("MIDI &CC#"), inBox);
-    ccnumberInBox = new QSpinBox(inBox);
-    ccnumberInLabel->setBuddy(ccnumberInBox);
-    ccnumberInBox->setRange(0, 127);
-    ccnumberInBox->setKeyboardTracking(false);
-    ccnumberInBox->setValue(74);
-    ccnumberInBox->setToolTip(tr("MIDI Controller number to record"));
+    connect(enableNoteOff, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableNoteOff(bool)));
     connect(ccnumberInBox, SIGNAL(valueChanged(int)), this,
             SLOT(updateCcnumberIn(int)));
-
-
-    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QComboBox(inBox);
-    for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
-    chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(activated(int)), this, SLOT(updateChIn(int)));
-
-    QGridLayout *inBoxLayout = new QGridLayout;
-
-    inBoxLayout->addWidget(ccnumberInLabel, 0, 0);
-    inBoxLayout->addWidget(ccnumberInBox, 0, 1);
-    inBoxLayout->addWidget(enableNoteOffLabel, 1, 0);
-    inBoxLayout->addWidget(enableNoteOff, 1, 1);
-    inBoxLayout->addWidget(enableRestartByKbdLabel, 2, 0);
-    inBoxLayout->addWidget(enableRestartByKbd, 2, 1);
-    inBoxLayout->addWidget(enableTrigByKbdLabel, 3, 0);
-    inBoxLayout->addWidget(enableTrigByKbd, 3, 1);
-    inBoxLayout->addWidget(enableTrigLegatoLabel, 4, 0);
-    inBoxLayout->addWidget(enableTrigLegato, 4, 1);
-    inBoxLayout->addWidget(chInLabel, 5, 0);
-    inBoxLayout->addWidget(chIn, 5, 1);
-    if (compactStyle) {
-        inBoxLayout->setSpacing(1);
-        inBoxLayout->setMargin(2);
-    }
-
-    inBox->setLayout(inBoxLayout);
-
-    // Output group box on right side
-    QGroupBox *portBox = new QGroupBox(tr("Output"), this);
-
-    QLabel *ccnumberLabel = new QLabel(tr("MIDI &CC#"), portBox);
-    ccnumberBox = new QSpinBox(portBox);
-    ccnumberLabel->setBuddy(ccnumberBox);
-    ccnumberBox->setRange(0, 127);
-    ccnumberBox->setKeyboardTracking(false);
-    ccnumberBox->setValue(74);
-    ccnumberBox->setToolTip(tr("MIDI Controller number sent to output"));
     connect(ccnumberBox, SIGNAL(valueChanged(int)), this,
             SLOT(updateCcnumber(int)));
-
-
-    QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
-    channelOut = new QComboBox(portBox);
-    channelLabel->setBuddy(channelOut);
-    for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableRestartByKbd(bool)));
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableTrigByKbd(bool)));
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
+            SLOT(updateTrigLegato(bool)));
+    connect(chIn, SIGNAL(activated(int)), this, 
+            SLOT(updateChIn(int)));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
-
-
-    QGridLayout *portBoxLayout = new QGridLayout;
-    portBoxLayout->addWidget(ccnumberLabel, 0, 0);
-    portBoxLayout->addWidget(ccnumberBox, 0, 1);
 #ifdef APPBUILD
-        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-        portOut = new QComboBox(portBox);
-        portLabel->setBuddy(portOut);
-        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
-        portBoxLayout->addWidget(portLabel, 1, 0);
-        portBoxLayout->addWidget(portOut, 1, 1);
+    connect(portOut, SIGNAL(activated(int)), this, 
+            SLOT(updatePortOut(int)));
 #endif
-    portBoxLayout->addWidget(channelLabel, 2, 0);
-    portBoxLayout->addWidget(channelOut, 2, 1);
-
-    QVBoxLayout* outputLayout = new QVBoxLayout;
-    outputLayout->addLayout(portBoxLayout);
-    if (compactStyle) {
-        outputLayout->setSpacing(1);
-        outputLayout->setMargin(2);
-    }
-
-    portBox->setLayout(outputLayout);
 
     hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    QToolButton *hideInOutBoxButton = new QToolButton;
     hideInOutBoxAction->setCheckable(true);
     hideInOutBoxAction->setChecked(inOutVisible);
     hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
     hideInOutBoxButton->setFixedSize(10, 80);
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
-
-    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-
-#ifdef APPBUILD
-    inOutBoxLayout->addWidget(manageBox);
-#endif
-    inOutBoxLayout->addWidget(inBox);
-    inOutBoxLayout->addWidget(portBox);
-    inOutBoxLayout->addStretch();
-    inOutBox = new QWidget(this);
-    inOutBox->setLayout(inOutBoxLayout);
-    inOutBox->setVisible(inOutVisible);
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
     // group box for wave setup
-    QGroupBox *waveBox = new QGroupBox(tr("Wave"), this);
+    QGroupBox *waveBox = new QGroupBox(tr("Wave"));
 
     screen = new LfoScreen(this);
     screen->setToolTip(
@@ -237,7 +128,7 @@ LfoWidget::LfoWidget(
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
             waveBox);
-    freqBox = new QComboBox(waveBox);
+    freqBox = new QComboBox;
     freqBoxLabel->setBuddy(freqBox);
     QStringList names;
     names << "1/32" << "1/16" << "1/8" << "1/4"
@@ -256,7 +147,7 @@ LfoWidget::LfoWidget(
 #endif
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
             waveBox);
-    resBox = new QComboBox(waveBox);
+    resBox = new QComboBox;
     resBoxLabel->setBuddy(resBox);
     names.clear();
     names << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "96" << "192";
@@ -271,8 +162,8 @@ LfoWidget::LfoWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("Resolution", resBox, 6);
 #endif
-    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), waveBox);
-    sizeBox = new QComboBox(waveBox);
+    QLabel *sizeBoxLabel = new QLabel(tr("&Length"));
+    sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8"
@@ -287,7 +178,7 @@ LfoWidget::LfoWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("Size", sizeBox, 7);
 #endif
-    loopBox = new QComboBox(waveBox);
+    loopBox = new QComboBox;
     names.clear();
     names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-" << "RANDM";
     loopBox->insertItems(0, names);
@@ -302,7 +193,7 @@ LfoWidget::LfoWidget(
     muteOutAction = new QAction(tr("&Mute"),this);
     muteOutAction->setCheckable(true);
     connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteOut = new QToolButton(this);
+    muteOut = new QToolButton;
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
@@ -314,7 +205,7 @@ LfoWidget::LfoWidget(
     deferChangesAction->setCheckable(true);
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
 
-    QToolButton *deferChangesButton = new QToolButton(this);
+    QToolButton *deferChangesButton = new QToolButton;
     deferChangesButton->setDefaultAction(deferChangesAction);
     deferChangesButton->setFixedSize(20, 20);
 
@@ -322,15 +213,15 @@ LfoWidget::LfoWidget(
     flipWaveVerticalAction->setToolTip(tr("Do a vertical flip of the wave about its mid value"));
     connect(flipWaveVerticalAction, SIGNAL(triggered(bool)), this, SLOT(updateFlipWaveVertical()));
 
-    QToolButton *flipWaveVerticalButton = new QToolButton(this);
+    QToolButton *flipWaveVerticalButton = new QToolButton;
     flipWaveVerticalButton->setDefaultAction(flipWaveVerticalAction);
     flipWaveVerticalButton->setFixedSize(20, 20);
 
-    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), waveBox);
-    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), waveBox);
+    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"));
+    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), this);
     recordAction->setToolTip(tr("Record incoming controller"));
     recordAction->setCheckable(true);
-    QToolButton *recordButton = new QToolButton(waveBox);
+    QToolButton *recordButton = new QToolButton;
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
@@ -398,7 +289,7 @@ LfoWidget::LfoWidget(
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
-    widgetLayout->addWidget(inOutBox, 0);
+    widgetLayout->addWidget(inOutBoxWidget, 0);
 #ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
         midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
@@ -435,7 +326,7 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
     int l1;
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
         xml.writeStartElement("input");
             xml.writeTextElement("enableNoteOff", QString::number(
                 midiWorker->enableNoteOff));
@@ -665,12 +556,6 @@ void LfoWidget::updateCcnumber(int val)
     modified = true;
 }
 
-void LfoWidget::setChIn(int value)
-{
-    chIn->setCurrentIndex(value);
-    modified = true;
-}
-
 void LfoWidget::updateChIn(int val)
 {
     if (midiWorker) midiWorker->chIn = val;
@@ -827,7 +712,7 @@ void LfoWidget::mouseWheel(int step)
 
 void LfoWidget::setInOutBoxVisible(bool on)
 {
-    inOutBox->setVisible(on);
+    setVisible(on);
     modified=true;
 }
 
@@ -852,18 +737,6 @@ void LfoWidget::setRecord(bool on)
 {
     if (midiWorker) midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
-}
-
-void LfoWidget::setPortOut(int value)
-{
-    portOut->setCurrentIndex(value);
-    modified = true;
-}
-
-void LfoWidget::setChannelOut(int value)
-{
-    channelOut->setCurrentIndex(value);
-    modified = true;
 }
 
 void LfoWidget::updatePortOut(int value)

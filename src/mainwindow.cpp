@@ -468,7 +468,7 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
     MidiArp *midiWorker = new MidiArp();
     ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, name, this);
+            passWidget->mutedAdd, inOutVisible, name);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
@@ -514,7 +514,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     MidiLfo *midiWorker = new MidiLfo();
     LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, p_name, this);
+            passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -569,7 +569,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     MidiSeq *midiWorker = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, p_name, this);
+            passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),

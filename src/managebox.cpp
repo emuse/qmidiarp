@@ -39,17 +39,16 @@
 
 #include "config.h"
 
-ManageBox::ManageBox(const QString & nameprefix, bool enable_clone, QWidget *parent)
-            : QWidget(parent)
+ManageBox::ManageBox(const QString & nameprefix)
 {
 
     namePrefix = nameprefix;
-    // Management Buttons on the right top
+
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
-    QToolButton *cloneButton = new QToolButton(this);
-    if (enable_clone) {
-        if (namePrefix.startsWith('S')) {
+    QToolButton *cloneButton = new QToolButton;
+    if (namePrefix == "Seq:" || namePrefix == "LFO:") {
+        if (namePrefix == "Seq:") {
             cloneAction = new QAction(QPixmap(seqwavcp_xpm), tr("&Clone..."), this);
         }
         else {
@@ -62,13 +61,13 @@ ManageBox::ManageBox(const QString & nameprefix, bool enable_clone, QWidget *par
     else cloneButton->hide();
     renameAction = new QAction(QPixmap(arprename_xpm), tr("&Rename..."), this);
     renameAction->setToolTip(tr("Rename this Module"));
-    QToolButton *renameButton = new QToolButton(this);
+    QToolButton *renameButton = new QToolButton;
     renameButton->setDefaultAction(renameAction);
     connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
 
     deleteAction = new QAction(QPixmap(arpremove_xpm), tr("&Delete..."), this);
     deleteAction->setToolTip(tr("Delete this Module"));
-    QToolButton *deleteButton = new QToolButton(this);
+    QToolButton *deleteButton = new QToolButton;
     deleteButton->setDefaultAction(deleteAction);
     connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
 

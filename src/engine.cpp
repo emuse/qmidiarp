@@ -683,7 +683,24 @@ bool Engine::eventCallback(MidiEvent inEv)
             return(false);
         }
     }
-
+    if (midiLearnFlag) {
+        if (midiLearnWindowID == 1) {
+            if (midiLearnID == 10)
+                arpWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
+            else if (midiLearnID == 11)
+                arpWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
+            
+            midiLearnFlag = false;
+        }
+        if (midiLearnWindowID == 3) {
+            if (midiLearnID == 10)
+                seqWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
+            else if (midiLearnID == 11)
+                seqWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
+            
+            midiLearnFlag = false;
+        }
+    }
     for (l1 = 0; l1 < midiLfoCount(); l1++) {
         unmatched = midiLfo(l1)->handleEvent(inEv, tick);
         if (midiLfo(l1)->gotKbdTrig) {

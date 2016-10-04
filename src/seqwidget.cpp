@@ -37,162 +37,58 @@
 #ifdef APPBUILD
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible, const QString& name):
+    InOutBox(portCount, compactStyle, inOutVisible, "Seq:"),
     midiWorker(p_midiWorker),
     globStore(p_globStore),
     modified(false)
 {
     midiControl = new MidiControl(this);
-    manageBox = new ManageBox("Seq:", true, this);
 #else
 SeqWidget::SeqWidget(
     bool compactStyle,
-    bool mutedAdd, bool inOutVisible, QWidget *parent):
-    QWidget(parent),
+    bool mutedAdd, bool inOutVisible):
+    InOutBox(compactStyle, inOutVisible, "Seq:"),
+    midiWorker(NULL),
     modified(false)
 {
-    midiWorker = NULL;
 #endif
-    int l1;
 
-    // Input group box on right top
-    QGroupBox *inBox = new QGroupBox(tr("Input"), this);
-
-    QLabel *enableNoteInLabel = new QLabel(tr("&Note"),inBox);
-    enableNoteIn = new QCheckBox(this);
-    connect(enableNoteIn, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteIn(bool)));
-    enableNoteInLabel->setBuddy(enableNoteIn);
-    enableNoteIn->setToolTip(tr("Transpose the sequence following incoming notes"));
-
-    QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"),inBox);
-    enableNoteOff = new QCheckBox(this);
-    connect(enableNoteOff, SIGNAL(toggled(bool)), this, SLOT(updateEnableNoteOff(bool)));
-    enableNoteOffLabel->setBuddy(enableNoteOff);
-    enableNoteOff->setToolTip(tr("Stop output when Note is released"));
-
-    QLabel *enableVelInLabel = new QLabel(tr("&Velocity"),inBox);
-    enableVelIn = new QCheckBox(this);
-    connect(enableVelIn, SIGNAL(toggled(bool)), this, SLOT(updateEnableVelIn(bool)));
-    enableVelInLabel->setBuddy(enableVelIn);
-    enableVelIn->setToolTip(tr("Set sequence velocity to that of incoming notes"));
-
-    QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"),inBox);
-    enableRestartByKbd = new QCheckBox(this);
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableRestartByKbd(bool)));
-    enableRestartByKbdLabel->setBuddy(enableRestartByKbd);
-    enableRestartByKbd->setToolTip(tr("Restart sequence when a new note is received"));
-
-    QLabel *enableTrigByKbdLabel = new QLabel(tr("&Trigger"),inBox);
-    enableTrigByKbd = new QCheckBox(this);
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, SLOT(updateEnableTrigByKbd(bool)));
-    enableTrigByKbdLabel->setBuddy(enableTrigByKbd);
-    enableTrigByKbd->setToolTip(tr("Retrigger sequence when a new note is received"));
-
-    QLabel *enableTrigLegatoLabel = new QLabel(tr("&Legato"),inBox);
-    enableTrigLegato = new QCheckBox(this);
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, SLOT(updateTrigLegato(bool)));
-    enableTrigLegatoLabel->setBuddy(enableTrigLegato);
-    enableTrigLegato->setToolTip(tr("Retrigger / restart upon new legato note as well"));
-
-    enableNoteIn->setChecked(true);
-    enableNoteOff->setChecked(false);
-    enableVelIn->setChecked(true);
-    enableRestartByKbd->setChecked(false);
-    enableTrigByKbd->setChecked(false);
-    enableTrigLegato->setChecked(false);
-
-    QLabel *chInLabel = new QLabel(tr("&Channel"), inBox);
-    chIn = new QComboBox(inBox);
-    for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
-    chInLabel->setBuddy(chIn);
-    connect(chIn, SIGNAL(activated(int)), this, SLOT(updateChIn(int)));
-
-    QGridLayout *inBoxLayout = new QGridLayout;
-
-    inBoxLayout->addWidget(enableNoteInLabel, 0, 0);
-    inBoxLayout->addWidget(enableNoteIn, 0, 1);
-    inBoxLayout->addWidget(enableNoteOffLabel, 1, 0);
-    inBoxLayout->addWidget(enableNoteOff, 1, 1);
-    inBoxLayout->addWidget(enableVelInLabel, 2, 0);
-    inBoxLayout->addWidget(enableVelIn, 2, 1);
-    inBoxLayout->addWidget(enableRestartByKbdLabel, 3, 0);
-    inBoxLayout->addWidget(enableRestartByKbd, 3, 1);
-    inBoxLayout->addWidget(enableTrigByKbdLabel, 4, 0);
-    inBoxLayout->addWidget(enableTrigByKbd, 4, 1);
-    inBoxLayout->addWidget(enableTrigLegatoLabel, 5, 0);
-    inBoxLayout->addWidget(enableTrigLegato, 5, 1);
-    inBoxLayout->addWidget(chInLabel, 6, 0);
-    inBoxLayout->addWidget(chIn, 6, 1);
-    if (compactStyle) {
-        inBoxLayout->setSpacing(1);
-        inBoxLayout->setMargin(2);
-    }
-
-    inBox->setLayout(inBoxLayout);
-
-
-    // Output group box on right bottom
-    QGroupBox *portBox = new QGroupBox(tr("Output"), this);
-
-    QLabel *channelLabel = new QLabel(tr("C&hannel"), portBox);
-    channelOut = new QComboBox(portBox);
-    channelLabel->setBuddy(channelOut);
-    for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
+    connect(enableNoteIn, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableNoteIn(bool)));
+    connect(enableVelIn, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableVelIn(bool)));
+    connect(enableNoteOff, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableNoteOff(bool)));
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableRestartByKbd(bool)));
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableTrigByKbd(bool)));
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
+            SLOT(updateTrigLegato(bool)));
+    connect(chIn, SIGNAL(activated(int)), this, 
+            SLOT(updateChIn(int)));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
-            
 #ifdef APPBUILD
+    connect(portOut, SIGNAL(activated(int)), this, 
+            SLOT(updatePortOut(int)));
     midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
+    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
+    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
-
-    QGridLayout *portBoxLayout = new QGridLayout;
-
-#ifdef APPBUILD
-        QLabel *portLabel = new QLabel(tr("&Port"), portBox);
-        portOut = new QComboBox(portBox);
-        portLabel->setBuddy(portOut);
-        for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-        connect(portOut, SIGNAL(activated(int)), this, SLOT(updatePortOut(int)));
-
-        portBoxLayout->addWidget(portLabel, 0, 0);
-        portBoxLayout->addWidget(portOut, 0, 1);
-#endif
-
-    portBoxLayout->addWidget(channelLabel, 1, 0);
-    portBoxLayout->addWidget(channelOut, 1, 1);
-
-    QVBoxLayout* outputLayout = new QVBoxLayout;
-    outputLayout->addLayout(portBoxLayout);
-    if (compactStyle) {
-        outputLayout->setSpacing(1);
-        outputLayout->setMargin(2);
-    }
-
-    portBox->setLayout(outputLayout);
 
     hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    QToolButton *hideInOutBoxButton = new QToolButton(this);
+    QToolButton *hideInOutBoxButton = new QToolButton;
     hideInOutBoxAction->setCheckable(true);
     hideInOutBoxAction->setChecked(inOutVisible);
     hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
     hideInOutBoxButton->setFixedSize(10, 80);
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), this, SLOT(setInOutBoxVisible(bool)));
-
-    QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
-#ifdef APPBUILD
-    inOutBoxLayout->addWidget(manageBox);
-#endif
-    inOutBoxLayout->addWidget(inBox);
-    inOutBoxLayout->addWidget(portBox);
-    inOutBoxLayout->addStretch();
-    inOutBox = new QWidget(this);
-    inOutBox->setLayout(inOutBoxLayout);
-    inOutBox->setVisible(inOutVisible);
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
     // group box for sequence setup
-    QGroupBox *seqBox = new QGroupBox(tr("Sequence"), this);
+    QGroupBox *seqBox = new QGroupBox(tr("Sequence"));
 
     screen = new SeqScreen(this);
     screen->setToolTip(
@@ -219,7 +115,7 @@ SeqWidget::SeqWidget(
     deferChangesAction->setCheckable(true);
     connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
 
-    QToolButton *deferChangesButton = new QToolButton(this);
+    QToolButton *deferChangesButton = new QToolButton;
     deferChangesButton->setDefaultAction(deferChangesAction);
     deferChangesButton->setFixedSize(20, 20);
 
@@ -236,11 +132,11 @@ SeqWidget::SeqWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
 #endif
-    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"), seqBox);
-    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), seqBox);
+    QLabel *recordButtonLabel = new QLabel(tr("Re&cord"));
+    recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), this);
     recordAction->setToolTip(tr("Record step by step"));
     recordAction->setCheckable(true);
-    QToolButton *recordButton = new QToolButton(seqBox);
+    QToolButton *recordButton = new QToolButton;
     recordButton->setDefaultAction(recordAction);
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
@@ -266,8 +162,8 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("Resolution", resBox, 4);
 #endif
 
-    QLabel *sizeBoxLabel = new QLabel(tr("&Length"), seqBox);
-    sizeBox = new QComboBox(seqBox);
+    QLabel *sizeBoxLabel = new QLabel(tr("&Length"));
+    sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
     names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "16" << "32";
@@ -282,7 +178,7 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 #endif
 
-    dispSignalMapper = new QSignalMapper(this);
+    dispSignalMapper = new QSignalMapper;
     QLabel *dispLabel[4];
     QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
     QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};
@@ -292,8 +188,8 @@ SeqWidget::SeqWidget(
     dispBoxLayout->addWidget(new QLabel(tr("Display")));
     dispBoxLayout->addStretch(10);
     for (int l1 = 0; l1 < 4; l1++) {
-        dispLabel[l1] = new QLabel(dispText[l1],this);
-        dispVert[l1] = new QCheckBox(this);
+        dispLabel[l1] = new QLabel(dispText[l1]);
+        dispVert[l1] = new QCheckBox;
         connect(dispVert[l1], SIGNAL(toggled(bool)), dispSignalMapper, SLOT(map()));
         dispSignalMapper->setMapping(dispVert[l1], l1);
         dispVert[l1]->setAutoExclusive(true);
@@ -370,7 +266,7 @@ SeqWidget::SeqWidget(
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
-    widgetLayout->addWidget(inOutBox, 0);
+    widgetLayout->addWidget(inOutBoxWidget, 0);
 
 #ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
@@ -412,7 +308,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
     xml.writeStartElement(manageBox->name.left(3));
     xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBox->isVisible()));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
 
         xml.writeStartElement("display");
             xml.writeTextElement("vertical", QString::number(
@@ -651,27 +547,31 @@ void SeqWidget::readData(QXmlStreamReader& xml)
 }
 #endif
 
-void SeqWidget::setEnableNoteIn(bool on)
-{
-    enableNoteIn->setChecked(on);
-    modified = true;
-}
-
-void SeqWidget::setEnableVelIn(bool on)
-{
-    enableVelIn->setChecked(on);
-    modified = true;
-}
-
-void SeqWidget::setChIn(int value)
-{
-    chIn->setCurrentIndex(value);
-    modified = true;
-}
-
 void SeqWidget::updateChIn(int value)
 {
     if (midiWorker) midiWorker->chIn = value;
+    modified = true;
+}
+
+void SeqWidget::updateIndexIn(int value)
+{
+    if (indexIn[0] == sender()) {
+        if (midiWorker) midiWorker->indexIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->indexIn[1] = value;
+    }
+    checkIfInputFilterSet();
+    modified = true;
+}
+
+void SeqWidget::updateRangeIn(int value)
+{
+    if (rangeIn[0] == sender()) {
+        if (midiWorker) midiWorker->rangeIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->rangeIn[1] = value;
+    }
+    checkIfInputFilterSet();
     modified = true;
 }
 
@@ -803,12 +703,6 @@ void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int presse
     modified = true;
 }
 
-void SeqWidget::setInOutBoxVisible(bool on)
-{
-    inOutBox->setVisible(on);
-    modified=true;
-}
-
 void SeqWidget::setMuted(bool on)
 {
     if (!midiWorker) return;
@@ -823,18 +717,6 @@ void SeqWidget::setMuted(bool on)
 void SeqWidget::updateDeferChanges(bool on)
 {
     if (midiWorker) midiWorker->updateDeferChanges(on);
-    modified = true;
-}
-
-void SeqWidget::setPortOut(int value)
-{
-    portOut->setCurrentIndex(value);
-    modified = true;
-}
-
-void SeqWidget::setChannelOut(int value)
-{
-    channelOut->setCurrentIndex(value);
     modified = true;
 }
 

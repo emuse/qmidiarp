@@ -17,6 +17,7 @@ nodist_qmidiarp_SOURCES = \
 	mainwindow_moc.cpp \
 	globstore_moc.cpp \
 	indicator_moc.cpp \
+	inoutbox_moc.cpp \
 	logwidget_moc.cpp \
 	midiarp_moc.cpp \
 	midilfo_moc.cpp \
@@ -44,6 +45,7 @@ qmidiarp_SOURCES = \
 	mainwindow.cpp mainwindow.h \
 	globstore.cpp globstore.h \
 	indicator.cpp indicator.h \
+	inoutbox.cpp inoutbox.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
 	midiarp.cpp midiarp.h \
@@ -97,6 +99,7 @@ qmidiarp_lfo_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	midilfo_moc.cpp \
+	inoutbox_moc.cpp \
 	lfowidget_moc.cpp \
 	lfoscreen_moc.cpp \
 	slider_moc.cpp \
@@ -105,6 +108,7 @@ nodist_qmidiarp_lfo_ui_la_SOURCES = \
 qmidiarp_lfo_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	midilfo.cpp midilfo.h \
+	inoutbox.cpp inoutbox.h \
 	lfowidget.cpp lfowidget.h \
 	lfoscreen.cpp lfoscreen.h \
 	lv2_common.h \
@@ -131,6 +135,7 @@ qmidiarp_seq_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	midiseq_moc.cpp \
+	inoutbox_moc.cpp \
 	seqwidget_moc.cpp \
 	seqscreen_moc.cpp \
 	slider_moc.cpp \
@@ -141,6 +146,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	lv2_common.h \
 	main.h \
 	midiseq.cpp midiseq.h \
+	inoutbox.cpp inoutbox.h \
 	seqwidget.cpp seqwidget.h \
 	seqscreen.cpp seqscreen.h \
 	slider.cpp slider.h \
@@ -164,6 +170,7 @@ qmidiarp_arp_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
+	inoutbox_moc.cpp \
 	midiarp_moc.cpp \
 	arpwidget_moc.cpp \
 	arpscreen_moc.cpp \
@@ -175,6 +182,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	lv2_common.h \
 	main.h \
 	midiarp.cpp midiarp.h \
+	inoutbox.cpp inoutbox.h \
 	arpwidget.cpp arpwidget.h \
 	arpscreen.cpp arpscreen.h \
 	slider.cpp slider.h \

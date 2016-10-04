@@ -51,6 +51,10 @@ MidiSeq::MidiSeq()
     nOctaves = 4;
     baseOctave = 3;
 
+    for (int l1 = 0; l1 < 2; l1++) {
+        rangeIn[l1] = (l1) ? 127 : 0;
+        indexIn[l1] = (l1) ? 127 : 0;
+    }
     chIn = 0;
     queueTempo = 100.0;
     vel = 0;
@@ -120,6 +124,10 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
         if (recordMode) {
             recordNote(inEv.data);
             return(false);
+        }
+        if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
+            || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
+            return(true);
         }
         if (enableNoteIn) {
             updateTranspose(inEv.data - 60);
