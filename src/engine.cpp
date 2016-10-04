@@ -683,7 +683,7 @@ bool Engine::eventCallback(MidiEvent inEv)
             return(false);
         }
     }
-    if (midiLearnFlag) {
+    if (midiLearnFlag && inEv.type == EV_NOTEON) {   //input range midi learn
         if (midiLearnWindowID == 1) {
             if (midiLearnID == 10)
                 arpWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
