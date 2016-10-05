@@ -81,10 +81,6 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     setLayout(sliderLayout);
 }
 
-Slider::~Slider()
-{
-}
-
 void Slider::setValue(int val)
 {
     slider->setValue(val);

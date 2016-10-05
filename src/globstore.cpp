@@ -42,17 +42,17 @@ GlobStore::GlobStore(QWidget *parent)
     currentRequest = 0;
     switchAtBeat = 0;
 
-    storeSignalMapper = new QSignalMapper(this);
+    storeSignalMapper = new QSignalMapper;
     connect(storeSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(storeAll(int)));
 
-    timeModeBox = new QComboBox(this);
+    timeModeBox = new QComboBox;
     timeModeBox->addItem(tr("End of"));
     timeModeBox->addItem(tr("After"));
     connect(timeModeBox, SIGNAL(activated(int)),
              this, SLOT(updateTimeModeBox(int)));
 
-    switchAtBeatBox = new QComboBox(this);
+    switchAtBeatBox = new QComboBox;
     for (l1 = 0; l1 < 16; l1++) {
         switchAtBeatBox->addItem(QString::number(l1 + 1)+" beats");
     }
@@ -60,14 +60,14 @@ GlobStore::GlobStore(QWidget *parent)
     connect(switchAtBeatBox, SIGNAL(activated(int)),
              this, SLOT(updateSwitchAtBeat(int)));
 
-    timeModuleBox = new QComboBox(this);
+    timeModuleBox = new QComboBox;
     timeModuleBox->setCurrentIndex(0);
     connect(timeModuleBox, SIGNAL(activated(int)),
              this, SLOT(updateTimeModule(int)));
 
-    QWidget *indicatorBox = new QWidget(this);
+    QWidget *indicatorBox = new QWidget;
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
-    indicator = new Indicator(20, ' ', this);
+    indicator = new Indicator(20, ' ');
     indicatorBox->setMinimumHeight(30);
     indicatorBox->setMinimumWidth(30);
     indicatorLayout->addWidget(indicator);
@@ -75,7 +75,7 @@ GlobStore::GlobStore(QWidget *parent)
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
-    QHBoxLayout *timeModeLayout = new QHBoxLayout();
+    QHBoxLayout *timeModeLayout = new QHBoxLayout;
     timeModeLayout->addWidget(timeModeBox);
     timeModeLayout->addWidget(timeModuleBox);
     timeModeLayout->addWidget(switchAtBeatBox);
@@ -83,22 +83,22 @@ GlobStore::GlobStore(QWidget *parent)
     timeModeLayout->setSpacing(0);
     timeModeLayout->addStretch();
 
-    QHBoxLayout *upperRowLayout = new QHBoxLayout();
+    QHBoxLayout *upperRowLayout = new QHBoxLayout;
     upperRowLayout->addLayout(timeModeLayout);
     upperRowLayout->addStretch();
 
     QAction* removeStoreAction = new QAction(tr("&Remove"), this);
-    QToolButton *removeStoreButton = new QToolButton(this);
+    QToolButton *removeStoreButton = new QToolButton;
     removeStoreButton->setDefaultAction(removeStoreAction);
     removeStoreButton->setFixedSize(50, 20);
     removeStoreButton->setArrowType (Qt::ArrowType(1));
     connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(removeLocation()));
 
-    QToolButton *toolButton = new QToolButton(this);
+    QToolButton *toolButton = new QToolButton;
     toolButton->setText("Global");
     toolButton->setMinimumSize(QSize(48,40));
     midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
-    QFrame *topRow = new QFrame(this);
+    QFrame *topRow = new QFrame;
 
     QHBoxLayout *topRowLayout = new QHBoxLayout;
     topRowLayout->addWidget(toolButton);
@@ -126,7 +126,7 @@ GlobStore::GlobStore(QWidget *parent)
     secondRowLayout->addLayout(indivButtonLayout);
     secondRowLayout->addStretch(1);
 
-    QVBoxLayout *centLayout = new QVBoxLayout();
+    QVBoxLayout *centLayout = new QVBoxLayout;
     centLayout->addLayout(upperRowLayout);
     centLayout->addLayout(secondRowLayout);
 
@@ -157,7 +157,7 @@ void GlobStore::storeAll(int ix)
 void GlobStore::addLocation()
 {
     QAction* storeAction = new QAction(tr("&Store"), this);
-    QToolButton *storeButton = new QToolButton(this);
+    QToolButton *storeButton = new QToolButton;
     storeButton->setDefaultAction(storeAction);
     storeButton->setFixedSize(15, 25);
     storeAction->setIcon(QPixmap(filesave_xpm));
@@ -165,7 +165,7 @@ void GlobStore::addLocation()
     storeSignalMapper->setMapping(storeAction, widgetList.count());
 
     QAction* restoreAction = new QAction(tr("&Restore"), this);
-    QToolButton *restoreButton = new QToolButton(this);
+    QToolButton *restoreButton = new QToolButton;
     restoreButton->setDefaultAction(restoreAction);
     restoreButton->setFixedSize(45, 25);
     restoreAction->setText(QString::number(widgetList.count() + 1));
@@ -175,7 +175,7 @@ void GlobStore::addLocation()
     restoreAction->setProperty("index", widgetList.count() + 1);
     connect(restoreAction, SIGNAL(triggered()), this, SLOT(mapRestoreSignal()));
 
-    QWidget* globWidget = new QWidget(this);
+    QWidget* globWidget = new QWidget;
     QHBoxLayout* globLayout = new QHBoxLayout;
     globLayout->setSpacing(0);
     globLayout->setMargin(0);

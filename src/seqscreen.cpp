@@ -32,7 +32,7 @@
 #include "engine.h"
 
 
-SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
+SeqScreen::SeqScreen()
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     mouseX = 0;
@@ -48,10 +48,6 @@ SeqScreen::SeqScreen(QWidget* parent) : QWidget (parent)
     grooveLength = 0;
     isMuted = false;
     needsRedraw = false;
-}
-
-SeqScreen::~SeqScreen()
-{
 }
 
 // Paint event handler.

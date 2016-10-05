@@ -30,9 +30,7 @@
 
 ParStore::ParStore(GlobStore *p_globStore, const QString &name,
             QAction *p_muteOutAction,
-            QAction *p_deferChangesAction,
-            QWidget* parent):
-                QWidget(parent), globStore(p_globStore)
+            QAction *p_deferChangesAction): globStore(p_globStore)
 {
     // when temp.empty is true, restoring from that set is ignored
     temp.empty = false;
@@ -72,21 +70,21 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     temp.pattern = "";
     list.clear();
 
-    ndc = new Indicator(14, name.at(0), this);
+    ndc = new Indicator(14, name.at(0));
 
-    topButton = new QToolButton(this);
+    topButton = new QToolButton;
     topButton->setFont(QFont("Helvetica", 8));
     topButton->setText(name);
     topButton->setMinimumSize(QSize(75, 10));
 
     muteOutAction = p_muteOutAction;
-    muteOut = new QToolButton(this);
+    muteOut = new QToolButton;
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(10, 10));
 
     deferChangesAction = p_deferChangesAction;
-    deferChanges = new QToolButton(this);
+    deferChanges = new QToolButton;
     deferChanges->setDefaultAction(deferChangesAction);
     deferChanges->setFont(QFont("Helvetica", 8));
     deferChanges->setMinimumSize(QSize(10, 10));
@@ -104,7 +102,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     controlLayout->setMargin(0);
     controlLayout->setSpacing(0);
 
-    QWidget *indicatorBox = new QWidget(this);
+    QWidget *indicatorBox = new QWidget;
     QHBoxLayout *indicatorLayout = new QHBoxLayout;
     indicatorBox->setMinimumHeight(20);
     indicatorBox->setMinimumWidth(25);
@@ -113,7 +111,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
-    QFrame *topRow = new QFrame(this);
+    QFrame *topRow = new QFrame;
     QHBoxLayout *topRowLayout = new QHBoxLayout;
     topRowLayout->addWidget(indicatorBox);
     topRowLayout->addLayout(controlLayout);
@@ -123,10 +121,10 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     topRow->setFrameStyle(QFrame::StyledPanel);
     topRow->setLayout(topRowLayout);
 
-    QVBoxLayout *buttonLayout = new QVBoxLayout();
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget(topRow);
 
-    locContextMenu = new QMenu(this);
+    locContextMenu = new QMenu;
 
     QAction *storeHereAction = new QAction(tr("&Store here"), this);
     storeHereAction->setProperty("index", list.count());
@@ -140,7 +138,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     locContextMenu->addAction(onlyPatternAction);
     connect(onlyPatternAction, SIGNAL(toggled(bool)), this, SLOT(updateOnlyPattern(bool)));
 
-    jumpToIndexMenu = new QMenu(tr("When finished"), this);
+    jumpToIndexMenu = new QMenu(tr("When finished"));
 
     jumpToGroup = new QActionGroup(this);
     connect(jumpToGroup, SIGNAL(triggered(QAction *))
@@ -181,10 +179,6 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     dispReqIx = 0;
     dispReqSelected = 0;
     needsGUIUpdate = false;
-}
-
-ParStore::~ParStore()
-{
 }
 
 void ParStore::writeData(QXmlStreamWriter& xml)
@@ -416,7 +410,7 @@ void ParStore::removeLocation(int ix)
     if (ix == -1) ix = list.count() - 1;
 
     list.removeAt(ix);
-    QWidget *button = new QWidget(this);
+    QWidget *button = new QWidget;
     button = layout()->itemAt(0)->layout()->takeAt(ix + 1)->widget();
     QAction *action = jumpToIndexMenu->actions().at(ix + 3);
     delete button;

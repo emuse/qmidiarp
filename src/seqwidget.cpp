@@ -90,14 +90,14 @@ SeqWidget::SeqWidget(
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"));
 
-    screen = new SeqScreen(this);
+    screen = new SeqScreen;
     screen->setToolTip(
         tr("Right button to mute points, left button to draw custom wave"));
     screen->setMinimumHeight(SEQSCR_MIN_H);
     connect(screen, SIGNAL(mouseEvent(double, double, int, int)), this,
             SLOT(mouseEvent(double, double, int, int)));
 
-    cursor = new Cursor('S', this);
+    cursor = new Cursor('S');
 
     muteOutAction = new QAction(tr("&Mute"),this);
     muteOutAction->setCheckable(true);
@@ -206,7 +206,7 @@ SeqWidget::SeqWidget(
              this, SLOT(updateDispVert(int)));
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
-            tr("Veloc&ity"), seqBox);
+            tr("Veloc&ity"), this);
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
 #ifdef APPBUILD
@@ -214,7 +214,7 @@ SeqWidget::SeqWidget(
 #endif
 
     notelength = new Slider(0, 127, 1, 16, 60, Qt::Horizontal,
-            tr("N&ote Length"), seqBox);
+            tr("N&ote Length"), this);
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
 #ifdef APPBUILD
@@ -222,7 +222,7 @@ SeqWidget::SeqWidget(
 #endif
 
     transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
-            tr("&Transpose"), seqBox);
+            tr("&Transpose"), this);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
 #ifdef APPBUILD
@@ -269,7 +269,7 @@ SeqWidget::SeqWidget(
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
 #ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
         midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));

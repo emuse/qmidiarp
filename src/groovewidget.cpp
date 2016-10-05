@@ -36,7 +36,7 @@
 #include "slider.h"
 
 
-GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
+GrooveWidget::GrooveWidget()
 {
     midiControl = new MidiControl(this);
     midiControl->ID = -1;
@@ -71,10 +71,6 @@ GrooveWidget::GrooveWidget(QWidget *parent) : QWidget(parent)
     velocityVal = 0;
     lengthVal = 0;
     needsGUIUpdate = false;
-}
-
-GrooveWidget::~GrooveWidget()
-{
 }
 
 void GrooveWidget::updateGrooveVelocity(int val)

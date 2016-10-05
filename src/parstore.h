@@ -47,9 +47,7 @@ class ParStore : public QWidget
   public:
     ParStore(GlobStore *p_globStore, const QString &name = "",
                 QAction* p_muteOutAction = 0,
-                QAction* p_deferChangesAction = 0,
-                QWidget* parent = 0);
-    ~ParStore();
+                QAction* p_deferChangesAction = 0);
     GlobStore *globStore;
     QToolButton *topButton;
     QAction *muteOutAction;

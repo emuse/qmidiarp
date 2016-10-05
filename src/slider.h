@@ -55,7 +55,6 @@ class Slider : public QWidget
   public:
     Slider(int minValue, int maxValue, int pageStep, int tickStep, int value,
            Qt::Orientation orientation, const QString& label, QWidget * parent);
-    ~Slider();
     int value();
     bool valueChangedSignalSuppressed;
 

@@ -62,7 +62,7 @@ class Cursor : public QWidget
     virtual void paintEvent(QPaintEvent *);
 
   public:
-    Cursor(QChar modtype = 'L', QWidget* parent=0);
+    Cursor(QChar modtype = 'L');
     ~Cursor();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;

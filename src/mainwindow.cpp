@@ -87,8 +87,8 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     lastDir = QDir::homePath();
     alsaMidi = p_alsamidi;
 
-    grooveWidget = new GrooveWidget(this);
-    grooveWindow = new QDockWidget(tr("Groove"), this);
+    grooveWidget = new GrooveWidget;
+    grooveWindow = new QDockWidget(tr("Groove"));
     grooveWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -97,7 +97,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     grooveWindow->setVisible(true);
 
     globStore = new GlobStore(this);
-    globStoreWindow = new QDockWidget(tr("Global Store"), this);
+    globStoreWindow = new QDockWidget(tr("Global Store"));
     globStoreWindow->setFeatures(QDockWidget::DockWidgetClosable
             | QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
@@ -503,7 +503,6 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
     appendDock(moduleWidget, name, count);
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
             , engine->moduleWindow(count), SLOT(raise()));
-
     checkIfFirstModule();
 }
 

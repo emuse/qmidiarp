@@ -104,7 +104,7 @@ LfoWidget::LfoWidget(
     connect(screen, SIGNAL(mouseWheel(int)), this,
             SLOT(mouseWheel(int)));
 
-    cursor = new Cursor('L', this);
+    cursor = new Cursor('L');
 
     QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), waveBox);
     waveFormBox = new QComboBox(waveBox);
@@ -229,7 +229,7 @@ LfoWidget::LfoWidget(
     midiControl->addMidiLearnMenu("RecordToggle", recordButton, 5);
 #endif
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
-            tr("&Amplitude"), waveBox);
+            tr("&Amplitude"), this);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
 #ifdef APPBUILD
@@ -237,7 +237,7 @@ LfoWidget::LfoWidget(
 #endif
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
-            tr("&Offset"), waveBox);
+            tr("&Offset"), this);
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
 #ifdef APPBUILD
@@ -291,7 +291,7 @@ LfoWidget::LfoWidget(
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 #ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
         midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));

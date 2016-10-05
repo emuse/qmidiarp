@@ -70,8 +70,7 @@ class SeqScreen : public QWidget
     virtual void paintEvent(QPaintEvent *);
 
   public:
-    SeqScreen(QWidget* parent=0);
-    ~SeqScreen();
+    SeqScreen();
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
     int baseOctave, nOctaves;

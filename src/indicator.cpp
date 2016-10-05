@@ -31,7 +31,7 @@
 #include "indicator.h"
 
 
-Indicator::Indicator(int size, QChar modType, QWidget* parent) : QWidget (parent)
+Indicator::Indicator(int size, QChar modType)
 {
     p_angle = 0;
     p_size = size;
@@ -52,10 +52,6 @@ Indicator::Indicator(int size, QChar modType, QWidget* parent) : QWidget (parent
     }
     needsRedraw = false;
     isMuted = false;
-}
-
-Indicator::~Indicator()
-{
 }
 
 // Paint event handler.

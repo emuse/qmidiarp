@@ -31,7 +31,7 @@
 #include "cursor.h"
 
 
-Cursor::Cursor(QChar modtype, QWidget* parent) : QWidget (parent)
+Cursor::Cursor(QChar modtype)
 {
     currentIndex = 0;
     modType = modtype;

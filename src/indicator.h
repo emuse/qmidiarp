@@ -47,8 +47,7 @@ class Indicator : public QWidget
     virtual void paintEvent(QPaintEvent *);
 
   public:
-    Indicator(int size, QChar modType = ' ', QWidget* parent=0);
-    ~Indicator();
+    Indicator(int size, QChar modType = ' ');
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
 

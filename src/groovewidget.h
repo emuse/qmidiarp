@@ -58,8 +58,7 @@ class GrooveWidget : public QWidget
     Slider *grooveVelocity, *grooveTick, *grooveLength;
 
   public:
-    GrooveWidget(QWidget* parent=0);
-    ~GrooveWidget();
+    GrooveWidget();
     MidiControl *midiControl;
 
 /*!

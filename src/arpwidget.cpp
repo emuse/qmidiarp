@@ -272,17 +272,17 @@ ArpWidget::ArpWidget(
     QVBoxLayout *randomBoxLayout = new QVBoxLayout;
 
     randomTick = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
-            tr("&Shift"), randomBox);
+            tr("&Shift"), this);
     connect(randomTick, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomTickAmp(int)));
 
     randomVelocity = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
-            tr("Vel&ocity"), randomBox);
+            tr("Vel&ocity"), this);
     connect(randomVelocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomVelocityAmp(int)));
 
     randomLength = new Slider(0, 100, 1, 5, 0, Qt::Horizontal,
-            tr("&Length"), randomBox);
+            tr("&Length"), this);
     connect(randomLength, SIGNAL(valueChanged(int)), this,
             SLOT(updateRandomLengthAmp(int)));
 
@@ -327,7 +327,7 @@ ArpWidget::ArpWidget(
     envelopeBox->setLayout(envelopeBoxLayout);
 
 #ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
         midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));
