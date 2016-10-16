@@ -48,7 +48,7 @@
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& name):
-    InOutBox(portCount, compactStyle, inOutVisible, "Arp:"),
+    InOutBox(portCount, compactStyle, inOutVisible, name),
     midiWorker(p_midiWorker),
     globStore(p_globStore),
     modified(false)
@@ -88,13 +88,6 @@ ArpWidget::ArpWidget(
     midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
 
-    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    QToolButton *hideInOutBoxButton = new QToolButton;
-    hideInOutBoxAction->setCheckable(true);
-    hideInOutBoxAction->setChecked(inOutVisible);
-    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
-    hideInOutBoxButton->setFixedSize(10, 80);
-    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
 
@@ -364,8 +357,8 @@ MidiArp *ArpWidget::getMidiWorker()
 
 void ArpWidget::writeData(QXmlStreamWriter& xml)
 {
-    xml.writeStartElement(manageBox->name.left(3));
-    xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
     xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);
@@ -854,27 +847,6 @@ void ArpWidget::updateChannelOut(int value)
     modified = true;
 }
 
-void ArpWidget::storeParams(int ix, bool empty)
-{
-#ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
-    doStoreParams(ix, empty);
-#else
-    (void)ix;
-    (void)empty;
-#endif
-}
-
-void ArpWidget::restoreParams(int ix)
-{
-#ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
-    doRestoreParams(ix);
-#else
-    (void)ix;
-#endif
-}
-
 #ifdef APPBUILD
 bool ArpWidget::isModified()
 {
@@ -890,7 +862,7 @@ void ArpWidget::setModified(bool m)
     if (midiWorker) midiControl->setModified(m);
 }
 
-void ArpWidget::doStoreParams(int ix, bool empty)
+void ArpWidget::doStoreParams(int ix, bool empty = false)
 {
     parStore->temp.empty = empty;
     parStore->temp.muteOut = muteOut->isChecked();

@@ -41,7 +41,6 @@
 #ifdef APPBUILD
 #include "globstore.h"
 #include "midicontrol.h"
-#include "managebox.h"
 #include "parstore.h"
 #endif
 
@@ -115,7 +114,6 @@ class SeqWidget : public InOutBox
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;
-    QAction* hideInOutBoxAction;
     QSignalMapper *dispSignalMapper;
     int dispVertIndex;
     int resBoxIndex;
@@ -308,8 +306,6 @@ class SeqWidget : public InOutBox
 */
     void updateDeferChanges(bool on);
 
-    void storeParams(int ix, bool empty = false);
-    void restoreParams(int ix);
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

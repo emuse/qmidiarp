@@ -42,7 +42,6 @@
 #ifdef APPBUILD
 #include "globstore.h"
 #include "midicontrol.h"
-#include "managebox.h"
 #include "parstore.h"
 #endif
 
@@ -122,7 +121,6 @@ class ArpWidget :  public InOutBox
 
     QStringList patternPresets, patternNames;
     QAction *muteOutAction;
-    QAction* hideInOutBoxAction;
     QAction *deferChangesAction;
     QToolButton *muteOut;
     QAction *latchModeAction;
@@ -260,9 +258,6 @@ class ArpWidget :  public InOutBox
 * @param on Set to True for deferring parameter changes to pattern end
 */
     void updateDeferChanges(bool on);
-
-    void storeParams(int ix, bool empty = false);
-    void restoreParams(int ix);
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

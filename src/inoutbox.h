@@ -35,8 +35,6 @@
 #include <QLabel>
 #include <QCheckBox>
 
-#include "managebox.h"
-
 /*! @brief GUI class creating an input/output parameter box
  *
 */
@@ -47,11 +45,14 @@ class InOutBox: public QWidget
 	public:
 #ifdef APPBUILD
 	InOutBox( int portCount, bool compactStyle,
-		bool inOutVisible, const QString& type);
-    ManageBox *manageBox;
+		bool inOutVisible, const QString& name);
+    QAction *deleteAction, *renameAction, *cloneAction;
+    QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
+    int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
+    int parentDockID;   /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
 #else
 	InOutBox(bool compactStyle,
-		bool inOutVisible, const QString& type);
+		bool inOutVisible, const QString& name);
 #endif
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     QLabel *rangeInLabel, *indexInLabel;
@@ -68,7 +69,9 @@ class InOutBox: public QWidget
     QCheckBox *enableNoteOff;
     QSpinBox  *ccnumberInBox;
     QSpinBox  *ccnumberBox;
-    
+	QAction *hideInOutBoxAction;
+	QToolButton *hideInOutBoxButton;
+	   
 	QWidget *inOutBoxWidget;
 
     virtual void setChIn(int value);
@@ -85,18 +88,76 @@ class InOutBox: public QWidget
 */
 
     virtual void setChannelOut(int value);
+
+#ifdef APPBUILD
 /*!
 * @brief Setter for the InOutBox::portOut spinbox setting the output
 * port of this module.
 * @param value Number of the output port to send data to
 *
 */
-#ifdef APPBUILD
     virtual void setPortOut(int value);
+/*!
+* @brief stores some module parameters in a parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    virtual void doStoreParams(int ix, bool empty) = 0;
+/*!
+* @brief restores some module parameters from the parameter
+* list object
+*
+* @param Position index in the parameter list
+*/
+    virtual void doRestoreParams(int ix) = 0;
 #endif
+	
+  public slots:
+/*!
+* @brief Slot for ManageBox::deleteAction.
+*
+* This function displays a warning and then emits the
+* ManageBox::moduleRemove signal to MainWindow with the module ID as
+* parameter.
+*/
+    virtual void moduleDelete();
+/*!
+* @brief Slot for ManageBox::renameAction.
+*
+* This function queries a new name then emits the ManageBox::dockRename
+* signal to MainWindow with the new name and the dockWidget ID to rename.
+*/
+    virtual void moduleRename();
+/*!
+* @brief Slot for ManageBox::cloneAction.
+*
+* This function emits the ManageBox::dockClone
+* signal to MainWindow with the module ID and the dockWidget ID.
+*/
+    virtual void moduleClone();
 
-public slots:    
     virtual void setInputFilterVisible(bool on);
+    
+	virtual void storeParams(int ix, bool empty = 0);
+	virtual void restoreParams(int ix);
+	
 
+  signals:
+
+/*! @brief Emitted to MainWindow::removeSeq for module deletion.
+ *  @param ID The internal module ID of the module to remove
+ *  */
+    void moduleRemove(int ID);
+/*! @brief Emitted to MainWindow::renameDock for module rename.
+ *  @param mname New name of the module
+ *  @param parentDockID parentDockID of the module to rename
+ *  @param ID widgetID of the module to rename
+ * */
+    void dockRename(const QString& mname, int parentDockID, int ID);
+/*! @brief Emitted to MainWindow::cloneSeq for module duplication.
+ *  @param ID module ID of the module to clone
+ * */
+    void moduleClone(int ID);
 };
 #endif

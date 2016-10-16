@@ -45,7 +45,7 @@
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& name):
-    InOutBox(portCount, compactStyle, inOutVisible, "LFO:"),
+    InOutBox(portCount, compactStyle, inOutVisible, name),
     midiWorker(p_midiWorker),
     globStore(p_globStore),
     modified(false)
@@ -80,15 +80,10 @@ LfoWidget::LfoWidget(
 #ifdef APPBUILD
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
+    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
+    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
 
-    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    QToolButton *hideInOutBoxButton = new QToolButton;
-    hideInOutBoxAction->setCheckable(true);
-    hideInOutBoxAction->setChecked(inOutVisible);
-    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
-    hideInOutBoxButton->setFixedSize(10, 80);
-    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
     // group box for wave setup
@@ -324,8 +319,8 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 {
     QByteArray tempArray;
     int l1;
-    xml.writeStartElement(manageBox->name.left(3));
-    xml.writeAttribute("name", manageBox->name.mid(manageBox->name.indexOf(':') + 1));
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
     xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
         xml.writeStartElement("input");
             xml.writeTextElement("enableNoteOff", QString::number(
@@ -338,6 +333,14 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->trigLegato));
             xml.writeTextElement("channel", QString::number(
                 midiWorker->chIn));
+            xml.writeTextElement("indexMin", QString::number(
+                midiWorker->indexIn[0]));
+            xml.writeTextElement("indexMax", QString::number(
+                midiWorker->indexIn[1]));
+            xml.writeTextElement("rangeMin", QString::number(
+                midiWorker->rangeIn[0]));
+            xml.writeTextElement("rangeMax", QString::number(
+                midiWorker->rangeIn[1]));
             xml.writeTextElement("ccnumber", QString::number(
                 midiWorker->ccnumberIn));
         xml.writeEndElement();
@@ -427,6 +430,14 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                     chIn->setCurrentIndex(tmp);
                     updateChIn(tmp);
                 }
+                else if (xml.name() == "indexMin")
+                    indexIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "indexMax")
+                    indexIn[1]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMin")
+                    rangeIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMax")
+                    rangeIn[1]->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "ccnumber")
                     ccnumberInBox->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
@@ -553,6 +564,28 @@ void LfoWidget::updateCcnumber(int val)
 {
     if (midiWorker)
         midiWorker->ccnumber = val;
+    modified = true;
+}
+
+void LfoWidget::updateIndexIn(int value)
+{
+    if (indexIn[0] == sender()) {
+        if (midiWorker) midiWorker->indexIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->indexIn[1] = value;
+    }
+    checkIfInputFilterSet();
+    modified = true;
+}
+
+void LfoWidget::updateRangeIn(int value)
+{
+    if (rangeIn[0] == sender()) {
+        if (midiWorker) midiWorker->rangeIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->rangeIn[1] = value;
+    }
+    checkIfInputFilterSet();
     modified = true;
 }
 
@@ -751,27 +784,6 @@ void LfoWidget::updateChannelOut(int value)
     modified = true;
 }
 
-void LfoWidget::storeParams(int ix, bool empty)
-{
-#ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
-    doStoreParams(ix, empty);
-#else
-    (void)ix;
-    (void)empty;
-#endif
-}
-
-void LfoWidget::restoreParams(int ix)
-{
-#ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
-    doRestoreParams(ix);
-#else
-    (void)ix;
-#endif
-}
-
 #ifdef APPBUILD
 QVector<Sample> LfoWidget::getCustomWave()
 {
@@ -798,6 +810,10 @@ void LfoWidget::doStoreParams(int ix, bool empty)
     parStore->temp.ccnumber = ccnumberBox->value();
     parStore->temp.channelOut = channelOut->currentIndex();
     parStore->temp.portOut = portOut->currentIndex();
+    parStore->temp.indexIn0 = indexIn[0]->value();
+    parStore->temp.indexIn1 = indexIn[1]->value();
+    parStore->temp.rangeIn0 = rangeIn[0]->value();
+    parStore->temp.rangeIn1 = rangeIn[1]->value();
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
@@ -835,6 +851,10 @@ void LfoWidget::doRestoreParams(int ix)
     if (!parStore->onlyPatternList.at(ix)) {
         //muteOut->setChecked(parStore->list.at(ix).muteOut);
         offset->setValue(parStore->list.at(ix).offs);
+        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
+        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
+        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
+        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
         chIn->setCurrentIndex(parStore->list.at(ix).chIn);
         updateChIn(parStore->list.at(ix).chIn);
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
@@ -857,6 +877,15 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
     enableTrigByKbd->setChecked(fromWidget->enableTrigByKbd->isChecked());
     enableTrigLegato->setChecked(fromWidget->enableTrigLegato->isChecked());
 
+    for (int l1 = 0; l1 < 1; l1++) {
+        tmp = fromWidget->indexIn[l1]->value();
+        indexIn[l1]->setValue(tmp);
+    }
+    for (int l1 = 0; l1 < 1; l1++) {
+        tmp = fromWidget->rangeIn[l1]->value();
+        rangeIn[l1]->setValue(tmp);
+    }
+
     tmp = fromWidget->chIn->currentIndex();
     chIn->setCurrentIndex(tmp);
     updateChIn(tmp);
@@ -869,10 +898,8 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 
     tmp = fromWidget->ccnumberInBox->value();
     ccnumberInBox->setValue(tmp);
-    updateCcnumberIn(tmp);
     tmp = fromWidget->ccnumberBox->value();
     ccnumberBox->setValue(tmp);
-    updateCcnumber(tmp);
 
     tmp = fromWidget->resBox->currentIndex();
     resBox->setCurrentIndex(tmp);

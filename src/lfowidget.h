@@ -39,7 +39,6 @@
 #ifdef APPBUILD
 #include "globstore.h"
 #include "midicontrol.h"
-#include "managebox.h"
 #include "parstore.h"
 #endif
 
@@ -124,7 +123,6 @@ class LfoWidget : public InOutBox
     QComboBox *loopBox;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
-    QAction* hideInOutBoxAction;
     QAction *muteOutAction;
     QAction *deferChangesAction;
     QAction *flipWaveVerticalAction;
@@ -206,6 +204,8 @@ class LfoWidget : public InOutBox
 /* PUBLIC SLOTS */
   public slots:
     void updateChIn(int value);
+    void updateIndexIn(int value);
+    void updateRangeIn(int value);
     void updateCcnumberIn(int value);
     void updateScreen(int value);
     void setRecord(bool on);
@@ -369,8 +369,6 @@ class LfoWidget : public InOutBox
 */
     void updateDeferChanges(bool on);
 
-    void storeParams(int ix, bool empty = false);
-    void restoreParams(int ix);
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

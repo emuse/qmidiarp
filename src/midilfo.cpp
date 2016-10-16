@@ -53,6 +53,10 @@ MidiLfo::MidiLfo()
     channelOut = 0;
     chIn = 0;
     ccnumberIn = 74;
+    for (int l1 = 0; l1 < 2; l1++) {
+        rangeIn[l1] = (l1) ? 127 : 0;
+        indexIn[l1] = (l1) ? 127 : 0;
+    }
     waveFormIndex = 0;
     isMuted = false;
     isMutedDefer = false;
@@ -618,6 +622,11 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
         return (false);
     }
     if (inEv.type != EV_NOTEON) return (true);
+    
+    if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
+        || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
+        return(true);
+    }
 
     if (inEv.value) {
         /*This is a NOTE ON event*/

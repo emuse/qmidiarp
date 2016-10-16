@@ -25,16 +25,61 @@
 #include <QBoxLayout>
 
 #include "inoutbox.h"
+#include "config.h"
 
 #ifdef APPBUILD
+
+#include <QMessageBox>
+#include <QInputDialog>
+
+
+#include "pixmaps/lfowavcp.xpm"
+#include "pixmaps/seqwavcp.xpm"
+#include "pixmaps/arpremove.xpm"
+#include "pixmaps/arprename.xpm"
+
+
 InOutBox::InOutBox(int portCount, bool compactStyle,
-    bool inOutVisible, const QString& nameprefix):
+    bool inOutVisible, const QString& p_name):
+    name(p_name),
     modified(false)
 {
-    manageBox = new ManageBox(nameprefix);
+
+    QHBoxLayout *manageBoxLayout = new QHBoxLayout;
+
+    QToolButton *cloneButton = new QToolButton;
+    if (name.startsWith('S') || name.startsWith('L')) {
+        if (name.startsWith('S')) {
+            cloneAction = new QAction(QPixmap(seqwavcp_xpm), tr("&Clone..."), this);
+        }
+        else {
+            cloneAction = new QAction(QPixmap(lfowavcp_xpm), tr("&Clone..."), this);
+        }
+        cloneAction->setToolTip(tr("Duplicate this Module in muted state"));
+        cloneButton->setDefaultAction(cloneAction);
+        connect(cloneAction, SIGNAL(triggered()), this, SLOT(moduleClone()));
+    }
+    else cloneButton->hide();
+    renameAction = new QAction(QPixmap(arprename_xpm), tr("&Rename..."), this);
+    renameAction->setToolTip(tr("Rename this Module"));
+    QToolButton *renameButton = new QToolButton;
+    renameButton->setDefaultAction(renameAction);
+    connect(renameAction, SIGNAL(triggered()), this, SLOT(moduleRename()));
+
+    deleteAction = new QAction(QPixmap(arpremove_xpm), tr("&Delete..."), this);
+    deleteAction->setToolTip(tr("Delete this Module"));
+    QToolButton *deleteButton = new QToolButton;
+    deleteButton->setDefaultAction(deleteAction);
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(moduleDelete()));
+
+    manageBoxLayout->addStretch();
+    manageBoxLayout->addWidget(cloneButton);
+    manageBoxLayout->addWidget(renameButton);
+    manageBoxLayout->addWidget(deleteButton);
+
 #else
 InOutBox::InOutBox(bool compactStyle,
-    bool inOutVisible, const QString& nameprefix):
+    bool inOutVisible, const QString& name):
     modified(false)
 {
 #endif
@@ -46,7 +91,7 @@ InOutBox::InOutBox(bool compactStyle,
     enableNoteIn = new QCheckBox;
     enableNoteInLabel->setBuddy(enableNoteIn);
     enableNoteIn->setToolTip(tr("Transpose the sequence following incoming notes"));
-    if (nameprefix != "Seq:") {
+    if (!name.startsWith('S')) {
 		enableNoteIn->hide();
 		enableNoteInLabel->hide();
 	}
@@ -55,7 +100,7 @@ InOutBox::InOutBox(bool compactStyle,
     enableVelIn = new QCheckBox;
     enableVelInLabel->setBuddy(enableVelIn);
     enableVelIn->setToolTip(tr("Set sequence velocity to that of incoming notes"));
-    if (nameprefix != "Seq:") {
+    if (!name.startsWith('S')) {
 		enableVelIn->hide();
 		enableVelInLabel->hide();
 	}
@@ -64,7 +109,7 @@ InOutBox::InOutBox(bool compactStyle,
     enableNoteOff = new QCheckBox;
     enableNoteOffLabel->setBuddy(enableNoteOff);
     enableNoteOff->setToolTip(tr("Stop output when Note is released"));
-    if (nameprefix == "Arp:") {
+    if (name.startsWith('A')) {
 		enableNoteOff->hide();
 		enableNoteOffLabel->hide();
 	}
@@ -76,7 +121,7 @@ InOutBox::InOutBox(bool compactStyle,
     ccnumberInBox->setKeyboardTracking(false);
     ccnumberInBox->setValue(74);
     ccnumberInBox->setToolTip(tr("MIDI Controller number to record"));
-    if (nameprefix != "LFO:") {
+    if (!name.startsWith('L')) {
 		ccnumberInBox->hide();
 		ccnumberInLabel->hide();
 	}
@@ -175,7 +220,7 @@ InOutBox::InOutBox(bool compactStyle,
     ccnumberBox->setKeyboardTracking(false);
     ccnumberBox->setValue(74);
     ccnumberBox->setToolTip(tr("MIDI Controller number sent to output"));
-    if (nameprefix != "LFO:") {
+    if (!name.startsWith('L')) {
 		ccnumberBox->hide();
 		ccnumberLabel->hide();
 	}
@@ -205,12 +250,20 @@ InOutBox::InOutBox(bool compactStyle,
     }
     portBox->setLayout(portBoxLayout);
 
+    // Hiding button that has to be added to each module widget outside the box
+    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    hideInOutBoxButton = new QToolButton;
+    hideInOutBoxAction->setCheckable(true);
+    hideInOutBoxAction->setChecked(inOutVisible);
+    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
+    hideInOutBoxButton->setFixedSize(10, 80);
+    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
 
     // Layout for left/right placements of in/out group boxes
     inOutBoxWidget = new QWidget;
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
 #ifdef APPBUILD
-    inOutBoxLayout->addWidget(manageBox);
+    inOutBoxLayout->addLayout(manageBoxLayout);
 #endif
     inOutBoxLayout->addWidget(inBox);
     inOutBoxLayout->addWidget(portBox);
@@ -218,14 +271,6 @@ InOutBox::InOutBox(bool compactStyle,
     inOutBoxWidget->setLayout(inOutBoxLayout);
     inOutBoxWidget->setVisible(inOutVisible);
 }
-
-#ifdef APPBUILD
-void InOutBox::setPortOut(int value)
-{
-    portOut->setCurrentIndex(value);
-    modified = true;
-}
-#endif
 
 void InOutBox::setChannelOut(int value)
 {
@@ -284,3 +329,72 @@ void InOutBox::setRangeIn(int index, int value)
     modified = true;
 }
 
+void InOutBox::storeParams(int ix, bool empty)
+{
+#ifdef APPBUILD
+    // have to do this for moc not caring for APPBUILD flag
+    doStoreParams(ix, empty);
+#else
+    (void)ix;
+    (void)empty;
+#endif
+}
+
+void InOutBox::restoreParams(int ix)
+{
+#ifdef APPBUILD
+    // have to do this for moc not caring for APPBUILD flag
+    doRestoreParams(ix);
+#else
+    (void)ix;
+#endif
+}
+
+#ifdef APPBUILD
+void InOutBox::setPortOut(int value)
+{
+    portOut->setCurrentIndex(value);
+    modified = true;
+}
+#endif
+
+void InOutBox::moduleDelete()
+{
+#ifdef APPBUILD
+    QString qs;
+    qs = tr("Delete \"%1\"?")
+        .arg(name);
+    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
+                QMessageBox::No | QMessageBox::Default
+                | QMessageBox::Escape, QMessageBox::NoButton)
+            == QMessageBox::No) {
+        return;
+    }
+    emit moduleRemove(ID);
+#endif
+}
+
+void InOutBox::moduleRename()
+{
+#ifdef APPBUILD
+    QString newname, oldname;
+    bool ok;
+	qWarning("name %s", qPrintable(name));
+    oldname = name;
+
+    newname = QInputDialog::getText(this, APP_NAME,
+                tr("New Name"), QLineEdit::Normal, oldname.mid(4), &ok);
+
+    if (ok && !newname.isEmpty()) {
+        name = oldname.left(4) + newname;
+        emit dockRename(name, parentDockID, ID);
+    }
+#endif
+}
+
+void InOutBox::moduleClone()
+{
+#ifdef APPBUILD
+        emit moduleClone(ID);
+#endif
+}

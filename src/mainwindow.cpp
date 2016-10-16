@@ -462,27 +462,26 @@ void MainWindow::seqNew()
     }
 }
 
-void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
+void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
 {
     int count, widgetID;
     MidiArp *midiWorker = new MidiArp();
     ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, name);
+            passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
                     QString&, int)));
-    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
+    connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
             engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
 
     widgetID = engine->arpWidgetCount();
-    moduleWidget->manageBox->name = name;
-    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
     // if the module is added at a time when global stores are already
@@ -497,10 +496,10 @@ void MainWindow::addArp(const QString& name, bool fromfile, bool inOutVisible)
     engine->sendGroove();
 
     count = engine->moduleWindowCount();
-    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
-    appendDock(moduleWidget, name, count);
+    appendDock(moduleWidget, p_name, count);
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
             , engine->moduleWindow(count), SLOT(raise()));
     checkIfFirstModule();
@@ -514,10 +513,10 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, p_name);
-    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)),
+    connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
-    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
             engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
@@ -528,8 +527,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     }
 
     //TODO: transfer these items to constructor
-    moduleWidget->manageBox->name = p_name;
-    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
     // if the module is added at a time when global stores are already
@@ -551,7 +549,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     engine->sendGroove();
 
     count = engine->moduleWindowCount();
-    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
@@ -569,9 +567,9 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, p_name);
-    connect(moduleWidget->manageBox, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
-    connect(moduleWidget->manageBox, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
-    connect(moduleWidget->manageBox, SIGNAL(dockRename(const QString&, int, int)),
+    connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
+    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
             engine, SLOT(renameDock(const QString&, int, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
             engine, SLOT(setMidiLearn(int, int, int)));
@@ -580,8 +578,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     if (clonefrom >= 0) {
         moduleWidget->copyParamsFrom(engine->seqWidget(clonefrom));
     }
-    moduleWidget->manageBox->name = p_name;
-    moduleWidget->manageBox->ID = widgetID;
+    moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
 
     // if the module is added at a time when global stores are already
@@ -603,7 +600,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     engine->sendGroove();
 
     count = engine->moduleWindowCount();
-    moduleWidget->manageBox->parentDockID = count;
+    moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
     moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
@@ -615,14 +612,14 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 void MainWindow::cloneLfo(int ID)
 {
     QString name;
-    name = engine->lfoWidget(ID)->manageBox->name + "_0";
+    name = engine->lfoWidget(ID)->name + "_0";
     addLfo(name, false, ID);
 }
 
 void MainWindow::cloneSeq(int ID)
 {
     QString name;
-    name = engine->seqWidget(ID)->manageBox->name + "_0";
+    name = engine->seqWidget(ID)->name + "_0";
     addSeq(name, false, ID);
 }
 
@@ -646,7 +643,7 @@ void MainWindow::removeArp(int index)
     int parentDockID;
     ArpWidget *arpWidget = engine->arpWidget(index);
 
-    parentDockID = arpWidget->manageBox->parentDockID;
+    parentDockID = arpWidget->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
     globStore->removeModule(parentDockID);
 
@@ -663,7 +660,7 @@ void MainWindow::removeLfo(int index)
     int parentDockID;
     LfoWidget *lfoWidget = engine->lfoWidget(index);
 
-    parentDockID = lfoWidget->manageBox->parentDockID;
+    parentDockID = lfoWidget->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
     globStore->removeModule(parentDockID);
 
@@ -680,7 +677,7 @@ void MainWindow::removeSeq(int index)
     int parentDockID;
     SeqWidget *seqWidget = engine->seqWidget(index);
 
-    parentDockID = seqWidget->manageBox->parentDockID;
+    parentDockID = seqWidget->parentDockID;
     QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
     globStore->removeModule(parentDockID);
 

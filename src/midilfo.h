@@ -95,6 +95,8 @@ class MidiLfo : public QObject  {
     bool reverse;       /*!< True when the current play direction is backwards */
     int portOut;    /*!< MIDI output port number */
     int channelOut; /*!< MIDI output channel */
+    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by LfoWidget */
+    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by LfoWidget */
     bool recordMode, isRecording;
     bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
     bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */

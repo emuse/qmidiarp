@@ -12,7 +12,6 @@ nodist_qmidiarp_SOURCES = \
 	arpwidget_moc.cpp \
 	lfowidget_moc.cpp \
 	seqwidget_moc.cpp \
-	managebox_moc.cpp \
 	groovewidget_moc.cpp \
 	mainwindow_moc.cpp \
 	globstore_moc.cpp \
@@ -40,7 +39,6 @@ qmidiarp_SOURCES = \
 	arpwidget.cpp arpwidget.h \
 	lfowidget.cpp lfowidget.h \
 	seqwidget.cpp seqwidget.h \
-	managebox.cpp managebox.h \
 	groovewidget.cpp groovewidget.h \
 	mainwindow.cpp mainwindow.h \
 	globstore.cpp globstore.h \
@@ -231,7 +229,7 @@ CLEANFILES = \
 SUFFIXES = _moc.cpp
 
 .h_moc.cpp: $(qmidiarp_SOURCES)
-	$(MOC) $< -o $@
+	$(MOC) $(DEFINES) $< -o $@
 
 if ENABLE_TRANSLATIONS
 # rule for translation file updates
