@@ -38,12 +38,6 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-#ifdef APPBUILD
-#include "globstore.h"
-#include "midicontrol.h"
-#include "parstore.h"
-#endif
-
 #include "midiseq.h"
 #include "inoutbox.h"
 #include "slider.h"
@@ -66,9 +60,6 @@ class SeqWidget : public InOutBox
     Q_OBJECT
 
     MidiSeq *midiWorker;
-#ifdef APPBUILD
-    GlobStore *globStore;
-#endif
     bool modified;      /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
@@ -93,14 +84,11 @@ class SeqWidget : public InOutBox
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
 
-    ParStore *parStore;
-    MidiControl *midiControl;
 #else
     SeqWidget(
             bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true);
 #endif
-    ~SeqWidget();
 
     QVector<Sample> data;
     SeqScreen *screen;
@@ -108,9 +96,6 @@ class SeqWidget : public InOutBox
 
     QComboBox *resBox, *sizeBox, *freqBox;
     QComboBox *loopBox;
-    QAction *muteOutAction;
-    QAction *deferChangesAction;
-    QToolButton *muteOut;
     QCheckBox *dispVert[4];
     Slider *velocity, *transpose, *notelength;
     QAction *recordAction;

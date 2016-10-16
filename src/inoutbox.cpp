@@ -39,11 +39,13 @@
 #include "pixmaps/arprename.xpm"
 
 
-InOutBox::InOutBox(int portCount, bool compactStyle,
+InOutBox::InOutBox(GlobStore *p_globStore, int portCount, bool compactStyle,
     bool inOutVisible, const QString& p_name):
     name(p_name),
+    globStore(p_globStore),
     modified(false)
 {
+    midiControl = new MidiControl(this);
 
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
 
@@ -232,23 +234,39 @@ InOutBox::InOutBox(bool compactStyle,
     for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
 
     QGridLayout *portBoxLayout = new QGridLayout;
+    portBoxLayout->addWidget(ccnumberLabel, 0, 0);
+    portBoxLayout->addWidget(ccnumberBox, 0, 1);
+    portBoxLayout->addWidget(channelLabel, 1, 0);
+    portBoxLayout->addWidget(channelOut, 1, 1);
 #ifdef APPBUILD
 	QLabel *portLabel = new QLabel(tr("&Port"));
 	portOut = new QComboBox;
 	portLabel->setBuddy(portOut);
 	for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-    portBoxLayout->addWidget(ccnumberLabel, 0, 0);
-    portBoxLayout->addWidget(ccnumberBox, 0, 1);
-	portBoxLayout->addWidget(portLabel, 1, 0);
-	portBoxLayout->addWidget(portOut, 1, 1);
+	portBoxLayout->addWidget(portLabel, 2, 0);
+	portBoxLayout->addWidget(portOut, 2, 1);
 #endif
-    portBoxLayout->addWidget(channelLabel, 2, 0);
-    portBoxLayout->addWidget(channelOut, 2, 1);
     if (compactStyle) {
         portBoxLayout->setMargin(2);
         portBoxLayout->setSpacing(1);
     }
     portBox->setLayout(portBoxLayout);
+
+    // Mute button that has to be added to each module widget outside the box
+    muteOutAction = new QAction(tr("&Mute"),this);
+    muteOutAction->setCheckable(true);
+    muteOut = new QToolButton;
+    muteOut->setDefaultAction(muteOutAction);
+    muteOut->setFont(QFont("Helvetica", 8));
+    muteOut->setMinimumSize(QSize(35,20));
+    
+    // Defer button that has to be added to each module widget outside the box
+    deferChangesAction = new QAction("D", this);
+    deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
+    deferChangesAction->setCheckable(true);
+    deferChangesButton = new QToolButton;
+    deferChangesButton->setDefaultAction(deferChangesAction);
+    deferChangesButton->setFixedSize(20, 20);
 
     // Hiding button that has to be added to each module widget outside the box
     hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
@@ -259,6 +277,18 @@ InOutBox::InOutBox(bool compactStyle,
     hideInOutBoxButton->setFixedSize(10, 80);
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
 
+#ifdef APPBUILD
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
+        connect(parStore, SIGNAL(store(int, bool)),
+                 this, SLOT(storeParams(int, bool)));
+        connect(parStore, SIGNAL(restore(int)),
+                 this, SLOT(restoreParams(int)));
+                 
+    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
+    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
+#endif
     // Layout for left/right placements of in/out group boxes
     inOutBoxWidget = new QWidget;
     QVBoxLayout *inOutBoxLayout = new QVBoxLayout;
@@ -270,6 +300,15 @@ InOutBox::InOutBox(bool compactStyle,
     inOutBoxLayout->addStretch();
     inOutBoxWidget->setLayout(inOutBoxLayout);
     inOutBoxWidget->setVisible(inOutVisible);
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
+				SLOT(setVisible(bool)));
+}
+
+InOutBox::~InOutBox()
+{
+#ifdef APPBUILD
+    delete parStore;
+#endif
 }
 
 void InOutBox::setChannelOut(int value)
@@ -398,3 +437,135 @@ void InOutBox::moduleClone()
         emit moduleClone(ID);
 #endif
 }
+
+#ifdef APPBUILD
+void InOutBox::writeCommonData(QXmlStreamWriter& xml)
+{
+    xml.writeStartElement(name.left(3));
+    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
+    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
+
+        xml.writeStartElement("input");
+            if (!name.startsWith('A')) {
+            xml.writeTextElement("enableNoteOff", QString::number(
+                enableNoteOff->isChecked()));
+			}
+            if (name.startsWith('S')) {
+            xml.writeTextElement("enableNote", QString::number(
+                enableNoteIn->isChecked()));
+            xml.writeTextElement("enableVelocity", QString::number(
+                enableVelIn->isChecked()));
+			}
+            xml.writeTextElement("restartByKbd", QString::number(
+                enableRestartByKbd->isChecked()));
+            xml.writeTextElement("trigByKbd", QString::number(
+                enableTrigByKbd->isChecked()));
+            xml.writeTextElement("trigLegato", QString::number(
+                enableTrigLegato->isChecked()));
+            xml.writeTextElement("channel", QString::number(
+                chIn->currentIndex()));
+            xml.writeTextElement("indexMin", QString::number(
+                indexIn[0]->value()));
+            xml.writeTextElement("indexMax", QString::number(
+                indexIn[1]->value()));
+            xml.writeTextElement("rangeMin", QString::number(
+                rangeIn[0]->value()));
+            xml.writeTextElement("rangeMax", QString::number(
+                rangeIn[1]->value()));
+            if (name.startsWith('L')) {
+            xml.writeTextElement("ccnumber", QString::number(
+                ccnumberInBox->value()));
+			}
+        xml.writeEndElement();
+
+        xml.writeStartElement("output");
+            xml.writeTextElement("muted", QString::number(
+                muteOut->isChecked()));
+            xml.writeTextElement("defer", QString::number(
+                deferChangesButton->isChecked()));
+            xml.writeTextElement("port", QString::number(
+                portOut->currentIndex()));
+            xml.writeTextElement("channel", QString::number(
+                channelOut->currentIndex()));
+            if (name.startsWith('L')) {
+            xml.writeTextElement("ccnumber", QString::number(
+                ccnumberBox->value()));
+			}
+        xml.writeEndElement();
+        
+        midiControl->writeData(xml);
+
+        parStore->writeData(xml);
+}
+
+void InOutBox::readCommonData(QXmlStreamReader& xml)
+{
+	int tmp = 0;
+	
+	    if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+            midiControl->readData(xml);
+        }
+        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+            parStore->readData(xml);
+        }
+
+        else if (xml.isStartElement() && (xml.name() == "input")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                    
+                if (xml.name() == "enableNote")
+                    enableNoteIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableNoteOff")
+                    enableNoteOff->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "enableVelocity")
+                    enableVelIn->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "restartByKbd")
+                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigByKbd")
+                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "trigLegato")
+                    enableTrigLegato->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    chIn->setCurrentIndex(tmp);
+                }
+                else if (xml.name() == "indexMin")
+                    indexIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "indexMax")
+                    indexIn[1]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMin")
+                    rangeIn[0]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "rangeMax")
+                    rangeIn[1]->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "ccnumber")
+                    ccnumberInBox->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+        else if (xml.isStartElement() && (xml.name() == "output")) {
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement())
+                    break;
+                if (xml.name() == "muted")
+                    muteOutAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "defer")
+                    deferChangesAction->setChecked(xml.readElementText().toInt());
+                else if (xml.name() == "channel") {
+                    tmp = xml.readElementText().toInt();
+                    channelOut->setCurrentIndex(tmp);
+                }
+                else if (xml.name() == "port") {
+                    tmp = xml.readElementText().toInt();
+                    portOut->setCurrentIndex(tmp);
+                }
+                else if (xml.name() == "ccnumber")
+                    ccnumberBox->setValue(xml.readElementText().toInt());
+                else skipXmlElement(xml);
+            }
+        }
+	
+}
+#endif

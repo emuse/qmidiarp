@@ -34,6 +34,15 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+
+
+#ifdef APPBUILD
+#include "globstore.h"
+#include "midicontrol.h"
+#include "parstore.h"
+#endif
 
 /*! @brief GUI class creating an input/output parameter box
  *
@@ -44,16 +53,20 @@ class InOutBox: public QWidget
   
 	public:
 #ifdef APPBUILD
-	InOutBox( int portCount, bool compactStyle,
+    QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
+    GlobStore *globStore;
+	InOutBox(GlobStore *p_globStore, int portCount, bool compactStyle,
 		bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
-    QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
     int parentDockID;   /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
+    ParStore *parStore;
+    MidiControl *midiControl;
 #else
 	InOutBox(bool compactStyle,
 		bool inOutVisible, const QString& name);
 #endif
+    ~InOutBox();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     QLabel *rangeInLabel, *indexInLabel;
     QGroupBox *inputFilterBox;
@@ -71,6 +84,10 @@ class InOutBox: public QWidget
     QSpinBox  *ccnumberBox;
 	QAction *hideInOutBoxAction;
 	QToolButton *hideInOutBoxButton;
+    QAction *muteOutAction;
+    QToolButton *muteOut;
+    QAction *deferChangesAction;
+    QToolButton *deferChangesButton;
 	   
 	QWidget *inOutBoxWidget;
 
@@ -80,6 +97,7 @@ class InOutBox: public QWidget
     virtual bool isModified();
     virtual void setModified(bool);
     virtual void checkIfInputFilterSet();
+
 /*!
 * @brief Setter for the InOutBox::channelOut spinbox setting the output
 * channel of this module.
@@ -90,6 +108,9 @@ class InOutBox: public QWidget
     virtual void setChannelOut(int value);
 
 #ifdef APPBUILD
+
+	virtual void writeCommonData(QXmlStreamWriter& xml);
+	virtual void readCommonData(QXmlStreamReader& xml);
 /*!
 * @brief Setter for the InOutBox::portOut spinbox setting the output
 * port of this module.
@@ -141,7 +162,6 @@ class InOutBox: public QWidget
     
 	virtual void storeParams(int ix, bool empty = 0);
 	virtual void restoreParams(int ix);
-	
 
   signals:
 

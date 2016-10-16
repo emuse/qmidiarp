@@ -36,12 +36,6 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-#ifdef APPBUILD
-#include "globstore.h"
-#include "midicontrol.h"
-#include "parstore.h"
-#endif
-
 #include "midilfo.h"
 #include "inoutbox.h"
 #include "cursor.h"
@@ -64,9 +58,6 @@ class LfoWidget : public InOutBox
     Q_OBJECT
 
     MidiLfo *midiWorker;
-#ifdef APPBUILD
-    GlobStore *globStore;
-#endif
     bool modified;              /**< Is set to True if unsaved parameter modifications exist */
     bool dataChanged;
     bool needsGUIUpdate;
@@ -106,15 +97,12 @@ class LfoWidget : public InOutBox
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
 
-    ParStore *parStore;
-    MidiControl *midiControl;
 #else
     LfoWidget(
             bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true);
 #endif
 
-    ~LfoWidget();
     LfoScreen *screen;
     Cursor *cursor;
     QVector<Sample> data;
@@ -123,10 +111,7 @@ class LfoWidget : public InOutBox
     QComboBox *loopBox;
     Slider *frequency, *amplitude, *offset;
     QAction *recordAction;
-    QAction *muteOutAction;
-    QAction *deferChangesAction;
     QAction *flipWaveVerticalAction;
-    QToolButton *muteOut;
     QComboBox *waveFormBox, *freqBox;
 
     QVector<Sample> getCustomWave();

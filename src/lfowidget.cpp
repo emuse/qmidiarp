@@ -44,13 +44,11 @@
 #ifdef APPBUILD
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name):
-    InOutBox(portCount, compactStyle, inOutVisible, name),
+    bool mutedAdd, bool inOutVisible, const QString& p_name):
+    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
     midiWorker(p_midiWorker),
-    globStore(p_globStore),
     modified(false)
 {
-    midiControl = new MidiControl(this);
 #else
 LfoWidget::LfoWidget(
     bool compactStyle,
@@ -77,14 +75,14 @@ LfoWidget::LfoWidget(
             SLOT(updateChIn(int)));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
+            SLOT(setMuted(bool)));
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
+            SLOT(updateDeferChanges(bool)));
 #ifdef APPBUILD
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
-    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
-    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
-
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
     // group box for wave setup
     QGroupBox *waveBox = new QGroupBox(tr("Wave"));
@@ -185,24 +183,6 @@ LfoWidget::LfoWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
 #endif
-    muteOutAction = new QAction(tr("&Mute"),this);
-    muteOutAction->setCheckable(true);
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteOut = new QToolButton;
-    muteOut->setDefaultAction(muteOutAction);
-    muteOut->setFont(QFont("Helvetica", 8));
-    muteOut->setMinimumSize(QSize(35,20));
-#ifdef APPBUILD
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-#endif
-    deferChangesAction = new QAction("D", this);
-    deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
-    deferChangesAction->setCheckable(true);
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
-
-    QToolButton *deferChangesButton = new QToolButton;
-    deferChangesButton->setDefaultAction(deferChangesAction);
-    deferChangesButton->setFixedSize(20, 20);
 
     flipWaveVerticalAction = new QAction(QPixmap(lfowflip_xpm),tr("&Flip"), this);
     flipWaveVerticalAction->setToolTip(tr("Do a vertical flip of the wave about its mid value"));
@@ -285,14 +265,6 @@ LfoWidget::LfoWidget(
     widgetLayout->addWidget(waveBox, 1);
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
-#ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
-        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 9);
-        connect(parStore, SIGNAL(store(int, bool)),
-                 this, SLOT(storeParams(int, bool)));
-        connect(parStore, SIGNAL(restore(int)),
-                 this, SLOT(restoreParams(int)));
-#endif
 
     muteOutAction->setChecked(mutedAdd);
 
@@ -300,13 +272,6 @@ LfoWidget::LfoWidget(
     updateAmp(64);
     dataChanged = false;
     needsGUIUpdate = false;
-}
-
-LfoWidget::~LfoWidget()
-{
-#ifdef APPBUILD
-    delete parStore;
-#endif
 }
 
 #ifdef APPBUILD
@@ -319,45 +284,9 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
 {
     QByteArray tempArray;
     int l1;
-    xml.writeStartElement(name.left(3));
-    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
-        xml.writeStartElement("input");
-            xml.writeTextElement("enableNoteOff", QString::number(
-                midiWorker->enableNoteOff));
-            xml.writeTextElement("restartByKbd", QString::number(
-                midiWorker->restartByKbd));
-            xml.writeTextElement("trigByKbd", QString::number(
-                midiWorker->trigByKbd));
-            xml.writeTextElement("trigLegato", QString::number(
-                midiWorker->trigLegato));
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->chIn));
-            xml.writeTextElement("indexMin", QString::number(
-                midiWorker->indexIn[0]));
-            xml.writeTextElement("indexMax", QString::number(
-                midiWorker->indexIn[1]));
-            xml.writeTextElement("rangeMin", QString::number(
-                midiWorker->rangeIn[0]));
-            xml.writeTextElement("rangeMax", QString::number(
-                midiWorker->rangeIn[1]));
-            xml.writeTextElement("ccnumber", QString::number(
-                midiWorker->ccnumberIn));
-        xml.writeEndElement();
 
-        xml.writeStartElement("output");
-            xml.writeTextElement("muted", QString::number(
-                midiWorker->isMuted));
-            xml.writeTextElement("defer", QString::number(
-                midiWorker->deferChanges));
-            xml.writeTextElement("port", QString::number(
-                midiWorker->portOut));
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->channelOut));
-            xml.writeTextElement("ccnumber", QString::number(
-                midiWorker->ccnumber));
-        xml.writeEndElement();
-
+        writeCommonData(xml);
+    
         xml.writeStartElement("waveParams");
             xml.writeTextElement("loopmode", QString::number(
                 loopBox->currentIndex()));
@@ -395,9 +324,6 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("data", tempArray.toHex());
         xml.writeEndElement();
 
-        midiControl->writeData(xml);
-
-        parStore->writeData(xml);
     xml.writeEndElement();
 }
 
@@ -411,65 +337,10 @@ void LfoWidget::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
+        
+        readCommonData(xml);
 
-        if (xml.isStartElement() && (xml.name() == "input")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "enableNoteOff")
-                    enableNoteOff->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "restartByKbd")
-                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigByKbd")
-                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigLegato")
-                    enableTrigLegato->setChecked(xml.readElementText().toInt());
-                if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    chIn->setCurrentIndex(tmp);
-                    updateChIn(tmp);
-                }
-                else if (xml.name() == "indexMin")
-                    indexIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "indexMax")
-                    indexIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMin")
-                    rangeIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMax")
-                    rangeIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "ccnumber")
-                    ccnumberInBox->setValue(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-
-        if (xml.isStartElement() && (xml.name() == "output")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "muted")
-                    muteOutAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "defer")
-                    deferChangesAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    channelOut->setCurrentIndex(tmp);
-                    updateChannelOut(tmp);
-                }
-                else if (xml.name() == "port") {
-                    tmp = xml.readElementText().toInt();
-                    portOut->setCurrentIndex(tmp);
-                    updatePortOut(tmp);
-                }
-                else if (xml.name() == "ccnumber")
-                    ccnumberBox->setValue(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-
-        else if (xml.isStartElement() && (xml.name() == "waveParams")) {
+        if (xml.isStartElement() && (xml.name() == "waveParams")) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
@@ -540,14 +411,12 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-            midiControl->readData(xml);
-        }
-        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
-            parStore->readData(xml);
-        }
         else skipXmlElement(xml);
     }
+    
+    updateChIn(chIn->currentIndex());
+    updateChannelOut(channelOut->currentIndex());
+    updatePortOut(portOut->currentIndex());
     waveFormBox->setCurrentIndex(wvtmp);
     updateWaveForm(wvtmp);
     modified = false;

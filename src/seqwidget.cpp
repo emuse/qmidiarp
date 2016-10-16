@@ -37,13 +37,11 @@
 #ifdef APPBUILD
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name):
-    InOutBox(portCount, compactStyle, inOutVisible, name),
+    bool mutedAdd, bool inOutVisible, const QString& p_name):
+    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
     midiWorker(p_midiWorker),
-    globStore(p_globStore),
     modified(false)
 {
-    midiControl = new MidiControl(this);
 #else
 SeqWidget::SeqWidget(
     bool compactStyle,
@@ -70,15 +68,16 @@ SeqWidget::SeqWidget(
             SLOT(updateChIn(int)));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
+            SLOT(setMuted(bool)));
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
+            SLOT(updateDeferChanges(bool)));
 #ifdef APPBUILD
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
     midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
-    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
-    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
 
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
 
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"));
@@ -261,15 +260,6 @@ SeqWidget::SeqWidget(
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
-#ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
-        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 7);
-        connect(parStore, SIGNAL(store(int, bool)),
-                 this, SLOT(storeParams(int, bool)));
-        connect(parStore, SIGNAL(restore(int)),
-                 this, SLOT(restoreParams(int)));
-#endif
-
     muteOutAction->setChecked(mutedAdd);
 
     setLayout(widgetLayout);
@@ -279,13 +269,6 @@ SeqWidget::SeqWidget(
     updateVelocity(64);
     updateWaveForm(0);
     lastMute = false;
-}
-
-SeqWidget::~SeqWidget()
-{
-#ifdef APPBUILD
-    delete parStore;
-#endif
 }
 
 #ifdef APPBUILD
@@ -299,49 +282,11 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
     QByteArray tempArray;
     int l1;
 
-    xml.writeStartElement(name.left(3));
-    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
+        writeCommonData(xml);
 
         xml.writeStartElement("display");
             xml.writeTextElement("vertical", QString::number(
                 dispVertIndex));
-        xml.writeEndElement();
-
-        xml.writeStartElement("input");
-            xml.writeTextElement("enableNote", QString::number(
-                midiWorker->enableNoteIn));
-            xml.writeTextElement("enableNoteOff", QString::number(
-                midiWorker->enableNoteOff));
-            xml.writeTextElement("enableVelocity", QString::number(
-                midiWorker->enableVelIn));
-            xml.writeTextElement("restartByKbd", QString::number(
-                midiWorker->restartByKbd));
-            xml.writeTextElement("trigByKbd", QString::number(
-                midiWorker->trigByKbd));
-            xml.writeTextElement("trigLegato", QString::number(
-                midiWorker->trigLegato));
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->chIn));
-            xml.writeTextElement("indexMin", QString::number(
-                midiWorker->indexIn[0]));
-            xml.writeTextElement("indexMax", QString::number(
-                midiWorker->indexIn[1]));
-            xml.writeTextElement("rangeMin", QString::number(
-                midiWorker->rangeIn[0]));
-            xml.writeTextElement("rangeMax", QString::number(
-                midiWorker->rangeIn[1]));
-        xml.writeEndElement();
-
-        xml.writeStartElement("output");
-            xml.writeTextElement("muted", QString::number(
-                midiWorker->isMuted));
-            xml.writeTextElement("defer", QString::number(
-                midiWorker->deferChanges));
-            xml.writeTextElement("port", QString::number(
-                midiWorker->portOut));
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->channelOut));
         xml.writeEndElement();
 
         xml.writeStartElement("seqParams");
@@ -381,10 +326,6 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
                 getLoopMarker()));
         xml.writeEndElement();
 
-        midiControl->writeData(xml);
-
-        parStore->writeData(xml);
-
     xml.writeEndElement();
 }
 
@@ -397,70 +338,16 @@ void SeqWidget::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
-
-        else if (xml.isStartElement() && (xml.name() == "display")) {
+            
+        readCommonData(xml);
+        
+        if (xml.isStartElement() && (xml.name() == "display")) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
                 if (xml.name() == "vertical")
                     setDispVert(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-        else if (xml.isStartElement() && (xml.name() == "input")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "enableNote")
-                    enableNoteIn->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableNoteOff")
-                    enableNoteOff->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableVelocity")
-                    enableVelIn->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "restartByKbd")
-                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigByKbd")
-                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigLegato")
-                    enableTrigLegato->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    chIn->setCurrentIndex(tmp);
-                    updateChIn(tmp);
-                }
-                else if (xml.name() == "indexMin")
-                    indexIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "indexMax")
-                    indexIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMin")
-                    rangeIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMax")
-                    rangeIn[1]->setValue(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-
-        else if (xml.isStartElement() && (xml.name() == "output")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "muted")
-                    muteOutAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "defer")
-                    deferChangesAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    channelOut->setCurrentIndex(tmp);
-                    updateChannelOut(tmp);
-                }
-                else if (xml.name() == "port") {
-                    tmp = xml.readElementText().toInt();
-                    portOut->setCurrentIndex(tmp);
-                    updatePortOut(tmp);
-                }
                 else skipXmlElement(xml);
             }
         }
@@ -544,14 +431,12 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-            midiControl->readData(xml);
-        }
-        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
-            parStore->readData(xml);
-        }
         else skipXmlElement(xml);
     }
+    
+    updateChIn(chIn->currentIndex());
+    updateChannelOut(channelOut->currentIndex());
+    updatePortOut(portOut->currentIndex());
     modified = false;
 }
 #endif

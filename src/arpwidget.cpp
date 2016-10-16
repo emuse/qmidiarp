@@ -47,13 +47,11 @@
 #ifdef APPBUILD
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& name):
-    InOutBox(portCount, compactStyle, inOutVisible, name),
+    bool mutedAdd, bool inOutVisible, const QString& p_name):
+    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
     midiWorker(p_midiWorker),
-    globStore(p_globStore),
     modified(false)
 {
-    midiControl = new MidiControl(this);
 #else
 ArpWidget::ArpWidget(
     bool compactStyle,
@@ -81,15 +79,14 @@ ArpWidget::ArpWidget(
             SLOT(updateRangeIn(int)));
     connect(channelOut, SIGNAL(activated(int)), this,
             SLOT(updateChannelOut(int)));
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
+            SLOT(setMuted(bool)));
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
+            SLOT(updateDeferChanges(bool)));
 #ifdef APPBUILD
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
-    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
-    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
 #endif
-
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, SLOT(setVisible(bool)));
-
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"));
@@ -133,24 +130,6 @@ ArpWidget::ArpWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
 #endif
-    muteOutAction = new QAction(tr("&Mute"),this);
-    muteOutAction->setCheckable(true);
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteOut = new QToolButton;
-    muteOut->setDefaultAction(muteOutAction);
-    muteOut->setFont(QFont("Helvetica", 8));
-    muteOut->setMinimumSize(QSize(35,20));
-#ifdef APPBUILD
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-#endif
-    deferChangesAction = new QAction("D", this);
-    deferChangesAction->setToolTip(tr("Defer mute to pattern end"));
-    deferChangesAction->setCheckable(true);
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
-
-    QToolButton *deferChangesButton = new QToolButton;
-    deferChangesButton->setDefaultAction(deferChangesAction);
-    deferChangesButton->setFixedSize(20, 20);
 
     repeatPatternThroughChord = new QComboBox;
     QStringList repeatPatternNames;
@@ -319,14 +298,6 @@ ArpWidget::ArpWidget(
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
-#ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
-        midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
-        connect(parStore, SIGNAL(store(int, bool)),
-                 this, SLOT(storeParams(int, bool)));
-        connect(parStore, SIGNAL(restore(int)),
-                 this, SLOT(restoreParams(int)));
-#endif
 
     muteOutAction->setChecked(mutedAdd);
 
@@ -342,12 +313,6 @@ ArpWidget::ArpWidget(
     needsGUIUpdate=false;
 }
 
-ArpWidget::~ArpWidget()
-{
-#ifdef APPBUILD
-    delete parStore;
-#endif
-}
 
 #ifdef APPBUILD
 MidiArp *ArpWidget::getMidiWorker()
@@ -357,9 +322,8 @@ MidiArp *ArpWidget::getMidiWorker()
 
 void ArpWidget::writeData(QXmlStreamWriter& xml)
 {
-    xml.writeStartElement(name.left(3));
-    xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
-    xml.writeAttribute("inOutVisible", QString::number(inOutBoxWidget->isVisible()));
+        writeCommonData(xml);
+
         xml.writeStartElement("pattern");
             xml.writeTextElement("pattern", midiWorker->pattern);
             xml.writeTextElement("repeatMode", QString::number(
@@ -372,36 +336,6 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
                 midiWorker->octHigh));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));
-        xml.writeEndElement();
-
-        xml.writeStartElement("input");
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->chIn));
-            xml.writeTextElement("indexMin", QString::number(
-                midiWorker->indexIn[0]));
-            xml.writeTextElement("indexMax", QString::number(
-                midiWorker->indexIn[1]));
-            xml.writeTextElement("rangeMin", QString::number(
-                midiWorker->rangeIn[0]));
-            xml.writeTextElement("rangeMax", QString::number(
-                midiWorker->rangeIn[1]));
-            xml.writeTextElement("restartByKbd", QString::number(
-                midiWorker->restartByKbd));
-            xml.writeTextElement("trigByKbd", QString::number(
-                midiWorker->trigByKbd));
-            xml.writeTextElement("trigLegato", QString::number(
-                midiWorker->trigLegato));
-        xml.writeEndElement();
-
-        xml.writeStartElement("output");
-            xml.writeTextElement("muted", QString::number(
-                midiWorker->isMuted));
-            xml.writeTextElement("defer", QString::number(
-                midiWorker->deferChanges));
-            xml.writeTextElement("port", QString::number(
-                midiWorker->portOut));
-            xml.writeTextElement("channel", QString::number(
-                midiWorker->channelOut));
         xml.writeEndElement();
 
         xml.writeStartElement("random");
@@ -420,21 +354,18 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
                 releaseTime->value()));
         xml.writeEndElement();
 
-        midiControl->writeData(xml);
-
-        parStore->writeData(xml);
 
     xml.writeEndElement();
 }
 
 void ArpWidget::readData(QXmlStreamReader& xml)
 {
-    int tmp;
-
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())
             break;
+
+        readCommonData(xml);
 
         if (xml.isStartElement() && (xml.name() == "pattern")) {
             while (!xml.atEnd()) {
@@ -457,55 +388,6 @@ void ArpWidget::readData(QXmlStreamReader& xml)
             }
         }
 
-        else if (xml.isStartElement() && (xml.name() == "input")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    chIn->setCurrentIndex(tmp);
-                    updateChIn(tmp);
-                }
-                else if (xml.name() == "indexMin")
-                    indexIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "indexMax")
-                    indexIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMin")
-                    rangeIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMax")
-                    rangeIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "restartByKbd")
-                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigByKbd")
-                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigLegato")
-                    enableTrigLegato->setChecked(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-        else if (xml.isStartElement() && (xml.name() == "output")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "muted")
-                    muteOutAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "defer")
-                    deferChangesAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    channelOut->setCurrentIndex(tmp);
-                    updateChannelOut(tmp);
-                }
-                else if (xml.name() == "port") {
-                    tmp = xml.readElementText().toInt();
-                    portOut->setCurrentIndex(tmp);
-                    updatePortOut(tmp);
-                }
-                else skipXmlElement(xml);
-            }
-        }
         else if (xml.isStartElement() && (xml.name() == "random")) {
             while (!xml.atEnd()) {
                 xml.readNext();
@@ -532,14 +414,13 @@ void ArpWidget::readData(QXmlStreamReader& xml)
                 else skipXmlElement(xml);
              }
         }
-        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-            midiControl->readData(xml);
-        }
-        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
-            parStore->readData(xml);
-        }
         else skipXmlElement(xml);
     }
+
+    updateChIn(chIn->currentIndex());
+    updateChannelOut(channelOut->currentIndex());
+    updatePortOut(portOut->currentIndex());
+
     modified = false;
 }
 #endif

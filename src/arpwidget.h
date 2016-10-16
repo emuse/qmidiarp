@@ -39,12 +39,6 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-#ifdef APPBUILD
-#include "globstore.h"
-#include "midicontrol.h"
-#include "parstore.h"
-#endif
-
 #include "main.h"
 #include "midiarp.h"
 #include "inoutbox.h"
@@ -65,9 +59,6 @@ class ArpWidget :  public InOutBox
   Q_OBJECT
 
     MidiArp *midiWorker;
-#ifdef APPBUILD
-    GlobStore *globStore;
-#endif
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     bool needsGUIUpdate;
 
@@ -99,14 +90,11 @@ class ArpWidget :  public InOutBox
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
 
-    ParStore *parStore;
-    MidiControl *midiControl;
 #else
     ArpWidget(
             bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true);
 #endif
-    ~ArpWidget();
 
     ArpScreen *screen;
 
@@ -120,9 +108,6 @@ class ArpWidget :  public InOutBox
     QLineEdit *patternText;
 
     QStringList patternPresets, patternNames;
-    QAction *muteOutAction;
-    QAction *deferChangesAction;
-    QToolButton *muteOut;
     QAction *latchModeAction;
 
 
