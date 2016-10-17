@@ -692,6 +692,14 @@ bool Engine::eventCallback(MidiEvent inEv)
             
             midiLearnFlag = false;
         }
+        if (midiLearnWindowID == 2) {
+            if (midiLearnID == 10)
+                lfoWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
+            else if (midiLearnID == 11)
+                lfoWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
+            
+            midiLearnFlag = false;
+        }
         if (midiLearnWindowID == 3) {
             if (midiLearnID == 10)
                 seqWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
