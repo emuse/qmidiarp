@@ -30,6 +30,7 @@
 #include <QString>
 #include <QVector>
 #include <main.h>
+#include "midiworker.h"
 
  /*!
  * @brief MIDI worker class for the Arpeggiator Module. Implements the
@@ -49,7 +50,7 @@
  * also calls MidiArp::handleEvent() in particular to store incoming notes
  * in its note buffer. 
  */
-class MidiArp : public QObject  {
+class MidiArp : public MidiWorker  {
 
   Q_OBJECT
 
@@ -61,10 +62,8 @@ class MidiArp : public QObject  {
     int currentNoteTick, arpTick;
     int nextLength;
     bool chordMode;
-    bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     int patternIndex; /*!< Holds the current position within the pattern text*/
     int grooveIndex; /*!< Holds the current position within the sequence*/
-    int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int randomTick, randomVelocity, randomLength;
     int sustainBufferCount, latchBufferCount;
     int lastLatchTick;
@@ -100,7 +99,6 @@ class MidiArp : public QObject  {
   * */
     double old_attackfn[MAXNOTES];
     int noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
-    int noteCount;      /*!< The number of notes in the MidiArp::notes buffer */
     int patternLen;     /*!< Length of the arp text pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
     int octOfs;        /*!< The currently active octave shift. @see repeatPatternThroughChord */
@@ -115,17 +113,6 @@ class MidiArp : public QObject  {
  * default velocity, step width, octave and length.
 */
     void initLoop();
-/**
- * @brief  allows forcing an integer value within the
- * specified range (clip).
- *
- * @param value The value to be checked
- * @param min The minimum allowed return value
- * @param max The maximum allowed return value
- * @param outOfRange Is set to -1|1 if value was outside min|max range
- * @return The value clipped within the range
- */
-    int clip(int value, int min, int max, int *outOfRange);
 /**
  * @brief This is MidiArp's main note processor producing output notes
  * from input notes.
@@ -204,20 +191,6 @@ class MidiArp : public QObject  {
     void checkOctaveAtEdge(bool reset);
 
   public:
-    int chIn;       /*!< Input channel state set by ArpWidget */
-    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by ArpWidget */
-    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by ArpWidget */
-    int portOut;    /*!< Output port, set by ArpWidget */
-    int channelOut; /*!< Output channel, set by ArpWidget */
-    bool isMuted;   /*!< Mute state set by ArpWidget */
-    bool isMutedDefer;   /*!< Deferred Global mute state */
-    bool deferChanges;    /*!< set by ArpWidget to defer parameter changes to pattern end */
-    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
-    int triggerMode; /*!< Current Trigger mode index */
-    bool restartByKbd; /*!< If True, restart pattern at 0 upon new received note, set by ArpWidget */
-    bool trigByKbd; /*!< If True, trigger current note tick by tick of received note, set by ArpWidget */
-    bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
-    bool gotKbdTrig; /*!< Is set when a keyboard trigger is activated by a note */
     bool latch_mode; /*!< If True hold notes released earlier than latch delay in latch buffer */
     bool hasNewNotes; /*!< True when prepareCurrentNote() was called with a tick causing new note calculation */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
@@ -243,33 +216,16 @@ class MidiArp : public QObject  {
     QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
-    int nextTick; /*!< Holds the next tick at which note events will be played out */
-
-    bool needsGUIUpdate;
 
   public:
     MidiArp();
-    ~MidiArp();
     QString stripPattern(const QString& p_pattern);
     void updatePattern(const QString&);
-    void updateTriggerMode(int val);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);
     void updateAttackTime(int);
     void updateReleaseTime(int);
-/*! @brief  sets MidiArp::isMuted, which is checked by
- * Engine and which suppresses data output globally if set to True.
- *
- * @param on Set to True to suppress data output to the Driver
- */
-    void setMuted(bool);
-/*! @brief  sets MidiArp::deferChanges, which will cause a
- * parameter changes only at pattern end.
- *
- * @param on Set to True to defer changes to pattern end
- */
-    void updateDeferChanges(bool on) { deferChanges = on; }
 /**
  * @brief  calculates the index of the next arpeggio
  * step and revolves it if necessary.
@@ -340,16 +296,6 @@ class MidiArp : public QObject  {
  * The values are then used by MidiArp::getNote.
  */
     void newRandomValues();
-/**
- * @brief  copies the new values transferred from the
- * GrooveWidget into variables used by MidiArp::getNote.
- *
- * @param p_grooveTick Groove amount for timing displacements
- * @param p_grooveVelocity Groove amount for velocity variations
- * @param p_grooveLength Groove amount for note length variations
- */
-    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-            int p_grooveLength);
  /*! @brief Set by Engine when MidiCC #64 is received.
   *
   * Will cause notes remaining in MidiArp::sustainBuffer until

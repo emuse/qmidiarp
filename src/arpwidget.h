@@ -59,8 +59,6 @@ class ArpWidget :  public InOutBox
   Q_OBJECT
 
     MidiArp *midiWorker;
-    bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
-    bool needsGUIUpdate;
 
     QGroupBox *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
@@ -82,7 +80,6 @@ class ArpWidget :  public InOutBox
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param inOutVisible If set to True, the module will show its In-Out panel
  * @param name Name string of the module
- * @param parent The parent widget of this module, i.e. MainWindow
  */
 #ifdef APPBUILD
     ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
@@ -135,18 +132,6 @@ class ArpWidget :  public InOutBox
 */
     MidiArp *getMidiWorker();
 /*!
-* @brief Accessor for ArpWidget::modified.
-* @return True if unsaved parameter modifications exist
-*
-*/
-    bool isModified();
-/*!
-* @brief sets ArpWidget::modified.
-* @param m Set to True if unsaved parameter modifications appear
-*
-*/
-    void setModified(bool);
-/*!
 * @brief stores some module parameters in a parameter
 * list object
 *
@@ -197,52 +182,21 @@ class ArpWidget :  public InOutBox
     void setRandomVisible(bool on);
     void setEnvelopeVisible(bool on);
 
-    void updateChIn(int value);
-    void updateEnableRestartByKbd(bool on);
-    void updateEnableTrigByKbd(bool on);
-    void updateTrigLegato(bool on);
-    void updateIndexIn(int value);
-    void updateRangeIn(int value);
 
  /*! @brief Slot for ArpWidget::latchModeAction.
   * Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received */
     void setLatchMode(bool);
-
-    //these slots are common to all modules
 /*!
- *  @brief Slot for the ArpWidget::channelOut spinbox setting the output
- *  channel of this module.
- *  @param value Number of the output channel to send data to
- *
- */
-    void updateChannelOut(int value);
-/*!
-* @brief Slot for the ArpWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void updatePortOut(int value);
-/*!
-* @brief Slot for the ArpWidget::muteOut checkbox.
-* Suppresses output of Arp data.
+* @brief Slot for the LfoWidget::muteOut checkbox.
+* suppresses output of LFO data.
 *
 * It calls
-* MidiArp::setMuted and ArpScreen::setMuted
+* MidiLfo::setMuted and LfoScreen::setMuted
 * @param on Set to True for muting this module
 *
 */
     void setMuted(bool on);
-/*!
-* @brief Slot for the ArpWidget::deferChanges action.
-*
-* Sets a flag in the midi worker causing parameter changes to become
-* active/inactive only at pattern end.
-*
-* @param on Set to True for deferring parameter changes to pattern end
-*/
-    void updateDeferChanges(bool on);
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

@@ -58,9 +58,6 @@ class LfoWidget : public InOutBox
     Q_OBJECT
 
     MidiLfo *midiWorker;
-    bool modified;              /**< Is set to True if unsaved parameter modifications exist */
-    bool dataChanged;
-    bool needsGUIUpdate;
 /*!
 * @brief populates the LfoWidget::waveForms list with
 * waveform names.
@@ -90,7 +87,6 @@ class LfoWidget : public InOutBox
  * @param mutedAdd If set to True, the module will be added in muted state
  * @param inOutVisible If set to True, the module will show its In-Out panel
  * @param name Name string of the module
- * @param parent The parent widget of this module, i.e. MainWindow
  */
     LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
@@ -151,18 +147,6 @@ class LfoWidget : public InOutBox
 */
     void copyParamsFrom(LfoWidget *fromWidget);
 /*!
-* @brief Accessor for LfoWidget::modified.
-* @return True if unsaved parameter modifications exist
-*
-*/
-    bool isModified();
-/*!
-* @brief sets LfoWidget::modified.
-* @param m Set to True if unsaved parameter modifications appear
-*
-*/
-    void setModified(bool);
-/*!
 * @brief stores some module parameters in a parameter
 * list object
 *
@@ -188,17 +172,8 @@ class LfoWidget : public InOutBox
 
 /* PUBLIC SLOTS */
   public slots:
-    void updateChIn(int value);
-    void updateIndexIn(int value);
-    void updateRangeIn(int value);
-    void updateCcnumberIn(int value);
     void updateScreen(int value);
     void setRecord(bool on);
-    void updateEnableNoteOff(bool on);
-    void updateEnableRestartByKbd(bool on);
-    void updateEnableTrigByKbd(bool on);
-    void updateTrigLegato(bool on);
-    void setInOutBoxVisible(bool on);
 
 /*!
 * @brief Slot for the LfoWidget::waveFormBox combobox setting the waveform
@@ -234,13 +209,6 @@ class LfoWidget : public InOutBox
 *
 */
     void updateLoop(int);
-/*!
-* @brief Slot for the LfoWidget::ccnumberBox spinbox setting the output
-* controller CC number of this module.
-* @param val CC number to send data to
-*
-*/
-    void updateCcnumber(int val);
 /*!
 * @brief Slot for the LfoWidget::freqBox combobox. Sets the frequency
 * of the LFO.
@@ -321,20 +289,6 @@ class LfoWidget : public InOutBox
     void updateFlipWaveVertical();
 
 /*!
-* @brief Slot for the LfoWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void updateChannelOut(int value);
-/*!
-* @brief Slot for the LfoWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void updatePortOut(int value);
-/*!
 * @brief Slot for the LfoWidget::muteOut checkbox.
 * suppresses output of LFO data.
 *
@@ -344,15 +298,6 @@ class LfoWidget : public InOutBox
 *
 */
     void setMuted(bool on);
-/*!
-* @brief Slot for the LfoWidget::deferChanges action.
-*
-* Sets a flag in the midi worker causing parameter changes to become
-* active/inactive only at pattern end.
-*
-* @param on Set to True for deferring parameter changes to pattern end
-*/
-    void updateDeferChanges(bool on);
 
 
 #ifdef APPBUILD

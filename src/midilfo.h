@@ -29,7 +29,9 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-#include <main.h>
+#include "main.h"
+
+#include "midiworker.h"
 
 
 /*! @brief MIDI worker class for the LFO Module. Implements a sequencer
@@ -49,32 +51,15 @@
  * points can be tagged as muted, which will avoid data output at the
  * corresponding position.
  */
-class MidiLfo : public QObject  {
+class MidiLfo : public MidiWorker  {
 
   Q_OBJECT
 
   private:
-    double queueTempo;  /*!< current tempo of the transport, not in use here */
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
     int lastMouseY;     /*!< The Y location at the last modification of the wave, used for interpolation*/
-    bool backward;       /*!< True when the sequence should start backward */
-    bool pingpong;      /*!< True when the play direction should alternate */
-    bool reflect;      /*!< True when the current play direction will change at the next reflect point */
     int recValue;
     int lastSampleValue;
-    bool seqFinished;   /*!< When True, all output events are muted, used when NOTE OFF is received */
-    int noteCount;      /*!< The number of keys currently pressed on keyboard */
-/**
- * @brief  allows forcing an integer value within the
- * specified range (clip).
- *
- * @param value The value to be checked
- * @param min The minimum allowed return value
- * @param max The maximum allowed return value
- * @param outOfRange Is set to True if value was outside min|max range
- * @return The value clipped within the range
- */
-    int clip(int value, int min, int max, bool *outOfRange);
 /*! @brief  recalculates the MidiLfo::customWave as a function
  * of a new offset value.
  *
@@ -84,31 +69,10 @@ class MidiLfo : public QObject  {
     void updateCustomWaveOffset(int cwoffs);
 
   public:
-    bool enableNoteOff;
-    bool enableVelIn;
-    bool restartByKbd;
-    bool trigByKbd;
-    bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
-    bool enableLoop;
-    bool gotKbdTrig;
-    bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
-    bool reverse;       /*!< True when the current play direction is backwards */
-    int portOut;    /*!< MIDI output port number */
-    int channelOut; /*!< MIDI output channel */
-    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by LfoWidget */
-    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by LfoWidget */
     bool recordMode, isRecording;
-    bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
-    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
-    bool needsGUIUpdate;
-    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int old_res;
-    int ccnumber;   /*!< MIDI Controller CC number to output */
-    bool isMuted;   /*!< Global mute state */
-    bool isMutedDefer;   /*!< Deferred Global mute state */
-    bool deferChanges;    /*!< set by LfoWidget to defer parameter changes to pattern end */
-    int freq, amp, offs, ccnumberIn, chIn;
+    int freq, amp, offs;
     int size;       /*!< Size of the waveform in quarter notes */
     int res;        /*!< Resolution of the waveform in ticks per quarter note */
     int frameSize;  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
@@ -123,8 +87,6 @@ class MidiLfo : public QObject  {
                                     @par 4: Square
                                     @par 5: Use Custom Wave */
     int cwmin;                  /*!< The minimum of MidiLfo::customWave */
-    int nextTick;
-    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
     QVector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
@@ -132,7 +94,6 @@ class MidiLfo : public QObject  {
 
   public:
     MidiLfo();
-    ~MidiLfo();
     void updateWaveForm(int val);
     void updateFrequency(int);
     void updateAmplitude(int);
@@ -140,7 +101,6 @@ class MidiLfo : public QObject  {
     void updateResolution(int);
     void updateSize(int);
     void updateLoop(int);
-    void updateQueueTempo(int);
     void record(int value);
     void setRecordMode(bool on);
 /*! @brief  Called by LfoWidget::mouseEvent()
@@ -156,12 +116,6 @@ class MidiLfo : public QObject  {
 */
     void newCustomOffset();
 
-/*! @brief  sets MidiLfo::isMuted, which is checked by
- * Engine and which suppresses data output globally if set to True.
- *
- * @param on Set to True to suppress data output to the Driver
- */
-    void setMuted(bool on);
 /*! @brief  sets MidiLfo::deferChanges, which will cause a
  * parameter changes only at pattern end.
  *
@@ -275,16 +229,7 @@ class MidiLfo : public QObject  {
  * @see MidiLfo::setMutePoint
  */
     bool toggleMutePoint(double mouseX);
-/**
- * @brief  copies the new values transferred from the
- * GrooveWidget into variables used by MidiArp::getNote.
- *
- * @param p_grooveTick Groove amount for timing displacements
- * @param p_grooveVelocity Groove amount for velocity variations
- * @param p_grooveLength Groove amount for note length variations
- */
-    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-            int p_grooveLength);
+
     int getFramePtr() { return frameptr;}
 /*! @brief Checks if deferred parameter changes are pending and applies
  * them if so

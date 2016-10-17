@@ -39,8 +39,9 @@
 #include "pixmaps/arprename.xpm"
 
 
-InOutBox::InOutBox(GlobStore *p_globStore, int portCount, bool compactStyle,
+InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCount, bool compactStyle,
     bool inOutVisible, const QString& p_name):
+    midiWorker(p_midiWorker),
     name(p_name),
     globStore(p_globStore),
     modified(false)
@@ -82,6 +83,7 @@ InOutBox::InOutBox(GlobStore *p_globStore, int portCount, bool compactStyle,
 #else
 InOutBox::InOutBox(bool compactStyle,
     bool inOutVisible, const QString& name):
+    midiWorker(NULL),
     modified(false)
 {
 #endif
@@ -300,8 +302,43 @@ InOutBox::InOutBox(bool compactStyle,
     inOutBoxLayout->addStretch();
     inOutBoxWidget->setLayout(inOutBoxLayout);
     inOutBoxWidget->setVisible(inOutVisible);
+    
+    connect(ccnumberBox, SIGNAL(valueChanged(int)), this, 
+            SLOT(updateCcnumber(int)));
+    connect(ccnumberInBox, SIGNAL(valueChanged(int)), this, 
+            SLOT(updateCcnumberIn(int)));
+    connect(enableVelIn, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableVelIn(bool)));
+    connect(enableNoteIn, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableNoteIn(bool)));
+    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableRestartByKbd(bool)));
+    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableTrigByKbd(bool)));
+    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
+            SLOT(updateTrigLegato(bool)));
+    connect(chIn, SIGNAL(activated(int)), this, 
+            SLOT(updateChIn(int)));
+    connect(indexIn[0], SIGNAL(valueChanged(int)), this,
+            SLOT(updateIndexIn(int)));
+    connect(indexIn[1], SIGNAL(valueChanged(int)), this,
+            SLOT(updateIndexIn(int)));
+    connect(rangeIn[0], SIGNAL(valueChanged(int)), this,
+            SLOT(updateRangeIn(int)));
+    connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
+            SLOT(updateRangeIn(int)));
+    connect(channelOut, SIGNAL(activated(int)), this,
+            SLOT(updateChannelOut(int)));
+    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
+            SLOT(updateDeferChanges(bool)));
+#ifdef APPBUILD
+    connect(portOut, SIGNAL(activated(int)), this, 
+            SLOT(updatePortOut(int)));
+#endif
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
 				SLOT(setVisible(bool)));
+    needsGUIUpdate=false;
+    dataChanged = false;
 }
 
 InOutBox::~InOutBox()
@@ -319,12 +356,19 @@ void InOutBox::setChannelOut(int value)
 
 bool InOutBox::isModified()
 {
-	return modified;
+	bool mcmod = false;
+#ifdef APPBUILD
+	mcmod = midiControl->isModified();
+#endif
+    return (modified || mcmod);
 }
 
 void InOutBox::setModified(bool m)
 {
     modified = m;
+#ifdef APPBUILD
+    midiControl->setModified(m);
+#endif
 }
 
 void InOutBox::setInputFilterVisible(bool on)
@@ -350,6 +394,95 @@ void InOutBox::checkIfInputFilterSet()
     }
 }
 
+void InOutBox::updateChIn(int value)
+{
+    if (midiWorker) midiWorker->chIn = value;
+    modified = true;
+}
+
+void InOutBox::updateIndexIn(int value)
+{
+    if (indexIn[0] == sender()) {
+        if (midiWorker) midiWorker->indexIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->indexIn[1] = value;
+    }
+    checkIfInputFilterSet();
+    modified = true;
+}
+
+void InOutBox::updateRangeIn(int value)
+{
+    if (rangeIn[0] == sender()) {
+        if (midiWorker) midiWorker->rangeIn[0] = value;
+    } else {
+        if (midiWorker) midiWorker->rangeIn[1] = value;
+    }
+    checkIfInputFilterSet();
+    modified = true;
+}
+
+void InOutBox::updateChannelOut(int value)
+{
+    if (midiWorker) midiWorker->channelOut = value;
+    modified = true;
+}
+
+void InOutBox::updateCcnumber(int val)
+{
+    if (midiWorker)
+        midiWorker->ccnumber = val;
+    modified = true;
+}
+
+void InOutBox::updateCcnumberIn(int val)
+{
+    if (midiWorker) midiWorker->ccnumberIn = val;
+    modified = true;
+}
+
+void InOutBox::updatePortOut(int value)
+{
+    if (midiWorker) midiWorker->portOut = value;
+    modified = true;
+}
+
+void InOutBox::updateEnableNoteIn(bool on)
+{
+    if (midiWorker) midiWorker->enableNoteIn = on;
+    modified = true;
+}
+
+void InOutBox::updateEnableVelIn(bool on)
+{
+    if (midiWorker) midiWorker->enableVelIn = on;
+    modified = true;
+}
+
+void InOutBox::updateEnableNoteOff(bool on)
+{
+    if (midiWorker) midiWorker->enableNoteOff = on;
+    modified = true;
+}
+
+void InOutBox::updateEnableRestartByKbd(bool on)
+{
+    if (midiWorker) midiWorker->restartByKbd = on;
+    modified = true;
+}
+
+void InOutBox::updateEnableTrigByKbd(bool on)
+{
+    if (midiWorker) midiWorker->trigByKbd = on;
+    modified = true;
+}
+
+void InOutBox::updateTrigLegato(bool on)
+{
+    if (midiWorker) midiWorker->trigLegato = on;
+    modified = true;
+}
+
 void InOutBox::setChIn(int value)
 {
     chIn->setCurrentIndex(value);
@@ -365,6 +498,12 @@ void InOutBox::setIndexIn(int index, int value)
 void InOutBox::setRangeIn(int index, int value)
 {
     rangeIn[index]->setValue(value);
+    modified = true;
+}
+
+void InOutBox::updateDeferChanges(bool on)
+{
+    if (midiWorker) midiWorker->updateDeferChanges(on);
     modified = true;
 }
 

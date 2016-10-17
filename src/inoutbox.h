@@ -44,6 +44,7 @@
 #include "parstore.h"
 #endif
 
+#include "midiworker.h"
 /*! @brief GUI class creating an input/output parameter box
  *
 */
@@ -52,14 +53,15 @@ class InOutBox: public QWidget
   Q_OBJECT
   
 	public:
+	MidiWorker *midiWorker;
 #ifdef APPBUILD
     QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
     GlobStore *globStore;
-	InOutBox(GlobStore *p_globStore, int portCount, bool compactStyle,
+	InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCount, bool compactStyle,
 		bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
-    int parentDockID;   /**< @brief The index of the ArpWidget's parent DockWidget in Engine::moduleWindowList */
+    int parentDockID;   /**< @brief The index of the Widget's parent DockWidget in Engine::moduleWindowList */
     ParStore *parStore;
     MidiControl *midiControl;
 #else
@@ -68,6 +70,8 @@ class InOutBox: public QWidget
 #endif
     ~InOutBox();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
+	bool dataChanged;
+	bool needsGUIUpdate;
     QLabel *rangeInLabel, *indexInLabel;
     QGroupBox *inputFilterBox;
     QComboBox *chIn;                        // Channel of input events
@@ -136,24 +140,24 @@ class InOutBox: public QWidget
 	
   public slots:
 /*!
-* @brief Slot for ManageBox::deleteAction.
+* @brief Slot for InOutBox::deleteAction.
 *
 * This function displays a warning and then emits the
-* ManageBox::moduleRemove signal to MainWindow with the module ID as
+* InOutBox::moduleRemove signal to MainWindow with the module ID as
 * parameter.
 */
     virtual void moduleDelete();
 /*!
-* @brief Slot for ManageBox::renameAction.
+* @brief Slot for InOutBox::renameAction.
 *
-* This function queries a new name then emits the ManageBox::dockRename
+* This function queries a new name then emits the InOutBox::dockRename
 * signal to MainWindow with the new name and the dockWidget ID to rename.
 */
     virtual void moduleRename();
 /*!
-* @brief Slot for ManageBox::cloneAction.
+* @brief Slot for InOutBox::cloneAction.
 *
-* This function emits the ManageBox::dockClone
+* This function emits the InOutBox::dockClone
 * signal to MainWindow with the module ID and the dockWidget ID.
 */
     virtual void moduleClone();
@@ -162,6 +166,46 @@ class InOutBox: public QWidget
     
 	virtual void storeParams(int ix, bool empty = 0);
 	virtual void restoreParams(int ix);
+/*!
+* @brief Slot for the InOutBox::channelOut spinbox setting the output
+* channel of this module.
+* @param value Number of the output channel to send data to
+*
+*/
+    virtual void updateChannelOut(int value);
+/*!
+* @brief Slot for the InOutBox::portOut spinbox setting the output
+* port of this module.
+* @param value Number of the output port to send data to
+*
+*/
+    virtual void updateCcnumberIn(int value);
+    virtual void updatePortOut(int value);
+    virtual void updateChIn(int value);
+    virtual void updateIndexIn(int value);
+    virtual void updateRangeIn(int value);
+    virtual void updateEnableNoteIn(bool on);
+    virtual void updateEnableVelIn(bool on);
+    virtual void updateEnableNoteOff(bool on);
+    virtual void updateEnableRestartByKbd(bool on);
+    virtual void updateEnableTrigByKbd(bool on);
+    virtual void updateTrigLegato(bool on);
+/*!
+* @brief Slot for the InOutBox::ccnumberBox spinbox setting the output
+* controller CC number of this module.
+* @param val CC number to send data to
+*
+*/
+    virtual void updateCcnumber(int val);
+/*!
+* @brief Slot for the InOutBox::deferChanges action.
+*
+* Sets a flag in the midi worker causing parameter changes to become
+* active/inactive only at pattern end.
+*
+* @param on Set to True for deferring parameter changes to pattern end
+*/
+    virtual void updateDeferChanges(bool on);
 
   signals:
 

@@ -31,6 +31,8 @@
 #include <QVector>
 #include <main.h>
 
+#include "midiworker.h"
+
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
@@ -60,7 +62,7 @@
  * size attributes and single points can be tagged as muted, which will
  * avoid data output at the corresponding position.
  */
-class MidiSeq : public QObject  {
+class MidiSeq : public MidiWorker  {
 
   Q_OBJECT
 
@@ -68,22 +70,7 @@ class MidiSeq : public QObject  {
     double queueTempo;
     int lastMouseLoc;
     int currentIndex;
-    bool backward;       /*!< True when the sequence should start backward */
-    bool pingpong;      /*!< True when the play direction should alternate */
-    bool reflect;      /*!< True when the current play direction will change at the next reflect point */
-    int noteCount;
     bool seqFinished;
-/**
- * @brief  allows forcing an integer value within the
- * specified range (clip).
- *
- * @param value The value to be checked
- * @param min The minimum allowed return value
- * @param max The maximum allowed return value
- * @param outOfRange Is set to True if value was outside min|max range
- * @return The value clipped within the range
- */
-    int clip(int value, int min, int max, bool *outOfRange);
 /**
  * @brief  calulates the next MidiSeq::currentIndex as a
  * function of the current value, play direction, loop marker position
@@ -93,48 +80,23 @@ class MidiSeq : public QObject  {
     void advancePatternIndex();
 
   public:
-    int chIn;           /**< Channel of input events */
-    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by ArpWidget */
-    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by ArpWidget */
-    bool enableNoteIn;
-    bool enableNoteOff;
-    bool enableVelIn;
-    bool restartByKbd;
-    bool trigByKbd;
-    bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
-    bool enableLoop;
-    bool gotKbdTrig;
-    bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
-    bool reverse;       /*!< True when the current play direction is backwards */
-    int portOut;        /**< Output port index */
-    int channelOut;
-    bool isMuted;
-    bool isMutedDefer;   /*!< Deferred Global mute state */
-    bool deferChanges;  /*!< set by SeqWidget to defer parameter changes to pattern end */
-    bool parChangesPending;    /*!< set when deferChanges is set and a parameter is changed */
     bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;
-    bool dataChanged;
-    bool needsGUIUpdate;
     int vel, transp, notelength;
     int velDefer, transpDefer, notelengthDefer;
     int size, res;
     int currentRecStep;
-    int curLoopMode;    /*!< Local storage of the currently active Loop mode */
     int loopMarker;
     int nPoints;        /*!< Number of steps to be played out */
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
-    int nextTick;
     int nOctaves;
     int baseOctave;
-    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
     QVector<Sample> customWave;
     QVector<bool> muteMask;
     QVector<Sample> data;
 
   public:
     MidiSeq();
-    ~MidiSeq();
     void updateWaveForm(int val);
     void updateNoteLength(int);
     void updateVelocity(int);
@@ -142,22 +104,9 @@ class MidiSeq : public QObject  {
     void updateSize(int);
     void updateLoop(int);
     void updateTranspose(int);
-    void updateQueueTempo(int);
     void updateDispVert(int mode);
 
     void recordNote(int note);
-/*! @brief  sets MidiLfo::isMuted, which is checked by
- * SeqDriver and which suppresses data output globally if set to True.
- *
- * @param on Set to True to suppress data output to the Driver
- */
-    void setMuted(bool);
-/*! @brief  sets MidiSeq::deferChanges, which will cause a
- * parameter changes only at pattern end.
- *
- * @param on Set to True to defer changes to pattern end
- */
-    void updateDeferChanges(bool on) { deferChanges = on; }
 /**
  * @brief  does the actions related to a newly received note.
  *
@@ -268,16 +217,6 @@ class MidiSeq : public QObject  {
  * @see MidiSeq::setMutePoint
  */
     bool toggleMutePoint(double);
-/**
- * @brief  copies the new values transferred from the
- * GrooveWidget into variables used by MidiArp::getNote.
- *
- * @param p_grooveTick Groove amount for timing displacements
- * @param p_grooveVelocity Groove amount for velocity variations
- * @param p_grooveLength Groove amount for note length variations
- */
-    void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-            int p_grooveLength);
 
     void setCurrentIndex(int ix);
     int getCurrentIndex() {return currentIndex; }

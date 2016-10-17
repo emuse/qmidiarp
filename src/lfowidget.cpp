@@ -45,44 +45,20 @@
 LfoWidget::LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
-    midiWorker(p_midiWorker),
-    modified(false)
+    InOutBox(p_midiWorker, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    midiWorker(p_midiWorker)
 {
 #else
 LfoWidget::LfoWidget(
     bool compactStyle,
     bool mutedAdd, bool inOutVisible):
     InOutBox(compactStyle, inOutVisible, "LFO:"),
-    midiWorker(NULL),
-    modified(false)
+    midiWorker(NULL)
 {
 #endif
 
-    connect(enableNoteOff, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableNoteOff(bool)));
-    connect(ccnumberInBox, SIGNAL(valueChanged(int)), this,
-            SLOT(updateCcnumberIn(int)));
-    connect(ccnumberBox, SIGNAL(valueChanged(int)), this,
-            SLOT(updateCcnumber(int)));
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableRestartByKbd(bool)));
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableTrigByKbd(bool)));
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
-            SLOT(updateTrigLegato(bool)));
-    connect(chIn, SIGNAL(activated(int)), this, 
-            SLOT(updateChIn(int)));
-    connect(channelOut, SIGNAL(activated(int)), this,
-            SLOT(updateChannelOut(int)));
     connect(muteOutAction, SIGNAL(toggled(bool)), this, 
             SLOT(setMuted(bool)));
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
-            SLOT(updateDeferChanges(bool)));
-#ifdef APPBUILD
-    connect(portOut, SIGNAL(activated(int)), this, 
-            SLOT(updatePortOut(int)));
-#endif
 
     // group box for wave setup
     QGroupBox *waveBox = new QGroupBox(tr("Wave"));
@@ -270,8 +246,6 @@ LfoWidget::LfoWidget(
 
     setLayout(widgetLayout);
     updateAmp(64);
-    dataChanged = false;
-    needsGUIUpdate = false;
 }
 
 #ifdef APPBUILD
@@ -429,70 +403,6 @@ void LfoWidget::loadWaveForms()
         << tr("Saw down") << tr("Square") << tr("Custom");
 }
 
-void LfoWidget::updateCcnumber(int val)
-{
-    if (midiWorker)
-        midiWorker->ccnumber = val;
-    modified = true;
-}
-
-void LfoWidget::updateIndexIn(int value)
-{
-    if (indexIn[0] == sender()) {
-        if (midiWorker) midiWorker->indexIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->indexIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
-
-void LfoWidget::updateRangeIn(int value)
-{
-    if (rangeIn[0] == sender()) {
-        if (midiWorker) midiWorker->rangeIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->rangeIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
-
-void LfoWidget::updateChIn(int val)
-{
-    if (midiWorker) midiWorker->chIn = val;
-    modified = true;
-}
-
-void LfoWidget::updateCcnumberIn(int val)
-{
-    if (midiWorker) midiWorker->ccnumberIn = val;
-    modified = true;
-}
-void LfoWidget::updateEnableNoteOff(bool on)
-{
-    if (midiWorker) midiWorker->enableNoteOff = on;
-    modified = true;
-}
-
-void LfoWidget::updateEnableRestartByKbd(bool on)
-{
-    if (midiWorker) midiWorker->restartByKbd = on;
-    modified = true;
-}
-
-void LfoWidget::updateEnableTrigByKbd(bool on)
-{
-    if (midiWorker) midiWorker->trigByKbd = on;
-    modified = true;
-}
-
-void LfoWidget::updateTrigLegato(bool on)
-{
-    if (midiWorker) midiWorker->trigLegato = on;
-    modified = true;
-}
-
 void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
@@ -612,12 +522,6 @@ void LfoWidget::mouseWheel(int step)
     offset->setValue(cv + step);
 }
 
-void LfoWidget::setInOutBoxVisible(bool on)
-{
-    setVisible(on);
-    modified=true;
-}
-
 void LfoWidget::setMuted(bool on)
 {
     if (!midiWorker) return;
@@ -629,45 +533,16 @@ void LfoWidget::setMuted(bool on)
     modified = true;
 }
 
-void LfoWidget::updateDeferChanges(bool on)
-{
-    if (midiWorker) midiWorker->updateDeferChanges(on);
-    modified = true;
-}
-
 void LfoWidget::setRecord(bool on)
 {
     if (midiWorker) midiWorker->setRecordMode(on);
     screen->setRecordMode(on);
 }
 
-void LfoWidget::updatePortOut(int value)
-{
-    if (midiWorker) midiWorker->portOut = value;
-    modified = true;
-}
-
-void LfoWidget::updateChannelOut(int value)
-{
-    if (midiWorker) midiWorker->channelOut = value;
-    modified = true;
-}
-
 #ifdef APPBUILD
 QVector<Sample> LfoWidget::getCustomWave()
 {
     return midiWorker->customWave;
-}
-
-bool LfoWidget::isModified()
-{
-    return (modified || midiControl->isModified());
-}
-
-void LfoWidget::setModified(bool m)
-{
-    modified = m;
-    midiControl->setModified(m);
 }
 
 void LfoWidget::doStoreParams(int ix, bool empty)

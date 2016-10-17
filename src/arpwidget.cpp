@@ -48,45 +48,20 @@
 ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
-    midiWorker(p_midiWorker),
-    modified(false)
+    InOutBox(p_midiWorker, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    midiWorker(p_midiWorker)
 {
 #else
 ArpWidget::ArpWidget(
     bool compactStyle,
     bool mutedAdd, bool inOutVisible):
     InOutBox(compactStyle, inOutVisible, "Arp:"),
-    midiWorker(NULL),
-    modified(false)
+    midiWorker(NULL)
 {
 #endif
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableRestartByKbd(bool)));
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableTrigByKbd(bool)));
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
-            SLOT(updateTrigLegato(bool)));
-    connect(chIn, SIGNAL(activated(int)), this, 
-            SLOT(updateChIn(int)));
-    connect(indexIn[0], SIGNAL(valueChanged(int)), this,
-            SLOT(updateIndexIn(int)));
-    connect(indexIn[1], SIGNAL(valueChanged(int)), this,
-            SLOT(updateIndexIn(int)));
-    connect(rangeIn[0], SIGNAL(valueChanged(int)), this,
-            SLOT(updateRangeIn(int)));
-    connect(rangeIn[1], SIGNAL(valueChanged(int)), this,
-            SLOT(updateRangeIn(int)));
-    connect(channelOut, SIGNAL(activated(int)), this,
-            SLOT(updateChannelOut(int)));
+
     connect(muteOutAction, SIGNAL(toggled(bool)), this, 
             SLOT(setMuted(bool)));
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
-            SLOT(updateDeferChanges(bool)));
-#ifdef APPBUILD
-    connect(portOut, SIGNAL(activated(int)), this, 
-            SLOT(updatePortOut(int)));
-#endif
 
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"));
@@ -310,7 +285,7 @@ ArpWidget::ArpWidget(
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
     setLayout(widgetLayout);
-    needsGUIUpdate=false;
+    modified = false;
 }
 
 
@@ -425,33 +400,6 @@ void ArpWidget::readData(QXmlStreamReader& xml)
 }
 #endif
 
-void ArpWidget::updateChIn(int value)
-{
-    if (midiWorker) midiWorker->chIn = value;
-    modified = true;
-}
-
-void ArpWidget::updateIndexIn(int value)
-{
-    if (indexIn[0] == sender()) {
-        if (midiWorker) midiWorker->indexIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->indexIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
-
-void ArpWidget::updateRangeIn(int value)
-{
-    if (rangeIn[0] == sender()) {
-        if (midiWorker) midiWorker->rangeIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->rangeIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
 
 void ArpWidget::updateText(const QString& newtext)
 {
@@ -539,24 +487,6 @@ void ArpWidget::updateOctaveLow(int val)
 void ArpWidget::updateOctaveHigh(int val)
 {
     if (midiWorker) midiWorker->octHigh = val;
-    modified = true;
-}
-
-void ArpWidget::updateEnableRestartByKbd(bool on)
-{
-    if (midiWorker) midiWorker->restartByKbd = on;
-    modified = true;
-}
-
-void ArpWidget::updateEnableTrigByKbd(bool on)
-{
-    if (midiWorker) midiWorker->trigByKbd = on;
-    modified = true;
-}
-
-void ArpWidget::updateTrigLegato(bool on)
-{
-    if (midiWorker) midiWorker->trigLegato = on;
     modified = true;
 }
 
@@ -703,11 +633,6 @@ void ArpWidget::setMuted(bool on)
     modified = true;
 }
 
-void ArpWidget::updateDeferChanges(bool on)
-{
-    if (midiWorker) midiWorker->updateDeferChanges(on);
-    modified = true;
-}
 
 void ArpWidget::setLatchMode(bool on)
 {
@@ -715,33 +640,7 @@ void ArpWidget::setLatchMode(bool on)
     modified = true;
 }
 
-
-void ArpWidget::updatePortOut(int value)
-{
-    if (midiWorker) midiWorker->portOut = value;
-    modified = true;
-}
-
-void ArpWidget::updateChannelOut(int value)
-{
-    if (midiWorker) midiWorker->channelOut = value;
-    modified = true;
-}
-
 #ifdef APPBUILD
-bool ArpWidget::isModified()
-{
-    if (midiWorker)
-        return (modified || midiControl->isModified());
-    else
-        return modified;
-}
-
-void ArpWidget::setModified(bool m)
-{
-    modified = m;
-    if (midiWorker) midiControl->setModified(m);
-}
 
 void ArpWidget::doStoreParams(int ix, bool empty = false)
 {

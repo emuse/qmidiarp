@@ -83,22 +83,8 @@ MidiArp::MidiArp()
         qWarning("seq: %d (after update)", rdata->foo);
     }
 */
-    for (int l1 = 0; l1 < 2; l1++) {
-        rangeIn[l1] = (l1) ? 127 : 0;
-        indexIn[l1] = (l1) ? 127 : 0;
-    }
-    chIn = 0;
-    portOut = 0;
-    channelOut = 0;
     noteBufPtr = 0;
-    noteCount = 0;
     releaseNoteCount = 0;
-    triggerMode = 0;
-    restartByKbd = false;
-    trigByKbd = false;
-    trigLegato = false;
-    gotKbdTrig = false;
-    restartFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
     minStepWidth = 1.0;
     maxOctave = 0;
@@ -120,7 +106,6 @@ MidiArp::MidiArp()
     patternLen = 0;
     semitone = 0;
     currentNoteTick = 0;
-    nextTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;
@@ -131,16 +116,8 @@ MidiArp::MidiArp()
     randomTickAmp = 0;
     randomVelocityAmp = 0;
     randomLengthAmp = 0;
-    grooveTick = 0;
-    newGrooveTick = 0;
     hasNewNotes = false;
-    grooveVelocity = 0;
-    grooveLength = 0;
     repeatPatternThroughChord = 1;
-    isMuted = false;
-    isMutedDefer = false;
-    deferChanges = false;
-    parChangesPending = false;
     attack_time = 0.0;
     release_time = 0.0;
     sustain = false;
@@ -154,21 +131,6 @@ MidiArp::MidiArp()
 
     returnNote.resize(128);
     returnVelocity.resize(128);
-
-    needsGUIUpdate = false;
-}
-
-MidiArp::~MidiArp(){
-}
-
-void MidiArp::setMuted(bool on)
-{
-    isMutedDefer = on;
-    if (deferChanges) {
-        parChangesPending = true;
-    }
-    else isMuted = on;
-    needsGUIUpdate = false;
 }
 
 bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
@@ -362,7 +324,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     QChar c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
     int current_octave = 0;
-    int outOfRange = 0;
+    bool outOfRange = false;
     bool gotCC, pause;
     double attackfn, releasefn;
 
@@ -453,7 +415,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         noteIndex[l1] = (noteCount) ? tmpIndex[l1] % noteCount : 0;
         note[l1] = clip(notes[noteBufPtr][0][noteIndex[l1]] + current_octave * 12
                 + chordSemitone[l1], 0, 127, &outOfRange);
-        if (outOfRange != 0) checkOctaveAtEdge(false);
+        if (outOfRange) checkOctaveAtEdge(false);
 
         grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
 
@@ -779,21 +741,6 @@ void MidiArp::updatePattern(const QString& p_pattern)
     nPoints = npoints;
 }
 
-int MidiArp::clip(int value, int min, int max, int *outOfRange)
-{
-    int tmp = value;
-
-    *outOfRange = false;
-    if (tmp > max) {
-        tmp = max;
-        *outOfRange = 1;
-    } else if (tmp < min) {
-        tmp = min;
-        *outOfRange = -1;
-    }
-    return(tmp);
-}
-
 void MidiArp::newRandomValues()
 {
     randomTick = (double)randomTickAmp * (0.5 - (double)random()
@@ -853,14 +800,6 @@ void MidiArp::updateReleaseTime(int val)
     release_time = (double)val;
 }
 
-void MidiArp::updateTriggerMode(int val)
-{
-    triggerMode = val;
-    trigByKbd = ((val == 2) || (val == 4));
-    restartByKbd = (val > 0);
-    trigLegato = (val > 2);
-}
-
 void MidiArp::clearNoteBuffer()
 {
     noteCount = 0;
@@ -905,14 +844,6 @@ void MidiArp::purgeLatchBuffer()
         removeNote(&buf, arpTick, 1);
     }
     latchBufferCount = 0;
-}
-
-void MidiArp::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-        int p_grooveLength)
-{
-    newGrooveTick = p_grooveTick;
-    grooveVelocity = p_grooveVelocity;
-    grooveLength = p_grooveLength;
 }
 
 void MidiArp::applyPendingParChanges()

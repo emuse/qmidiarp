@@ -60,11 +60,8 @@ class SeqWidget : public InOutBox
     Q_OBJECT
 
     MidiSeq *midiWorker;
-    bool modified;      /**< Is set to True if unsaved parameter modifications exist */
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
-    bool dataChanged;
-    bool needsGUIUpdate;
 
 /* PUBLIC MEMBERS */
   public:
@@ -77,7 +74,6 @@ class SeqWidget : public InOutBox
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
- * @param parent The parent widget of this module, i.e. MainWindow
  */
     SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
@@ -136,18 +132,6 @@ class SeqWidget : public InOutBox
 * @param fromWidget pointer to the SeqWidget parameters are to be taken from
 */
     void copyParamsFrom(SeqWidget *fromWidget);
-/*!
-* @brief Accessor for SeqWidget::modified.
-* @return True if unsaved parameter modifications exist
-*
-*/
-    bool isModified();
-/*!
-* @brief sets SeqWidget::modified.
-* @param m Set to True if unsaved parameter modifications appear
-*
-*/
-    void setModified(bool);
 /*!
 * @brief stores some module parameters in a parameter
 * list object
@@ -225,15 +209,6 @@ class SeqWidget : public InOutBox
     void updateNoteLength(int val);
     void updateTranspose(int val);
 
-    void updateChIn(int value);
-    void updateIndexIn(int value);
-    void updateRangeIn(int value);
-    void updateEnableNoteIn(bool on);
-    void updateEnableVelIn(bool on);
-    void updateEnableNoteOff(bool on);
-    void updateEnableRestartByKbd(bool on);
-    void updateEnableTrigByKbd(bool on);
-    void updateTrigLegato(bool on);
     void setRecord(bool on);
     void setDispVert(int mode);
     void updateDispVert(int mode);
@@ -258,20 +233,6 @@ class SeqWidget : public InOutBox
 */
     void mouseEvent(double, double, int, int pressed);
 /*!
-* @brief Slot for the SeqWidget::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    void updateChannelOut(int value);
-/*!
-* @brief Slot for the SeqWidget::portOut spinbox setting the output
-* port of this module.
-* @param value Number of the output port to send data to
-*
-*/
-    void updatePortOut(int value);
-/*!
 * @brief Slot for the SeqWidget::muteOut action.
 * Suppresses output of Seq data.
 *
@@ -281,15 +242,6 @@ class SeqWidget : public InOutBox
 *
 */
     void setMuted(bool on);
-/*!
-* @brief Slot for the SeqWidget::deferChanges action.
-*
-* Sets a flag in the midi worker causing parameter changes to become
-* active/inactive only at pattern end.
-*
-* @param on Set to True for deferring parameter changes to pattern end
-*/
-    void updateDeferChanges(bool on);
 
 
 #ifdef APPBUILD

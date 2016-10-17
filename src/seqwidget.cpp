@@ -38,45 +38,20 @@
 SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_globStore, portCount, compactStyle, inOutVisible, p_name),
-    midiWorker(p_midiWorker),
-    modified(false)
+    InOutBox(p_midiWorker, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    midiWorker(p_midiWorker)
 {
 #else
 SeqWidget::SeqWidget(
     bool compactStyle,
     bool mutedAdd, bool inOutVisible):
     InOutBox(compactStyle, inOutVisible, "Seq:"),
-    midiWorker(NULL),
-    modified(false)
+    midiWorker(NULL)
 {
 #endif
 
-    connect(enableNoteIn, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableNoteIn(bool)));
-    connect(enableVelIn, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableVelIn(bool)));
-    connect(enableNoteOff, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableNoteOff(bool)));
-    connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableRestartByKbd(bool)));
-    connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
-            SLOT(updateEnableTrigByKbd(bool)));
-    connect(enableTrigLegato, SIGNAL(toggled(bool)), this, 
-            SLOT(updateTrigLegato(bool)));
-    connect(chIn, SIGNAL(activated(int)), this, 
-            SLOT(updateChIn(int)));
-    connect(channelOut, SIGNAL(activated(int)), this,
-            SLOT(updateChannelOut(int)));
     connect(muteOutAction, SIGNAL(toggled(bool)), this, 
             SLOT(setMuted(bool)));
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, 
-            SLOT(updateDeferChanges(bool)));
-#ifdef APPBUILD
-    connect(portOut, SIGNAL(activated(int)), this, 
-            SLOT(updatePortOut(int)));
-    midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
-#endif
 
 
     // group box for sequence setup
@@ -91,17 +66,6 @@ SeqWidget::SeqWidget(
 
     cursor = new Cursor('S');
 
-    muteOutAction = new QAction(tr("&Mute"),this);
-    muteOutAction->setCheckable(true);
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, SLOT(setMuted(bool)));
-    muteOut = new QToolButton(this);
-    muteOut->setDefaultAction(muteOutAction);
-    muteOut->setFont(QFont("Helvetica", 8));
-    muteOut->setMinimumSize(QSize(35,20));
-
-#ifdef APPBUILD
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-#endif
     deferChangesAction = new QAction("D", this);
     deferChangesAction->setToolTip(tr("Defer mute, velocity, note length and transpose to pattern end"));
     deferChangesAction->setCheckable(true);
@@ -264,11 +228,10 @@ SeqWidget::SeqWidget(
 
     setLayout(widgetLayout);
     recordMode = false;
-    dataChanged=false;
-    needsGUIUpdate=false;
     updateVelocity(64);
     updateWaveForm(0);
     lastMute = false;
+    modified = false;
 }
 
 #ifdef APPBUILD
@@ -441,70 +404,6 @@ void SeqWidget::readData(QXmlStreamReader& xml)
 }
 #endif
 
-void SeqWidget::updateChIn(int value)
-{
-    if (midiWorker) midiWorker->chIn = value;
-    modified = true;
-}
-
-void SeqWidget::updateIndexIn(int value)
-{
-    if (indexIn[0] == sender()) {
-        if (midiWorker) midiWorker->indexIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->indexIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
-
-void SeqWidget::updateRangeIn(int value)
-{
-    if (rangeIn[0] == sender()) {
-        if (midiWorker) midiWorker->rangeIn[0] = value;
-    } else {
-        if (midiWorker) midiWorker->rangeIn[1] = value;
-    }
-    checkIfInputFilterSet();
-    modified = true;
-}
-
-void SeqWidget::updateEnableNoteIn(bool on)
-{
-    if (midiWorker) midiWorker->enableNoteIn = on;
-    modified = true;
-}
-
-void SeqWidget::updateEnableNoteOff(bool on)
-{
-    if (midiWorker) midiWorker->enableNoteOff = on;
-    modified = true;
-}
-
-void SeqWidget::updateEnableVelIn(bool on)
-{
-    if (midiWorker) midiWorker->enableVelIn = on;
-    modified = true;
-}
-
-void SeqWidget::updateEnableRestartByKbd(bool on)
-{
-    if (midiWorker) midiWorker->restartByKbd = on;
-    modified = true;
-}
-
-void SeqWidget::updateEnableTrigByKbd(bool on)
-{
-    if (midiWorker) midiWorker->trigByKbd = on;
-    modified = true;
-}
-
-void SeqWidget::updateTrigLegato(bool on)
-{
-    if (midiWorker) midiWorker->trigLegato = on;
-    modified = true;
-}
-
 void SeqWidget::updateNoteLength(int val)
 {
     if (midiWorker) midiWorker->updateNoteLength(sliderToTickLen(val));
@@ -607,24 +506,6 @@ void SeqWidget::setMuted(bool on)
     modified = true;
 }
 
-void SeqWidget::updateDeferChanges(bool on)
-{
-    if (midiWorker) midiWorker->updateDeferChanges(on);
-    modified = true;
-}
-
-void SeqWidget::updatePortOut(int value)
-{
-    if (midiWorker) midiWorker->portOut = value;
-    modified = true;
-}
-
-void SeqWidget::updateChannelOut(int value)
-{
-    if (midiWorker) midiWorker->channelOut = value;
-    modified = true;
-}
-
 void SeqWidget::setDispVert(int mode)
 {
     dispVert[mode]->setChecked(true);
@@ -639,16 +520,6 @@ void SeqWidget::updateDispVert(int mode)
 }
 
 #ifdef APPBUILD
-bool SeqWidget::isModified()
-{
-    return (modified || midiControl->isModified());
-}
-
-void SeqWidget::setModified(bool m)
-{
-    modified = m;
-    midiControl->setModified(m);
-}
 
 void SeqWidget::doStoreParams(int ix, bool empty)
 {

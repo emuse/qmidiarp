@@ -18,6 +18,7 @@ nodist_qmidiarp_SOURCES = \
 	indicator_moc.cpp \
 	inoutbox_moc.cpp \
 	logwidget_moc.cpp \
+	midiworker_moc.cpp \
 	midiarp_moc.cpp \
 	midilfo_moc.cpp \
 	midiseq_moc.cpp \
@@ -46,6 +47,7 @@ qmidiarp_SOURCES = \
 	inoutbox.cpp inoutbox.h \
 	logwidget.cpp logwidget.h \
 	main.cpp main.h \
+	midiworker.cpp midiworker.h \
 	midiarp.cpp midiarp.h \
 	midilfo.cpp midilfo.h \
 	midiseq.cpp midiseq.h \
@@ -82,12 +84,14 @@ lfopluginui_LTLIBRARIES = qmidiarp_lfo_ui.la
 seqpluginui_LTLIBRARIES = qmidiarp_seq_ui.la
 
 nodist_qmidiarp_lfo_la_SOURCES = \
+	midiworker_moc.cpp \
 	midilfo_moc.cpp \
 	midilfo_lv2_moc.cpp
 
 qmidiarp_lfo_la_SOURCES = \
 	lv2_common.h \
 	main.h \
+	midiworker.cpp midiworker.h \
 	midilfo.cpp midilfo.h \
 	midilfo_lv2.cpp midilfo_lv2.h
 
@@ -96,6 +100,7 @@ qmidiarp_lfo_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	cursor_moc.cpp \
+	midiworker_moc.cpp \
 	midilfo_moc.cpp \
 	inoutbox_moc.cpp \
 	lfowidget_moc.cpp \
@@ -105,6 +110,7 @@ nodist_qmidiarp_lfo_ui_la_SOURCES = \
 
 qmidiarp_lfo_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
+	midiworker.cpp midiworker.h \
 	midilfo.cpp midilfo.h \
 	inoutbox.cpp inoutbox.h \
 	lfowidget.cpp lfowidget.h \
@@ -118,12 +124,14 @@ qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_seq_la_SOURCES = \
+	midiworker_moc.cpp \
 	midiseq_moc.cpp \
 	midiseq_lv2_moc.cpp
 
 qmidiarp_seq_la_SOURCES = \
 	lv2_common.h \
 	main.h \
+	midiworker.cpp midiworker.h \
 	midiseq.cpp midiseq.h \
 	midiseq_lv2.cpp midiseq_lv2.h
 
@@ -132,6 +140,7 @@ qmidiarp_seq_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
+	midiworker_moc.cpp \
 	midiseq_moc.cpp \
 	inoutbox_moc.cpp \
 	seqwidget_moc.cpp \
@@ -143,6 +152,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
 	main.h \
+	midiworker.cpp midiworker.h \
 	midiseq.cpp midiseq.h \
 	inoutbox.cpp inoutbox.h \
 	seqwidget.cpp seqwidget.h \
@@ -154,12 +164,14 @@ qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_arp_la_SOURCES = \
+	midiworker_moc.cpp \
 	midiarp_moc.cpp \
 	midiarp_lv2_moc.cpp
 
 qmidiarp_arp_la_SOURCES = \
 	lv2_common.h \
 	main.h \
+	midiworker.cpp midiworker.h \
 	midiarp.cpp midiarp.h \
 	midiarp_lv2.cpp midiarp_lv2.h
 
@@ -169,6 +181,7 @@ qmidiarp_arp_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	inoutbox_moc.cpp \
+	midiworker_moc.cpp \
 	midiarp_moc.cpp \
 	arpwidget_moc.cpp \
 	arpscreen_moc.cpp \
@@ -179,6 +192,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
 	main.h \
+	midiworker.cpp midiworker.h \
 	midiarp.cpp midiarp.h \
 	inoutbox.cpp inoutbox.h \
 	arpwidget.cpp arpwidget.h \

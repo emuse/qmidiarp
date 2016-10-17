@@ -28,35 +28,14 @@
 
 MidiSeq::MidiSeq()
 {
-    enableNoteIn = true;
-    enableNoteOff = false;
-    enableVelIn = true;
     recordMode = false;
-    trigByKbd = false;
-    restartByKbd = false;
-    trigLegato = false;
     enableLoop = true;
-    gotKbdTrig = false;
     currentRecStep = 0;
-    seqFinished = false;
-    reverse = false;
-    pingpong = false;
-    backward = false;
-    reflect = false;
-    restartFlag = false;
-    curLoopMode = 0;
-    noteCount = 0;
     loopMarker = 0;
 
     nOctaves = 4;
     baseOctave = 3;
 
-    for (int l1 = 0; l1 < 2; l1++) {
-        rangeIn[l1] = (l1) ? 127 : 0;
-        indexIn[l1] = (l1) ? 127 : 0;
-    }
-    chIn = 0;
-    queueTempo = 100.0;
     vel = 0;
     velDefer = 0;
     transp = 0;
@@ -67,21 +46,8 @@ MidiSeq::MidiSeq()
     maxNPoints = 16;
     notelength = 180;
     notelengthDefer = 180;
-    portOut = 0;
-    channelOut = 0;
     currentIndex = 0;
-    nextTick = 0;
-    grooveTick = 0;
-    newGrooveTick = 0;
-    grooveVelocity = 0;
-    grooveLength = 0;
-    isMuted = false;
-    isMutedDefer = false;
-    deferChanges = false;
-    parChangesPending = false;
     lastMute = false;
-    dataChanged = false;
-    needsGUIUpdate = false;
 
     int lt = 0;
     int l1 = 0;
@@ -97,20 +63,6 @@ MidiSeq::MidiSeq()
             lt+=step;
     }
     muteMask.fill(false, 2048);
-}
-
-MidiSeq::~MidiSeq(){
-}
-
-void MidiSeq::setMuted(bool on)
-{
-    isMutedDefer = on;
-    if (deferChanges) {
-        parChangesPending = true;
-    }
-    else isMuted = on;
-
-    needsGUIUpdate = false;
 }
 
 bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
@@ -275,21 +227,6 @@ void MidiSeq::getData(QVector<Sample> *p_data)
     *p_data = data;
 }
 
-int MidiSeq::clip(int value, int min, int max, bool *outOfRange)
-{
-    int tmp = value;
-
-    *outOfRange = false;
-    if (tmp > max) {
-        tmp = max;
-        *outOfRange = true;
-    } else if (tmp < min) {
-        tmp = min;
-        *outOfRange = true;
-    }
-    return(tmp);
-}
-
 void MidiSeq::updateResolution(int val)
 {
     res = val;
@@ -347,11 +284,6 @@ void MidiSeq::recordNote(int val)
         currentRecStep++;
         currentRecStep %= (res * size);
         dataChanged = true;
-}
-
-void MidiSeq::updateQueueTempo(int val)
-{
-    queueTempo = (double)val;
 }
 
 int MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
@@ -517,16 +449,6 @@ void MidiSeq::setCurrentIndex(int ix)
 
         reflect = pingpong;
     }
-}
-
-void MidiSeq::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-        int p_grooveLength)
-{
-    // grooveTick is only updated on pair steps to keep quantization
-    // newGrooveTick stores the GUI value temporarily
-    newGrooveTick = p_grooveTick;
-    grooveVelocity = p_grooveVelocity;
-    grooveLength = p_grooveLength;
 }
 
 void MidiSeq::applyPendingParChanges()

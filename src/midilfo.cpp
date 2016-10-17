@@ -28,18 +28,6 @@
 
 MidiLfo::MidiLfo()
 {
-    enableNoteOff = false;
-    trigByKbd = false;
-    gotKbdTrig = false;
-    restartByKbd = false;
-    trigLegato = false;
-    enableLoop = true;
-    curLoopMode = 0;
-    seqFinished = false;
-    restartFlag = false;
-    noteCount = 0;
-
-    queueTempo = 100.0;
     amp = 64;
     offs = 0;
     freq = 8;
@@ -48,26 +36,9 @@ MidiLfo::MidiLfo()
     nPoints = 16;
     maxNPoints = 16;
     old_res = 0;
-    ccnumber = 74;
-    portOut = 0;
-    channelOut = 0;
-    chIn = 0;
-    ccnumberIn = 74;
-    for (int l1 = 0; l1 < 2; l1++) {
-        rangeIn[l1] = (l1) ? 127 : 0;
-        indexIn[l1] = (l1) ? 127 : 0;
-    }
     waveFormIndex = 0;
-    isMuted = false;
-    isMutedDefer = false;
-    deferChanges = false;
-    parChangesPending = false;
     recordMode = false;
     isRecording = false;
-    reverse = false;
-    pingpong = false;
-    backward = false;
-    reflect = false;
     recValue = 0;
     int l1 = 0;
     int lt = 0;
@@ -94,28 +65,8 @@ MidiLfo::MidiLfo()
     lastMouseY = 0;
     frameptr = 0;
     frameSize = 1;
-    nextTick = 0;
-    grooveTick = 0;
-    newGrooveTick = 0;
-    grooveVelocity = 0;
-    grooveLength = 0;
 
     lastMute = false;
-    dataChanged = false;
-    needsGUIUpdate = false;
-}
-
-MidiLfo::~MidiLfo(){
-}
-
-void MidiLfo::setMuted(bool on)
-{
-    isMutedDefer = on;
-    if (deferChanges) {
-        parChangesPending = true;
-    }
-    else isMuted = on;
-    needsGUIUpdate = false;
 }
 
 void MidiLfo::getNextFrame(int tick)
@@ -328,21 +279,6 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     *p_data = data;
 }
 
-int MidiLfo::clip(int value, int min, int max, bool *outOfRange)
-{
-    int tmp = value;
-
-    *outOfRange = false;
-    if (tmp > max) {
-        tmp = max;
-        *outOfRange = true;
-    } else if (tmp < min) {
-        tmp = min;
-        *outOfRange = true;
-    }
-    return(tmp);
-}
-
 void MidiLfo::updateWaveForm(int val)
 {
     waveFormIndex = val;
@@ -387,11 +323,6 @@ void MidiLfo::updateLoop(int val)
         seqFinished = false;
         setFramePtr(0);
     }
-}
-
-void MidiLfo::updateQueueTempo(int val)
-{
-    queueTempo = (double)val;
 }
 
 int MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
@@ -644,16 +575,6 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
         if (noteCount) noteCount--;
     }
     return(false);
-}
-
-void MidiLfo::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-        int p_grooveLength)
-{
-    // grooveTick is only updated on pair steps to keep quantization
-    // newGrooveTick stores the GUI value temporarily
-    newGrooveTick = p_grooveTick;
-    grooveVelocity = p_grooveVelocity;
-    grooveLength = p_grooveLength;
 }
 
 void MidiLfo::applyPendingParChanges()
