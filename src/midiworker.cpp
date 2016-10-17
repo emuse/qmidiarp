@@ -55,6 +55,7 @@ MidiWorker::MidiWorker()
     seqFinished = false;
     restartFlag = false;
     triggerMode = 0;
+    enableLoop = true;
     curLoopMode = 0;
     noteCount = 0;
     nextTick = 0;
