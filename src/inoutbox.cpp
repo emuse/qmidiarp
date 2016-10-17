@@ -99,6 +99,7 @@ InOutBox::InOutBox(bool compactStyle,
 		enableNoteIn->hide();
 		enableNoteInLabel->hide();
 	}
+	else enableNoteIn->setChecked(true);
 
     QLabel *enableVelInLabel = new QLabel(tr("&Velocity"));
     enableVelIn = new QCheckBox;
@@ -108,6 +109,7 @@ InOutBox::InOutBox(bool compactStyle,
 		enableVelIn->hide();
 		enableVelInLabel->hide();
 	}
+	else enableVelIn->setChecked(true);
 
     QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"));
     enableNoteOff = new QCheckBox;
