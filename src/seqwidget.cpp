@@ -66,16 +66,7 @@ SeqWidget::SeqWidget(
 
     cursor = new Cursor('S');
 
-    deferChangesAction = new QAction("D", this);
-    deferChangesAction->setToolTip(tr("Defer mute, velocity, note length and transpose to pattern end"));
-    deferChangesAction->setCheckable(true);
-    connect(deferChangesAction, SIGNAL(toggled(bool)), this, SLOT(updateDeferChanges(bool)));
-
-    QToolButton *deferChangesButton = new QToolButton;
-    deferChangesButton->setDefaultAction(deferChangesAction);
-    deferChangesButton->setFixedSize(20, 20);
-
-    loopBox = new QComboBox(seqBox);
+    loopBox = new QComboBox;
     QStringList names;
     names.clear();
     names << "->_>" << " <_<-" << "->_<" << " >_<-" << "->_|" << " |_<-" << "RANDM";
@@ -100,9 +91,8 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
 #endif
 
-    QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
-            seqBox);
-    resBox = new QComboBox(seqBox);
+    QLabel *resBoxLabel = new QLabel(tr("&Resolution"));
+    resBox = new QComboBox;
     resBoxLabel->setBuddy(resBox);
     names.clear();
     names << "1" << "2" << "4" << "8" << "16";

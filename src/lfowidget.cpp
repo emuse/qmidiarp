@@ -75,8 +75,8 @@ LfoWidget::LfoWidget(
 
     cursor = new Cursor('L');
 
-    QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"), waveBox);
-    waveFormBox = new QComboBox(waveBox);
+    QLabel *waveFormBoxLabel = new QLabel(tr("&Waveform"));
+    waveFormBox = new QComboBox;
     waveFormBoxLabel->setBuddy(waveFormBox);
     //loadWaveForms();
     waveFormBox->addItem(QPixmap(lfowsine_xpm),"");
@@ -95,8 +95,7 @@ LfoWidget::LfoWidget(
     midiControl->addMidiLearnMenu("WaveForm", waveFormBox, 3);
 #endif
 
-    QLabel *freqBoxLabel = new QLabel(tr("&Frequency"),
-            waveBox);
+    QLabel *freqBoxLabel = new QLabel(tr("&Frequency"));
     freqBox = new QComboBox;
     freqBoxLabel->setBuddy(freqBox);
     QStringList names;
@@ -114,8 +113,7 @@ LfoWidget::LfoWidget(
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("Frequency", freqBox, 4);
 #endif
-    QLabel *resBoxLabel = new QLabel(tr("&Resolution"),
-            waveBox);
+    QLabel *resBoxLabel = new QLabel(tr("&Resolution"));
     resBox = new QComboBox;
     resBoxLabel->setBuddy(resBox);
     names.clear();
