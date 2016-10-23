@@ -59,9 +59,9 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     temp.dispVertIndex = 0;
     /* Arp Modules */
     temp.indexIn0 = 0;
-    temp.indexIn1 = 0;
+    temp.indexIn1 = 127;
     temp.rangeIn0 = 0;
-    temp.rangeIn1 = 0;
+    temp.rangeIn1 = 127;
     temp.attack = 0;
     temp.release = 0;
     temp.repeatMode = 0;
@@ -377,6 +377,10 @@ void ParStore::readData(QXmlStreamReader& xml)
                 }
                 else skipXmlElement(xml);
             }
+            //For compatibility with files stored before all modules got
+            //Note filters:
+            if (!(temp.indexIn0 + temp.indexIn1)) temp.indexIn1 = 127;
+            if (!(temp.rangeIn0 + temp.rangeIn1)) temp.rangeIn1 = 127;
             tempToList(ix);
             updateRunOnce(ix, tmpjumpto);
             onlyPatternList.replace(ix, tmponlypattern);
