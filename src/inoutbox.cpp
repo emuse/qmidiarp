@@ -282,7 +282,7 @@ InOutBox::InOutBox(bool compactStyle,
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
 
 #ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction);
+        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));
         connect(parStore, SIGNAL(restore(int)),

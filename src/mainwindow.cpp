@@ -133,6 +133,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
 #endif
 
     engine = new Engine(globStore, grooveWidget, p_portCount, alsaMidi, this);
+    
     if (alsaMidi) {
         connect(engine->jackSync, SIGNAL(j_shutdown()), this, SLOT(jackShutdown()));
     }

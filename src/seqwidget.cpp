@@ -134,7 +134,7 @@ SeqWidget::SeqWidget(
     midiControl->addMidiLearnMenu("Size", sizeBox, 5);
 #endif
 
-    dispSignalMapper = new QSignalMapper;
+    dispSignalMapper = new QSignalMapper(this);
     QLabel *dispLabel[4];
     QString dispText[4] = {tr("&F"), tr("&U"), tr("&M"), tr("&L")};
     QString dispToolTip[4] = {tr("Full"), tr("Upper"), tr("Mid"), tr("Lower")};

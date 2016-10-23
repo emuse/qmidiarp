@@ -29,9 +29,10 @@
 #include "pixmaps/filesave.xpm"
 
 ParStore::ParStore(GlobStore *p_globStore, const QString &name,
-            QAction *p_muteOutAction,
-            QAction *p_deferChangesAction): globStore(p_globStore)
+            QAction *p_muteOutAction, QAction *p_deferChangesAction,
+            QWidget *p_parent): globStore(p_globStore)
 {
+    setParent(p_parent);
     // when temp.empty is true, restoring from that set is ignored
     temp.empty = false;
     temp.muteOut = false;
@@ -124,7 +125,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     QVBoxLayout *buttonLayout = new QVBoxLayout;
     buttonLayout->addWidget(topRow);
 
-    locContextMenu = new QMenu;
+    locContextMenu = new QMenu(this);
 
     QAction *storeHereAction = new QAction(tr("&Store here"), this);
     storeHereAction->setProperty("index", list.count());
@@ -138,7 +139,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     locContextMenu->addAction(onlyPatternAction);
     connect(onlyPatternAction, SIGNAL(toggled(bool)), this, SLOT(updateOnlyPattern(bool)));
 
-    jumpToIndexMenu = new QMenu(tr("When finished"));
+    jumpToIndexMenu = new QMenu(tr("When finished"), this);
 
     jumpToGroup = new QActionGroup(this);
     connect(jumpToGroup, SIGNAL(triggered(QAction *))
@@ -410,8 +411,7 @@ void ParStore::removeLocation(int ix)
     if (ix == -1) ix = list.count() - 1;
 
     list.removeAt(ix);
-    QWidget *button = new QWidget;
-    button = layout()->itemAt(0)->layout()->takeAt(ix + 1)->widget();
+    QWidget *button = layout()->itemAt(0)->layout()->takeAt(ix + 1)->widget();
     QAction *action = jumpToIndexMenu->actions().at(ix + 3);
     delete button;
     delete action;

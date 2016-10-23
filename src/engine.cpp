@@ -39,7 +39,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     logTickBuffer.resize(128);
     logEventCount = 0;
 
-    midiControl = new MidiControl();
+    midiControl = new MidiControl(parent);
     midiControl->ID = -3;
     midiControl->parentDockID = -3;
     connect(midiControl, SIGNAL(setMidiLearn(int, int, int)),

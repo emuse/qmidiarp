@@ -42,7 +42,7 @@ GlobStore::GlobStore(QWidget *parent)
     currentRequest = 0;
     switchAtBeat = 0;
 
-    storeSignalMapper = new QSignalMapper;
+    storeSignalMapper = new QSignalMapper(this);
     connect(storeSignalMapper, SIGNAL(mapped(int)),
              this, SLOT(storeAll(int)));
 
