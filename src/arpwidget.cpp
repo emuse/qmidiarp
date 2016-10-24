@@ -2,7 +2,6 @@
  * @file arpwidget.cpp
  * @brief Implements the ArpWidget GUI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -642,17 +641,8 @@ void ArpWidget::setLatchMode(bool on)
 
 #ifdef APPBUILD
 
-void ArpWidget::doStoreParams(int ix, bool empty = false)
+void ArpWidget::doStoreParams(int ix)
 {
-    parStore->temp.empty = empty;
-    parStore->temp.muteOut = muteOut->isChecked();
-    parStore->temp.chIn = chIn->currentIndex();
-    parStore->temp.channelOut = channelOut->currentIndex();
-    parStore->temp.portOut = portOut->currentIndex();
-    parStore->temp.indexIn0 = indexIn[0]->value();
-    parStore->temp.indexIn1 = indexIn[1]->value();
-    parStore->temp.rangeIn0 = rangeIn[0]->value();
-    parStore->temp.rangeIn1 = rangeIn[1]->value();
     parStore->temp.attack = attackTime->value();
     parStore->temp.release = releaseTime->value();
     parStore->temp.rndTick = randomTick->value();
@@ -671,23 +661,11 @@ void ArpWidget::doRestoreParams(int ix)
     repeatPatternThroughChord->setCurrentIndex(parStore->list.at(ix).repeatMode);
     updateRepeatPattern(parStore->list.at(ix).repeatMode);
     if (!parStore->onlyPatternList.at(ix)) {
-        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
-        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
-        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
-        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
         attackTime->setValue(parStore->list.at(ix).attack);
         releaseTime->setValue(parStore->list.at(ix).release);
         randomTick->setValue(parStore->list.at(ix).rndTick);
         randomLength->setValue(parStore->list.at(ix).rndLen);
         randomVelocity->setValue(parStore->list.at(ix).rndVel);
-
-        //muteOut->setChecked(parStore->list.at(ix).muteOut);
-        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-        updateChIn(parStore->list.at(ix).chIn);
-        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-        updateChannelOut(parStore->list.at(ix).channelOut);
-        setPortOut(parStore->list.at(ix).portOut);
-        updatePortOut(parStore->list.at(ix).portOut);
     }
     midiWorker->advancePatternIndex(true);
 }

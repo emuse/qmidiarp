@@ -2,7 +2,6 @@
  * @file seqwidget.h
  * @brief Member definitions for the SeqWidget GUI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -71,9 +70,12 @@ class SeqWidget : public InOutBox
  * instance.
  *
  * @param p_midiWorker Associated MidiSeq Object
+ * @param p_globStore The Application-wide globStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
+ * @param inOutVisible Add the module with visible InOutBox or not
+ * @param name The name of the module preceded by its type (Arp: , etc...)
  */
     SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
             int portCount, bool compactStyle,
@@ -136,14 +138,14 @@ class SeqWidget : public InOutBox
 * @brief stores some module parameters in a parameter
 * list object
 *
-* @param Position index in the parameter list
+* @param ix Position index in the parameter list
 */
-    void doStoreParams(int ix, bool empty);
+    void doStoreParams(int ix);
 /*!
 * @brief restores some module parameters from the parameter
 * list object
 *
-* @param Position index in the parameter list
+* @param ix Position index in the parameter list
 */
     void doRestoreParams(int ix);
 #endif

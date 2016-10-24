@@ -2,7 +2,6 @@
  * @file seqwidget.cpp
  * @brief Implements the SeqWidget GUI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -511,17 +510,8 @@ void SeqWidget::updateDispVert(int mode)
 
 #ifdef APPBUILD
 
-void SeqWidget::doStoreParams(int ix, bool empty)
+void SeqWidget::doStoreParams(int ix)
 {
-    parStore->temp.empty = empty;
-    parStore->temp.muteOut = muteOut->isChecked();
-    parStore->temp.chIn = chIn->currentIndex();
-    parStore->temp.indexIn0 = indexIn[0]->value();
-    parStore->temp.indexIn1 = indexIn[1]->value();
-    parStore->temp.rangeIn0 = rangeIn[0]->value();
-    parStore->temp.rangeIn1 = rangeIn[1]->value();
-    parStore->temp.channelOut = channelOut->currentIndex();
-    parStore->temp.portOut = portOut->currentIndex();
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
@@ -561,18 +551,6 @@ void SeqWidget::doRestoreParams(int ix)
         midiWorker->transp = parStore->list.at(ix).transp;
         midiWorker->vel = parStore->list.at(ix).vel;
         setDispVert(parStore->list.at(ix).dispVertIndex);
-
-        //muteOut->setChecked(parStore->list.at(ix).muteOut);
-        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
-        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
-        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
-        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
-        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-        updateChIn(parStore->list.at(ix).chIn);
-        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-        updateChannelOut(parStore->list.at(ix).channelOut);
-        setPortOut(parStore->list.at(ix).portOut);
-        updatePortOut(parStore->list.at(ix).portOut);
     }
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);

@@ -2,7 +2,6 @@
  * @file lfowidget.cpp
  * @brief Implements the LfoWidget GUI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -543,19 +542,10 @@ QVector<Sample> LfoWidget::getCustomWave()
     return midiWorker->customWave;
 }
 
-void LfoWidget::doStoreParams(int ix, bool empty)
+void LfoWidget::doStoreParams(int ix)
 {
-    parStore->temp.empty = empty;
-    parStore->temp.muteOut = muteOut->isChecked();
-    parStore->temp.chIn = chIn->currentIndex();
     parStore->temp.ccnumberIn = ccnumberInBox->value();
     parStore->temp.ccnumber = ccnumberBox->value();
-    parStore->temp.channelOut = channelOut->currentIndex();
-    parStore->temp.portOut = portOut->currentIndex();
-    parStore->temp.indexIn0 = indexIn[0]->value();
-    parStore->temp.indexIn1 = indexIn[1]->value();
-    parStore->temp.rangeIn0 = rangeIn[0]->value();
-    parStore->temp.rangeIn1 = rangeIn[1]->value();
     parStore->temp.res = resBox->currentIndex();
     parStore->temp.size = sizeBox->currentIndex();
     parStore->temp.loopMode = loopBox->currentIndex();
@@ -591,21 +581,10 @@ void LfoWidget::doRestoreParams(int ix)
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
     if (!parStore->onlyPatternList.at(ix)) {
-        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        amplitude->setValue(parStore->list.at(ix).ampl);
         offset->setValue(parStore->list.at(ix).offs);
-        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
-        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
-        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
-        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
-        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
-        updateChIn(parStore->list.at(ix).chIn);
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
         ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
-        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
-        updateChannelOut(parStore->list.at(ix).channelOut);
-        setPortOut(parStore->list.at(ix).portOut);
-        updatePortOut(parStore->list.at(ix).portOut);
-        amplitude->setValue(parStore->list.at(ix).ampl);
     }
     midiWorker->setFramePtr(0);
 }
