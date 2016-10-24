@@ -2,7 +2,6 @@
  * @file inoutbox.h
  * @brief Member definitions for the InOutBox GUI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -47,6 +46,10 @@
 #include "midiworker.h"
 /*! @brief GUI class creating an input/output parameter box
  *
+ * The three module widget classes ArpWiget, SeqWidget and LfoWidget 
+ * inherit from this class. It provides the input
+ * output settings and widget and handlers and some other small functions
+ * and member variables
 */
 class InOutBox: public QWidget
 {
@@ -57,6 +60,17 @@ class InOutBox: public QWidget
 #ifdef APPBUILD
     QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
     GlobStore *globStore;
+/*!
+ * @brief Constructor for InOutBox. Creates the base class and widget for a module
+ * 
+ *
+ * @param p_midiWorker Associated MidiWorker Base Object
+ * @param p_globStore The Application-wide globStore widget
+ * @param portCount Number of available MIDI output ports
+ * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
+ * @param inOutVisible Add the module with visible InOutBox or not
+ * @param name The name of the module preceded by its type (Arp: , etc...)
+ */
 	InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCount, bool compactStyle,
 		bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
@@ -126,14 +140,14 @@ class InOutBox: public QWidget
 * @brief stores some module parameters in a parameter
 * list object
 *
-* @param Position index in the parameter list
+* @param ix Position index in the parameter list
 */
-    virtual void doStoreParams(int ix, bool empty) = 0;
+    virtual void doStoreParams(int ix) = 0;
 /*!
 * @brief restores some module parameters from the parameter
 * list object
 *
-* @param Position index in the parameter list
+* @param ix Position index in the parameter list
 */
     virtual void doRestoreParams(int ix) = 0;
 #endif

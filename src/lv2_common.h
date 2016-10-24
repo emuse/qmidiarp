@@ -2,7 +2,6 @@
  * @file lv2_common.h
  * @brief URI definitions and mapping for QMidiArp LV2 plugins
  *
- * @section LICENSE
  *
  *      Copyright 2011 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

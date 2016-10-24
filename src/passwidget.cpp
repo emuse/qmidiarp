@@ -2,7 +2,6 @@
  * @file passwidget.cpp
  * @brief Implements the PassWidget UI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

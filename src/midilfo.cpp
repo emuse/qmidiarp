@@ -2,7 +2,6 @@
  * @file midilfo.cpp
  * @brief Implements the MidiLfo MIDI worker class for the LFO Module.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

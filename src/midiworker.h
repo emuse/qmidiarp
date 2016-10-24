@@ -2,7 +2,6 @@
  * @file midiworker.h
  * @brief Member definitions for the MidiWorker class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -46,6 +45,9 @@
 
 /*! @brief MIDI worker base class for QMidiArp modules.
  *
+ * The three Midi Module classes inherit from this class. It provides common
+ * input output settings variables and some other small functions that all
+ * modules have in common
 */
 class MidiWorker : public QObject  {
 

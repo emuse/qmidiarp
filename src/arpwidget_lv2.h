@@ -2,7 +2,6 @@
  * @file arpwidget_lv2.cpp
  * @brief Headers for the LV2 GUI for the QMidiArp Arp plugin.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

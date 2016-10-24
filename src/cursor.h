@@ -2,7 +2,6 @@
  * @file cursor.h
  * @brief Header for the Cursor class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

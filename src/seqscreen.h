@@ -2,7 +2,6 @@
  * @file seqscreen.h
  * @brief Header for the SeqScreen class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

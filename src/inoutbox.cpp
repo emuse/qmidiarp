@@ -2,7 +2,6 @@
  * @file inoutbox.cpp
  * @brief Implements the InOutBox GUI class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -512,8 +511,17 @@ void InOutBox::updateDeferChanges(bool on)
 void InOutBox::storeParams(int ix, bool empty)
 {
 #ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
-    doStoreParams(ix, empty);
+    parStore->temp.empty = empty;
+    parStore->temp.muteOut = muteOut->isChecked();
+    parStore->temp.chIn = chIn->currentIndex();
+    parStore->temp.channelOut = channelOut->currentIndex();
+    parStore->temp.portOut = portOut->currentIndex();
+    parStore->temp.indexIn0 = indexIn[0]->value();
+    parStore->temp.indexIn1 = indexIn[1]->value();
+    parStore->temp.rangeIn0 = rangeIn[0]->value();
+    parStore->temp.rangeIn1 = rangeIn[1]->value();
+    doStoreParams(ix);
+    
 #else
     (void)ix;
     (void)empty;
@@ -523,8 +531,20 @@ void InOutBox::storeParams(int ix, bool empty)
 void InOutBox::restoreParams(int ix)
 {
 #ifdef APPBUILD
-    // have to do this for moc not caring for APPBUILD flag
     doRestoreParams(ix);
+    if (!parStore->onlyPatternList.at(ix)) {
+        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
+        indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
+        rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);
+        rangeIn[1]->setValue(parStore->list.at(ix).rangeIn1);
+        chIn->setCurrentIndex(parStore->list.at(ix).chIn);
+        updateChIn(parStore->list.at(ix).chIn);
+        channelOut->setCurrentIndex(parStore->list.at(ix).channelOut);
+        updateChannelOut(parStore->list.at(ix).channelOut);
+        setPortOut(parStore->list.at(ix).portOut);
+        updatePortOut(parStore->list.at(ix).portOut);
+    }
 #else
     (void)ix;
 #endif

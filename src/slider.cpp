@@ -6,7 +6,6 @@
  * visualized. The stepwidth when controller by keyboard cursor keys
  * can be set as well as the display orientation.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

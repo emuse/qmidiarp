@@ -2,7 +2,6 @@
  * @file midiarp.cpp
  * @brief Implements the MidiArp MIDI worker class for the Arpeggiator Module.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

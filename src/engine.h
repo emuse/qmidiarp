@@ -2,7 +2,6 @@
  * @file engine.h
  * @brief Header file for the Engine class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

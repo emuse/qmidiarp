@@ -3,7 +3,6 @@
  * @file driverbase.h
  * @brief Base class for drivers
  *
- * @section LICENSE
  *
  *      Copyright 2011 <qmidiarp-devel@lists.sourceforge.net>
  *

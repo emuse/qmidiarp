@@ -2,7 +2,6 @@
  * @file midiseq_lv2.cpp
  * @brief Implements an LV2 plugin inheriting from MidiSeq
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

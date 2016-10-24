@@ -2,7 +2,6 @@
  * @file storagebutton.cpp
  * @brief Implements the StorageButton QToolButton class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

@@ -2,7 +2,6 @@
  * @file lfowidget_lv2.cpp
  * @brief Implements the the LV2 GUI for the QMidiArp Lfo plugin.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

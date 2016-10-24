@@ -2,7 +2,6 @@
  * @file midiworker.cpp
  * @brief Implements the MIDI worker module base class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

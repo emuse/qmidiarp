@@ -2,7 +2,6 @@
  * @file midievent.h
  * @brief Defines the MidiEvent structure and the midi_event_type enum
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

@@ -2,7 +2,6 @@
  * @file indicator.cpp
  * @brief Implementation of the Indicator class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

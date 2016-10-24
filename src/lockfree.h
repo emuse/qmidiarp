@@ -3,7 +3,6 @@
  * @file lockfree.h
  * @brief Implementation of the LockFreeStore and LockedData templates
  *
- * @section LICENSE
  *
  *      Copyright 2011 <qmidiarp-devel@lists.sourceforge.net>
  *
@@ -127,7 +126,6 @@ public:
      *
      * Releases the writable store lock.
      *
-     * @param store a reference to existing LockFreeStore
      */
     ~LockedData()
     {

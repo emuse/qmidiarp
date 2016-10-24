@@ -36,7 +36,6 @@
  * Guido Scholz 2009 <BR> 
  * Matthias Nagorni 2003 <BR> 
  * 
- *   @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

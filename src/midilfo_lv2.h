@@ -2,7 +2,6 @@
  * @file midilfo_lv2.h
  * @brief Headers for the MidiLfo LV2 plugin class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

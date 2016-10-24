@@ -2,7 +2,6 @@
  * @file midicctable.cpp
  * @brief Header for the MidiCCTable QDialog class
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

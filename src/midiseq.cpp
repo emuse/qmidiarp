@@ -2,7 +2,6 @@
  * @file midiseq.cpp
  * @brief Implements the MidiSeq MIDI worker class for the Seq Module.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

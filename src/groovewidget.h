@@ -2,7 +2,6 @@
  * @file groovewidget.h
  * @brief Member definitions for the GrooveWidget QWidget class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

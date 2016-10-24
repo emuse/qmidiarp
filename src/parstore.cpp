@@ -2,7 +2,6 @@
  * @file parstore.cpp
  * @brief Implements the ParStore class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

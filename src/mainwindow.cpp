@@ -2,7 +2,6 @@
  * @file mainwindow.cpp
  * @brief Implements the MainWindow top-level UI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *

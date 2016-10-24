@@ -2,7 +2,6 @@
  * @file mainwindow.h
  * @brief Member definitions for the MainWindow top-level UI class.
  *
- * @section LICENSE
  *
  *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
  *
