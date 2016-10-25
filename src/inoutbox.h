@@ -44,9 +44,9 @@
 #endif
 
 #include "midiworker.h"
-/*! @brief GUI class creating an input/output parameter box
+/*! @brief GUI base class for module widgets, creates an in-out settings box
  *
- * The three module widget classes ArpWiget, SeqWidget and LfoWidget 
+ * The three module widget classes ArpWidget, SeqWidget and LfoWidget 
  * inherit from this class. It provides the input
  * output settings and widget and handlers and some other small functions
  * and member variables
@@ -127,7 +127,15 @@ class InOutBox: public QWidget
 
 #ifdef APPBUILD
 
+/*!
+* @brief Writes common module parameters to disk
+* @param xml XML stream to write to
+*/
 	virtual void writeCommonData(QXmlStreamWriter& xml);
+/*!
+* @brief Reads common module parameters from disk
+* @param xml XML stream to read from
+*/
 	virtual void readCommonData(QXmlStreamReader& xml);
 /*!
 * @brief Setter for the InOutBox::portOut spinbox setting the output
@@ -178,7 +186,26 @@ class InOutBox: public QWidget
 
     virtual void setInputFilterVisible(bool on);
     
+/*!
+* @brief Store common module parameters and call doStoreParams
+* 
+* Stores common module parameters to ParStore:list and then calls 
+* InOutBox::doStoreParams(), which is reimplemented in each module widget
+* to store module specific parameters.
+* 
+* @param ix The storage location index to write to
+* @param empty Signal an empty location
+*/
 	virtual void storeParams(int ix, bool empty = 0);
+/*!
+* @brief Restore common module parameters and call doRestoreParams
+* 
+* Restores common module parameters from ParStore:list and then calls 
+* InOutBox::doRestoreParams(), which is reimplemented in each module widget
+* to restore module specific parameters.
+* 
+* @param ix The storage location index to read from
+*/
 	virtual void restoreParams(int ix);
 /*!
 * @brief Slot for the InOutBox::channelOut spinbox setting the output

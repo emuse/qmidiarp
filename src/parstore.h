@@ -39,6 +39,16 @@
 #include "main.h"
 
 
+/*!
+ * ParStore holds module parameter fields in its ParStore:list. These parameter
+ * fields can be read by the modules who have a pointer to ParStore. ParStore
+ * also creates storage location GUI handling for each module. Each list entry
+ * is represented by a StorageButton and its associated context menu. GUI elements
+ * are dynamically added to and removed from the GlobStore Widget. ParStore is 
+ * midi controllable and it can save all field lists to disk. 
+
+ * @brief Manages a list of module parameter fields and GUI elements
+ */
 class ParStore : public QWidget
 {
   Q_OBJECT

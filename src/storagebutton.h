@@ -30,6 +30,8 @@
 /*!
  * The StorageButton class derives from QToolButton and implements
  * supplemental display elements such as a second text label.
+
+ * @brief Button widget adding a second text label to QToolButton
  */
 class StorageButton : public QToolButton
 

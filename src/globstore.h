@@ -39,10 +39,12 @@
 
 /*!
  * The GlobStore class is a small QWidget UI that allows storing
- * and restoring global parameters of all modules for QMidiArp.
- * It is instantiated by MainWindow.
- * It is shown in the bottom part of the MainWindow and is the central
- * widget for it.
+ * and restoring global parameters of all modules for QMidiArp into
+ * the ParStore:list. It creates a top row of controls and indicators
+ * for each module as well as the first column of the storages. 
+ * The storage locations themselves are handled by
+ * ParStore. GlobStore is instantiated by MainWindow, and a pointer to
+ * it is given to Engine and ParStore. 
 
  * @brief Global Parameter Storage UI. Instantiated by MainWindow.
  */
