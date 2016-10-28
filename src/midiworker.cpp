@@ -64,12 +64,19 @@ MidiWorker::MidiWorker()
     grooveLength = 0;
     dataChanged = false;
     needsGUIUpdate = false;
+    parChangesPending = false;
 
 }
 
 void MidiWorker::setMuted(bool on)
 {
-    isMuted = on;
+    isMutedDefer = on;
+    if (deferChanges) {
+        parChangesPending = true;
+    }
+    else isMuted = on;
+
+    needsGUIUpdate = false;
 }
 
 int MidiWorker::clip(int value, int min, int max, bool *outOfRange)
