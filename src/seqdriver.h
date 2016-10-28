@@ -111,15 +111,15 @@ class SeqDriver : public DriverBase {
         ~SeqDriver();
         double getCurrentTime();
         void calcCurrentTick(double time); /** calculate m_current_tick based on realTime */
-        void requestTempo(double bpm); /** reimplemented over DriverBase */
-        void setTempo(double bpm); /** reimplemented over DriverBase */
-        int getClientId(); /** reimplemented over DriverBase */
+        void requestTempo(double bpm);
+        void setTempo(double bpm);
+        int getClientId();
         void run();
 
    public slots:
-        void setTransportStatus(bool run); /** is pure in DriverBase */
-        void setUseMidiClock(bool on); /** reimplemented over DriverBase */
-        void setUseJackTransport(bool on); /** reimplemented over DriverBase */
+        void setTransportStatus(bool run);
+        void setUseMidiClock(bool on);
+        void setUseJackTransport(bool on);
 };
 
 #endif

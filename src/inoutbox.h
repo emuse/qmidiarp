@@ -189,7 +189,7 @@ class InOutBox: public QWidget
 /*!
 * @brief Store common module parameters and call doStoreParams
 * 
-* Stores common module parameters to ParStore:list and then calls 
+* Stores common module parameters to ParStore::list and then calls 
 * InOutBox::doStoreParams(), which is reimplemented in each module widget
 * to store module specific parameters.
 * 
@@ -200,7 +200,7 @@ class InOutBox: public QWidget
 /*!
 * @brief Restore common module parameters and call doRestoreParams
 * 
-* Restores common module parameters from ParStore:list and then calls 
+* Restores common module parameters from ParStore::list and then calls 
 * InOutBox::doRestoreParams(), which is reimplemented in each module widget
 * to restore module specific parameters.
 * 
@@ -239,7 +239,7 @@ class InOutBox: public QWidget
 */
     virtual void updateCcnumber(int val);
 /*!
-* @brief Slot for the InOutBox::deferChanges action.
+* @brief Slot for the InOutBox::deferChangesAction.
 *
 * Sets a flag in the midi worker causing parameter changes to become
 * active/inactive only at pattern end.

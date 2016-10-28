@@ -187,11 +187,11 @@ class ArpWidget :  public InOutBox
   * stakato note received */
     void setLatchMode(bool);
 /*!
-* @brief Slot for the LfoWidget::muteOut checkbox.
+* @brief Slot for the ArpWidget::muteOut checkbox.
 * suppresses output of LFO data.
 *
 * It calls
-* MidiLfo::setMuted and LfoScreen::setMuted
+* MidiArp::setMuted and ArpScreen::setMuted
 * @param on Set to True for muting this module
 *
 */

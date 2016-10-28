@@ -40,8 +40,8 @@
 
 
 /*!
- * ParStore holds module parameter fields in its ParStore:list. These parameter
- * fields can be read by the modules who have a pointer to ParStore. ParStore
+ * ParStore holds module parameter fields in its ParStore::list. These parameter
+ * fields can be read by the modules, which have a pointer to ParStore. ParStore
  * also creates storage location GUI handling for each module. Each list entry
  * is represented by a StorageButton and its associated context menu. GUI elements
  * are dynamically added to and removed from the GlobStore Widget. ParStore is 
@@ -118,11 +118,11 @@ class ParStore : public QWidget
         QString pattern;
     };
     TempStore temp; /**< Structure to which all module parameters are copied
-                        * before being appended to the TempStore::list*/
-    QList<TempStore> list; /**< List of TempStore::temp structures for
+                        * before being appended to the ParStore::list*/
+    QList<TempStore> list; /**< List of TempStore structures for
                         parameter storage*/
 
-/**< When this variable is greater than -1, ParStore::updateDisplay() will cause
+/*! When this variable is greater than -1, ParStore::updateDisplay() will cause
 * ParStore::restoreParams(restoreRequest) at pattern end
 */
     int restoreRequest;
@@ -142,9 +142,9 @@ class ParStore : public QWidget
     int dispReqIx, dispReqSelected; 
 
 /*!
-* @brief stores all module parameters to TempStore::temp and stores temp
-* in TempStore::list at index ix. If the given index is greater than the list size,
-* temp is appended to TempStore::list.
+* @brief stores all module parameters to ParStore::temp and stores temp
+* in ParStore::list at index ix. If the given index is greater than the list size,
+* temp is appended to ParStore::list.
 *
 * @param ix Index at which the parameters are stored.
 */

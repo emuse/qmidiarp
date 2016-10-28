@@ -141,19 +141,22 @@ class MidiArp : public MidiWorker  {
  */
     int getPressedNoteCount();
 /**
- * @brief  returns the number of notes present at the MIDI
- * input port.
+ * @brief Either deletes a note or tags the note as released
  *
- * This is the number of notes currently pressed on the keyboard. Note
- * that the input MidiArp::notes buffer size can be different from this
- * number, since it can contain notes in release state or in the
- * MidiArp::latchBuffer.
+ * This function is called when a NOTE OFF event is received or when the
+ * latch and sustain buffers are cleared. The specified note is either 
+ * deleted via MidiArp::deleteNoteAt() or tagged as released if the 
+ * release function is active and if the keep_rel flag is set to 1. 
  *
- * @return Number of notes present at the MIDI input port.
+ * @param noteptr pointer to the note to be looked for
+ * @param tick the current tick position
+ * @param keep_rel If set to 1 and MidiArp::release_time is set, the 
+ * note is marked as released. If set to 0, the note will be deleted
+ * 
  */
     void removeNote(int *noteptr, int tick, int keep_rel);
 /**
- * @brief  removes a note inside the MidiArp::notes input
+ * @brief  Deletes a note inside the MidiArp::notes input
  * note buffer.
  *
  * The note  at the given index is deleted from the buffer with the
