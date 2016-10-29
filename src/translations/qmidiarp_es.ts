@@ -263,7 +263,7 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <source>Restart when a new note is received</source>
-        <translation></translation>
+        <translation>Reiniciar la secuencia cuando una nueva nota sea recibida</translation>
     </message>
     <message>
         <source>&amp;Trigger</source>
@@ -271,7 +271,7 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <source>Retrigger when a new note is received</source>
-        <translation></translation>
+        <translation>Volver a disparar cuando una nueva nota sea recibida</translation>
     </message>
     <message>
         <source>&amp;Legato</source>

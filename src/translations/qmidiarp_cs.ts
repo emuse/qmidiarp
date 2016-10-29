@@ -263,7 +263,7 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
     <message>
         <source>Restart when a new note is received</source>
-        <translation></translation>
+        <translation>Spustit sekvenci znovu, když je nota přijata</translation>
     </message>
     <message>
         <source>&amp;Trigger</source>
@@ -271,7 +271,7 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
     <message>
         <source>Retrigger when a new note is received</source>
-        <translation></translation>
+        <translation>Spustit sekvenci znovu, když je přijata nová nota</translation>
     </message>
     <message>
         <source>&amp;Legato</source>

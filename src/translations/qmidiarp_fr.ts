@@ -259,7 +259,7 @@ d h durée de note augm/dim
     </message>
     <message>
         <source>Restart when a new note is received</source>
-        <translation></translation>
+        <translation>Redémarrer la séquence quand une nouvelle note est reçue</translation>
     </message>
     <message>
         <source>&amp;Trigger</source>
@@ -267,7 +267,7 @@ d h durée de note augm/dim
     </message>
     <message>
         <source>Retrigger when a new note is received</source>
-        <translation></translation>
+        <translation>Déclencher la séquence avec les notes reçues</translation>
     </message>
     <message>
         <source>&amp;Legato</source>

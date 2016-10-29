@@ -259,7 +259,7 @@ please just run the qmidiarp main application once.</source>
     </message>
     <message>
         <source>Restart when a new note is received</source>
-        <translation></translation>
+        <translation>Neu starten wenn eine neue Note empfangen wird</translation>
     </message>
     <message>
         <source>&amp;Trigger</source>
@@ -267,7 +267,7 @@ please just run the qmidiarp main application once.</source>
     </message>
     <message>
         <source>Retrigger when a new note is received</source>
-        <translation></translation>
+        <translation>Mit dem timing der empfangenen Noten starten (triggern)</translation>
     </message>
     <message>
         <source>&amp;Legato</source>
