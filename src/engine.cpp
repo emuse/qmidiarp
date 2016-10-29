@@ -397,28 +397,16 @@ bool Engine::isModified()
 {
     if (!moduleWindowCount()) return false;
 
-    bool arpmodified = false;
-    bool lfomodified = false;
-    bool seqmodified = false;
+    bool modmodified = false;
 
-    for (int l1 = 0; l1 < arpWidgetCount(); l1++)
-        if (arpWidget(l1)->isModified()) {
-            arpmodified = true;
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        if ( ((InOutBox *)moduleWindow(l1)->widget())->isModified() ) {
+            modmodified = true;
             break;
         }
-    for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
-        if (lfoWidget(l1)->isModified()) {
-            lfomodified = true;
-            break;
-        }
+    }
 
-    for (int l1 = 0; l1 < seqWidgetCount(); l1++)
-        if (seqWidget(l1)->isModified()) {
-            seqmodified = true;
-            break;
-        }
-
-    return (modified || arpmodified || lfomodified || seqmodified
+    return (modified || modmodified
             || globStoreWidget->isModified());
 }
 
@@ -426,14 +414,9 @@ void Engine::setModified(bool m)
 {
     modified = m;
 
-    for (int l1 = 0; l1 < arpWidgetCount(); l1++)
-        arpWidget(l1)->setModified(m);
-
-    for (int l1 = 0; l1 < lfoWidgetCount(); l1++)
-        lfoWidget(l1)->setModified(m);
-
-    for (int l1 = 0; l1 < seqWidgetCount(); l1++)
-        seqWidget(l1)->setModified(m);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->setModified(m);
+    }
 
     globStoreWidget->setModified(m);
 }
@@ -749,14 +732,9 @@ bool Engine::eventCallback(MidiEvent inEv)
 
 void Engine::showAllIOPanels(bool on)
 {
-    int l1;
-
-    for (l1 = 0; l1 < arpWidgetCount(); l1++)
-        arpWidget(l1)->hideInOutBoxAction->setChecked(on);
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++)
-        lfoWidget(l1)->hideInOutBoxAction->setChecked(on);
-    for (l1 = 0; l1 < seqWidgetCount(); l1++)
-        seqWidget(l1)->hideInOutBoxAction->setChecked(on);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->hideInOutBoxAction->setChecked(on);
+    }
 }
 
 void Engine::sendController(int ccnumber, int channel, int value)
@@ -929,16 +907,8 @@ void Engine::tr_state_cb(bool on, void *context)
 
 void Engine::store(int ix)
 {
-    int l1;
-
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->storeParams(ix);
-    }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->storeParams(ix);
-    }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->storeParams(ix);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->storeParams(ix);
     }
 }
 
@@ -966,19 +936,11 @@ void Engine::schedRestore(int ix)
 
 void Engine::restore(int ix)
 {
-    int l1;
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->restoreParams(ix);
-        arpWidget(l1)->parStore->oldRestoreRequest = ix;
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->restoreParams(ix);
+        ((InOutBox *)moduleWindow(l1)->widget())->parStore->oldRestoreRequest = ix;
     }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->restoreParams(ix);
-        lfoWidget(l1)->parStore->oldRestoreRequest = ix;
-    }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->restoreParams(ix);
-        seqWidget(l1)->parStore->oldRestoreRequest = ix;
-    }
+
     restoreRequest = -1;
 
     globStoreWidget->requestDispState(ix, 1);
@@ -986,15 +948,8 @@ void Engine::restore(int ix)
 
 void Engine::removeParStores(int ix)
 {
-    int l1;
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->parStore->removeLocation(ix);
-    }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->parStore->removeLocation(ix);
-    }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->parStore->removeLocation(ix);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->parStore->removeLocation(ix);
     }
 }
 
@@ -1020,14 +975,8 @@ void Engine::updateDisplay()
         schedRestoreLocation = -1;
     }
 
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
-        arpWidget(l1)->updateDisplay();
-    }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
-        lfoWidget(l1)->updateDisplay();
-    }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
-        seqWidget(l1)->updateDisplay();
+    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->updateDisplay();
     }
 
     globStoreWidget->updateDisplay();

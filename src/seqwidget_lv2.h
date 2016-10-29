@@ -86,6 +86,7 @@ class SeqWidgetLV2 : public SeqWidget
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
     void sendUIisUp(bool on);
+    void updateDisplay() {};
 
   public slots:
     void mapParam(int value);

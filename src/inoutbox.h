@@ -115,6 +115,7 @@ class InOutBox: public QWidget
     virtual bool isModified();
     virtual void setModified(bool);
     virtual void checkIfInputFilterSet();
+    virtual void updateDisplay() = 0;
 
 /*!
 * @brief Setter for the InOutBox::channelOut spinbox setting the output
