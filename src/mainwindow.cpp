@@ -475,10 +475,10 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
                     QString&, int)));
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeArp(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
-            engine, SLOT(renameDock(const QString&, int, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            engine, SLOT(setMidiLearn(int, int, int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+            engine, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
+            engine, SLOT(setMidiLearn(int, int)));
 
     widgetID = engine->arpWidgetCount();
     moduleWidget->ID = widgetID;
@@ -516,10 +516,10 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
-            engine, SLOT(renameDock(const QString&, int, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            engine, SLOT(setMidiLearn(int, int, int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+            engine, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
+            engine, SLOT(setMidiLearn(int, int)));
 
     widgetID = engine->lfoWidgetCount();
     if (clonefrom >= 0) {
@@ -569,10 +569,10 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
             passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int, int)),
-            engine, SLOT(renameDock(const QString&, int, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            engine, SLOT(setMidiLearn(int, int, int)));
+    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
+            engine, SLOT(renameDock(const QString&, int)));
+    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
+            engine, SLOT(setMidiLearn(int, int)));
 
     widgetID = engine->seqWidgetCount();
     if (clonefrom >= 0) {

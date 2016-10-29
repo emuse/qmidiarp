@@ -126,7 +126,7 @@ void MidiControl::removeMidiCC(int controlID, int ccnumber, int channel)
 
 void MidiControl::midiLearn(int controlID)
 {
-    emit setMidiLearn(parentDockID, ID, controlID);
+    emit setMidiLearn(parentDockID, controlID);
     qWarning("Requesting Midi Learn for %s", qPrintable(names[controlID]));
     cancelMidiLearnAction->setEnabled(true);
 }
@@ -138,7 +138,7 @@ void MidiControl::midiForget(int controlID)
 
 void MidiControl::midiLearnCancel()
 {
-    emit setMidiLearn(parentDockID, ID, -1);
+    emit setMidiLearn(parentDockID, -1);
     qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
 }

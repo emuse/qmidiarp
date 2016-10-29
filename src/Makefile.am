@@ -248,7 +248,11 @@ SUFFIXES = _moc.cpp
 if ENABLE_TRANSLATIONS
 # rule for translation file updates
 $(translations): $(qmidiarp_SOURCES)
-	$(LUPDATE) -verbose $(qmidiarp_SOURCES) -ts $@
+	$(LUPDATE) -verbose $(qmidiarp_SOURCES) \
+		arpwidget_lv2.cpp \
+		lfowidget_lv2.cpp \
+		seqwidget_lv2.cpp \
+		-ts $@
 
 # rule to generate binary translation files
 .ts.qm: $(translations)

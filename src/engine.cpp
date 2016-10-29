@@ -41,12 +41,12 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     midiControl = new MidiControl;
     midiControl->ID = -3;
     midiControl->parentDockID = -3;
-    connect(midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            this, SLOT(setMidiLearn(int, int, int)));
+    connect(midiControl, SIGNAL(setMidiLearn(int, int)),
+            this, SLOT(setMidiLearn(int, int)));
 
     globStoreWidget = p_globStore;
-    connect(globStoreWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            this, SLOT(setMidiLearn(int, int, int)));
+    connect(globStoreWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
+            this, SLOT(setMidiLearn(int, int)));
 
     grooveWidget = p_grooveWidget;
     connect(grooveWidget, SIGNAL(newGrooveTick(int)),
@@ -55,8 +55,8 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
             this, SLOT(setGrooveVelocity(int)));
     connect(grooveWidget, SIGNAL(newGrooveLength(int)),
             this, SLOT(setGrooveLength(int)));
-    connect(grooveWidget->midiControl, SIGNAL(setMidiLearn(int, int, int)),
-            this, SLOT(setMidiLearn(int, int, int)));
+    connect(grooveWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
+            this, SLOT(setMidiLearn(int, int)));
     portCount = p_portCount;
 
     if (!p_alsamidi) {
@@ -333,12 +333,11 @@ int Engine::moduleWindowCount()
     return(moduleWindowList.count());
 }
 
-void Engine::renameDock(const QString& name, int parentDockID, int widgetID)
+void Engine::renameDock(const QString& name, int parentDockID)
 {
     moduleWindow(parentDockID)->setWindowTitle(name);
-    if (name.startsWith('S')) seqWidget(widgetID)->parStore->topButton->setText(name);
-    if (name.startsWith('L')) lfoWidget(widgetID)->parStore->topButton->setText(name);
-    if (name.startsWith('A')) arpWidget(widgetID)->parStore->topButton->setText(name);
+    ((InOutBox *)moduleWindow(parentDockID)->widget())
+            ->parStore->topButton->setText(name);
     setModified(true);
 }
 
@@ -406,8 +405,7 @@ bool Engine::isModified()
         }
     }
 
-    return (modified || modmodified
-            || globStoreWidget->isModified());
+    return (modified || modmodified || globStoreWidget->isModified());
 }
 
 void Engine::setModified(bool m)
@@ -667,28 +665,15 @@ bool Engine::eventCallback(MidiEvent inEv)
         }
     }
     if (midiLearnFlag && inEv.type == EV_NOTEON) {   //input range midi learn
-        if (midiLearnWindowID == 1) {
-            if (midiLearnID == 10)
-                arpWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
-            else if (midiLearnID == 11)
-                arpWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
-            
-            midiLearnFlag = false;
-        }
-        if (midiLearnWindowID == 2) {
-            if (midiLearnID == 10)
-                lfoWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
-            else if (midiLearnID == 11)
-                lfoWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
-            
-            midiLearnFlag = false;
-        }
-        if (midiLearnWindowID == 3) {
-            if (midiLearnID == 10)
-                seqWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
-            else if (midiLearnID == 11)
-                seqWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
-            
+        if (midiLearnWindowID > 0) {
+            if (midiLearnID == 10) {
+                ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
+                    ->indexIn[0]->setValue(inEv.data);
+            }
+            else if (midiLearnID == 11) {
+                ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
+                    ->indexIn[1]->setValue(inEv.data);
+            }
             midiLearnFlag = false;
         }
     }
@@ -778,19 +763,11 @@ void Engine::learnController(int ccnumber, int channel)
 
     int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
 
-    if (midiLearnWindowID == 1) {
-        arpWidget(midiLearnModuleID)->midiControl->requestAppendMidiCC(midiLearnID,
+    if (midiLearnWindowID > 0) {
+        ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
+                ->midiControl->requestAppendMidiCC(midiLearnID,
                 ccnumber, channel, min, 127);
     }
-    if (midiLearnWindowID == 2) {
-        lfoWidget(midiLearnModuleID)->midiControl->requestAppendMidiCC(midiLearnID,
-                ccnumber, channel, min, 127);
-    }
-    if (midiLearnWindowID == 3) {
-        seqWidget(midiLearnModuleID)->midiControl->requestAppendMidiCC(midiLearnID,
-                ccnumber, channel, min, 127);
-    }
-
     midiLearnFlag = false;
 }
 
@@ -856,7 +833,7 @@ void Engine::setUseJackTransport(bool on)
     modified = true;
 }
 
-void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
+void Engine::setMidiLearn(int moduleWindowID, int controlID)
 {
     if (0 > controlID) {
         midiLearnFlag = false;
@@ -865,13 +842,8 @@ void Engine::setMidiLearn(int moduleWindowID, int moduleID, int controlID)
     else {
         midiLearnFlag = true;
         midiLearnWindowID = moduleWindowID;
-        if (midiLearnWindowID >= 0) {
-            QChar test = moduleWindow(midiLearnWindowID)->objectName().at(0);
-            if (test == 'A') midiLearnWindowID = 1;
-            if (test == 'L') midiLearnWindowID = 2;
-            if (test == 'S') midiLearnWindowID = 3;
-        }
-        midiLearnModuleID = moduleID;
+        if (midiLearnWindowID >= 0) midiLearnWindowID = 1;
+        midiLearnModuleID = moduleWindowID;
         midiLearnID = controlID;
     }
 }

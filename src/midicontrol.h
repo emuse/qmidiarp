@@ -112,10 +112,9 @@ class MidiControl : public QWidget
   signals:
 /*! @brief Connected to Engine::setMidiLearn() to listen for incoming events.
 *  @param parentdockid parentDockID of the module requesting MIDI learn
-*  @param id ID of the module recequesting MIDI learn
 *  @param controlID ID of the GUI element to be assigned to the controller
 */
-    void setMidiLearn(int parentdockid, int id, int controlID);
+    void setMidiLearn(int parentdockid, int controlID);
 
   public slots:
 /*!

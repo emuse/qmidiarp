@@ -587,7 +587,7 @@ void InOutBox::moduleRename()
 
     if (ok && !newname.isEmpty()) {
         name = oldname.left(4) + newname;
-        emit dockRename(name, parentDockID, ID);
+        emit dockRename(name, parentDockID);
     }
 #endif
 }

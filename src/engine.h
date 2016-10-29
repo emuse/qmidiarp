@@ -209,9 +209,8 @@ class Engine : public QObject  {
 *
 * @param name New name attribute of the DockWidget
 * @param windowID window ID of the DockWidget to rename
-* @param widgetID widgetID of the module to rename
 */
-    void renameDock(const QString& name, int windowID, int widgetID);
+    void renameDock(const QString& name, int windowID);
 /*!
 * @brief  Sets the transport status running or stopped
 *
@@ -273,16 +272,15 @@ class Engine : public QObject  {
     void handleController(int ccnumber, int channel, int value);
 /**
  * @brief Slot for MidiControl::setMidiLearn(). Sets Engine into MIDI Learn status for
- * moduleID and controlID.
+ * moduleWindowID and controlID.
  *
  * Engine will then wait for an incoming controller event and trigger the
  * attribution by calling MidiControl::appendMidiCC().
  *
  * @param moduleWindowID dockWidget ID of the module
- * @param moduleID ID of the module (index in the moduleWidgetList)
  * @param controlID ID of the controllable widget requesting MIDI learn
  */
-    void setMidiLearn(int moduleWindowID, int moduleID, int controlID);
+    void setMidiLearn(int moduleWindowID, int controlID);
 /**
  * @brief turns on and off MIDI controller handling globally
  *
