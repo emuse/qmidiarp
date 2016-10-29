@@ -123,11 +123,11 @@ d h durée de note augm/dim
     </message>
     <message>
         <source>Low octave limit</source>
-        <translation>Limite Octave Inférieure</translation>
+        <translation>Limite octave inférieure</translation>
     </message>
     <message>
         <source>High octave limit</source>
-        <translation>Limite Octave Supérieure</translation>
+        <translation>Limite octave supérieure</translation>
     </message>
     <message>
         <source>&amp;Attack (beats)</source>

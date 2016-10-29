@@ -145,16 +145,16 @@ cuando todas las notas han sido reproducidas</translation>
 <context>
     <name>ArpWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo del reloj interno</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo del reloj interno</translation>
     </message>
 </context>
 <context>
@@ -315,7 +315,7 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <source>&amp;Show/hide in-out settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Mostrar/Ocultar los paneles de E/S</translation>
     </message>
     <message>
         <source>Note Filter - ACTIVE</source>
@@ -432,16 +432,16 @@ Rueda para cambiar desplazamiento</translation>
 <context>
     <name>LfoWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo del reloj interno</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo del reloj interno</translation>
     </message>
 </context>
 <context>
@@ -985,16 +985,16 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
 <context>
     <name>SeqWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo del reloj interno</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo del reloj interno</translation>
     </message>
 </context>
 </TS>

@@ -145,16 +145,16 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
 <context>
     <name>ArpWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo vnitřních hodin</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo vnitřních hodin</translation>
     </message>
 </context>
 <context>
@@ -432,16 +432,16 @@ Kolečko myši: změna posunu</translation>
 <context>
     <name>LfoWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo vnitřních hodin</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo vnitřních hodin</translation>
     </message>
 </context>
 <context>
@@ -989,16 +989,16 @@ zavoláním qmidiarp -a</translation>
 <context>
     <name>SeqWidgetLV2</name>
     <message>
+        <source>Tempo of internal clock</source>
+        <translation>Tempo vnitřních hodin</translation>
+    </message>
+    <message>
         <source>&amp;Sync with Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tempo of internal clock</source>
-        <translation>Tempo vnitřních hodin</translation>
     </message>
 </context>
 </TS>
