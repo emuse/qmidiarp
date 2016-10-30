@@ -186,16 +186,6 @@ class ArpWidget :  public InOutBox
   * Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received */
     void setLatchMode(bool);
-/*!
-* @brief Slot for the ArpWidget::muteOut checkbox.
-* suppresses output of LFO data.
-*
-* It calls
-* MidiArp::setMuted and ArpScreen::setMuted
-* @param on Set to True for muting this module
-*
-*/
-    void setMuted(bool on);
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

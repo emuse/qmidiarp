@@ -262,6 +262,9 @@ InOutBox::InOutBox(bool compactStyle,
     muteOut->setDefaultAction(muteOutAction);
     muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
+    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
+            SLOT(setMuted(bool)));
+
     
     // Defer button that has to be added to each module widget outside the box
     deferChangesAction = new QAction("D", this);
@@ -484,6 +487,13 @@ void InOutBox::updateTrigLegato(bool on)
     modified = true;
 }
 
+void InOutBox::setMuted(bool on)
+{
+    if (!midiWorker) return;
+    midiWorker->setMuted(on);
+    needsGUIUpdate = true;
+    modified = true;
+}
 void InOutBox::setChIn(int value)
 {
     chIn->setCurrentIndex(value);

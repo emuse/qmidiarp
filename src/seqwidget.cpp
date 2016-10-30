@@ -49,10 +49,6 @@ SeqWidget::SeqWidget(
 {
 #endif
 
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
-            SLOT(setMuted(bool)));
-
-
     // group box for sequence setup
     QGroupBox *seqBox = new QGroupBox(tr("Sequence"));
 
@@ -484,17 +480,6 @@ void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int presse
     modified = true;
 }
 
-void SeqWidget::setMuted(bool on)
-{
-    if (!midiWorker) return;
-    midiWorker->setMuted(on);
-    screen->setMuted(midiWorker->isMuted);
-#ifdef APPBUILD
-    parStore->ndc->setMuted(midiWorker->isMuted);
-#endif
-    modified = true;
-}
-
 void SeqWidget::setDispVert(int mode)
 {
     dispVert[mode]->setChecked(true);
@@ -743,7 +728,7 @@ void SeqWidget::updateDisplay()
     transpose->setValue(midiWorker->transp);
     notelength->setValue(tickLenToSlider(midiWorker->notelength));
     velocity->setValue(midiWorker->vel);
-    muteOutAction->setChecked(midiWorker->isMuted);
+    muteOut->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);

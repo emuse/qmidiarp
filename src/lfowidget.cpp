@@ -56,9 +56,6 @@ LfoWidget::LfoWidget(
 {
 #endif
 
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
-            SLOT(setMuted(bool)));
-
     // group box for wave setup
     QGroupBox *waveBox = new QGroupBox(tr("Wave"));
 
@@ -519,17 +516,6 @@ void LfoWidget::mouseWheel(int step)
     offset->setValue(cv + step);
 }
 
-void LfoWidget::setMuted(bool on)
-{
-    if (!midiWorker) return;
-    midiWorker->setMuted(on);
-    screen->setMuted(midiWorker->isMuted);
-#ifdef APPBUILD
-    parStore->ndc->setMuted(midiWorker->isMuted);
-#endif
-    modified = true;
-}
-
 void LfoWidget::setRecord(bool on)
 {
     if (midiWorker) midiWorker->setRecordMode(on);
@@ -763,7 +749,7 @@ void LfoWidget::updateDisplay()
 
     if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
-    muteOutAction->setChecked(midiWorker->isMuted);
+    muteOut->setChecked(midiWorker->isMuted);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);

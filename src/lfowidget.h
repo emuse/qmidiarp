@@ -287,17 +287,6 @@ class LfoWidget : public InOutBox
 */
     void updateFlipWaveVertical();
 
-/*!
-* @brief Slot for the LfoWidget::muteOut checkbox.
-* suppresses output of LFO data.
-*
-* It calls
-* MidiLfo::setMuted and LfoScreen::setMuted
-* @param on Set to True for muting this module
-*
-*/
-    void setMuted(bool on);
-
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);

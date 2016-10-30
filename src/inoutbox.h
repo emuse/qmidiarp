@@ -248,6 +248,15 @@ class InOutBox: public QWidget
 * @param on Set to True for deferring parameter changes to pattern end
 */
     virtual void updateDeferChanges(bool on);
+/*!
+* @brief Slot for the LfoWidget::muteOut checkbox.
+* suppresses output of LFO data.
+*
+* It sets MidiWorker::isMuted and causes a needsGUIUpdate
+* @param on Set to True for muting this module
+*
+*/
+    virtual void setMuted(bool on);
 
   signals:
 

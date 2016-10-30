@@ -59,9 +59,6 @@ ArpWidget::ArpWidget(
 {
 #endif
 
-    connect(muteOutAction, SIGNAL(toggled(bool)), this, 
-            SLOT(setMuted(bool)));
-
     // group box for pattern setup
     QGroupBox *patternBox = new QGroupBox(tr("Pattern"));
     QVBoxLayout *patternBoxLayout = new QVBoxLayout;
@@ -620,18 +617,6 @@ void ArpWidget::setEnvelopeVisible(bool on)
     attackTime->setVisible(on);
     releaseTime->setVisible(on);
 }
-
-void ArpWidget::setMuted(bool on)
-{
-    if (!midiWorker) return;
-    midiWorker->setMuted(on);
-    screen->setMuted(midiWorker->isMuted);
-#ifdef APPBUILD
-    parStore->ndc->setMuted(midiWorker->isMuted);
-#endif
-    modified = true;
-}
-
 
 void ArpWidget::setLatchMode(bool on)
 {

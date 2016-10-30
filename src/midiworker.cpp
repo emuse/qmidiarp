@@ -47,6 +47,7 @@ MidiWorker::MidiWorker()
     ccnumberIn = 74;
     isMuted = false;
     isMutedDefer = false;
+    deferChanges = false;
     reverse = false;
     pingpong = false;
     backward = false;

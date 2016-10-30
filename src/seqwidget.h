@@ -234,17 +234,6 @@ class SeqWidget : public InOutBox
 *
 */
     void mouseEvent(double, double, int, int pressed);
-/*!
-* @brief Slot for the SeqWidget::muteOut action.
-* Suppresses output of Seq data.
-*
-* It calls
-* MidiSeq::setMuted and SeqScreen::setMuted
-* @param on Set to True for muting this module
-*
-*/
-    void setMuted(bool on);
-
 
 #ifdef APPBUILD
     void handleController(int ccnumber, int channel, int value);
