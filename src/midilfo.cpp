@@ -421,7 +421,9 @@ void MidiLfo::newCustomOffset()
         if (value < min) min = value;
     }
     cwmin = min;
+#ifdef APPBUILD
     offs = min;
+#endif
 }
 
 void MidiLfo::flipWaveVertical()
@@ -448,7 +450,9 @@ void MidiLfo::flipWaveVertical()
         customWave.replace(l1, sample);
     }
     cwmin = min;
+#ifdef APPBUILD
     offs = min;
+#endif
 }
 
 void MidiLfo::updateCustomWaveOffset(int o)
