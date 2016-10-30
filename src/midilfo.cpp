@@ -353,6 +353,8 @@ int MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
         sample.value = lastMouseY;
         customWave.replace(lastMouseLoc, sample);
     } while (lastMouseLoc != loc);
+
+    newCustomOffset();
     return (loc);
 }
 
@@ -368,11 +370,8 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
             ix = setMutePoint(mouseX, lastMute);
     }
     else if ((pressed != 2) && (buttons == 1)) {
-        if (waveFormIndex < 5) {
-            copyToCustom();
-        }
+        if (waveFormIndex < 5) copyToCustom();
         ix = setCustomWavePoint(mouseX, mouseY, pressed);
-        newCustomOffset();
     }
     dataChanged = true;
     return (ix);
@@ -422,6 +421,7 @@ void MidiLfo::newCustomOffset()
         if (value < min) min = value;
     }
     cwmin = min;
+    offs = min;
 }
 
 void MidiLfo::flipWaveVertical()
@@ -429,7 +429,7 @@ void MidiLfo::flipWaveVertical()
     Sample sample;
     int min = 127;
     int max = 0;
-    int value, mid, l1;
+    int value, l1;
     const int npoints = res * size;
     
     if (waveFormIndex < 5) {
@@ -442,17 +442,16 @@ void MidiLfo::flipWaveVertical()
         if (value > max) max = value;
     }
 
-    mid = min + (max - min) / 2;
-
     for (l1 = 0; l1 < npoints; l1++) {
         sample = customWave.at(l1);
-        sample.value = mid + mid - sample.value;
+        sample.value = min + max - sample.value;
         customWave.replace(l1, sample);
     }
-    cwmin = mid + mid - max;
+    cwmin = min;
+    offs = min;
 }
 
-void MidiLfo::updateCustomWaveOffset(int cwoffs)
+void MidiLfo::updateCustomWaveOffset(int o)
 {
     Sample sample;
     const int count = res * size;
@@ -460,7 +459,7 @@ void MidiLfo::updateCustomWaveOffset(int cwoffs)
     bool cl = false;
 
     while ((!cl) && (l1 < count)) {
-        sample.value = clip(customWave.at(l1).value + cwoffs - cwmin,
+        sample.value = clip(customWave.at(l1).value + o - cwmin,
                             0, 127, &cl);
         l1++;
         }
@@ -469,10 +468,10 @@ void MidiLfo::updateCustomWaveOffset(int cwoffs)
 
     for (l1 = 0; l1 < count; l1++) {
         sample = customWave.at(l1);
-        sample.value += cwoffs - cwmin;
+        sample.value += o - cwmin;
         customWave.replace(l1, sample);
     }
-    cwmin = cwoffs;
+    cwmin = o;
 }
 
 bool MidiLfo::toggleMutePoint(double mouseX)
