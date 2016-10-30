@@ -106,7 +106,7 @@ class InOutBox: public QWidget
     QToolButton *muteOut;
     QAction *deferChangesAction;
     QToolButton *deferChangesButton;
-	   
+
 	QWidget *inOutBoxWidget;
 
     virtual void setChIn(int value);

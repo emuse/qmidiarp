@@ -326,7 +326,10 @@ void LfoWidgetLV2::receiveWavePoint(int index, int value)
 void LfoWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
-    if (muteOutAction == sender())              updateParam(MUTE, value);
+    if (muteOutAction == sender()) {
+        updateParam(MUTE, value);
+        screen->setMuted(value);
+    }
     else if (enableNoteOff == sender())         updateParam(ENABLE_NOTEOFF, value);
     else if (enableRestartByKbd == sender())    updateParam(ENABLE_RESTARTBYKBD, value);
     else if (enableTrigByKbd == sender())       updateParam(ENABLE_TRIGBYKBD, value);

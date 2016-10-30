@@ -407,7 +407,10 @@ void ArpWidgetLV2::receivePattern(LV2_Atom* atom)
 void ArpWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
-    if (muteOutAction == sender())              updateParam(MUTE, value);
+    if (muteOutAction == sender()) {
+        updateParam(MUTE, value);
+        screen->setMuted(value);
+    }
     else if (deferChangesAction == sender())    updateParam(DEFER, value);
     else if (latchModeAction == sender())       updateParam(LATCH_MODE, value);
     else if (transportBox == sender())          updateParam(TRANSPORT_MODE, value);

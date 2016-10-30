@@ -294,7 +294,10 @@ void SeqWidgetLV2::receiveWavePoint(int index, int value)
 void SeqWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
-    if (muteOutAction == sender())              updateParam(MUTE, value);
+    if (muteOutAction == sender()) {
+        updateParam(MUTE, value);
+        screen->setMuted(value);
+    }
     else if (enableNoteIn == sender())          updateParam(ENABLE_NOTEIN, value);
     else if (enableVelIn == sender())           updateParam(ENABLE_VELIN, value);
     else if (enableNoteOff == sender())         updateParam(ENABLE_NOTEOFF, value);
