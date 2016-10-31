@@ -710,7 +710,6 @@ void SeqWidget::updateDisplay()
 
     parStore->updateDisplay(getCurrentIndex(), midiWorker->reverse);
 
-
     if (dataChanged || midiWorker->dataChanged) {
         dataChanged=false;
         midiWorker->dataChanged=false;
@@ -729,6 +728,8 @@ void SeqWidget::updateDisplay()
     notelength->setValue(tickLenToSlider(midiWorker->notelength));
     velocity->setValue(midiWorker->vel);
     muteOut->setChecked(midiWorker->isMuted);
+    screen->newGrooveValues(midiWorker->newGrooveTick, midiWorker->grooveVelocity,
+                midiWorker->grooveLength);
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
     recordAction->setChecked(midiWorker->recordMode);

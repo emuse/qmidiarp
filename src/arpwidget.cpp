@@ -722,6 +722,8 @@ void ArpWidget::updateDisplay()
     if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
 
     muteOut->setChecked(midiWorker->isMuted);
+    screen->newGrooveValues(midiWorker->newGrooveTick, midiWorker->grooveVelocity,
+                midiWorker->grooveLength);    
     screen->setMuted(midiWorker->isMuted);
     parStore->ndc->setMuted(midiWorker->isMuted);
     if (patternPresetBoxIndex != patternPresetBox->currentIndex())

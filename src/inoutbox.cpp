@@ -673,70 +673,81 @@ void InOutBox::readCommonData(QXmlStreamReader& xml)
 {
 	int tmp = 0;
 	
-	    if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-            midiControl->readData(xml);
-        }
-        else if (xml.isStartElement() && (xml.name() == "globalStores")) {
-            parStore->readData(xml);
-        }
+    if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+		midiControl->readData(xml);
+	}
+	else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+		parStore->readData(xml);
+	}
 
-        else if (xml.isStartElement() && (xml.name() == "input")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                    
-                if (xml.name() == "enableNote")
-                    enableNoteIn->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableNoteOff")
-                    enableNoteOff->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "enableVelocity")
-                    enableVelIn->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "restartByKbd")
-                    enableRestartByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigByKbd")
-                    enableTrigByKbd->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "trigLegato")
-                    enableTrigLegato->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    chIn->setCurrentIndex(tmp);
-                }
-                else if (xml.name() == "indexMin")
-                    indexIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "indexMax")
-                    indexIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMin")
-                    rangeIn[0]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "rangeMax")
-                    rangeIn[1]->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "ccnumber")
-                    ccnumberInBox->setValue(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-        else if (xml.isStartElement() && (xml.name() == "output")) {
-            while (!xml.atEnd()) {
-                xml.readNext();
-                if (xml.isEndElement())
-                    break;
-                if (xml.name() == "muted")
-                    muteOutAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "defer")
-                    deferChangesAction->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "channel") {
-                    tmp = xml.readElementText().toInt();
-                    channelOut->setCurrentIndex(tmp);
-                }
-                else if (xml.name() == "port") {
-                    tmp = xml.readElementText().toInt();
-                    portOut->setCurrentIndex(tmp);
-                }
-                else if (xml.name() == "ccnumber")
-                    ccnumberBox->setValue(xml.readElementText().toInt());
-                else skipXmlElement(xml);
-            }
-        }
-	
+	else if (xml.isStartElement() && (xml.name() == "input")) {
+		while (!xml.atEnd()) {
+			xml.readNext();
+			if (xml.isEndElement())
+				break;
+				
+			if (xml.name() == "enableNote")
+				enableNoteIn->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "enableNoteOff")
+				enableNoteOff->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "enableVelocity")
+				enableVelIn->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "restartByKbd")
+				enableRestartByKbd->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "trigByKbd")
+				enableTrigByKbd->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "trigLegato")
+				enableTrigLegato->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "channel") {
+				tmp = xml.readElementText().toInt();
+				chIn->setCurrentIndex(tmp);
+			}
+			else if (xml.name() == "indexMin")
+				indexIn[0]->setValue(xml.readElementText().toInt());
+			else if (xml.name() == "indexMax")
+				indexIn[1]->setValue(xml.readElementText().toInt());
+			else if (xml.name() == "rangeMin")
+				rangeIn[0]->setValue(xml.readElementText().toInt());
+			else if (xml.name() == "rangeMax")
+				rangeIn[1]->setValue(xml.readElementText().toInt());
+			else if (xml.name() == "ccnumber")
+				ccnumberInBox->setValue(xml.readElementText().toInt());
+			else skipXmlElement(xml);
+		}
+	}
+	else if (xml.isStartElement() && (xml.name() == "output")) {
+		while (!xml.atEnd()) {
+			xml.readNext();
+			if (xml.isEndElement())
+				break;
+			if (xml.name() == "muted")
+				muteOutAction->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "defer")
+				deferChangesAction->setChecked(xml.readElementText().toInt());
+			else if (xml.name() == "channel") {
+				tmp = xml.readElementText().toInt();
+				channelOut->setCurrentIndex(tmp);
+			}
+			else if (xml.name() == "port") {
+				tmp = xml.readElementText().toInt();
+				portOut->setCurrentIndex(tmp);
+			}
+			else if (xml.name() == "ccnumber")
+				ccnumberBox->setValue(xml.readElementText().toInt());
+			else skipXmlElement(xml);
+		}
+	}
 }
+
+void InOutBox::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+        int p_grooveLength)
+{
+    // grooveTick is only updated on pair steps to keep quantization
+    // newGrooveTick stores the GUI value temporarily
+    midiWorker->newGrooveTick = p_grooveTick;
+    midiWorker->grooveVelocity = p_grooveVelocity;
+    midiWorker->grooveLength = p_grooveLength;
+    needsGUIUpdate = true;
+}
+
 #endif

@@ -186,25 +186,9 @@ void Engine::setGrooveLength(int val)
 
 void Engine::sendGroove()
 {
-    int l1;
-
-    for (l1 = 0; l1 < midiArpList.count(); l1++) {
-        midiArp(l1)->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
-        arpWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
-    }
-    for (l1 = 0; l1 < midiSeqList.count(); l1++) {
-        midiSeq(l1)->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
-        seqWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
-    }
-    for (l1 = 0; l1 < midiLfoList.count(); l1++) {
-        midiLfo(l1)->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
-        lfoWidget(l1)->screen->newGrooveValues(grooveTick, grooveVelocity,
-                grooveLength);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())
+            ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
     }
 }
 
@@ -348,7 +332,6 @@ void Engine::updateIDs(int curID)
     for (l1 = 0; l1 < arpWidgetCount(); l1++) {
         arpWidget(l1)->ID = l1;
         arpWidget(l1)->midiControl->ID = l1;
-        arpWidget(l1)->setProperty("widgetID", l1);
         tempDockID = arpWidget(l1)->parentDockID;
         if (tempDockID > curID) {
             arpWidget(l1)->parentDockID = tempDockID - 1;
@@ -358,7 +341,6 @@ void Engine::updateIDs(int curID)
     for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
         lfoWidget(l1)->ID = l1;
         lfoWidget(l1)->midiControl->ID = l1;
-        lfoWidget(l1)->setProperty("widgetID", l1);
         tempDockID = lfoWidget(l1)->parentDockID;
         if (tempDockID > curID) {
             lfoWidget(l1)->parentDockID = tempDockID - 1;
@@ -368,7 +350,6 @@ void Engine::updateIDs(int curID)
     for (l1 = 0; l1 < seqWidgetCount(); l1++) {
         seqWidget(l1)->ID = l1;
         seqWidget(l1)->midiControl->ID = l1;
-        seqWidget(l1)->setProperty("widgetID", l1);
         tempDockID = seqWidget(l1)->parentDockID;
         if (tempDockID > curID) {
             seqWidget(l1)->parentDockID = tempDockID - 1;
@@ -930,8 +911,7 @@ void Engine::updateGlobRestoreTimeModule(int windowIndex)
     restoreModType = globStoreWidget->timeModuleBox
                         ->itemText(windowIndex).at(0);
 
-    restoreModIx = moduleWindowList.at(windowIndex)->widget()
-                        ->property("widgetID").toInt();
+    restoreModIx = ((InOutBox *)moduleWindow(windowIndex)->widget())->ID;
 }
 
 void Engine::updateDisplay()

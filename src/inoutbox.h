@@ -159,7 +159,17 @@ class InOutBox: public QWidget
 * @param ix Position index in the parameter list
 */
     virtual void doRestoreParams(int ix) = 0;
-#endif
+/**
+ * @brief copies the new values transferred from the
+ * GrooveWidget into variables used by the main routine.
+ *
+ * @param p_grooveTick Groove amount for timing displacements
+ * @param p_grooveVelocity Groove amount for velocity variations
+ * @param p_grooveLength Groove amount for note length variations
+ */
+    virtual void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+            int p_grooveLength);
+ #endif
 	
   public slots:
 /*!
@@ -249,8 +259,8 @@ class InOutBox: public QWidget
 */
     virtual void updateDeferChanges(bool on);
 /*!
-* @brief Slot for the LfoWidget::muteOut checkbox.
-* suppresses output of LFO data.
+* @brief Slot for the InOutBox::muteOut checkbox.
+* suppresses output of MIDI data.
 *
 * It sets MidiWorker::isMuted and causes a needsGUIUpdate
 * @param on Set to True for muting this module

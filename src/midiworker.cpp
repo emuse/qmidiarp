@@ -100,16 +100,6 @@ void MidiWorker::updateQueueTempo(int val)
     queueTempo = (double)val;
 }
 
-void MidiWorker::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-        int p_grooveLength)
-{
-    // grooveTick is only updated on pair steps to keep quantization
-    // newGrooveTick stores the GUI value temporarily
-    newGrooveTick = p_grooveTick;
-    grooveVelocity = p_grooveVelocity;
-    grooveLength = p_grooveLength;
-}
-
 void MidiWorker::updateTriggerMode(int val)
 {
     triggerMode = val;

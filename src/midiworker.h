@@ -96,16 +96,7 @@ class MidiWorker : public QObject  {
  * @param on Set to True to suppress data output to the Driver
  */
     virtual void setMuted(bool on);
-/**
- * @brief copies the new values transferred from the
- * GrooveWidget into variables used by the main routine.
- *
- * @param p_grooveTick Groove amount for timing displacements
- * @param p_grooveVelocity Groove amount for velocity variations
- * @param p_grooveLength Groove amount for note length variations
- */
-    virtual void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
-            int p_grooveLength);
+
 /*! @brief  sets MidiWorker::deferChanges, which will cause a
  * parameter changes only at pattern end.
  *

@@ -498,7 +498,6 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
-    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
             , engine->moduleWindow(count), SLOT(raise()));
@@ -551,7 +550,6 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
-    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
             , engine->moduleWindow(count), SLOT(raise()));
@@ -602,7 +600,6 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
-    moduleWidget->setProperty("widgetID", widgetID);
     appendDock(moduleWidget, p_name, count);
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
             , engine->moduleWindow(count), SLOT(raise()));
