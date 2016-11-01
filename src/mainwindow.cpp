@@ -1331,7 +1331,7 @@ void MainWindow::recentFileActivated(QAction *action)
 {
     if (!action->text().isEmpty()) {
         if (isSave())
-            openFile(action->text());
+            openFile(action->text().remove('&'));
     }
 }
 
