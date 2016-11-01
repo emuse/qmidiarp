@@ -145,20 +145,11 @@ class LfoWidget : public InOutBox
 * @param fromWidget pointer to the LfoWidget parameters are to be taken from
 */
     void copyParamsFrom(LfoWidget *fromWidget);
-/*!
-* @brief stores some module parameters in a parameter
-* list object
-*
-* @param ix Position index in the parameter list
-*/
+
     void doStoreParams(int ix);
-/*!
-* @brief restores some module parameters from the parameter
-* list object
-*
-* @param ix Position index in the parameter list
-*/
     void doRestoreParams(int ix);
+    void updateDisplay();
+    void handleController(int ccnumber, int channel, int value);
 #endif
 
 /* SIGNALS */
@@ -287,24 +278,6 @@ class LfoWidget : public InOutBox
 */
     void updateFlipWaveVertical();
 
-
-#ifdef APPBUILD
-    void handleController(int ccnumber, int channel, int value);
-/*!
- * @brief Updates the LfoScreen and other GUI elements with data from
- * the MidiSeq instance.
- *
- * It is called by Engine::updateDisplay(), which itself is
- * connected to the MTimer::timeout event. It runs in the MTimer thread.
- * It reads the waveform data and other settings from the MidiLfo instance
- * and sets GUI cursor, wave display and other elements accordingly. This
- * way, no memory allocations are done within the jack run thread, for
- * instance by MIDI controllers, since the Qt widgets are not called directly.
- * This function also checks whether parameter chages from ParStore are
- * pending and causes them to get transferred if so.
- */
-    void updateDisplay();
-#endif
     int getFramePtr() { return midiWorker->getFramePtr(); }
     int getNextTick() { return midiWorker->nextTick; }
     bool getReverse() { return midiWorker->reverse; }

@@ -115,7 +115,6 @@ class InOutBox: public QWidget
     virtual bool isModified();
     virtual void setModified(bool);
     virtual void checkIfInputFilterSet();
-    virtual void updateDisplay() = 0;
 
 /*!
 * @brief Setter for the InOutBox::channelOut spinbox setting the output
@@ -153,14 +152,14 @@ class InOutBox: public QWidget
 */
     virtual void doStoreParams(int ix) = 0;
 /*!
-* @brief restores some module parameters from the parameter
+* @brief Restores some module parameters from the parameter
 * list object
 *
 * @param ix Position index in the parameter list
 */
     virtual void doRestoreParams(int ix) = 0;
 /**
- * @brief copies the new values transferred from the
+ * @brief Copies the new values transferred from the
  * GrooveWidget into variables used by the main routine.
  *
  * @param p_grooveTick Groove amount for timing displacements
@@ -169,7 +168,28 @@ class InOutBox: public QWidget
  */
     virtual void newGrooveValues(int p_grooveTick, int p_grooveVelocity,
             int p_grooveLength);
- #endif
+
+/**
+ * @brief Handles MIDI-learned controller events locally in each module
+ * 
+ * It is called by Engine::sendController() when a MIDI controller is received.
+ */
+    virtual void handleController(int ccnumber, int channel, int value) = 0;
+/*!
+ * @brief Updates the SeqScreen and other GUI elements with data from
+ * the MidiSeq instance.
+ *
+ * It is called by Engine::updateDisplay(), which itself is
+ * connected to the MTimer::timeout event. It runs in the MTimer thread.
+ * It reads the waveform data and other settings from the MidiSeq instance
+ * and sets GUI cursor, wave display and other elements accordingly. This
+ * way, no memory allocations are done within the jack run thread, for
+ * instance by MIDI controllers, since the Qt widgets are not called directly.
+ * This function also checks whether parameter changes from ParStore are
+ * pending and causes them to get transferred if so.
+ */
+    virtual void updateDisplay() = 0;
+#endif
 	
   public slots:
 /*!

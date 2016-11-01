@@ -30,7 +30,9 @@
 #include "engine.h"
 
 
-Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portCount, bool p_alsamidi, QWidget *parent) : QObject(parent), modified(false)
+Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, 
+            int p_portCount, bool p_alsamidi, QWidget *parent) 
+            : QObject(parent), modified(false)
 {
     ready = false;
 
@@ -60,13 +62,17 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget, int p_portC
     portCount = p_portCount;
 
     if (!p_alsamidi) {
-        driver = new JackDriver(portCount, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
+        driver = new JackDriver(portCount, this, tr_state_cb, 
+                midi_event_received_callback, tick_callback, tempo_callback);
     }
     else {
-    // In case of ALSA MIDI with Jack Transport sync, JackDriver is instantiated with 0 ports
+    // In case of ALSA MIDI with Jack Transport sync, JackDriver is 
+    // instantiated with 0 ports
     // a pointer to jackSync has to be passed to driver
-        jackSync = new JackDriver(0, this, tr_state_cb, midi_event_received_callback, tick_callback, tempo_callback);
-        driver = new SeqDriver(jackSync, portCount, this, midi_event_received_callback, tick_callback);
+        jackSync = new JackDriver(0, this, tr_state_cb, 
+                midi_event_received_callback, tick_callback, tempo_callback);
+        driver = new SeqDriver(jackSync, portCount, this, 
+                midi_event_received_callback, tick_callback);
     }
 
     midiLearnFlag = false;
@@ -136,8 +142,7 @@ void Engine::removeArpWidget(ArpWidget *arpWidget)
 
 void Engine::updatePatternPresets(const QString& n, const QString& p, int index)
 {
-    int l1;
-    for (l1 = 0; l1 < midiArpCount(); l1++) {
+    for (int l1 = 0; l1 < midiArpCount(); l1++) {
         arpWidgetList.at(l1)->updatePatternPresets(n, p, index);
     }
 }
@@ -705,18 +710,14 @@ void Engine::showAllIOPanels(bool on)
 
 void Engine::sendController(int ccnumber, int channel, int value)
 {
-    int l1;
-
     handleController(ccnumber, channel, value);
     grooveWidget->handleController(ccnumber, channel, value);
     globStoreWidget->handleController(ccnumber, channel, value);
 
-    for (l1 = 0; l1 < arpWidgetCount(); l1++)
-        arpWidget(l1)->handleController(ccnumber, channel, value);
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++)
-        lfoWidget(l1)->handleController(ccnumber, channel, value);
-    for (l1 = 0; l1 < seqWidgetCount(); l1++)
-        seqWidget(l1)->handleController(ccnumber, channel, value);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())
+            ->handleController(ccnumber, channel, value);
+    }
 }
 
 void Engine::learnController(int ccnumber, int channel)
