@@ -1,3 +1,24 @@
+qmidiarp-0.6.4 (2016-11-01)
+
+Improvements
+  o All Modules now have the Note Filter already present in the Arps.
+    Also, the note range entries can now be set by MIDI learn
+  o Arp: The octave mode is now defined by independent upper/lower bounds
+    (feature request #12 by ssj71)
+  o LFO: New waveform flip button (feature request #11 by MilkMiruku)
+  o Seq: The output MIDI channel is now a MIDI controllable item. This
+    allows for instance an LFO to control the Seq MIDI channels for 
+    dispatching sounds within a sequence (feature request #13 by Menno)
+
+Fixed Bugs
+  o LFO: Offset slider didn't follow drawing and led to jumps on 
+    first use
+  o LFO: Waveform type switched to custom when muting points (bug #16
+    reported by MilkMiruku)
+  o Arp: When using Global Storage "Restore", the restore step was 
+    incorrect
+
+
 qmidiarp-0.6.3 (2015-11-01)
 
 Fixed Bugs
