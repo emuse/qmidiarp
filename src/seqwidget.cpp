@@ -210,6 +210,9 @@ SeqWidget::SeqWidget(
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
     muteOutAction->setChecked(mutedAdd);
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
+#endif
 
     setLayout(widgetLayout);
     recordMode = false;
