@@ -366,6 +366,10 @@ void MidiSeqLV2::updateParams()
 
     channelOut =      (int)*val[CH_OUT];
     chIn =            (int)*val[CH_IN];
+    indexIn[0]   =   (int)*val[INDEX_IN1];
+    indexIn[1]   =   (int)*val[INDEX_IN2];
+    rangeIn[0]   =   (int)*val[RANGE_IN1];
+    rangeIn[1]   =   (int)*val[RANGE_IN2];
 
     if (internalTempo != *val[TEMPO]) {
         internalTempo = *val[TEMPO];

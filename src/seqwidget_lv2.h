@@ -65,15 +65,19 @@ class SeqWidgetLV2 : public SeqWidget
             ENABLE_RESTARTBYKBD = 20,
             ENABLE_TRIGBYKBD = 21,
             ENABLE_TRIGLEGATO = 22,
-            RECORD = 23,
-            DEFER = 24,
-            CURR_RECSTEP = 25, //output
-            TRANSPORT_MODE = 26,
-            TEMPO = 27,
-            HOST_TEMPO = 28,
-            HOST_POSITION = 29,
-            HOST_SPEED = 30,
-            DISPLAY_ZOOM = 31
+            INDEX_IN1 = 23,
+            INDEX_IN2 = 24,
+            RANGE_IN1 = 25,
+            RANGE_IN2 = 26,
+            RECORD = 27,
+            DEFER = 28,
+            CURR_RECSTEP = 29, //output
+            TRANSPORT_MODE = 30,
+            TEMPO = 31,
+            HOST_TEMPO = 32,
+            HOST_POSITION = 33,
+            HOST_SPEED = 34,
+            DISPLAY_ZOOM = 35
     };
 
     SeqWidgetLV2(
@@ -86,7 +90,6 @@ class SeqWidgetLV2 : public SeqWidget
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
     void sendUIisUp(bool on);
-    void updateDisplay() {};
 
   public slots:
     void mapParam(int value);

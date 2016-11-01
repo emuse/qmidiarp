@@ -59,19 +59,23 @@ public:
             MOUSEPRESSED = 14,
             CC_OUT = 15,
             CC_IN = 16,
-            ENABLE_NOTEOFF = 17,
-            ENABLE_RESTARTBYKBD = 18,
-            ENABLE_TRIGBYKBD = 19,
-            ENABLE_TRIGLEGATO = 20,
-            RECORD = 21,
-            DEFER = 22,
-            SPARE = 23, //output
-            TRANSPORT_MODE = 24,
-            TEMPO = 25,
-            WaveOut = 26,
-            HOST_TEMPO = 27,
-            HOST_POSITION = 28,
-            HOST_SPEED = 29
+            INDEX_IN1 = 17,
+            INDEX_IN2 = 18,
+            RANGE_IN1 = 19,
+            RANGE_IN2 = 20,
+             ENABLE_NOTEOFF = 21,
+            ENABLE_RESTARTBYKBD = 22,
+            ENABLE_TRIGBYKBD = 23,
+            ENABLE_TRIGLEGATO = 24,
+            RECORD = 25,
+            DEFER = 26,
+            SPARE = 27, //output
+            TRANSPORT_MODE = 28,
+            TEMPO = 29,
+            WaveOut = 30,
+            HOST_TEMPO = 31,
+            HOST_POSITION = 32,
+            HOST_SPEED = 33
         };
 
         void connect_port(uint32_t port, void *data);
@@ -89,7 +93,7 @@ public:
 
 private:
 
-        float *val[30];
+        float *val[35];
         uint64_t curFrame;
         uint64_t nCalls;
         uint64_t tempoChangeTick;

@@ -170,20 +170,56 @@
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 23 ;
+        lv2:symbol "INDEX_IN1" ;
+        lv2:name "Index In 1" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 24 ;
+        lv2:symbol "INDEX_IN2" ;
+        lv2:name "Index In 2" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 127 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 25 ;
+        lv2:symbol "RANGE_IN1" ;
+        lv2:name "Range In 1" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 26 ;
+        lv2:symbol "RANGE_IN2" ;
+        lv2:name "Range In 1" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 127 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 127.0 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 27 ;
         lv2:symbol "RECORD" ;
         lv2:name "Record" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 24 ;
+        lv2:index 28 ;
         lv2:symbol "DEFER" ;
         lv2:name "Defer mute" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
     ] , [
         a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 25 ;
+        lv2:index 29 ;
         lv2:symbol "CURR_RECSTEP" ;
         lv2:name "Current Recording Step" ;
         lv2:portProperty lv2:integer ;
@@ -235,7 +271,7 @@
         lv2:default 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 26 ;
+        lv2:index 30 ;
         lv2:symbol "TRANSPORT_MODE" ;
         lv2:name "Transport Mode" ;
         lv2:portProperty lv2:toggled ;
@@ -244,7 +280,7 @@
         lv2:default 1.0 ;
    ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 27 ;
+        lv2:index 31 ;
         lv2:symbol "TEMPO" ;
         lv2:name "Internal Tempo" ;
         lv2:portProperty lv2:integer ;
@@ -292,7 +328,7 @@
         lv2:maximum 2.0 ;
     ], [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 28 ;
+        lv2:index 32 ;
         lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_TEMPO" ;
         lv2:name "Host Tempo" ;
@@ -302,7 +338,7 @@
         lv2:designation time:beatsPerMinute ;
     ], [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 29 ;
+        lv2:index 33 ;
         lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_POSITION" ;
         lv2:name "Host Position" ;
@@ -312,7 +348,7 @@
         lv2:designation time:frame ;
     ], [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 30 ;
+        lv2:index 34 ;
         lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_SPEED" ;
         lv2:name "Host Speed (Start/Stop)" ;
@@ -322,7 +358,7 @@
         lv2:designation time:speed ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 31 ;
+        lv2:index 35 ;
         lv2:symbol "DISPLAY_ZOOM" ;
         lv2:name "Display Zoom" ;
         lv2:portProperty lv2:integer ;

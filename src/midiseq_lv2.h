@@ -63,15 +63,19 @@ public:
             ENABLE_RESTARTBYKBD = 18,
             ENABLE_TRIGBYKBD = 19,
             ENABLE_TRIGLEGATO = 20,
-            RECORD = 21,
-            DEFER = 22,
-            CURR_RECSTEP = 23, //output
-            TRANSPORT_MODE = 24,
-            TEMPO = 25,
-            HOST_TEMPO = 26,
-            HOST_POSITION = 27,
-            HOST_SPEED = 28,
-            DISPLAY_ZOOM = 29
+            INDEX_IN1 = 21,
+            INDEX_IN2 = 22,
+            RANGE_IN1 = 23,
+            RANGE_IN2 = 24,
+            RECORD = 25,
+            DEFER = 26,
+            CURR_RECSTEP = 27, //output
+            TRANSPORT_MODE = 28,
+            TEMPO = 29,
+            HOST_TEMPO = 30,
+            HOST_POSITION = 31,
+            HOST_SPEED = 32,
+            DISPLAY_ZOOM = 33
         };
 
         void connect_port(uint32_t port, void *data);
@@ -88,7 +92,7 @@ public:
 
 private:
 
-        float *val[30];
+        float *val[35];
         uint64_t curFrame;
         uint64_t nCalls;
         uint64_t tempoChangeTick;

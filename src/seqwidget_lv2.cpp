@@ -86,6 +86,10 @@ SeqWidgetLV2::SeqWidgetLV2 (
     connect(loopBox,            SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(channelOut,         SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(chIn,               SIGNAL(activated(int)), this, SLOT(mapParam(int)));
+    connect(indexIn[0],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(indexIn[1],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(rangeIn[0],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(rangeIn[1],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(dispSignalMapper,   SIGNAL(mapped(int)),   this, SLOT(mapParam(int)));
 
@@ -157,6 +161,18 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
             break;
             case CH_IN:
                     chIn->setCurrentIndex(fValue);
+            break;
+            case INDEX_IN1:
+                    indexIn[0]->setValue(fValue);
+            break;
+            case INDEX_IN2:
+                    indexIn[1]->setValue(fValue);
+            break;
+            case RANGE_IN1:
+                    rangeIn[0]->setValue(fValue);
+            break;
+            case RANGE_IN2:
+                    rangeIn[1]->setValue(fValue);
             break;
             case CURSOR_POS:
                     cursor->updateNumbers(res, size);
@@ -327,6 +343,10 @@ void SeqWidgetLV2::mapParam(int value)
     else if (transpose == sender())     updateParam(TRANSPOSE, value);
     else if (channelOut == sender())    updateParam(CH_OUT, value);
     else if (chIn == sender())          updateParam(CH_IN, value);
+    else if (indexIn[0] == sender())    updateParam(INDEX_IN1, value);
+    else if (indexIn[1] == sender())    updateParam(INDEX_IN2, value);
+    else if (rangeIn[0] == sender())    updateParam(RANGE_IN1, value);
+    else if (rangeIn[1] == sender())    updateParam(RANGE_IN2, value);
     else if (loopBox == sender())       updateParam(LOOPMODE, value);
     else if (tempoSpin == sender())     updateParam(TEMPO, value);
     else if (dispSignalMapper == sender())     updateParam(DISPLAY_ZOOM, value);

@@ -58,19 +58,23 @@ class LfoWidgetLV2 : public LfoWidget
             MOUSEPRESSED = 16,
             CC_OUT = 17,
             CC_IN = 18,
-            ENABLE_NOTEOFF = 19,
-            ENABLE_RESTARTBYKBD = 20,
-            ENABLE_TRIGBYKBD = 21,
-            ENABLE_TRIGLEGATO = 22,
-            RECORD = 23,
-            DEFER = 24,
-            SPARE = 25,
-            TRANSPORT_MODE = 26,
-            TEMPO = 27,
-            WaveOut = 28,
-            HOST_TEMPO = 29,
-            HOST_POSITION = 30,
-            HOST_SPEED = 31
+            INDEX_IN1 = 19,
+            INDEX_IN2 = 20,
+            RANGE_IN1 = 21,
+            RANGE_IN2 = 22,
+            ENABLE_NOTEOFF = 23,
+            ENABLE_RESTARTBYKBD = 24,
+            ENABLE_TRIGBYKBD = 25,
+            ENABLE_TRIGLEGATO = 26,
+            RECORD = 27,
+            DEFER = 28,
+            SPARE = 29,
+            TRANSPORT_MODE = 30,
+            TEMPO = 31,
+            WaveOut = 32,
+            HOST_TEMPO = 33,
+            HOST_POSITION = 34,
+            HOST_SPEED = 35
         };
 
     LfoWidgetLV2(
@@ -83,7 +87,6 @@ class LfoWidgetLV2 : public LfoWidget
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
     void sendUIisUp(bool on);
-    void updateDisplay() {};
 
   public slots:
     void mapParam(int value);
