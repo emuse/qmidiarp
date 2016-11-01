@@ -33,6 +33,7 @@
 
 #include "groovewidget.h"
 #include "slider.h"
+#include "main.h"
 
 
 GrooveWidget::GrooveWidget()
@@ -158,21 +159,4 @@ void GrooveWidget::updateDisplay()
     grooveVelocity->setValue(velocityVal);
     grooveLength->setValue(lengthVal);
 
-}
-
-void GrooveWidget::skipXmlElement(QXmlStreamReader& xml)
-{
-    if (xml.isStartElement()) {
-        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
-        while (!xml.atEnd()) {
-            xml.readNext();
-
-            if (xml.isEndElement())
-                break;
-
-            if (xml.isStartElement()) {
-                skipXmlElement(xml);
-            }
-        }
-    }
 }

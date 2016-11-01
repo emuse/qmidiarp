@@ -74,7 +74,6 @@ class GrooveWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
-    void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
     void newGrooveVelocity(int);
