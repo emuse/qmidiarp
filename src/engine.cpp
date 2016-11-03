@@ -369,12 +369,14 @@ void Engine::setCompactStyle(bool on)
 {
     int l1;
     if (on) {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+        for (l1 = 0; l1 < moduleWindowCount(); l1++) {
             moduleWindow(l1)->setStyleSheet(COMPACT_STYLE);
+        }
     }
     else {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++)
+        for (l1 = 0; l1 < moduleWindowCount(); l1++) {
             moduleWindow(l1)->setStyleSheet("");
+        }
     }
 }
 
@@ -399,6 +401,7 @@ void Engine::setModified(bool m)
     modified = m;
 
     for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->needsGUIUpdate = false;
         ((InOutBox *)moduleWindow(l1)->widget())->setModified(m);
     }
 
