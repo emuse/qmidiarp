@@ -29,7 +29,7 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
 {
     QHBoxLayout *boxlayout = new QHBoxLayout(this);
     secondText = new QLabel(this);
-    secondText->setFont(QFont("Helvetica", 8, QFont::Bold));
+    setStyleSheet("font: 10pt; font-weight: bold");
     boxlayout->setMargin(4);
     boxlayout->addStretch();
     boxlayout->addWidget(secondText);

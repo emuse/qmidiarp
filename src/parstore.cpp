@@ -73,20 +73,17 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     ndc = new Indicator(14, name.at(0));
 
     topButton = new QToolButton;
-    topButton->setFont(QFont("Helvetica", 8));
     topButton->setText(name);
     topButton->setMinimumSize(QSize(75, 10));
 
     muteOutAction = p_muteOutAction;
     muteOut = new QToolButton;
     muteOut->setDefaultAction(muteOutAction);
-    muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(10, 10));
 
     deferChangesAction = p_deferChangesAction;
     deferChanges = new QToolButton;
     deferChanges->setDefaultAction(deferChangesAction);
-    deferChanges->setFont(QFont("Helvetica", 8));
     deferChanges->setMinimumSize(QSize(10, 10));
 
     QHBoxLayout *muteRowLayout = new QHBoxLayout;
@@ -117,7 +114,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     topRowLayout->addLayout(controlLayout);
     topRowLayout->setSpacing(0);
     topRowLayout->setMargin(0);
-    topRow->setMinimumSize(QSize(48,46));;
+    topRow->setMinimumSize(QSize(104,46));;
     topRow->setFrameStyle(QFrame::StyledPanel);
     topRow->setLayout(topRowLayout);
 
@@ -392,6 +389,7 @@ void ParStore::addLocation()
 {
     StorageButton *toolButton = new StorageButton(this);
     toolButton->setText(QString::number(list.count()));
+    toolButton->setStyleSheet("font: 10pt");
     toolButton->setProperty("index", list.count());
     connect(toolButton, SIGNAL(pressed()), this, SLOT(mapRestoreSignal()));
 

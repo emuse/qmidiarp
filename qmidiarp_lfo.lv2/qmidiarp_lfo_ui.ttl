@@ -2,5 +2,5 @@
 @prefix lv2ui:   <http://lv2plug.in/ns/extensions/ui#> .
 
 <https://git.code.sf.net/p/qmidiarp/lfo#ui>
-    a lv2ui:Qt4UI ;
+    a lv2ui:Qt5UI ;
     lv2ui:binary <qmidiarp_lfo_ui.so> .

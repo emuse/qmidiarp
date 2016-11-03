@@ -260,7 +260,6 @@ InOutBox::InOutBox(bool compactStyle,
     muteOutAction->setCheckable(true);
     muteOut = new QToolButton;
     muteOut->setDefaultAction(muteOutAction);
-    muteOut->setFont(QFont("Helvetica", 8));
     muteOut->setMinimumSize(QSize(35,20));
     connect(muteOutAction, SIGNAL(toggled(bool)), this, 
             SLOT(setMuted(bool)));
@@ -284,12 +283,13 @@ InOutBox::InOutBox(bool compactStyle,
     hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
 
 #ifdef APPBUILD
-        parStore = new ParStore(globStore, name, muteOutAction, deferChangesAction, this);
+        parStore = new ParStore(globStore, name, muteOutAction
+					, deferChangesAction, this);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));
         connect(parStore, SIGNAL(restore(int)),
                  this, SLOT(restoreParams(int)));
-                 
+    if (compactStyle) parStore->setStyleSheet( COMPACT_STYLE );
     midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
     midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
     midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);

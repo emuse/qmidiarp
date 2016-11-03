@@ -89,22 +89,23 @@ GlobStore::GlobStore(QWidget *parent)
     QAction* removeStoreAction = new QAction(tr("&Remove"), this);
     QToolButton *removeStoreButton = new QToolButton;
     removeStoreButton->setDefaultAction(removeStoreAction);
-    removeStoreButton->setFixedSize(50, 20);
+    removeStoreButton->setFixedSize(60, 20);
     removeStoreButton->setArrowType (Qt::ArrowType(1));
     connect(removeStoreAction, SIGNAL(triggered()), this, SLOT(removeLocation()));
 
     QToolButton *toolButton = new QToolButton;
     toolButton->setText("Global");
-    toolButton->setMinimumSize(QSize(48,40));
+    toolButton->setMinimumSize(QSize(56,32));
     midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
+    
     QFrame *topRow = new QFrame;
-
-    QHBoxLayout *topRowLayout = new QHBoxLayout;
+    QVBoxLayout *topRowLayout = new QVBoxLayout;
     topRowLayout->addWidget(toolButton);
+    topRowLayout->addStretch();
     topRowLayout->setSpacing(0);
     topRowLayout->setMargin(0);
     topRow->setFrameStyle(QFrame::StyledPanel);
-    topRow->setMinimumSize(QSize(48,46));;
+    topRow->setMinimumSize(QSize(48,48));;
     topRow->setLayout(topRowLayout);
 
     QVBoxLayout *buttonLayout = new QVBoxLayout;
@@ -113,7 +114,7 @@ GlobStore::GlobStore(QWidget *parent)
     QVBoxLayout *columnLayout = new QVBoxLayout;
     columnLayout->addLayout(buttonLayout);
     columnLayout->addWidget(removeStoreButton);
-    columnLayout->addStretch();
+    columnLayout->addStretch(1);
 
     indivButtonLayout = new QHBoxLayout;
     indivButtonLayout->setSpacing(0);
@@ -128,6 +129,7 @@ GlobStore::GlobStore(QWidget *parent)
     QVBoxLayout *centLayout = new QVBoxLayout;
     centLayout->addLayout(upperRowLayout);
     centLayout->addLayout(secondRowLayout);
+    centLayout->addStretch(1);
 
     addLocation();
 
@@ -168,7 +170,7 @@ void GlobStore::addLocation()
     restoreButton->setDefaultAction(restoreAction);
     restoreButton->setFixedSize(45, 25);
     restoreAction->setText(QString::number(widgetList.count() + 1));
-    restoreAction->setFont(QFont("Helvetica", 18));
+    restoreButton->setStyleSheet("font: 18pt");
     restoreAction->setDisabled(true);
     restoreAction->setObjectName("-1");
     restoreAction->setProperty("index", widgetList.count() + 1);
