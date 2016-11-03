@@ -75,7 +75,7 @@ void MidiCCTable::getCurrentControls()
 
     ccList = engine->midiControl->ccList;
 
-    for (l2 = 0; l2 < engine->midiControl->ccList.count(); l2++) {
+    for (l2 = 0; l2 < ccList.count(); l2++) {
 
         midiCCTable->setVerticalHeaderItem(nrows,
                 new QTableWidgetItem("Engine"));
@@ -86,7 +86,7 @@ void MidiCCTable::getCurrentControls()
 
     ccList = engine->globStoreWidget->midiControl->ccList;
 
-    for (l2 = 0; l2 < engine->globStoreWidget->midiControl->ccList.count(); l2++) {
+    for (l2 = 0; l2 < ccList.count(); l2++) {
 
         midiCCTable->setVerticalHeaderItem(nrows,
                 new QTableWidgetItem("Param Store"));
@@ -97,7 +97,7 @@ void MidiCCTable::getCurrentControls()
 
     ccList = engine->grooveWidget->midiControl->ccList;
 
-    for (l2 = 0; l2 < engine->grooveWidget->midiControl->ccList.count(); l2++) {
+    for (l2 = 0; l2 < ccList.count(); l2++) {
 
         midiCCTable->setVerticalHeaderItem(nrows,
                 new QTableWidgetItem("Groove"));
@@ -106,41 +106,18 @@ void MidiCCTable::getCurrentControls()
         nrows++;
     }
 
-    for (l1 = 0; l1 < engine->arpWidgetCount(); l1++) {
-        ccList = engine->arpWidget(l1)->midiControl->ccList;
+    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++) {
+        
+        InOutBox *moduleWidget = (InOutBox *)engine->moduleWindow(l1)->widget();
+        
+        ccList = moduleWidget->midiControl->ccList;
 
-        for (l2 = 0; l2 < engine->arpWidget(l1)->midiControl->ccList.count(); l2++) {
-
-            midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->arpWidget(l1)->name));
-
-            fillControlRow(nrows, ccList.at(l2), engine->arpWidget(l1)->ID);
-            nrows++;
-        }
-    }
-
-    for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++) {
-        ccList = engine->lfoWidget(l1)->midiControl->ccList;
-
-        for (l2 = 0; l2 < engine->lfoWidget(l1)->midiControl->ccList.count(); l2++) {
+        for (l2 = 0; l2 < ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->lfoWidget(l1)->name));
+                    new QTableWidgetItem(moduleWidget->name));
 
-            fillControlRow(nrows, ccList.at(l2), engine->lfoWidget(l1)->ID);
-            nrows++;
-        }
-    }
-
-    for (l1 = 0; l1 < engine->seqWidgetCount(); l1++) {
-        ccList = engine->seqWidget(l1)->midiControl->ccList;
-
-        for (l2 = 0; l2 < engine->seqWidget(l1)->midiControl->ccList.count(); l2++) {
-
-            midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(engine->seqWidget(l1)->name));
-
-            fillControlRow(nrows, ccList.at(l2), engine->seqWidget(l1)->ID);
+            fillControlRow(nrows, ccList.at(l2), moduleWidget->ID);
             nrows++;
         }
     }
@@ -184,12 +161,8 @@ void MidiCCTable::apply()
     engine->globStoreWidget->midiControl->ccList.clear();
     engine->grooveWidget->midiControl->ccList.clear();
 
-    for (l1 = 0; l1 < engine->arpWidgetCount(); l1++)
-            engine->arpWidget(l1)->midiControl->ccList.clear();
-    for (l1 = 0; l1 < engine->lfoWidgetCount(); l1++)
-            engine->lfoWidget(l1)->midiControl->ccList.clear();
-    for (l1 = 0; l1 < engine->seqWidgetCount(); l1++)
-            engine->seqWidget(l1)->midiControl->ccList.clear();
+    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++)
+        ((InOutBox *)engine->moduleWindow(l1)->widget())->midiControl->ccList.clear();
 
     for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
         ccnumber = midiCCTable->item(l1, 1)->text().toInt();
