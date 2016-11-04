@@ -44,18 +44,18 @@
 
 
 #ifdef APPBUILD
-ArpWidget::ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
+ArpWidget::ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiWorker, p_globStore, portCount, compactStyle, inOutVisible, p_name),
-    midiWorker(p_midiWorker)
+    InOutBox(p_midiArp, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    midiArp(p_midiArp)
 {
 #else
 ArpWidget::ArpWidget(
     bool compactStyle,
     bool mutedAdd, bool inOutVisible):
     InOutBox(compactStyle, inOutVisible, "Arp:"),
-    midiWorker(NULL)
+    midiArp(NULL)
 {
 #endif
 
@@ -288,7 +288,7 @@ ArpWidget::ArpWidget(
 #ifdef APPBUILD
 MidiArp *ArpWidget::getMidiWorker()
 {
-    return (midiWorker);
+    return (midiArp);
 }
 
 void ArpWidget::writeData(QXmlStreamWriter& xml)
@@ -296,26 +296,26 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         writeCommonData(xml);
 
         xml.writeStartElement("pattern");
-            xml.writeTextElement("pattern", midiWorker->pattern);
+            xml.writeTextElement("pattern", midiArp->pattern);
             xml.writeTextElement("repeatMode", QString::number(
-                midiWorker->repeatPatternThroughChord));
+                midiArp->repeatPatternThroughChord));
             xml.writeTextElement("octaveMode", QString::number(
-                midiWorker->octMode));
+                midiArp->octMode));
             xml.writeTextElement("octaveLow", QString::number(
-                midiWorker->octLow));
+                midiArp->octLow));
             xml.writeTextElement("octaveHigh", QString::number(
-                midiWorker->octHigh));
+                midiArp->octHigh));
             xml.writeTextElement("latchMode", QString::number(
                 latchModeAction->isChecked()));
         xml.writeEndElement();
 
         xml.writeStartElement("random");
             xml.writeTextElement("tick", QString::number(
-                midiWorker->randomTickAmp));
+                midiArp->randomTickAmp));
             xml.writeTextElement("velocity", QString::number(
-                midiWorker->randomVelocityAmp));
+                midiArp->randomVelocityAmp));
             xml.writeTextElement("length", QString::number(
-                midiWorker->randomLengthAmp));
+                midiArp->randomLengthAmp));
         xml.writeEndElement();
 
         xml.writeStartElement("envelope");
@@ -400,13 +400,13 @@ void ArpWidget::readData(QXmlStreamReader& xml)
 void ArpWidget::updateText(const QString& newtext)
 {
     patternPresetBox->setCurrentIndex(0);
-    if (!midiWorker) return;
+    if (!midiArp) return;
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    midiWorker->updatePattern(newtext);
-    screen->updateScreen(newtext, midiWorker->minOctave,
-                    midiWorker->maxOctave, midiWorker->minStepWidth,
-                    midiWorker->nSteps, midiWorker->patternMaxIndex);
+    midiArp->updatePattern(newtext);
+    screen->updateScreen(newtext, midiArp->minOctave,
+                    midiArp->maxOctave, midiArp->minStepWidth,
+                    midiArp->nSteps, midiArp->patternMaxIndex);
 
     modified = true;
 }
@@ -416,13 +416,13 @@ void ArpWidget::selectPatternPreset(int val)
     if (val < patternPresets.count()) {
         if (val) {
             patternText->setText(patternPresets.at(val));
-            if (!midiWorker) return;
+            if (!midiArp) return;
             patternPresetBox->setCurrentIndex(val);
             textStoreAction->setEnabled(false);
             textRemoveAction->setEnabled(true);
         }
         else {
-            if (!midiWorker) return;
+            if (!midiArp) return;
             textRemoveAction->setEnabled(false);
         }
         modified = true;
@@ -464,45 +464,45 @@ void ArpWidget::loadPatternPresets()
 
 void ArpWidget::updateRepeatPattern(int val)
 {
-    if (midiWorker) midiWorker->repeatPatternThroughChord = val;
+    if (midiArp) midiArp->repeatPatternThroughChord = val;
     modified = true;
 }
 
 void ArpWidget::updateOctaveMode(int val)
 {
-    if (midiWorker) midiWorker->updateOctaveMode(val);
+    if (midiArp) midiArp->updateOctaveMode(val);
     modified = true;
 }
 
 void ArpWidget::updateOctaveLow(int val)
 {
-    if (midiWorker) midiWorker->octLow = -val;
+    if (midiArp) midiArp->octLow = -val;
     modified = true;
 }
 
 void ArpWidget::updateOctaveHigh(int val)
 {
-    if (midiWorker) midiWorker->octHigh = val;
+    if (midiArp) midiArp->octHigh = val;
     modified = true;
 }
 
 void ArpWidget::updateRandomLengthAmp(int val)
 {
-    if (midiWorker) midiWorker->updateRandomLengthAmp(val);
+    if (midiArp) midiArp->updateRandomLengthAmp(val);
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomTickAmp(int val)
 {
-    if (midiWorker) midiWorker->updateRandomTickAmp(val);
+    if (midiArp) midiArp->updateRandomTickAmp(val);
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomVelocityAmp(int val)
 {
-    if (midiWorker) midiWorker->updateRandomVelocityAmp(val);
+    if (midiArp) midiArp->updateRandomVelocityAmp(val);
     checkIfRandomSet();
     modified = true;
 }
@@ -522,14 +522,14 @@ void ArpWidget::checkIfRandomSet()
 
 void ArpWidget::updateAttackTime(int val)
 {
-    if (midiWorker) midiWorker->updateAttackTime(val);
+    if (midiArp) midiArp->updateAttackTime(val);
     checkIfEnvelopeSet();
     modified = true;
 }
 
 void ArpWidget::updateReleaseTime(int val)
 {
-    if (midiWorker) midiWorker->updateReleaseTime(val);
+    if (midiArp) midiArp->updateReleaseTime(val);
     checkIfEnvelopeSet();
     modified = true;
 }
@@ -620,7 +620,7 @@ void ArpWidget::setEnvelopeVisible(bool on)
 
 void ArpWidget::setLatchMode(bool on)
 {
-    if (midiWorker) midiWorker->setLatchMode(on);
+    if (midiArp) midiArp->setLatchMode(on);
     modified = true;
 }
 
@@ -640,7 +640,7 @@ void ArpWidget::doStoreParams(int ix)
 
 void ArpWidget::doRestoreParams(int ix)
 {
-    midiWorker->applyPendingParChanges();
+    midiArp->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     patternText->setText(parStore->list.at(ix).pattern);
     repeatPatternThroughChord->setCurrentIndex(parStore->list.at(ix).repeatMode);
@@ -652,7 +652,7 @@ void ArpWidget::doRestoreParams(int ix)
         randomLength->setValue(parStore->list.at(ix).rndLen);
         randomVelocity->setValue(parStore->list.at(ix).rndVel);
     }
-    midiWorker->advancePatternIndex(true);
+    midiArp->advancePatternIndex(true);
 }
 
 void ArpWidget::handleController(int ccnumber, int channel, int value)
@@ -670,16 +670,16 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {
-                                m = midiWorker->isMuted;
-                                midiWorker->setMuted(!m);
+                                m = midiArp->isMuted;
+                                midiArp->setMuted(!m);
                             }
                         }
                         else {
                             if (value == max) {
-                                midiWorker->setMuted(false);
+                                midiArp->setMuted(false);
                             }
                             if (value == min) {
-                                midiWorker->setMuted(true);
+                                midiArp->setMuted(true);
                             }
                         }
                 break;
@@ -711,7 +711,7 @@ void ArpWidget::updateDisplay()
 {
     int frame = 1;
     if (getGrooveIndex() == 0 
-            || getGrooveIndex() == midiWorker->nPoints) {
+            || getGrooveIndex() == midiArp->nPoints) {
         frame = 0;
     }
     parStore->updateDisplay(frame, false);
@@ -719,18 +719,18 @@ void ArpWidget::updateDisplay()
     screen->updateDraw();
     midiControl->update();
 
-    if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
+    if (!(needsGUIUpdate || midiArp->needsGUIUpdate)) return;
 
-    muteOut->setChecked(midiWorker->isMuted);
-    screen->newGrooveValues(midiWorker->newGrooveTick, midiWorker->grooveVelocity,
-                midiWorker->grooveLength);    
-    screen->setMuted(midiWorker->isMuted);
-    parStore->ndc->setMuted(midiWorker->isMuted);
+    muteOut->setChecked(midiArp->isMuted);
+    screen->newGrooveValues(midiArp->newGrooveTick, midiArp->grooveVelocity,
+                midiArp->grooveLength);    
+    screen->setMuted(midiArp->isMuted);
+    parStore->ndc->setMuted(midiArp->isMuted);
     if (patternPresetBoxIndex != patternPresetBox->currentIndex())
         selectPatternPreset(patternPresetBoxIndex);
 
     needsGUIUpdate = false;
-    midiWorker->needsGUIUpdate = false;
+    midiArp->needsGUIUpdate = false;
 }
 
 #endif

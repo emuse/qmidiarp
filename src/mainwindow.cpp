@@ -465,8 +465,8 @@ void MainWindow::seqNew()
 void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
 {
     int count, widgetID;
-    MidiArp *midiWorker = new MidiArp();
-    ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
+    MidiArp *midiArp = new MidiArp();
+    ArpWidget *moduleWidget = new ArpWidget(midiArp, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
@@ -491,7 +491,7 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
         moduleWidget->storeParams(l1, true);
     }
 
-    engine->addMidiArp(midiWorker);
+    engine->addMidiArp(midiArp);
     engine->addArpWidget(moduleWidget);
     engine->sendGroove();
 
@@ -508,8 +508,8 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 {
     int widgetID, count;
 
-    MidiLfo *midiWorker = new MidiLfo();
-    LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
+    MidiLfo *midiLfo = new MidiLfo();
+    LfoWidget *moduleWidget = new LfoWidget(midiLfo, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
@@ -537,13 +537,13 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     }
 
     if (clonefrom >= 0) {
-        midiWorker->reverse = engine->lfoWidget(clonefrom)->getReverse();
-        midiWorker->setNextTick(engine->lfoWidget(clonefrom)->getNextTick());
+        midiLfo->reverse = engine->lfoWidget(clonefrom)->getReverse();
+        midiLfo->setNextTick(engine->lfoWidget(clonefrom)->getNextTick());
     }
     else if (engine->lfoWidgetCount())
-        midiWorker->setNextTick(engine->lfoWidget(0)->getNextTick());
+        midiLfo->setNextTick(engine->lfoWidget(0)->getNextTick());
 
-    engine->addMidiLfo(midiWorker);
+    engine->addMidiLfo(midiLfo);
     engine->addLfoWidget(moduleWidget);
     engine->sendGroove();
 
@@ -561,8 +561,8 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 {
     int widgetID, count;
 
-    MidiSeq *midiWorker = new MidiSeq();
-    SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
+    MidiSeq *midiSeq = new MidiSeq();
+    SeqWidget *moduleWidget = new SeqWidget(midiSeq, globStore,
             engine->getPortCount(), passWidget->compactStyle,
             passWidget->mutedAdd, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
@@ -587,13 +587,13 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     }
 
     if (clonefrom >= 0) {
-        midiWorker->reverse = engine->seqWidget(clonefrom)->getReverse();
-        midiWorker->setNextTick(engine->seqWidget(clonefrom)->getNextTick());
+        midiSeq->reverse = engine->seqWidget(clonefrom)->getReverse();
+        midiSeq->setNextTick(engine->seqWidget(clonefrom)->getNextTick());
     }
     else if (engine->seqWidgetCount())
-        midiWorker->setNextTick(engine->seqWidget(0)->getNextTick());
+        midiSeq->setNextTick(engine->seqWidget(0)->getNextTick());
 
-    engine->addMidiSeq(midiWorker);
+    engine->addMidiSeq(midiSeq);
     engine->addSeqWidget(moduleWidget);
     engine->sendGroove();
 

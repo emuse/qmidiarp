@@ -66,10 +66,8 @@ class MidiSeq : public MidiWorker  {
   Q_OBJECT
 
   private:
-    double queueTempo;
     int lastMouseLoc;
     int currentIndex;
-    bool seqFinished;
 /**
  * @brief  calulates the next MidiSeq::currentIndex as a
  * function of the current value, play direction, loop marker position

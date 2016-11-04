@@ -101,7 +101,6 @@ MidiArp::MidiArp()
     vel = 0.8;  // velocity relative to global velocity
     noteIndex[0] = 0;
     patternIndex = 0;
-    grooveIndex = 0;
     patternLen = 0;
     semitone = 0;
     currentNoteTick = 0;

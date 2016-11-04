@@ -62,7 +62,6 @@ class MidiArp : public MidiWorker  {
     int nextLength;
     bool chordMode;
     int patternIndex; /*!< Holds the current position within the pattern text*/
-    int grooveIndex; /*!< Holds the current position within the sequence*/
     int randomTick, randomVelocity, randomLength;
     int sustainBufferCount, latchBufferCount;
     int lastLatchTick;

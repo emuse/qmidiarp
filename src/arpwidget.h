@@ -57,7 +57,7 @@ class ArpWidget :  public InOutBox
 {
   Q_OBJECT
 
-    MidiArp *midiWorker;
+    MidiArp *midiArp;
 
     QGroupBox *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
@@ -73,7 +73,7 @@ class ArpWidget :  public InOutBox
  * @brief Constructor for ArpWidget. It creates the GUI and an ArpScreen
  * instance.
  *
- * @param p_midiWorker Associated MidiArp Object
+ * @param p_midiArp Associated MidiArp Object
  * @param p_globStore The Application-wide globStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
@@ -81,7 +81,7 @@ class ArpWidget :  public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    ArpWidget(MidiArp *p_midiWorker, GlobStore *p_globStore,
+    ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
@@ -137,7 +137,7 @@ class ArpWidget :  public InOutBox
     void handleController(int ccnumber, int channel, int value);
 #endif
 
-    int getNextTick() { return midiWorker->nextTick; }
+    int getNextTick() { return midiArp->nextTick; }
 
 /* SIGNALS */
   signals:
@@ -178,7 +178,7 @@ class ArpWidget :  public InOutBox
   * stakato note received */
     void setLatchMode(bool);
 
-    int getGrooveIndex() { return midiWorker->getGrooveIndex(); }
+    int getGrooveIndex() { return midiArp->getGrooveIndex(); }
 };
 
 #endif

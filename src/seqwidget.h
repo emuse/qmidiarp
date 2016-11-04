@@ -58,7 +58,7 @@ class SeqWidget : public InOutBox
 {
     Q_OBJECT
 
-    MidiSeq *midiWorker;
+    MidiSeq *midiSeq;
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
 
@@ -69,7 +69,7 @@ class SeqWidget : public InOutBox
  * @brief Constructor for SeqWidget. It creates the GUI and an SeqScreen
  * instance.
  *
- * @param p_midiWorker Associated MidiSeq Object
+ * @param p_midiSeq Associated MidiSeq Object
  * @param p_globStore The Application-wide globStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
@@ -77,7 +77,7 @@ class SeqWidget : public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
+    SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
@@ -227,10 +227,10 @@ class SeqWidget : public InOutBox
 */
     void mouseEvent(double, double, int, int pressed);
 
-    int getCurrentIndex() { return midiWorker->getCurrentIndex(); }
-    int getLoopMarker() { return midiWorker->loopMarker; }
-    int getNextTick() { return midiWorker->nextTick; }
-    bool getReverse() { return midiWorker->reverse; }
+    int getCurrentIndex() { return midiSeq->getCurrentIndex(); }
+    int getLoopMarker() { return midiSeq->loopMarker; }
+    int getNextTick() { return midiSeq->nextTick; }
+    bool getReverse() { return midiSeq->reverse; }
     int sliderToTickLen(int val) { return (val * TPQN / 64); }
     int tickLenToSlider(int val) { return (val * 64 / TPQN); }
 };

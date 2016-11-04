@@ -115,12 +115,6 @@ class MidiLfo : public MidiWorker  {
 */
     void newCustomOffset();
 
-/*! @brief  sets MidiLfo::deferChanges, which will cause a
- * parameter changes only at pattern end.
- *
- * @param on Set to True to defer changes to pattern end
- */
-    void updateDeferChanges(bool on) { deferChanges = on; }
 /*! @brief  sets the (controller) value of one point of the
  * MidiLfo::customWave array. It is used for handling drawing functionality.
  *

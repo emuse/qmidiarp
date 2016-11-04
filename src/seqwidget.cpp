@@ -34,18 +34,18 @@
 
 
 #ifdef APPBUILD
-SeqWidget::SeqWidget(MidiSeq *p_midiWorker, GlobStore *p_globStore,
+SeqWidget::SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
     int portCount, bool compactStyle,
     bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiWorker, p_globStore, portCount, compactStyle, inOutVisible, p_name),
-    midiWorker(p_midiWorker)
+    InOutBox(p_midiSeq, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    midiSeq(p_midiSeq)
 {
 #else
 SeqWidget::SeqWidget(
     bool compactStyle,
     bool mutedAdd, bool inOutVisible):
     InOutBox(compactStyle, inOutVisible, "Seq:"),
-    midiWorker(NULL)
+    midiSeq(NULL)
 {
 #endif
 
@@ -225,7 +225,7 @@ SeqWidget::SeqWidget(
 #ifdef APPBUILD
 MidiSeq *SeqWidget::getMidiWorker()
 {
-    return (midiWorker);
+    return (midiSeq);
 }
 
 void SeqWidget::writeData(QXmlStreamWriter& xml)
@@ -248,17 +248,17 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("size", QString::number(
                 sizeBox->currentIndex()));
             xml.writeTextElement("velocity", QString::number(
-                midiWorker->vel));
+                midiSeq->vel));
             xml.writeTextElement("noteLength", QString::number(
-                tickLenToSlider(midiWorker->notelength)));
+                tickLenToSlider(midiSeq->notelength)));
             xml.writeTextElement("transp", QString::number(
-                midiWorker->transp));
+                midiSeq->transp));
         xml.writeEndElement();
 
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiWorker->maxNPoints) {
-            tempArray.append(midiWorker->muteMask.at(l1));
+        while (l1 < midiSeq->maxNPoints) {
+            tempArray.append(midiSeq->muteMask.at(l1));
             l1++;
         }
         xml.writeStartElement("muteMask");
@@ -267,8 +267,8 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 
         tempArray.clear();
         l1 = 0;
-        while (l1 < midiWorker->maxNPoints) {
-            tempArray.append(midiWorker->customWave.at(l1).value);
+        while (l1 < midiSeq->maxNPoints) {
+            tempArray.append(midiSeq->customWave.at(l1).value);
             l1++;
         }
         xml.writeStartElement("sequence");
@@ -348,9 +348,9 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        midiWorker->muteMask.replace(l1, tmpArray.at(l1));
+                        midiSeq->muteMask.replace(l1, tmpArray.at(l1));
                     }
-                    midiWorker->maxNPoints = tmpArray.count();
+                    midiSeq->maxNPoints = tmpArray.count();
                 }
                 else skipXmlElement(xml);
             }
@@ -363,20 +363,20 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 if (xml.isStartElement() && (xml.name() == "data")) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    int step = TPQN / midiWorker->res;
+                    int step = TPQN / midiSeq->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         sample.value = tmpArray.at(l1);
                         sample.tick = lt;
-                        sample.muted = midiWorker->muteMask.at(l1);
-                        midiWorker->customWave.replace(l1, sample);
+                        sample.muted = midiSeq->muteMask.at(l1);
+                        midiSeq->customWave.replace(l1, sample);
                         lt+=step;
                     }
                     updateWaveForm(0);
                 }
                 else if (xml.name() == "loopmarker") {
                     tmp = xml.readElementText().toInt();
-                    midiWorker->setLoopMarker(tmp);
+                    midiSeq->setLoopMarker(tmp);
                     screen->setLoopMarker(tmp);
                 }
                 else skipXmlElement(xml);
@@ -394,14 +394,14 @@ void SeqWidget::readData(QXmlStreamReader& xml)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    if (midiWorker) midiWorker->updateNoteLength(sliderToTickLen(val));
+    if (midiSeq) midiSeq->updateNoteLength(sliderToTickLen(val));
     modified = true;
 }
 
 void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
-    if (midiWorker) midiWorker->getData(&data);
+    if (midiSeq) midiSeq->getData(&data);
     screen->updateData(data);
     modified = true;
 }
@@ -410,20 +410,20 @@ void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
     screen->setRecordMode(on);
-    if (!midiWorker) return;
-    midiWorker->setRecordMode(on);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiSeq) return;
+    midiSeq->setRecordMode(on);
+    screen->setCurrentRecStep(midiSeq->currentRecStep);
 }
 
 void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
     resBoxIndex = val;
-    if (!midiWorker) return;
-    midiWorker->res = seqResValues[val];
-    midiWorker->resizeAll();
-    midiWorker->getData(&data);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiSeq) return;
+    midiSeq->res = seqResValues[val];
+    midiSeq->resizeAll();
+    midiSeq->getData(&data);
+    screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -432,11 +432,11 @@ void SeqWidget::updateSize(int val)
 {
     if (val > 9) return;
     sizeBoxIndex = val;
-    if (!midiWorker) return;
-    midiWorker->size = sizeBox->currentText().toInt();
-    midiWorker->resizeAll();
-    midiWorker->getData(&data);
-    screen->setCurrentRecStep(midiWorker->currentRecStep);
+    if (!midiSeq) return;
+    midiSeq->size = sizeBox->currentText().toInt();
+    midiSeq->resizeAll();
+    midiSeq->getData(&data);
+    screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
     modified = true;
 }
@@ -444,29 +444,29 @@ void SeqWidget::updateSize(int val)
 void SeqWidget::updateLoop(int val)
 {
     if (val > 6) return;
-    if (midiWorker) midiWorker->updateLoop(val);
+    if (midiSeq) midiSeq->updateLoop(val);
     modified = true;
 }
 
 void SeqWidget::updateVelocity(int val)
 {
-    if (midiWorker) midiWorker->updateVelocity(val);
+    if (midiSeq) midiSeq->updateVelocity(val);
     modified = true;
 }
 
 void SeqWidget::updateTranspose(int val)
 {
-    if (midiWorker) midiWorker->updateTranspose(val);
+    if (midiSeq) midiSeq->updateTranspose(val);
     modified = true;
 }
 
 void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if (!midiWorker) {
+    if (!midiSeq) {
         emit mouseSig(mouseX, mouseY, buttons, pressed);
     }
     else {
-        midiWorker->mouseEvent(mouseX, mouseY, buttons, pressed);
+        midiSeq->mouseEvent(mouseX, mouseY, buttons, pressed);
     }
 
     if ((mouseY < 0) && (pressed != 2)) { // we have to recalculate loopMarker for screen update
@@ -491,7 +491,7 @@ void SeqWidget::setDispVert(int mode)
 void SeqWidget::updateDispVert(int mode)
 {
     dispVertIndex = mode;
-    if (midiWorker) midiWorker->updateDispVert(mode);
+    if (midiSeq) midiSeq->updateDispVert(mode);
     screen->updateDispVert(mode);
     modified = true;
 }
@@ -508,8 +508,8 @@ void SeqWidget::doStoreParams(int ix)
     parStore->temp.vel = velocity->value();
     parStore->temp.dispVertIndex = dispVertIndex;
     parStore->temp.loopMode = loopBox->currentIndex();
-    parStore->temp.wave = getCustomWave().mid(0, midiWorker->maxNPoints);
-    parStore->temp.muteMask = midiWorker->muteMask.mid(0, midiWorker->maxNPoints);
+    parStore->temp.wave = getCustomWave().mid(0, midiSeq->maxNPoints);
+    parStore->temp.muteMask = midiSeq->muteMask.mid(0, midiSeq->maxNPoints);
     parStore->temp.loopMarker = getLoopMarker();
 
     parStore->tempToList(ix);
@@ -517,32 +517,32 @@ void SeqWidget::doStoreParams(int ix)
 
 void SeqWidget::doRestoreParams(int ix)
 {
-    midiWorker->applyPendingParChanges();
+    midiSeq->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
-        midiWorker->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
-        midiWorker->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
+        midiSeq->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
+        midiSeq->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
     }
     sizeBoxIndex = parStore->list.at(ix).size;
     sizeBox->setCurrentIndex(sizeBoxIndex);
-    midiWorker->size = sizeBox->currentText().toInt();
+    midiSeq->size = sizeBox->currentText().toInt();
     resBoxIndex = parStore->list.at(ix).res;
-    midiWorker->res = seqResValues[resBoxIndex];
-    midiWorker->resizeAll();
-    midiWorker->setLoopMarker(parStore->list.at(ix).loopMarker);
+    midiSeq->res = seqResValues[resBoxIndex];
+    midiSeq->resizeAll();
+    midiSeq->setLoopMarker(parStore->list.at(ix).loopMarker);
     screen->setLoopMarker(parStore->list.at(ix).loopMarker);
 
     resBox->setCurrentIndex(parStore->list.at(ix).res);
     loopBox->setCurrentIndex(parStore->list.at(ix).loopMode);
     if (!parStore->onlyPatternList.at(ix)) {
-        midiWorker->notelength = sliderToTickLen(parStore->list.at(ix).notelen);
-        midiWorker->transp = parStore->list.at(ix).transp;
-        midiWorker->vel = parStore->list.at(ix).vel;
+        midiSeq->notelength = sliderToTickLen(parStore->list.at(ix).notelen);
+        midiSeq->transp = parStore->list.at(ix).transp;
+        midiSeq->vel = parStore->list.at(ix).vel;
         setDispVert(parStore->list.at(ix).dispVertIndex);
     }
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
-    midiWorker->setCurrentIndex(0);
+    midiSeq->setCurrentIndex(0);
 
     needsGUIUpdate = true;
 }
@@ -595,11 +595,11 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 
     notelength->setValue(fromWidget->notelength->value());
     for (int l1 = 0; l1 < fromWidget->getMidiWorker()->maxNPoints; l1++) {
-        midiWorker->customWave.replace(l1, fromWidget->getCustomWave().at(l1));
-        midiWorker->muteMask.replace(l1, midiWorker->customWave.at(l1).muted);
+        midiSeq->customWave.replace(l1, fromWidget->getCustomWave().at(l1));
+        midiSeq->muteMask.replace(l1, midiSeq->customWave.at(l1).muted);
     }
     tmp = fromWidget->getLoopMarker();
-    midiWorker->setLoopMarker(tmp);
+    midiSeq->setLoopMarker(tmp);
     screen->setLoopMarker(tmp);
     midiControl->setCcList(fromWidget->midiControl->ccList);
     muteOutAction->setChecked(true);
@@ -608,7 +608,7 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 
 QVector<Sample> SeqWidget::getCustomWave()
 {
-    return midiWorker->customWave;
+    return midiSeq->customWave;
 }
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
@@ -625,43 +625,43 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {
-                                m = midiWorker->isMuted;
-                                midiWorker->setMuted(!m);
+                                m = midiSeq->isMuted;
+                                midiSeq->setMuted(!m);
                             }
                         }
                         else {
                             if (value == max) {
-                                midiWorker->setMuted(false);
+                                midiSeq->setMuted(false);
                             }
                             if (value == min) {
-                                midiWorker->setMuted(true);
+                                midiSeq->setMuted(true);
                             }
                         }
                 break;
 
                 case 1:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->updateVelocity(sval);
+                        midiSeq->updateVelocity(sval);
                 break;
 
                 case 2:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->updateNoteLength(sliderToTickLen(sval));
+                        midiSeq->updateNoteLength(sliderToTickLen(sval));
                 break;
 
                 case 3: if (min == max) {
                             if (value == max) {
-                                m = midiWorker->recordMode;
-                                midiWorker->setRecordMode(!m);
+                                m = midiSeq->recordMode;
+                                midiSeq->setRecordMode(!m);
                                 return;
                             }
                         }
                         else {
                             if (value == max) {
-                                midiWorker->setRecordMode(true);
+                                midiSeq->setRecordMode(true);
                             }
                             if (value == min) {
-                                midiWorker->setRecordMode(false);
+                                midiSeq->setRecordMode(false);
                             }
                         }
                 break;
@@ -675,7 +675,7 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                 break;
                 case 6:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < 6) midiWorker->curLoopMode = sval;
+                        if (sval < 6) midiSeq->curLoopMode = sval;
                 break;
                 case 7:
                         sval = min + ((double)value * (max - min) / 127);
@@ -691,12 +691,12 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case 8:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiWorker->updateTranspose(sval - 24);
+                        midiSeq->updateTranspose(sval - 24);
                 break;
                 
                 case 9:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < 16) midiWorker->channelOut = sval;
+                        if (sval < 16) midiSeq->channelOut = sval;
                 break;
 
                 default:
@@ -711,39 +711,39 @@ void SeqWidget::updateDisplay()
 {
     QVector<Sample> data;
 
-    parStore->updateDisplay(getCurrentIndex(), midiWorker->reverse);
+    parStore->updateDisplay(getCurrentIndex(), midiSeq->reverse);
 
-    if (dataChanged || midiWorker->dataChanged) {
+    if (dataChanged || midiSeq->dataChanged) {
         dataChanged=false;
-        midiWorker->dataChanged=false;
-        midiWorker->getData(&data);
+        midiSeq->dataChanged=false;
+        midiSeq->getData(&data);
         screen->updateData(data);
-        if (recordMode) screen->setCurrentRecStep(midiWorker->currentRecStep);
-        cursor->updateNumbers(midiWorker->res, midiWorker->size);
+        if (recordMode) screen->setCurrentRecStep(midiSeq->currentRecStep);
+        cursor->updateNumbers(midiSeq->res, midiSeq->size);
     }
     screen->updateDraw();
     cursor->updateDraw();
     midiControl->update();
 
-    if (!(needsGUIUpdate || midiWorker->needsGUIUpdate)) return;
+    if (!(needsGUIUpdate || midiSeq->needsGUIUpdate)) return;
 
-    transpose->setValue(midiWorker->transp);
-    notelength->setValue(tickLenToSlider(midiWorker->notelength));
-    velocity->setValue(midiWorker->vel);
-    muteOut->setChecked(midiWorker->isMuted);
-    screen->newGrooveValues(midiWorker->newGrooveTick, midiWorker->grooveVelocity,
-                midiWorker->grooveLength);
-    screen->setMuted(midiWorker->isMuted);
-    parStore->ndc->setMuted(midiWorker->isMuted);
-    recordAction->setChecked(midiWorker->recordMode);
+    transpose->setValue(midiSeq->transp);
+    notelength->setValue(tickLenToSlider(midiSeq->notelength));
+    velocity->setValue(midiSeq->vel);
+    muteOut->setChecked(midiSeq->isMuted);
+    screen->newGrooveValues(midiSeq->newGrooveTick, midiSeq->grooveVelocity,
+                midiSeq->grooveLength);
+    screen->setMuted(midiSeq->isMuted);
+    parStore->ndc->setMuted(midiSeq->isMuted);
+    recordAction->setChecked(midiSeq->recordMode);
     resBox->setCurrentIndex(resBoxIndex);
     updateRes(resBoxIndex);
     sizeBox->setCurrentIndex(sizeBoxIndex);
     updateSize(sizeBoxIndex);
-    loopBox->setCurrentIndex(midiWorker->curLoopMode);
-    channelOut->setCurrentIndex(midiWorker->channelOut);
+    loopBox->setCurrentIndex(midiSeq->curLoopMode);
+    channelOut->setCurrentIndex(midiSeq->channelOut);
     needsGUIUpdate = false;
-    midiWorker->needsGUIUpdate = false;
+    midiSeq->needsGUIUpdate = false;
 }
 
 #endif

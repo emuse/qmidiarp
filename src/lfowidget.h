@@ -56,7 +56,7 @@ class LfoWidget : public InOutBox
 {
     Q_OBJECT
 
-    MidiLfo *midiWorker;
+    MidiLfo *midiLfo;
 /*!
 * @brief populates the LfoWidget::waveForms list with
 * waveform names.
@@ -79,7 +79,7 @@ class LfoWidget : public InOutBox
  * @brief Constructor for LfoWidget. It creates the GUI and an LfoScreen
  * instance.
  *
- * @param p_midiWorker Associated MidiLfo Object
+ * @param p_midiLfo Associated MidiLfo Object
  * @param p_globStore The Application-wide globStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
@@ -87,7 +87,7 @@ class LfoWidget : public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    LfoWidget(MidiLfo *p_midiWorker, GlobStore *p_globStore,
+    LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore,
             int portCount, bool compactStyle,
             bool mutedAdd = false, bool inOutVisible = true,
             const QString& name = "");
@@ -278,9 +278,9 @@ class LfoWidget : public InOutBox
 */
     void updateFlipWaveVertical();
 
-    int getFramePtr() { return midiWorker->getFramePtr(); }
-    int getNextTick() { return midiWorker->nextTick; }
-    bool getReverse() { return midiWorker->reverse; }
+    int getFramePtr() { return midiLfo->getFramePtr(); }
+    int getNextTick() { return midiLfo->nextTick; }
+    bool getReverse() { return midiLfo->reverse; }
 };
 
 #endif
