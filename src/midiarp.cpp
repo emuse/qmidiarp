@@ -101,12 +101,14 @@ MidiArp::MidiArp()
     vel = 0.8;  // velocity relative to global velocity
     noteIndex[0] = 0;
     patternIndex = 0;
+    grooveIndex = 0;
     patternLen = 0;
     semitone = 0;
     currentNoteTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;
+    returnTick = 0;
     chordMode = false;
     randomTick = 0;
     randomVelocity = 0;
@@ -126,7 +128,6 @@ MidiArp::MidiArp()
     latchBufferCount = 0;
     lastLatchTick = 0;
     trigDelayTicks = 4;
-
     returnNote.resize(128);
     returnVelocity.resize(128);
 }
@@ -239,7 +240,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 
 void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
 {
-    int bufPtr, index, note ;
+    int bufPtr, note ;
     note = *noteptr;
 
     // modify buffer that is not accessed by arpeggio output
@@ -257,7 +258,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
         }
         else {
             // note is not on top: take out the note and pull down all above
-            index = 0;
+            int index = 0;
             while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
 
             // additional forward in buffer to look for release marked note
@@ -324,7 +325,6 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     int current_octave = 0;
     bool outOfRange = false;
     bool gotCC, pause;
-    double attackfn, releasefn;
 
 
     chordIndex = 0;
@@ -416,7 +416,8 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         if (outOfRange) checkOctaveAtEdge(false);
 
         grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
-
+        
+        double releasefn = 0;
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
             releasefn = 1.0 - (double)(arpTick
                     - notes[noteBufPtr][2][noteIndex[l1]])
@@ -426,6 +427,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         }
         else releasefn = 1.0;
 
+        double attackfn = 0;
         if (attack_time > 0) {
             if (!notes[noteBufPtr][3][noteIndex[l1]]) {
                 attackfn = (double)(arpTick

@@ -243,10 +243,9 @@ void MidiSeqLV2::run (uint32_t nframes )
 
         // Note Off Queue handling
         int noteofftick = evTickQueue.first();
-        int tmptick = 0;
         int idx = 0;
         for (int l1 = 0; l1 < bufPtr; l1++) {
-            tmptick = evTickQueue.at(l1);
+            int tmptick = evTickQueue.at(l1);
             if (noteofftick > tmptick) {
                 idx = l1;
                 noteofftick = tmptick;

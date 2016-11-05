@@ -864,11 +864,9 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
 {
     int count = 0;
-    bool iovis;
-
 
     while (!xml.atEnd()) {
-        iovis = true;
+        bool iovis = true;
         xml.readNext();
         if (xml.isEndElement())
             break;

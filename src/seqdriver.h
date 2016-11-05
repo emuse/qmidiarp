@@ -89,7 +89,6 @@ class SeqDriver : public DriverBase {
         int lastRatioTick;
         int midiTempoRefreshTick;
         int lastSchedTick;
-        int jackOffsetTick;
         int tempoChangeTick;
         uint64_t tempoChangeFrame;
 

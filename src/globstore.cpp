@@ -241,15 +241,12 @@ void GlobStore::requestDispState(int ix, int selected)
 
 void GlobStore::setDispState(int ix, int selected)
 {
-    int start, end;
-    int l1, l2;
-
-    start = 1;
-    end = timeModuleBox->count();
+    int start = 1;
+    int end = timeModuleBox->count();
 
     if (selected == 1) {
-        for (l1 = start; l1 <= end; l1++) {
-            for (l2 = 1; l2 < widgetList.count(); l2++) {
+        for (int l1 = start; l1 <= end; l1++) {
+            for (int l2 = 1; l2 < widgetList.count(); l2++) {
                 setBGColorAt(l1, l2 , 0);
             }
             setBGColorAt(l1, ix + 1, 1);
@@ -257,7 +254,7 @@ void GlobStore::setDispState(int ix, int selected)
         activeStore = ix;
     }
     else if (selected == 2) {
-        for (l1 = start; l1 <= end; l1++) {
+        for (int l1 = start; l1 <= end; l1++) {
             setBGColorAt(l1, ix + 1, 2);
             if (currentRequest != activeStore) {
                 setBGColorAt(l1, currentRequest + 1, 0);

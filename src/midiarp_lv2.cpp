@@ -205,7 +205,7 @@ void MidiArpLV2::run ( uint32_t nframes )
             // MIDI Input
             if (event && event->body.type == MidiEventID) {
                 uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
-                MidiEvent inEv;
+                MidiEvent inEv = {0, 0, 0, 0};
                 if ( (di[0] & 0xf0) == 0x90 ) {
                     inEv.type = EV_NOTEON;
                     inEv.value = di[2];
@@ -261,10 +261,9 @@ void MidiArpLV2::run ( uint32_t nframes )
 
         // Note Off Queue handling
         int noteofftick = evTickQueue.first();
-        int tmptick = 0;
         int idx = 0;
         for (int l1 = 0; l1 < bufPtr; l1++) {
-            tmptick = evTickQueue.at(l1);
+            int tmptick = evTickQueue.at(l1);
             if (noteofftick > tmptick) {
                 idx = l1;
                 noteofftick = tmptick;

@@ -153,25 +153,21 @@ void MidiCCTable::accept()
 
 void MidiCCTable::apply()
 {
-    int ccnumber, channel, min, max, ctrlID, moduleID;
-    int l1;
-    QChar moduleType;
-
     engine->midiControl->ccList.clear();
     engine->globStoreWidget->midiControl->ccList.clear();
     engine->grooveWidget->midiControl->ccList.clear();
 
-    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++)
+    for (int l1 = 0; l1 < engine->moduleWindowCount(); l1++)
         ((InOutBox *)engine->moduleWindow(l1)->widget())->midiControl->ccList.clear();
 
-    for (l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
-        ccnumber = midiCCTable->item(l1, 1)->text().toInt();
-        channel = midiCCTable->item(l1, 2)->text().toInt() - 1;
-        min = midiCCTable->item(l1, 3)->text().toInt();
-        max = midiCCTable->item(l1, 4)->text().toInt();
-        ctrlID = midiCCTable->item(l1, 5)->text().toInt();
-        moduleID = midiCCTable->item(l1, 6)->text().toInt();
-        moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
+    for (int l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
+        int ccnumber = midiCCTable->item(l1, 1)->text().toInt();
+        int channel = midiCCTable->item(l1, 2)->text().toInt() - 1;
+        int min = midiCCTable->item(l1, 3)->text().toInt();
+        int max = midiCCTable->item(l1, 4)->text().toInt();
+        int ctrlID = midiCCTable->item(l1, 5)->text().toInt();
+        int moduleID = midiCCTable->item(l1, 6)->text().toInt();
+        QChar  moduleType = midiCCTable->verticalHeaderItem(l1)->text().at(0);
 
         switch (moduleType.toLatin1()) {
             case 'E':

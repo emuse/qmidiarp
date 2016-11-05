@@ -103,7 +103,6 @@ private:
         double mouseYCur;
         int mouseEvCur;
         int lastMouseIndex;
-        int buttonsCur;
         double internalTempo;
         double sampleRate;
         double tempo;

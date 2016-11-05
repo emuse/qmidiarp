@@ -42,6 +42,10 @@ LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
     grooveLength = 0;
     isMuted = false;
     needsRedraw = false;
+    recordMode = false;
+    w = 0;
+    h = 0;
+    mouseW = 0;
 }
 
 LfoScreen::~LfoScreen()
@@ -51,26 +55,20 @@ LfoScreen::~LfoScreen()
 // Paint event handler.
 void LfoScreen::paintEvent(QPaintEvent*)
 {
+    if (p_data.isEmpty()) return;
+
     QPainter p(this);
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
     p.setPen(pen);
 
-    int l1, l2;
-    int nsteps = 0.0;
     int beat = 4;
-    int npoints = 0;
-    int ypos, xpos, xscale, yscale;
+    int xscale, yscale;
     w = QWidget::width();
     h = QWidget::height();
     int notestreak_thick = 2;
-    int ofs;
     int x, x1;
-    int beatRes = 1;
-    int beatDiv = 0;
-    int grooveTmp = 0;
-    l2 = 0;
 
     //Beryll Filled Frame
     if (isMuted)
@@ -82,18 +80,19 @@ void LfoScreen::paintEvent(QPaintEvent*)
     p.setPen(QColor(160, 20, 20));
 
     //Grid
-    if (p_data.isEmpty()) return;
-    npoints = p_data.count() - 1;
-    nsteps = p_data.at(npoints).tick / TPQN;
+    int npoints = p_data.count() - 1;
+    int nsteps = p_data.at(npoints).tick / TPQN;
     if (!nsteps) nsteps = 1;
-    beatRes = npoints / nsteps;
-    beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
+    int beatRes = npoints / nsteps;
+    int beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;
     xscale = (w - 2 * LFOSCR_HMARG);
     yscale = h - 2 * LFOSCR_VMARG;
 
     //Beat separators
-    for (l1 = 0; l1 < nsteps + 1; l1++) {
-
+    for (int l1 = 0; l1 < nsteps + 1; l1++) {
+        
+        int ofs = 0;
+        
         if (l1 < 10) {
             ofs = w / nsteps * .5 - 4 + LFOSCR_HMARG;
         } else {
@@ -117,7 +116,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
             // Beat divisor separators
             p.setPen(QColor(120, 60, 20));
             x1 = x;
-            for (l2 = 1; l2 < beatDiv; l2++) {
+            for (int l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / nsteps / beatDiv;
                 if (x1 < xscale)
                     p.drawLine(LFOSCR_HMARG + x1,
@@ -132,14 +131,14 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
-    grooveTmp = (beatRes < 32) ? grooveTick : 0;
-    l1 = 0;
+    int grooveTmp = (beatRes < 32) ? grooveTick : 0;
+    int l1 = 0;
     while (l1 < npoints) {
 
         x = (l1 + .01 * (double)grooveTmp * (l1 % 2)) * xscale / npoints;
-        ypos = yscale - yscale * p_data.at(l1).value / 128
+        int ypos = yscale - yscale * p_data.at(l1).value / 128
                         + LFOSCR_VMARG;
-        xpos = LFOSCR_HMARG + x + pen.width() / 2;
+        int xpos = LFOSCR_HMARG + x + pen.width() / 2;
         if (p_data.at(l1).muted) {
             pen.setColor(QColor(100, 40, 5));
         }
@@ -156,8 +155,8 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     //Horizontal separators and numbers
     p.setPen(QColor(180, 120, 40));
-    for (l1 = 0; l1 < 3; l1++) {
-        ypos = yscale * l1 / 2 + LFOSCR_VMARG;
+    for (int l1 = 0; l1 < 3; l1++) {
+        int ypos = yscale * l1 / 2 + LFOSCR_VMARG;
         p.drawLine(LFOSCR_HMARG, ypos, xMax, ypos);
         p.drawText(1, yscale * (l1) + LFOSCR_VMARG + 4,
                 QString::number(128 * (1 - l1)));

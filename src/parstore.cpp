@@ -180,7 +180,6 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
 
 void ParStore::writeData(QXmlStreamWriter& xml)
 {
-    int l1;
     QByteArray tempArray;
 
     xml.writeStartElement("globalStores");
@@ -223,7 +222,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("onlyPattern", QString::number((int)onlyPatternList.at(ix)));
 
             tempArray.clear();
-            l1 = 0;
+            int l1 = 0;
             while (l1 < list.at(ix).muteMask.count()) {
                 tempArray.append(list.at(ix).muteMask.at(l1));
                 l1++;
@@ -508,12 +507,9 @@ void ParStore::mapStoreSignal()
 
 void ParStore::setDispState(int ix, int selected)
 {
-    int l2;
-    int color;
     if (selected == 1) {
-        for (l2 = 1; l2 <= list.count(); l2++) {
-            color = 3 * (jumpToList.at(l2 - 1) > -2);
-            setBGColorAt(l2, color);
+        for (int l2 = 1; l2 <= list.count(); l2++) {
+            setBGColorAt(l2, 3 * (jumpToList.at(l2 - 1) > -2));
         }
         setBGColorAt(ix + 1, 1);
         activeStore = ix;

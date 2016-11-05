@@ -102,7 +102,6 @@ private:
         double mouseYCur;
         int mouseEvCur;
         int lastMouseIndex;
-        int buttonsCur;
         int dispVertIndex;
         int transpFromGui;
         int velFromGui;

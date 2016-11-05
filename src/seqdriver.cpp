@@ -35,7 +35,7 @@ SeqDriver::SeqDriver(
     void * callback_context,
     bool (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig))
-    : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
+    : DriverBase(p_portCount, callback_context, midi_event_received_callback, tick_callback, 60e9)
     , jackSync(p_jackSync)
 {
     int err;
@@ -67,7 +67,6 @@ SeqDriver::SeqDriver(
     queue_id = snd_seq_alloc_queue(seq_handle);
 
     /* Register ALSA output ports */
-    portCount = p_portCount;
     for (l1 = 0; l1 < portCount; l1++) {
         snprintf(buf, sizeof(buf), "out %d", l1 + 1);
         portid_out[l1] = snd_seq_create_simple_port(seq_handle, buf,
@@ -89,10 +88,7 @@ SeqDriver::SeqDriver(
     lastSchedTick = 0;
     m_current_tick = 0;
 
-    queueStatus = false;
     startQueue = false;
-    useJackSync = false;
-    useMidiClock = false;
     midiTick = 0;
     lastRatioTick = 0;
     tempoChangeTick = 0;
@@ -100,8 +96,6 @@ SeqDriver::SeqDriver(
     trStartingTick = 0;
     trLoopingTick = 0;
     tempoChangeFrame = 0;
-    requestedTempo = 120.;
-    internalTempo = 120.;
     initTempo();
     tempoChangeTime = 0;
 

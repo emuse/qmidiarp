@@ -44,6 +44,7 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
     nSteps = 1.0;
     minStepWidth = 1.0;
     patternMaxIndex = 0;
+    currentIndex = 0;
     isMuted = false;
     needsRedraw = false;
 }
@@ -61,37 +62,9 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.setFont(QFont("Helvetica", 8));
     p.setPen(pen);
 
-    int l1, l2;
-    int beat = 4;
-    double stepwd = 1.0;
-    double curstep = 0.0;
-    int nlines = 0;
-    int notelen;
-    int dx = 0;
-    int ypos, xpos;
-    int octYoffset;
     int w = QWidget::width();
     int h = QWidget::height();
     int notestreak_thick = 2;
-
-    double len;
-    int xscale, yscale, ofs;
-    int x, x1;
-    int patternLen = pattern.length();
-    bool chordmd = false;
-    int octave = 0;
-    int semitone = 0;
-    double vel =1.0;
-    double v = 0;
-    int grv_cur_sft = 0;
-    int grv_cur_len = 0;
-    int grv_cur_vel = 0;
-    int grooveIndex = 0;
-    int chordindex = 0;
-    int polyindex = 0;
-    l2 = 0;
-    QChar c;
-
 
     //Green Filled Frame
     if (isMuted)
@@ -104,24 +77,24 @@ void ArpScreen::paintEvent(QPaintEvent*)
     p.setPen(QColor(20, 160, 20));
 
     //Grid
-    len = nSteps;
-    xscale = (w - 2 * ARPSCR_HMARG) / len;
-    yscale = h - 2 * ARPSCR_VMARG;
+    double len = nSteps;
+    int xscale = (w - 2 * ARPSCR_HMARG) / len;
+    int yscale = h - 2 * ARPSCR_VMARG;
 
-    //Beat separators
-    for (l1 = 0; l1 < nSteps + 1; l1++) {
-
+    //Beat separators (4 beats)
+    for (int l1 = 0; l1 < nSteps + 1; l1++) {
+        int ofs;
         if (l1 < 10) {
             ofs = w / len * .5 - 4 + ARPSCR_HMARG;
         } else {
             ofs = w / len * .5 - 6 + ARPSCR_HMARG;
         }
-        if ((bool)(l1%beat)) {
+        if ((bool)(l1%4)) {
             p.setPen(QColor(60, 180, 60));
         } else {
             p.setPen(QColor(60, 180, 150));
         }
-        x = l1 * xscale;
+        int x = l1 * xscale;
         p.drawLine(ARPSCR_HMARG + x, ARPSCR_VMARG,
                 ARPSCR_HMARG + x, h-ARPSCR_VMARG);
 
@@ -133,8 +106,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
             // Beat divisor separators
             p.setPen(QColor(40, 100, 40));
 
-            for (l2 = 1; l2 < 1.0/minStepWidth; l2++) {
-                x1 = x + l2 * xscale * minStepWidth;
+            for (int l2 = 1; l2 < 1.0/minStepWidth; l2++) {
+                int x1 = x + l2 * xscale * minStepWidth;
                 if (x1 < xscale*len)
                     p.drawLine(ARPSCR_HMARG + x1,
                             ARPSCR_VMARG, ARPSCR_HMARG + x1,
@@ -146,8 +119,8 @@ void ArpScreen::paintEvent(QPaintEvent*)
     //Octave separators and numbers
     p.setPen(QColor(40, 120, 40));
     int noctaves = maxOctave - minOctave + 1;
-    for (l1 = 0; l1 < noctaves + 1; l1++) {
-        ypos = yscale * l1 / noctaves + ARPSCR_VMARG;
+    for (int l1 = 0; l1 < noctaves + 1; l1++) {
+        int ypos = yscale * l1 / noctaves + ARPSCR_VMARG;
         p.drawLine(ARPSCR_HMARG, ypos, w - ARPSCR_HMARG, ypos);
         p.drawText(ARPSCR_HMARG / 2 - 3,
                 yscale * (l1 + 0.5) / noctaves + ARPSCR_VMARG + 4,
@@ -155,19 +128,22 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }
 
     //Draw arpTicks
-    curstep= 0.0;
-    notelen = xscale/8;
-    stepwd = 1.0;
-    vel = 0.8;
-    octave = 0;
-    semitone = 0;
-    chordmd = false;
-    chordindex = 0;
+    double curstep= 0.0;
+    int notelen = xscale/8;
+    double stepwd = 1.0;
+    double vel = 0.8;
+    int octave = 0;
+    int semitone = 0;
+    bool chordmd = false;
+    int chordindex = 0;
 
+    int grooveIndex = 0;
+    int polyindex = 0;
+    int nlines = 0;
 
-    for (l1 = 0; l1 < patternLen; l1++)
+    for (int l1 = 0; l1 < pattern.length(); l1++)
     {
-        c = pattern.at(l1);
+        QChar c = pattern.at(l1);
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
@@ -253,15 +229,15 @@ void ArpScreen::paintEvent(QPaintEvent*)
             }
         }
 
-        grv_cur_sft = ((grooveIndex % 2)) ? 0 : grooveTick ;
-        grv_cur_len = ((grooveIndex % 2)) ? grooveLength : -grooveLength ;
-        grv_cur_vel = ((grooveIndex % 2)) ? grooveVelocity : -grooveVelocity ;
+        int grv_cur_sft = ((grooveIndex % 2)) ? 0 : grooveTick ;
+        int grv_cur_len = ((grooveIndex % 2)) ? grooveLength : -grooveLength ;
+        int grv_cur_vel = ((grooveIndex % 2)) ? grooveVelocity : -grooveVelocity ;
 
         if (c.isDigit()) {
-            octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
-            x = (curstep - stepwd + 0.01 * (double)grv_cur_sft * stepwd) * xscale;
-            dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
-            v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
+            int octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
+            int x = (curstep - stepwd + 0.01 * (double)grv_cur_sft * stepwd) * xscale;
+            int dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
+            double v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
 
             if (nlines > 0) {
                 pen.setWidth(notestreak_thick);
@@ -270,11 +246,11 @@ void ArpScreen::paintEvent(QPaintEvent*)
                 else
                     pen.setColor(QColor(80 + 60 * v, 160 + 40 * v, 80 + 60 * v));
                 p.setPen(pen);
-                ypos = yscale - yscale * (nlines - 1 + octYoffset)
+                int ypos = yscale - yscale * (nlines - 1 + octYoffset)
                             / (patternMaxIndex + 1) / noctaves
                             + ARPSCR_VMARG - 3 + notestreak_thick
                             - notestreak_thick * polyindex;
-                xpos = ARPSCR_HMARG + x + pen.width() / 2;
+                int xpos = ARPSCR_HMARG + x + pen.width() / 2;
                 p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
                 // Cursor
                 if (grooveIndex == currentIndex) {

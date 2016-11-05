@@ -427,10 +427,9 @@ int Engine::getClientId()
 
 void Engine::setStatus(bool on)
 {
-    int l1;
     if (!moduleWindowCount()) return;
     if (!on) {
-        for (l1 = 0; l1 < midiArpCount(); l1++) {
+        for (int l1 = 0; l1 < midiArpCount(); l1++) {
             midiArp(l1)->clearNoteBuffer();
         }
     }
@@ -451,7 +450,6 @@ void Engine::echoCallback(bool echo_from_trig)
 {
     int l1, l2;
     int tick = driver->getCurrentTick();
-    int note_tick = 0;
     int length;
     int outport;
     int frameptr;
@@ -560,7 +558,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     outEv.channel = midiArp(l1)->channelOut;
                     midiArp(l1)->newRandomValues();
                     midiArp(l1)->prepareCurrentNote(tick + schedDelayTicks);
-                    note_tick = midiArp(l1)->returnTick;
+                    int note_tick = midiArp(l1)->returnTick;
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
                     arpWidget(l1)->screen->updateScreen(midiArp(l1)->getGrooveIndex());
@@ -610,7 +608,6 @@ void Engine::echoCallback(bool echo_from_trig)
         && (!midiLfoCount() || (nextMinLfoTick + schedDelayTicks >= restoreTick))
         && (!midiSeqCount() || (nextMinSeqTick + schedDelayTicks >= restoreTick))) {
         restoreTick = -1;
-        restoreFlag = false;
         // TODO: At term the following should be restore() instead of
         // schedRestore(). restore is not yet fit for realtime. But
         // testing seems positive this way.

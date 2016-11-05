@@ -111,6 +111,7 @@ public:
 
 protected:
     DriverBase(
+        int p_portCount,
         void * callback_context,
         bool (* midi_event_received_callback)(void * context, MidiEvent ev),
         void (* tick_callback)(void * context, bool echo_from_trig),
@@ -122,7 +123,16 @@ protected:
         , m_current_tick(0)
         , m_next_tick(0)
         , m_tpm(0)
+        , portCount(p_portCount)
     {
+    internalTempo = 120;
+    tempo = 120;
+    requestedTempo = 120;
+    portUnmatched = 0;
+    forwardUnmatched = false;
+    useJackSync = false;
+    queueStatus = false;
+    useMidiClock = false;
     }
 
     uint64_t tickToBackendOffset(unsigned int tick)

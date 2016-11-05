@@ -203,7 +203,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
             // MIDI Input
             else if (event && event->body.type == MidiEventID) {
                 uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
-                MidiEvent inEv;
+                MidiEvent inEv = {0, 0, 0, 0};
                 if ( (di[0] & 0xf0) == 0x90 ) {
                     inEv.type = EV_NOTEON;
                     inEv.value = di[2];

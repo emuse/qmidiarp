@@ -613,15 +613,15 @@ QVector<Sample> SeqWidget::getCustomWave()
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
 {
-    bool m;
-    int min, max, sval;
     QVector<MidiCC> cclist= midiControl->ccList;
 
     for (int l2 = 0; l2 < cclist.count(); l2++) {
-        min = cclist.at(l2).min;
-        max = cclist.at(l2).max;
+        int min = cclist.at(l2).min;
+        int max = cclist.at(l2).max;
         if ((ccnumber == cclist.at(l2).ccnumber) &&
             (channel == cclist.at(l2).channel)) {
+            int sval = 0;
+            bool m = false;
             switch (cclist.at(l2).ID) {
                 case 0: if (min == max) {
                             if (value == max) {

@@ -47,6 +47,7 @@ MidiSeq::MidiSeq()
     notelengthDefer = 180;
     currentIndex = 0;
     lastMute = false;
+    lastMouseLoc = 0;
 
     int lt = 0;
     int l1 = 0;
@@ -379,8 +380,6 @@ void MidiSeq::setRecordedNote(int note)
 
 void MidiSeq::resizeAll()
 {
-    int lt = 0;
-    int l1 = 0;
     const int step = TPQN / res;
     const int npoints = res * size;
     Sample sample;
@@ -389,7 +388,8 @@ void MidiSeq::resizeAll()
     currentRecStep%=npoints;
 
     if (maxNPoints < npoints) {
-        for (l1 = 0; l1 < npoints; l1++) {
+        int lt = 0;
+        for (int l1 = 0; l1 < npoints; l1++) {
             if (l1 >= maxNPoints)
                 muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
             sample = customWave.at(l1 % maxNPoints);

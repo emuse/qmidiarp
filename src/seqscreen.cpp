@@ -52,14 +52,14 @@ SeqScreen::SeqScreen()
 // Paint event handler.
 void SeqScreen::paintEvent(QPaintEvent*)
 {
+    if (p_data.isEmpty()) return;
+
     QPainter p(this);
     QPen pen;
     pen.setWidth(1);
     p.setFont(QFont("Helvetica", 8));
     p.setPen(pen);
 
-    int l1, l2;
-    double nsteps = 0.0;
     int beat = 4;
     int tmpval = 0;
     int ypos, xpos, xscale, yscale;
@@ -70,15 +70,11 @@ void SeqScreen::paintEvent(QPaintEvent*)
     int minOctave = baseOctave;
     int maxOctave = nOctaves + minOctave;
     int notestreak_thick = 16 / nOctaves;
-    int beatRes = 1.0;
-    int beatDiv = 0;
-    l2 = 0;
 
     //Grid setup
-    if (p_data.isEmpty()) return;
-    nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
-    beatRes = (p_data.count() - 1) / nsteps;
-    beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
+    double nsteps = p_data.at(p_data.count() - 1).tick / TPQN;
+    int beatRes = (p_data.count() - 1) / nsteps;
+    int beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     int npoints = beatRes * nsteps;
     xscale = (w - 2 * SEQSCR_HMARG) / nsteps;
     yscale = h - 2 * SEQSCR_VMARG;
@@ -100,7 +96,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
                 , h - 2*SEQSCR_VMARG, QColor(5, 40, 100));
 
     //Beat separators
-    for (l1 = 0; l1 < nsteps + 1; l1++) {
+    for (int l1 = 0; l1 < nsteps + 1; l1++) {
 
         if (l1 < 10) {
             ofs = w / nsteps * .5 - 4 + SEQSCR_HMARG;
@@ -125,7 +121,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
             // Beat divisor separators
             p.setPen(QColor(20, 60, 120));
             x1 = x;
-            for (l2 = 1; l2 < beatDiv; l2++) {
+            for (int l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / beatDiv;
                 if (x1 < xscale * nsteps)
                     p.drawLine(SEQSCR_HMARG + x1,
@@ -136,9 +132,8 @@ void SeqScreen::paintEvent(QPaintEvent*)
     }
 
     //Horizontal separators and numbers
-    int l3 = 0;
-    for (l1 = 0; l1 <= nOctaves * 12; l1++) {
-        l3 = l1%12;
+    for (int l1 = 0; l1 <= nOctaves * 12; l1++) {
+        int l3 = l1%12;
 
         ypos = yscale * l1 / nOctaves / 12 + SEQSCR_VMARG;
 
@@ -167,7 +162,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
     pen.setWidth(notestreak_thick);
     p.setPen(pen);
-    for (l1 = 0; l1 < npoints; l1++) {
+    for (int l1 = 0; l1 < npoints; l1++) {
         x = (l1 + .01 * (double)grooveTick * (l1 % 2)) * nsteps * xscale / npoints;
         tmpval = p_data.at(l1).value;
         if ((tmpval >= 12 * baseOctave) && (tmpval < 12 * maxOctave)) {

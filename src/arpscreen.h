@@ -57,7 +57,7 @@ class ArpScreen : public QWidget
   private:
     int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
-    int pattern_updated, currentIndex;
+    int currentIndex;
     bool isMuted;
     bool needsRedraw;
 

@@ -193,10 +193,8 @@ void MidiLfo::getData(QVector<Sample> *p_data)
     Sample sample;
     const int step = TPQN / res;
     const int npoints = size * res;
-    int l1 = 0;
-    int lt = 0;
     int val = 0;
-    int tempval;
+    int lt = 0;
     bool cl = false;
     QVector<Sample> tmpdata;
 
@@ -204,7 +202,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
 
     switch(waveFormIndex) {
         case 0: //sine
-            for (l1 = 0; l1 < npoints; l1++) {
+            for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((-cos((double)(l1 * 6.28 /
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
@@ -215,7 +213,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
         break;
         case 1: //sawtooth up
             val = 0;
-            for (l1 = 0; l1 < npoints; l1++) {
+            for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(val * amp / res / 32
                 + offs, 0, 127, &cl);
                 sample.tick = lt;
@@ -228,8 +226,8 @@ void MidiLfo::getData(QVector<Sample> *p_data)
         break;
         case 2: //triangle
             val = 0;
-            for (l1 = 0; l1 < npoints; l1++) {
-                tempval = val - res * 16;
+            for (int l1 = 0; l1 < npoints; l1++) {
+                int tempval = val - res * 16;
                 if (tempval < 0 ) tempval = -tempval;
                 sample.value = clip((res * 16 - tempval) * amp
                         / res / 16 + offs, 0, 127, &cl);
@@ -243,7 +241,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
         break;
         case 3: //sawtooth down
             val = 0;
-            for (l1 = 0; l1 < npoints; l1++) {
+            for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((res * 32 - val)
                         * amp / res / 32 + offs, 0, 127, &cl);
                 sample.tick = lt;
@@ -255,7 +253,7 @@ void MidiLfo::getData(QVector<Sample> *p_data)
             }
         break;
         case 4: //square
-            for (l1 = 0; l1 < npoints; l1++) {
+            for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(amp * ((l1 * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
@@ -379,8 +377,6 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 
 void MidiLfo::resizeAll()
 {
-    int lt = 0;
-    int l1 = 0;
     const int step = TPQN / res;
     const int npoints = res * size;
     Sample sample;
@@ -388,7 +384,8 @@ void MidiLfo::resizeAll()
     frameptr%=npoints;
 
     if (maxNPoints < npoints) {
-        for (l1 = 0; l1 < npoints; l1++) {
+        int lt = 0;
+        for (int l1 = 0; l1 < npoints; l1++) {
             if (l1 >= maxNPoints)
                 muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
             sample = customWave.at(l1 % maxNPoints);
@@ -414,10 +411,9 @@ void MidiLfo::copyToCustom()
 void MidiLfo::newCustomOffset()
 {
     int min = 127;
-    int value;
     const int npoints = res * size;
     for (int l1 = 0; l1 < npoints; l1++) {
-        value = customWave.at(l1).value;
+        int value = customWave.at(l1).value;
         if (value < min) min = value;
     }
     cwmin = min;
@@ -431,20 +427,19 @@ void MidiLfo::flipWaveVertical()
     Sample sample;
     int min = 127;
     int max = 0;
-    int value, l1;
     const int npoints = res * size;
     
     if (waveFormIndex < 5) {
         copyToCustom();
     }
     
-    for (l1 = 0; l1 < npoints; l1++) {
-        value = customWave.at(l1).value;
+    for (int l1 = 0; l1 < npoints; l1++) {
+        int value = customWave.at(l1).value;
         if (value < min) min = value;
         if (value > max) max = value;
     }
 
-    for (l1 = 0; l1 < npoints; l1++) {
+    for (int l1 = 0; l1 < npoints; l1++) {
         sample = customWave.at(l1);
         sample.value = min + max - sample.value;
         customWave.replace(l1, sample);

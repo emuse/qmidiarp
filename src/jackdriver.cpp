@@ -33,16 +33,12 @@ JackDriver::JackDriver(
     bool (* midi_event_received_callback)(void * context, MidiEvent ev),
     void (* tick_callback)(void * context, bool echo_from_trig),
     void (* p_tempo_callback)(double bpm, void * context))
-    : DriverBase(callback_context, midi_event_received_callback, tick_callback, 60e9)
+    : DriverBase(p_portCount, callback_context, midi_event_received_callback, tick_callback, 60e9)
 {
-    portCount = p_portCount;
     cbContext = callback_context;
     trStateCb = p_tr_state_cb;
     tempoCb = p_tempo_callback;
     jackRunning = false;
-    portUnmatched = 0;
-    forwardUnmatched = false;
-    useJackSync = false;
     echoTickQueue.resize(JQ_BUFSZ);
     echoTrigFlagQueue.resize(JQ_BUFSZ);
     evQueue.resize(JQ_BUFSZ);
@@ -50,8 +46,6 @@ JackDriver::JackDriver(
     evPortQueue.resize(JQ_BUFSZ);
     bufPtr = 0;
     echoPtr = 0;
-    internalTempo = 120;
-    requestedTempo = 120;
     tempoChangeTick = 0;
     tempoChangeJPosFrame = 0;
     jackNFrames = 256;
@@ -468,8 +462,7 @@ bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 void JackDriver::handleEchoes(int nframes)
 {
-    uint l1;
-    int nexttick, tmptick, idx;
+    int nexttick, idx;
 
     jackNFrames = nframes;
     if (useJackSync) {
@@ -499,8 +492,8 @@ void JackDriver::handleEchoes(int nframes)
     idx = 0;
     nexttick = echoTickQueue.first();
 
-    for (l1 = 0; l1 < echoPtr; l1++) {
-        tmptick = echoTickQueue.at(l1);
+    for (uint l1 = 0; l1 < echoPtr; l1++) {
+        int tmptick = echoTickQueue.at(l1);
         if (nexttick > tmptick) {
             idx = l1;
             nexttick = tmptick;
