@@ -157,12 +157,10 @@ void SeqDriver::run()
             }
             if (((inEv.type == EV_ECHO) || startQueue) && queueStatus) {
                 startQueue = false;
-                unmatched = false;
                 calcCurrentTick(tmpTime);
                 tick_callback((inEv.data));
             }
             else {
-                unmatched = true;
                 inEv.channel = evIn->data.control.channel;
 
                 if ((inEv.type == EV_NOTEON) || (inEv.type == EV_NOTEOFF)) {

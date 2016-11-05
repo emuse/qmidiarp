@@ -113,14 +113,12 @@ void SeqScreen::paintEvent(QPaintEvent*)
                 SEQSCR_HMARG + x, h-SEQSCR_VMARG);
 
         if (l1 < nsteps) {
-            p.setPen(QColor(100, 150, 180));
-
             //Beat numbers
+            p.setPen(QColor(100, 150, 180));
             p.drawText(ofs + x, SEQSCR_VMARG, QString::number(l1+1));
 
             // Beat divisor separators
             p.setPen(QColor(20, 60, 120));
-            x1 = x;
             for (int l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / beatDiv;
                 if (x1 < xscale * nsteps)

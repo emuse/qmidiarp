@@ -108,14 +108,12 @@ void LfoScreen::paintEvent(QPaintEvent*)
                 LFOSCR_HMARG + x, h-LFOSCR_VMARG);
 
         if (l1 < nsteps) {
-            p.setPen(QColor(180, 150, 100));
-
             //Beat numbers
+            p.setPen(QColor(180, 150, 100));
             p.drawText(ofs + x, LFOSCR_VMARG, QString::number(l1+1));
 
             // Beat divisor separators
             p.setPen(QColor(120, 60, 20));
-            x1 = x;
             for (int l2 = 1; l2 < beatDiv; l2++) {
                 x1 = x + l2 * xscale / nsteps / beatDiv;
                 if (x1 < xscale)

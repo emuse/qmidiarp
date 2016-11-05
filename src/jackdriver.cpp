@@ -462,9 +462,8 @@ bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
 
 void JackDriver::handleEchoes(int nframes)
 {
-    int nexttick, idx;
-
     jackNFrames = nframes;
+
     if (useJackSync) {
         m_current_tick = ((uint64_t)currentPos.frame - tempoChangeJPosFrame)
             * TPQN * tempo / (currentPos.frame_rate * 60) + tempoChangeTick;
@@ -489,8 +488,8 @@ void JackDriver::handleEchoes(int nframes)
     }
     if (!echoPtr) return;
 
-    idx = 0;
-    nexttick = echoTickQueue.first();
+    int idx = 0;
+    int nexttick = echoTickQueue.first();
 
     for (uint l1 = 0; l1 < echoPtr; l1++) {
         int tmptick = echoTickQueue.at(l1);

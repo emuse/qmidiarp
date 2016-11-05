@@ -186,8 +186,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
 
-        if ((trigByKbd
-                && (getPressedNoteCount() == 1))
+        if ((trigByKbd && (getPressedNoteCount() == 1))
                     || trigLegato) {
             initArpTick(tick + trigDelayTicks);
             gotKbdTrig = true;
