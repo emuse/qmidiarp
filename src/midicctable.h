@@ -27,7 +27,6 @@
 
 #include <QDialog>
 #include <QTableWidget>
-#include <QPushButton>
 #include "engine.h"
 
 /*! @brief QDialog class for managing MIDI controller mappings

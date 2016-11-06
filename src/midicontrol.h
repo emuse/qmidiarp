@@ -54,7 +54,7 @@ struct MidiCC {
  *
  * MidiControl is instantiated by each of QMidiArp's module widgets.
  */
-class MidiControl : public QWidget
+class MidiControl : public QObject
 
 {
   Q_OBJECT

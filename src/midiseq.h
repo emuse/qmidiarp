@@ -25,25 +25,7 @@
 #ifndef MIDISEQ_H
 #define MIDISEQ_H
 
-#include <QObject>
-#include <QString>
-#include <QVector>
-#include <main.h>
-
 #include "midiworker.h"
-
-#ifndef SAMPLE_H
-#define SAMPLE_H
-
-/*! @brief Structure holding elements of a MIDI note or controller representing
- * one point of a waveform
- */
-    struct Sample {
-        int value;
-        int tick;
-        bool muted;
-    };
-#endif
 
 /*! @brief MIDI worker class for the Seq Module. Implements a monophonic
  * step sequencer as a QObject.

@@ -23,7 +23,7 @@
  */
 #include <cstdlib>
 #include <cstdio>
-#include <QString>
+
 #include "midiarp.h"
 
 /*

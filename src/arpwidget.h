@@ -24,21 +24,8 @@
 #ifndef ARPWIDGET_H
 #define ARPWIDGET_H
 
-#include <QString>
-#include <QTextStream>
-#include <QToolButton>
-#include <QPushButton>
-#include <QAction>
-#include <QComboBox>
-#include <QGroupBox>
-#include <QSpinBox>
-#include <QLabel>
 #include <QLineEdit>
-#include <QCheckBox>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
-#include "main.h"
 #include "midiarp.h"
 #include "inoutbox.h"
 #include "slider.h"

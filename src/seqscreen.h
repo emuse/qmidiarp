@@ -24,8 +24,8 @@
 #ifndef SEQSCREEN_H
 #define SEQSCREEN_H
 
-#include "midiseq.h"
 #include "screen.h"
+#include "midiworker.h"
 
 #define SEQSCR_MIN_W   180
 #define SEQSCR_MIN_H   216

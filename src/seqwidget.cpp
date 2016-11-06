@@ -21,13 +21,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QLabel>
-#include <QBoxLayout>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QInputDialog>
-#include <QMessageBox>
-
 #include "seqwidget.h"
 
 #include "pixmaps/seqrecord.xpm"

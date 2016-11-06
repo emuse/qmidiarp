@@ -21,16 +21,10 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QBoxLayout>
-
 #include "inoutbox.h"
 #include "config.h"
 
 #ifdef APPBUILD
-
-#include <QMessageBox>
-#include <QInputDialog>
-
 
 #include "pixmaps/lfowavcp.xpm"
 #include "pixmaps/seqwavcp.xpm"

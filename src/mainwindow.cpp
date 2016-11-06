@@ -26,7 +26,6 @@
 #include <QFileDialog>
 #include <QPixmap>
 #include <QInputDialog>
-#include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMetaType>

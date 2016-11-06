@@ -21,11 +21,6 @@
  *      MA 02110-1301, USA.
  */
 #include <cstdio>
-#include <QBoxLayout>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QMessageBox>
 
 #include "lfowidget.h"
 

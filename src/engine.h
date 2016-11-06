@@ -24,20 +24,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QThread>
 #include <QDockWidget>
-#include <QList>
+
 #include "seqdriver.h"
-#include "jackdriver.h"
-#include "midiarp.h"
 #include "arpwidget.h"
-#include "midilfo.h"
 #include "lfowidget.h"
-#include "midicontrol.h"
-#include "midiseq.h"
 #include "seqwidget.h"
 #include "groovewidget.h"
-#include "globstore.h"
 
 /*!
  * @brief 5ms timer calling the updateDisplay() function periodically

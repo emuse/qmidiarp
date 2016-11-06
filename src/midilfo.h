@@ -25,11 +25,6 @@
 #ifndef MIDILFO_H
 #define MIDILFO_H
 
-#include <QObject>
-#include <QString>
-#include <QVector>
-#include "main.h"
-
 #include "midiworker.h"
 
 

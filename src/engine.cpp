@@ -22,11 +22,7 @@
  *
  */
 
-#include <QString>
-
 #include <iostream>
-
-#include "seqdriver.h"
 #include "engine.h"
 
 

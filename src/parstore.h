@@ -24,19 +24,11 @@
 #ifndef PARSTORE_H
 #define PARSTORE_H
 
-#include <QObject>
-#include <QWidget>
-#include <QList>
 #include <QMenu>
-#include <QString>
 #include <QToolButton>
-#include <QVector>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 #include "globstore.h"
-#include "indicator.h"
-#include "main.h"
+#include "midievent.h"
 
 
 /*!

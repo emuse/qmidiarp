@@ -22,17 +22,9 @@
  *
  */
 
-#include <QString>
-#include <QLabel>
-#include <QSlider>
-#include <QBoxLayout>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpinBox>
 #include <QGroupBox>
 
 #include "groovewidget.h"
-#include "slider.h"
 #include "main.h"
 
 

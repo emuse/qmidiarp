@@ -24,7 +24,10 @@
 #ifndef INOUTBOX_H
 #define INOUTBOX_H
 
-#include <QString>
+#include <QBoxLayout>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QMessageBox>
 #include <QToolButton>
 #include <QPushButton>
 #include <QAction>
@@ -33,13 +36,12 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QCheckBox>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 
 #ifdef APPBUILD
+#include <QInputDialog>
+
 #include "globstore.h"
-#include "midicontrol.h"
 #include "parstore.h"
 #endif
 

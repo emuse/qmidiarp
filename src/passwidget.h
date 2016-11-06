@@ -24,9 +24,7 @@
 #ifndef PASSWIDGET_H
 #define PASSWIDGET_H
 
-#include <QComboBox>
 #include <QDialog>
-#include <QSpinBox>
 
 #include "engine.h"
 

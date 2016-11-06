@@ -25,7 +25,6 @@
 #ifndef QMIDIARP_LFOWIDGET_LV2_H
 #define QMIDIARP_LFOWIDGET_LV2_H
 
-#include <QBoxLayout>
 #include "lfowidget.h"
 #include "lv2_common.h"
 

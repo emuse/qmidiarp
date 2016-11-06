@@ -24,15 +24,9 @@
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
 
-#include <QWidget>
-#include <QThread>
 #include <alsa/asoundlib.h>
 
 #include "jackdriver.h"
-#include "midiarp.h"
-#include "midilfo.h"
-#include "midiseq.h"
-#include "main.h"
 #include "driverbase.h"
 
 /*! @brief ALSA sequencer backend QThread class.

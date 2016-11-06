@@ -21,8 +21,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QString>
-#include <QStringList>
 #include "main.h"
 #include "midicontrol.h"
 

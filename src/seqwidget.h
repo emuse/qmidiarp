@@ -24,18 +24,7 @@
 #ifndef SEQWIDGET_H
 #define SEQWIDGET_H
 
-#include <QString>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QTextStream>
-#include <QCheckBox>
-#include <QAction>
-#include <QToolButton>
-#include <QPushButton>
 #include <QSignalMapper>
-#include <QVector>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 #include "midiseq.h"
 #include "inoutbox.h"

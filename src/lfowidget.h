@@ -24,17 +24,6 @@
 #ifndef LFOWIDGET_H
 #define LFOWIDGET_H
 
-#include <QAction>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QSpinBox>
-#include <QString>
-#include <QTextStream>
-#include <QToolButton>
-#include <QPushButton>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
-
 #include "midilfo.h"
 #include "inoutbox.h"
 #include "cursor.h"

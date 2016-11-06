@@ -24,14 +24,12 @@
 #ifndef GLOBSTORE_H
 #define GLOBSTORE_H
 
-#include <QAction>
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QList>
-#include <QSignalMapper>
 #include <QString>
 
 #include "indicator.h"

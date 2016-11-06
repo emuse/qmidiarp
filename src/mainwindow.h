@@ -25,31 +25,19 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QAction>
 #include <QApplication>
-#include <QBoxLayout>
 #include <QCloseEvent>
-#include <QComboBox>
-#include <QDockWidget>
 #include <QMessageBox>
 #include <QMainWindow>
-#include <QString>
 #include <QToolBar>
 
 #include "logwidget.h"
-#include "engine.h"
 #include "midicctable.h"
 #include "passwidget.h"
 #include "globstore.h"
-#include "groovewidget.h"
-#include "config.h"
 
 #ifdef NSM
 #include "nsm.h"
-#endif
-
-#ifdef JACK_SESSION
-#include <jack/session.h>
 #endif
 
 

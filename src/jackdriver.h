@@ -25,7 +25,6 @@
 #define JACKSYNC_H
 
 #include <QVector>
-#include <QThread>
 #include "config.h"
 #include <jack/jack.h>
 #include <jack/transport.h>

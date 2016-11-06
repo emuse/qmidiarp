@@ -21,12 +21,10 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QBoxLayout>
 #include <QFile>
 #include <QTextStream>
 #include <QInputDialog>
 #include <QDir>
-#include <QMessageBox>
 
 #include "midiarp.h"
 #include "arpwidget.h"

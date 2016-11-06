@@ -21,9 +21,6 @@
  *      MA 02110-1301, USA.
  */
 
-#include <QString>
-#include <QLabel>
-#include <QSlider>
 #include <QPushButton>
 #include <QStringList>
 #include <QGroupBox>

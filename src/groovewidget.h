@@ -24,15 +24,9 @@
 #ifndef GROOVEWIDGET_H
 #define GROOVEWIDGET_H
 
-#include <QString>
-#include <QLabel>
-#include <QSlider>
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QSpinBox>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 #include "slider.h"
 #include "midicontrol.h"
 

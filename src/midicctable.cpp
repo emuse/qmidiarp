@@ -23,10 +23,8 @@
  */
 
 
-#include <QVector>
 #include <QDialogButtonBox>
 #include "midicctable.h"
-#include "mainwindow.h"
 
 MidiCCTable::MidiCCTable(Engine *p_engine, QWidget *parent) : QDialog(parent)
 {

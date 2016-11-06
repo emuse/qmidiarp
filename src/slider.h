@@ -28,10 +28,8 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <QString>
 #include <QSlider>
 #include <QSpinBox>
-#include <QWidget>
 
 
 class Slider : public QWidget

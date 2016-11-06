@@ -25,12 +25,8 @@
 #define CURSOR_H
 
 #include <QWidget>
-#include <QString>
-#include <QLabel>
 #include <QSizePolicy>
 #include <QSize>
-
-#include "midilfo.h"
 
 #define CSR_MIN_W   250
 #define CSR_MIN_H     6

@@ -24,11 +24,8 @@
 #ifndef MIDIARP_H
 #define MIDIARP_H
 
-#include <QMutex>
-#include <QWidget>
 #include <QString>
-#include <QVector>
-#include <main.h>
+
 #include "midiworker.h"
 
  /*!

@@ -28,7 +28,6 @@
 #include <QDateTime>
 #include <QString>
 #include <QLabel>
-#include <QSlider>
 #include <QCheckBox>
 #include <QTextEdit>
 

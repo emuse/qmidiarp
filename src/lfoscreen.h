@@ -24,8 +24,8 @@
 #ifndef LFOSCREEN_H
 #define LFOSCREEN_H
 
-#include "midilfo.h"
 #include "screen.h"
+#include "midiworker.h"
 
 #define LFOSCR_MIN_W   250
 #define LFOSCR_MIN_H   120

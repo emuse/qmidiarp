@@ -22,6 +22,19 @@
  *
  */
 
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
+/*! @brief Structure holding elements of a MIDI note or controller representing
+ * one point of a waveform
+ */
+    struct Sample {
+        int value;
+        int tick;
+        bool muted;
+    };
+#endif
+
 #ifndef MIDIEVENT_H
 #define MIDIEVENT_H
 
