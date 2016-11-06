@@ -561,7 +561,7 @@ void Engine::echoCallback(bool echo_from_trig)
                     int note_tick = midiArp(l1)->returnTick;
                     length = midiArp(l1)->returnLength * 4;
                     outport = midiArp(l1)->portOut;
-                    arpWidget(l1)->screen->updateScreen(midiArp(l1)->getGrooveIndex());
+                    arpWidget(l1)->screen->updateCursor(midiArp(l1)->getGrooveIndex());
                     if (midiArp(l1)->hasNewNotes && !midiArp(l1)->returnNote.isEmpty()
                         && midiArp(l1)->returnVelocity.at(0)) {
                         l2 = 0;

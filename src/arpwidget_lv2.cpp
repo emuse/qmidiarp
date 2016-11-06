@@ -162,7 +162,7 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
                     chIn->setCurrentIndex(fValue);
             break;
             case CURSOR_POS:
-                    screen->updateScreen((int)fValue);
+                    screen->updateCursor((int)fValue);
                     screen->update();
             break;
             case PATTERN_PRESET:
@@ -327,7 +327,7 @@ void ArpWidgetLV2::updatePattern(const QString& p_pattern)
                 ;
         }
     }
-    screen->updateScreen(pattern, minOctave, maxOctave, minStepWidth,
+    screen->updateData(pattern, minOctave, maxOctave, minStepWidth,
                     nsteps, patternMaxIndex);
     screen->update();
 }

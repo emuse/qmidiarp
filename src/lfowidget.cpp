@@ -412,13 +412,6 @@ void LfoWidget::updateWaveForm(int val)
 
 }
 
-void LfoWidget::updateScreen(int val)
-{
-    if (!midiLfo) return;
-    if (!midiLfo->isRecording)
-        cursor->updatePosition(val);
-}
-
 void LfoWidget::updateFreq(int val)
 {
     if (val > 13) return;

@@ -22,21 +22,13 @@
  *
  */
 
-#include <QPainter>
-#include <QPaintDevice>
-#include <QPen>
-#include <QPixmap>
-
 #include "arpscreen.h"
 
 
-ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
+ArpScreen::ArpScreen(QWidget* parent) : Screen (parent)
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
     pattern=" ";
-    grooveTick = 0;
-    grooveVelocity = 0;
-    grooveLength = 0;
 
     // These parameters are transferred by ArpWidget upon each pattern change
     maxOctave = 0;
@@ -44,13 +36,6 @@ ArpScreen::ArpScreen(QWidget* parent) : QWidget (parent)
     nSteps = 1.0;
     minStepWidth = 1.0;
     patternMaxIndex = 0;
-    currentIndex = 0;
-    isMuted = false;
-    needsRedraw = false;
-}
-
-ArpScreen::~ArpScreen()
-{
 }
 
 // Paint event handler.
@@ -265,7 +250,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
     }
 }
 
-void ArpScreen::updateScreen(const QString& p_pattern, int p_minOctave,
+void ArpScreen::updateData(const QString& p_pattern, int p_minOctave,
                                 int p_maxOctave, double p_minStepWidth,
                                 double p_nSteps, int p_patternMaxIndex)
 {
@@ -278,41 +263,8 @@ void ArpScreen::updateScreen(const QString& p_pattern, int p_minOctave,
     needsRedraw = true;
 }
 
-void ArpScreen::updateScreen(int p_index)
+void ArpScreen::updateCursor(int p_index)
 {
     currentIndex = p_index;
     needsRedraw = true;
 }
-
-void ArpScreen::updateDraw()
-{
-    if (!needsRedraw) return;
-    needsRedraw = false;
-    update();
-}
-
-void ArpScreen::newGrooveValues(int tick, int vel, int length)
-{
-    grooveTick = tick;
-    grooveVelocity = vel;
-    grooveLength = length;
-    needsRedraw = true;
-}
-
-void ArpScreen::setMuted(bool on)
-{
-    isMuted = on;
-    needsRedraw = true;
-}
-
-QSize ArpScreen::sizeHint() const
-{
-    return QSize(ARPSCR_MIN_W, ARPSCR_MIN_H);
-}
-
-QSizePolicy ArpScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
-}
-

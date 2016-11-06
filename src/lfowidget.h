@@ -162,7 +162,6 @@ class LfoWidget : public InOutBox
 
 /* PUBLIC SLOTS */
   public slots:
-    void updateScreen(int value);
     void setRecord(bool on);
 
 /*!

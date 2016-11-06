@@ -22,31 +22,16 @@
  *
  */
 
-#include <QPainter>
-#include <QPaintDevice>
-#include <QPen>
-#include <QPixmap>
-
 #include "seqscreen.h"
-#include "engine.h"
-
 
 SeqScreen::SeqScreen()
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
-    mouseX = 0;
-    mouseY = 0;
     baseOctave = 3;
     nOctaves= 4;
-    recordMode = false;
     currentRecStep = 0;
     loopMarker = 0;
     currentIndex = 0;
-    grooveTick = 0;
-    grooveVelocity = 0;
-    grooveLength = 0;
-    isMuted = false;
-    needsRedraw = false;
 }
 
 // Paint event handler.
@@ -210,26 +195,6 @@ void SeqScreen::paintEvent(QPaintEvent*)
     }
 }
 
-void SeqScreen::updateData(const QVector<Sample>& data)
-{
-    p_data = data;
-    needsRedraw = true;
-}
-
-void SeqScreen::newGrooveValues(int tick, int vel, int length)
-{
-    grooveTick = tick;
-    grooveVelocity = vel;
-    grooveLength = length;
-    needsRedraw = true;
-}
-
-void SeqScreen::setMuted(bool on)
-{
-    isMuted = on;
-    needsRedraw = true;
-}
-
 void SeqScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
     mouseX = event->x();
@@ -241,24 +206,9 @@ void SeqScreen::emitMouseEvent(QMouseEvent *event, int pressed)
                 (h - 2 * SEQSCR_VMARG), event->buttons(), pressed);
 }
 
-void SeqScreen::mouseMoveEvent(QMouseEvent *event)
+void SeqScreen::updateData(const QVector<Sample>& data)
 {
-    emitMouseEvent(event, 0);
-}
-
-void SeqScreen::mousePressEvent(QMouseEvent *event)
-{
-    emitMouseEvent(event, 1);
-}
-
-void SeqScreen::mouseReleaseEvent(QMouseEvent *event)
-{
-    emitMouseEvent(event, 2);
-}
-
-void SeqScreen::setRecordMode(bool on)
-{
-    recordMode = on;
+    p_data = data;
     needsRedraw = true;
 }
 
@@ -272,13 +222,6 @@ void SeqScreen::setLoopMarker(int pos)
 {
     loopMarker = pos;
     needsRedraw = true;
-}
-
-void SeqScreen::updateDraw()
-{
-    if (!needsRedraw) return;
-    needsRedraw = false;
-    update();
 }
 
 void SeqScreen::updateDispVert(int mode)
@@ -305,15 +248,4 @@ void SeqScreen::updateDispVert(int mode)
             baseOctave = 3;
     }
     update();
-}
-
-QSize SeqScreen::sizeHint() const
-{
-    return QSize(SEQSCR_MIN_W, SEQSCR_MIN_H);
-}
-
-QSizePolicy SeqScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
 }

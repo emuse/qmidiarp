@@ -24,15 +24,8 @@
 #ifndef LFOSCREEN_H
 #define LFOSCREEN_H
 
-#include <QWidget>
-#include <QString>
-#include <QLabel>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QSizePolicy>
-#include <QSize>
-
 #include "midilfo.h"
+#include "screen.h"
 
 #define LFOSCR_MIN_W   250
 #define LFOSCR_MIN_H   120
@@ -51,46 +44,24 @@
  * double from 0 ... 1.0 representing the relative mouse position on the
  * entire LfoScreen display area.
  */
-class LfoScreen : public QWidget
+class LfoScreen : public Screen
 {
   Q_OBJECT
 
   private:
     QVector<Sample> p_data, data;
-    int grooveTick, grooveVelocity, grooveLength;
-    int mouseX, mouseY, mouseW;
-    int w, h;
     int xMax;
-    int currentIndex;
+    void emitMouseEvent(QMouseEvent *event, int pressed);
     int clip(int value, int min, int max, bool *outOfRange);
-    bool recordMode;
-    bool isMuted;
-    bool needsRedraw;
 
   protected:
     virtual void paintEvent(QPaintEvent *);
 
   public:
     LfoScreen(QWidget* parent=0);
-    ~LfoScreen();
-    virtual QSize sizeHint() const;
-    virtual QSizePolicy sizePolicy() const;
-    void emitMouseEvent(QMouseEvent *event, int pressed);
-
-  signals:
-    void mouseEvent(double, double, int, int pressed);
-    void mouseWheel(int);
 
   public slots:
     void updateData(const QVector<Sample>& data);
-    void mouseMoveEvent(QMouseEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
-    void setRecordMode(bool on);
-    void wheelEvent(QWheelEvent* event);
-    void newGrooveValues(int tick, int vel, int length);
-    void setMuted(bool on);
-    void updateDraw();
 };
 
 #endif

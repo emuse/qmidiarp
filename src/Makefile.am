@@ -27,6 +27,7 @@ nodist_qmidiarp_SOURCES = \
 	passwidget_moc.cpp \
 	parstore_moc.cpp \
 	jackdriver_moc.cpp \
+	screen_moc.cpp \
 	seqdriver_moc.cpp \
 	slider_moc.cpp \
 	storagebutton_moc.cpp
@@ -59,6 +60,7 @@ qmidiarp_SOURCES = \
 	parstore.cpp parstore.h \
 	passwidget.cpp passwidget.h \
 	jackdriver.cpp jackdriver.h \
+	screen.cpp screen.h \
 	seqdriver.cpp seqdriver.h \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h
@@ -105,6 +107,7 @@ nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	inoutbox_moc.cpp \
 	lfowidget_moc.cpp \
 	lfoscreen_moc.cpp \
+	screen_moc.cpp \
 	slider_moc.cpp \
 	lfowidget_lv2_moc.cpp
 
@@ -117,6 +120,7 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	lfoscreen.cpp lfoscreen.h \
 	lv2_common.h \
 	main.h \
+	screen.cpp screen.h \
 	slider.cpp slider.h \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 
@@ -143,6 +147,7 @@ nodist_qmidiarp_seq_ui_la_SOURCES = \
 	midiworker_moc.cpp \
 	midiseq_moc.cpp \
 	inoutbox_moc.cpp \
+	screen_moc.cpp \
 	seqwidget_moc.cpp \
 	seqscreen_moc.cpp \
 	slider_moc.cpp \
@@ -155,6 +160,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	midiworker.cpp midiworker.h \
 	midiseq.cpp midiseq.h \
 	inoutbox.cpp inoutbox.h \
+	screen.cpp screen.h \
 	seqwidget.cpp seqwidget.h \
 	seqscreen.cpp seqscreen.h \
 	slider.cpp slider.h \
@@ -185,6 +191,7 @@ nodist_qmidiarp_arp_ui_la_SOURCES = \
 	midiarp_moc.cpp \
 	arpwidget_moc.cpp \
 	arpscreen_moc.cpp \
+	screen_moc.cpp \
 	slider_moc.cpp \
 	arpwidget_lv2_moc.cpp
 
@@ -197,6 +204,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	inoutbox.cpp inoutbox.h \
 	arpwidget.cpp arpwidget.h \
 	arpscreen.cpp arpscreen.h \
+	screen.cpp screen.h \
 	slider.cpp slider.h \
 	arpwidget_lv2.cpp arpwidget_lv2.h
 

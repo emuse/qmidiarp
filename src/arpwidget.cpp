@@ -404,7 +404,7 @@ void ArpWidget::updateText(const QString& newtext)
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
     midiArp->updatePattern(newtext);
-    screen->updateScreen(newtext, midiArp->minOctave,
+    screen->updateData(newtext, midiArp->minOctave,
                     midiArp->maxOctave, midiArp->minStepWidth,
                     midiArp->nSteps, midiArp->patternMaxIndex);
 

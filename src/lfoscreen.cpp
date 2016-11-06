@@ -22,34 +22,12 @@
  *
  */
 
-#include <QPainter>
-#include <QPaintDevice>
-#include <QPen>
-#include <QPixmap>
-
 #include "lfoscreen.h"
 
-
-LfoScreen::LfoScreen(QWidget* parent) : QWidget (parent)
+LfoScreen::LfoScreen(QWidget* parent) : Screen (parent)
 {
     setPalette(QPalette(QColor(0, 20, 100), QColor(0, 20, 100)));
-    mouseX = 0;
-    mouseY = 0;
     xMax = LFOSCR_HMARG;
-    currentIndex = 0;
-    grooveTick = 0;
-    grooveVelocity = 0;
-    grooveLength = 0;
-    isMuted = false;
-    needsRedraw = false;
-    recordMode = false;
-    w = 0;
-    h = 0;
-    mouseW = 0;
-}
-
-LfoScreen::~LfoScreen()
-{
 }
 
 // Paint event handler.
@@ -162,40 +140,6 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
 }
 
-void LfoScreen::updateData(const QVector<Sample>& data)
-{
-    p_data = data;
-    needsRedraw = true;
-}
-
-void LfoScreen::updateDraw()
-{
-    if (!needsRedraw) return;
-    needsRedraw = false;
-    update();
-}
-
-void LfoScreen::setMuted(bool on)
-{
-    isMuted = on;
-    needsRedraw = true;
-}
-
-void LfoScreen::mouseMoveEvent(QMouseEvent *event)
-{
-    emitMouseEvent(event, 0);
-}
-
-void LfoScreen::mousePressEvent(QMouseEvent *event)
-{
-    emitMouseEvent(event, 1);
-}
-
-void LfoScreen::mouseReleaseEvent(QMouseEvent *event)
-{
-    emitMouseEvent(event, 2);
-}
-
 void LfoScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
     mouseX = event->x();
@@ -209,13 +153,6 @@ void LfoScreen::emitMouseEvent(QMouseEvent *event, int pressed)
                             ((double)xMax - LFOSCR_HMARG + .2),
                 1. - ((double)mouseY - LFOSCR_VMARG) /
                 (h - 2 * LFOSCR_VMARG), event->buttons(), pressed);
-}
-
-void LfoScreen::wheelEvent(QWheelEvent *event)
-{
-    mouseW = event->delta();
-    emit mouseWheel(mouseW / 120);
-    event->accept();
 }
 
 int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
@@ -233,26 +170,8 @@ int LfoScreen::clip(int value, int min, int max, bool *outOfRange)
     return(tmp);
 }
 
-void LfoScreen::setRecordMode(bool on)
+void LfoScreen::updateData(const QVector<Sample>& data)
 {
-    recordMode = on;
-}
-
-void LfoScreen::newGrooveValues(int tick, int vel, int length)
-{
-    grooveTick = tick;
-    grooveVelocity = vel;
-    grooveLength = length;
+    p_data = data;
     needsRedraw = true;
-}
-
-QSize LfoScreen::sizeHint() const
-{
-    return QSize(LFOSCR_MIN_W, LFOSCR_MIN_H);
-}
-
-QSizePolicy LfoScreen::sizePolicy() const
-{
-    return QSizePolicy(QSizePolicy::MinimumExpanding,
-            QSizePolicy::MinimumExpanding);
 }

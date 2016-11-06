@@ -24,13 +24,7 @@
 #ifndef ARPSCREEN_H
 #define ARPSCREEN_H
 
-#include <QWidget>
-#include <QString>
-#include <QLabel>
-#include <QSizePolicy>
-#include <QSize>
-
-#include "midilfo.h"
+#include "screen.h"
 
 #define ARPSCR_MIN_W    250
 #define ARPSCR_MIN_H    120
@@ -38,51 +32,41 @@
 #define ARPSCR_HMARG    16
 
 
-
-
 /*! @brief Drawing widget for visualization of arp patterns using QPainter
  *
  * ArpScreen is created and embedded by ArpWidget. The painter callback
  * analyses the pattern string and produces a streak map of its content
  * similar to a piano roll display. The display is updated
- * by calling ArpScreen::updateScreen() with the pattern text string as
+ * by calling ArpScreen::updateData() with the pattern text string as
  * and argument. A cursor is placed at the corresponding pattern index
- * by calling ArpScreen::updateScreen() with the integer current pattern
+ * by calling ArpScreen::updateCursor() with the integer current pattern
  * index as an overloaded member.
  */
-class ArpScreen : public QWidget
+class ArpScreen : public Screen
 {
   Q_OBJECT
 
   private:
-    int grooveTick, grooveVelocity, grooveLength;
     QString pattern;
-    int currentIndex;
-    bool isMuted;
-    bool needsRedraw;
-
-  protected:
-    virtual void paintEvent(QPaintEvent *);
-
-  public:
-    ArpScreen(QWidget* parent=0);
-    ~ArpScreen();
-    virtual QSize sizeHint() const;
-    virtual QSizePolicy sizePolicy() const;
     int maxOctave;
     int minOctave;
     double minStepWidth;
     double nSteps;
     int patternMaxIndex;
+    void emitMouseEvent(QMouseEvent *event, int pressed) 
+        {(void)event; (void)pressed;};
+    
+  protected:
+    virtual void paintEvent(QPaintEvent *);
+
+  public:
+    ArpScreen(QWidget* parent=0);
 
   public slots:
-    void updateScreen(const QString& pattern, int p_minOct, int p_maxOct,
+    void updateData(const QString& pattern, int p_minOct, int p_maxOct,
                             double p_minStepWidth, double p_nSteps,
                             int p_patternMaxIndex);
-    void updateScreen(int p_index);
-    void newGrooveValues(int tick, int vel, int length);
-    void setMuted(bool on);
-    void updateDraw();
+    void updateCursor(int p_index);
 };
 
 #endif

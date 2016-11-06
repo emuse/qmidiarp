@@ -24,14 +24,8 @@
 #ifndef SEQSCREEN_H
 #define SEQSCREEN_H
 
-#include <QLabel>
-#include <QMouseEvent>
-#include <QString>
-#include <QWidget>
-#include <QSizePolicy>
-#include <QSize>
-
 #include "midiseq.h"
+#include "screen.h"
 
 #define SEQSCR_MIN_W   180
 #define SEQSCR_MIN_H   216
@@ -49,47 +43,28 @@
  * double from 0 ... 1.0 representing the relative mouse position on the
  * entire SeqScreen display area.
  */
-class SeqScreen : public QWidget
+class SeqScreen : public Screen
 {
   Q_OBJECT
 
   private:
     QVector<Sample> p_data, data;
-    int grooveTick, grooveVelocity, grooveLength;
-    int mouseX, mouseY;
-    int w, h;
-    bool recordMode;
     int currentRecStep;
-    int currentIndex;
-    bool needsRedraw;
-    bool isMuted;
+    int baseOctave, nOctaves;
     QPointF trg[3];
+    void emitMouseEvent(QMouseEvent *event, int pressed);
 
   protected:
     virtual void paintEvent(QPaintEvent *);
 
   public:
     SeqScreen();
-    virtual QSize sizeHint() const;
-    virtual QSizePolicy sizePolicy() const;
-    int baseOctave, nOctaves;
     int loopMarker;
-    void emitMouseEvent(QMouseEvent *event, int pressed);
-
-  signals:
-    void mouseEvent(double, double, int, int pressed);
-
+    
   public slots:
     void updateData(const QVector<Sample>& data);
-    void mouseMoveEvent(QMouseEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
-    void setRecordMode(bool on);
     void setCurrentRecStep(int currentRecStep);
     void setLoopMarker(int pos);
-    void newGrooveValues(int tick, int vel, int length);
-    void setMuted(bool on);
-    void updateDraw();
     void updateDispVert(int mode);
 };
 
