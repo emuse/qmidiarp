@@ -492,7 +492,6 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
 
     engine->addMidiArp(midiArp);
     engine->addArpWidget(moduleWidget);
-    engine->sendGroove();
 
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
@@ -544,7 +543,6 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 
     engine->addMidiLfo(midiLfo);
     engine->addLfoWidget(moduleWidget);
-    engine->sendGroove();
 
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;
@@ -594,7 +592,6 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 
     engine->addMidiSeq(midiSeq);
     engine->addSeqWidget(moduleWidget);
-    engine->sendGroove();
 
     count = engine->moduleWindowCount();
     moduleWidget->parentDockID = count;

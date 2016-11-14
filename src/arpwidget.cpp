@@ -704,14 +704,10 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
     }
 }
 
+
 void ArpWidget::updateDisplay()
 {
-    int frame = 1;
-    if (getGrooveIndex() == 0 
-            || getGrooveIndex() == midiArp->nPoints) {
-        frame = 0;
-    }
-    parStore->updateDisplay(frame, false);
+    parStore->updateDisplay(getFramePtr() , false);
 
     screen->updateDraw();
     midiControl->update();

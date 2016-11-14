@@ -741,7 +741,35 @@ void InOutBox::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
     midiWorker->newGrooveTick = p_grooveTick;
     midiWorker->grooveVelocity = p_grooveVelocity;
     midiWorker->grooveLength = p_grooveLength;
-    needsGUIUpdate = true;
+    midiWorker->needsGUIUpdate = true;
+}
+
+void InOutBox::updateIndicators()
+{
+    int ci = midiWorker->getFramePtr();
+
+    int percent;
+    if (midiWorker->nPoints)
+        percent = ci * 100 / (midiWorker->nPoints);
+    else
+        percent = 0;
+    
+    parStore->ndc->updatePercent(percent);
+    
+    if (parStore->isRestoreMaster
+            && (!globStore->timeModeBox->currentIndex())) {
+        globStore->indicator->updatePercent(percent);
+    }
+}
+
+void InOutBox::checkIfRestore(int *restoreTick, bool *restoreFlag)
+{
+	if (!midiWorker->getFramePtr() && restoreFlag
+		&& parStore->isRestoreMaster
+		&& !globStore->timeModeBox->currentIndex()) {
+		*restoreTick = midiWorker->nextTick;
+		*restoreFlag = false;
+	}
 }
 
 #endif

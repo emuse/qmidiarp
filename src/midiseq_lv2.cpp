@@ -226,18 +226,18 @@ void MidiSeqLV2::run (uint32_t nframes )
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
-            getNextNote(&currentSample, curTick);
-            if (!currentSample.muted && !isMuted) {
+            getNextFrame(curTick);
+            if (!returnNote.muted && !isMuted) {
                 unsigned char d[3];
                 d[0] = 0x90 + channelOut;
-                d[1] = currentSample.value;
+                d[1] = returnNote.value;
                 d[2] = vel;
                 forgeMidiEvent(f, d, 3);
                 evTickQueue.replace(bufPtr, curTick + notelength / 4);
-                evQueue.replace(bufPtr, currentSample.value);
+                evQueue.replace(bufPtr, returnNote.value);
                 bufPtr++;
             }
-            float pos = (float)getCurrentIndex();
+            float pos = (float)getFramePtr();
             *val[CURSOR_POS] = pos;
         }
 
@@ -460,7 +460,7 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
 
     if (size < 2 || !tmpArray1.count()) return LV2_STATE_ERR_UNKNOWN;
 
-    pPlugin->setCurrentIndex(0);
+    pPlugin->setFramePtr(0);
     pPlugin->maxNPoints = tmpArray1.count();
 
     for (l1 = 0; l1 < tmpArray1.count(); l1++) {

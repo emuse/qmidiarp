@@ -167,7 +167,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
 
     globStore->indivButtonLayout->addWidget(this);
 
-
+    isRestoreMaster = false;
     restoreRequest = -1;
     oldRestoreRequest = 0;
     restoreRunOnce = false;

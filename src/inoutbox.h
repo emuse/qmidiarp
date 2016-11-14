@@ -46,6 +46,7 @@
 #endif
 
 #include "midiworker.h"
+#include "screen.h"
 /*! @brief GUI base class for module widgets, creates an in-out settings box
  *
  * The three module widget classes ArpWidget, SeqWidget and LfoWidget 
@@ -124,8 +125,10 @@ class InOutBox: public QWidget
 * @param value Number of the output channel to send data to
 *
 */
-
     virtual void setChannelOut(int value);
+
+    virtual int getFramePtr() { return midiWorker->getFramePtr(); }
+    virtual int getNextTick() { return midiWorker->nextTick; }
 
 #ifdef APPBUILD
 
@@ -191,6 +194,8 @@ class InOutBox: public QWidget
  * pending and causes them to get transferred if so.
  */
     virtual void updateDisplay() = 0;
+    virtual void updateIndicators();
+    virtual void checkIfRestore(int *restoreTick, bool *restoreFlag);
 #endif
 	
   public slots:

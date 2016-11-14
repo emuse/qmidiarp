@@ -72,7 +72,9 @@ class MidiWorker : public QObject  {
     bool isMutedDefer;   /*!< Deferred Global mute state */
     int nextTick; /*!< Holds the next tick at which note events will be played out */
     int noteCount;      /*!< The number of notes in the MidiWorker::notes buffer */
-    int newGrooveTick, grooveTick, grooveVelocity, grooveLength, grooveIndex;
+    int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
+    int framePtr;       /*!< position of the currently output frame in sequence/wave/pattern */
+    int nPoints;        /*!< Number of steps in pattern or sequence or wave */
     bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
     bool needsGUIUpdate;
 
@@ -104,6 +106,8 @@ class MidiWorker : public QObject  {
     virtual int clip(int value, int min, int max, bool *outOfRange);
     virtual void updateQueueTempo(int);
     virtual void updateTriggerMode(int val);
+    virtual int getFramePtr() { return framePtr; }
+    virtual void getNextFrame(int tick) = 0;
 };
 
 #endif

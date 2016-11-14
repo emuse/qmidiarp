@@ -139,6 +139,7 @@ class LfoWidget : public InOutBox
     void doRestoreParams(int ix);
     void updateDisplay();
     void handleController(int ccnumber, int channel, int value);
+    void updateCursorPos() { cursor->updatePosition(getFramePtr()); }
 #endif
 
 /* SIGNALS */
@@ -266,8 +267,6 @@ class LfoWidget : public InOutBox
 */
     void updateFlipWaveVertical();
 
-    int getFramePtr() { return midiLfo->getFramePtr(); }
-    int getNextTick() { return midiLfo->nextTick; }
     bool getReverse() { return midiLfo->reverse; }
 };
 

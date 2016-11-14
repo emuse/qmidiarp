@@ -125,20 +125,24 @@ void ArpScreen::paintEvent(QPaintEvent*)
     int grooveIndex = 0;
     int polyindex = 0;
     int nlines = 0;
-
+    
     for (int l1 = 0; l1 < pattern.length(); l1++)
     {
+        int forward = 0;
         QChar c = pattern.at(l1);
         if (c.isDigit())
         {
             nlines = c.digitValue() + 1;
-            if (chordmd && (nlines == 1) && chordindex) polyindex++;
+            if (chordmd && (nlines == 1) && chordindex) {
+                polyindex++;
+            }
             if (!chordindex)
             {
                 if (chordmd) chordindex++;
                 curstep += stepwd;
-                grooveIndex++;
             }
+            if (!chordmd) forward = 1;
+
         }
         else
         {
@@ -150,8 +154,10 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case ')':
+                    if (chordmd) forward = 1;
                     chordmd = false;
                     chordindex = 0;
+                    nlines = 0;
                     break;
 
                 case '>':
@@ -167,9 +173,10 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case 'p':
-                    if (!chordmd)
+                    if (!chordmd) {
                         curstep += stepwd;
-                        grooveIndex++;
+                        forward = 1;
+                    }
                    break;
 
                 case '+':
@@ -214,39 +221,41 @@ void ArpScreen::paintEvent(QPaintEvent*)
             }
         }
 
-        int grv_cur_sft = ((grooveIndex % 2)) ? 0 : grooveTick ;
-        int grv_cur_len = ((grooveIndex % 2)) ? grooveLength : -grooveLength ;
-        int grv_cur_vel = ((grooveIndex % 2)) ? grooveVelocity : -grooveVelocity ;
+        int grv_cur_sft = ((grooveIndex % 2)) ? grooveTick : 0 ;
+        int grv_cur_len = ((grooveIndex % 2)) ? -grooveLength : grooveLength ;
+        int grv_cur_vel = ((grooveIndex % 2)) ? -grooveVelocity : grooveVelocity ;
 
-        if (c.isDigit()) {
+        if (c.isDigit() || c == 'p') {
             int octYoffset = (octave - minOctave) * (patternMaxIndex + 1);
             int x = (curstep - stepwd + 0.01 * (double)grv_cur_sft * stepwd) * xscale;
             int dx = notelen * (1.0 + 0.005 * (double)grv_cur_len);
             double v = vel * (1.0 + 0.005 * (double)grv_cur_vel) - .8;
+            pen.setWidth(notestreak_thick);
+            int xpos = ARPSCR_HMARG + x + pen.width() / 2;
 
+            // Arp ticks
             if (nlines > 0) {
-                pen.setWidth(notestreak_thick);
+                int ypos = yscale - yscale * (nlines - 1 + octYoffset)
+                        / (patternMaxIndex + 1) / noctaves
+                        + ARPSCR_VMARG - 3 + notestreak_thick
+                        - notestreak_thick * polyindex;
                 if (semitone != 0)
                     pen.setColor(QColor(50 + 60 * v, 130 + 40 * v, abs(100 + 10 * semitone) % 256));
                 else
                     pen.setColor(QColor(80 + 60 * v, 160 + 40 * v, 80 + 60 * v));
                 p.setPen(pen);
-                int ypos = yscale - yscale * (nlines - 1 + octYoffset)
-                            / (patternMaxIndex + 1) / noctaves
-                            + ARPSCR_VMARG - 3 + notestreak_thick
-                            - notestreak_thick * polyindex;
-                int xpos = ARPSCR_HMARG + x + pen.width() / 2;
                 p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
-                // Cursor
-                if (grooveIndex == currentIndex) {
-                    pen.setWidth(notestreak_thick * 2);
-                    p.setPen(pen);
-                    ypos = h - 2;
-                    p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
-                }
-                pen.setWidth(1);
             }
+            // Cursor
+            if (grooveIndex == currentIndex) {
+                int ypos = h - 2;
+                pen.setWidth(notestreak_thick * 2);
+                p.setPen(pen);
+                p.drawLine(xpos, ypos, xpos + dx - pen.width(), ypos);
+            }
+            pen.setWidth(1);
         }
+        grooveIndex+=forward;
     }
 }
 

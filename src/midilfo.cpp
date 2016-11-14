@@ -32,7 +32,6 @@ MidiLfo::MidiLfo()
     freq = 8;
     size = 4;
     res = 4;
-    nPoints = 16;
     maxNPoints = 16;
     old_res = 0;
     waveFormIndex = 0;
@@ -62,7 +61,6 @@ MidiLfo::MidiLfo()
     getData(&data);
     lastMouseLoc = 0;
     lastMouseY = 0;
-    frameptr = 0;
     frameSize = 1;
 
     lastMute = false;
@@ -74,7 +72,7 @@ void MidiLfo::getNextFrame(int tick)
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
     //The FRAMELIMIT avoids excessive cursor updating
 
-    if (frameptr >= data.size()) return;
+    if (framePtr >= data.size()) return;
     
     Sample sample;
     const int step = TPQN / res;
@@ -90,16 +88,16 @@ void MidiLfo::getNextFrame(int tick)
     if (!frameSize) frameSize = 1;
 
     if (restartFlag) setFramePtr(0);
-    if (!frameptr) grooveTick = newGrooveTick;
+    if (!framePtr) grooveTick = newGrooveTick;
 
     l1 = 0;
     lt = nextTick;
     do {
         if (reverse) {
-            index = (frameSize - 1 - l1 + frameptr) % npoints;
+            index = (frameSize - 1 - l1 + framePtr) % npoints;
         }
         else {
-            index = (l1 + frameptr) % npoints;
+            index = (l1 + framePtr) % npoints;
         }
         sample = data.at(index);
 
@@ -129,40 +127,40 @@ void MidiLfo::getNextFrame(int tick)
 
     reflect = pingpong;
 
-    if ((!frameptr && !reverse)
-        || (frameptr == npoints - l1 && reverse)) applyPendingParChanges();
+    if ((!framePtr && !reverse)
+        || (framePtr == npoints - l1 && reverse)) applyPendingParChanges();
 
     if (curLoopMode == 6) {
-        frameptr = (rand() % npoints) / l1;
-        frameptr *= l1;
+        framePtr = (rand() % npoints) / l1;
+        framePtr *= l1;
     }
     else {
         if (reverse) {
-            frameptr-=l1;
-            if (frameptr < 0) {
+            framePtr-=l1;
+            if (framePtr < 0) {
                 if (!enableLoop) seqFinished = true;
-                frameptr = npoints - l1;
+                framePtr = npoints - l1;
                 if (reflect  || !backward) {
                     reverse = false;
-                    frameptr = 0;
+                    framePtr = 0;
                 }
             }
         }
         else {
-            frameptr+=l1;
-            if (frameptr >= npoints) {
+            framePtr+=l1;
+            if (framePtr >= npoints) {
                 if (!enableLoop) seqFinished = true;
-                frameptr = 0;
+                framePtr = 0;
                 if (reflect || backward) {
                     reverse = true;
-                    frameptr = npoints - l1;
+                    framePtr = npoints - l1;
                 }
             }
         }
     }
     int cur_grv_sft = 0.01 * (grooveTick * (step - 1));
     /* pairwise application of new groove shift */
-    if (!(frameptr % 2)) {
+    if (!(framePtr % 2)) {
         cur_grv_sft = -cur_grv_sft;
         grooveTick = newGrooveTick;
     }
@@ -176,13 +174,13 @@ void MidiLfo::getNextFrame(int tick)
     sample.tick = nextTick;
     frame.replace(l1, sample);
 
-    if (!trigByKbd && !(frameptr % 2) && !grooveTick) {
+    if (!trigByKbd && !(framePtr % 2) && !grooveTick) {
         /* round-up to current resolution (quantize) */
         nextTick/= (step * frameSize);
         nextTick*= (step * frameSize);
     }
 
-    if (seqFinished) frameptr = 0;
+    if (seqFinished) framePtr = 0;
 
 }
 
@@ -381,7 +379,7 @@ void MidiLfo::resizeAll()
     const int npoints = res * size;
     Sample sample;
 
-    frameptr%=npoints;
+    framePtr%=npoints;
 
     if (maxNPoints < npoints) {
         int lt = 0;
@@ -513,12 +511,12 @@ int MidiLfo::setMutePoint(double mouseX, bool on)
 
 void MidiLfo::setFramePtr(int idx)
 {
-    frameptr = idx;
+    framePtr = idx;
     if (!idx) {
         reverse = curLoopMode&1;
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
-        if (reverse) frameptr = res * size - 1;
+        if (reverse) framePtr = res * size - 1;
     }
 }
 

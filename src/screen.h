@@ -84,6 +84,7 @@ class Screen : public QWidget
     virtual void wheelEvent(QWheelEvent* event);
     virtual void newGrooveValues(int tick, int vel, int length);
     virtual void setMuted(bool on);
+    virtual void updateCursor(int c) { (void)c; };
     virtual void updateDraw();
 };
 

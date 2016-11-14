@@ -92,13 +92,10 @@ class Engine : public QObject  {
     bool midiLearnFlag;
     bool useMidiClock;
 
-    int restoreModIx;
-    QChar restoreModType;
-    int restoreModWindowIndex;
     int restoreRequest;
-    int restoreModule;
     int restoreTick;
     int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
+
     double tempo;
     double requestedTempo;
 
@@ -109,7 +106,6 @@ class Engine : public QObject  {
     int nextMinArpTick;
     int currentTick;
     int requestTick;
-    Sample seqSample;
     bool sendLogEvents;
     int logEventCount;
     QVector<MidiEvent> logEventBuffer;
@@ -123,6 +119,7 @@ class Engine : public QObject  {
     static void tempo_callback(double bpm, void *context);
   public:
     int grooveTick, grooveVelocity, grooveLength;
+    int restoreModIx;
     bool midiControllable;
     bool status;
     bool ready;
@@ -174,7 +171,7 @@ class Engine : public QObject  {
 
     int getClientId();
     void setTempo(double bpm);
-    void sendGroove();
+    void sendGroove(int ix = -1);
     void showAllIOPanels(bool on);
 
   signals:

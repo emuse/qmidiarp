@@ -35,7 +35,7 @@
  * The parameters of MidiArp are controlled by the ArpWidget class.
  * The backend driver thread calls the Engine::echoCallback(), which will
  * query each module, in this case via
- * the MidiArp::prepareCurrentNote() method. MidiArp will then call its
+ * the MidiArp::getNextFrame() method. MidiArp will then call its
  * internal MidiArp::getNote() function which produces an array of notes
  * stored in its internal output buffer. The notes in the array depend
  * on the active MidiArp::pattern, envelope, random and groove settings.
@@ -55,7 +55,7 @@ class MidiArp : public MidiWorker  {
                                 @see MidiArp::updateNotes */
     int nextVelocity[MAXCHORD]; /*!< Holds the associated velocities to be output next
                                     @see MidiArp::updateNotes, MidiArp::nextNote */
-    int currentNoteTick, arpTick;
+    int arpTick;
     int nextLength;
     bool chordMode;
     int patternIndex; /*!< Holds the current position within the pattern text*/
@@ -115,7 +115,7 @@ class MidiArp : public MidiWorker  {
  * It analyzes the MidiArp::pattern text and MidiArp::notes input buffer
  * to yield arrays of notes that have to be sent at the given timing.
  * The calculated note data is stored in arrays, copied again by
- * prepareCurrentNote() and the copy is accessed by Engine::echoCallback().
+ * getNextFrame() and the copy is accessed by Engine::echoCallback().
  * Only in case of an arpeggio step involving chords, these arrays have
  * sizes > 1.
  * @param tick The timing of the notes to be scheduled
@@ -190,7 +190,7 @@ class MidiArp : public MidiWorker  {
 
   public:
     bool latch_mode; /*!< If True hold notes released earlier than latch delay in latch buffer */
-    bool hasNewNotes; /*!< True when prepareCurrentNote() was called with a tick causing new note calculation */
+    bool hasNewNotes; /*!< True when getNextFrame() was called with a tick causing new note calculation */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
@@ -204,7 +204,6 @@ class MidiArp : public MidiWorker  {
     int minOctave;      /*!< Minimum octave shift found in the pattern */
     double minStepWidth; /*!< Minimum step width of the pattern for quantization purposes*/
     double nSteps;      /*!< Musical length of the pattern in beats */
-    int nPoints;        /*!< Number of steps to be played out */
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int octMode;        /*!< The octave Mode 0=up, 1=down, 2=pingpong. @see repeatPatternThroughChord */
     int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */
@@ -260,7 +259,7 @@ class MidiArp : public MidiWorker  {
  * @param askedTick the current transport position in ticks.
  *
  */
-    void prepareCurrentNote(int askedTick);
+    void getNextFrame(int askedTick);
 /**
  * @brief  resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.
@@ -325,12 +324,10 @@ class MidiArp : public MidiWorker  {
  */
     void updateOctaveMode(int val);
 
-  public slots:
- /*! @brief Slot for MidiArp::latchTimer. Calls MidiArp::removeNote for
+ /*! @brief Calls MidiArp::removeNote for
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
   */
     void purgeLatchBuffer();
-    int getGrooveIndex() { return grooveIndex; }
 /**
  * @brief sets MidiArp::nextTick and MidiArp::patternIndex position
  * according to the specified tick.

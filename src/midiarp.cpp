@@ -96,15 +96,12 @@ MidiArp::MidiArp()
     octIncr = 0;
 
     nSteps = 1.0;
-    nPoints = 1;
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
     noteIndex[0] = 0;
     patternIndex = 0;
-    grooveIndex = 0;
     patternLen = 0;
     semitone = 0;
-    currentNoteTick = 0;
     patternMaxIndex = 0;
     noteOfs = 0;
     arpTick = 0;
@@ -334,6 +331,10 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     if (restartFlag) advancePatternIndex(true);
 
     if (!patternIndex) initLoop();
+
+    framePtr++;
+    if (framePtr >= nPoints) framePtr = 0;
+
     chordSemitone[0] = semitone;
     do {
         if (patternLen)
@@ -405,7 +406,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             }
         }
         current_octave = octOfs;
-    } while (advancePatternIndex(false) && (gotCC || chordMode));
+    } while (advancePatternIndex(false) && (gotCC || chordMode || c == ' '));
 
     l1 = 0;
     if (noteCount) do {
@@ -414,7 +415,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 + chordSemitone[l1], 0, 127, &outOfRange);
         if (outOfRange) checkOctaveAtEdge(false);
 
-        grooveTmp = (grooveIndex % 2) ? -grooveVelocity : grooveVelocity;
+        grooveTmp = (framePtr % 2) ? grooveVelocity : -grooveVelocity;
         
         double releasefn = 0;
         if ((release_time > 0) && (notes[noteBufPtr][3][noteIndex[l1]])) {
@@ -456,21 +457,21 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             && (noteCount));
 
     note[l1] = -1; // mark end of array
-    grooveTmp = (grooveIndex % 2) ? -grooveLength : grooveLength;
+    grooveTmp = (framePtr % 2) ? grooveLength : -grooveLength;
     *length = clip(len * stepWidth * (double)TPQN
             * (1.0 + 0.005 * (double)(randomLength + grooveTmp)), 2,
             1000000,  &outOfRange);
 
-    if (!grooveIndex) grooveTick = newGrooveTick;
+    if (!framePtr) grooveTick = newGrooveTick;
     grooveTmp = TPQN * stepWidth * grooveTick * 0.01;
     /* pairwise application of new groove shift */
-    if (grooveIndex % 2) {
+    if (!(framePtr % 2)) {
         grooveTmp = -grooveTmp;
         grooveTick = newGrooveTick;
     }
     arpTick += stepWidth * TPQN + grooveTmp;
 
-    if (!trigByKbd && !grooveIndex && !grooveTick) {
+    if (!trigByKbd && !framePtr && !grooveTick) {
         /* round-up to current resolution (quantize) */
         arpTick/= (TPQN * minStepWidth);
         arpTick*= (TPQN * minStepWidth);
@@ -482,7 +483,6 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     if (!(patternLen && noteCount) || pause || isMuted) {
         velocity[0] = 0;
     }
-    grooveIndex++;
 }
 
 void MidiArp::checkOctaveAtEdge(bool reset)
@@ -573,17 +573,19 @@ void MidiArp::initLoop()
     len = 0.5;
     vel = 0.8;
     semitone = 0;
-    grooveIndex = 0;
+    framePtr = 0;
 }
 
-void MidiArp::prepareCurrentNote(int askedTick)
+void MidiArp::getNextFrame(int askedTick)
 {
     gotKbdTrig = false;
+    
+    newRandomValues();
 
     int l1 = 0;
     //allow 8 ticks of tolerance for echo tick for external sync
-    if ((askedTick + 8) >= currentNoteTick) {
-        currentNoteTick = nextTick;
+    if ((askedTick + 8) >= nextTick) {
+        returnTick = nextTick;
         getNote(&nextTick, nextNote, nextVelocity, &nextLength);
         while ((l1 < MAXCHORD - 1) && (nextNote[l1] >= 0)) {
             returnNote.replace(l1, nextNote[l1]);
@@ -596,8 +598,6 @@ void MidiArp::prepareCurrentNote(int askedTick)
     else hasNewNotes = false;
     
     returnNote.replace(l1, -1); // mark end of chord
-
-    returnTick = currentNoteTick;
 }
 
 void MidiArp::foldReleaseTicks(int tick)
@@ -617,12 +617,11 @@ void MidiArp::initArpTick(int tick)
 {
     arpTick = tick;
     returnVelocity.first() = 0;
-    currentNoteTick = tick;
     nextTick  = tick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
     patternIndex = 0;
-    grooveIndex = 0;
+    framePtr = 0;
 }
 
 QString MidiArp::stripPattern(const QString& p_pattern)
@@ -734,7 +733,7 @@ void MidiArp::updatePattern(const QString& p_pattern)
     }
 
     patternIndex = 0;
-    grooveIndex = 0;
+    framePtr = 0;
     noteOfs = 0;
     nSteps = nsteps;
     nPoints = npoints;
@@ -863,7 +862,7 @@ void MidiArp::setNextTick(int tick)
 
     returnTick = tick / (int)(nSteps*TPQN) * (int)(nSteps*TPQN);
     patternIndex = 0;
-    currentNoteTick = returnTick;
+    framePtr = 0;
     arpTick = returnTick;
     nextTick = returnTick;
 }

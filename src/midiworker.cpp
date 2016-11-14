@@ -63,7 +63,9 @@ MidiWorker::MidiWorker()
     newGrooveTick = 0;
     grooveVelocity = 0;
     grooveLength = 0;
-    grooveIndex = 0;
+    framePtr = 0;
+    nPoints = 1;
+
     dataChanged = false;
     needsGUIUpdate = false;
     parChangesPending = false;

@@ -70,9 +70,7 @@ class MidiLfo : public MidiWorker  {
     int size;       /*!< Size of the waveform in quarter notes */
     int res;        /*!< Resolution of the waveform in ticks per quarter note */
     int frameSize;  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
-    int nPoints;        /*!< Number of steps to be played out */
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
-    int frameptr;       /*!< position of the currently output frame in the MidiArp::data waveform */
     int waveFormIndex;          /*!< Index of the waveform to produce
                                     @par 0: Sine
                                     @par 1: Sawtooth Up
@@ -167,10 +165,10 @@ class MidiLfo : public MidiWorker  {
  * It is called by LfoWidget when the vertical flip button is pressed.
  */
     void flipWaveVertical();
-/*! @brief  sets the MidiLfo::frameptr to the given value.
+/*! @brief  sets the MidiLfo::framePtr to the given value.
  *
  * It is called when the Transport starts.
- * @param idx Index to which the frameptr is set
+ * @param idx Index to which the framePtr is set
  */
     void setFramePtr(int idx);
 /**
@@ -218,7 +216,6 @@ class MidiLfo : public MidiWorker  {
  */
     bool toggleMutePoint(double mouseX);
 
-    int getFramePtr() { return frameptr;}
 /*! @brief Checks if deferred parameter changes are pending and applies
  * them if so
  */

@@ -247,8 +247,8 @@ void MidiLfoLV2::run ( uint32_t nframes )
             inLfoFrame++;
             inLfoFrame%=frameSize;
             if (!inLfoFrame) {
-                frameptr = getFramePtr();
-                float pos = (float)frameptr;
+                framePtr = getFramePtr();
+                float pos = (float)framePtr;
                 *val[CURSOR_POS] = pos;
                 getNextFrame(curTick);
             }

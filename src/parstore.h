@@ -71,6 +71,7 @@ class ParStore : public QWidget
 
     int activeStore; /**< Currently active location index*/
     int currentRequest; /**< Currently pending location index*/
+	bool isRestoreMaster; /**< @brief Indicates whether this module triggers global restores */
 
     struct TempStore {
         bool empty;

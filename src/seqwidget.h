@@ -128,7 +128,7 @@ class SeqWidget : public InOutBox
     void doRestoreParams(int ix);
     void updateDisplay();
     void handleController(int ccnumber, int channel, int value);
-
+    void updateCursorPos() {cursor->updatePosition(getFramePtr()); }
 #endif
 
 /* SIGNALS */
@@ -216,9 +216,7 @@ class SeqWidget : public InOutBox
 */
     void mouseEvent(double, double, int, int pressed);
 
-    int getCurrentIndex() { return midiSeq->getCurrentIndex(); }
     int getLoopMarker() { return midiSeq->loopMarker; }
-    int getNextTick() { return midiSeq->nextTick; }
     bool getReverse() { return midiSeq->reverse; }
     int sliderToTickLen(int val) { return (val * TPQN / 64); }
     int tickLenToSlider(int val) { return (val * 64 / TPQN); }

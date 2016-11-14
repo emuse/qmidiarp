@@ -124,8 +124,8 @@ class ArpWidget :  public InOutBox
     void handleController(int ccnumber, int channel, int value);
 #endif
 
-    int getNextTick() { return midiArp->nextTick; }
-
+    void updateCursorPos() { screen->updateCursor(midiArp->getFramePtr()); }
+    
 /* SIGNALS */
   signals:
 /*! @brief Emitted to MainWindow::updatePatternPresets saving and deploying modified preset
@@ -164,8 +164,6 @@ class ArpWidget :  public InOutBox
   * Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received */
     void setLatchMode(bool);
-
-    int getGrooveIndex() { return midiArp->getGrooveIndex(); }
 };
 
 #endif

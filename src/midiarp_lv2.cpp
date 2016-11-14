@@ -237,7 +237,7 @@ void MidiArpLV2::run ( uint32_t nframes )
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
             newRandomValues();
-            prepareCurrentNote(curTick);
+            getNextFrame(curTick);
             if (!isMuted) {
                 if (hasNewNotes && !returnNote.isEmpty()
                     && returnVelocity.at(0)) {
@@ -255,7 +255,7 @@ void MidiArpLV2::run ( uint32_t nframes )
                     }
                 }
             }
-            float pos = (float)getGrooveIndex();
+            float pos = (float)getFramePtr();
             *val[CURSOR_POS] = pos;
         }
 

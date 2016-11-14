@@ -87,8 +87,6 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget,
 
     restoreRequest = -1;
     restoreModIx = 0;
-    restoreModType = 'X';
-    restoreModWindowIndex = -1;
     restoreTick = -1;
     schedRestoreLocation = -1;
 
@@ -185,12 +183,16 @@ void Engine::setGrooveLength(int val)
     modified = true;
 }
 
-void Engine::sendGroove()
+void Engine::sendGroove(int ix)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())
-            ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
-    }
+    if (ix  == -1)
+        for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+            ((InOutBox *)moduleWindow(l1)->widget())
+                ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
+        }
+    else
+        ((InOutBox *)moduleWindow(ix)->widget())
+                ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
 }
 
 //LFO handling
@@ -298,6 +300,9 @@ SeqWidget *Engine::seqWidget(int index)
 void Engine::addModuleWindow(QDockWidget *moduleWindow)
 {
     moduleWindowList.append(moduleWindow);
+    sendGroove(moduleWindowCount() - 1);
+    updateGlobRestoreTimeModule(restoreModIx);
+
     modified = true;
 }
 
@@ -448,8 +453,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int tick = driver->getCurrentTick();
     int length;
     int outport;
-    int frameptr;
-    int percent;
     bool restoreFlag = (restoreRequest >= 0);
     MidiEvent outEv;
 
@@ -462,17 +465,18 @@ void Engine::echoCallback(bool echo_from_trig)
 
     //LFO data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if (((tick + 8) >= nextMinLfoTick) && (midiLfoCount())) {
+    if ((tick + 8) >= nextMinLfoTick && midiLfoCount()) {
         for (l1 = 0; l1 < midiLfoCount(); l1++) {
             if ((echo_from_trig && midiLfo(l1)->gotKbdTrig)
                     || (!midiLfo(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiLfo(l1)->nextTick) {
+                    lfoWidget(l1)->updateCursorPos();
+                    lfoWidget(l1)->updateIndicators();
+                    midiLfo(l1)->getNextFrame(tick);
+                    lfoWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
                     outEv.type = EV_CONTROLLER;
                     outEv.data = midiLfo(l1)->ccnumber;
                     outEv.channel = midiLfo(l1)->channelOut;
-                    frameptr = midiLfo(l1)->getFramePtr();
-                    lfoWidget(l1)->cursor->updatePosition(frameptr);
-                    midiLfo(l1)->getNextFrame(tick);
                     outport = midiLfo(l1)->portOut;
                     l2 = 0;
                     while (midiLfo(l1)->frame.at(l2).value > -1) {
@@ -482,17 +486,6 @@ void Engine::echoCallback(bool echo_from_trig)
                                 , outport);
                         }
                         l2++;
-                    }
-                    frameptr = midiLfo(l1)->getFramePtr();
-                    percent = frameptr * 100 / (midiLfo(l1)->nPoints);
-                    lfoWidget(l1)->parStore->ndc->updatePercent(percent);
-                    if ((restoreModType == 'L') && (l1 == restoreModIx)
-                            && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && restoreFlag) {
-                            restoreTick = midiLfo(l1)->frame.at(l2).tick;
-                            restoreFlag = false;
-                        }
                     }
                 }
             }
@@ -506,33 +499,23 @@ void Engine::echoCallback(bool echo_from_trig)
 
     //Seq notes data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if (((tick + 8) >= nextMinSeqTick) && (midiSeqCount())) {
+    if ((tick + 8) >= nextMinSeqTick && midiSeqCount()) {
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
             if ((echo_from_trig && midiSeq(l1)->gotKbdTrig)
                     || (!midiSeq(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiSeq(l1)->nextTick) {
+                    seqWidget(l1)->updateCursorPos();
+                    seqWidget(l1)->updateIndicators();
+                    midiSeq(l1)->getNextFrame(tick);
+                    seqWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
                     outEv.type = EV_NOTEON;
                     outEv.value = midiSeq(l1)->vel;
                     outEv.channel = midiSeq(l1)->channelOut;
-                    seqWidget(l1)->cursor->updatePosition(midiSeq(l1)->getCurrentIndex());
-
-                    midiSeq(l1)->getNextNote(&seqSample, tick);
                     length = midiSeq(l1)->notelength;
                     outport = midiSeq(l1)->portOut;
-                    if ((!midiSeq(l1)->isMuted) && (!seqSample.muted)) {
-                        outEv.data = seqSample.value;
-                        driver->sendMidiEvent(outEv, seqSample.tick, outport, length);
-                    }
-                        frameptr = midiSeq(l1)->getCurrentIndex();
-                        percent = frameptr * 100 / (midiSeq(l1)->nPoints);
-                        seqWidget(l1)->parStore->ndc->updatePercent(percent);
-                    if ((restoreModType == 'S') && (l1 == restoreModIx)
-                          && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        globStoreWidget->indicator->updatePercent(percent);
-                        if (!frameptr && restoreFlag) {
-                            restoreTick = midiSeq(l1)->nextTick;
-                            restoreFlag = false;
-                        }
+                    if ((!midiSeq(l1)->isMuted) && (!midiSeq(l1)->returnNote.muted)) {
+                        outEv.data = midiSeq(l1)->returnNote.value;
+                        driver->sendMidiEvent(outEv, midiSeq(l1)->returnNote.tick, outport, length);
                     }
                 }
             }
@@ -550,14 +533,15 @@ void Engine::echoCallback(bool echo_from_trig)
             if ((echo_from_trig && midiArp(l1)->gotKbdTrig)
                     || (!midiArp(l1)->gotKbdTrig && !echo_from_trig)) {
                 if ((tick + 8) >= midiArp(l1)->nextTick) {
+                    arpWidget(l1)->updateCursorPos();
+                    arpWidget(l1)->updateIndicators();
+                    midiArp(l1)->getNextFrame(tick + schedDelayTicks);
+                    arpWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
                     outEv.type = EV_NOTEON;
                     outEv.channel = midiArp(l1)->channelOut;
-                    midiArp(l1)->newRandomValues();
-                    midiArp(l1)->prepareCurrentNote(tick + schedDelayTicks);
-                    int note_tick = midiArp(l1)->returnTick;
                     length = midiArp(l1)->returnLength * 4;
+                    int note_tick = midiArp(l1)->returnTick;
                     outport = midiArp(l1)->portOut;
-                    arpWidget(l1)->screen->updateCursor(midiArp(l1)->getGrooveIndex());
                     if (midiArp(l1)->hasNewNotes && !midiArp(l1)->returnNote.isEmpty()
                         && midiArp(l1)->returnVelocity.at(0)) {
                         l2 = 0;
@@ -566,20 +550,6 @@ void Engine::echoCallback(bool echo_from_trig)
                             outEv.value = midiArp(l1)->returnVelocity.at(l2);
                             driver->sendMidiEvent(outEv, note_tick, outport, length);
                             l2++;
-                        }
-                    }
-                    frameptr = midiArp(l1)->getGrooveIndex();
-                    if (midiArp(l1)->nPoints)
-                        percent = (frameptr - 1) * 100 / (midiArp(l1)->nPoints);
-                    else
-                        percent = 0;
-                    arpWidget(l1)->parStore->ndc->updatePercent(percent);
-                    if ((restoreModType == 'A') && (l1 == restoreModIx)
-                            && (!globStoreWidget->timeModeBox->currentIndex())) {
-                        globStoreWidget->indicator->updatePercent(percent);
-                        if ((!frameptr || (frameptr == midiArp(l1)->nPoints)) && restoreFlag) {
-                            restoreTick = note_tick;
-                            restoreFlag = false;
                         }
                     }
                 }
@@ -595,7 +565,7 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
-        percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
+        int percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
         globStoreWidget->indicator->updatePercent(percent);
     }
 
@@ -905,10 +875,12 @@ void Engine::removeParStores(int ix)
 
 void Engine::updateGlobRestoreTimeModule(int windowIndex)
 {
-    restoreModType = globStoreWidget->timeModuleBox
-                        ->itemText(windowIndex).at(0);
+    ((InOutBox *)moduleWindow(restoreModIx)->widget())
+            ->parStore->isRestoreMaster = false;
+    ((InOutBox *)moduleWindow(windowIndex)->widget())
+            ->parStore->isRestoreMaster = true;
 
-    restoreModIx = ((InOutBox *)moduleWindow(windowIndex)->widget())->ID;
+    restoreModIx = windowIndex;
 }
 
 void Engine::updateDisplay()

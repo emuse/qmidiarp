@@ -535,7 +535,7 @@ void SeqWidget::doRestoreParams(int ix)
     }
     updateLoop(parStore->list.at(ix).loopMode);
     updateWaveForm(parStore->list.at(ix).waveForm);
-    midiSeq->setCurrentIndex(0);
+    midiSeq->setFramePtr(0);
 
     needsGUIUpdate = true;
 }
@@ -704,7 +704,7 @@ void SeqWidget::updateDisplay()
 {
     QVector<Sample> data;
 
-    parStore->updateDisplay(getCurrentIndex(), midiSeq->reverse);
+    parStore->updateDisplay(getFramePtr(), midiSeq->reverse);
 
     if (dataChanged || midiSeq->dataChanged) {
         dataChanged=false;

@@ -41,11 +41,9 @@ MidiSeq::MidiSeq()
     transpDefer = 0;
     size = 4;
     res = 4;
-    nPoints = 16;
     maxNPoints = 16;
     notelength = 180;
     notelengthDefer = 180;
-    currentIndex = 0;
     lastMute = false;
     lastMouseLoc = 0;
 
@@ -62,6 +60,7 @@ MidiSeq::MidiSeq()
             customWave.replace(l1, sample);
             lt+=step;
     }
+    returnNote = sample;
     muteMask.fill(false, 2048);
 }
 
@@ -106,17 +105,17 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
     return(false);
 }
 
-void MidiSeq::getNextNote(Sample *p_sample, int tick)
+void MidiSeq::getNextFrame(int tick)
 {
     const int frame_nticks = TPQN / res;
     Sample sample;
     int cur_grv_sft;
 
     gotKbdTrig = false;
-    if (restartFlag) setCurrentIndex(0);
-    if (!currentIndex) grooveTick = newGrooveTick;
+    if (restartFlag) setFramePtr(0);
+    if (!framePtr) grooveTick = newGrooveTick;
 
-    sample = customWave.at(currentIndex);
+    sample = customWave.at(framePtr);
     advancePatternIndex();
 
     if (nextTick < (tick - frame_nticks)) nextTick = tick;
@@ -128,13 +127,13 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
     cur_grv_sft = 0.01 * (grooveTick * (frame_nticks - 1));
 
     /* pairwise application of new groove shift */
-    if (!(currentIndex % 2)) {
+    if (!(framePtr % 2)) {
         cur_grv_sft = -cur_grv_sft;
         grooveTick = newGrooveTick;
     }
     nextTick += frame_nticks + cur_grv_sft;
 
-    if (!trigByKbd && !(currentIndex % 2)) {
+    if (!trigByKbd && !(framePtr % 2)) {
         /* round-up to current resolution (quantize) */
         nextTick/=frame_nticks;
         nextTick*=frame_nticks;
@@ -142,9 +141,9 @@ void MidiSeq::getNextNote(Sample *p_sample, int tick)
 
     if (seqFinished) {
         sample.muted = true;
-        currentIndex = 0;
+        framePtr = 0;
     }
-    *p_sample = sample;
+    returnNote = sample;
 }
 
 void MidiSeq::advancePatternIndex()
@@ -155,57 +154,57 @@ void MidiSeq::advancePatternIndex()
 
     if (curLoopMode == 6) {
         if (pivot)
-            currentIndex = rand() % pivot;
+            framePtr = rand() % pivot;
         else
-            currentIndex = rand() % npoints;
+            framePtr = rand() % npoints;
         return;
     }
 
     if (reverse) {
         if (!pivot) pivot = npoints;
-        if (currentIndex == pivot - 1) applyPendingParChanges();
-        currentIndex--;
-        if (currentIndex == -1) {
+        if (framePtr == pivot - 1) applyPendingParChanges();
+        framePtr--;
+        if (framePtr == -1) {
             if (!enableLoop) seqFinished = true;
             if (reflect  || !backward) {
                 reverse = false;
-                currentIndex = 0;
+                framePtr = 0;
             }
-            else currentIndex = pivot - 1;
+            else framePtr = pivot - 1;
         }
-        else if (currentIndex == pivot - 1) {
+        else if (framePtr == pivot - 1) {
             if (!enableLoop) seqFinished = true;
             if (loopMarker < 0) reflect = true;
             if (loopMarker > 0) reflect = false;
             if (reflect) {
                 reverse = false;
-                currentIndex = pivot;
+                framePtr = pivot;
             }
-            else currentIndex = npoints - 1;
+            else framePtr = npoints - 1;
         }
     }
     else {
-        if (!currentIndex) applyPendingParChanges();
-        currentIndex++;
-        if (currentIndex == npoints) {
+        if (!framePtr) applyPendingParChanges();
+        framePtr++;
+        if (framePtr == npoints) {
             if (!enableLoop) seqFinished = true;
 
             if (reflect || backward) {
                 reverse = true;
-                currentIndex = npoints - 1;
+                framePtr = npoints - 1;
             }
-            else currentIndex = pivot;
+            else framePtr = pivot;
         }
-        else if ((currentIndex == pivot)) {
+        else if ((framePtr == pivot)) {
             if (!pivot) pivot = npoints;
             if (!enableLoop) seqFinished = true;
             if (loopMarker > 0) reflect = true;
             if (loopMarker < 0) reflect = false;
             if (reflect) {
                 reverse = true;
-                currentIndex = pivot - 1;
+                framePtr = pivot - 1;
             }
-            else currentIndex = 0;
+            else framePtr = 0;
         }
     }
 }
@@ -247,7 +246,7 @@ void MidiSeq::updateLoop(int val)
     curLoopMode = val;
     if (seqFinished) {
         seqFinished = false;
-        setCurrentIndex(0);
+        setFramePtr(0);
     }
 }
 
@@ -384,7 +383,7 @@ void MidiSeq::resizeAll()
     const int npoints = res * size;
     Sample sample;
 
-    currentIndex%=npoints;
+    framePtr%=npoints;
     currentRecStep%=npoints;
 
     if (maxNPoints < npoints) {
@@ -432,17 +431,17 @@ int MidiSeq::setMutePoint(double mouseX, bool on)
     return (loc);
 }
 
-void MidiSeq::setCurrentIndex(int ix)
+void MidiSeq::setFramePtr(int ix)
 {
-    currentIndex=ix;
+    framePtr=ix;
 
     if (!ix) {
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
         if (backward) {
             reverse = true;
-            if (loopMarker) currentIndex = abs(loopMarker) - 1;
-            else currentIndex = res * size - 1;
+            if (loopMarker) framePtr = abs(loopMarker) - 1;
+            else framePtr = res * size - 1;
         }
         else reverse = false;
 
@@ -479,6 +478,6 @@ void MidiSeq::setNextTick(int tick)
     if (backward) reverse = !reverse;
     if (reverse) pos = nPoints - pos;
 
-    setCurrentIndex(pos);
+    setFramePtr(pos);
     nextTick = (tick/tickres) * tickres;
 }

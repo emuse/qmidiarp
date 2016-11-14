@@ -33,7 +33,7 @@
  * The parameters of MidiSeq are controlled by the SeqWidget class.
  * The backend driver thread calls the Engine::echoCallback(), which will
  * query each module, in this case via
- * the MidiSeq::getNextNote() method. MidiSeq will return a note from
+ * the MidiSeq::getNextFrame() method. MidiSeq will return a note from
  * its internal MidiSeq::data buffer as a function of the position of
  * the driver's transport. The MidiSeq::data buffer is populated by the
  * MidiSeq::getData() function at each modification done via
@@ -49,11 +49,10 @@ class MidiSeq : public MidiWorker  {
 
   private:
     int lastMouseLoc;
-    int currentIndex;
 /**
- * @brief  calulates the next MidiSeq::currentIndex as a
+ * @brief  calulates the next MidiSeq::framePtr as a
  * function of the current value, play direction, loop marker position
- * and orientation. It is called by MidiSeq::getNextNote() so that upon
+ * and orientation. It is called by MidiSeq::getNextFrame() so that upon
  * every new output note, the sequence pointer advances.
  */
     void advancePatternIndex();
@@ -66,10 +65,10 @@ class MidiSeq : public MidiWorker  {
     int size, res;
     int currentRecStep;
     int loopMarker;
-    int nPoints;        /*!< Number of steps to be played out */
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
     int nOctaves;
     int baseOctave;
+    Sample returnNote;
     QVector<Sample> customWave;
     QVector<bool> muteMask;
     QVector<Sample> data;
@@ -176,14 +175,16 @@ class MidiSeq : public MidiWorker  {
  * @param data reference to an array the waveform is copied to
  */
     void getData(QVector<Sample> *data);
-/*! @brief  transfers one Sample of data taken from
- * the currently active waveform MidiLfo::data at the index frameptr.
+/*! @brief  transfers the next Sample to returnNote
+ * 
+ * Transfers one Sample of data taken from the currently active sequence 
+ * MidiSeq::data at the index framePtr into the returnNote to be read
+ * by engine. This is called by Engine at every step.
  *
- * @param p_sample reference to a Sample structure receiving the data point
  * @param tick the current tick at which we request a note. This tick will be
  * used to calculate the nextTick which is quantized to the pattern
  */
-    void getNextNote(Sample *p_sample, int tick);
+    void getNextFrame(int tick);
 /*! @brief  toggles the mute state of one point of the
  * MidiSeq::muteMask array.
  *
@@ -197,14 +198,13 @@ class MidiSeq : public MidiWorker  {
  */
     bool toggleMutePoint(double);
 
-    void setCurrentIndex(int ix);
-    int getCurrentIndex() {return currentIndex; }
+    void setFramePtr(int ix);
 /*! @brief Checks if deferred parameter changes are pending and applies
  * them if so
  */
     void applyPendingParChanges();
 /**
- * @brief sets MidiSeq::nextTick and MidiSeq::currentIndex position
+ * @brief sets MidiSeq::nextTick and MidiSeq::framePtr position
  * according to the specified tick.
  *
  * @param tick The current tick to which the module position should be
