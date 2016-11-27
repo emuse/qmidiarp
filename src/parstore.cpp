@@ -469,7 +469,7 @@ void ParStore::setBGColorAt(int row, int color)
     if (color == 1)         //green
         styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
     else if (color == 2)    //yellow
-        styleSheet = "QToolButton { background-color: rgba(80, 255, 80, 10%); }";
+        styleSheet = "QToolButton { background-color: rgba(150, 255, 150, 10%); }";
     else if (color == 3)    //blueish
         styleSheet = "QToolButton { }";
     else                    //no color
