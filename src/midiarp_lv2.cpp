@@ -366,7 +366,7 @@ void MidiArpLV2::initTransport()
 {
     if (!hostTransport) {
         transportFramesDelta = curFrame;
-        tempoChangeTick = curTick;
+        if (curTick > 0) tempoChangeTick = curTick;
         transportBpm = internalTempo;
         tempo = internalTempo;
         transportSpeed = 1;

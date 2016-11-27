@@ -376,13 +376,13 @@ void MidiLfoLV2::initTransport()
 {
     if (!hostTransport) {
         transportFramesDelta = curFrame;
-        tempoChangeTick = curTick;
+        if (curTick > 0) tempoChangeTick = curTick;
         transportBpm = internalTempo;
         tempo = internalTempo;
         transportSpeed = 1;
     }
     else transportSpeed = 0;
-
+    
     setNextTick(tempoChangeTick);
     getNextFrame(tempoChangeTick);
     inLfoFrame = 0;
