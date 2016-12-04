@@ -381,6 +381,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
     updateChIn(chIn->currentIndex());
     updateChannelOut(channelOut->currentIndex());
     updatePortOut(portOut->currentIndex());
+    midiSeq->needsGUIUpdate = false;
     modified = false;
 }
 #endif

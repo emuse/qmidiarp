@@ -389,7 +389,7 @@ void ArpWidget::readData(QXmlStreamReader& xml)
     updateChIn(chIn->currentIndex());
     updateChannelOut(channelOut->currentIndex());
     updatePortOut(portOut->currentIndex());
-
+    midiArp->needsGUIUpdate = false;
     modified = false;
 }
 #endif

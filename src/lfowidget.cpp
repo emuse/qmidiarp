@@ -382,6 +382,7 @@ void LfoWidget::readData(QXmlStreamReader& xml)
     updatePortOut(portOut->currentIndex());
     waveFormBox->setCurrentIndex(wvtmp);
     updateWaveForm(wvtmp);
+    midiLfo->needsGUIUpdate = false;
     modified = false;
 }
 #endif
