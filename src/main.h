@@ -24,7 +24,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include <QXmlStreamReader>
 #include "midievent.h"
 
 #define CT_FOOTSW       0x40
@@ -68,18 +67,4 @@ const int seqResValues[5] = {1, 2, 4, 8, 16};
 /*! @brief This array holds the currently available Seq size values.
  */
 const int seqSizeValues[11] = {1, 2, 3, 4, 5, 6, 7, 8, 16, 32};
-
-#ifdef APPBUILD
-/*!
-* @brief allows ignoring one XML element in the XML stream
-* passed by the caller.
-*
-* It also advances the stream read-in. It is used to
-* ignore unknown elements for both-ways-compatibility
-*
-* @param xml reference to QXmlStreamReader containing the open XML stream
-*/
-extern void skipXmlElement(QXmlStreamReader& xml);
-
-#endif
 #endif
