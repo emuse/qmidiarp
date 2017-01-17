@@ -22,8 +22,8 @@
  *
  */
 
+
 #include <cstdio>
-#include <cmath>
 #include "midilfo_lv2.h"
 
 MidiLfoLV2::MidiLfoLV2 (
@@ -72,7 +72,7 @@ MidiLfoLV2::MidiLfoLV2 (
         }
     }
     if (!urid_map) {
-        qWarning("Host does not support urid:map.");
+        printf("Host does not support urid:map.\n");
         return;
     }
 
@@ -156,7 +156,7 @@ void MidiLfoLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
             getNextFrame(tempoChangeTick);
         }
     }
-    //qWarning("transportBpm %f, transportFramesDelta %d", transportBpm, transportFramesDelta);
+    //printf("transportBpm %f, transportFramesDelta %d\n", transportBpm, transportFramesDelta);
 }
 
 void MidiLfoLV2::run ( uint32_t nframes )
@@ -437,17 +437,14 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     const char *value1
         = (const char *) (*retrieve)(handle, key, &size, &type, &flags);
 
-    QByteArray tmpArray1 = QByteArray::fromHex(value1);
-
-    if (size < 2 || !tmpArray1.count()) return LV2_STATE_ERR_UNKNOWN;
+    if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
     pPlugin->setFramePtr(0);
-    pPlugin->maxNPoints = tmpArray1.count();
+    pPlugin->maxNPoints = (size - 1 ) / 2;
 
-    for (l1 = 0; l1 < tmpArray1.count(); l1++) {
-        pPlugin->muteMask.replace(l1, tmpArray1.at(l1));
+    for (l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
+        pPlugin->muteMask[l1] = (value1[2 * l1 + 1] == '1');
     }
-
 
     key = uris->hex_customwave;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
@@ -457,19 +454,25 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
-    QByteArray tmpArray = QByteArray::fromHex(value);
-
     Sample sample;
     int step = TPQN / pPlugin->res;
     int lt = 0;
     int min = 127;
-    for (l1 = 0; l1 < tmpArray.count(); l1++) {
-        sample.value = tmpArray.at(l1);
+    for (l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
+        int hi = 0;
+        int lo = 0;
+        if (value[2*l1] <= '9' && value[2*l1] >= '0') hi = value[2*l1] - '0';
+        if (value[2*l1] <= 'f' && value[2*l1] >= 'a') hi = value[2*l1] - 'a' + 10;
+
+        if (value[2*l1 + 1] <= '9' && value[2*l1 + 1] >= '0') lo = value[2*l1 + 1] - '0';
+        if (value[2*l1 + 1] <= 'f' && value[2*l1 + 1] >= 'a') lo = value[2*l1 + 1] - 'a' + 10;
+
+        sample.value = hi * 16 + lo;
         sample.tick = lt;
-        sample.muted = pPlugin->muteMask.at(l1);
-        pPlugin->customWave.replace(l1, sample);
-        lt+=step;
+        sample.muted = pPlugin->muteMask[l1];
+        pPlugin->customWave[l1] = sample;
         if (sample.value < min) min = sample.value;
+        lt+=step;
     }
     pPlugin->cwmin = min;
     pPlugin->getData(&pPlugin->data);
@@ -494,31 +497,32 @@ static LV2_State_Status MidiLfoLV2_state_save ( LV2_Handle instance,
 
     flags |= (LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 
-    QByteArray tempArray;
-
-    tempArray.clear();
+    const char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     int l1;
+    char bt[pPlugin->maxNPoints * 2 + 1];
+    
     for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
-        tempArray.append(pPlugin->customWave.at(l1).value);
+        bt[2*l1] = hexmap[(pPlugin->customWave[l1].value  & 0xF0) >> 4];
+        bt[2*l1 + 1] = hexmap[pPlugin->customWave[l1].value  & 0x0F];
     }
-
-    const QByteArray hexArray = tempArray.toHex();
-    const char *value = hexArray.constData();
-
+    bt[pPlugin->maxNPoints * 2] = '\0';
+    
+    const char *value = bt;
+    
     size_t size = strlen(value) + 1;
+    
     uint32_t key = uris->hex_customwave;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
     store(handle, key, value, size, type, flags);
 
-    tempArray.clear();
-
     for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
-        tempArray.append(pPlugin->muteMask.at(l1));
+        bt[2*l1] = '0';
+        bt[2*l1 + 1] = hexmap[pPlugin->muteMask[l1]];
     }
 
-    const QByteArray hexArray1 = tempArray.toHex();
-    const char *value1 = hexArray1.constData();
+    const char *value1 = bt;
 
     size = strlen(value1) + 1;
     key = uris->hex_mutemask;

@@ -24,9 +24,10 @@
 #ifndef MIDIARP_H
 #define MIDIARP_H
 
-#include <QString>
-
 #include "midiworker.h"
+#include <cstring>
+
+using namespace std;
 
  /*!
  * @brief MIDI worker class for the Arpeggiator Module. Implements the
@@ -48,8 +49,6 @@
  */
 class MidiArp : public MidiWorker  {
 
-  Q_OBJECT
-
   private:
     int nextNote[MAXCHORD]; /*!< Holds the note values to be output next
                                 @see MidiArp::updateNotes */
@@ -63,8 +62,8 @@ class MidiArp : public MidiWorker  {
     int sustainBufferCount, latchBufferCount;
     int lastLatchTick;
     double stepWidth, len, vel;
-    QVector<int> sustainBuffer; /*!< Holds released note values when MidiArp::sustain is True */
-    QVector<int> latchBuffer;   /*!< Holds released note values when MidiArp::latch_mode is True */
+    int sustainBuffer[128]; /*!< Holds released note values when MidiArp::sustain is True */
+    int latchBuffer[128];   /*!< Holds released note values when MidiArp::latch_mode is True */
 
     bool sustain;
     int noteIndex[MAXCHORD], chordSemitone[MAXCHORD];
@@ -199,7 +198,7 @@ class MidiArp : public MidiWorker  {
     int randomLengthAmp; /*!< Amplitude of length randomization, set by ArpWidget */
     int trigDelayTicks; /*!< Ticks to wait for playing out notes after trigger in delayed trig mode */
 
-    QString pattern; /*!< Holds the the arpeggio pattern text */
+    string pattern; /*!< Holds the the arpeggio pattern text */
     int maxOctave;      /*!< Maximum octave shift found in the pattern */
     int minOctave;      /*!< Minimum octave shift found in the pattern */
     double minStepWidth; /*!< Minimum step width of the pattern for quantization purposes*/
@@ -209,15 +208,16 @@ class MidiArp : public MidiWorker  {
     int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */
     int octHigh;        /*!< The higher octave limit. @see repeatPatternThroughChord */
 
-    QVector<int> returnNote; /*!< Holds the notes of the currently active arpeggio step */
-    QVector<int> returnVelocity; /*!< Holds the velocities of the currently active arpeggio step */
+    int returnNote[128]; /*!< Holds the notes of the currently active arpeggio step */
+    int returnVelocity[128]; /*!< Holds the velocities of the currently active arpeggio step */
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
 
   public:
     MidiArp();
-    QString stripPattern(const QString& p_pattern);
-    void updatePattern(const QString&);
+    virtual ~MidiArp() {}
+    string stripPattern(const string& p_pattern);
+    void updatePattern(const string&);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);

@@ -542,12 +542,11 @@ void Engine::echoCallback(bool echo_from_trig)
                     length = midiArp(l1)->returnLength * 4;
                     int note_tick = midiArp(l1)->returnTick;
                     outport = midiArp(l1)->portOut;
-                    if (midiArp(l1)->hasNewNotes && !midiArp(l1)->returnNote.isEmpty()
-                        && midiArp(l1)->returnVelocity.at(0)) {
+                    if (midiArp(l1)->hasNewNotes && midiArp(l1)->returnVelocity[0]) {
                         l2 = 0;
-                        while(midiArp(l1)->returnNote.at(l2) >= 0) {
-                            outEv.data = midiArp(l1)->returnNote.at(l2);
-                            outEv.value = midiArp(l1)->returnVelocity.at(l2);
+                        while(midiArp(l1)->returnNote[l2] >= 0) {
+                            outEv.data = midiArp(l1)->returnNote[l2];
+                            outEv.value = midiArp(l1)->returnVelocity[l2];
                             driver->sendMidiEvent(outEv, note_tick, outport, length);
                             l2++;
                         }
@@ -588,10 +587,10 @@ bool Engine::midi_event_received_callback(void * context, MidiEvent ev)
 
 bool Engine::eventCallback(MidiEvent inEv)
 {
-    bool unmatched;
+    bool unmatched = true;
     bool no_collision = false;
     int l1;
-    unmatched = true;
+
     int tick = driver->getCurrentTick();
 
     if (sendLogEvents) {

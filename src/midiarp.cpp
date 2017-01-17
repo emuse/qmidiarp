@@ -23,6 +23,7 @@
  */
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 
 #include "midiarp.h"
 
@@ -118,15 +119,11 @@ MidiArp::MidiArp()
     attack_time = 0.0;
     release_time = 0.0;
     sustain = false;
-    sustainBuffer.resize(64);
     sustainBufferCount = 0;
     latch_mode = false;
-    latchBuffer.resize(64);
     latchBufferCount = 0;
     lastLatchTick = 0;
     trigDelayTicks = 4;
-    returnNote.resize(128);
-    returnVelocity.resize(128);
 }
 
 bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
@@ -198,13 +195,13 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             return(false);
         }
         if (sustain) {
-            sustainBuffer.replace(sustainBufferCount, inEv.data);
+            sustainBuffer[sustainBufferCount] = inEv.data;
             sustainBufferCount++;
             return(false);
         }
 
         if (latch_mode) {
-            latchBuffer.replace(latchBufferCount, inEv.data);
+            latchBuffer[latchBufferCount] = inEv.data;
             latchBufferCount++;
             if (latchBufferCount != noteCount) {
                 if ((uint)tick > (uint)(lastLatchTick + 30) && (latchBufferCount > 1)) purgeLatchBuffer();
@@ -316,7 +313,7 @@ void MidiArp::copyNoteBuffer()
 
 void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
 {
-    QChar c;
+    char c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
     int current_octave = 0;
     bool outOfRange = false;
@@ -343,8 +340,8 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             c = ' ';
 
         if (c != ' ') {
-            if (c.isDigit() || (c == 'p')) {
-                tmpIndex[chordIndex] = c.digitValue() + noteOfs;
+            if (isdigit(c) || (c == 'p')) {
+                tmpIndex[chordIndex] = c - '0' + noteOfs;
                 if (chordMode) {
                     chordIndex++;
                     chordSemitone[chordIndex] = semitone;
@@ -355,7 +352,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             else {
                 gotCC = true;
 
-                switch(c.toLatin1()) {
+                switch(c) {
                     case '(':
                         chordMode = true;
                         break;
@@ -588,8 +585,8 @@ void MidiArp::getNextFrame(int askedTick)
         returnTick = nextTick;
         getNote(&nextTick, nextNote, nextVelocity, &nextLength);
         while ((l1 < MAXCHORD - 1) && (nextNote[l1] >= 0)) {
-            returnNote.replace(l1, nextNote[l1]);
-            returnVelocity.replace(l1, nextVelocity[l1]);
+            returnNote[l1] = nextNote[l1];
+            returnVelocity[l1] = nextVelocity[l1];
             l1++;
         }
         returnLength = nextLength;
@@ -597,7 +594,7 @@ void MidiArp::getNextFrame(int askedTick)
     }
     else hasNewNotes = false;
     
-    returnNote.replace(l1, -1); // mark end of chord
+    returnNote[l1] = -1; // mark end of chord
 }
 
 void MidiArp::foldReleaseTicks(int tick)
@@ -616,7 +613,7 @@ void MidiArp::foldReleaseTicks(int tick)
 void MidiArp::initArpTick(int tick)
 {
     arpTick = tick;
-    returnVelocity.first() = 0;
+    returnVelocity[0] = 0;
     nextTick  = tick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;
@@ -624,29 +621,29 @@ void MidiArp::initArpTick(int tick)
     framePtr = 0;
 }
 
-QString MidiArp::stripPattern(const QString& p_pattern)
+string MidiArp::stripPattern(const string& p_pattern)
 {
-    QString p = p_pattern;
+    string p = p_pattern;
     patternLen = 0;
-    if (!p.count()) return (p);
+    if (!p.length()) return (p);
 
-    QChar c = (p.at(p.count() - 1));
-    while (!c.isDigit() && (c != 'p') && (c != ')')) {
-        p = p.left(p.count() - 1);
-        if (p.count() < 1) break;
-        c = (p.at(p.count() - 1));
+    char c = p[p.length() - 1];
+    while (!isdigit(c) && (c != 'p') && (c != ')')) {
+        p = p.substr(0, p.length() - 1);
+        if (p.length() < 1) break;
+        c = p[p.length() - 1];
     }
 
-    patternLen = p.count();
+    patternLen = p.length();
 
     return (p);
 }
 
 
-void MidiArp::updatePattern(const QString& p_pattern)
+void MidiArp::updatePattern(const string& p_pattern)
 {
     int l1;
-    QChar c;
+    char c;
 
     pattern = p_pattern;
     patternMaxIndex = 0;
@@ -662,24 +659,23 @@ void MidiArp::updatePattern(const QString& p_pattern)
     int npoints = 0;
 
     pattern = stripPattern(pattern);
-
     // determine some useful properties of the arp pattern,
     // number of octaves, step width and number of steps in beats and
     // number of points
 
     for (l1 = 0; l1 < patternLen; l1++) {
-        c = pattern.at(l1);
+        c = pattern[l1];
 
-        if (c.isDigit()) {
+        if (isdigit(c)) {
             if (!chordindex) {
                 nsteps += stepwd;
                 npoints++;
                 if (chordmd) chordindex++;
             }
-            if (c.digitValue() > patternMaxIndex)
-                patternMaxIndex = c.digitValue();
+            if (isdigit(c) && (c  - '0' > patternMaxIndex))
+                patternMaxIndex = c - '0';
         }
-        switch(c.toLatin1()) {
+        switch(c) {
             case '(':
                 chordmd = true;
                 chordindex = 0;
@@ -823,7 +819,7 @@ void MidiArp::setSustain(bool on, int sustick)
 void MidiArp::purgeSustainBuffer(int sustick)
 {
     for (int l1 = 0; l1 < sustainBufferCount; l1++) {
-        int buf = sustainBuffer.at(l1);
+        int buf = sustainBuffer[l1];
         removeNote(&buf, sustick, 1);
     }
     sustainBufferCount = 0;
@@ -838,7 +834,7 @@ void MidiArp::setLatchMode(bool on)
 void MidiArp::purgeLatchBuffer()
 {
     for (int l1 = 0; l1 < latchBufferCount; l1++) {
-        int buf = latchBuffer.at(l1);
+        int buf = latchBuffer[l1];
         removeNote(&buf, arpTick, 1);
     }
     latchBufferCount = 0;
