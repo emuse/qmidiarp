@@ -41,6 +41,7 @@ AC_ARG_ENABLE(lv2plugins,
   [ac_lv2plugins="yes"])
 
 AM_CONDITIONAL([BUILD_LV2], [test "x$ac_lv2plugins" = "xyes"])
+ac_lv2willbuild=no
 
 AM_COND_IF([BUILD_LV2],[
 dnl check for lv2atom
@@ -54,8 +55,10 @@ CFLAGS="$CFLAGS $CFLAGSsave"
 if test $lv2include_found = "no" -o $lv2Works = "no"; then
     AC_MSG_NOTICE(
         [cannot find an lv2 component for building. Will not build LV2 plugins.])
-    AM_CONDITIONAL([BUILD_LV2], 0)
-    AM_CONDITIONAL([BUILD_LV2_UI], 0)
+    AM_CONDITIONAL([BUILD_LV2], false)
+    AM_CONDITIONAL([BUILD_LV2_UI], false)
+else
+    ac_lv2willbuild=yes    
 fi
 
 ], [AC_MSG_NOTICE([LV2 plugins will not be built])])
@@ -66,7 +69,7 @@ AC_ARG_ENABLE(lv2pluginuis,
   [ac_lv2pluginuis="$enableval"],
   [ac_lv2pluginuis="yes"])
 
-AM_CONDITIONAL([BUILD_LV2_UI], [test "x$ac_lv2pluginuis" = "xyes"])
+AM_CONDITIONAL([BUILD_LV2_UI], [test "x$ac_lv2pluginuis" = "xyes" -a "x$ac_lv2willbuild" = "xyes"])
 
 # Build QMidiArp standalone application ?
 AC_ARG_ENABLE(buildapp,
@@ -104,8 +107,8 @@ if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
           AC_SUBST(Qt4_LIBS)
         else
           AC_MSG_NOTICE([cannot find Qt4 library >= 4.2])
-          AM_CONDITIONAL([BUILD_APP], 0)
-          AM_CONDITIONAL([BUILD_LV2_UI], 0)
+          AM_CONDITIONAL([BUILD_APP], false)
+          AM_CONDITIONAL([BUILD_LV2_UI], false)
         fi
         ac_qtversion=qt4],
         dnl ... or use Qt5
@@ -131,8 +134,8 @@ if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
         
         else
           AC_MSG_NOTICE([cannot find Qt5 library >= 5.0])
-          AM_CONDITIONAL([BUILD_APP], 0)
-          AM_CONDITIONAL([BUILD_LV2_UI], 0)
+          AM_CONDITIONAL([BUILD_APP], false)
+          AM_CONDITIONAL([BUILD_LV2_UI], false)
         fi
         ac_qtversion=qt5
     ])
@@ -182,8 +185,8 @@ if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
         sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
     fi
 else
-    AM_CONDITIONAL([ENABLE_TRANSLATIONS], 0)
-    AM_CONDITIONAL([NEED_MOC], 0)
+    AM_CONDITIONAL([ENABLE_TRANSLATIONS], false)
+    AM_CONDITIONAL([NEED_MOC], false)
 fi
 
 AM_CONDITIONAL([NEED_MOC], [test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes"])
@@ -235,7 +238,7 @@ if test "x$ac_buildapp" = "xyes" ; then
         AC_DEFINE(JACK_SESSION, 1, [Define to enable jack session support])
     fi
 else
-    AM_CONDITIONAL([ENABLE_NSM], 0)
+    AM_CONDITIONAL([ENABLE_NSM], false)
     AC_DEFINE(JACK_SESSION, 0)
 fi
 
