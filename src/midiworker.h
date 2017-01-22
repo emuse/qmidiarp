@@ -26,6 +26,8 @@
 #define MIDIWORKER_H
 
 #include <main.h>
+#include <cstdlib>
+#include <cstdio>
 
 
 /*! @brief MIDI worker base class for QMidiArp modules.

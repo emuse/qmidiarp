@@ -24,10 +24,8 @@
 #ifndef MIDIARP_H
 #define MIDIARP_H
 
+#include <string>
 #include "midiworker.h"
-#include <cstring>
-
-using namespace std;
 
  /*!
  * @brief MIDI worker class for the Arpeggiator Module. Implements the
@@ -198,7 +196,7 @@ class MidiArp : public MidiWorker  {
     int randomLengthAmp; /*!< Amplitude of length randomization, set by ArpWidget */
     int trigDelayTicks; /*!< Ticks to wait for playing out notes after trigger in delayed trig mode */
 
-    string pattern; /*!< Holds the the arpeggio pattern text */
+    std::string pattern; /*!< Holds the the arpeggio pattern text */
     int maxOctave;      /*!< Maximum octave shift found in the pattern */
     int minOctave;      /*!< Minimum octave shift found in the pattern */
     double minStepWidth; /*!< Minimum step width of the pattern for quantization purposes*/
@@ -216,8 +214,8 @@ class MidiArp : public MidiWorker  {
   public:
     MidiArp();
     virtual ~MidiArp() {}
-    string stripPattern(const string& p_pattern);
-    void updatePattern(const string&);
+    std::string stripPattern(const std::string& p_pattern);
+    void updatePattern(const std::string&);
     void updateRandomTickAmp(int);
     void updateRandomVelocityAmp(int);
     void updateRandomLengthAmp(int);

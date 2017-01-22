@@ -25,7 +25,6 @@
 #include <cstdio>
 #include <cmath>
 #include "midiarp_lv2.h"
-#include "arpwidget_lv2.h"
 
 MidiArpLV2::MidiArpLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
@@ -68,7 +67,7 @@ MidiArpLV2::MidiArpLV2 (
         }
     }
     if (!urid_map) {
-        qWarning("Host does not support urid:map.");
+        printf("Host does not support urid:map.\n");
         return;
     }
 

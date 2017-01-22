@@ -621,9 +621,9 @@ void MidiArp::initArpTick(int tick)
     framePtr = 0;
 }
 
-string MidiArp::stripPattern(const string& p_pattern)
+std::string MidiArp::stripPattern(const std::string& p_pattern)
 {
-    string p = p_pattern;
+    std::string p = p_pattern;
     patternLen = 0;
     if (!p.length()) return (p);
 
@@ -640,7 +640,7 @@ string MidiArp::stripPattern(const string& p_pattern)
 }
 
 
-void MidiArp::updatePattern(const string& p_pattern)
+void MidiArp::updatePattern(const std::string& p_pattern)
 {
     int l1;
     char c;
