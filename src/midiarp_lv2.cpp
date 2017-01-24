@@ -236,7 +236,7 @@ void MidiArpLV2::run ( uint32_t nframes )
             newRandomValues();
             getNextFrame(curTick);
             if (!isMuted) {
-                if (hasNewNotes && !returnVelocity[0] == -1) {
+                if (hasNewNotes && returnVelocity[0] != -1) {
                     int l2 = 0;
                     while(returnNote[l2] >= 0) {
                         unsigned char d[3];
