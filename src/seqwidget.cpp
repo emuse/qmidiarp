@@ -397,11 +397,12 @@ void SeqWidget::updateNoteLength(int val)
 void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
+    modified = true;
+    if (!midiSeq) return;
     std::vector<Sample> sdata;
-    if (midiSeq) midiSeq->getData(&sdata);
+    midiSeq->getData(&sdata);
     data=QVector<Sample>::fromStdVector(sdata);
     screen->updateData(data);
-    modified = true;
 }
 
 void SeqWidget::setRecord(bool on)
@@ -417,6 +418,7 @@ void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
     resBoxIndex = val;
+    modified = true;
     if (!midiSeq) return;
     midiSeq->res = seqResValues[val];
     midiSeq->resizeAll();
@@ -425,13 +427,13 @@ void SeqWidget::updateRes(int val)
     data=QVector<Sample>::fromStdVector(sdata);
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
-    modified = true;
 }
 
 void SeqWidget::updateSize(int val)
 {
     if (val > 9) return;
     sizeBoxIndex = val;
+    modified = true;
     if (!midiSeq) return;
     midiSeq->size = sizeBox->currentText().toInt();
     midiSeq->resizeAll();
@@ -440,7 +442,6 @@ void SeqWidget::updateSize(int val)
     data=QVector<Sample>::fromStdVector(sdata);
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
-    modified = true;
 }
 
 void SeqWidget::updateLoop(int val)
