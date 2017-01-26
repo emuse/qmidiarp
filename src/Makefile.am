@@ -107,8 +107,6 @@ qmidiarp_arp_la_SOURCES = \
 
 qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
 
-endif
-
 if BUILD_LV2_UI
 SUBDIRS = pixmaps
 
@@ -201,6 +199,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
+endif
 endif
 
 if ENABLE_TRANSLATIONS

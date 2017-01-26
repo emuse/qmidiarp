@@ -83,7 +83,7 @@ AC_ARG_ENABLE(qt5, AC_HELP_STRING([--enable-qt5],
                           [enable Qt5 instead of Qt4 library]),,
                           enable_qt4=yes)
                           
-if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
+if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2willbuild" = "xyes"]; then
     AC_MSG_NOTICE([QT stuff required for standalone app or LV2 UIs])
     dnl Check for Qt stuff only if we require GUI building
     AS_IF([test x$enable_qt4 = xyes],
