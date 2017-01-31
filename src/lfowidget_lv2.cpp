@@ -207,7 +207,7 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
                     ccnumberInBox->setValue(fValue);
             break;
             case ENABLE_NOTEOFF:
-                    enableNoteOff->setChecked((fValue > .5));
+                    enableNoteOff->setChecked((bool)fValue);
             break;
             case ENABLE_RESTARTBYKBD:
                     enableRestartByKbd->setChecked((bool)fValue);
