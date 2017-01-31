@@ -132,6 +132,8 @@
         lv2:name "Enable Note" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 1.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 18 ;
@@ -139,6 +141,8 @@
         lv2:name "Enable Velocity" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 1.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 19 ;
@@ -146,6 +150,8 @@
         lv2:name "Note Off" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 20 ;
@@ -153,6 +159,8 @@
         lv2:name "Restart" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 21 ;
@@ -160,6 +168,8 @@
         lv2:name "Trigger" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 22 ;
@@ -167,6 +177,8 @@
         lv2:name "Trigger Legato" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 23 ;
@@ -210,6 +222,8 @@
         lv2:name "Record" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 28 ;
@@ -217,6 +231,8 @@
         lv2:name "Defer mute" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 29 ;
@@ -269,6 +285,8 @@
         lv2:name "Mute Output" ;
         lv2:portProperty lv2:toggled ;
         lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 30 ;
@@ -278,6 +296,8 @@
         lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
         lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
         lv2:default 1.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 1.0 ;
    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 31 ;
