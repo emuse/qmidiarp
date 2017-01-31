@@ -57,7 +57,6 @@ class Screen : public QWidget
   Q_OBJECT
 
   protected:
-    virtual void paintEvent(QPaintEvent *) = 0;
 
   public:
     Screen(QWidget* parent=0);

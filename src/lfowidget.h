@@ -99,6 +99,7 @@ class LfoWidget : public InOutBox
     QComboBox *waveFormBox, *freqBox;
 
     QVector<Sample> getCustomWave();
+    QVector<bool> getMuteMask();
     int resBoxIndex;
     int sizeBoxIndex;
     int freqBoxIndex;

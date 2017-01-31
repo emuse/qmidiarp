@@ -733,6 +733,23 @@ void InOutBox::readCommonData(QXmlStreamReader& xml)
 	}
 }
 
+void InOutBox::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+
 void InOutBox::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {

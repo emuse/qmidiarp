@@ -33,7 +33,6 @@
 #include <QStringList>
 #include <QSpinBox>
 #include <QStyle>
-#include <QTableWidget>
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -920,6 +919,23 @@ void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
             xml.readElementText().toLatin1()));
         }
         else skipXmlElement(xml);
+    }
+}
+
+void MainWindow::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
     }
 }
 

@@ -25,10 +25,9 @@
 #ifndef MIDIWORKER_H
 #define MIDIWORKER_H
 
-#include <QObject>
-#include <QVector>
-
 #include <main.h>
+#include <cstdlib>
+#include <cstdio>
 
 
 /*! @brief MIDI worker base class for QMidiArp modules.
@@ -37,9 +36,7 @@
  * input output settings variables and some other small functions that all
  * modules have in common
 */
-class MidiWorker : public QObject  {
-
-  Q_OBJECT
+class MidiWorker {
 
   public:
     double queueTempo;  /*!< current tempo of the transport, not in use here */
@@ -53,8 +50,8 @@ class MidiWorker : public QObject  {
     bool trigByKbd;
     bool trigLegato; /*!< If True, trigger and restart upon legato input notes as well */
     int triggerMode; /*!< Current Trigger mode index */
-    bool enableLoop;
-    bool gotKbdTrig;
+    bool enableLoop; /*!< Enables looping of sequence or wave, determined by the loopMode */
+    bool gotKbdTrig; /*!< Set by MidiWorker::handleEvent() when the module was triggered by a new keyboard stroke */
     bool restartFlag; /*!< Signals frameptr reset on next getNextFrame() call */
     bool backward;       /*!< True when the sequence should start backward */
     bool pingpong;      /*!< True when the play direction should alternate */
@@ -75,8 +72,8 @@ class MidiWorker : public QObject  {
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int framePtr;       /*!< position of the currently output frame in sequence/wave/pattern */
     int nPoints;        /*!< Number of steps in pattern or sequence or wave */
-    bool dataChanged; /*!< Flag set to true by recording loop and queried by disp update */
-    bool needsGUIUpdate;
+    bool dataChanged; /*!< Flag set to true by recording loop and queried by InOutBox::updateDisplay() */
+    bool needsGUIUpdate; /*!< Flag set to true when MidiWorker members changed and queried by InOutBox::updateDisplay() */
 
   public:
     MidiWorker();

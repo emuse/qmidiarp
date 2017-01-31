@@ -92,6 +92,7 @@ class SeqWidget : public InOutBox
     int sizeBoxIndex;
 
     QVector<Sample> getCustomWave();
+    QVector<bool> getMuteMask();
 
 
 #ifdef APPBUILD

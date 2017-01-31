@@ -71,7 +71,7 @@ class ParStore : public QWidget
 
     int activeStore; /**< Currently active location index*/
     int currentRequest; /**< Currently pending location index*/
-	bool isRestoreMaster; /**< @brief Indicates whether this module triggers global restores */
+    bool isRestoreMaster; /**< @brief Indicates whether this module triggers global restores */
 
     struct TempStore {
         bool empty;
@@ -184,6 +184,19 @@ class ParStore : public QWidget
 * @param reverse Set to true if the parent module currently plays backward
 */
     void updateDisplay(int frame, bool reverse);
+    
+#ifdef APPBUILD
+/*!
+* @brief allows ignoring one XML element in the XML stream
+* passed by the caller.
+*
+* It also advances the stream read-in. It is used to
+* ignore unknown elements for both-ways-compatibility
+*
+* @param xml reference to QXmlStreamReader containing the open XML stream
+*/
+void skipXmlElement(QXmlStreamReader& xml);
+#endif
 
   signals:
 /*!

@@ -99,7 +99,7 @@ private:
         bool ui_up;
         bool transportAtomReceived;
         void updateParams();
-        void sendPattern(const QString & p);
+        void sendPattern(const std::string & p);
         void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
         uint32_t MidiEventID;
@@ -107,8 +107,8 @@ private:
         float transportBpm;
         float transportSpeed;
         bool hostTransport;
-        QVector<uint> evQueue;
-        QVector<uint> evTickQueue;
+        uint evQueue[JQ_BUFSZ];
+        uint evTickQueue[JQ_BUFSZ];
         int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;

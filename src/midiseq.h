@@ -26,9 +26,10 @@
 #define MIDISEQ_H
 
 #include "midiworker.h"
+#include <vector>
 
 /*! @brief MIDI worker class for the Seq Module. Implements a monophonic
- * step sequencer as a QObject.
+ * step sequencer.
  *
  * The parameters of MidiSeq are controlled by the SeqWidget class.
  * The backend driver thread calls the Engine::echoCallback(), which will
@@ -44,8 +45,6 @@
  * avoid data output at the corresponding position.
  */
 class MidiSeq : public MidiWorker  {
-
-  Q_OBJECT
 
   private:
     int lastMouseLoc;
@@ -69,12 +68,13 @@ class MidiSeq : public MidiWorker  {
     int nOctaves;
     int baseOctave;
     Sample returnNote;
-    QVector<Sample> customWave;
-    QVector<bool> muteMask;
-    QVector<Sample> data;
+    std::vector<Sample> customWave;
+    std::vector<bool> muteMask;
+    std::vector<Sample> data;
 
   public:
     MidiSeq();
+    virtual ~MidiSeq() {}
     void updateWaveForm(int val);
     void updateNoteLength(int);
     void updateVelocity(int);
@@ -174,7 +174,7 @@ class MidiSeq : public MidiWorker  {
  *
  * @param data reference to an array the waveform is copied to
  */
-    void getData(QVector<Sample> *data);
+    void getData(std::vector<Sample> * p_data);
 /*! @brief  transfers the next Sample to returnNote
  * 
  * Transfers one Sample of data taken from the currently active sequence 

@@ -294,7 +294,7 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
         writeCommonData(xml);
 
         xml.writeStartElement("pattern");
-            xml.writeTextElement("pattern", midiArp->pattern);
+            xml.writeTextElement("pattern", QString::fromStdString(midiArp->pattern));
             xml.writeTextElement("repeatMode", QString::number(
                 midiArp->repeatPatternThroughChord));
             xml.writeTextElement("octaveMode", QString::number(
@@ -401,7 +401,7 @@ void ArpWidget::updateText(const QString& newtext)
     if (!midiArp) return;
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
-    midiArp->updatePattern(newtext);
+    midiArp->updatePattern(newtext.toStdString());
     screen->updateData(newtext, midiArp->minOctave,
                     midiArp->maxOctave, midiArp->minStepWidth,
                     midiArp->nSteps, midiArp->patternMaxIndex);
