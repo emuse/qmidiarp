@@ -180,7 +180,7 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
                     cursor->update();
             break;
             case LOOPMARKER:
-                    screen->setLoopMarker((bool)fValue);
+                    screen->setLoopMarker((int)fValue);
                     screen->update();
             break;
             case LOOPMODE:
@@ -200,13 +200,13 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
             case MOUSEPRESSED:
             break;
             case ENABLE_NOTEIN:
-                    enableNoteIn->setChecked((fValue > .5));
+                    enableNoteIn->setChecked((bool)fValue);
             break;
             case ENABLE_VELIN:
-                    enableVelIn->setChecked((fValue > .5));
+                    enableVelIn->setChecked((bool)fValue);
             break;
             case ENABLE_NOTEOFF:
-                    enableNoteOff->setChecked((fValue > .5));
+                    enableNoteOff->setChecked((bool)fValue);
             break;
             case ENABLE_RESTARTBYKBD:
                     enableRestartByKbd->setChecked((bool)fValue);
