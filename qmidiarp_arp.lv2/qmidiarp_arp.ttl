@@ -37,8 +37,7 @@
         lv2:index 0;
         lv2:symbol "MidiIn";
         lv2:name "Midi In";
-    ] ;
-    lv2:port [
+    ] , [
         a lv2:OutputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports midi:MidiEvent ;
@@ -47,8 +46,7 @@
         lv2:index 1;
         lv2:symbol "MidiOut";
         lv2:name "Midi Out";
-    ]  ;
-    lv2:port [
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 2 ;
         lv2:symbol "ATTACK" ;
@@ -64,44 +62,42 @@
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 20.0 ;
-    ] ;
-    lv2:port [
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 4 ;
         lv2:symbol "RANDOM_TICK" ;
         lv2:name "Random Tick" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 5 ;
         lv2:symbol "RANDOM_LEN" ;
         lv2:name "Random Length" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 6 ;
         lv2:symbol "RANDOM_VEL" ;
         lv2:name "Random Velocity" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
-    ] ;
-    lv2:port [
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 7 ;
         lv2:symbol "CH_OUT" ;
         lv2:name "Output Channel" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 15.0 ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 15 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 8 ;
@@ -109,105 +105,9 @@
         lv2:name "Input Channel" ;
         lv2:portProperty lv2:integer ;
         lv2:default 0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 15.0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 15 ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 17 ;
-        lv2:symbol "INDEX_IN1" ;
-        lv2:name "Index In 1" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 18 ;
-        lv2:symbol "INDEX_IN2" ;
-        lv2:name "Index In 2" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 127 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 19 ;
-        lv2:symbol "RANGE_IN1" ;
-        lv2:name "Range In 1" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 20 ;
-        lv2:symbol "RANGE_IN2" ;
-        lv2:name "Range In 2" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 127 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 127.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 10 ;
-        lv2:symbol "ENABLE_RESTARTBYKBD" ;
-        lv2:name "Restart" ;
-        lv2:portProperty lv2:toggled ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 11 ;
-        lv2:symbol "ENABLE_TRIGBYKBD" ;
-        lv2:name "Trigger" ;
-        lv2:portProperty lv2:toggled ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 21 ;
-        lv2:symbol "ENABLE_TRIGLEGATO" ;
-        lv2:name "Trigger Legato" ;
-        lv2:portProperty lv2:toggled ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 22 ;
-        lv2:symbol "REPEAT_MODE" ;
-        lv2:name "Repeat Mode" ;
-        lv2:portProperty lv2:integer ;
-        lv2:scalePoint [ rdfs:label "Static"; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Up"; rdf:value 1 ] ;
-        lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
-        lv2:scalePoint [ rdfs:label "Random"; rdf:value 3 ] ;
-        lv2:default 1.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 3.0 ;
-    ] , [
-        a lv2:OutputPort, lv2:ControlPort ;
-        lv2:index 23 ;
-        lv2:portProperty pprop:notOnGUI ;
-        lv2:symbol "RPATTERNFLAG" ;
-        lv2:name "Receive Pattern Flag" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 24 ;
-        lv2:symbol "DEFER" ;
-        lv2:name "Defer mute" ;
-        lv2:portProperty lv2:toggled ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
-    ] ;
-    lv2:port [
         a lv2:OutputPort, lv2:ControlPort ;
         lv2:index 9 ;
         lv2:symbol "CURSOR_POS" ;
@@ -216,36 +116,170 @@
         lv2:default 0 ;
         lv2:minimum 0 ;
         lv2:maximum 8192 ;
-    ] ;
-    lv2:port [
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 25 ;
-        lv2:symbol "PATTERN_PRESET" ;
-        lv2:name "Pattern Preset" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 10.0 ;
+        lv2:index 10 ;
+        lv2:symbol "ENABLE_RESTARTBYKBD" ;
+        lv2:name "Restart" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 11 ;
+        lv2:symbol "ENABLE_TRIGBYKBD" ;
+        lv2:name "Trigger" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 12 ;
         lv2:symbol "MUTE" ;
         lv2:name "Mute Output" ;
-        lv2:portProperty lv2:toggled ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 13 ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:symbol "LATCH_MODE" ;
+        lv2:name "Latch mode" ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 14 ;
+        lv2:symbol "OCTAVE_MODE" ;
+        lv2:name "Octave Mode" ;
+        lv2:portProperty lv2:enumeration, lv2:integer ;
+        lv2:scalePoint [ rdfs:label "Static"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Up"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "Bounce"; rdf:value 3 ] ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 15 ;
+        lv2:symbol "OCTAVE_LOW" ;
+        lv2:name "Low octave limit" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 16 ;
+        lv2:symbol "OCTAVE_HIGH" ;
+        lv2:name "High octave limit" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 17 ;
+        lv2:symbol "INDEX_IN1" ;
+        lv2:name "Index In 1" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 18 ;
+        lv2:symbol "INDEX_IN2" ;
+        lv2:name "Index In 2" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 127 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 19 ;
+        lv2:symbol "RANGE_IN1" ;
+        lv2:name "Range In 1" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 20 ;
+        lv2:symbol "RANGE_IN2" ;
+        lv2:name "Range In 2" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 127 ;
+        lv2:minimum 0 ;
+        lv2:maximum 127 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 21 ;
+        lv2:symbol "ENABLE_TRIGLEGATO" ;
+        lv2:name "Trigger Legato" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+	lv2:minimum 0 ;
+	lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 22 ;
+        lv2:symbol "REPEAT_MODE" ;
+        lv2:name "Repeat Mode" ;
+        lv2:portProperty lv2:enumeration, lv2:integer ;
+        lv2:scalePoint [ rdfs:label "Static"; rdf:value 0 ] ;
+        lv2:scalePoint [ rdfs:label "Up"; rdf:value 1 ] ;
+        lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
+        lv2:scalePoint [ rdfs:label "Random"; rdf:value 3 ] ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 3 ;
+    ] , [
+        a lv2:OutputPort, lv2:ControlPort ;
+        lv2:index 23 ;
+        lv2:portProperty pprop:notOnGUI ;
+        lv2:symbol "RPATTERNFLAG" ;
+        lv2:name "Receive Pattern Flag" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 24 ;
+        lv2:symbol "DEFER" ;
+        lv2:name "Defer mute" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+    ] , [
+        a lv2:InputPort, lv2:ControlPort ;
+        lv2:index 25 ;
+        lv2:symbol "PATTERN_PRESET" ;
+        lv2:name "Pattern Preset" ;
+        lv2:portProperty lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 10 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 26 ;
         lv2:symbol "TRANSPORT_MODE" ;
         lv2:name "Transport Mode" ;
-        lv2:portProperty lv2:toggled ;
+        lv2:portProperty lv2:enumeration, lv2:integer ;
         lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
         lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
-        lv2:default 1.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
+        lv2:default 1 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 27 ;
@@ -255,48 +289,7 @@
         lv2:default 120 ;
         lv2:minimum  10 ;
         lv2:maximum 400 ;
-    ] ;
-    lv2:port [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 13 ;
-        lv2:portProperty lv2:toggled ;
-        lv2:symbol "LATCH_MODE" ;
-        lv2:name "Latch mode" ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 1.0 ;
     ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 14 ;
-        lv2:symbol "OCTAVE_MODE" ;
-        lv2:name "Octave Mode" ;
-        lv2:portProperty lv2:integer ;
-        lv2:scalePoint [ rdfs:label "Static"; rdf:value 0 ] ;
-        lv2:scalePoint [ rdfs:label "Up"; rdf:value 1 ] ;
-        lv2:scalePoint [ rdfs:label "Down"; rdf:value 2 ] ;
-        lv2:scalePoint [ rdfs:label "Bounce"; rdf:value 3 ] ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 3.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 15 ;
-        lv2:symbol "OCTAVE_LOW" ;
-        lv2:name "Low octave limit" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum 0.0 ;
-        lv2:maximum 3.0 ;
-    ] , [
-        a lv2:InputPort, lv2:ControlPort ;
-        lv2:index 16 ;
-        lv2:symbol "OCTAVE_HIGH" ;
-        lv2:name "High octave limit" ;
-        lv2:portProperty lv2:integer ;
-        lv2:default 0.0 ;
-        lv2:minimum -3.0 ;
-        lv2:maximum 0.0 ;
-    ], [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 28 ;
         lv2:portProperty pprop:notOnGUI ;
@@ -306,7 +299,7 @@
         lv2:minimum 2.0 ;
         lv2:maximum 400.0 ;
         lv2:designation time:beatsPerMinute ;
-    ], [
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 29 ;
         lv2:portProperty pprop:notOnGUI ;
@@ -316,12 +309,13 @@
         lv2:minimum 0.0 ;
         lv2:maximum 100000000000.0 ;
         lv2:designation time:frame ;
-    ], [
+    ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 30 ;
         lv2:portProperty pprop:notOnGUI ;
         lv2:symbol "HOST_SPEED" ;
         lv2:name "Host Speed (Start/Stop)" ;
+        lv2:portProperty lv2:toggled, lv2:integer ;
         lv2:default 0 ;
         lv2:minimum 0 ;
         lv2:maximum 1 ;
