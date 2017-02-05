@@ -25,12 +25,15 @@
 #define ENGINE_H
 
 #include <QDockWidget>
+#include <QThread>
 
+#include "jackdriver.h"
 #include "seqdriver.h"
 #include "arpwidget.h"
 #include "lfowidget.h"
 #include "seqwidget.h"
 #include "groovewidget.h"
+#include "config.h"
 
 /*!
  * @brief 5ms timer calling the updateDisplay() function periodically

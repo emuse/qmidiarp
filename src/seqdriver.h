@@ -21,9 +21,13 @@
  *      MA 02110-1301, USA.
  *
  */
+ 
 #ifndef SEQDRIVER_H
 #define SEQDRIVER_H
 
+#include "config.h"
+
+#ifdef HAVE_ALSA
 #include <alsa/asoundlib.h>
 
 #include "jackdriver.h"
@@ -115,4 +119,5 @@ class SeqDriver : public DriverBase {
         void setUseJackTransport(bool on);
 };
 
+#endif
 #endif

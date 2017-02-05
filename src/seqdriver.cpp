@@ -21,13 +21,15 @@
  *      MA 02110-1301, USA.
  *
  */
+#include "config.h"
+
+#ifdef HAVE_ALSA
+
 #include <cstdio>
 #include <QString>
 #include <alsa/asoundlib.h>
 
 #include "seqdriver.h"
-#include "config.h"
-
 
 SeqDriver::SeqDriver(
     JackDriver *p_jackSync,
@@ -415,3 +417,4 @@ bool SeqDriver::callJack(int portcount, const QString & clientname)
 {
     return jackSync->callJack(portcount, clientname);
 }
+#endif

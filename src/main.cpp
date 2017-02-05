@@ -73,8 +73,10 @@
 static struct option options[] = {
     {"version", 0, 0, 'v'},
     {"help", 0, 0, 'h'},
+#ifdef HAVE_ALSA
     {"alsa", 0, 0, 'a'},
     {"jack", 0, 0, 'j'},
+#endif
     {"jack_session_uuid", required_argument, 0, 'U' },
     {"portCount", 1, 0, 'p'},
     {0, 0, 0, 0}
@@ -112,22 +114,24 @@ int main(int argc, char *argv[])
                     "Print application version" << endl;
                 out << "  -h, --help               "
                     "Print this message" << endl;
+#ifdef HAVE_ALSA
                 out << "  -a, --alsa               "
                     "Use ALSA MIDI interface" << endl;
                 out << "  -j, --jack               "
                     "Use JACK MIDI interface (default)" << endl;
+#endif
                 out << QString("  -p, --portCount <num>    "
                         "Number of output ports [%1]").arg(portCount) << endl;
                 out.flush();
                 exit(EXIT_SUCCESS);
-
+#ifdef HAVE_ALSA
             case 'a':
                 alsamidi = true;
                 break;
-
             case 'j':
                 alsamidi = false;
                 break;
+#endif
             case 'U':
                 global_jack_session_uuid = QString(optarg);
                 break;

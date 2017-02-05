@@ -61,6 +61,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget,
         driver = new JackDriver(portCount, this, tr_state_cb, 
                 midi_event_received_callback, tick_callback, tempo_callback);
     }
+#ifdef HAVE_ALSA
     else {
     // In case of ALSA MIDI with Jack Transport sync, JackDriver is 
     // instantiated with 0 ports
@@ -70,6 +71,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget,
         driver = new SeqDriver(jackSync, portCount, this, 
                 midi_event_received_callback, tick_callback);
     }
+#endif
 
     midiLearnFlag = false;
     midiControllable = true;

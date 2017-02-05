@@ -34,6 +34,12 @@ LT_INIT([dlopen])
 # Checks for libraries
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
+AC_ARG_ENABLE(alsa,
+  AC_HELP_STRING([--enable-alsa], [provide ALSA backend option (default=yes)]),
+  [ac_alsa="$enableval"],
+  [ac_alsa="yes"])
+alsalib_found="yes"
+
 # Build LV2 plugins
 AC_ARG_ENABLE(lv2plugins,
   AC_HELP_STRING([--enable-lv2plugins], [build LV2 plugins (default=yes)]),
@@ -196,8 +202,9 @@ if test "x$ac_buildapp" = "xyes" ; then
     
     # Checks done if the standalone app is required
     # Checks for libraries
-    AC_CHECK_LIB([asound], [snd_pcm_open], ,
-                 [AC_MSG_ERROR(ALSA library (asound) is required)])
+    if test "x$ac_alsa" = "xyes" ; then
+        AC_CHECK_LIB([asound], [snd_pcm_open], , alsalib_found="no")
+    fi
     AC_CHECK_LIB([jack], [jack_client_open], ,
                  [AC_MSG_ERROR(JACK library (jack) is required)])
     # Enable NSM support
@@ -242,6 +249,9 @@ else
     AC_DEFINE(JACK_SESSION, 0)
 fi
 
+if test "x$alsalib_found" = "xyes" -a "x$ac_alsa" = "xyes" ; then
+    AC_DEFINE(HAVE_ALSA, 1, [Define to enable ALSA backend availabilty])
+fi
 # Remove the following generated file during configure to avoid need for make clean
 rm -f src/mainwindow_moc.cpp
 
@@ -282,6 +292,7 @@ if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
     else
         echo "Translation file generation enabled."
     fi
+echo
 else
     echo
     echo "Will not use any QT libs"
@@ -289,4 +300,8 @@ else
     echo
 fi
 
+if test "x$alsalib_found" = "xno" -o "x$ac_alsa" = "xno" ; then
+    echo "Will build without ALSA backend."
+    echo
+fi
 echo
