@@ -737,11 +737,11 @@ void MidiArp::updatePattern(const std::string& p_pattern)
 
 void MidiArp::newRandomValues()
 {
-    randomTick = (double)randomTickAmp * (0.5 - (double)random()
+    randomTick = (double)randomTickAmp * (0.5 - (double)rand()
             / (double)RAND_MAX);
-    randomVelocity = (double)randomVelocityAmp * (0.5 - (double)random()
+    randomVelocity = (double)randomVelocityAmp * (0.5 - (double)rand()
             / (double)RAND_MAX);
-    randomLength = (double)randomLengthAmp * (0.5 - (double)random()
+    randomLength = (double)randomLengthAmp * (0.5 - (double)rand()
             / (double)RAND_MAX);
 }
 

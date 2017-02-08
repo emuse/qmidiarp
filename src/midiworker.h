@@ -25,7 +25,7 @@
 #ifndef MIDIWORKER_H
 #define MIDIWORKER_H
 
-#include <main.h>
+#include "main.h"
 #include <cstdlib>
 #include <cstdio>
 
