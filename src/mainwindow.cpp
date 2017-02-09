@@ -1427,6 +1427,7 @@ void MainWindow::handleSignal(int sig)
 
 bool MainWindow::installSignalHandlers()
 {
+#ifdef SIGUSR1
     /*install pipe to forward received system signals*/
     if (pipe(sigpipe) < 0) {
         qWarning("pipe() failed: %s", std::strerror(errno));
@@ -1462,11 +1463,15 @@ bool MainWindow::installSignalHandlers()
     }
 #endif
 
+#endif
     return true;
 }
 
 void MainWindow::signalAction(int fd)
 {
+#ifndef SIGUSR1
+	(void)fd;
+#else
     int message;
 
     if (read(fd, &message, sizeof(message)) == -1) {
@@ -1490,6 +1495,7 @@ void MainWindow::signalAction(int fd)
             qWarning("Unexpected signal received: %d", message);
             break;
     }
+#endif
 }
 
 void MainWindow::jsAction(int evtype)
