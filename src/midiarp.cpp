@@ -701,9 +701,10 @@ void MidiArp::updatePattern(const std::string& p_pattern)
                 break;
 
             case 'p':
-                if (!chordmd)
+                if (!chordmd) {
                     nsteps += stepwd;
-                npoints++;
+               	    npoints++;
+                }
                 break;
 
             case '+':
