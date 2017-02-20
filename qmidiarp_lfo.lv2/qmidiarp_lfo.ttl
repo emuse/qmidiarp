@@ -318,7 +318,7 @@
         lv2:index 30 ;
         lv2:symbol "TRANSPORT_MODE" ;
         lv2:name "Transport Mode" ;
-        lv2:portProperty lv2:toggled, lv2:integer ;
+        lv2:portProperty lv2:enumeration, lv2:integer ;
         lv2:scalePoint [ rdfs:label "Free"; rdf:value 0 ] ;
         lv2:scalePoint [ rdfs:label "Host Transport"; rdf:value 1 ] ;
         lv2:default 1.0 ;
