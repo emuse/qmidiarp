@@ -171,18 +171,18 @@
         lv2:symbol "OCTAVE_LOW" ;
         lv2:name "Low octave limit" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum 0 ;
-        lv2:maximum 3 ;
+        lv2:default 0.0 ;
+        lv2:minimum -3.0 ;
+        lv2:maximum 0.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 16 ;
         lv2:symbol "OCTAVE_HIGH" ;
         lv2:name "High octave limit" ;
         lv2:portProperty lv2:integer ;
-        lv2:default 0 ;
-        lv2:minimum 0 ;
-        lv2:maximum 3 ;
+        lv2:default 0.0 ;
+        lv2:minimum 0.0 ;
+        lv2:maximum 3.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 17 ;
