@@ -12,7 +12,7 @@
 @prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
 
 <https://git.code.sf.net/p/qmidiarp/lfo>
-    a lv2:Plugin, lv2:InstrumentPlugin, lv2:ModulatorPlugin;
+    a lv2:Plugin, lv2:MIDIPlugin, lv2:ModulatorPlugin;
     doap:name "QMidiArp LFO" ;
     doap:license <http://opensource.org/licenses/GPL-2.0> ;
     doap:maintainer [

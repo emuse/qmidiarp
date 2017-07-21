@@ -14,7 +14,7 @@
 @prefix state: <http://lv2plug.in/ns/ext/state#> .
 
 <https://git.code.sf.net/p/qmidiarp/arp>
-    a lv2:Plugin, lv2:InstrumentPlugin ;
+    a lv2:Plugin, lv2:MIDIPlugin ;
     doap:name "QMidiArp Arp" ;
     doap:license <http://opensource.org/licenses/GPL-2.0> ;
     doap:maintainer [

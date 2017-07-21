@@ -1,6 +1,12 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
+# Temporarily include description of lv2:MIDIPlugin for backwards compatibility
+lv2:MIDIPlugin
+    a rdfs:Class ;
+    rdfs:subClassOf lv2:Plugin ;
+    rdfs:label "MIDI" .
+
 <https://git.code.sf.net/p/qmidiarp/arp>
     a lv2:Plugin ;
     lv2:appliesTo <qmidiarp_arp.so> ;
