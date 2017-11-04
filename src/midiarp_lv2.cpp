@@ -34,7 +34,6 @@ MidiArpLV2::MidiArpLV2 (
     MidiEventID = 0;
     sampleRate = sample_rate;
     curFrame = 0;
-    nCalls = 0;
     inEventBuffer = NULL;
     outEventBuffer = NULL;
     tempo = 120.0f;
@@ -286,7 +285,6 @@ void MidiArpLV2::run ( uint32_t nframes )
         }
         curFrame++;
     }
-    nCalls++;
 }
 
 void MidiArpLV2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size)

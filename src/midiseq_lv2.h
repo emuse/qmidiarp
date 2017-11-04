@@ -94,7 +94,6 @@ private:
 
         float *val[35];
         uint64_t curFrame;
-        uint64_t nCalls;
         uint64_t tempoChangeTick;
         int curTick;
         Sample currentSample;
