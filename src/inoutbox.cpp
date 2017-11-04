@@ -309,6 +309,8 @@ InOutBox::InOutBox(bool compactStyle,
             SLOT(updateEnableVelIn(bool)));
     connect(enableNoteIn, SIGNAL(toggled(bool)), this, 
             SLOT(updateEnableNoteIn(bool)));
+    connect(enableNoteOff, SIGNAL(toggled(bool)), this, 
+            SLOT(updateEnableNoteOff(bool)));
     connect(enableRestartByKbd, SIGNAL(toggled(bool)), this, 
             SLOT(updateEnableRestartByKbd(bool)));
     connect(enableTrigByKbd, SIGNAL(toggled(bool)), this, 
