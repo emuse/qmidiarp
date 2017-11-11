@@ -58,6 +58,7 @@ class MidiArp : public MidiWorker  {
     int arpTick;
     int nextLength;
     bool chordMode;
+    bool purgeReleaseFlag; /*!< Causes MidiArp::getNote() to call MidiArp::purgeReleaseNotes() */
     int patternIndex; /*!< Holds the current position within the pattern text*/
     int randomTick, randomVelocity, randomLength;
     int sustainBufferCount, latchBufferCount;
@@ -328,6 +329,12 @@ class MidiArp : public MidiWorker  {
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
   */
     void purgeLatchBuffer();
+
+ /*! @brief Untags notes tagged as released in the specified buffer.
+  * 
+  * @param bufptr Buffer pointer (0 or 1) to the buffer to act on
+  */
+    void purgeReleaseNotes(int bufptr);
 /**
  * @brief sets MidiArp::nextTick and MidiArp::patternIndex position
  * according to the specified tick.

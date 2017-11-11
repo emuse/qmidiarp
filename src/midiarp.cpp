@@ -84,6 +84,7 @@ MidiArp::MidiArp()
 */
     noteBufPtr = 0;
     releaseNoteCount = 0;
+    purgeReleaseFlag = false;
     stepWidth = 1.0;     // stepWidth relative to global queue stepWidth
     minStepWidth = 1.0;
     maxOctave = 0;
@@ -153,12 +154,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
             // if we have been triggered, remove pending release notes
-            if (trigByKbd && release_time > 0) {
-                for (int l1 = 0; l1 < noteCount; l1++) {
-                    if (notes[bufPtr][3][l1])
-                        removeNote(&notes[noteBufPtr][0][l1], -1, 0);
-                }
-            }
+            if (trigByKbd && release_time > 0) purgeReleaseNotes(noteBufPtr);
         }
         // modify buffer that is not accessed by arpeggio output
         bufPtr = (noteBufPtr) ? 0 : 1;
@@ -181,6 +177,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
         notes[bufPtr][3][index] = 0;
         noteCount++;
 
+        
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
 
         if ((trigByKbd && (getPressedNoteCount() == 1))
@@ -297,8 +294,8 @@ void MidiArp::tagAsReleased(int note, int tick, int bufPtr)
     if (note == notes[bufPtr][0][l1]) {
         notes[bufPtr][3][l1] = 1;
         notes[bufPtr][2][l1] = tick;
+        releaseNoteCount++;
     }
-    releaseNoteCount++;
 }
 
 void MidiArp::copyNoteBuffer()
@@ -328,6 +325,11 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     tmpIndex[1] = -1;
     gotCC = false;
     pause = false;
+    
+    if (purgeReleaseFlag) {
+        purgeReleaseNotes(noteBufPtr);
+        purgeReleaseFlag = false;
+    }
     if (restartFlag) advancePatternIndex(true);
 
     if (!patternIndex) initLoop();
@@ -426,7 +428,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
             if (releasefn < 0.0) releasefn = 0.0;
         }
         else releasefn = 1.0;
-
+        
         double attackfn = 0;
         if (attack_time > 0) {
             if (!notes[noteBufPtr][3][noteIndex[l1]]) {
@@ -796,6 +798,8 @@ void MidiArp::updateAttackTime(int val)
 
 void MidiArp::updateReleaseTime(int val)
 {
+    if (release_time > 0 && val == 0) purgeReleaseFlag = true;
+
     release_time = (double)val;
 }
 
@@ -843,6 +847,14 @@ void MidiArp::purgeLatchBuffer()
         removeNote(&buf, arpTick, 1);
     }
     latchBufferCount = 0;
+}
+
+void MidiArp::purgeReleaseNotes(int bufptr)
+{
+    for (int l1 = noteCount - 1; l1 >= 0; l1--) {
+        if (notes[bufptr][3][l1])
+            deleteNoteAt(l1, bufptr);
+    }
 }
 
 void MidiArp::applyPendingParChanges()
