@@ -43,7 +43,7 @@ MidiWorker::MidiWorker()
     ccnumber = 74;
     portOut = 0;
     channelOut = 0;
-    chIn = 0;
+    chIn = OMNI;
     ccnumberIn = 74;
     isMuted = false;
     isMutedDefer = false;

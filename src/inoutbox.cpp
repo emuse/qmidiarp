@@ -144,6 +144,8 @@ InOutBox::InOutBox(bool compactStyle,
     chIn = new QComboBox;
     int l1;
     for (l1 = 0; l1 < 16; l1++) chIn->addItem(QString::number(l1 + 1));
+    chIn->addItem("Omni");
+    chIn->setCurrentIndex(OMNI);
     chInLabel->setBuddy(chIn);
 
     inputFilterBox = new QGroupBox(tr("Note Filter"));
@@ -229,7 +231,7 @@ InOutBox::InOutBox(bool compactStyle,
     channelOut = new QComboBox;
     channelLabel->setBuddy(channelOut);
     for (l1 = 0; l1 < 16; l1++) channelOut->addItem(QString::number(l1 + 1));
-
+    
     QGridLayout *portBoxLayout = new QGridLayout;
     portBoxLayout->addWidget(ccnumberLabel, 0, 0);
     portBoxLayout->addWidget(ccnumberBox, 0, 1);

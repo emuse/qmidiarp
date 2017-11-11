@@ -67,7 +67,7 @@ MidiSeq::MidiSeq()
 bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
 {
     if (inEv.type != EV_NOTEON) return(true);
-    if (inEv.channel != chIn) return(true);
+    if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.data < 36) || (inEv.data >= 84)) return(true);
 
     if (inEv.value) {

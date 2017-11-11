@@ -37,6 +37,7 @@
 #define TPQN             192
 #define MIDICLK_TPQN      24
 #define MAXCHORD          33
+#define OMNI              16
 
 #define QMARCNAME ".qmidiarprc"
 #define JSFILENAME "js_saved.qmax"

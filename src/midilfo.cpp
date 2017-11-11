@@ -540,7 +540,7 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
 {
 
     if (!recordMode && (inEv.type == EV_CONTROLLER)) return(true);
-    if (inEv.channel != chIn) return(true);
+    if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && (inEv.data != ccnumberIn)) return(true);
 
     if ((inEv.type == EV_CONTROLLER) && recordMode) {

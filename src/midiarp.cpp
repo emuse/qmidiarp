@@ -135,7 +135,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     int bufPtr = 0;
     int index = 0;
 
-    if (inEv.channel != chIn) return(true);
+    if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && (inEv.data == CT_FOOTSW)) {
         setSustain((inEv.value == 127), tick);
         return(false);
