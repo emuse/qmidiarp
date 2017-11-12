@@ -136,6 +136,11 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     int index = 0;
 
     if (inEv.channel != chIn && chIn != OMNI) return(true);
+    if ((inEv.type == EV_CONTROLLER) && 
+        ((inEv.data == CT_ALLNOTESOFF) || (inEv.data == CT_ALLSOUNDOFF))) {
+        clearNoteBuffer();
+        return(true); // In case we receive all notes off we still forward
+    }
     if ((inEv.type == EV_CONTROLLER) && (inEv.data == CT_FOOTSW)) {
         setSustain((inEv.value == 127), tick);
         return(false);

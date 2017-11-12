@@ -28,6 +28,8 @@
 #include "midievent.h"
 
 #define CT_FOOTSW       0x40
+#define CT_ALLNOTESOFF  0x7B
+#define CT_ALLSOUNDOFF  0x78
 
 #define MAX_PORTS         64
 #define SEQPOOL         2048
