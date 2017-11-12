@@ -220,7 +220,6 @@ void MidiArp::addNote(int note, int vel, int tick)
     notes[bufPtr][3][index] = 0;
     noteCount++;
 
-    qWarning("Note Count %d",noteCount);
     copyNoteBuffer();
 
 }
