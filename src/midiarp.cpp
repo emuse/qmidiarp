@@ -181,7 +181,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             return(false);
         }
 
-        if (latch_mode) {
+        if (latch_mode && keep_rel) {
             latchBuffer.replace(latchBufferCount, inEv.data);
             latchBufferCount++;
             if (latchBufferCount != noteCount) {

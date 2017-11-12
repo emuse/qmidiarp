@@ -646,7 +646,15 @@ bool Engine::eventCallback(MidiEvent inEv)
         }
     }
     for (l1 = 0; l1 < midiArpCount(); l1++) {
-        unmatched = midiArp(l1)->handleEvent(inEv, tick, 1);
+        /* In case transport is stopped we cause note off events
+         * to remove the note from the buffer (ignoring the Release 
+         * time */
+        if (!status) {
+            unmatched = midiArp(l1)->handleEvent(inEv, tick, 0);
+        }
+        else {
+            unmatched = midiArp(l1)->handleEvent(inEv, tick, 1);
+        }
         if (midiArp(l1)->gotKbdTrig) {
             nextMinArpTick = midiArp(l1)->nextTick;
             no_collision = driver->requestEchoAt(nextMinArpTick, true);
