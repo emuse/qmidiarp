@@ -132,9 +132,6 @@ MidiArp::MidiArp()
 
 bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 {
-    int bufPtr = 0;
-    int index = 0;
-
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && 
         ((inEv.data == CT_ALLNOTESOFF) || (inEv.data == CT_ALLSOUNDOFF))) {
@@ -161,27 +158,8 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             // if we have been triggered, remove pending release notes
             if (trigByKbd && release_time > 0) purgeReleaseNotes(noteBufPtr);
         }
-        // modify buffer that is not accessed by arpeggio output
-        bufPtr = (noteBufPtr) ? 0 : 1;
-
-        if (!noteCount || (inEv.data > notes[bufPtr][0][noteCount - 1]))
-            index = noteCount;
-        else {
-            index = 0;
-            while (inEv.data > notes[bufPtr][0][index]) index++;
-
-            for (int l3 = 0; l3 < 4; l3++) {
-                for (int l2 = noteCount; l2 > index; l2--) {
-                    notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 - 1];
-                }
-            }
-        }
-        notes[bufPtr][0][index] = inEv.data;
-        notes[bufPtr][1][index] = inEv.value;
-        notes[bufPtr][2][index] = tick;
-        notes[bufPtr][3][index] = 0;
-        noteCount++;
-
+        
+        addNote(inEv.data, inEv.value, tick);
         
         if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
 
@@ -193,8 +171,6 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     }
     else {
         // This is a NOTE OFF event
-        // modify buffer that is not accessed by arpeggio output
-        bufPtr = (noteBufPtr) ? 0 : 1;
 
         if (!noteCount) {
             return(false);
@@ -214,26 +190,62 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             }
             return(false);
         }
-
-        if ((!keep_rel) || (!release_time)) {
-            //definitely remove from buffer
-            if (inEv.data == notes[bufPtr][0][noteCount - 1]) {
-                //note is on top of buffer: only decrement noteCount
-                noteCount--;
-                if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
-            }
-            else {
-                //note is not on top: take out the note and pull down all above
-                index = 0;
-                while ((index < noteCount) && (inEv.data > notes[bufPtr][0][index])) index++;
-                deleteNoteAt(index, bufPtr);
-            }
-        }
-        else tagAsReleased(inEv.data, tick, bufPtr);
+        
+        releaseNote(inEv.data, tick, keep_rel);
     }
     
-    copyNoteBuffer();
     return(false);
+}
+
+void MidiArp::addNote(int note, int vel, int tick)
+{
+        // modify buffer that is not accessed by arpeggio output
+    int bufPtr = (noteBufPtr) ? 0 : 1;
+    int index = 0;
+
+    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
+        index = noteCount;
+    else {
+        while (note > notes[bufPtr][0][index]) index++;
+
+        for (int l3 = 0; l3 < 4; l3++) {
+            for (int l2 = noteCount; l2 > index; l2--) {
+                notes[bufPtr][l3][l2] = notes[bufPtr][l3][l2 - 1];
+            }
+        }
+    }
+    notes[bufPtr][0][index] = note;
+    notes[bufPtr][1][index] = vel;
+    notes[bufPtr][2][index] = tick;
+    notes[bufPtr][3][index] = 0;
+    noteCount++;
+
+    qWarning("Note Count %d",noteCount);
+    copyNoteBuffer();
+
+}
+
+void MidiArp::releaseNote(int note, int tick, bool keep_rel)
+{
+    // modify buffer that is not accessed by arpeggio output
+    int bufPtr = (noteBufPtr) ? 0 : 1;
+    if ((!keep_rel) || (!release_time)) {
+        //definitely remove from buffer
+        if (note == notes[bufPtr][0][noteCount - 1]) {
+            //note is on top of buffer: only decrement noteCount
+            noteCount--;
+            if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
+        }
+        else {
+            //note is not on top: take out the note and pull down all above
+            int index = 0;
+            while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
+            deleteNoteAt(index, bufPtr);
+        }
+    }
+    else tagAsReleased(note, tick, bufPtr);
+    
+    copyNoteBuffer();
 }
 
 void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
@@ -453,7 +465,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 * releasefn * attackfn, 0, 127, &outOfRange);
 
         if ((release_time > 0.) && (notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1])) {
-            removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
+            deleteNoteAt(noteIndex[l1], noteBufPtr);
         }
         else {
             l1++;

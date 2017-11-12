@@ -137,11 +137,24 @@ class MidiArp : public MidiWorker  {
  * @return Number of notes present at the MIDI input port.
  */
     int getPressedNoteCount();
+
+/**
+ * @brief Adds an incoming note to the note buffer
+ *
+ * This function is called when a NOTE ON event is received. The 
+ * specified note is 
+ * 
+ * @param note note data
+ * @param val note velocity value
+ * @param tick the tick position of the event
+  * 
+ */
+    void addNote(int note, int vel, int tick);
 /**
  * @brief Either deletes a note or tags the note as released
  *
- * This function is called when a NOTE OFF event is received or when the
- * latch and sustain buffers are cleared. The specified note is either 
+ * This function is called when the latch and sustain buffers are 
+ * cleared. The specified note is either 
  * deleted via MidiArp::deleteNoteAt() or tagged as released if the 
  * release function is active and if the keep_rel flag is set to 1. 
  *
@@ -152,6 +165,20 @@ class MidiArp : public MidiWorker  {
  * 
  */
     void removeNote(int *noteptr, int tick, int keep_rel);
+/**
+ * @brief Handles a released incoming note
+ *
+ * This function is called when a NOTE OFF event is received. One note
+ * of the type specified is either deleted from the buffer or tagged 
+ * as released if the release time of the module is set > 0.
+ * 
+ * @param note note data
+ * @param tick the tick position of the event
+ * @param keep_rel If set to 1 and MidiArp::release_time is set, the 
+ * note is marked as released. If set to 0, the note will be deleted
+ * 
+ */
+    void releaseNote(int note, int tick, bool keep_rel);
 /**
  * @brief  Deletes a note inside the MidiArp::notes input
  * note buffer.
