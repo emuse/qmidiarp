@@ -151,7 +151,6 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
 
     if (inEv.value) {
         // This is a NOTE ON event
-        
         if (!getPressedNoteCount() || trigLegato) {
             purgeLatchBuffer();
             if (restartByKbd) restartFlag = true;
@@ -464,7 +463,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
                 * releasefn * attackfn, 0, 127, &outOfRange);
 
         if ((release_time > 0.) && (notes[noteBufPtr][3][noteIndex[l1]]) && (!velocity[l1])) {
-            deleteNoteAt(noteIndex[l1], noteBufPtr);
+            removeNote(&notes[noteBufPtr][0][noteIndex[l1]], -1, 0);
         }
         else {
             l1++;
