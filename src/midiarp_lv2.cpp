@@ -25,7 +25,6 @@
 #include <cstdio>
 #include <cmath>
 #include "midiarp_lv2.h"
-#include "arpwidget_lv2.h"
 
 MidiArpLV2::MidiArpLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
@@ -51,8 +50,6 @@ MidiArpLV2::MidiArpLV2 (
     ui_up = false;
 
     bufPtr = 0;
-    evQueue.resize(JQ_BUFSZ);
-    evTickQueue.resize(JQ_BUFSZ);
 
     LV2_URID_Map *urid_map;
 
@@ -69,7 +66,7 @@ MidiArpLV2::MidiArpLV2 (
         }
     }
     if (!urid_map) {
-        qWarning("Host does not support urid:map.");
+        printf("Host does not support urid:map.\n");
         return;
     }
 
@@ -196,9 +193,9 @@ void MidiArpLV2::run ( uint32_t nframes )
                     lv2_atom_object_get(obj, uris->pattern_string, &a0, 0);
                     if (a0 && a0->type == uris->atom_String) {
                         const char* p = (const char*)LV2_ATOM_BODY(a0);
-                        QString newPattern = QString::fromUtf8(p);
-                        QString txPattern = newPattern.remove(QChar(0));
-                        updatePattern(txPattern);
+                        std::string newPattern = p;
+                        //std::txPattern = newPattern.remove(QChar(0));
+                        updatePattern(newPattern);
                         sendPatternFlag = false;
                     }
                 }
@@ -240,17 +237,16 @@ void MidiArpLV2::run ( uint32_t nframes )
             newRandomValues();
             getNextFrame(curTick);
             if (!isMuted) {
-                if (hasNewNotes && !returnNote.isEmpty()
-                    && returnVelocity.at(0)) {
+                if (hasNewNotes && returnVelocity[0] != -1) {
                     int l2 = 0;
-                    while(returnNote.at(l2) >= 0) {
+                    while(returnNote[l2] >= 0) {
                         unsigned char d[3];
                         d[0] = 0x90 + channelOut;
-                        d[1] = returnNote.at(l2);
-                        d[2] = returnVelocity.at(l2);
+                        d[1] = returnNote[l2];
+                        d[2] = returnVelocity[l2];
                         forgeMidiEvent(f, d, 3);
-                        evTickQueue.replace(bufPtr, curTick + returnLength);
-                        evQueue.replace(bufPtr, returnNote.at(l2));
+                        evTickQueue[bufPtr] = curTick + returnLength;
+                        evQueue[bufPtr] = returnNote[l2];
                         bufPtr++;
                         l2++;
                     }
@@ -261,10 +257,10 @@ void MidiArpLV2::run ( uint32_t nframes )
         }
 
         // Note Off Queue handling
-        int noteofftick = evTickQueue.first();
+        int noteofftick = evTickQueue[0];
         int idx = 0;
         for (int l1 = 0; l1 < bufPtr; l1++) {
-            int tmptick = evTickQueue.at(l1);
+            int tmptick = evTickQueue[l1];
             if (noteofftick > tmptick) {
                 idx = l1;
                 noteofftick = tmptick;
@@ -272,10 +268,10 @@ void MidiArpLV2::run ( uint32_t nframes )
         }
         if ( (bufPtr) && ((curTick >= noteofftick)
                 || (hostTransport && !transportSpeed)) ) {
-            int outval = evQueue.at(idx);
+            int outval = evQueue[idx];
             for (int l4 = idx ; l4 < (bufPtr - 1);l4++) {
-                evQueue.replace(l4, evQueue.at(l4 + 1));
-                evTickQueue.replace(l4, evTickQueue.at(l4 + 1));
+                evQueue[l4] = evQueue[l4 + 1];
+                evTickQueue[l4] = evTickQueue[l4 + 1];
             }
             bufPtr--;
 
@@ -376,15 +372,15 @@ void MidiArpLV2::initTransport()
     setNextTick(tempoChangeTick);
 }
 
-void MidiArpLV2::sendPattern(const QString & p)
+void MidiArpLV2::sendPattern(const std::string & p)
 {
     if (!(ui_up && sendPatternFlag)) return;
 
     sendPatternFlag = false;
 
     const QMidiArpURIs* uris = &m_uris;
-    QByteArray byteArray = p.toUtf8();
-    const char* c = byteArray.constData();
+
+    const char* c = p.c_str();
 
 
     /* prepare forge buffer and initialize atom-sequence */
@@ -425,8 +421,8 @@ static LV2_State_Status MidiArpLV2_state_restore ( LV2_Handle instance,
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
     pPlugin->advancePatternIndex(true);
-    QString newpattern = QString::fromUtf8(value1);
-    pPlugin->updatePattern(newpattern);
+
+    pPlugin->updatePattern(value1);
     pPlugin->sendPatternFlag = true;
     return LV2_STATE_SUCCESS;
 }
@@ -447,8 +443,7 @@ static LV2_State_Status MidiArpLV2_state_save ( LV2_Handle instance,
 
     flags |= (LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
 
-    QByteArray byteArray = pPlugin->pattern.toUtf8();
-    const char* c = byteArray.constData();
+    const char* c = pPlugin->pattern.c_str();
 
     size_t size = strlen(c) + 1;
     uint32_t key = uris->pattern_string;

@@ -33,7 +33,6 @@
 #include <QStringList>
 #include <QSpinBox>
 #include <QStyle>
-#include <QTableWidget>
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -923,6 +922,23 @@ void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
     }
 }
 
+void MainWindow::skipXmlElement(QXmlStreamReader& xml)
+{
+    if (xml.isStartElement()) {
+        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        while (!xml.atEnd()) {
+            xml.readNext();
+
+            if (xml.isEndElement())
+                break;
+
+            if (xml.isStartElement()) {
+                skipXmlElement(xml);
+            }
+        }
+    }
+}
+
 void MainWindow::fileSave()
 {
     if (filename.isEmpty())
@@ -1411,6 +1427,7 @@ void MainWindow::handleSignal(int sig)
 
 bool MainWindow::installSignalHandlers()
 {
+#ifdef SIGUSR1
     /*install pipe to forward received system signals*/
     if (pipe(sigpipe) < 0) {
         qWarning("pipe() failed: %s", std::strerror(errno));
@@ -1446,11 +1463,15 @@ bool MainWindow::installSignalHandlers()
     }
 #endif
 
+#endif
     return true;
 }
 
 void MainWindow::signalAction(int fd)
 {
+#ifndef SIGUSR1
+	(void)fd;
+#else
     int message;
 
     if (read(fd, &message, sizeof(message)) == -1) {
@@ -1474,6 +1495,7 @@ void MainWindow::signalAction(int fd)
             qWarning("Unexpected signal received: %d", message);
             break;
     }
+#endif
 }
 
 void MainWindow::jsAction(int evtype)

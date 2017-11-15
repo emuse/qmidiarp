@@ -21,6 +21,8 @@
  *      MA 02110-1301, USA.
  */
 
+#include <vector>
+
 #include "seqwidget.h"
 
 #include "pixmaps/seqrecord.xpm"
@@ -341,7 +343,7 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        midiSeq->muteMask.replace(l1, tmpArray.at(l1));
+                        midiSeq->muteMask[l1] = tmpArray.at(l1);
                     }
                     midiSeq->maxNPoints = tmpArray.count();
                 }
@@ -361,8 +363,8 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
                         sample.value = tmpArray.at(l1);
                         sample.tick = lt;
-                        sample.muted = midiSeq->muteMask.at(l1);
-                        midiSeq->customWave.replace(l1, sample);
+                        sample.muted = midiSeq->muteMask[l1];
+                        midiSeq->customWave[l1] = sample;
                         lt+=step;
                     }
                     updateWaveForm(0);
@@ -395,9 +397,12 @@ void SeqWidget::updateNoteLength(int val)
 void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
-    if (midiSeq) midiSeq->getData(&data);
-    screen->updateData(data);
     modified = true;
+    if (!midiSeq) return;
+    std::vector<Sample> sdata;
+    midiSeq->getData(&sdata);
+    data=QVector<Sample>::fromStdVector(sdata);
+    screen->updateData(data);
 }
 
 void SeqWidget::setRecord(bool on)
@@ -413,26 +418,30 @@ void SeqWidget::updateRes(int val)
 {
     if (val > 4) return;
     resBoxIndex = val;
+    modified = true;
     if (!midiSeq) return;
     midiSeq->res = seqResValues[val];
     midiSeq->resizeAll();
-    midiSeq->getData(&data);
+    std::vector<Sample> sdata;
+    midiSeq->getData(&sdata);
+    data=QVector<Sample>::fromStdVector(sdata);
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
-    modified = true;
 }
 
 void SeqWidget::updateSize(int val)
 {
     if (val > 9) return;
     sizeBoxIndex = val;
+    modified = true;
     if (!midiSeq) return;
     midiSeq->size = sizeBox->currentText().toInt();
     midiSeq->resizeAll();
-    midiSeq->getData(&data);
+    std::vector<Sample> sdata;
+    midiSeq->getData(&sdata);
+    data=QVector<Sample>::fromStdVector(sdata);
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
-    modified = true;
 }
 
 void SeqWidget::updateLoop(int val)
@@ -503,7 +512,7 @@ void SeqWidget::doStoreParams(int ix)
     parStore->temp.dispVertIndex = dispVertIndex;
     parStore->temp.loopMode = loopBox->currentIndex();
     parStore->temp.wave = getCustomWave().mid(0, midiSeq->maxNPoints);
-    parStore->temp.muteMask = midiSeq->muteMask.mid(0, midiSeq->maxNPoints);
+    parStore->temp.muteMask = getMuteMask().mid(0, midiSeq->maxNPoints);
     parStore->temp.loopMarker = getLoopMarker();
 
     parStore->tempToList(ix);
@@ -514,8 +523,8 @@ void SeqWidget::doRestoreParams(int ix)
     midiSeq->applyPendingParChanges();
     if (parStore->list.at(ix).empty) return;
     for (int l1 = 0; l1 < parStore->list.at(ix).wave.count(); l1++) {
-        midiSeq->customWave.replace(l1, parStore->list.at(ix).wave.at(l1));
-        midiSeq->muteMask.replace(l1, parStore->list.at(ix).muteMask.at(l1));
+        midiSeq->customWave[l1] = parStore->list.at(ix).wave.at(l1);
+        midiSeq->muteMask[l1] = parStore->list.at(ix).muteMask.at(l1);
     }
     sizeBoxIndex = parStore->list.at(ix).size;
     sizeBox->setCurrentIndex(sizeBoxIndex);
@@ -589,8 +598,8 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 
     notelength->setValue(fromWidget->notelength->value());
     for (int l1 = 0; l1 < fromWidget->getMidiWorker()->maxNPoints; l1++) {
-        midiSeq->customWave.replace(l1, fromWidget->getCustomWave().at(l1));
-        midiSeq->muteMask.replace(l1, midiSeq->customWave.at(l1).muted);
+        midiSeq->customWave[l1] = fromWidget->getCustomWave().at(l1);
+        midiSeq->muteMask[l1] = midiSeq->customWave.at(l1).muted;
     }
     tmp = fromWidget->getLoopMarker();
     midiSeq->setLoopMarker(tmp);
@@ -602,7 +611,12 @@ void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
 
 QVector<Sample> SeqWidget::getCustomWave()
 {
-    return midiSeq->customWave;
+    return QVector<Sample>::fromStdVector(midiSeq->customWave);
+}
+
+QVector<bool> SeqWidget::getMuteMask()
+{
+    return QVector<bool>::fromStdVector(midiSeq->muteMask);
 }
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
@@ -704,13 +718,15 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 void SeqWidget::updateDisplay()
 {
     QVector<Sample> data;
+    std::vector<Sample> sdata;
 
     parStore->updateDisplay(getFramePtr(), midiSeq->reverse);
 
     if (dataChanged || midiSeq->dataChanged) {
         dataChanged=false;
         midiSeq->dataChanged=false;
-        midiSeq->getData(&data);
+        midiSeq->getData(&sdata);
+        data = QVector<Sample>::fromStdVector(sdata);
         screen->updateData(data);
         if (recordMode) screen->setCurrentRecStep(midiSeq->currentRecStep);
         cursor->updateNumbers(midiSeq->res, midiSeq->size);

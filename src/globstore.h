@@ -107,6 +107,18 @@ class GlobStore : public QWidget
     void handleController(int ccnumber, int channel, int value);
     bool isModified() { return modified;};
     void setModified(bool on) { modified = on; };
+#ifdef APPBUILD
+/*!
+* @brief allows ignoring one XML element in the XML stream
+* passed by the caller.
+*
+* It also advances the stream read-in. It is used to
+* ignore unknown elements for both-ways-compatibility
+*
+* @param xml reference to QXmlStreamReader containing the open XML stream
+*/
+    void skipXmlElement(QXmlStreamReader& xml);
+#endif
 
   signals:
 

@@ -28,7 +28,6 @@
 MidiSeq::MidiSeq()
 {
     recordMode = false;
-    enableLoop = true;
     currentRecStep = 0;
     loopMarker = 0;
 
@@ -47,21 +46,24 @@ MidiSeq::MidiSeq()
     lastMute = false;
     lastMouseLoc = 0;
 
+    customWave.resize(2048);
+    muteMask.resize(2048);
+    data.reserve(2048);
+    
     int lt = 0;
     int l1 = 0;
     int step = TPQN / res;
     Sample sample;
     sample.value = 60;
-    customWave.resize(2048);
-    muteMask.resize(2048);
     for (l1 = 0; l1 < 2048; l1++) {
-            sample.tick = lt;
-            sample.muted = false;
-            customWave.replace(l1, sample);
-            lt+=step;
+        sample.tick = lt;
+        sample.muted = false;
+        customWave[l1] = sample;
+        data[l1] = sample;
+        muteMask[l1] = false;
+        lt+=step;
     }
     returnNote = sample;
-    muteMask.fill(false, 2048);
 }
 
 bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
@@ -115,7 +117,7 @@ void MidiSeq::getNextFrame(int tick)
     if (restartFlag) setFramePtr(0);
     if (!framePtr) grooveTick = newGrooveTick;
 
-    sample = customWave.at(framePtr);
+    sample = customWave[framePtr];
     advancePatternIndex();
 
     if (nextTick < (tick - frame_nticks)) nextTick = tick;
@@ -209,20 +211,22 @@ void MidiSeq::advancePatternIndex()
     }
 }
 
-void MidiSeq::getData(QVector<Sample> *p_data)
+void MidiSeq::getData(std::vector<Sample> * p_data)
 {
     Sample sample;
     int lt = 0;
+    int l1 = 0;
     const int step = TPQN / res;
     const int npoints = res * size;
 
-    QVector<Sample> data;
+    data.resize(npoints);
 
     lt = step * npoints;
-    data = customWave.mid(0, npoints);
+    for (l1 = 0; l1 < npoints; l1++) data[l1] = customWave[l1];
     sample.value = -1;
     sample.tick = lt;
-    data.append(sample);
+    data.push_back(sample);
+    
     *p_data = data;
 }
 
@@ -371,10 +375,10 @@ void MidiSeq::setRecordedNote(int note)
 {
     Sample sample;
 
-    sample = customWave.at(currentRecStep);
+    sample = customWave[currentRecStep];
     sample.value = note;
     sample.tick = currentRecStep * TPQN / res;
-    customWave.replace(currentRecStep, sample);
+    customWave[currentRecStep] = sample;
 }
 
 void MidiSeq::resizeAll()
@@ -390,11 +394,11 @@ void MidiSeq::resizeAll()
         int lt = 0;
         for (int l1 = 0; l1 < npoints; l1++) {
             if (l1 >= maxNPoints)
-                muteMask.replace(l1, muteMask.at(l1 % maxNPoints));
-            sample = customWave.at(l1 % maxNPoints);
+                muteMask[l1] = muteMask[l1 % maxNPoints];
+            sample = customWave[l1 % maxNPoints];
             sample.tick = lt;
-            sample.muted = muteMask.at(l1);
-            customWave.replace(l1, sample);
+            sample.muted = muteMask[l1];
+            customWave[l1] = sample;
             lt+=step;
         }
         maxNPoints = npoints;
@@ -411,11 +415,11 @@ bool MidiSeq::toggleMutePoint(double mouseX)
     bool m;
     int loc = mouseX * (res * size);
 
-    m = muteMask.at(loc);
-    muteMask.replace(loc, !m);
-    sample = customWave.at(loc);
+    m = muteMask[loc];
+    muteMask[loc] = !m;
+    sample = customWave[loc];
     sample.muted = !m;
-    customWave.replace(loc, sample);
+    customWave[loc] = sample;
     return(!m);
 }
 
@@ -424,10 +428,10 @@ int MidiSeq::setMutePoint(double mouseX, bool on)
     Sample sample;
     int loc = mouseX * (res * size);
 
-    sample = customWave.at(loc);
+    sample = customWave[loc];
     sample.muted = on;
-    customWave.replace(loc, sample);
-    muteMask.replace(loc, on);
+    customWave[loc] = sample;
+    muteMask[loc] = on;
     return (loc);
 }
 

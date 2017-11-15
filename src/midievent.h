@@ -38,7 +38,6 @@
 #ifndef MIDIEVENT_H
 #define MIDIEVENT_H
 
-#include <QMetaType>
 
 /*! @brief Structure holding elements of a MIDI event
  */
@@ -49,8 +48,10 @@ typedef struct {
         int value;
     } MidiEvent;
 
+#ifdef APPBUILD
+#include <QMetaType>
 Q_DECLARE_METATYPE (MidiEvent)
-
+#endif
 
 /*! @brief Sequencer event type enum in analogy to the ALSA snd_seq_event_types */
 enum midi_event_type {

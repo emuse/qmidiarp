@@ -41,12 +41,10 @@
 #ifdef APPBUILD
 #include <QInputDialog>
 
-#include "globstore.h"
 #include "parstore.h"
 #endif
 
 #include "midiworker.h"
-#include "screen.h"
 /*! @brief GUI base class for module widgets, creates an in-out settings box
  *
  * The three module widget classes ArpWidget, SeqWidget and LfoWidget 
@@ -196,6 +194,16 @@ class InOutBox: public QWidget
     virtual void updateDisplay() = 0;
     virtual void updateIndicators();
     virtual void checkIfRestore(int *restoreTick, bool *restoreFlag);
+/*!
+* @brief allows ignoring one XML element in the XML stream
+* passed by the caller.
+*
+* It also advances the stream read-in. It is used to
+* ignore unknown elements for both-ways-compatibility
+*
+* @param xml reference to QXmlStreamReader containing the open XML stream
+*/
+    virtual void skipXmlElement(QXmlStreamReader& xml);
 #endif
 	
   public slots:
@@ -217,7 +225,7 @@ class InOutBox: public QWidget
 /*!
 * @brief Slot for InOutBox::cloneAction.
 *
-* This function emits the InOutBox::dockClone
+* This function emits the InOutBox::moduleClone()
 * signal to MainWindow with the module ID and the dockWidget ID.
 */
     virtual void moduleClone();

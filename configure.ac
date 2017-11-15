@@ -32,128 +32,13 @@ LT_INIT([dlopen])
 
 
 # Checks for libraries
-AC_CHECK_LIB([asound], [snd_pcm_open], ,
-             [AC_MSG_ERROR(ALSA library (asound) is required)])
-AC_CHECK_LIB([jack], [jack_client_open], ,
-             [AC_MSG_ERROR(JACK library (jack) is required)])
 AC_CHECK_LIB([m], [roundf], , AC_MSG_ERROR([required libm missing]))
 
-AC_ARG_ENABLE(qt5, AC_HELP_STRING([--enable-qt5],
-                          [enable Qt5 instead of Qt4 library]),,
-                          enable_qt4=yes)
-
-AS_IF([test x$enable_qt4 = xyes],
-dnl Check for Qt4 library files
-[
-PKG_CHECK_MODULES(Qt4, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
-if test "x$HAVE_QT4" = "xyes"; then
-  dnl Check needed because in some cases the QtGui includedir
-  dnl does not contain the subsystem dir.
-  QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir QtGui`
-  QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui`
-  EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-  AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
-  AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-  AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
-             QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
-             AC_MSG_WARN([QWidget not found])))
-
-  AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])
-  AC_SUBST(QT_CXXFLAGS)
-  AC_SUBST(Qt4_LIBS)
-else
-  AC_MSG_ERROR([cannot find Qt4 library >= 4.2])
-fi
-ac_qtversion=qt4],
-dnl ... or use Qt5
-[
-PKG_CHECK_MODULES(Qt5, Qt5Core Qt5Gui Qt5Widgets >= 5.0,
-                  HAVE_QT5="yes", HAVE_QT5="no")
-if test "x$HAVE_QT5" = "xyes"; then
-  dnl Check needed because in some cases the QtGui includedir
-  dnl doesnt contain the subsystem dir.
-  QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir Qt5Gui`
-  QT_CXXFLAGS=`$PKG_CONFIG --cflags Qt5Core Qt5Gui Qt5Widgets`
-  QT_CXXFLAGS="$QT_CXXFLAGS -fPIC"
-  EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-  AC_CHECK_FILE([$QT_INCLUDE_DIR/QtWidgets/QWidget],
-    AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-      AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
-        QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
-          AC_MSG_WARN([QWidget not found])))
-
-  AC_SUBST(QT_CXXFLAGS)
-  AC_SUBST(Qt5_LIBS)
-  AC_DEFINE([HAVE_QT5], [1],[Define to 1 if you have Qt5.])
-
-else
-  AC_MSG_ERROR([cannot find Qt5 library >= 5.0])
-fi
-ac_qtversion=qt5
-])
-dnl endo of qt version test
-
-dnl check for moc
-AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$PATH:$QTDIR/bin])
-if test "x$MOC" = "xno" ; then
-  AC_MSG_ERROR(
-    [cannot find 'moc', please install the Qt development tools package.])
-fi
-
-# Enable translations.
-AC_ARG_ENABLE(translations,
-  AC_HELP_STRING([--enable-translations], [enable translation file generation (default=no)]),
-  [ac_translations="$enableval"],
-  [ac_translations="no"])
-
-AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test "x$ac_translations" = "xyes"])
-
-AM_COND_IF([ENABLE_TRANSLATIONS],[
-dnl check for lupdate
-AC_PATH_PROGS(LUPDATE, lupdate-$ac_qtversion lupdate, no, [$PATH:$QTDIR/bin])
-if test "x$LUPDATE" = "xno" ; then
-  AC_MSG_ERROR(
-    [cannot find 'lupdate', please install the Qt development tools package.])
-fi
-
-dnl check for lrelease
-AC_PATH_PROGS(LRELEASE, lrelease-$ac_qtversion lrelease, no, [$PATH:$QTDIR/bin])
-if test "x$LRELEASE" = "xno" ; then
-  AC_MSG_ERROR(
-    [cannot find 'lrelease', please install the Qt development tools package.])
-fi
-], [AC_MSG_NOTICE([translations are disabled])])
-
-# Enable NSM support
-AC_ARG_ENABLE(nsm,
-  AC_HELP_STRING([--enable-nsm], [enable NSM support generation (default=yes)]),
-  [ac_nsm="$enableval"],
-  [ac_nsm="yes"])
-
-AM_CONDITIONAL([ENABLE_NSM], [test "x$ac_nsm" = "xyes"])
-
-AM_COND_IF([ENABLE_NSM],[
-dnl check for liblo
-AC_CHECK_HEADER( lo/lo.h, loinclude_found="yes", loinclude_found="no" )
-# OSC support
-PKG_CHECK_MODULES(LIBLO, liblo >= 0.26, libloWorks="yes", libloWorks="no")
-LIBSsave=$LIBS
-CFLAGSsave=$CFLAGS
-CFLAGS=$LIBLO_CFLAGS
-LIBS=$LIBLO_LIBS
-
-AC_SUBST(LIBLO_CFLAGS)
-AC_SUBST(LIBLO_LIBS)
-LIBS="$LIBS $LIBSsave"
-CFLAGS="$CFLAGS $CFLAGSsave"
-
-if test "$loinclude_found" = "no" -o "libloWorks" = "no"; then
-  AC_MSG_NOTICE(
-    [cannot find a liblo component for building. Will build without nsm support.])
-else
-    AC_DEFINE(NSM, 1, [Define to enable NSM session manager support])
-fi
-], [AC_MSG_NOTICE([NSM support is disabled])])
+AC_ARG_ENABLE(alsa,
+  AC_HELP_STRING([--enable-alsa], [provide ALSA backend option (default=yes)]),
+  [ac_alsa="$enableval"],
+  [ac_alsa="yes"])
+alsalib_found="yes"
 
 # Build LV2 plugins
 AC_ARG_ENABLE(lv2plugins,
@@ -162,6 +47,7 @@ AC_ARG_ENABLE(lv2plugins,
   [ac_lv2plugins="yes"])
 
 AM_CONDITIONAL([BUILD_LV2], [test "x$ac_lv2plugins" = "xyes"])
+ac_lv2willbuild=no
 
 AM_COND_IF([BUILD_LV2],[
 dnl check for lv2atom
@@ -175,11 +61,197 @@ CFLAGS="$CFLAGS $CFLAGSsave"
 if test $lv2include_found = "no" -o $lv2Works = "no"; then
     AC_MSG_NOTICE(
         [cannot find an lv2 component for building. Will not build LV2 plugins.])
-    AM_CONDITIONAL([BUILD_LV2], 0)
+    AM_CONDITIONAL([BUILD_LV2], false)
+    AM_CONDITIONAL([BUILD_LV2_UI], false)
+else
+    ac_lv2willbuild=yes    
 fi
 
 ], [AC_MSG_NOTICE([LV2 plugins will not be built])])
 
+# Build LV2 plugin Qt UIs ?
+AC_ARG_ENABLE(lv2pluginuis,
+    AC_HELP_STRING([--enable-lv2pluginuis], [build LV2 plugin UIs (default=yes)]),
+  [ac_lv2pluginuis="$enableval"],
+  [ac_lv2pluginuis="yes"])
+
+AM_CONDITIONAL([BUILD_LV2_UI], [test "x$ac_lv2pluginuis" = "xyes" -a "x$ac_lv2willbuild" = "xyes"])
+
+# Build QMidiArp standalone application ?
+AC_ARG_ENABLE(buildapp,
+    AC_HELP_STRING([--enable-buildapp], [build standalone application (default=yes)]),
+  [ac_buildapp="$enableval"],
+  [ac_buildapp="yes"])
+
+AM_CONDITIONAL([BUILD_APP], [test "x$ac_buildapp" = "xyes"])
+
+AC_ARG_ENABLE(qt4, AC_HELP_STRING([--enable-qt4],
+                          [force Qt4 instead of Qt5 library (default=no)]),,
+                          enable_qt4=no)
+                          
+if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2willbuild" = "xyes"]; then
+    AC_MSG_NOTICE([QT stuff required for standalone app or LV2 UIs])
+    dnl Check for Qt stuff only if we require GUI building
+    AS_IF([test x$enable_qt4 = xyes],
+        dnl Check for Qt4 library files
+        [
+        PKG_CHECK_MODULES(Qt4, QtCore QtGui >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
+        if test "x$HAVE_QT4" = "xyes"; then
+          dnl Check needed because in some cases the QtGui includedir
+          dnl does not contain the subsystem dir.
+          QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir QtGui`
+          QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui`
+          EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
+          AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
+          AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
+          AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
+                     QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
+                     AC_MSG_WARN([QWidget not found])))
+        
+          AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])
+          AC_SUBST(QT_CXXFLAGS)
+          AC_SUBST(Qt4_LIBS)
+        else
+          AC_MSG_NOTICE([cannot find Qt4 library >= 4.2])
+          AM_CONDITIONAL([BUILD_APP], false)
+          AM_CONDITIONAL([BUILD_LV2_UI], false)
+        fi
+        ac_qtversion=qt4],
+        dnl ... or use Qt5
+        [
+        PKG_CHECK_MODULES(Qt5, Qt5Core Qt5Gui Qt5Widgets >= 5.0,
+                          HAVE_QT5="yes", HAVE_QT5="no")
+        if test "x$HAVE_QT5" = "xyes"; then
+          dnl Check needed because in some cases the QtGui includedir
+          dnl doesnt contain the subsystem dir.
+          QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir Qt5Gui`
+          QT_CXXFLAGS=`$PKG_CONFIG --cflags Qt5Core Qt5Gui Qt5Widgets`
+          QT_CXXFLAGS="$QT_CXXFLAGS -fPIC"
+          EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
+          AC_CHECK_FILE([$QT_INCLUDE_DIR/QtWidgets/QWidget],
+            AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
+              AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
+                QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
+                  AC_MSG_WARN([QWidget not found])))
+        
+          AC_SUBST(QT_CXXFLAGS)
+          AC_SUBST(Qt5_LIBS)
+          AC_DEFINE([HAVE_QT5], [1],[Define to 1 if you have Qt5.])
+        
+        else
+          AC_MSG_NOTICE([cannot find Qt5 library >= 5.0])
+          AM_CONDITIONAL([BUILD_APP], false)
+          AM_CONDITIONAL([BUILD_LV2_UI], false)
+        fi
+        ac_qtversion=qt5
+    ])
+    dnl endo of qt version test
+    
+    dnl check for moc
+    AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$PATH:$QTDIR/bin])
+    if test "x$MOC" = "xno" ; then
+      AC_MSG_ERROR(
+        [cannot find 'moc', please install the Qt development tools package.])
+    fi
+    
+    # Enable translations.
+    AC_ARG_ENABLE(translations,
+      AC_HELP_STRING([--enable-translations], [enable translation file generation (default=no)]),
+      [ac_translations="$enableval"],
+      [ac_translations="no"])
+    
+    AM_CONDITIONAL([ENABLE_TRANSLATIONS], [test "x$ac_translations" = "xyes"])
+    
+    AM_COND_IF([ENABLE_TRANSLATIONS],[
+    dnl check for lupdate
+    AC_PATH_PROGS(LUPDATE, lupdate-$ac_qtversion lupdate, no, [$PATH:$QTDIR/bin])
+    if test "x$LUPDATE" = "xno" ; then
+      AC_MSG_ERROR(
+        [cannot find 'lupdate', please install the Qt development tools package.])
+    fi
+    
+    dnl check for lrelease
+    AC_PATH_PROGS(LRELEASE, lrelease-$ac_qtversion lrelease, no, [$PATH:$QTDIR/bin])
+    if test "x$LRELEASE" = "xno" ; then
+      AC_MSG_ERROR(
+        [cannot find 'lrelease', please install the Qt development tools package.])
+    fi
+    ], [AC_MSG_NOTICE([translations are disabled])])
+    
+    # Modify the entries in the LV2 ttl files according to Qt version
+    
+    if test "x$ac_qtversion" = "xqt5"; then
+        sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+        sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+        sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+    fi
+    if test "x$ac_qtversion" = "xqt4"; then
+        sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+        sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+        sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+    fi
+else
+    AM_CONDITIONAL([ENABLE_TRANSLATIONS], false)
+    AM_CONDITIONAL([NEED_MOC], false)
+fi
+
+AM_CONDITIONAL([NEED_MOC], [test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes"])
+
+if test "x$ac_buildapp" = "xyes" ; then
+    AC_MSG_NOTICE([Application build enabled.])
+    
+    # Checks done if the standalone app is required
+    # Checks for libraries
+    if test "x$ac_alsa" = "xyes" ; then
+        AC_CHECK_LIB([asound], [snd_pcm_open], , alsalib_found="no")
+    fi
+    AC_CHECK_LIB([jack], [jack_client_open], ,
+                 [AC_MSG_ERROR(JACK library (jack) is required)])
+    # Enable NSM support
+    AC_ARG_ENABLE(nsm,
+      AC_HELP_STRING([--enable-nsm], [enable NSM support generation (default=yes)]),
+      [ac_nsm="$enableval"],
+      [ac_nsm="yes"])
+    
+    AM_CONDITIONAL([ENABLE_NSM], [test "x$ac_nsm" = "xyes"])
+    
+    AM_COND_IF([ENABLE_NSM],[
+    dnl check for liblo
+    AC_CHECK_HEADER( lo/lo.h, loinclude_found="yes", loinclude_found="no" )
+    # OSC support
+    PKG_CHECK_MODULES(LIBLO, liblo >= 0.26, libloWorks="yes", libloWorks="no")
+    LIBSsave=$LIBS
+    CFLAGSsave=$CFLAGS
+    CFLAGS=$LIBLO_CFLAGS
+    LIBS=$LIBLO_LIBS
+    
+    AC_SUBST(LIBLO_CFLAGS)
+    AC_SUBST(LIBLO_LIBS)
+    LIBS="$LIBS $LIBSsave"
+    CFLAGS="$CFLAGS $CFLAGSsave"
+    
+    if test "$loinclude_found" = "no" -o "libloWorks" = "no"; then
+      AC_MSG_NOTICE(
+        [cannot find a liblo component for building. Will build without nsm support.])
+    else
+        AC_DEFINE(NSM, 1, [Define to enable NSM session manager support])
+    fi
+    ], [AC_MSG_NOTICE([NSM support is disabled])])
+
+    # JACK session support
+    
+    AC_CHECK_HEADER(jack/session.h, jack_session_found="yes", jack_session_found="no")
+    if test "$jack_session_found" = "yes"; then
+        AC_DEFINE(JACK_SESSION, 1, [Define to enable jack session support])
+    fi
+else
+    AM_CONDITIONAL([ENABLE_NSM], false)
+    AC_DEFINE(JACK_SESSION, 0)
+fi
+
+if test "x$alsalib_found" = "xyes" -a "x$ac_alsa" = "xyes" ; then
+    AC_DEFINE(HAVE_ALSA, 1, [Define to enable ALSA backend availabilty])
+fi
 # Remove the following generated file during configure to avoid need for make clean
 rm -f src/mainwindow_moc.cpp
 
@@ -198,14 +270,6 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([floor ftruncate getcwd memset malloc mkdir pow rint sqrt])
 
 
-# Checks for header files.
-
-AC_CHECK_HEADER(jack/session.h, jack_session_found="yes", jack_session_found="no")
-if test "$jack_session_found" = "yes"; then
-    AC_DEFINE(JACK_SESSION, 1, [Define to enable jack session support])
-fi
-
-
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
@@ -216,28 +280,28 @@ AC_CONFIG_FILES([src/pixmaps/Makefile] [man/Makefile] [man/fr/Makefile])
 AC_CONFIG_FILES([man/de/Makefile])
 AC_OUTPUT
 
+if test "x$ac_buildapp" = "xyes" -o "x$ac_lv2pluginuis" = "xyes" ; then
+    
+    echo
+    echo "Will use the following QT libs:" $Qt4_LIBS $Qt5_LIBS
+    
+    echo
+    if test "x$ac_translations" = "xno" ; then
+        echo "Translation file generation disabled."
+        echo "Use ./configure --enable-translations=yes to enable."
+    else
+        echo "Translation file generation enabled."
+    fi
 echo
-echo "Will use the following QT libs:" $Qt4_LIBS $Qt5_LIBS
-
-echo
-if test "x$ac_translations" = "xno" ; then
-    echo "Translation file generation disabled."
-    echo "Use ./configure --enable-translations=yes to enable."
 else
-    echo "Translation file generation enabled."
+    echo
+    echo "Will not use any QT libs"
+    
+    echo
 fi
 
-# Modify the entries in the LV2 ttl files according to Qt version
-
-if test "x$ac_qtversion" = "xqt5"; then
-    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
-    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
-    sed -i "s/Qt4UI/Qt5UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+if test "x$alsalib_found" = "xno" -o "x$ac_alsa" = "xno" ; then
+    echo "Will build without ALSA backend."
+    echo
 fi
-if test "x$ac_qtversion" = "xqt4"; then
-    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
-    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
-    sed -i "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
-fi
-
 echo

@@ -36,4 +36,12 @@ install-exec-hook:
 	rm -f $(DESTDIR)$(arp_lv2datadir)/*.la
 	rm -f $(DESTDIR)$(lfo_lv2datadir)/*.la
 	rm -f $(DESTDIR)$(seq_lv2datadir)/*.la
+	
+uninstall-hook:
+	rm -f $(DESTDIR)$(arp_lv2datadir)/*.so
+	rm -f $(DESTDIR)$(lfo_lv2datadir)/*.so
+	rm -f $(DESTDIR)$(seq_lv2datadir)/*.so
+	rmdir $(DESTDIR)$(arp_lv2datadir)
+	rmdir $(DESTDIR)$(lfo_lv2datadir)
+	rmdir $(DESTDIR)$(seq_lv2datadir)
 endif

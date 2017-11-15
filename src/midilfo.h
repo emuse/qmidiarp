@@ -25,6 +25,7 @@
 #ifndef MIDILFO_H
 #define MIDILFO_H
 
+#include <vector>
 #include "midiworker.h"
 
 
@@ -46,8 +47,6 @@
  * corresponding position.
  */
 class MidiLfo : public MidiWorker  {
-
-  Q_OBJECT
 
   private:
     int lastMouseLoc;   /*!< The X location of the last modification of the wave, used for interpolation*/
@@ -79,13 +78,14 @@ class MidiLfo : public MidiWorker  {
                                     @par 4: Square
                                     @par 5: Use Custom Wave */
     int cwmin;                  /*!< The minimum of MidiLfo::customWave */
-    QVector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
-    QVector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
-    QVector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
-    QVector<Sample> data;
+    std::vector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
+    std::vector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
+    std::vector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
+    std::vector<Sample> data;
 
   public:
     MidiLfo();
+    virtual ~MidiLfo() {}
     void updateWaveForm(int val);
     void updateFrequency(int);
     void updateAmplitude(int);
@@ -191,7 +191,7 @@ class MidiLfo : public MidiWorker  {
  *
  * @param *data reference to an array the waveform is copied to
  */
-    void getData(QVector<Sample> *data);
+    void getData(std::vector<Sample> *data);
 /*! @brief fills the MidiLfo::frame with Sample data points taken from
  * the currently active waveform MidiLfo::data.
  *

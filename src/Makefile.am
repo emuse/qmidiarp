@@ -1,6 +1,6 @@
 # Makefile.am for qmidiarp
+if BUILD_APP
 SUBDIRS = pixmaps
-
 bin_PROGRAMS = qmidiarp
 
 nodist_qmidiarp_SOURCES = \
@@ -68,27 +68,17 @@ qmidiarp_SOURCES = \
 qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD
 qmidiarp_LDADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
+endif
+
 if BUILD_LV2
 
 arpplugindir = @libdir@/lv2/qmidiarp_arp.lv2
 lfoplugindir = @libdir@/lv2/qmidiarp_lfo.lv2
 seqplugindir = @libdir@/lv2/qmidiarp_seq.lv2
-arppluginuidir = @libdir@/lv2/qmidiarp_arp.lv2
-lfopluginuidir = @libdir@/lv2/qmidiarp_lfo.lv2
-seqpluginuidir = @libdir@/lv2/qmidiarp_seq.lv2
 
 arpplugin_LTLIBRARIES = qmidiarp_arp.la
 lfoplugin_LTLIBRARIES = qmidiarp_lfo.la
 seqplugin_LTLIBRARIES = qmidiarp_seq.la
-
-arppluginui_LTLIBRARIES = qmidiarp_arp_ui.la
-lfopluginui_LTLIBRARIES = qmidiarp_lfo_ui.la
-seqpluginui_LTLIBRARIES = qmidiarp_seq_ui.la
-
-nodist_qmidiarp_lfo_la_SOURCES = \
-	midiworker_moc.cpp \
-	midilfo_moc.cpp \
-	midilfo_lv2_moc.cpp
 
 qmidiarp_lfo_la_SOURCES = \
 	lv2_common.h \
@@ -98,7 +88,35 @@ qmidiarp_lfo_la_SOURCES = \
 	midilfo_lv2.cpp midilfo_lv2.h
 
 qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_lfo_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+
+qmidiarp_seq_la_SOURCES = \
+	lv2_common.h \
+	main.h \
+	midiworker.cpp midiworker.h \
+	midiseq.cpp midiseq.h \
+	midiseq_lv2.cpp midiseq_lv2.h
+
+qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
+
+qmidiarp_arp_la_SOURCES = \
+	lv2_common.h \
+	main.h \
+	midiworker.cpp midiworker.h \
+	midiarp.cpp midiarp.h \
+	midiarp_lv2.cpp midiarp_lv2.h
+
+qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
+
+if BUILD_LV2_UI
+SUBDIRS = pixmaps
+
+arppluginuidir = @libdir@/lv2/qmidiarp_arp.lv2
+lfopluginuidir = @libdir@/lv2/qmidiarp_lfo.lv2
+seqpluginuidir = @libdir@/lv2/qmidiarp_seq.lv2
+
+arppluginui_LTLIBRARIES = qmidiarp_arp_ui.la
+lfopluginui_LTLIBRARIES = qmidiarp_lfo_ui.la
+seqpluginui_LTLIBRARIES = qmidiarp_seq_ui.la
 
 nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -127,21 +145,6 @@ qmidiarp_lfo_ui_la_SOURCES = \
 qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
-nodist_qmidiarp_seq_la_SOURCES = \
-	midiworker_moc.cpp \
-	midiseq_moc.cpp \
-	midiseq_lv2_moc.cpp
-
-qmidiarp_seq_la_SOURCES = \
-	lv2_common.h \
-	main.h \
-	midiworker.cpp midiworker.h \
-	midiseq.cpp midiseq.h \
-	midiseq_lv2.cpp midiseq_lv2.h
-
-qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_seq_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
-
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	midiworker_moc.cpp \
@@ -168,21 +171,6 @@ qmidiarp_seq_ui_la_SOURCES = \
 
 qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
-
-nodist_qmidiarp_arp_la_SOURCES = \
-	midiworker_moc.cpp \
-	midiarp_moc.cpp \
-	midiarp_lv2_moc.cpp
-
-qmidiarp_arp_la_SOURCES = \
-	lv2_common.h \
-	main.h \
-	midiworker.cpp midiworker.h \
-	midiarp.cpp midiarp.h \
-	midiarp_lv2.cpp midiarp_lv2.h
-
-qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
-qmidiarp_arp_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -212,6 +200,7 @@ qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -E
 qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 endif
+endif
 
 if ENABLE_TRANSLATIONS
 translationsdir = $(pkgdatadir)/translations
@@ -239,14 +228,12 @@ EXTRA_DIST = qmidiarp.pro $(translations)
 # all generated files to be removed by "make clean"
 CLEANFILES = \
 	$(nodist_qmidiarp_SOURCES) \
-	$(nodist_qmidiarp_arp_la_SOURCES) \
-	$(nodist_qmidiarp_lfo_la_SOURCES) \
-	$(nodist_qmidiarp_seq_la_SOURCES) \
 	$(nodist_qmidiarp_arp_ui_la_SOURCES) \
 	$(nodist_qmidiarp_lfo_ui_la_SOURCES) \
 	$(nodist_qmidiarp_seq_ui_la_SOURCES) \
 	$(translations_DATA)
 
+if NEED_MOC
 # rule for moc-file generation
 SUFFIXES = _moc.cpp
 
@@ -265,4 +252,5 @@ $(translations): $(qmidiarp_SOURCES)
 # rule to generate binary translation files
 .ts.qm: $(translations)
 	$(LRELEASE) -verbose $< -qm $@
+endif
 endif

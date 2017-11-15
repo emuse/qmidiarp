@@ -118,8 +118,8 @@ private:
         float transportBpm;
         float transportSpeed;
         bool hostTransport;
-        QVector<uint> evQueue;
-        QVector<uint> evTickQueue;
+        uint evQueue[JQ_BUFSZ];
+        uint evTickQueue[JQ_BUFSZ];
         int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;
