@@ -85,9 +85,9 @@ AC_ARG_ENABLE(buildapp,
 
 AM_CONDITIONAL([BUILD_APP], [test "x$ac_buildapp" = "xyes"])
 
-AC_ARG_ENABLE(qt5, AC_HELP_STRING([--enable-qt5],
-                          [enable Qt5 instead of Qt4 library]),,
-                          enable_qt4=yes)
+AC_ARG_ENABLE(qt4, AC_HELP_STRING([--enable-qt4],
+                          [force Qt4 instead of Qt5 library (default=no)]),,
+                          enable_qt4=no)
                           
 if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2willbuild" = "xyes"]; then
     AC_MSG_NOTICE([QT stuff required for standalone app or LV2 UIs])
