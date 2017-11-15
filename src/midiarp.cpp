@@ -149,7 +149,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     if (inEv.value) {
         // This is a NOTE ON event
         if (!getPressedNoteCount() || trigLegato) {
-            purgeLatchBuffer();
+            purgeLatchBuffer(tick);
             if (restartByKbd) restartFlag = true;
             // if we have been triggered, remove pending release notes
             if (trigByKbd && release_time > 0) purgeReleaseNotes(noteBufPtr);
@@ -172,16 +172,19 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             return(false);
         }
         if (sustain) {
+            if (sustainBufferCount == MAXNOTES - 1) purgeSustainBuffer(tick);
             sustainBuffer[sustainBufferCount] = inEv.data;
             sustainBufferCount++;
             return(false);
         }
 
         if (latch_mode && keep_rel) {
+            if (latchBufferCount == MAXNOTES - 1) purgeLatchBuffer(tick);
             latchBuffer[latchBufferCount] = inEv.data;
             latchBufferCount++;
             if (latchBufferCount != noteCount) {
-                if ((uint)tick > (uint)(lastLatchTick + 30) && (latchBufferCount > 1)) purgeLatchBuffer();
+                if ((uint)tick > (uint)(lastLatchTick + 30) 
+                    && (latchBufferCount > 1)) purgeLatchBuffer(tick);
                 lastLatchTick = tick;
             }
             return(false);
@@ -202,7 +205,7 @@ void MidiArp::addNote(int note, int vel, int tick)
     if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
         index = noteCount;
     else {
-        while (note > notes[bufPtr][0][index]) index++;
+        while (index < MAXNOTES && note > notes[bufPtr][0][index]) index++;
 
         for (int l3 = 0; l3 < 4; l3++) {
             for (int l2 = noteCount; l2 > index; l2--) {
@@ -234,7 +237,7 @@ void MidiArp::releaseNote(int note, int tick, bool keep_rel)
         else {
             //note is not on top: take out the note and pull down all above
             int index = 0;
-            while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
+            while ((index < MAXNOTES) && (index < noteCount) && (note > notes[bufPtr][0][index])) index++;
             deleteNoteAt(index, bufPtr);
         }
     }
@@ -268,7 +271,7 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
 
             // additional forward in buffer to look for release marked note
             // tick is -1 only if removeNote called after release
-            while ((index < noteCount) && (!notes[bufPtr][3][index])
+            while ((index < MAXNOTES) && (index < noteCount) && (!notes[bufPtr][3][index])
                     && (tick == -1)) {
                 index++;
             }
@@ -339,6 +342,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
     pause = false;
     
     if (purgeReleaseFlag) {
+        purgeLatchBuffer(arpTick);
         purgeReleaseNotes(noteBufPtr);
         purgeReleaseFlag = false;
     }
@@ -359,7 +363,7 @@ void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
         if (c != ' ') {
             if (isdigit(c) || (c == 'p')) {
                 tmpIndex[chordIndex] = c - '0' + noteOfs;
-                if (chordMode) {
+                if ((chordIndex < MAXNOTES - 1) && chordMode) {
                     chordIndex++;
                     chordSemitone[chordIndex] = semitone;
                 }
@@ -625,6 +629,7 @@ void MidiArp::foldReleaseTicks(int tick)
     }
 
     copyNoteBuffer();
+    lastLatchTick -= tick;    
 }
 
 void MidiArp::initArpTick(int tick)
@@ -832,7 +837,7 @@ void MidiArp::setSustain(bool on, int sustick)
     sustain = on;
     if (!sustain) {
         purgeSustainBuffer(sustick);
-        if (latch_mode) purgeLatchBuffer();
+        if (latch_mode) purgeLatchBuffer(sustick);
     }
 }
 
@@ -848,14 +853,14 @@ void MidiArp::purgeSustainBuffer(int sustick)
 void MidiArp::setLatchMode(bool on)
 {
     latch_mode = on;
-    if (!latch_mode) purgeLatchBuffer();
+    if (!latch_mode) purgeLatchBuffer(arpTick);
 }
 
-void MidiArp::purgeLatchBuffer()
+void MidiArp::purgeLatchBuffer(int latchtick)
 {
     for (int l1 = 0; l1 < latchBufferCount; l1++) {
         int buf = latchBuffer[l1];
-        removeNote(&buf, arpTick, 1);
+        removeNote(&buf, latchtick, 1);
     }
     latchBufferCount = 0;
 }

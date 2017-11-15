@@ -61,8 +61,8 @@ class MidiArp : public MidiWorker  {
     int sustainBufferCount, latchBufferCount;
     int lastLatchTick;
     double stepWidth, len, vel;
-    int sustainBuffer[128]; /*!< Holds released note values when MidiArp::sustain is True */
-    int latchBuffer[128];   /*!< Holds released note values when MidiArp::latch_mode is True */
+    int sustainBuffer[MAXNOTES]; /*!< Holds released note values when MidiArp::sustain is True */
+    int latchBuffer[MAXNOTES];   /*!< Holds released note values when MidiArp::latch_mode is True */
 
     bool sustain;
     int noteIndex[MAXCHORD], chordSemitone[MAXCHORD];
@@ -352,8 +352,9 @@ class MidiArp : public MidiWorker  {
 
  /*! @brief Calls MidiArp::removeNote for
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
+  * @param latchtick Time of note release in internal ticks
   */
-    void purgeLatchBuffer();
+    void purgeLatchBuffer(int latchtick);
 
  /*! @brief Untags notes tagged as released in the specified buffer.
   * 
