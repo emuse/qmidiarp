@@ -292,6 +292,7 @@
         lv2:symbol "SPARE" ;
         lv2:name "Spare" ;
         lv2:portProperty lv2:integer, lv2:integer ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 127.0 ;

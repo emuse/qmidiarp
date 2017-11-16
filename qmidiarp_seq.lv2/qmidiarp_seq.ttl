@@ -415,6 +415,7 @@
         lv2:symbol "DISPLAY_ZOOM" ;
         lv2:name "Display Zoom" ;
         lv2:portProperty lv2:enumeration, lv2:integer ;
+        lv2:portProperty pprop:notOnGUI ;
         lv2:scalePoint [ rdfs:label "F"; rdf:value 0 ] ;
         lv2:scalePoint [ rdfs:label "U"; rdf:value 1 ] ;
         lv2:scalePoint [ rdfs:label "M"; rdf:value 2 ] ;
