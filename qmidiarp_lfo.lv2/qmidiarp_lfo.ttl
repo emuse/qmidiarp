@@ -175,7 +175,7 @@
         lv2:scalePoint [ rdfs:label "15"; rdf:value 14 ] ;
         lv2:scalePoint [ rdfs:label "16"; rdf:value 15 ] ;
         lv2:scalePoint [ rdfs:label "Omni"; rdf:value 16 ] ;
-        lv2:default 0 ;
+        lv2:default 16.0 ;
         lv2:minimum 0.0 ;
         lv2:maximum 16.0 ;
     ] , [
