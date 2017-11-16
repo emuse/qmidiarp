@@ -234,8 +234,8 @@ class MidiArp : public MidiWorker  {
     int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */
     int octHigh;        /*!< The higher octave limit. @see repeatPatternThroughChord */
 
-    int returnNote[128]; /*!< Holds the notes of the currently active arpeggio step */
-    int returnVelocity[128]; /*!< Holds the velocities of the currently active arpeggio step */
+    int returnNote[MAXCHORD]; /*!< Holds the notes of the currently active arpeggio step */
+    int returnVelocity[MAXCHORD]; /*!< Holds the velocities of the currently active arpeggio step */
     int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
 
