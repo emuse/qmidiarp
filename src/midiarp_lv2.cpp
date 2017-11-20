@@ -227,8 +227,11 @@ void MidiArpLV2::run ( uint32_t nframes )
 
                 inEv.channel = di[0] & 0x0f;
                 inEv.data=di[1];
-                int tick = (uint64_t)(curFrame - transportFramesDelta)
-                            *TPQN*tempo/60/sampleRate + tempoChangeTick;
+                int tick = ((uint64_t)(curFrame - transportFramesDelta) 
+                        * nframes
+                        + (uint64_t)(&event->time.frames) % nframes)
+                        * TPQN*tempo/nframes/60/sampleRate 
+                        + tempoChangeTick;
                         
                 //printf("curFrame %d \n", curFrame - transportFramesDelta);
                 // Set ticks to zero whenever notes with stopped

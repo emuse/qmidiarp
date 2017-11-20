@@ -220,7 +220,8 @@ void MidiArp::addNote(int note, int vel, int tick)
     noteCount++;
 
     copyNoteBuffer();
-
+    //printf("Added note %d with tick %d\n\n", note, tick);
+    //fflush(stdout);
 }
 
 void MidiArp::releaseNote(int note, int tick, bool keep_rel)
