@@ -91,6 +91,7 @@ private:
         float *val[30];
         uint64_t curFrame;
         uint64_t tempoChangeTick;
+        uint64_t trStartingTick;
         int curTick;
         double internalTempo;
         double sampleRate;

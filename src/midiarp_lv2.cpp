@@ -44,6 +44,7 @@ MidiArpLV2::MidiArpLV2 (
     tempoChangeTick = 0;
     hostTransport = true;
     transportSpeed = 0;
+    trStartingTick = 0;
     transportAtomReceived = false;
 
     sendPatternFlag = false;
@@ -136,22 +137,28 @@ void MidiArpLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         transportSpeed = 0;
     }
 
-    if (!ignore_pos) {
-        const float frames_per_beat = 60.0f / transportBpm * sampleRate;
-        transportFramesDelta = pos;
-        tempoChangeTick = pos * TPQN / frames_per_beat;
-    }
     if (transportSpeed != speed) {
         /* Speed changed, e.g. 0 (stop) to 1 (play) */
         transportSpeed = speed;
         if (transportSpeed) {
+            //printf("Transport Start: %d %d\n", trStartingTick, tempoChangeTick);
+            //printf("transportFramesDelta %d\n\n", transportFramesDelta);
+            //fflush(stdout);
             curFrame = transportFramesDelta;
+            foldReleaseTicks(trStartingTick - tempoChangeTick);
             setNextTick(tempoChangeTick);
+            trStartingTick = tempoChangeTick;
             newRandomValues();
         } 
         else {
-            clearNoteBuffer();
+            trStartingTick = tempoChangeTick;
         }
+    }
+    
+    if (!ignore_pos) {
+        const float frames_per_beat = 60.0f / transportBpm * sampleRate;
+        transportFramesDelta = pos;
+        tempoChangeTick = pos * TPQN / frames_per_beat;
     }
 }
 
@@ -222,7 +229,22 @@ void MidiArpLV2::run ( uint32_t nframes )
                 inEv.data=di[1];
                 int tick = (uint64_t)(curFrame - transportFramesDelta)
                             *TPQN*tempo/60/sampleRate + tempoChangeTick;
-                if (handleEvent(inEv, tick - 2, 1)) //if event is unmatched, forward it
+                        
+                //printf("curFrame %d \n", curFrame - transportFramesDelta);
+                // Set ticks to zero whenever notes with stopped
+                // transport are received. This is experimental.
+                // Also, when note offs are received when transport is
+                // not rolling, these notes should be removed without
+                // release.
+                bool unmatched = false;
+                if ((hostTransport) && (transportSpeed == 0)) {
+                    tick = 2;
+                    unmatched = handleEvent(inEv, tick - 2, 0);
+                } 
+                else {
+                    unmatched = handleEvent(inEv, tick - 2, 1);
+                }
+                if (unmatched) //if event is unmatched, forward it
                     forgeMidiEvent((int)((uint64_t)(&event->time.frames) % nframes), di, 3);
             }
         }
@@ -300,7 +322,10 @@ void MidiArpLV2::forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_
 void MidiArpLV2::updateParams()
 {
     attack_time     = *val[ATTACK];
-    release_time    = *val[RELEASE];
+
+    if (release_time != *val[RELEASE]) {
+        updateReleaseTime(*val[RELEASE]);
+    }
 
     if (randomTickAmp != *val[RANDOM_TICK]) {
         updateRandomTickAmp(*val[RANDOM_TICK]);
@@ -468,6 +493,7 @@ void MidiArpLV2::activate (void)
 void MidiArpLV2::deactivate (void)
 {
     transportSpeed = 0;
+    clearNoteBuffer();
 }
 
 static LV2_Handle MidiArpLV2_instantiate (
