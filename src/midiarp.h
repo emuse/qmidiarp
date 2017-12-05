@@ -216,7 +216,7 @@ class MidiArp : public MidiWorker  {
   public:
     bool latch_mode; /*!< If True hold notes released earlier than latch delay in latch buffer */
     bool hasNewNotes; /*!< True when getNextFrame() was called with a tick causing new note calculation */
-    int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", set by ArpWidget */
+    int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", "As Played" set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
     int randomTickAmp; /*!< Amplitude of timing randomization, set by ArpWidget */

@@ -102,7 +102,7 @@ ArpWidget::ArpWidget(
 
     repeatPatternThroughChord = new QComboBox;
     QStringList repeatPatternNames;
-    repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Random");
+    repeatPatternNames << tr("Static") << tr("Up") << tr("Down") << tr("Random") << tr("As Played");
     repeatPatternThroughChord->insertItems(0, repeatPatternNames);
     repeatPatternThroughChord->setToolTip(tr("Repeat mode - This is how notes are sequenced\n"
                             "when a chord is pressed"));

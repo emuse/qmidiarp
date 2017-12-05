@@ -202,7 +202,8 @@ void MidiArp::addNote(int note, int vel, int tick)
     int bufPtr = (noteBufPtr) ? 0 : 1;
     int index = 0;
 
-    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1]))
+    if (!noteCount || (note > notes[bufPtr][0][noteCount - 1])
+            || (repeatPatternThroughChord == 4) )
         index = noteCount;
     else {
         while (index < MAXNOTES && note > notes[bufPtr][0][index]) index++;
@@ -220,8 +221,6 @@ void MidiArp::addNote(int note, int vel, int tick)
     noteCount++;
 
     copyNoteBuffer();
-    //printf("Added note %d with tick %d\n\n", note, tick);
-    //fflush(stdout);
 }
 
 void MidiArp::releaseNote(int note, int tick, bool keep_rel)
@@ -230,7 +229,8 @@ void MidiArp::releaseNote(int note, int tick, bool keep_rel)
     int bufPtr = (noteBufPtr) ? 0 : 1;
     if ((!keep_rel) || (!release_time)) {
         //definitely remove from buffer
-        if (note == notes[bufPtr][0][noteCount - 1]) {
+        if (note == notes[bufPtr][0][noteCount - 1]
+                && (repeatPatternThroughChord != 4)) {
             //note is on top of buffer: only decrement noteCount
             noteCount--;
             if (repeatPatternThroughChord == 2) noteOfs = noteCount - 1;
@@ -238,7 +238,8 @@ void MidiArp::releaseNote(int note, int tick, bool keep_rel)
         else {
             //note is not on top: take out the note and pull down all above
             int index = 0;
-            while ((index < MAXNOTES) && (index < noteCount) && (note > notes[bufPtr][0][index])) index++;
+            while ((index < MAXNOTES) && (index < noteCount) 
+                && (note != notes[bufPtr][0][index])) index++;
             deleteNoteAt(index, bufPtr);
         }
     }
@@ -259,7 +260,8 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
     }
     if (!keep_rel || (!release_time)) {
         // definitely remove from buffer, do NOT check for doubles
-        if (note == notes[bufPtr][0][noteCount - 1]) {
+        if (note == notes[bufPtr][0][noteCount - 1]
+                && (repeatPatternThroughChord != 4)) {
             // note is on top of buffer: only decrement noteCount
             noteCount--;
             if (tick == -1) releaseNoteCount--;
@@ -268,15 +270,17 @@ void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
         else {
             // note is not on top: take out the note and pull down all above
             int index = 0;
-            while ((index < noteCount) && (note > notes[bufPtr][0][index])) index++;
-
-            // additional forward in buffer to look for release marked note
-            // tick is -1 only if removeNote called after release
-            while ((index < MAXNOTES) && (index < noteCount) && (!notes[bufPtr][3][index])
-                    && (tick == -1)) {
-                index++;
+            if (tick != -1) {
+                while ((index < noteCount) 
+                        && (note != notes[bufPtr][0][index])) index++;
+            }
+            else {
+                while ((index < noteCount) 
+                        && ((note != notes[bufPtr][0][index])
+                        || (!notes[bufPtr][3][index]))) index++;
             }
 
+            
             if (note == notes[bufPtr][0][index]) {
                 deleteNoteAt(index, bufPtr);
                 if (tick == -1) releaseNoteCount--;
@@ -305,8 +309,10 @@ void MidiArp::tagAsReleased(int note, int tick, int bufPtr)
 {
     //mark as released but keep with note off time tick
     int l1 = 0;
-    while ((l1 < noteCount) && (note > notes[bufPtr][0][l1])) l1++;
-    while ((l1 < noteCount) && (notes[bufPtr][3][l1])) l1++;
+    while ((l1 < noteCount) 
+        && ((note != notes[bufPtr][0][l1]) || (notes[bufPtr][3][l1]))) {
+        l1++;
+    }
     if (note == notes[bufPtr][0][l1]) {
         notes[bufPtr][3][l1] = 1;
         notes[bufPtr][2][l1] = tick;
@@ -559,6 +565,7 @@ bool MidiArp::advancePatternIndex(bool reset)
 
         switch (repeatPatternThroughChord) {
             case 1:
+            case 4:
                 noteOfs++;
                 if ((noteCount - 1 < patternMaxIndex + noteOfs) || reset) {
                     noteOfs = 0;
