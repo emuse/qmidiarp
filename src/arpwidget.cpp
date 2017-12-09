@@ -413,6 +413,7 @@ void ArpWidget::selectPatternPreset(int val)
 {
     if (val < patternPresets.count()) {
         if (val) {
+            patternText->setText("");
             patternText->setText(patternPresets.at(val));
             if (!midiArp) return;
             patternPresetBox->setCurrentIndex(val);
