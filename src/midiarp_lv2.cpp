@@ -137,28 +137,21 @@ void MidiArpLV2::updatePos(uint64_t pos, float bpm, int speed, bool ignore_pos)
         transportSpeed = 0;
     }
 
-    if (transportSpeed != speed) {
-        /* Speed changed, e.g. 0 (stop) to 1 (play) */
-        transportSpeed = speed;
-        if (transportSpeed) {
-            //printf("Transport Start: %d %d\n", trStartingTick, tempoChangeTick);
-            //printf("transportFramesDelta %d\n\n", transportFramesDelta);
-            //fflush(stdout);
-            curFrame = transportFramesDelta;
-            foldReleaseTicks(trStartingTick - tempoChangeTick);
-            setNextTick(tempoChangeTick);
-            trStartingTick = tempoChangeTick;
-            newRandomValues();
-        } 
-        else {
-            trStartingTick = tempoChangeTick;
-        }
-    }
-    
     if (!ignore_pos) {
         const float frames_per_beat = 60.0f / transportBpm * sampleRate;
         transportFramesDelta = pos;
         tempoChangeTick = pos * TPQN / frames_per_beat;
+    }    
+    if (transportSpeed != speed) {
+        /* Speed changed, e.g. 0 (stop) to 1 (play) */
+        transportSpeed = speed;
+        if (transportSpeed) {
+            curFrame = transportFramesDelta;
+            foldReleaseTicks(trStartingTick - tempoChangeTick);
+            setNextTick(tempoChangeTick);
+        } 
+
+        trStartingTick = tempoChangeTick;
     }
 }
 
@@ -200,8 +193,8 @@ void MidiArpLV2::run ( uint32_t nframes )
                     lv2_atom_object_get(obj, uris->pattern_string, &a0, 0);
                     if (a0 && a0->type == uris->atom_String) {
                         const char* p = (const char*)LV2_ATOM_BODY(a0);
+                        
                         std::string newPattern = p;
-                        //std::txPattern = newPattern.remove(QChar(0));
                         updatePattern(newPattern);
                         sendPatternFlag = false;
                     }
@@ -235,7 +228,7 @@ void MidiArpLV2::run ( uint32_t nframes )
                         
                 //printf("curFrame %d \n", curFrame - transportFramesDelta);
                 // Set ticks to zero whenever notes with stopped
-                // transport are received. This is experimental.
+                // transport are received.
                 // Also, when note offs are received when transport is
                 // not rolling, these notes should be removed without
                 // release.
@@ -259,7 +252,6 @@ void MidiArpLV2::run ( uint32_t nframes )
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
-            newRandomValues();
             getNextFrame(curTick);
             if (!isMuted) {
                 if (hasNewNotes && returnVelocity[0] != -1) {

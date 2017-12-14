@@ -632,6 +632,11 @@ void MidiArp::foldReleaseTicks(int tick)
 
     bufPtr = (noteBufPtr) ? 0 : 1;
 
+    if (tick <= 0) {
+        purgeReleaseNotes(bufPtr);
+        return;
+    }
+
     for (l2 = 0; l2 < noteCount; l2++) {
             notes[bufPtr][2][l2] -= tick;
     }
@@ -878,6 +883,7 @@ void MidiArp::purgeReleaseNotes(int bufptr)
     for (int l1 = noteCount - 1; l1 >= 0; l1--) {
         if (notes[bufptr][3][l1])
             deleteNoteAt(l1, bufptr);
+            releaseNoteCount--;
     }
 }
 
