@@ -101,8 +101,6 @@ class MidiWorker {
  * @return The value clipped within the range
  */
     virtual int clip(int value, int min, int max, bool *outOfRange);
-    virtual void updateQueueTempo(int);
-    virtual void updateTriggerMode(int val);
     virtual int getFramePtr() { return framePtr; }
     virtual void getNextFrame(int tick) = 0;
 };

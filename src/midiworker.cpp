@@ -97,16 +97,3 @@ int MidiWorker::clip(int value, int min, int max, bool *outOfRange)
     }
     return(tmp);
 }
-
-void MidiWorker::updateQueueTempo(int val)
-{
-    queueTempo = (double)val;
-}
-
-void MidiWorker::updateTriggerMode(int val)
-{
-    triggerMode = val;
-    trigByKbd = ((val == 2) || (val == 4));
-    restartByKbd = (val > 0);
-    trigLegato = (val > 2);
-}

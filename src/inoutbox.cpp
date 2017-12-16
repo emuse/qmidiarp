@@ -350,12 +350,6 @@ InOutBox::~InOutBox()
 #endif
 }
 
-void InOutBox::setChannelOut(int value)
-{
-    channelOut->setCurrentIndex(value);
-    modified = true;
-}
-
 bool InOutBox::isModified()
 {
 	bool mcmod = false;
@@ -490,23 +484,6 @@ void InOutBox::setMuted(bool on)
     if (!midiWorker) return;
     midiWorker->setMuted(on);
     needsGUIUpdate = true;
-    modified = true;
-}
-void InOutBox::setChIn(int value)
-{
-    chIn->setCurrentIndex(value);
-    modified = true;
-}
-
-void InOutBox::setIndexIn(int index, int value)
-{
-    indexIn[index]->setValue(value);
-    modified = true;
-}
-
-void InOutBox::setRangeIn(int index, int value)
-{
-    rangeIn[index]->setValue(value);
     modified = true;
 }
 

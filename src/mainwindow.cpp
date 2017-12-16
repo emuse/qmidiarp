@@ -1136,11 +1136,6 @@ void MainWindow::updateTransportStatus(bool on)
     //if (alsaMidi) tempoSpin->setDisabled(on);
 }
 
-void MainWindow::resetTransport()
-{
-    engine->setStatus(engine->status);
-}
-
 void MainWindow::midiClockToggle(bool on)
 {
     if (on) jackSyncAction->setChecked(false);
@@ -1360,17 +1355,6 @@ void MainWindow::addRecentlyOpenedFile(const QString &fn, QStringList &lst)
         lst.removeLast();
 
     lst.prepend(fi.absoluteFilePath());
-}
-
-void MainWindow::appendRecentlyOpenedFile(const QString &fn, QStringList &lst)
-{
-    QFileInfo fi(fn);
-    if (lst.contains(fi.absoluteFilePath()))
-        return;
-    if (lst.count() >= 6 )
-        lst.removeFirst();
-
-    lst.append(fi.absoluteFilePath());
 }
 
 void MainWindow::updatePatternPresets(const QString& n, const QString& p,

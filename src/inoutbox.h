@@ -110,21 +110,9 @@ class InOutBox: public QWidget
 
 	QWidget *inOutBoxWidget;
 
-    virtual void setChIn(int value);
-    virtual void setIndexIn(int index, int value);
-    virtual void setRangeIn(int index, int value);
     virtual bool isModified();
     virtual void setModified(bool);
     virtual void checkIfInputFilterSet();
-
-/*!
-* @brief Setter for the InOutBox::channelOut spinbox setting the output
-* channel of this module.
-* @param value Number of the output channel to send data to
-*
-*/
-    virtual void setChannelOut(int value);
-
     virtual int getFramePtr() { return midiWorker->getFramePtr(); }
     virtual int getNextTick() { return midiWorker->nextTick; }
 

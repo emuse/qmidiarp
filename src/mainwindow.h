@@ -223,19 +223,9 @@ class MainWindow : public QMainWindow
 * It is called by openFile if the opening was successful.
 * @param fn Filename with full path to be prepended
 * @param lst The list of recently opened files
-* @see appendRecentlyOpenedFile, setupRecentFilesMenu
+* @see setupRecentFilesMenu
 */
     void addRecentlyOpenedFile(const QString &fn, QStringList &lst);
-/*!
-* @brief  appends a filename at the end of the recently
-* opened files list.
-*
-* It is called by openFile if the opening was successful.
-* @param fn Filename with full path to be appended
-* @param lst The list of recently opened files
-* @see addRecentlyOpenedFile, setupRecentFilesMenu
-*/
-    void appendRecentlyOpenedFile(const QString &fn, QStringList &lst);
 /*!
 * @brief  checks whether a .qmidiarprc file is present
 * and creates it with default settings, if not.
@@ -302,12 +292,6 @@ class MainWindow : public QMainWindow
 * @see midiClockToggle, jackSyncToggle
 */
     void setGUIforExtSync(bool on);
-/*!
-* @brief  restarts the transport position if rolling and does
-* nothing if it is stopped
-*
-*/
-    void resetTransport();
 
 /*! @brief Handler for system signals (SIGUSR1, SIGINT...).
  * This function writes a message to the pipe and leaves as soon as possible
