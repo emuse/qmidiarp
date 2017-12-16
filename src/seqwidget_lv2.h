@@ -3,7 +3,7 @@
  * @brief Headers for the LV2 GUI for the QMidiArp Seq plugin.
  *
  *
- *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2017 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by

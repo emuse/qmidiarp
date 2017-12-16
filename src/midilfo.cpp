@@ -3,7 +3,7 @@
  * @brief Implements the MidiLfo MIDI worker class for the LFO Module.
  *
  *
- *      Copyright 2009 - 2016 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2017 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by

@@ -1,3 +1,37 @@
+qmidiarp-0.6.5 (2017-12-..)
+
+Improvements
+  o MIDI OMNI Mode receiving on all MIDI channels is now available and
+    even default for all modules.
+  o Arp: Some more 'factory' patterns added to the LV2 presets and to
+    the .qmidiarprc file. Latter requires deleting the original one in 
+    the home directory and launching the standalone application.
+  o Arp: New pattern repeat mode "As Played" for following the played
+    note order instead of reorganizing them up, down or random. 
+  o Arp: For deliberately clearing buffered incoming notes the modules
+    now all react to ALL_NOTES_OFF and ALL_SOUND_OFF MIDI messages.
+  o LV2: The DSP ("generic") parameter interface has gotten some 
+    improvements for better usability (thanks Holger Wirtz for input on 
+    this)
+
+Fixed Bugs:
+  o LV2: Latch mode was not working properly when using release function.
+  o LV2 Arp: when running with host transport sync, transport start 
+    caused received notes to be cleared. This also cleared those notes 
+    received before the transport was starting and led to missed notes
+    especially in qtractor. This should work better now.
+  o LV2 Seq and LFO: the "Note Off" option had no effect.
+
+General changes:
+  o Building against Qt5 is now default. No more --enable-qt5 needed.
+  o LV2: Category set to MIDIPlugin instead of Instrument
+  o The DSP classes including the LV2 DSP modules no longer use
+    Qt libraries. However the LV2 and App GUIs do.
+  o New build configure options for more flexibility
+    --enable-alsa (default=yes) set no for building on systems without alsa
+    --enable-buildapp (default=yes) set no for building only LV2 modules
+    --enable-lv2-pluginuis (default=yes) set no for LV2 module dsps only
+
 qmidiarp-0.6.4 (2016-11-01)
 
 Improvements
