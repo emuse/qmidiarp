@@ -10,7 +10,7 @@ dist_svgdata_DATA = qmidiarp.svg
 applicationsdir = @datadir@/applications
 dist_applications_DATA = qmidiarp.desktop
 
-appdatadir = @datadir@/appdata
+appdatadir = @datadir@/metainfo
 dist_appdata_DATA = qmidiarp.appdata.xml
 
 include $(top_srcdir)/aminclude.am
