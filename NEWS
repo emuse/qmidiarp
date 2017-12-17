@@ -1,4 +1,4 @@
-qmidiarp-0.6.5 (2017-12-..)
+qmidiarp-0.6.5 (2017-12-17)
 
 Improvements
   o MIDI OMNI Mode receiving on all MIDI channels is now available and
@@ -20,7 +20,8 @@ Fixed Bugs:
     caused received notes to be cleared. This also cleared those notes 
     received before the transport was starting and led to missed notes
     especially in qtractor. This should work better now.
-  o LV2 Seq and LFO: the "Note Off" option had no effect.
+  o Seq and LFO: the "Note Off" option had no effect (regression).
+  o Recent Files menu in main app displayed extra characters with Qt5.
 
 General changes:
   o Building against Qt5 is now default. No more --enable-qt5 needed.
