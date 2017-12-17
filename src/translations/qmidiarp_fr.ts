@@ -137,6 +137,10 @@ d h durée de note augm/dim
         <source>&amp;Release (beats)</source>
         <translation></translation>
     </message>
+    <message>
+        <source>As Played</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArpWidgetLV2</name>

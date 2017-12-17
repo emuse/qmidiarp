@@ -137,6 +137,10 @@ please just run the qmidiarp main application once.</source>
         <source>&amp;Release (beats)</source>
         <translation></translation>
     </message>
+    <message>
+        <source>As Played</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArpWidgetLV2</name>

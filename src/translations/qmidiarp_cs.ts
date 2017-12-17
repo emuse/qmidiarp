@@ -141,6 +141,10 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
         <source>High octave limit</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>As Played</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArpWidgetLV2</name>
