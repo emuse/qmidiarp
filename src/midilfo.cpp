@@ -553,6 +553,7 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
         return (false);
     }
     if (inEv.type != EV_NOTEON) return (true);
+    if (!(trigByKbd || trigLegato || restartByKbd || enableNoteOff)) return (true);
     
     if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
         || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {

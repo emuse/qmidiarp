@@ -71,17 +71,19 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
     if (inEv.type != EV_NOTEON) return(true);
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.data < 36) || (inEv.data >= 84)) return(true);
+    
+    if (recordMode && inEv.value) {
+        recordNote(inEv.data);
+        return(false);
+    }
+    
+    if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
+        || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
+        return(true);
+    }
 
     if (inEv.value) {
         /*This is a NOTE ON event*/
-        if (recordMode) {
-            recordNote(inEv.data);
-            return(false);
-        }
-        if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
-            || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
-            return(true);
-        }
         if (enableNoteIn) {
             updateTranspose(inEv.data - 60);
             needsGUIUpdate = true;
