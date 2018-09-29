@@ -626,6 +626,8 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
     if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    moduleWindow->show();
+    moduleWindow->raise();
     engine->addModuleWindow(moduleWindow);
     globStore->addModule(name);
 }
