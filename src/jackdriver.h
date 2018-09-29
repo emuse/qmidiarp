@@ -78,10 +78,10 @@ class JackDriver : public DriverBase
     jack_port_t * out_ports[MAX_PORTS];
 
     bool jackRunning;
-    uint transportState;
-    uint jackNFrames;
-    uint lastSchedTick;
-    uint tempoChangeTick;
+    uint32_t transportState;
+    uint32_t jackNFrames;
+    uint32_t lastSchedTick;
+    uint32_t tempoChangeTick;
     uint64_t curJFrame;
     uint64_t tempoChangeJPosFrame;
     QVector<uint> echoTickQueue;
@@ -89,8 +89,8 @@ class JackDriver : public DriverBase
     QVector<MidiEvent> evQueue;
     QVector<uint> evTickQueue;
     QVector<uint> evPortQueue;
-    uint bufPtr;
-    uint echoPtr;
+    uint32_t bufPtr;
+    uint32_t echoPtr;
     jack_client_t *jack_handle;
     jack_position_t currentPos;
     void handleEchoes(int nframes);

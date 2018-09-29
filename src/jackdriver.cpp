@@ -187,11 +187,11 @@ void JackDriver::jack_shutdown(void *arg)
 
 int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
 {
-    uint i;
-    uint l1, l2;
+    uint32_t i;
+    uint32_t l1, l2;
 
     JackDriver *rd = (JackDriver *) arg;
-    uint out_port_count = rd->portCount;
+    uint32_t out_port_count = rd->portCount;
     rd->jackTrCheckState();
 
     if (!out_port_count) return (0);
@@ -202,13 +202,13 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     uint64_t cur_j_frame = rd->curJFrame;
     bool forward_unmatched = rd->forwardUnmatched;
     int port_unmatched = rd->portUnmatched;
-    uint tempochangetick = rd->tempoChangeTick;
-    uint nexttick = 0;
-    uint tmptick = 0;
-    uint idx = 0;
+    uint32_t tempochangetick = rd->tempoChangeTick;
+    uint32_t nexttick = 0;
+    uint32_t tmptick = 0;
+    uint32_t idx = 0;
     int evport;
     uint64_t ev_jframe, ev_sample;
-    uint ev_inframe;
+    uint32_t ev_inframe;
     MidiEvent inEv;
     inEv.type = 0;
     inEv.data = 0;
@@ -253,7 +253,7 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
                 //qWarning("nexttick %d, ev_frame %d, ev_inframe %d, cur_jframe %d, buf_idx %d", nexttick, ev_jframe, ev_inframe, cur_j_frame, idx);
                 outEv = rd->evQueue.at(idx);
                 evport = rd->evPortQueue.at(idx);
-                for (uint l4 = idx ; l4 < (rd->bufPtr - 1);l4++) {
+                for (uint32_t l4 = idx ; l4 < (rd->bufPtr - 1);l4++) {
                     rd->evQueue.replace(l4, rd->evQueue.at(l4 + 1));
                     rd->evPortQueue.replace(l4, rd->evPortQueue.at(l4 + 1));
                     rd->evTickQueue.replace(l4, rd->evTickQueue.at(l4 + 1));
@@ -374,7 +374,7 @@ void JackDriver::jackTrCheckState()
 {
     if (!useJackSync) return;
 
-    uint state = getState();
+    uint32_t state = getState();
 
     if (!portCount && (currentPos.beats_per_minute != tempo)) {
         tempoCb(currentPos.beats_per_minute, cbContext);
@@ -491,7 +491,7 @@ void JackDriver::handleEchoes(int nframes)
     int idx = 0;
     int nexttick = echoTickQueue.first();
 
-    for (uint l1 = 0; l1 < echoPtr; l1++) {
+    for (uint32_t l1 = 0; l1 < echoPtr; l1++) {
         int tmptick = echoTickQueue.at(l1);
         if (nexttick > tmptick) {
             idx = l1;
@@ -500,7 +500,7 @@ void JackDriver::handleEchoes(int nframes)
     }
     if (m_current_tick >= echoTickQueue.at(idx)) {
         tick_callback(echoTrigFlagQueue.at(idx));
-        for (uint l4 = idx ; l4 < (echoPtr - 1); l4++) {
+        for (uint32_t l4 = idx ; l4 < (echoPtr - 1); l4++) {
             echoTickQueue.replace(l4, echoTickQueue.at(l4 + 1));
             echoTrigFlagQueue.replace(l4, echoTrigFlagQueue.at(l4 + 1));
         }

@@ -118,8 +118,8 @@ private:
         float transportBpm;
         float transportSpeed;
         bool hostTransport;
-        uint evQueue[JQ_BUFSZ];
-        uint evTickQueue[JQ_BUFSZ];
+        uint32_t evQueue[JQ_BUFSZ];
+        uint32_t evTickQueue[JQ_BUFSZ];
         int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;

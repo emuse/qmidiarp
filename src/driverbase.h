@@ -42,8 +42,8 @@ public:
     bool forwardUnmatched, queueStatus;
     int portUnmatched;
     QString jsFilename;
-    uint trStartingTick;
-    uint trLoopingTick;
+    uint32_t trStartingTick;
+    uint32_t trLoopingTick;
 
     virtual void resetTick(unsigned int tick = 0)
     {

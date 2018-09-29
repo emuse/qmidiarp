@@ -304,7 +304,7 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
     int ofs = 127;
     res = resBox->currentText().toInt();
     size = sizeBox->currentText().toInt();
-    for (uint l1 = 0; l1 < n_elem; l1++) {
+    for (uint32_t l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
         if ((l1 < n_elem - 1) && (recdata[l1] > -1) && (recdata[l1] < ofs)) ofs = recdata[l1];
     }

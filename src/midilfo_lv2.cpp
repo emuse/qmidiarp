@@ -231,7 +231,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
 
         // MIDI and Wave Control Output
 
-    for (uint f = 0 ; f < nframes; f++) {
+    for (uint32_t f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= frame.at(inLfoFrame).tick)

@@ -220,7 +220,7 @@ void MidiSeqLV2::run (uint32_t nframes )
 
 
         // MIDI Output
-    for (uint f = 0 ; f < nframes; f++) {
+    for (uint32_t f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= nextTick) && (transportSpeed)) {
