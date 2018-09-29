@@ -288,7 +288,7 @@ void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
     for (uint32_t l1 = 0; l1 < n_elem; l1++) {
         receiveWavePoint(l1, recdata[l1]);
     }
-    if (n_elem < (uint)data.count()) data.resize(res * size + 1);
+    if (n_elem < (uint32_t)data.count()) data.resize(res * size + 1);
     screen->updateData(data);
     screen->update();
 }

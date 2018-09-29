@@ -22,6 +22,7 @@
  *
  */
 #include <cstdlib>
+#include <cstdint>
 #include <cstdio>
 #include <iostream>
 
@@ -183,7 +184,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             latchBuffer[latchBufferCount] = inEv.data;
             latchBufferCount++;
             if (latchBufferCount != noteCount) {
-                if ((uint)tick > (uint)(lastLatchTick + 30) 
+                if ((uint32_t)tick > (uint32_t)(lastLatchTick + 30) 
                     && (latchBufferCount > 1)) purgeLatchBuffer(tick);
                 lastLatchTick = tick;
             }

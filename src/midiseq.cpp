@@ -22,6 +22,7 @@
  *
  */
 #include <cmath>
+#include <cstdint>
 #include "midiseq.h"
 
 

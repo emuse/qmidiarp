@@ -22,6 +22,7 @@
  *
  */
 #include <cmath>
+#include <cstdint>
 #include "midilfo.h"
 
 
@@ -75,7 +76,7 @@ void MidiLfo::getNextFrame(int tick)
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
     //The FRAMELIMIT avoids excessive cursor updating
 
-    if ((uint)framePtr >= data.size()) return;
+    if ((uint32_t)framePtr >= data.size()) return;
     
     Sample sample;
     const int step = TPQN / res;
