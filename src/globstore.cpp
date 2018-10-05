@@ -334,7 +334,7 @@ void GlobStore::readData(QXmlStreamReader& xml)
         }
         else if (xml.name() == "timeModule") {
             tmp =xml.readElementText().toInt();
-            timeModuleBox->setCurrentIndex(tmp);
+            if (tmp > -1) timeModuleBox->setCurrentIndex(tmp);
             updateTimeModule(tmp);
         }
         else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
