@@ -1267,6 +1267,8 @@ void MainWindow::readRcFile()
                 prefsWidget->compactStyleCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#MutedAdd"))
                 prefsWidget->mutedAddCheck->setChecked(value.at(1).toInt());
+            else if ((value.at(0) == "#StoreMuteState"))
+                prefsWidget->storeMuteStateCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#EnableLog"))
                 logWidget->enableLog->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LogMidiClock"))
@@ -1307,6 +1309,8 @@ void MainWindow::writeRcFile()
     writeText << prefs->compactStyle << endl;
     writeText << "#MutedAdd%";
     writeText << prefs->mutedAdd << endl;
+    writeText << "#StoreMuteState%";
+    writeText << prefs->storeMuteState << endl;
     writeText << "#EnableLog%";
     writeText << logWidget->enableLog->isChecked() << endl;
     writeText << "#LogMidiClock%";
