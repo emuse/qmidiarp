@@ -228,6 +228,7 @@ void MidiSeq::getData(std::vector<Sample> * p_data)
     for (l1 = 0; l1 < npoints; l1++) data[l1] = customWave[l1];
     sample.value = -1;
     sample.tick = lt;
+    sample.muted = false;
     data.push_back(sample);
     
     *p_data = data;
