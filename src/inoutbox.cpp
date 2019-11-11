@@ -32,13 +32,16 @@
 #include "pixmaps/arprename.xpm"
 
 
-InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCount, bool compactStyle,
-    bool inOutVisible, const QString& p_name):
+InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
+    Prefs *p_prefs, bool inOutVisible, const QString& p_name):
     midiWorker(p_midiWorker),
     name(p_name),
     globStore(p_globStore),
+    prefs(p_prefs),
     modified(false)
 {
+    bool compactStyle = p_prefs->compactStyle;
+    bool portCount = p_prefs->portCount;
     midiControl = new MidiControl(this);
 
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
@@ -74,11 +77,12 @@ InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCou
     manageBoxLayout->addWidget(deleteButton);
 
 #else
-InOutBox::InOutBox(bool compactStyle,
-    bool inOutVisible, const QString& name):
+InOutBox::InOutBox(const QString& name):
     midiWorker(NULL),
     modified(false)
 {
+    bool compactStyle = true;
+    bool inOutVisible = true;
 #endif
 
     // Input group box on left side
@@ -518,7 +522,7 @@ void InOutBox::restoreParams(int ix)
 #ifdef APPBUILD
     doRestoreParams(ix);
     if (!parStore->onlyPatternList.at(ix)) {
-        //muteOut->setChecked(parStore->list.at(ix).muteOut);
+        if (prefs->storeMuteState) muteOutAction->setChecked(parStore->list.at(ix).muteOut);
         indexIn[0]->setValue(parStore->list.at(ix).indexIn0);
         indexIn[1]->setValue(parStore->list.at(ix).indexIn1);
         rangeIn[0]->setValue(parStore->list.at(ix).rangeIn0);

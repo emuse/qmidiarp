@@ -170,8 +170,12 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     addDockWidget(Qt::BottomDockWidgetArea, globStoreWindow);
     addDockWidget(Qt::BottomDockWidgetArea, grooveWindow);
     addDockWidget(Qt::BottomDockWidgetArea, logWindow);
-
-    passWidget = new PassWidget(engine, p_portCount, this);
+    
+    prefs = new Prefs;
+    
+    prefs->portCount = p_portCount;
+    
+    prefsWidget = new PrefsWidget(engine, prefs, this);
 
     addArpAction = new QAction(QPixmap(arpadd_xpm), tr("&New Arp..."), this);
     addArpAction->setShortcut(QKeySequence(tr("Ctrl+A", "Module|New Arp")));
@@ -275,7 +279,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     viewSettingsAction->setIcon(QPixmap(settings_xpm));
     viewSettingsAction->setShortcut(QKeySequence(tr("Ctrl+P",
                     "View|Settings")));
-    connect(viewSettingsAction, SIGNAL(triggered()), passWidget, SLOT(show()));
+    connect(viewSettingsAction, SIGNAL(triggered()), prefsWidget, SLOT(show()));
 
     QAction* viewGlobAction = globStoreWindow->toggleViewAction();
     viewGlobAction->setIcon(QPixmap(globtog_xpm));
@@ -372,7 +376,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     if (checkRcFile())
         readRcFile();
 
-    passWidget->setModified(false);
+    prefsWidget->setModified(false);
 
     if (!installSignalHandlers())
         qWarning("%s", "Signal handlers not installed!");
@@ -465,8 +469,7 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
     int count, widgetID;
     MidiArp *midiArp = new MidiArp();
     ArpWidget *moduleWidget = new ArpWidget(midiArp, globStore,
-            engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, p_name);
+            prefs, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
                     QString&, int)),
             this, SLOT(updatePatternPresets(const QString&, const
@@ -507,8 +510,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
 
     MidiLfo *midiLfo = new MidiLfo();
     LfoWidget *moduleWidget = new LfoWidget(midiLfo, globStore,
-            engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, p_name);
+            prefs, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(moduleRemove(int)),
             this, SLOT(removeLfo(int)));
     connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
@@ -559,8 +561,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
 
     MidiSeq *midiSeq = new MidiSeq();
     SeqWidget *moduleWidget = new SeqWidget(midiSeq, globStore,
-            engine->getPortCount(), passWidget->compactStyle,
-            passWidget->mutedAdd, inOutVisible, p_name);
+            prefs, inOutVisible, p_name);
     connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
     connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
@@ -623,7 +624,7 @@ void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int coun
     moduleWindow->setWidget(moduleWidget);
     moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (passWidget->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
+    if (prefs->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
 
     if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
     moduleWindow->show();
@@ -833,7 +834,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                 if (xml.isEndElement())
                     break;
                 if (xml.name() == "midiControlEnabled")
-                    passWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
+                    prefsWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
                 else if (xml.name() == "midiClockEnabled") {
                         bool tmp = xml.readElementText().toInt();
                         if (alsaMidi) midiClockAction->setChecked(tmp);
@@ -843,9 +844,13 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                         jackSyncAction->setChecked(tmp);
                     }
                 else if (xml.name() == "forwardUnmatched")
-                    passWidget->setForward(xml.readElementText().toInt());
+                    prefsWidget->setForward(xml.readElementText().toInt());
+                else if (xml.name() == "storeMuteState") {
+                        bool tmp = xml.readElementText().toInt();
+                        prefsWidget->storeMuteStateCheck->setChecked(tmp);
+                    }
                 else if (xml.name() == "forwardPort")
-                    passWidget->setPortUnmatched(xml.readElementText().toInt());
+                    prefsWidget->setPortUnmatched(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
@@ -855,7 +860,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
             engine->midiControl->readData(xml);
         else skipXmlElement(xml);
     }
-    passWidget->setModified(false);
+    prefsWidget->setModified(false);
 }
 
 void MainWindow::readFilePartModules(QXmlStreamReader& xml)
@@ -979,15 +984,17 @@ bool MainWindow::saveFile()
 
         xml.writeStartElement("settings");
             xml.writeTextElement("midiControlEnabled",
-                QString::number((int)passWidget->cbuttonCheck->isChecked()));
+                QString::number((int)prefsWidget->cbuttonCheck->isChecked()));
             xml.writeTextElement("midiClockEnabled",
                 QString::number((int)midiClockAction->isChecked()));
             xml.writeTextElement("jackSyncEnabled",
                 QString::number((int)jackSyncAction->isChecked()));
             xml.writeTextElement("forwardUnmatched",
-                QString::number((int)passWidget->forwardCheck->isChecked()));
+                QString::number((int)prefsWidget->forwardCheck->isChecked()));
             xml.writeTextElement("forwardPort",
-                QString::number(passWidget->portUnmatchedSpin->currentIndex()));
+                QString::number(prefsWidget->portUnmatchedSpin->currentIndex()));
+            xml.writeTextElement("storeMuteState",
+                QString::number(prefsWidget->storeMuteStateCheck->isChecked()));
         xml.writeEndElement();
 
         grooveWidget->writeData(xml);
@@ -1118,7 +1125,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 
 bool MainWindow::isModified()
 {
-    return (engine->isModified() || passWidget->isModified());
+    return (engine->isModified() || prefsWidget->isModified());
 }
 
 void MainWindow::updateTempo(int p_tempo)
@@ -1257,9 +1264,9 @@ void MainWindow::readRcFile()
                 patternPresets << value.at(2);
             }
             else if ((value.at(0) == "#CompactStyle"))
-                passWidget->compactStyleCheck->setChecked(value.at(1).toInt());
+                prefsWidget->compactStyleCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#MutedAdd"))
-                passWidget->mutedAddCheck->setChecked(value.at(1).toInt());
+                prefsWidget->mutedAddCheck->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#EnableLog"))
                 logWidget->enableLog->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LogMidiClock"))
@@ -1297,9 +1304,9 @@ void MainWindow::writeRcFile()
     }
 
     writeText << "#CompactStyle%";
-    writeText << passWidget->compactStyle << endl;
+    writeText << prefs->compactStyle << endl;
     writeText << "#MutedAdd%";
-    writeText << passWidget->mutedAdd << endl;
+    writeText << prefs->mutedAdd << endl;
     writeText << "#EnableLog%";
     writeText << logWidget->enableLog->isChecked() << endl;
     writeText << "#LogMidiClock%";
@@ -1565,4 +1572,5 @@ int MainWindow::nsm_save(char **out_msg)
     if (!saveFile()) err = ERR_GENERAL;
     return err;
 }
+
 #endif

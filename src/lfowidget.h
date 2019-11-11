@@ -76,15 +76,12 @@ class LfoWidget : public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore,
-            int portCount, bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
+    LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore, Prefs *p_prefs,
+            bool inOutVisible = true,
             const QString& name = "");
 
 #else
-    LfoWidget(
-            bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true);
+    LfoWidget();
 #endif
 
     LfoScreen *screen;

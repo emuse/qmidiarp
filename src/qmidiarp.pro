@@ -15,7 +15,7 @@ HEADERS += arpdata.h \
            groovewidget.h \
            seqdriver.h \
            logwidget.h \
-           passwidget.h \
+           prefswidget.h \
            gui.h \
            main.h \
            midiarp.h \
@@ -27,7 +27,7 @@ SOURCES += arpdata.cpp \
            groovewidget.cpp \
            seqdriver.cpp \
            logwidget.cpp \
-           passwidget.cpp \
+           prefswidget.cpp \
 	   gui.cpp \
            main.cpp \
            midiarp.cpp \

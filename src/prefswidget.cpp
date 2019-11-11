@@ -1,6 +1,6 @@
 /*!
- * @file passwidget.cpp
- * @brief Implements the PassWidget UI class.
+ * @file prefswidget.cpp
+ * @brief Implements the PrefsWidget UI class.
  *
  *
  *      Copyright 2009 - 2019 <qmidiarp-devel@lists.sourceforge.net>
@@ -25,13 +25,13 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 
-#include "passwidget.h"
+#include "prefswidget.h"
 
-PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
+PrefsWidget::PrefsWidget(Engine *p_engine, Prefs *p_prefs, QWidget *parent)
             : QDialog(parent)
 {
     int l1;
-
+    prefs = p_prefs;
     engine = p_engine;
 
     forwardCheck = new QCheckBox(this);
@@ -42,7 +42,7 @@ PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
 
     portUnmatchedSpin = new QComboBox(this);
     portUnmatchedSpin->setDisabled(true);
-    for (l1 = 0; l1 < p_portcount; l1++) portUnmatchedSpin->addItem(QString::number(l1 + 1));
+    for (l1 = 0; l1 < p_prefs->portCount; l1++) portUnmatchedSpin->addItem(QString::number(l1 + 1));
     QObject::connect(portUnmatchedSpin, SIGNAL(activated(int)), this,
             SLOT(updatePortUnmatched(int)));
 
@@ -61,73 +61,86 @@ PassWidget::PassWidget(Engine *p_engine, int p_portcount, QWidget *parent)
     compactStyleCheck->setText(tr("&Compact module layout style"));
     QObject::connect(compactStyleCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateCompactStyle(bool)));
-    compactStyle = false;
 
     mutedAddCheck = new QCheckBox(this);
     mutedAddCheck->setText(tr("&Add new modules in muted state"));
     QObject::connect(mutedAddCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateMutedAdd(bool)));
-    mutedAdd = false;
+
+    storeMuteStateCheck = new QCheckBox(this);
+    storeMuteStateCheck->setText(tr("&Store and restore mute state of modules"));
+    QObject::connect(storeMuteStateCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateStoreMuteState(bool)));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-    QVBoxLayout *passWidgetLayout = new QVBoxLayout;
-    passWidgetLayout->addLayout(portBoxLayout);
-    passWidgetLayout->addWidget(cbuttonCheck);
-    passWidgetLayout->addWidget(compactStyleCheck);
-    passWidgetLayout->addWidget(mutedAddCheck);
-    passWidgetLayout->addWidget(buttonBox);
-    passWidgetLayout->addStretch();
+    QVBoxLayout *prefsWidgetLayout = new QVBoxLayout;
+    prefsWidgetLayout->addLayout(portBoxLayout);
+    prefsWidgetLayout->addWidget(cbuttonCheck);
+    prefsWidgetLayout->addWidget(compactStyleCheck);
+    prefsWidgetLayout->addWidget(mutedAddCheck);
+    prefsWidgetLayout->addWidget(storeMuteStateCheck);
+    prefsWidgetLayout->addWidget(buttonBox);
+    prefsWidgetLayout->addStretch();
 
-    setLayout(passWidgetLayout);
+    setLayout(prefsWidgetLayout);
     setModal(true);
     setWindowTitle(tr("Settings - ") + APP_NAME);
 }
 
-PassWidget::~PassWidget()
+PrefsWidget::~PrefsWidget()
 {
 }
 
-void PassWidget::updateForward(bool on)
+void PrefsWidget::updateForward(bool on)
 {
     engine->driver->setForwardUnmatched(on);
     portUnmatchedSpin->setDisabled(!on);
     modified = true;
 }
 
-void PassWidget::updatePortUnmatched(int id)
+void PrefsWidget::updatePortUnmatched(int id)
 {
     engine->driver->setPortUnmatched(id);
+    prefs->portUnmatched = id;
     modified = true;
 }
 
-void PassWidget::setForward(bool on)
+void PrefsWidget::setForward(bool on)
 {
     forwardCheck->setChecked(on);
+    prefs->forwardUnmatched = on;
 }
 
-void PassWidget::setPortUnmatched(int id)
+void PrefsWidget::setPortUnmatched(int id)
 {
     portUnmatchedSpin->setCurrentIndex(id);
+    prefs->portUnmatched = id;
     updatePortUnmatched(id);
 }
 
-void PassWidget::updateControlSetting(bool on)
+void PrefsWidget::updateControlSetting(bool on)
 {
     engine->setMidiControllable(on);
+    prefs->midiControllable = on;    
     modified = true;
 }
 
-void PassWidget::updateCompactStyle(bool on)
+void PrefsWidget::updateCompactStyle(bool on)
 {
-    compactStyle = on;
+    prefs->midiControllable = on;    
     engine->setCompactStyle(on);
 }
 
-void PassWidget::updateMutedAdd(bool on)
+void PrefsWidget::updateStoreMuteState(bool on)
 {
-    mutedAdd = on;
+    prefs->storeMuteState = on;
+}
+
+void PrefsWidget::updateMutedAdd(bool on)
+{
+    prefs->mutedAdd = on;
 }

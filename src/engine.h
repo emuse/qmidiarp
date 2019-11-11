@@ -277,14 +277,14 @@ class Engine : public QObject  {
 /**
  * @brief turns on and off MIDI controller handling globally
  *
- * This is a slot for PassWidget::updateControlSetting() called when the
+ * This is a slot for PrefsWidget::updateControlSetting() called when the
  * Settings window checkbox is clicked.
  */
     void setMidiControllable(bool on);
 /**
  * @brief sets the QStyle of all module widgets to CompactStyle
  *
- * This is a slot for PassWidget::updateCompactStyle() called when the
+ * This is a slot for PrefsWidget::updateCompactStyle() called when the
  * Settings window checkbox is clicked.
  */
     void setCompactStyle(bool on);

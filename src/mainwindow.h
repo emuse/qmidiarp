@@ -33,8 +33,9 @@
 
 #include "logwidget.h"
 #include "midicctable.h"
-#include "passwidget.h"
+#include "prefswidget.h"
 #include "globstore.h"
+#include "prefs.h"
 
 #ifdef NSM
 #include "nsm.h"
@@ -62,7 +63,7 @@ static const char ABOUTMSG[] =
  * The MainWindow class is the main UI that holds functions to manage global
  * QMidiArp parameters and modules and to load and save parameters to
  * disk. The constructor sets up all main window elements including
- * toolbars and menus. It instantiates the LogWidget, PassWidget,
+ * toolbars and menus. It instantiates the LogWidget, PrefsWidget,
  * MidiCCTable and their DockWidget windows. It also instantiates the
  * Engine widget holding the lists of modules.
 
@@ -76,12 +77,13 @@ class MainWindow : public QMainWindow
     static int sigpipe[2];
     bool alsaMidi;
     QSpinBox *tempoSpin;
-    PassWidget *passWidget;
+    PrefsWidget *prefsWidget;
     GrooveWidget *grooveWidget;
     LogWidget *logWidget;
     GlobStore *globStore;
     Engine *engine;
     MidiCCTable *midiCCTable;
+    Prefs *prefs;
     QString lastDir, filename;
     QStringList patternNames, patternPresets;
     QStringList recentFiles;
@@ -247,7 +249,7 @@ class MainWindow : public QMainWindow
 * resource file.
 *
 * The file contains the Arp preset patterns, the last
-* GUI state, settings made in the Settings dialog (PassWidget) and
+* GUI state, settings made in the Settings dialog (PrefsWidget) and
 * the recent files and path.
 * This function is called from the MainWindow constructor.
 * @see readRcFile, updatePatternPresets

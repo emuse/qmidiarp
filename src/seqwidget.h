@@ -66,15 +66,12 @@ class SeqWidget : public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
-            int portCount, bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
+    SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore, Prefs *p_prefs,
+            bool inOutVisible = true,
             const QString& name = "");
 
 #else
-    SeqWidget(
-            bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true);
+    SeqWidget();
 #endif
 
     QVector<Sample> data;

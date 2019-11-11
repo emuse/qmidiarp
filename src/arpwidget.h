@@ -68,15 +68,12 @@ class ArpWidget :  public InOutBox
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore,
-            int portCount, bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true,
+    ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore, Prefs *p_prefs,
+            bool inOutVisible = true,
             const QString& name = "");
 
 #else
-    ArpWidget(
-            bool compactStyle,
-            bool mutedAdd = false, bool inOutVisible = true);
+    ArpWidget();
 #endif
 
     ArpScreen *screen;

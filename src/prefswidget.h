@@ -1,6 +1,6 @@
 /*!
- * @file passwidget.h
- * @brief Headers for the PassWidget UI class.
+ * @file prefswidget.h
+ * @brief Headers for the PrefsWidget UI class.
  *
  *
  *      Copyright 2009 - 2019 <qmidiarp-devel@lists.sourceforge.net>
@@ -21,38 +21,38 @@
  *      MA 02110-1301, USA.
  *
  */
-#ifndef PASSWIDGET_H
-#define PASSWIDGET_H
+#ifndef PREFSWIDGET_H
+#define PREFSWIDGET_H
 
 #include <QDialog>
 
 #include "engine.h"
 
 /*!
- * The PassWidget class is a small QDialog UI that allows defining some
+ * The PrefsWidget class is a small QDialog UI that allows defining some
  * global settings for QMidiArp. It is instantiated by MainWindow.
  * It is shown when the MainWindow::viewSettingsAction() is triggered.
 
  * @brief Preferences QDialog UI class. Instantiated by MainWindow.
  */
-class PassWidget : public QDialog
+class PrefsWidget : public QDialog
 
 {
   Q_OBJECT
 
   private:
     Engine *engine;
+    Prefs *prefs;
     bool modified;
 
   public:
-    PassWidget(Engine* engine, int p_portcount, QWidget* parent=0);
-    ~PassWidget();
+    PrefsWidget(Engine* engine, Prefs* prefs, QWidget* parent=0);
+    ~PrefsWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck, *mutedAddCheck;
-    QCheckBox *forwardCheck;
+    QCheckBox *forwardCheck, *storeMuteStateCheck;
     QComboBox *portUnmatchedSpin;
-    bool compactStyle, mutedAdd;
     bool isModified() { return modified;};
     void setModified(bool on) { modified = on; };
 
@@ -65,6 +65,7 @@ class PassWidget : public QDialog
     void updateControlSetting(bool);
     void updateCompactStyle(bool);
     void updateMutedAdd(bool);
+    void updateStoreMuteState(bool);
 };
 
 #endif

@@ -42,9 +42,11 @@
 #include <QInputDialog>
 
 #include "parstore.h"
+#include "prefs.h"
 #endif
 
 #include "midiworker.h"
+
 /*! @brief GUI base class for module widgets, creates an in-out settings box
  *
  * The three module widget classes ArpWidget, SeqWidget and LfoWidget 
@@ -72,16 +74,16 @@ class InOutBox: public QWidget
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-	InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, int portCount, bool compactStyle,
-		bool inOutVisible, const QString& name);
+	InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
+            Prefs *p_prefs, bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
     int parentDockID;   /**< @brief The index of the Widget's parent DockWidget in Engine::moduleWindowList */
+    Prefs *prefs;
     ParStore *parStore;
     MidiControl *midiControl;
 #else
-	InOutBox(bool compactStyle,
-		bool inOutVisible, const QString& name);
+	InOutBox(const QString& name);
 #endif
     ~InOutBox();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */

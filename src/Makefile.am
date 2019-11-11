@@ -24,8 +24,9 @@ nodist_qmidiarp_SOURCES = \
 	midiseq_moc.cpp \
 	midicctable_moc.cpp \
 	midicontrol_moc.cpp \
-	passwidget_moc.cpp \
+	prefswidget_moc.cpp \
 	parstore_moc.cpp \
+	prefs_moc.cpp \
 	jackdriver_moc.cpp \
 	screen_moc.cpp \
 	seqdriver_moc.cpp \
@@ -58,7 +59,8 @@ qmidiarp_SOURCES = \
 	nsm.h \
 	driverbase.h \
 	parstore.cpp parstore.h \
-	passwidget.cpp passwidget.h \
+	prefswidget.cpp prefswidget.h \
+	prefs.cpp prefs.h \
 	jackdriver.cpp jackdriver.h \
 	screen.cpp screen.h \
 	seqdriver.cpp seqdriver.h \

@@ -30,7 +30,7 @@ ArpWidgetLV2::ArpWidgetLV2 (
         LV2UI_Controller ct,
         LV2UI_Write_Function write_function,
         const LV2_Feature *const *host_features)
-        : ArpWidget(true, true, true)
+        : ArpWidget()
 {
     m_controller = ct;
     writeFunction = write_function;

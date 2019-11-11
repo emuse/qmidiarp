@@ -30,18 +30,17 @@
 
 #ifdef APPBUILD
 SeqWidget::SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
-    int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiSeq, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    Prefs *p_prefs, bool inOutVisible, const QString& p_name):
+    InOutBox(p_midiSeq, p_globStore, p_prefs, inOutVisible, p_name),
     midiSeq(p_midiSeq)
 {
+    bool compactStyle = p_prefs->compactStyle;
 #else
-SeqWidget::SeqWidget(
-    bool compactStyle,
-    bool mutedAdd, bool inOutVisible):
-    InOutBox(compactStyle, inOutVisible, "Seq:"),
+SeqWidget::SeqWidget():
+    InOutBox("Seq:"),
     midiSeq(NULL)
 {
+    bool compactStyle = true;
 #endif
 
     // group box for sequence setup
@@ -204,8 +203,8 @@ SeqWidget::SeqWidget(
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
-    muteOutAction->setChecked(mutedAdd);
 #ifdef APPBUILD
+    muteOutAction->setChecked(p_prefs->mutedAdd);
     midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
 #endif
 

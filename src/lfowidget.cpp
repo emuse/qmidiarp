@@ -38,18 +38,17 @@
 
 #ifdef APPBUILD
 LfoWidget::LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore,
-    int portCount, bool compactStyle,
-    bool mutedAdd, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiLfo, p_globStore, portCount, compactStyle, inOutVisible, p_name),
+    Prefs *p_prefs, bool inOutVisible, const QString& p_name):
+    InOutBox(p_midiLfo, p_globStore, p_prefs, inOutVisible, p_name),
     midiLfo(p_midiLfo)
 {
+    bool compactStyle = p_prefs->compactStyle;
 #else
-LfoWidget::LfoWidget(
-    bool compactStyle,
-    bool mutedAdd, bool inOutVisible):
-    InOutBox(compactStyle, inOutVisible, "LFO:"),
+LfoWidget::LfoWidget():
+    InOutBox("LFO:"),
     midiLfo(NULL)
 {
+    bool compactStyle = true;
 #endif
 
     // group box for wave setup
@@ -232,7 +231,9 @@ LfoWidget::LfoWidget(
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
-    muteOutAction->setChecked(mutedAdd);
+#ifdef APPBUILD
+    muteOutAction->setChecked(p_prefs->mutedAdd);
+#endif
 
     setLayout(widgetLayout);
     updateAmp(64);
