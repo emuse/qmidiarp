@@ -3,7 +3,7 @@
  * @brief Implementation of the ArpScreen class
  *
  *
- *      Copyright 2009 - 2017 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2019 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
