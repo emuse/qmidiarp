@@ -266,10 +266,6 @@ ArpWidget::ArpWidget():
     envelopeBox->setFlat(true);
     envelopeBox->setLayout(envelopeBoxLayout);
 
-#ifdef APPBUILD
-    muteOutAction->setChecked(p_prefs->mutedAdd);
-#endif
-
     QGridLayout *widgetLayout = new QGridLayout;
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);

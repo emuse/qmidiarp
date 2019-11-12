@@ -263,7 +263,9 @@ InOutBox::InOutBox(const QString& name):
     muteOut->setMinimumSize(QSize(35,20));
     connect(muteOutAction, SIGNAL(toggled(bool)), this, 
             SLOT(setMuted(bool)));
-
+#ifdef APPBUILD
+    muteOutAction->setChecked(p_prefs->mutedAdd);
+#endif
     
     // Defer button that has to be added to each module widget outside the box
     deferChangesAction = new QAction("D", this);

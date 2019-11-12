@@ -231,10 +231,6 @@ LfoWidget::LfoWidget():
     widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
-#ifdef APPBUILD
-    muteOutAction->setChecked(p_prefs->mutedAdd);
-#endif
-
     setLayout(widgetLayout);
     updateAmp(64);
 }
