@@ -35,7 +35,8 @@ SOURCES += \
 	src/midicctable.cpp\
 	src/midicontrol.cpp\
 	src/parstore.cpp\
-	src/passwidget.cpp\
+	src/prefs.cpp\
+	src/prefswidget.cpp\
 	src/jackdriver.cpp\
 	src/screen.cpp\
 	src/seqdriver.cpp\
@@ -65,7 +66,8 @@ HEADERS += \
 	src/midicctable.h\
 	src/midicontrol.h\
 	src/parstore.h\
-	src/passwidget.h\
+	src/prefs.h\
+	src/prefswidget.h\
 	src/jackdriver.h\
 	src/screen.h\
 	src/seqdriver.h\
