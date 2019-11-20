@@ -41,7 +41,7 @@ InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore,
     modified(false)
 {
     bool compactStyle = p_prefs->compactStyle;
-    bool portCount = p_prefs->portCount;
+    int portCount = p_prefs->portCount;
     midiControl = new MidiControl(this);
 
     QHBoxLayout *manageBoxLayout = new QHBoxLayout;
