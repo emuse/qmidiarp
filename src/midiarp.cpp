@@ -882,9 +882,10 @@ void MidiArp::purgeLatchBuffer(int latchtick)
 void MidiArp::purgeReleaseNotes(int bufptr)
 {
     for (int l1 = noteCount - 1; l1 >= 0; l1--) {
-        if (notes[bufptr][3][l1])
+        if (notes[bufptr][3][l1]) {
             deleteNoteAt(l1, bufptr);
             releaseNoteCount--;
+        }
     }
 }
 
