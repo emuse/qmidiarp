@@ -156,7 +156,7 @@ SeqWidget::SeqWidget():
     midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
 #endif
 
-    transpose = new Slider(-24, 24, 1, 2, 0, Qt::Horizontal,
+    transpose = new Slider(-36, 24, 1, 2, 0, Qt::Horizontal,
             tr("&Transpose"), this);
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
