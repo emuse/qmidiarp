@@ -302,9 +302,10 @@ void ArpWidgetLV2::updatePattern(const QString& p_pattern)
                 break;
 
             case 'p':
-                if (!chordmd)
+                if (!chordmd) {
                     nsteps += stepwd;
                     npoints++;
+                }
                 break;
 
             case '+':
