@@ -131,8 +131,8 @@ void PrefsWidget::updateControlSetting(bool on)
 
 void PrefsWidget::updateCompactStyle(bool on)
 {
-    prefs->midiControllable = on;    
     engine->setCompactStyle(on);
+    prefs->compactStyle = on;    
 }
 
 void PrefsWidget::updateStoreMuteState(bool on)

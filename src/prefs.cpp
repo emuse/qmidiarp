@@ -29,7 +29,7 @@ Prefs::Prefs()
     portCount = 2;
     forwardUnmatched = false;
     portUnmatched = 0;
-    compactStyle = true;
+    compactStyle = false;
     storeMuteState = false;
     mutedAdd = false;
     midiControllable = true;
