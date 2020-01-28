@@ -430,6 +430,41 @@ void MidiSeqLV2::sendWave()
     lv2_atom_forge_pop(&forge, &frame);
 }
 
+#ifdef BUILD_LV2_UI
+//=== The following comes from the synthv1 plugin by rncbc ====
+QApplication *MidiSeqLV2::g_qAppInstance = nullptr;
+unsigned int  MidiSeqLV2::qAppCount = 0;
+
+
+void MidiSeqLV2::qAppInstantiate(void)
+{
+	if (qApp == nullptr && g_qAppInstance == nullptr) {
+		static int s_argc = 1;
+		static const char *s_argv[] = { __func__, nullptr };
+		g_qAppInstance = new QApplication(s_argc, (char **) s_argv);
+	}
+
+	if (g_qAppInstance)
+		qAppCount++;
+}
+
+
+void MidiSeqLV2::qAppCleanup (void)
+{
+	if (g_qAppInstance && --qAppCount == 0) {
+		delete g_qAppInstance;
+		g_qAppInstance = nullptr;
+	}
+}
+
+
+QApplication *MidiSeqLV2::qAppInstance(void)
+{
+	return g_qAppInstance;
+}
+// ====
+#endif
+
 static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature* const* )
@@ -566,6 +601,9 @@ static LV2_Handle MidiSeqLV2_instantiate (
     const LV2_Descriptor *, double sample_rate, const char *,
     const LV2_Feature *const *host_features )
 {
+#ifdef BUILD_LV2_UI
+	MidiSeqLV2::qAppInstantiate();
+#endif
     return new MidiSeqLV2(sample_rate, host_features);
 }
 
@@ -603,6 +641,10 @@ static void MidiSeqLV2_cleanup ( LV2_Handle instance )
     MidiSeqLV2 *pPlugin = static_cast<MidiSeqLV2 *> (instance);
     if (pPlugin)
         delete pPlugin;
+
+#ifdef BUILD_LV2_UI
+    MidiSeqLV2::qAppCleanup();
+#endif
 }
 
 static const void *MidiSeqLV2_extension_data ( const char * uri)

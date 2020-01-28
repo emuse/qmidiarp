@@ -110,6 +110,15 @@ qmidiarp_arp_la_SOURCES = \
 qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E
 
 if BUILD_LV2_UI
+qmidiarp_lfo_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILD_LV2_UI
+qmidiarp_seq_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILD_LV2_UI
+qmidiarp_arp_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILD_LV2_UI
+qmidiarp_lfo_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_seq_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_arp_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+endif
+
+if BUILD_LV2_UI
 SUBDIRS = pixmaps
 
 arppluginuidir = @libdir@/lv2/qmidiarp_arp.lv2

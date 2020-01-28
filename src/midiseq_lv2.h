@@ -28,6 +28,10 @@
 #include "midiseq.h"
 #include "lv2_common.h"
 
+#ifdef BUILD_LV2_UI
+#include <QApplication>
+#endif
+
 #define QMIDIARP_SEQ_LV2_URI QMIDIARP_LV2_URI "/seq"
 #define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
 
@@ -90,6 +94,12 @@ public:
         LV2_Atom_Forge forge;
         LV2_Atom_Forge_Frame m_frame;
 
+#ifdef BUILD_LV2_UI
+        static void qAppInstantiate();
+        static void qAppCleanup();
+        
+        static QApplication *qAppInstance();
+#endif
 private:
 
         float *val[35];
@@ -127,6 +137,11 @@ private:
 
         int sliderToTickLen(int val) { return (val * TPQN / 64); }
         int tickLenToSlider(int val) { return (val * 64 / TPQN); }
+
+#ifdef BUILD_LV2_UI
+        static QApplication *g_qAppInstance;
+        static unsigned int  qAppCount;
+#endif
 };
 
 #endif

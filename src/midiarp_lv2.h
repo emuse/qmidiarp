@@ -28,6 +28,10 @@
 #include "midiarp.h"
 #include "lv2_common.h"
 
+#ifdef BUILD_LV2_UI
+#include <QApplication>
+#endif
+
 #define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
 #define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 
@@ -86,6 +90,13 @@ public:
 
         bool sendPatternFlag;
 
+#ifdef BUILD_LV2_UI
+        static void qAppInstantiate();
+        static void qAppCleanup();
+        
+        static QApplication *qAppInstance();
+#endif
+
 private:
 
         float *val[30];
@@ -113,6 +124,12 @@ private:
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;
+
+#ifdef BUILD_LV2_UI
+        static QApplication *g_qAppInstance;
+        static unsigned int  qAppCount;
+#endif
+
 };
 
 #endif

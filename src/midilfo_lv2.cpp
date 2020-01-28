@@ -414,6 +414,41 @@ void MidiLfoLV2::sendWave()
     lv2_atom_forge_pop(&forge, &lv2frame);
 }
 
+#ifdef BUILD_LV2_UI
+//=== The following comes from the synthv1 plugin by rncbc ====
+QApplication *MidiLfoLV2::g_qAppInstance = nullptr;
+unsigned int  MidiLfoLV2::qAppCount = 0;
+
+
+void MidiLfoLV2::qAppInstantiate(void)
+{
+	if (qApp == nullptr && g_qAppInstance == nullptr) {
+		static int s_argc = 1;
+		static const char *s_argv[] = { __func__, nullptr };
+		g_qAppInstance = new QApplication(s_argc, (char **) s_argv);
+	}
+
+	if (g_qAppInstance)
+		qAppCount++;
+}
+
+
+void MidiLfoLV2::qAppCleanup (void)
+{
+	if (g_qAppInstance && --qAppCount == 0) {
+		delete g_qAppInstance;
+		g_qAppInstance = nullptr;
+	}
+}
+
+
+QApplication *MidiLfoLV2::qAppInstance(void)
+{
+	return g_qAppInstance;
+}
+//===
+#endif
+
 static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     LV2_State_Retrieve_Function retrieve, LV2_State_Handle handle,
     uint32_t flags, const LV2_Feature *const * )
@@ -552,6 +587,9 @@ static LV2_Handle MidiLfoLV2_instantiate (
     const LV2_Descriptor *, double sample_rate, const char *,
     const LV2_Feature *const *host_features )
 {
+#ifdef BUILD_LV2_UI
+	MidiLfoLV2::qAppInstantiate();
+#endif
     return new MidiLfoLV2(sample_rate, host_features);
 }
 
@@ -587,8 +625,13 @@ static void MidiLfoLV2_deactivate ( LV2_Handle instance )
 static void MidiLfoLV2_cleanup ( LV2_Handle instance )
 {
     MidiLfoLV2 *pPlugin = static_cast<MidiLfoLV2 *> (instance);
+    
     if (pPlugin)
         delete pPlugin;
+        
+#ifdef BUILD_LV2_UI
+    MidiLfoLV2::qAppCleanup();
+#endif
 }
 
 static const void *MidiLfoLV2_extension_data ( const char * uri)
