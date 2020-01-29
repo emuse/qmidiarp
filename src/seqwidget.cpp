@@ -101,7 +101,10 @@ SeqWidget::SeqWidget():
     sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "16" << "32";
+    for (int i = 1; i < 17; i++) {
+        names << QString::number(i);
+    }
+    names << "24" << "32";
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
@@ -429,7 +432,7 @@ void SeqWidget::updateRes(int val)
 
 void SeqWidget::updateSize(int val)
 {
-    if (val > 9) return;
+    if (val > 17) return;
     sizeBoxIndex = val;
     modified = true;
     if (!midiSeq) return;

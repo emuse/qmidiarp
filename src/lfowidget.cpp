@@ -124,8 +124,10 @@ LfoWidget::LfoWidget():
     sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    names << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8"
-            << "12" << "16" << "24" << "32" ;
+    for (int i = 1; i < 17; i++) {
+        names << QString::number(i);
+    }
+    names << "24" << "32";
     sizeBox->insertItems(0, names);
     sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
@@ -437,7 +439,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-    if (val > 11) return;
+    if (val > 17) return;
     sizeBoxIndex = val;
     modified = true;
     if (!midiLfo) return;
