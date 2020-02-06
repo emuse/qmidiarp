@@ -28,10 +28,12 @@
 #include "lv2_common.h"
 #include "arpwidget.h"
 #include <QApplication>
+#include <QWindow>
 
 #define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
 #define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
 #define QMIDIARP_ARP_LV2UI_URI QMIDIARP_ARP_LV2_PREFIX "ui"
+#define QMIDIARP_ARP_LV2UI_X11_URI QMIDIARP_ARP_LV2_PREFIX "ui_x11"
 
 class ArpWidgetLV2 : public ArpWidget
 {

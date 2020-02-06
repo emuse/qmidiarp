@@ -364,29 +364,29 @@ unsigned int  SeqWidgetLV2::qAppCount = 0;
 
 void SeqWidgetLV2::qAppInstantiate(void)
 {
-	if (qApp == nullptr && g_qAppInstance == nullptr) {
-		static int s_argc = 1;
-		static const char *s_argv[] = { __func__, nullptr };
-		g_qAppInstance = new QApplication(s_argc, (char **) s_argv);
-	}
+    if (qApp == nullptr && g_qAppInstance == nullptr) {
+        static int s_argc = 1;
+        static const char *s_argv[] = { __func__, nullptr };
+        g_qAppInstance = new QApplication(s_argc, (char **) s_argv);
+    }
 
-	if (g_qAppInstance)
-		qAppCount++;
+    if (g_qAppInstance)
+        qAppCount++;
 }
 
 
 void SeqWidgetLV2::qAppCleanup (void)
 {
-	if (g_qAppInstance && --qAppCount == 0) {
-		delete g_qAppInstance;
-		g_qAppInstance = nullptr;
-	}
+    if (g_qAppInstance && --qAppCount == 0) {
+        delete g_qAppInstance;
+        g_qAppInstance = nullptr;
+    }
 }
 
 
 QApplication *SeqWidgetLV2::qAppInstance(void)
 {
-	return g_qAppInstance;
+    return g_qAppInstance;
 }
 // ====
 
@@ -396,10 +396,44 @@ static LV2UI_Handle MidiSeqLV2ui_instantiate (
     LV2UI_Controller controller, LV2UI_Widget *widget,
     const LV2_Feature *const *host_features )
 {
-	SeqWidgetLV2::qAppInstantiate();
+    SeqWidgetLV2::qAppInstantiate();
     SeqWidgetLV2 *pWidget = new SeqWidgetLV2(
                     controller, write_function, host_features);
     *widget = pWidget;
+    return pWidget;
+}
+
+static LV2UI_Handle MidiSeqLV2ui_x11_instantiate (
+    const LV2UI_Descriptor *, const char *, const char *,
+    LV2UI_Write_Function write_function,
+    LV2UI_Controller controller, LV2UI_Widget *widget,
+    const LV2_Feature *const *ui_features )
+{
+    WId winid, parent = 0;
+    LV2UI_Resize *resize = nullptr;
+
+    for (int i = 0; ui_features[i]; ++i) {
+        if (::strcmp(ui_features[i]->URI, LV2_UI__parent) == 0)
+            parent = (WId) ui_features[i]->data;
+        else
+        if (::strcmp(ui_features[i]->URI, LV2_UI__resize) == 0)
+            resize = (LV2UI_Resize *) ui_features[i]->data;
+    }
+
+    if (!parent)
+        return nullptr;
+
+    SeqWidgetLV2::qAppInstantiate();
+    SeqWidgetLV2 *pWidget
+        = new SeqWidgetLV2(controller, write_function, ui_features);
+    if (resize && resize->handle) {
+        const QSize& hint = pWidget->sizeHint();
+        resize->ui_resize(resize->handle, hint.width(), hint.height());
+    }
+    winid = pWidget->winId();
+    pWidget->windowHandle()->setParent(QWindow::fromWinId(parent));
+    pWidget->show();
+    *widget = (LV2UI_Widget) winid;
     return pWidget;
 }
 
@@ -436,7 +470,22 @@ static const LV2UI_Descriptor MidiSeqLV2ui_descriptor =
     MidiSeqLV2ui_extension_data
 };
 
+static const LV2UI_Descriptor MidiSeqLV2ui_x11_descriptor =
+{
+    QMIDIARP_SEQ_LV2UI_X11_URI,
+    MidiSeqLV2ui_x11_instantiate,
+    MidiSeqLV2ui_cleanup,
+    MidiSeqLV2ui_port_event,
+    MidiSeqLV2ui_extension_data
+};
+
 LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
-    return (index == 0 ? &MidiSeqLV2ui_descriptor : NULL);
+    if (index == 0)
+        return &MidiSeqLV2ui_descriptor;
+    else
+    if (index == 1)
+        return &MidiSeqLV2ui_x11_descriptor;
+    else
+        return NULL;
 }

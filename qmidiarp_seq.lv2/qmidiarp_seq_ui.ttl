@@ -4,3 +4,7 @@
 <https://git.code.sf.net/p/qmidiarp/seq#ui>
     a lv2ui:Qt5UI ;
     lv2ui:binary <qmidiarp_seq_ui.so> .
+
+<https://git.code.sf.net/p/qmidiarp/seq#ui_x11>
+    a lv2ui:X11UI ;
+    lv2ui:binary <qmidiarp_seq_ui.so> .

@@ -27,6 +27,7 @@
     lv2:optionalFeature lv2:hardRTCapable ;
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
     lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui> ;
+    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui_x11> ;
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;
         atom:bufferType atom:Sequence ;
@@ -364,102 +365,102 @@
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Simple 4" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> "0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> "0"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern02>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Simple 8" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">0"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern03>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Simple 16" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>0"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern04>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Simple 32" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>>0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>>0"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern05>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chord 8" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">(0123456789)"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">(0123456789)"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern06>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chord+Bass 16" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>(01234)0(01234)0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>(01234)0(01234)0"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern07>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chord Oct 16 A" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\ +(0123456789)"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\ +(0123456789)"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern08>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chord Oct 16 B" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>///0\\ \\ \\ 0+////0\\ \\ \\ \\ -00+0-00+0-00+0-00+0-0"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern09>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chord Oct 16 C" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>///0\\ \\ \\ 0+////(0123)\\ \\ \\ \\ -00+(1234)-00+0-00+0-00+0-0"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern10>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Fast Chords 1" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\+(0123456789) ////hh(0123456789)ddd\\ \\ ////(0123456789)"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\+(0123456789) ////hh(0123456789)ddd\\ \\ ////(0123456789)"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern11>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Fast Chords 2" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>(0123456)p+(0123456)-(01234)(234567)(56789)"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>(0123456)p+(0123456)-(01234)(234567)(56789)"
+    ] .
     
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern12>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Fast Chords 3" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\ +(0123456789) ////hh(0123456789)ddd\\ \\ \\ ////(0123456789)-\\(0123456789)\\ \\ \\ (0123456789) ////hh+(0123456789)dd\\ \\ \\ ////-(0123456789)"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> ">>////(0123456789)\\ \\ \\ +(0123456789) ////hh(0123456789)ddd\\ \\ \\ ////(0123456789)-\\(0123456789)\\ \\ \\ (0123456789) ////hh+(0123456789)dd\\ \\ \\ ////-(0123456789)"
+    ] .
 
 <https://git.code.sf.net/p/qmidiarp/arp#Pattern13>
     a pset:Preset ;
     lv2:appliesTo <https://git.code.sf.net/p/qmidiarp/arp> ;
     rdfs:label "Chords/Glissando 16" ;
-	state:state [
-		<https://git.code.sf.net/p/qmidiarp#ARPPATTERN> "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342"
-	] .
+    state:state [
+        <https://git.code.sf.net/p/qmidiarp#ARPPATTERN> "d(012)>h(123)>d(012)<d(234)>hh(23)(42)(12)(43)>d012342"
+    ] .

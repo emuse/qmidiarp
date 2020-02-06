@@ -28,10 +28,12 @@
 #include "seqwidget.h"
 #include "lv2_common.h"
 #include <QApplication>
+#include <QWindow>
 
 #define QMIDIARP_SEQ_LV2_URI QMIDIARP_LV2_URI "/seq"
 #define QMIDIARP_SEQ_LV2_PREFIX QMIDIARP_SEQ_LV2_URI "#"
 #define QMIDIARP_SEQ_LV2UI_URI QMIDIARP_SEQ_LV2_PREFIX "ui"
+#define QMIDIARP_SEQ_LV2UI_X11_URI QMIDIARP_SEQ_LV2_PREFIX "ui_x11"
 
 class SeqWidgetLV2 : public SeqWidget
 {

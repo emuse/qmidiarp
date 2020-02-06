@@ -28,10 +28,12 @@
 #include "lfowidget.h"
 #include "lv2_common.h"
 #include <QApplication>
+#include <QWindow>
 
 #define QMIDIARP_LFO_LV2_URI QMIDIARP_LV2_URI "/lfo"
 #define QMIDIARP_LFO_LV2_PREFIX QMIDIARP_LFO_LV2_URI "#"
 #define QMIDIARP_LFO_LV2UI_URI QMIDIARP_LFO_LV2_PREFIX "ui"
+#define QMIDIARP_LFO_LV2UI_X11_URI QMIDIARP_LFO_LV2_PREFIX "ui_x11"
 
 class LfoWidgetLV2 : public LfoWidget
 {
