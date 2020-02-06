@@ -27,6 +27,7 @@
 
 #include "lv2_common.h"
 #include "arpwidget.h"
+#include <QApplication>
 
 #define QMIDIARP_ARP_LV2_URI QMIDIARP_LV2_URI "/arp"
 #define QMIDIARP_ARP_LV2_PREFIX QMIDIARP_ARP_LV2_URI "#"
@@ -83,6 +84,11 @@ class ArpWidgetLV2 : public ArpWidget
         uint32_t buffer_size, uint32_t format, const void *buffer);
     void sendUIisUp(bool on);
 
+    static void qAppInstantiate();
+    static void qAppCleanup();
+    
+    static QApplication *qAppInstance();
+
   public slots:
     void mapParam(int value);
     void mapBool(bool on);
@@ -106,6 +112,9 @@ class ArpWidgetLV2 : public ArpWidget
     double mouseXCur, mouseYCur;
     bool receivePatternFlag;
     bool receivedPatternOnce;
+
+    static QApplication *g_qAppInstance;
+    static unsigned int  qAppCount;
 };
 
 #endif

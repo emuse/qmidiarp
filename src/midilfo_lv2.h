@@ -28,10 +28,6 @@
 #include "midilfo.h"
 #include "lv2_common.h"
 
-#ifdef BUILD_LV2_UI
-#include <QApplication>
-#endif
-
 #define QMIDIARP_LFO_LV2_URI QMIDIARP_LV2_URI "/lfo"
 #define QMIDIARP_LFO_LV2_PREFIX QMIDIARP_LFO_LV2_URI "#"
 
@@ -96,10 +92,6 @@ public:
         LV2_Atom_Forge_Frame m_lv2frame;
 
 #ifdef BUILD_LV2_UI
-        static void qAppInstantiate();
-        static void qAppCleanup();
-        
-        static QApplication *qAppInstance();
 #endif
 
 private:
@@ -129,11 +121,6 @@ private:
 
         LV2_Atom_Sequence *inEventBuffer;
         const LV2_Atom_Sequence *outEventBuffer;
-
-#ifdef BUILD_LV2_UI
-        static QApplication *g_qAppInstance;
-        static unsigned int  qAppCount;
-#endif
 };
 
 #endif

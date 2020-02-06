@@ -397,12 +397,45 @@ void LfoWidgetLV2::updateParam(int index, float fValue) const
 }
 
 
+//=== The following comes from the synthv1 plugin by rncbc ====
+QApplication *LfoWidgetLV2::g_qAppInstance = nullptr;
+unsigned int  LfoWidgetLV2::qAppCount = 0;
+
+
+void LfoWidgetLV2::qAppInstantiate(void)
+{
+	if (qApp == nullptr && g_qAppInstance == nullptr) {
+		static int s_argc = 1;
+		static const char *s_argv[] = { __func__, nullptr };
+		g_qAppInstance = new QApplication(s_argc, (char **) s_argv);
+	}
+
+	if (g_qAppInstance)
+		qAppCount++;
+}
+
+
+void LfoWidgetLV2::qAppCleanup (void)
+{
+	if (g_qAppInstance && --qAppCount == 0) {
+		delete g_qAppInstance;
+		g_qAppInstance = nullptr;
+	}
+}
+
+
+QApplication *LfoWidgetLV2::qAppInstance(void)
+{
+	return g_qAppInstance;
+}
+//===
 static LV2UI_Handle MidiLfoLV2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
     LV2UI_Controller controller, LV2UI_Widget *widget,
     const LV2_Feature *const *host_features )
 {
+	LfoWidgetLV2::qAppInstantiate();
     LfoWidgetLV2 *pWidget = new LfoWidgetLV2(
                 controller, write_function, host_features);
     *widget = pWidget;
@@ -416,6 +449,7 @@ static void MidiLfoLV2ui_cleanup ( LV2UI_Handle ui )
         pWidget->sendUIisUp(false);
         delete pWidget;
     }
+    LfoWidgetLV2::qAppCleanup();
 }
 
 static void MidiLfoLV2ui_port_event (
