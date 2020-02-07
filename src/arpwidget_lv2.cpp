@@ -475,6 +475,32 @@ QApplication *ArpWidgetLV2::qAppInstance(void)
 {
     return g_qAppInstance;
 }
+
+int MidiArpLV2ui_resize ( LV2UI_Handle ui, int width, int height )
+{
+    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
+    if (pWidget) {
+        pWidget->resize(width, height);
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+static const LV2UI_Resize MidiArpLV2ui_resize_interface =
+{
+    nullptr, // handle: host should use its own when calling ui_resize().
+    MidiArpLV2ui_resize
+};
+
+static const void *MidiArpLV2ui_extension_data ( const char *uri )
+{
+    if (::strcmp(uri, LV2_UI__resize) == 0)
+        return (void *) &MidiArpLV2ui_resize_interface;
+    else
+        return nullptr;
+}
+
 //===
 
 static LV2UI_Handle MidiArpLV2ui_instantiate (
@@ -541,11 +567,6 @@ static void MidiArpLV2ui_port_event (
     ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
     if (pWidget)
         pWidget->port_event(port_index, buffer_size, format, buffer);
-}
-
-static const void *MidiArpLV2ui_extension_data ( const char * )
-{
-    return NULL;
 }
 
 static const LV2UI_Descriptor MidiArpLV2ui_descriptor =
