@@ -90,7 +90,7 @@ class LfoWidget : public InOutBox
     QStringList waveForms;
     QComboBox *resBox, *sizeBox;
     QComboBox *loopBox;
-    Slider *frequency, *amplitude, *offset;
+    Slider *frequency, *amplitude, *offset, *phase;
     QAction *recordAction;
     QAction *flipWaveVerticalAction;
     QComboBox *waveFormBox, *freqBox;
@@ -213,6 +213,16 @@ class LfoWidget : public InOutBox
 *
 */
     void updateOffs(int val);
+
+/*!
+* @brief Slot for the LfoWidget::phase slider. Sets the phase offset
+* in steps of the waveform for this LFO.
+*
+* updates the LfoScreen of this module.
+* @param val Phase (0 ... XX) of the waveform.
+*
+*/
+    void updatePhase(int val);
 
 /*!
 * @brief Slot for the LfoScreen::mouseEvent signal.

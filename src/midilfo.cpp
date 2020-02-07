@@ -30,6 +30,7 @@ MidiLfo::MidiLfo()
 {
     amp = 64;
     offs = 0;
+    phase = 0;
     freq = 8;
     size = 4;
     res = 4;
@@ -205,7 +206,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
     switch(waveFormIndex) {
         case 0: //sine
             for (int l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip((-cos((double)(l1 * 6.28 /
+                sample.value = clip((-cos((double)((l1 + phase) * 6.28 /
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
@@ -214,7 +215,8 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 1: //sawtooth up
-            val = 0;
+            val = freq * phase;
+            val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(val * amp / res / 32
                 + offs, 0, 127, &cl);
@@ -227,7 +229,8 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 2: //triangle
-            val = 0;
+            val = freq * phase;
+            val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 int tempval = val - res * 16;
                 if (tempval < 0 ) tempval = -tempval;
@@ -242,7 +245,8 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 3: //sawtooth down
-            val = 0;
+            val = freq * phase;
+            val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((res * 32 - val)
                         * amp / res / 32 + offs, 0, 127, &cl);
@@ -256,7 +260,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
         break;
         case 4: //square
             for (int l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(amp * ((l1 * freq / 16
+                sample.value = clip(amp * (( (l1 + phase) * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
@@ -300,6 +304,11 @@ void MidiLfo::updateOffset(int val)
     if (isRecording) return;
     if (waveFormIndex == 5) updateCustomWaveOffset(val);
     offs = val;
+}
+
+void MidiLfo::updatePhase(int val)
+{
+    phase = val;
 }
 
 void MidiLfo::updateResolution(int val)

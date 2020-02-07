@@ -91,6 +91,7 @@ class ParStore : public QWidget
         int freq;
         int ampl;
         int offs;
+        int phase;
         /* Seq Modules */
         int loopMarker;
         int notelen;

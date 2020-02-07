@@ -63,24 +63,25 @@ class MidiLfo : public MidiWorker  {
 
   public:
     bool recordMode, isRecording;
-    bool lastMute;              /**< Contains the mute state of the last waveForm point modified by mouse click*/
+    bool lastMute;                  /**< Contains the mute state of the last waveForm point modified by mouse click*/
     int old_res;
     int freq, amp, offs;
-    int size;       /*!< Size of the waveform in quarter notes */
-    int res;        /*!< Resolution of the waveform in ticks per quarter note */
-    int frameSize;  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
-    int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
-    int waveFormIndex;          /*!< Index of the waveform to produce
-                                    @par 0: Sine
-                                    @par 1: Sawtooth Up
-                                    @par 2: Triangle
-                                    @par 3: Sawtooth Down
-                                    @par 4: Square
-                                    @par 5: Use Custom Wave */
-    int cwmin;                  /*!< The minimum of MidiLfo::customWave */
+    int phase;                      /*!< Starting Phase position of the waveform based on resolution */
+    int size;                       /*!< Size of the waveform in quarter notes */
+    int res;                        /*!< Resolution of the waveform in ticks per quarter note */
+    int frameSize;                  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
+    int maxNPoints;                 /*!< Maximum number of steps that have been used in the session */
+    int waveFormIndex;              /*!< Index of the waveform to produce
+                                        @par 0: Sine
+                                        @par 1: Sawtooth Up
+                                        @par 2: Triangle
+                                        @par 3: Sawtooth Down
+                                        @par 4: Square
+                                        @par 5: Use Custom Wave */
+    int cwmin;                      /*!< The minimum of MidiLfo::customWave */
     std::vector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     std::vector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
-    std::vector<Sample> frame; /*!< Vector of Sample points holding the current frame for transfer */
+    std::vector<Sample> frame;      /*!< Vector of Sample points holding the current frame for transfer */
     std::vector<Sample> data;
 
   public:
@@ -90,6 +91,7 @@ class MidiLfo : public MidiWorker  {
     void updateFrequency(int);
     void updateAmplitude(int);
     void updateOffset(int);
+    void updatePhase(int);
     void updateResolution(int);
     void updateSize(int);
     void updateLoop(int);

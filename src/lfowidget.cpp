@@ -185,9 +185,20 @@ LfoWidget::LfoWidget():
 #ifdef APPBUILD
     midiControl->addMidiLearnMenu("Offset", offset, 2);
 #endif
+
+    phase = new Slider(0, 192, 1, 8, 0, Qt::Horizontal,
+            tr("&Phase"), this);
+    connect(phase, SIGNAL(valueChanged(int)), this,
+            SLOT(updatePhase(int)));
+#ifdef APPBUILD
+    midiControl->addMidiLearnMenu("Phase", phase, 10);
+#endif
+
+
     QVBoxLayout* sliderLayout = new QVBoxLayout;
     sliderLayout->addWidget(amplitude);
     sliderLayout->addWidget(offset);
+    sliderLayout->addWidget(phase);
     sliderLayout->addStretch();
     if (compactStyle) {
         sliderLayout->setSpacing(1);
@@ -265,6 +276,8 @@ void LfoWidget::writeData(QXmlStreamWriter& xml)
                 midiLfo->amp));
             xml.writeTextElement("offset", QString::number(
                 midiLfo->offs));
+            xml.writeTextElement("phase", QString::number(
+                midiLfo->phase));
         xml.writeEndElement();
 
         tempArray.clear();
@@ -334,6 +347,8 @@ void LfoWidget::readData(QXmlStreamReader& xml)
                     amplitude->setValue(xml.readElementText().toInt());
                 else if (xml.name() == "offset")
                     offset->setValue(xml.readElementText().toInt());
+                else if (xml.name() == "phase")
+                    phase->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
@@ -406,6 +421,7 @@ void LfoWidget::updateWaveForm(int val)
     if (isCustom && midiLfo) midiLfo->newCustomOffset();
     amplitude->setDisabled(isCustom);
     freqBox->setDisabled(isCustom);
+    phase->setDisabled(isCustom);
     modified = true;
 
 }
@@ -480,6 +496,17 @@ void LfoWidget::updateOffs(int val)
     screen->updateData(data);
 }
 
+void LfoWidget::updatePhase(int val)
+{
+    modified = true;
+    if (!midiLfo) return;
+    midiLfo->updatePhase(val);
+    std::vector<Sample> sdata;
+    midiLfo->getData(&sdata);
+    data=QVector<Sample>::fromStdVector(sdata);
+    screen->updateData(data);
+}
+
 void LfoWidget::copyToCustom()
 {
     if (midiLfo) midiLfo->copyToCustom();
@@ -548,6 +575,7 @@ void LfoWidget::doStoreParams(int ix)
     parStore->temp.freq = freqBox->currentIndex();
     parStore->temp.ampl = amplitude->value();
     parStore->temp.offs = offset->value();
+    parStore->temp.phase = phase->value();
     parStore->temp.waveForm = waveFormBox->currentIndex();
 
     if (midiLfo) parStore->temp.wave = getCustomWave().mid(0, midiLfo->maxNPoints);
@@ -579,6 +607,7 @@ void LfoWidget::doRestoreParams(int ix)
     if (!parStore->onlyPatternList.at(ix)) {
         amplitude->setValue(parStore->list.at(ix).ampl);
         offset->setValue(parStore->list.at(ix).offs);
+        phase->setValue(parStore->list.at(ix).phase);
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
         ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
     }
@@ -633,6 +662,7 @@ void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
 
     amplitude->setValue(fromWidget->amplitude->value());
     offset->setValue(fromWidget->offset->value());
+    phase->setValue(fromWidget->phase->value());
 
     for (int l1 = 0; l1 < fromWidget->getMidiWorker()->maxNPoints; l1++) {
         midiLfo->customWave[l1] = fromWidget->getCustomWave().at(l1);
@@ -730,7 +760,10 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                         }
                         else return;
                 break;
-
+                case 10:
+                        sval = min + ((double)value * (max - min) / 127);
+                        midiLfo->updatePhase(sval);
+                break;
 
                 default:
                 break;
@@ -753,6 +786,7 @@ void LfoWidget::updateDisplay()
         screen->updateData(data);
         cursor->updateNumbers(midiLfo->res, midiLfo->size);
         offset->setValue(midiLfo->offs);
+        phase->setValue(midiLfo->phase);
         midiLfo->dataChanged = false;
     }
     screen->updateDraw();
@@ -777,6 +811,7 @@ void LfoWidget::updateDisplay()
     loopBox->setCurrentIndex(midiLfo->curLoopMode);
     amplitude->setValue(midiLfo->amp);
     offset->setValue(midiLfo->offs);
+    phase->setValue(midiLfo->phase);
     if (waveFormBoxIndex != waveFormBox->currentIndex()) {
         waveFormBox->setCurrentIndex(waveFormBoxIndex);
         updateWaveForm(waveFormBoxIndex);

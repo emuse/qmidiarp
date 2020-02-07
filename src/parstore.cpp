@@ -50,6 +50,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     temp.freq = 0;
     temp.ampl = 0;
     temp.offs = 0;
+    temp.phase = 0;
     /* Seq Modules */
     temp.loopMarker = 0;
     temp.notelen = 0;
@@ -201,6 +202,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("freq", QString::number(list.at(ix).freq));
             xml.writeTextElement("ampl", QString::number(list.at(ix).ampl));
             xml.writeTextElement("offs", QString::number(list.at(ix).offs));
+            xml.writeTextElement("phase", QString::number(list.at(ix).phase));
             xml.writeTextElement("loopMarker", QString::number(list.at(ix).loopMarker));
             xml.writeTextElement("notelen", QString::number(list.at(ix).notelen));
             xml.writeTextElement("vel", QString::number(list.at(ix).vel));
@@ -290,6 +292,8 @@ void ParStore::readData(QXmlStreamReader& xml)
                     temp.ampl = xml.readElementText().toInt();
                 else if (xml.name() == "offs")
                     temp.offs = xml.readElementText().toInt();
+                else if (xml.name() == "phase")
+                    temp.phase = xml.readElementText().toInt();
                 else if (xml.name() == "vel")
                     temp.vel = xml.readElementText().toInt();
                 else if (xml.name() == "dispVertical")
