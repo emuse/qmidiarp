@@ -285,6 +285,12 @@ void MidiLfoLV2::updateParams()
         *val[OFFSET] = offs;
     }
 
+    if (offs != *val[PHASE]) {
+        changed = true;
+        updatePhase(*val[PHASE]);
+        *val[PHASE] = phase;
+    }
+
     if (mouseXCur != *val[MOUSEX] || mouseYCur != *val[MOUSEY]
                 || mouseEvCur != *val[MOUSEPRESSED]) {
         int ix = 1;

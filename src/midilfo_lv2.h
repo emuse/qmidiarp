@@ -69,7 +69,7 @@ public:
             ENABLE_TRIGLEGATO = 24,
             RECORD = 25,
             DEFER = 26,
-            SPARE = 27, //output
+            PHASE = 27,
             TRANSPORT_MODE = 28,
             TEMPO = 29,
             WaveOut = 30,

@@ -78,6 +78,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
 
     connect(amplitude,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(offset,             SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
+    connect(phase,              SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(resBox,             SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(sizeBox,            SIGNAL(activated(int)), this, SLOT(mapParam(int)));
     connect(freqBox,            SIGNAL(activated(int)), this, SLOT(mapParam(int)));
@@ -148,6 +149,9 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
             break;
             case OFFSET:
                     offset->setValue(fValue);
+            break;
+            case PHASE:
+                    phase->setValue(fValue);
             break;
             case RESOLUTION:
                     resBox->setCurrentIndex(fValue);
@@ -375,6 +379,7 @@ void LfoWidgetLV2::mapParam(int value)
 {
     if (amplitude == sender())          updateParam(AMPLITUDE, value);
     else if (offset == sender())        updateParam(OFFSET, value);
+    else if (phase == sender())         updateParam(PHASE, value);
     else if (resBox == sender())        updateParam(RESOLUTION, value);
     else if (sizeBox == sender())       updateParam(SIZE, value);
     else if (freqBox == sender())       updateParam(FREQUENCY, value);

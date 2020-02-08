@@ -70,7 +70,7 @@ class LfoWidgetLV2 : public LfoWidget
             ENABLE_TRIGLEGATO = 26,
             RECORD = 27,
             DEFER = 28,
-            SPARE = 29,
+            PHASE = 29,
             TRANSPORT_MODE = 30,
             TEMPO = 31,
             WaveOut = 32,
