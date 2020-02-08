@@ -54,7 +54,7 @@
         lv2:portProperty lv2:integer ;
         lv2:default 64.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 128.0 ;
+        lv2:maximum 127.0 ;
     ] , [
         a lv2:InputPort, lv2:ControlPort ;
         lv2:index 3 ;
@@ -63,7 +63,7 @@
         lv2:portProperty lv2:integer ;
         lv2:default 60.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 128.0 ;
+        lv2:maximum 127.0 ;
     ] ;
     lv2:port [
         a lv2:InputPort, lv2:ControlPort ;
