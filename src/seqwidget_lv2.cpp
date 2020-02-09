@@ -175,9 +175,11 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
                     rangeIn[1]->setValue(fValue);
             break;
             case CURSOR_POS:
-                    cursor->updateNumbers(res, size);
-                    cursor->updatePosition(fValue);
-                    cursor->update();
+                    if (cursor->currentIndex != (int)fValue) {
+                        cursor->updateNumbers(res, size);
+                        cursor->updatePosition(fValue);
+                        cursor->update();
+                    }
             break;
             case LOOPMARKER:
                     screen->setLoopMarker((int)fValue);

@@ -142,7 +142,7 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
 
 
         float fValue = *(float *) buffer;
-
+        
         switch (port_index) {
             case AMPLITUDE:
                     amplitude->setValue(fValue);
@@ -181,9 +181,11 @@ void LfoWidgetLV2::port_event ( uint32_t port_index,
                     rangeIn[1]->setValue(fValue);
             break;
             case CURSOR_POS:
-                    cursor->updateNumbers(res, size);
-                    cursor->updatePosition(fValue);
-                    cursor->update();
+                    if (cursor->currentIndex != (int)fValue) {
+                        cursor->updateNumbers(res, size);
+                        cursor->updatePosition(fValue);
+                        cursor->update();
+                    }
             break;
             case WAVEFORM:
                     waveFormBox->setCurrentIndex(fValue);

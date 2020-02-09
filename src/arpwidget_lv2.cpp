@@ -162,8 +162,10 @@ void ArpWidgetLV2::port_event ( uint32_t port_index,
                     chIn->setCurrentIndex(fValue);
             break;
             case CURSOR_POS:
-                    screen->updateCursor((int)fValue);
-                    screen->update();
+                    if (screen->currentIndex != (int)fValue) {
+                        screen->updateCursor((int)fValue);
+                        screen->update();
+                    }
             break;
             case PATTERN_PRESET:
                     //patternPresetBox->setCurrentIndex(fValue);

@@ -50,7 +50,6 @@ class Cursor : public QWidget
     int w, h;
     QChar modType;
     int nPoints, nSteps;
-    int currentIndex;
     bool needsRedraw;
 
   protected:
@@ -59,6 +58,7 @@ class Cursor : public QWidget
   public:
     Cursor(QChar modtype = 'L');
     ~Cursor();
+    int currentIndex;
     virtual QSize sizeHint() const;
     virtual QSizePolicy sizePolicy() const;
 
