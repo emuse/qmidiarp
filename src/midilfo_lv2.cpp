@@ -285,7 +285,7 @@ void MidiLfoLV2::updateParams()
         *val[OFFSET] = offs;
     }
 
-    if (offs != *val[PHASE]) {
+    if (phase != *val[PHASE]) {
         changed = true;
         updatePhase(*val[PHASE]);
         *val[PHASE] = phase;
