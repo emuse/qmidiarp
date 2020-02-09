@@ -295,7 +295,7 @@ void MidiLfoLV2::updateParams()
                 || mouseEvCur != *val[MOUSEPRESSED]) {
         int ix = 1;
         int evtype = 0;
-        changed = true;
+
         mouseXCur = *val[MOUSEX];
         mouseYCur = *val[MOUSEY];
         if ((mouseEvCur == 2) && (*val[MOUSEPRESSED] != 2) )
@@ -372,8 +372,10 @@ void MidiLfoLV2::updateParams()
     }
 
     if (changed) {
-        getData(&data);
         dataChanged = true;
+    }
+    if (dataChanged) {
+        getData(&data);
     }
 }
 

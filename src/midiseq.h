@@ -48,6 +48,7 @@ class MidiSeq : public MidiWorker  {
 
   private:
     int lastMouseLoc;
+    int lastMouseY;
 /**
  * @brief  calulates the next MidiSeq::framePtr as a
  * function of the current value, play direction, loop marker position

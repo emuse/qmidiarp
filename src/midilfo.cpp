@@ -341,6 +341,8 @@ int MidiLfo::setCustomWavePoint(double mouseX, double mouseY, bool newpt)
     int loc = mouseX * (res * size);
     int Y = mouseY * 128;
 
+    if ((loc == lastMouseLoc) && (lastMouseY == Y)) return(-loc);
+    
     if (newpt || (lastMouseLoc >= (res * size))) {
     // the mouse was just clicked so we can directly set the point
         lastMouseLoc = loc;
@@ -384,7 +386,12 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
         if (waveFormIndex < 5) copyToCustom();
         ix = setCustomWavePoint(mouseX, mouseY, pressed);
     }
-    dataChanged = true;
+    
+    // if value is negative data hasn't changed
+    if (ix < 0)
+        ix = -ix;
+    else
+        dataChanged = true;
     return (ix);
 }
 
@@ -507,7 +514,10 @@ int MidiLfo::setMutePoint(double mouseX, bool on)
 {
     Sample sample;
     int loc = mouseX * (res * size);
-
+    
+    // Return negative value to signal that data hasn't changed
+    if ((loc == lastMouseLoc) && (loc > 0)) return(-loc);
+    
     if (lastMouseLoc >= (res * size)) lastMouseLoc = loc;
 
     do {

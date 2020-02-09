@@ -46,6 +46,7 @@ MidiSeq::MidiSeq()
     notelengthDefer = 180;
     lastMute = false;
     lastMouseLoc = 0;
+    lastMouseY = 0;
 
     customWave.resize(2048);
     muteMask.resize(2048);
@@ -303,6 +304,8 @@ int MidiSeq::setCustomWavePoint(double mouseX, double mouseY)
 int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
     int ix = 0;
+    bool mute = false;
+    int Y = 12 * (mouseY * nOctaves + baseOctave);
 
     if ((mouseY < 0) && (pressed != 2)) {
         if (mouseX < 0) mouseX = 0;
@@ -315,8 +318,10 @@ int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 
     if (buttons == 2) {
         if (pressed == 1) {
+            mute = lastMute;
             lastMute = toggleMutePoint(mouseX);
-            ix = lastMute;
+            mute = (mute != lastMute);
+            ix = mouseX * (res * size);
         }
         else if (pressed == 0)
             ix = setMutePoint(mouseX, lastMute);
@@ -324,8 +329,11 @@ int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
     else if (pressed != 2) {
         ix = setCustomWavePoint(mouseX, mouseY);
     }
-    dataChanged = true;
+    
+    if ( (ix != lastMouseLoc) || (lastMouseY != Y) || (mute) ) dataChanged = true;
 
+    lastMouseLoc = ix;
+    lastMouseY = Y;
     return (ix);
 }
 
