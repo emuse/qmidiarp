@@ -227,8 +227,10 @@ void SeqWidgetLV2::port_event ( uint32_t port_index,
             break;
             case CURR_RECSTEP:
                     //record step has changed
-                    screen->setCurrentRecStep((int)fValue);
-                    screen->update();
+                    if (screen->currentRecStep != (int)fValue) {
+                        screen->setCurrentRecStep((int)fValue);
+                        screen->update();
+                    }
             break;
             case TRANSPORT_MODE:
                     transportBox->setChecked((bool)fValue);

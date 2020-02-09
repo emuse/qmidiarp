@@ -49,7 +49,6 @@ class SeqScreen : public Screen
 
   private:
     QVector<Sample> p_data, data;
-    int currentRecStep;
     int baseOctave, nOctaves;
     QPointF trg[3];
     void emitMouseEvent(QMouseEvent *event, int pressed);
@@ -60,6 +59,7 @@ class SeqScreen : public Screen
   public:
     SeqScreen();
     int loopMarker;
+    int currentRecStep;
     
   public slots:
     void updateData(const QVector<Sample>& data);
