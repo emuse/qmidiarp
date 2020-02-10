@@ -437,6 +437,7 @@ void LfoWidget::updateFreq(int val)
     midiLfo->getData(&sdata);
     data=QVector<Sample>::fromStdVector(sdata);
     screen->updateData(data);
+    updatePhaseMax();
 }
 
 void LfoWidget::updateRes(int val)
@@ -451,6 +452,7 @@ void LfoWidget::updateRes(int val)
     data=QVector<Sample>::fromStdVector(sdata);
     screen->updateData(data);
     if (waveFormBoxIndex == 5) midiLfo->newCustomOffset();
+    updatePhaseMax();
 }
 
 void LfoWidget::updateSize(int val)
@@ -505,6 +507,15 @@ void LfoWidget::updatePhase(int val)
     midiLfo->getData(&sdata);
     data=QVector<Sample>::fromStdVector(sdata);
     screen->updateData(data);
+}
+
+void LfoWidget::updatePhaseMax()
+{
+    if (!midiLfo) return;
+    // phase max is resolution divided by freq
+    // so we use the 32 here to our advantage
+    phase->setMax((midiLfo->res * 32) / midiLfo->freq);
+    updatePhase(phase->value());
 }
 
 void LfoWidget::copyToCustom()

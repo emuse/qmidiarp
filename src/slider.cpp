@@ -85,6 +85,18 @@ void Slider::setValue(int val)
     slider->setValue(val);
 }
 
+void Slider::setMin(int min)
+{
+    slider->setMinimum(min);
+    sliderSpin->setMinimum(min);
+}
+
+void Slider::setMax(int max)
+{
+    slider->setMaximum(max);
+    sliderSpin->setMaximum(max);
+}
+
 int Slider::value()
 {
     return(slider->value());

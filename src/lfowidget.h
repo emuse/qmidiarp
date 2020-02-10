@@ -225,6 +225,16 @@ class LfoWidget : public InOutBox
     void updatePhase(int val);
 
 /*!
+* @brief Slot for the LfoWidget::phase slider. Sets the maximum phase 
+* offset value in the phase slider
+*
+* updates the Phase Slider of this module.
+* @param val Phase (0 ... XX) of the waveform.
+*
+*/
+    void updatePhaseMax();
+
+/*!
 * @brief Slot for the LfoScreen::mouseEvent signal.
 * 
 * Mutes or sets a wave point when the mouse is pressed or
