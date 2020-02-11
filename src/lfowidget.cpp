@@ -186,7 +186,7 @@ LfoWidget::LfoWidget():
     midiControl->addMidiLearnMenu("Offset", offset, 2);
 #endif
 
-    phase = new Slider(0, 192, 1, 8, 0, Qt::Horizontal,
+    phase = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
             tr("&Phase"), this);
     connect(phase, SIGNAL(valueChanged(int)), this,
             SLOT(updatePhase(int)));

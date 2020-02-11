@@ -203,10 +203,13 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
 
     tmpdata.clear();
 
+    int phase_max = res * 32 / freq;
+    int ph = phase_max * phase / 128;
+
     switch(waveFormIndex) {
         case 0: //sine
             for (int l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip((-cos((double)((l1 + phase) * 6.28 /
+                sample.value = clip((-cos((double)((l1 + ph) * 6.28 /
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);
@@ -215,7 +218,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 1: //sawtooth up
-            val = freq * phase;
+            val = freq * ph;
             val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(val * amp / res / 32
@@ -229,7 +232,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 2: //triangle
-            val = freq * phase;
+            val = freq * ph;
             val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 int tempval = val - res * 16;
@@ -245,7 +248,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             }
         break;
         case 3: //sawtooth down
-            val = freq * phase;
+            val = freq * ph;
             val %= res * 32;
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((res * 32 - val)
@@ -260,7 +263,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
         break;
         case 4: //square
             for (int l1 = 0; l1 < npoints; l1++) {
-                sample.value = clip(amp * (( (l1 + phase) * freq / 16
+                sample.value = clip(amp * (( (l1 + ph) * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = lt;
                 sample.muted = muteMask.at(l1);

@@ -295,7 +295,7 @@
         lv2:portProperty lv2:integer ;
         lv2:default 0.0 ;
         lv2:minimum 0.0 ;
-        lv2:maximum 192.0 ;
+        lv2:maximum 127.0 ;
     ] ;
     lv2:port [
         a lv2:OutputPort, lv2:ControlPort ;
