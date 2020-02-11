@@ -61,8 +61,6 @@ class Slider : public QWidget
 
   public slots:
     void setValue(int);
-    void setMin(int);
-    void setMax(int);
 
   private slots:
     void updateSpinBox(int);
