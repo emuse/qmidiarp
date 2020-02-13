@@ -90,7 +90,13 @@ class ArpWidget :  public InOutBox
     QStringList patternPresets, patternNames;
     QAction *latchModeAction;
 
-
+/*! 
+ * @brief ENUM for Internal MIDI Control IDs supported
+ * by arp widget 
+ */
+    enum ARPWIDGET_CTRL_IDS {
+        ARP_PRESET_SWITCH = 1,
+    };
 
 #ifdef APPBUILD
     //these members are common to all modules

@@ -91,6 +91,20 @@ class SeqWidget : public InOutBox
     QVector<Sample> getCustomWave();
     QVector<bool> getMuteMask();
 
+/*!
+ * @brief ENUM for Internal MIDI Control IDs supported 
+ * by the Sequencer widget
+ */         
+    enum SEQWIDGET_CTRL_IDS {
+        SEQ_VELOCITY = 1,
+        SEQ_NOTE_LENGTH = 2,
+        SEQ_RECORD = 3,
+        SEQ_RESOLUTION = 4,
+        SEQ_SIZE = 5,
+        SEQ_LOOP_MODE = 6,
+        SEQ_TRANSPOSE = 7,
+        SEQ_CHANNEL_OUT = 8,
+    };
 
 #ifdef APPBUILD
 /*!

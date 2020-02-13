@@ -66,7 +66,7 @@ SeqWidget::SeqWidget():
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("LoopMode", loopBox, 6);
+    midiControl->addMidiLearnMenu("LoopMode", loopBox, SEQ_LOOP_MODE);
 #endif
     QLabel *recordButtonLabel = new QLabel(tr("Re&cord"));
     recordAction = new QAction(QPixmap(seqrecord_xpm), tr("Re&cord"), this);
@@ -77,7 +77,7 @@ SeqWidget::SeqWidget():
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 3);
+    midiControl->addMidiLearnMenu("RecordToggle", recordButton, SEQ_RECORD);
 #endif
 
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"));
@@ -94,7 +94,7 @@ SeqWidget::SeqWidget():
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Resolution", resBox, 4);
+    midiControl->addMidiLearnMenu("Resolution", resBox, SEQ_RESOLUTION);
 #endif
 
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"));
@@ -113,7 +113,7 @@ SeqWidget::SeqWidget():
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Size", sizeBox, 5);
+    midiControl->addMidiLearnMenu("Size", sizeBox, SEQ_SIZE);
 #endif
 
     dispSignalMapper = new QSignalMapper(this);
@@ -148,7 +148,7 @@ SeqWidget::SeqWidget():
     connect(velocity, SIGNAL(valueChanged(int)), this,
             SLOT(updateVelocity(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Velocity", velocity, 1);
+    midiControl->addMidiLearnMenu("Velocity", velocity, SEQ_VELOCITY);
 #endif
 
     notelength = new Slider(0, 127, 1, 16, 60, Qt::Horizontal,
@@ -156,7 +156,7 @@ SeqWidget::SeqWidget():
     connect(notelength, SIGNAL(valueChanged(int)), this,
             SLOT(updateNoteLength(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("NoteLength", notelength, 2);
+    midiControl->addMidiLearnMenu("NoteLength", notelength, SEQ_NOTE_LENGTH);
 #endif
 
     transpose = new Slider(-36, 24, 1, 2, 0, Qt::Horizontal,
@@ -164,7 +164,7 @@ SeqWidget::SeqWidget():
     connect(transpose, SIGNAL(valueChanged(int)), this,
             SLOT(updateTranspose(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Transpose", transpose, 8);
+    midiControl->addMidiLearnMenu("Transpose", transpose, SEQ_TRANSPOSE);
 #endif
 
     QGridLayout* sliderLayout = new QGridLayout;
@@ -207,7 +207,7 @@ SeqWidget::SeqWidget():
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Out Channel", channelOut, 9);
+    midiControl->addMidiLearnMenu("Out Channel", channelOut, SEQ_CHANNEL_OUT);
 #endif
 
     setLayout(widgetLayout);
@@ -632,7 +632,7 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
             int sval = 0;
             bool m = false;
             switch (cclist.at(l2).ID) {
-                case 0: if (min == max) {
+                case MUTE_BUTTON: if (min == max) {
                             if (value == max) {
                                 m = midiSeq->isMuted;
                                 midiSeq->setMuted(!m);
@@ -648,17 +648,17 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         }
                 break;
 
-                case 1:
+                case SEQ_VELOCITY:
                         sval = min + ((double)value * (max - min) / 127);
                         midiSeq->updateVelocity(sval);
                 break;
 
-                case 2:
+                case SEQ_NOTE_LENGTH:
                         sval = min + ((double)value * (max - min) / 127);
                         midiSeq->updateNoteLength(sliderToTickLen(sval));
                 break;
 
-                case 3: if (min == max) {
+                case SEQ_RECORD: if (min == max) {
                             if (value == max) {
                                 m = midiSeq->recordMode;
                                 midiSeq->setRecordMode(!m);
@@ -674,19 +674,19 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                             }
                         }
                 break;
-                case 4:
+                case SEQ_RESOLUTION:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 5) resBoxIndex = sval;
                 break;
-                case 5:
+                case SEQ_SIZE:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 8) sizeBoxIndex = sval;
                 break;
-                case 6:
+                case SEQ_LOOP_MODE:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 6) midiSeq->curLoopMode = sval;
                 break;
-                case 7:
+                case PARAM_RESTORE:
                         sval = min + ((double)value * (max - min) / 127);
                         if ((sval < parStore->list.count())
                                 && (sval != parStore->activeStore)
@@ -698,12 +698,12 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                         else return;
                 break;
 
-                case 8:
+                case SEQ_TRANSPOSE:
                         sval = min + ((double)value * (max - min) / 127);
                         midiSeq->updateTranspose(sval - 24);
                 break;
                 
-                case 9:
+                case SEQ_CHANNEL_OUT:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 16) midiSeq->channelOut = sval;
                 break;

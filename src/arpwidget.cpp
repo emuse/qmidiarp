@@ -96,7 +96,7 @@ ArpWidget::ArpWidget():
     connect(patternPresetBox, SIGNAL(activated(int)), this,
             SLOT(selectPatternPreset(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, 1);
+    midiControl->addMidiLearnMenu("PresetSwitch", patternPresetBox, ARP_PRESET_SWITCH);
 #endif
 
     repeatPatternThroughChord = new QComboBox;
@@ -662,7 +662,7 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
             (channel == cclist.at(l2).channel)) {
             int sval = 0;
             switch (cclist.at(l2).ID) {
-                case 0: if (min == max) {
+                case MUTE_BUTTON: if (min == max) {
                             if (value == max) {
                                 bool m = midiArp->isMuted;
                                 midiArp->setMuted(!m);
@@ -677,11 +677,11 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
                             }
                         }
                 break;
-                case 1:
+                case ARP_PRESET_SWITCH:
                         sval = min + ((double)value * (max - min) / 127);
                         patternPresetBoxIndex = sval;
                 break;
-                case 2:
+                case PARAM_RESTORE:
                         sval = min + ((double)value * (max - min) / 127);
                         if ((sval < parStore->list.count())
                                 && (sval != parStore->activeStore)

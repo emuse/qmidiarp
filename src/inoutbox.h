@@ -118,6 +118,18 @@ class InOutBox: public QWidget
     virtual int getFramePtr() { return midiWorker->getFramePtr(); }
     virtual int getNextTick() { return midiWorker->nextTick; }
 
+/*!
+ * @brief ENUM for Internal MIDI Control IDs supported 
+ * by the InOutBox widget
+ * NOTE: These are used by the arp, lfo, and seq widgets
+ */         
+    enum INOUTBOX_CTRL_IDS {
+        MUTE_BUTTON = 10,
+        NOTE_LOW = 11,
+        NOTE_HIGH = 12,
+        PARAM_RESTORE = 13,
+    };
+
 #ifdef APPBUILD
 
 /*!

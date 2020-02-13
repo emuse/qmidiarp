@@ -73,6 +73,15 @@ class GlobStore : public QWidget
     Indicator *indicator;
     QList<QWidget*> widgetList;
     int switchAtBeat; /**< number of beats after which parameter restore is done in Engine */
+
+/*!
+ * @brief ENUM for Internal MIDI Control IDs supported 
+ * by the GlobStore widget 
+ */         
+    enum GLOBSTORE_CTRL_IDS {
+        GLOB_RESTORE = 0,
+    };
+
 /*!
 * @brief creates and adds a new group of global parameter
 *  storage and retrieval buttons

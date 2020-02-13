@@ -102,6 +102,21 @@ class LfoWidget : public InOutBox
     int freqBoxIndex;
     int waveFormBoxIndex;
 
+/*!
+ * @brief ENUM for Internal MIDI Control IDs supported 
+ * by the lfo widget
+ */         
+    enum LFOWIDGET_CTRL_IDS {
+        LFO_AMPLITUDE = 1,
+        LFO_OFFSET = 2,
+        LFO_WAVEFORM = 3,
+        LFO_FREQUENCY = 4,
+        LFO_RECORD = 5,
+        LFO_RESOLUTION = 6,
+        LFO_SIZE = 7,
+        LFO_LOOPMODE = 8,
+        LFO_PHASE = 9,
+    };
 
 #ifdef APPBUILD
 /*!

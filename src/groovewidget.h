@@ -68,6 +68,17 @@ class GrooveWidget : public QWidget
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
+
+/*!
+ * @brief ENUM for Internal MIDI Control IDs supported 
+ * by the GrooveWidget widget 
+ */         
+    enum GROOVEWIDGET_CTRL_IDS {
+        GROOVE_TICK = 1,
+        GROOVE_VELOCITY = 2,
+        GROOVE_LENGTH = 3,
+    };
+
 #ifdef APPBUILD
 /*!
 * @brief allows ignoring one XML element in the XML stream

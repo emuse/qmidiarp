@@ -96,7 +96,7 @@ GlobStore::GlobStore(QWidget *parent)
     QToolButton *toolButton = new QToolButton;
     toolButton->setText("Global");
     toolButton->setMinimumSize(QSize(56,32));
-    midiControl->addMidiLearnMenu("GlobRestore", toolButton, 0);
+    midiControl->addMidiLearnMenu("GlobRestore", toolButton, GLOB_RESTORE);
     
     QFrame *topRow = new QFrame;
     QVBoxLayout *topRowLayout = new QVBoxLayout;
@@ -381,7 +381,7 @@ void GlobStore::handleController(int ccnumber, int channel, int value)
 {
     if (!midiControl->ccList.count()) return;
 
-    MidiCC midiCC = midiControl->ccList.at(0);
+    MidiCC midiCC = midiControl->ccList.at(GLOB_RESTORE);
     int sval, min, max;
 
     if ((ccnumber != midiCC.ccnumber) || (channel != midiCC.channel)) return;

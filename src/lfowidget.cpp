@@ -83,7 +83,7 @@ LfoWidget::LfoWidget():
     connect(waveFormBox, SIGNAL(activated(int)), this,
             SLOT(updateWaveForm(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("WaveForm", waveFormBox, 3);
+    midiControl->addMidiLearnMenu("WaveForm", waveFormBox, LFO_WAVEFORM);
 #endif
 
     QLabel *freqBoxLabel = new QLabel(tr("&Frequency"));
@@ -102,7 +102,7 @@ LfoWidget::LfoWidget():
     connect(freqBox, SIGNAL(activated(int)), this,
             SLOT(updateFreq(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Frequency", freqBox, 4);
+    midiControl->addMidiLearnMenu("Frequency", freqBox, LFO_FREQUENCY);
 #endif
     QLabel *resBoxLabel = new QLabel(tr("&Resolution"));
     resBox = new QComboBox;
@@ -118,7 +118,7 @@ LfoWidget::LfoWidget():
     connect(resBox, SIGNAL(activated(int)), this,
             SLOT(updateRes(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Resolution", resBox, 6);
+    midiControl->addMidiLearnMenu("Resolution", resBox, LFO_RESOLUTION);
 #endif
     QLabel *sizeBoxLabel = new QLabel(tr("&Length"));
     sizeBox = new QComboBox;
@@ -136,7 +136,7 @@ LfoWidget::LfoWidget():
     connect(sizeBox, SIGNAL(activated(int)), this,
             SLOT(updateSize(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Size", sizeBox, 7);
+    midiControl->addMidiLearnMenu("Size", sizeBox, LFO_SIZE);
 #endif
     loopBox = new QComboBox;
     names.clear();
@@ -148,7 +148,7 @@ LfoWidget::LfoWidget():
     connect(loopBox, SIGNAL(activated(int)), this,
             SLOT(updateLoop(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("LoopMode", loopBox, 8);
+    midiControl->addMidiLearnMenu("LoopMode", loopBox, LFO_LOOPMODE);
 #endif
 
     flipWaveVerticalAction = new QAction(QPixmap(lfowflip_xpm),tr("&Flip"), this);
@@ -168,14 +168,14 @@ LfoWidget::LfoWidget():
     recordButtonLabel->setBuddy(recordButton);
     connect(recordAction, SIGNAL(toggled(bool)), this, SLOT(setRecord(bool)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("RecordToggle", recordButton, 5);
+    midiControl->addMidiLearnMenu("RecordToggle", recordButton, LFO_RECORD);
 #endif
     amplitude = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
             tr("&Amplitude"), this);
     connect(amplitude, SIGNAL(valueChanged(int)), this,
             SLOT(updateAmp(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Amplitude", amplitude, 1);
+    midiControl->addMidiLearnMenu("Amplitude", amplitude, LFO_AMPLITUDE);
 #endif
 
     offset = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
@@ -183,7 +183,7 @@ LfoWidget::LfoWidget():
     connect(offset, SIGNAL(valueChanged(int)), this,
             SLOT(updateOffs(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Offset", offset, 2);
+    midiControl->addMidiLearnMenu("Offset", offset, LFO_OFFSET);
 #endif
 
     phase = new Slider(0, 127, 1, 8, 0, Qt::Horizontal,
@@ -191,7 +191,7 @@ LfoWidget::LfoWidget():
     connect(phase, SIGNAL(valueChanged(int)), this,
             SLOT(updatePhase(int)));
 #ifdef APPBUILD
-    midiControl->addMidiLearnMenu("Phase", phase, 10);
+    midiControl->addMidiLearnMenu("Phase", phase, LFO_PHASE);
 #endif
 
 
@@ -688,7 +688,7 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
             int sval = 0;
             bool m = false;
             switch (cclist.at(l2).ID) {
-                case 0: if (min == max) {
+                case MUTE_BUTTON: if (min == max) {
                             if (value == max) {
                                 m = midiLfo->isMuted;
                                 midiLfo->setMuted(!m);
@@ -704,24 +704,24 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                         }
                 break;
 
-                case 1:
+                case LFO_AMPLITUDE:
                         sval = min + ((double)value * (max - min) / 127);
                         midiLfo->updateAmplitude(sval);
                 break;
 
-                case 2:
+                case LFO_OFFSET:
                         sval = min + ((double)value * (max - min) / 127);
                         midiLfo->updateOffset(sval);
                 break;
-                case 3:
+                case LFO_WAVEFORM:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 6) waveFormBoxIndex = sval;
                 break;
-                case 4:
+                case LFO_FREQUENCY:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 14) freqBoxIndex = sval;
                 break;
-                case 5: if (min == max) {
+                case LFO_RECORD: if (min == max) {
                             if (value == max) {
                                 m = midiLfo->recordMode;
                                 midiLfo->setRecordMode(!m);
@@ -737,19 +737,19 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                             }
                         }
                 break;
-                case 6:
+                case LFO_RESOLUTION:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 9) resBoxIndex = sval;
                 break;
-                case 7:
+                case LFO_SIZE:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 12) sizeBoxIndex = sval;
                 break;
-                case 8:
+                case LFO_LOOPMODE:
                         sval = min + ((double)value * (max - min) / 127);
                         if (sval < 6) midiLfo->curLoopMode = sval;
                 break;
-                case 9:
+                case PARAM_RESTORE:
                         sval = min + ((double)value * (max - min) / 127);
                         if ((sval < parStore->list.count())
                                 && (sval != parStore->activeStore)
@@ -760,7 +760,7 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                         }
                         else return;
                 break;
-                case 10:
+                case LFO_PHASE:
                         sval = min + ((double)value * (max - min) / 127);
                         midiLfo->updatePhase(sval);
                 break;

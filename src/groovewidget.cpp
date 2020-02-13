@@ -39,13 +39,13 @@ GrooveWidget::GrooveWidget()
             tr("&Shift"), this);
     connect(grooveTick, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveTick(int)));
-    midiControl->addMidiLearnMenu("Tick", grooveTick, 0);
+    midiControl->addMidiLearnMenu("Tick", grooveTick, GROOVE_TICK);
 
     grooveVelocity = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal,
             tr("&Velocity"), this);
     connect(grooveVelocity, SIGNAL(valueChanged(int)),
             this, SLOT(updateGrooveVelocity(int)));
-    midiControl->addMidiLearnMenu("Velocity", grooveVelocity, 1);
+    midiControl->addMidiLearnMenu("Velocity", grooveVelocity, GROOVE_VELOCITY);
 
     grooveLength = new Slider(-100, 100, 1, 10, 0, Qt::Horizontal,
             tr("&Length"), this);
@@ -89,15 +89,15 @@ void GrooveWidget::handleController(int ccnumber, int channel, int value)
         if ((ccnumber == cclist.at(l2).ccnumber) &&
             (channel == cclist.at(l2).channel)) {
             switch (cclist.at(l2).ID) {
-                case 0:
+                case GROOVE_TICK:
                         tickVal = sval;
                 break;
 
-                case 1:
+                case GROOVE_VELOCITY:
                         velocityVal = sval;
                 break;
 
-                case 2:
+                case GROOVE_LENGTH:
                         lengthVal = sval;
                 break;
 

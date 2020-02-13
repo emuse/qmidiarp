@@ -292,10 +292,10 @@ InOutBox::InOutBox(const QString& name):
         connect(parStore, SIGNAL(restore(int)),
                  this, SLOT(restoreParams(int)));
     if (compactStyle) parStore->setStyleSheet( COMPACT_STYLE );
-    midiControl->addMidiLearnMenu("Note Low", indexIn[0], 10);
-    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], 11);
-    midiControl->addMidiLearnMenu("MuteToggle", muteOut, 0);
-    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, 2);
+    midiControl->addMidiLearnMenu("Note Low", indexIn[0], NOTE_LOW);
+    midiControl->addMidiLearnMenu("Note Hi", indexIn[1], NOTE_HIGH);
+    midiControl->addMidiLearnMenu("MuteToggle", muteOut, MUTE_BUTTON);
+    midiControl->addMidiLearnMenu("Restore_"+name, parStore->topButton, PARAM_RESTORE);
 #endif
     // Layout for left/right placements of in/out group boxes
     inOutBoxWidget = new QWidget;

@@ -212,7 +212,12 @@ void skipXmlElement(QXmlStreamReader& xml);
 * @param xml QXmlStreamWriter to write to
 */
     void writeData(QXmlStreamWriter& xml);
-
+/*!
+* @brief Copies the CC list from an existing one, used to copy
+* params from in lfowidget and seqwidget
+*
+* @param p_ccList QVector<MidiCC> to copy from
+*/
     void setCcList(const QVector<MidiCC> &p_ccList);
 };
 #endif
