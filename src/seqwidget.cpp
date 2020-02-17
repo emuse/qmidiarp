@@ -700,7 +700,7 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
 
                 case SEQ_TRANSPOSE:
                         sval = min + ((double)value * (max - min) / 127);
-                        midiSeq->updateTranspose(sval - 24);
+                        midiSeq->updateTranspose(sval - 36);
                 break;
                 
                 case SEQ_CHANNEL_OUT:
