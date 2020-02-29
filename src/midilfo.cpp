@@ -585,12 +585,15 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
 
     if (inEv.value) {
         /*This is a NOTE ON event*/
-        if (restartByKbd && (!noteCount || trigLegato)) restartFlag = true;
-        seqFinished = false;
+        if (restartByKbd && (!noteCount || trigLegato)) {
+            restartFlag = true;
+            seqFinished = false;
+        }
         noteCount++;
         if (trigByKbd && ((noteCount == 1) || trigLegato)) {
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
+            seqFinished = false;
         }
      }
     else {

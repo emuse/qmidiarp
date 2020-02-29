@@ -90,16 +90,19 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
             updateTranspose(inEv.data - 60);
             needsGUIUpdate = true;
         }
-        if (restartByKbd && (!noteCount || trigLegato)) restartFlag = true;
         if (enableVelIn) {
             updateVelocity(inEv.value);
             needsGUIUpdate = true;
         }
-        seqFinished = false;
+        if (restartByKbd && (!noteCount || trigLegato)) {
+            restartFlag = true;
+            seqFinished = false;
+        }
         noteCount++;
         if (trigByKbd && ((noteCount == 1) || trigLegato)) {
             nextTick = tick + 2; //schedDelayTicks;
             gotKbdTrig = true;
+            seqFinished = false;
         }
     }
     else {
