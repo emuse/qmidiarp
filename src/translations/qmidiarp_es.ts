@@ -900,6 +900,33 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     </message>
 </context>
 <context>
+    <name>PrefsWidget</name>
+    <message>
+        <source>&amp;Forward unmatched events to port</source>
+        <translation>&amp;Redireccionar eventos no coincidentes al puerto</translation>
+    </message>
+    <message>
+        <source>&amp;Modules controllable by MIDI controller</source>
+        <translation>&amp;Módulos controlables por controlador MIDI</translation>
+    </message>
+    <message>
+        <source>&amp;Compact module layout style</source>
+        <translation>Estilo &amp;compacto de distribución de módulo</translation>
+    </message>
+    <message>
+        <source>&amp;Add new modules in muted state</source>
+        <translation>&amp;Añadir nuevos módulos en estado silenciado</translation>
+    </message>
+    <message>
+        <source>&amp;Store and restore mute state of modules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings - </source>
+        <translation>Preferencias - </translation>
+    </message>
+</context>
+<context>
     <name>SeqWidget</name>
     <message>
         <source>Display</source>

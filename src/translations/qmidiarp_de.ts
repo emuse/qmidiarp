@@ -139,7 +139,7 @@ please just run the qmidiarp main application once.</source>
     </message>
     <message>
         <source>As Played</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Spielfolge</translation>
     </message>
 </context>
 <context>
@@ -891,6 +891,33 @@ Wenn gewünscht kann QMidiArp auch mit ALSA Treiber verwendet werden (Starten mi
     <message>
         <source>&amp;Add new modules in muted state</source>
         <translation>&amp;Neue Module stummgeschaltet hinzufügen</translation>
+    </message>
+    <message>
+        <source>Settings - </source>
+        <translation>Einstellungen - </translation>
+    </message>
+</context>
+<context>
+    <name>PrefsWidget</name>
+    <message>
+        <source>&amp;Forward unmatched events to port</source>
+        <translation>&amp;Unpassende MIDI Signale weiterleiten an Anschluss</translation>
+    </message>
+    <message>
+        <source>&amp;Modules controllable by MIDI controller</source>
+        <translation>&amp;Module sind MIDI-steuerbar</translation>
+    </message>
+    <message>
+        <source>&amp;Compact module layout style</source>
+        <translation>&amp;Kompakter Layout-Stil für Module</translation>
+    </message>
+    <message>
+        <source>&amp;Add new modules in muted state</source>
+        <translation>&amp;Neue Module stummgeschaltet hinzufügen</translation>
+    </message>
+    <message>
+        <source>&amp;Store and restore mute state of modules</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Settings - </source>

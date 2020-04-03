@@ -139,7 +139,7 @@ d h durée de note augm/dim
     </message>
     <message>
         <source>As Played</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Suivant jeu</translation>
     </message>
 </context>
 <context>
@@ -891,6 +891,33 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
     <message>
         <source>&amp;Add new modules in muted state</source>
         <translation>&amp;Ajout de nouveaux modules en état muet</translation>
+    </message>
+    <message>
+        <source>Settings - </source>
+        <translation>Paramètres - </translation>
+    </message>
+</context>
+<context>
+    <name>PrefsWidget</name>
+    <message>
+        <source>&amp;Forward unmatched events to port</source>
+        <translation>&amp;Acheminer les évênements non-traités au port</translation>
+    </message>
+    <message>
+        <source>&amp;Modules controllable by MIDI controller</source>
+        <translation>&amp;Modules contrôlables par MIDI</translation>
+    </message>
+    <message>
+        <source>&amp;Compact module layout style</source>
+        <translation>Style &amp;compact d&apos;affichage des modules</translation>
+    </message>
+    <message>
+        <source>&amp;Add new modules in muted state</source>
+        <translation>&amp;Ajout de nouveaux modules en état muet</translation>
+    </message>
+    <message>
+        <source>&amp;Store and restore mute state of modules</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Settings - </source>

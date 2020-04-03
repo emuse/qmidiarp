@@ -904,6 +904,33 @@ zavoláním qmidiarp -a</translation>
     </message>
 </context>
 <context>
+    <name>PrefsWidget</name>
+    <message>
+        <source>&amp;Forward unmatched events to port</source>
+        <translation>&amp;Neodpovídající události (signály MIDI) vést dál na přípojku</translation>
+    </message>
+    <message>
+        <source>&amp;Modules controllable by MIDI controller</source>
+        <translation>&amp;Moduly jsou říditelné ovladačem MIDI</translation>
+    </message>
+    <message>
+        <source>&amp;Compact module layout style</source>
+        <translation>&amp;Kompaktní styl rozvržení pro moduly</translation>
+    </message>
+    <message>
+        <source>&amp;Add new modules in muted state</source>
+        <translation>&amp;Přidat nové moduly ve ztlumeném stavu</translation>
+    </message>
+    <message>
+        <source>&amp;Store and restore mute state of modules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings - </source>
+        <translation>Nastavení - </translation>
+    </message>
+</context>
+<context>
     <name>SeqWidget</name>
     <message>
         <source>Display</source>
