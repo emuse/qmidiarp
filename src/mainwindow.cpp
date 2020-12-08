@@ -1473,7 +1473,7 @@ bool MainWindow::installSignalHandlers()
 void MainWindow::signalAction(int fd)
 {
 #ifndef SIGUSR1
-	(void)fd;
+    (void)fd;
 #else
     int message;
 
@@ -1555,6 +1555,7 @@ int MainWindow::cb_nsm_save ( char **out_msg, void *userdata )
 
 int MainWindow::nsm_open(const char *name, const char *display_name, const char *client_id, char **out_msg)
 {
+    qWarning("QMidiArp: NSM asks us to open file %s", name);
     (void)out_msg;
     (void)display_name;
 
