@@ -208,6 +208,8 @@ void GlobStore::removeLocation(int ix)
 void GlobStore::updateTimeModule(int ix)
 {
     (void)ix;
+    if (timeModuleBox->count() < 1)
+        return;
     emit updateGlobRestoreTimeModule(timeModuleBox->currentIndex());
     modified = true;
 }
