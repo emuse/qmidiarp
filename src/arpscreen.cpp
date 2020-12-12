@@ -173,6 +173,7 @@ void ArpScreen::paintEvent(QPaintEvent*)
                     break;
 
                 case 'p':
+                    nlines = 0;
                     if (!chordmd) {
                         curstep += stepwd;
                         forward = 1;
