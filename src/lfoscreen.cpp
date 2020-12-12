@@ -59,7 +59,7 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
     //Grid
     int npoints = p_data.count() - 1;
-    int nsteps = p_data.at(npoints).tick / TPQN;
+    int nsteps = (int)( (double)p_data.at(p_data.count() - 1).tick / TPQN + .5);
     if (!nsteps) nsteps = 1;
     int beatRes = npoints / nsteps;
     int beatDiv = (npoints > 64) ? 64 / nsteps : beatRes;

@@ -27,10 +27,11 @@
 #include "screen.h"
 #include "midiworker.h"
 
-#define SEQSCR_MIN_W   180
-#define SEQSCR_MIN_H   216
-#define SEQSCR_VMARG    14
-#define SEQSCR_HMARG    20
+#define SEQSCR_MIN_W      180
+#define SEQSCR_MIN_H      246
+#define SEQSCR_VMARG_TOP  14
+#define SEQSCR_VMARG_BOT  26
+#define SEQSCR_HMARG      20
 
 /*! @brief Drawing widget for visualization of sequences using QPainter
  *
