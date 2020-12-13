@@ -67,7 +67,7 @@ qmidiarp_SOURCES = \
 	slider.cpp slider.h \
 	storagebutton.cpp storagebutton.h
 
-qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD
+qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD -Wno-deprecated-copy
 qmidiarp_LDADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 endif
@@ -223,7 +223,7 @@ TRANSLATION_DEFS = -DTRANSLATIONSDIR=\"$(translationsdir)\"
 endif
 
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -std=c++11 -Wall -Wextra -D_REENTRANT $(TRANSLATION_DEFS) @DEFS@
+DEFS = -std=c++11 -Wall -Wextra -Wno-deprecated-copy -D_REENTRANT $(TRANSLATION_DEFS) @DEFS@ 
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations)
