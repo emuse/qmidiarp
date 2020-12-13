@@ -236,15 +236,16 @@ void SeqDriver::initTempo()
     }
 }
 
-void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, unsigned outport, unsigned length)
+void SeqDriver::sendMidiEvent(MidiEvent outEv, uint64_t n_tick, unsigned outport, unsigned length)
 {
-    //~ qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
+    double duration = (double)length / tempo * 40 / 128;
+    //qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %f) at tick %lu", outEv.type, outEv.channel, outEv.data, outEv.value, outport, duration, n_tick);
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);
 
     ev.type = outEv.type;
     if (ev.type == EV_NOTEON) {
-        snd_seq_ev_set_note(&ev, 0, outEv.data, outEv.value, length * 80 / tempo);
+        snd_seq_ev_set_note(&ev, 0, outEv.data, outEv.value, duration);
     }
     else if (ev.type == EV_CONTROLLER) {
         ev.data.control.param = outEv.data;
@@ -258,7 +259,7 @@ void SeqDriver::sendMidiEvent(MidiEvent outEv, int n_tick, unsigned outport, uns
     snd_seq_event_output_direct(seq_handle, &ev);
 }
 
-bool SeqDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
+bool SeqDriver::requestEchoAt(uint64_t echo_tick, bool echo_from_trig)
 {
     if ((echo_tick == lastSchedTick) && (echo_tick)) return false;
 
@@ -348,7 +349,7 @@ void SeqDriver::setUseMidiClock(bool on)
     if (!on) jackSync->tempoCb(internalTempo, jackSync->cbContext);
 }
 
-double SeqDriver::tickToDelta(int tick)
+double SeqDriver::tickToDelta(uint64_t tick)
 {
     if (tick > tempoChangeTick)
         return (double)(60e9/TPQN/tempo) * (tick-tempoChangeTick) + tempoChangeTime;
@@ -356,7 +357,7 @@ double SeqDriver::tickToDelta(int tick)
         return 0;
 }
 
-int SeqDriver::deltaToTick(double curtime)
+uint64_t SeqDriver::deltaToTick(double curtime)
 {
     if (tempoChangeTime < curtime)
         return (int)((curtime-tempoChangeTime) / (60e9/TPQN/tempo))+tempoChangeTick;

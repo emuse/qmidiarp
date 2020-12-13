@@ -48,18 +48,18 @@
 class MidiArp : public MidiWorker  {
 
   private:
-    int nextNote[MAXCHORD]; /*!< Holds the note values to be output next
+    int64_t nextNote[MAXCHORD]; /*!< Holds the note values to be output next
                                 @see MidiArp::updateNotes */
     int nextVelocity[MAXCHORD]; /*!< Holds the associated velocities to be output next
                                     @see MidiArp::updateNotes, MidiArp::nextNote */
-    int arpTick;
+    uint64_t arpTick;
     int nextLength;
     bool chordMode;
     bool purgeReleaseFlag; /*!< Causes MidiArp::getNote() to call MidiArp::purgeReleaseNotes() */
     int patternIndex; /*!< Holds the current position within the pattern text*/
     int randomTick, randomVelocity, randomLength;
     int sustainBufferCount, latchBufferCount;
-    int lastLatchTick;
+    uint64_t lastLatchTick;
     double stepWidth, len, vel;
     int sustainBuffer[MAXNOTES]; /*!< Holds released note values when MidiArp::sustain is True */
     int latchBuffer[MAXNOTES];   /*!< Holds released note values when MidiArp::latch_mode is True */
@@ -82,7 +82,7 @@ class MidiArp : public MidiWorker  {
   *
   * @par The third index is the note index in the buffer.
   * */
-    int notes[2][4][MAXNOTES];
+    int64_t notes[2][4][MAXNOTES];
 
  /*! @brief The storage copy of dynamic attack values.
   *
@@ -91,7 +91,7 @@ class MidiArp : public MidiWorker  {
   * to that of the third MidiArp::notes buffer index.
   * */
     double old_attackfn[MAXNOTES];
-    int noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
+    int64_t noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
     int patternLen;     /*!< Length of the arp text pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
     int octOfs;        /*!< The currently active octave shift. @see repeatPatternThroughChord */
@@ -103,7 +103,7 @@ class MidiArp : public MidiWorker  {
  * accumulates during run.
  *
  * It is called when the currentIndex revolves to restart the loop with
- * default velocity, step width, octave and length.
+ * default velocity, s-Wno-deprecated-copytep width, octave and length.
 */
     void initLoop();
 /**
@@ -121,7 +121,7 @@ class MidiArp : public MidiWorker  {
  * @param velocity The associated array of velocites to be filled
  * @param length The note length for this arpeggio step
  */
-    void getNote(int *tick, int note[], int velocity[], int *length);
+    void getNote(int64_t *tick, int64_t note[], int velocity[], int *length);
 /**
  * @brief  returns the number of notes present at the MIDI
  * input port.
@@ -146,7 +146,7 @@ class MidiArp : public MidiWorker  {
  * @param tick the tick position of the event
   * 
  */
-    void addNote(int note, int vel, int tick);
+    void addNote(int note, int vel, int64_t tick);
 /**
  * @brief Either deletes a note or tags the note as released
  *
@@ -161,7 +161,7 @@ class MidiArp : public MidiWorker  {
  * note is marked as released. If set to 0, the note will be deleted
  * 
  */
-    void removeNote(int *noteptr, int tick, int keep_rel);
+    void removeNote(int64_t *noteptr, int64_t tick, int keep_rel);
 /**
  * @brief Handles a released incoming note
  *
@@ -175,7 +175,7 @@ class MidiArp : public MidiWorker  {
  * note is marked as released. If set to 0, the note will be deleted
  * 
  */
-    void releaseNote(int note, int tick, bool keep_rel);
+    void releaseNote(int note, int64_t tick, bool keep_rel);
 /**
  * @brief  Deletes a note inside the MidiArp::notes input
  * note buffer.
@@ -200,7 +200,7 @@ class MidiArp : public MidiWorker  {
  * @param tick The time in internal ticks at which the note was released
  * @param bufPtr The index of the MidiArp::notes buffer currently in use
  */
-    void tagAsReleased(int note, int tick, int bufPtr);
+    void tagAsReleased(int note, int64_t tick, int bufPtr);
 /**
  * @brief  performs a copy within MidiArp::notes from the
  * currently active index to the inactive index
@@ -236,7 +236,7 @@ class MidiArp : public MidiWorker  {
 
     int returnNote[MAXCHORD]; /*!< Holds the notes of the currently active arpeggio step */
     int returnVelocity[MAXCHORD]; /*!< Holds the velocities of the currently active arpeggio step */
-    int returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
+    uint64_t returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
     int returnLength; /*!< Holds the note length of the currently active arpeggio step */
 
   public:
@@ -271,7 +271,7 @@ class MidiArp : public MidiWorker  {
  * remain in the release buffer. It will definitely be removed if keep_rel is false
  * @return True if inEv is in not the input range of the module (event is unmatched)
  */
-    bool handleEvent(MidiEvent inEv, int tick, int keep_rel = 0);
+    bool handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel = 0);
 /**
  * @brief Causes calculation of a new note set at a step and copies it
  * to arrays accessed by Engine.
@@ -285,7 +285,7 @@ class MidiArp : public MidiWorker  {
  * @param askedTick the current transport position in ticks.
  *
  */
-    void getNextFrame(int askedTick);
+    void getNextFrame(int64_t askedTick);
 /**
  * @brief  resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.
@@ -296,7 +296,7 @@ class MidiArp : public MidiWorker  {
  * @param tick The timing in internal ticks, relative to which
  * the following arpeggio notes are calculated.
  */
-    void initArpTick(int tick);
+    void initArpTick(uint64_t tick);
 /**
  * @brief  ensures continuity of the release function
  * when the currentTick position jumps into
@@ -307,7 +307,7 @@ class MidiArp : public MidiWorker  {
 
  * @param tick The current time position in internal ticks.
  */
-    void foldReleaseTicks(int tick);
+    void foldReleaseTicks(uint64_t tick);
 /**
  * @brief  seeds new random values for the three parameters
  * concerned, timing (tick), velocity and length.
@@ -325,7 +325,7 @@ class MidiArp : public MidiWorker  {
   * set to false.
   * @param sustain Set to True to cause hold mode
   * @param tick Time in internal ticks at which the controller was received */
-    void setSustain(bool sustain, int tick);
+    void setSustain(bool sustain, uint64_t tick);
  /*! @brief Will cause notes remaining in MidiArp::latchBuffer until new
   * stakato note received
   *
@@ -337,7 +337,7 @@ class MidiArp : public MidiWorker  {
   *
   *  It is called by MidiArp::setSustain
   * @param sustick Time in internal ticks at which the controller was received */
-    void purgeSustainBuffer(int sustick);
+    void purgeSustainBuffer(uint64_t sustick);
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
     void clearNoteBuffer();
 /*! @brief Checks if deferred parameter changes are pending and applies
@@ -354,7 +354,7 @@ class MidiArp : public MidiWorker  {
   * all notes in MidiArp::latchBuffer and then clears latchBuffer.
   * @param latchtick Time of note release in internal ticks
   */
-    void purgeLatchBuffer(int latchtick);
+    void purgeLatchBuffer(uint64_t latchtick);
 
  /*! @brief Untags notes tagged as released in the specified buffer.
   * 
@@ -368,7 +368,7 @@ class MidiArp : public MidiWorker  {
  * @param tick The current tick to which the module position should be
  * aligned.
  */
-    void setNextTick(int tick);
+    void setNextTick(uint64_t tick);
 
 };
 

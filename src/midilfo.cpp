@@ -40,9 +40,6 @@ MidiLfo::MidiLfo()
     recordMode = false;
     isRecording = false;
     recValue = 0;
-    int l1 = 0;
-    int lt = 0;
-    int step = TPQN / res;
     cwmin = 0;
 
     customWave.resize(8192);
@@ -53,14 +50,13 @@ MidiLfo::MidiLfo()
     Sample sample;
     sample.value = 63;
     sample.tick = 0;
-    for (l1 = 0; l1 < size * res; l1++) {
-        sample.tick = lt;
+    for (int l1 = 0; l1 < size * res; l1++) {
+        sample.tick =  l1 * TPQN / res;;
         sample.muted = false;
         customWave[l1] = sample;
         data[l1] = sample;
         if (l1 < 32) frame[l1] = sample;
         muteMask[l1] = false;
-        lt+=step;
     }
     updateWaveForm(waveFormIndex);
     getData(&data);
@@ -71,7 +67,7 @@ MidiLfo::MidiLfo()
     lastMute = false;
 }
 
-void MidiLfo::getNextFrame(int tick)
+void MidiLfo::getNextFrame(int64_t tick)
 {
     //this function is called by engine and returns one sample
     //if res <= LFO_FRAMELIMIT. If res > LFO_FRAMELIMIT, a frame is output
@@ -80,7 +76,7 @@ void MidiLfo::getNextFrame(int tick)
     if ((uint32_t)framePtr >= data.size()) return;
     
     Sample sample;
-    const int step = TPQN / res;
+    const int step = TPQN * frameSize / res;
     const int npoints = size * res;
     int lt, l1;
     int framelimit;
@@ -96,8 +92,8 @@ void MidiLfo::getNextFrame(int tick)
     if (!framePtr) grooveTick = newGrooveTick;
 
     l1 = 0;
-    lt = nextTick;
     do {
+        lt = nextTick + l1 * TPQN / res;
         if (reverse) {
             index = (frameSize - 1 - l1 + framePtr) % npoints;
         }
@@ -125,10 +121,10 @@ void MidiLfo::getNextFrame(int tick)
         sample.tick = lt;
         if (seqFinished) sample.muted = true;
         frame[l1] = sample;
-        lt+=step;
         l1++;
     } while ((l1 < frameSize) && (l1 < npoints));
 
+    lt = nextTick + l1 * TPQN / res;
 
     reflect = pingpong;
 
@@ -163,7 +159,7 @@ void MidiLfo::getNextFrame(int tick)
             }
         }
     }
-    int cur_grv_sft = 0.01 * (grooveTick * (step - 1));
+    int cur_grv_sft = 0.01 * (grooveTick * (step/frameSize - 1));
     /* pairwise application of new groove shift */
     if (!(framePtr % 2)) {
         cur_grv_sft = -cur_grv_sft;
@@ -181,8 +177,8 @@ void MidiLfo::getNextFrame(int tick)
 
     if (!trigByKbd && !(framePtr % 2) && !grooveTick) {
         /* round-up to current resolution (quantize) */
-        nextTick/= (step * frameSize);
-        nextTick*= (step * frameSize);
+        nextTick/= step;
+        nextTick*= step;
     }
 
     if (seqFinished) framePtr = 0;
@@ -194,10 +190,8 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
     //this function returns the full LFO wave
 
     Sample sample;
-    const int step = TPQN / res;
     const int npoints = size * res;
     int val = 0;
-    int lt = 0;
     bool cl = false;
     std::vector<Sample> tmpdata;
 
@@ -211,10 +205,9 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((-cos((double)((l1 + ph) * 6.28 /
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
-                sample.tick = lt;
+                sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
                 tmpdata.push_back(sample);
-                lt += step;
             }
         break;
         case 1: //sawtooth up
@@ -223,10 +216,9 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(val * amp / res / 32
                 + offs, 0, 127, &cl);
-                sample.tick = lt;
+                sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
                 tmpdata.push_back(sample);
-                lt += step;
                 val += freq;
                 val %= res * 32;
             }
@@ -239,10 +231,9 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                 if (tempval < 0 ) tempval = -tempval;
                 sample.value = clip((res * 16 - tempval) * amp
                         / res / 16 + offs, 0, 127, &cl);
-                sample.tick = lt;
+                sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
                 tmpdata.push_back(sample);
-                lt += step;
                 val += freq;
                 val %= res * 32;
             }
@@ -253,10 +244,9 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip((res * 32 - val)
                         * amp / res / 32 + offs, 0, 127, &cl);
-                sample.tick = lt;
+                sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
                 tmpdata.push_back(sample);
-                lt+=step;
                 val += freq;
                 val %= res * 32;
             }
@@ -265,23 +255,21 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
             for (int l1 = 0; l1 < npoints; l1++) {
                 sample.value = clip(amp * (( (l1 + ph) * freq / 16
                         / res) % 2 == 0) + offs, 0, 127, &cl);
-                sample.tick = lt;
+                sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
                 tmpdata.push_back(sample);
-                lt+=step;
             }
         break;
         case 5: //custom
             for (int l1 = 0; l1 < npoints; l1++) {
                 tmpdata.push_back(customWave[l1]);
             }
-            lt = step * npoints;
         break;
         default:
         break;
     }
     sample.value = -1;
-    sample.tick = lt;
+    sample.tick = npoints * TPQN / res;;
     tmpdata.push_back(sample);
     data = tmpdata;
     *p_data = data;
@@ -400,22 +388,19 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 
 void MidiLfo::resizeAll()
 {
-    const int step = TPQN / res;
     const int npoints = res * size;
     Sample sample;
 
     framePtr%=npoints;
 
     if (maxNPoints < npoints) {
-        int lt = 0;
         for (int l1 = 0; l1 < npoints; l1++) {
             if (l1 >= maxNPoints)
                 muteMask[l1] = muteMask[l1 % maxNPoints];
             sample = customWave[l1 % maxNPoints];
-            sample.tick = lt;
+            sample.tick = l1 * TPQN / res;
             sample.muted = muteMask[l1];
             customWave[l1] = sample;
-            lt+=step;
         }
         maxNPoints = npoints;
     }
@@ -628,5 +613,6 @@ void MidiLfo::setNextTick(int tick)
     if (reverse) pos = nPoints - pos;
 
     setFramePtr(pos);
-    nextTick = (tick/tickres) * tickres;
+    nextTick = tick;
+    //nextTick = (tick/tickres) * tickres;
 }

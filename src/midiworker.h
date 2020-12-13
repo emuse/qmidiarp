@@ -28,7 +28,7 @@
 #include "main.h"
 #include <cstdlib>
 #include <cstdio>
-
+#include <cstdint>
 
 /*! @brief MIDI worker base class for QMidiArp modules.
  *
@@ -67,7 +67,7 @@ class MidiWorker {
     int ccnumberIn;
     bool isMuted;   /*!< Global mute state */
     bool isMutedDefer;   /*!< Deferred Global mute state */
-    int nextTick; /*!< Holds the next tick at which note events will be played out */
+    int64_t nextTick; /*!< Holds the next tick at which note events will be played out */
     int noteCount;      /*!< The number of notes in the MidiWorker::notes buffer */
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int framePtr;       /*!< position of the currently output frame in sequence/wave/pattern */
@@ -102,7 +102,7 @@ class MidiWorker {
  */
     virtual int clip(int value, int min, int max, bool *outOfRange);
     virtual int getFramePtr() { return framePtr; }
-    virtual void getNextFrame(int tick) = 0;
+    virtual void getNextFrame(int64_t tick) = 0;
 };
 
 #endif

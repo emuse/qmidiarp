@@ -95,7 +95,7 @@ private:
         float *val[35];
         uint64_t curFrame;
         uint64_t tempoChangeTick;
-        int curTick;
+        uint64_t curTick;
         Sample currentSample;
         double mouseXCur;
         double mouseYCur;
@@ -119,7 +119,7 @@ private:
         float transportSpeed;
         bool hostTransport;
         uint32_t evQueue[JQ_BUFSZ];
-        uint32_t evTickQueue[JQ_BUFSZ];
+        uint64_t evTickQueue[JQ_BUFSZ];
         int bufPtr;
 
         LV2_Atom_Sequence *inEventBuffer;

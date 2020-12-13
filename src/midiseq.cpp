@@ -52,18 +52,14 @@ MidiSeq::MidiSeq()
     muteMask.resize(2048);
     data.reserve(2048);
     
-    int lt = 0;
-    int l1 = 0;
-    int step = TPQN / res;
     Sample sample;
     sample.value = 60;
-    for (l1 = 0; l1 < 2048; l1++) {
-        sample.tick = lt;
+    for (int l1 = 0; l1 < 2048; l1++) {
+        sample.tick = l1 * TPQN / res;
         sample.muted = false;
         customWave[l1] = sample;
         data[l1] = sample;
         muteMask[l1] = false;
-        lt+=step;
     }
     returnNote = sample;
 }
@@ -114,7 +110,7 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
     return(false);
 }
 
-void MidiSeq::getNextFrame(int tick)
+void MidiSeq::getNextFrame(int64_t tick)
 {
     const int frame_nticks = TPQN / res;
     Sample sample;
@@ -221,17 +217,13 @@ void MidiSeq::advancePatternIndex()
 void MidiSeq::getData(std::vector<Sample> * p_data)
 {
     Sample sample;
-    int lt = 0;
-    int l1 = 0;
-    const int step = TPQN / res;
     const int npoints = res * size;
 
     data.resize(npoints);
 
-    lt = step * npoints;
-    for (l1 = 0; l1 < npoints; l1++) data[l1] = customWave[l1];
+    for (int l1 = 0; l1 < npoints; l1++) data[l1] = customWave[l1];
     sample.value = -1;
-    sample.tick = lt;
+    sample.tick = npoints * TPQN / res;
     sample.muted = false;
     data.push_back(sample);
     
@@ -398,7 +390,6 @@ void MidiSeq::setRecordedNote(int note)
 
 void MidiSeq::resizeAll()
 {
-    const int step = TPQN / res;
     const int npoints = res * size;
     Sample sample;
 
@@ -406,15 +397,13 @@ void MidiSeq::resizeAll()
     currentRecStep%=npoints;
 
     if (maxNPoints < npoints) {
-        int lt = 0;
         for (int l1 = 0; l1 < npoints; l1++) {
             if (l1 >= maxNPoints)
                 muteMask[l1] = muteMask[l1 % maxNPoints];
             sample = customWave[l1 % maxNPoints];
-            sample.tick = lt;
+            sample.tick = l1 * TPQN / res;
             sample.muted = muteMask[l1];
             customWave[l1] = sample;
-            lt+=step;
         }
         maxNPoints = npoints;
     }
@@ -498,5 +487,6 @@ void MidiSeq::setNextTick(int tick)
     if (reverse) pos = nPoints - pos;
 
     setFramePtr(pos);
-    nextTick = (tick/tickres) * tickres;
+    nextTick = tick;
+    //nextTick = (tick/tickres) * tickres;
 }

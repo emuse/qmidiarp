@@ -42,8 +42,8 @@ public:
     bool forwardUnmatched, queueStatus;
     int portUnmatched;
     QString jsFilename;
-    uint32_t trStartingTick;
-    uint32_t trLoopingTick;
+    uint64_t trStartingTick;
+    uint64_t trLoopingTick;
 
     virtual void resetTick(unsigned int tick = 0)
     {
@@ -102,8 +102,8 @@ public:
     virtual bool callJack(int portcount, const QString & clientname=PACKAGE) = 0;
 
     // duration is in ticks and is valid only for note on events
-    virtual void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0) = 0;
-    virtual bool requestEchoAt(int echoTick, bool echo_from_trig = 0) = 0;
+    virtual void sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned int outport, unsigned int duration = 0) = 0;
+    virtual bool requestEchoAt(uint64_t echoTick, bool echo_from_trig = 0) = 0;
 
 
     virtual void setTransportStatus(bool run) = 0;
@@ -169,8 +169,8 @@ protected:
     void (* m_tick_callback)(void * context, bool echo_from_trig);
     void * m_callback_context;
     uint64_t m_backend_rate;    // samples(?) per minute (granularity)
-    unsigned int m_current_tick;
-    unsigned int m_next_tick;
+    uint64_t m_current_tick;
+    uint64_t m_next_tick;
 
     uint64_t m_tpm;             // ticks per minute
     double tempo, internalTempo, requestedTempo;

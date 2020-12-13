@@ -202,7 +202,7 @@ class MidiLfo : public MidiWorker  {
  *
  * @param tick current tick
  */
-    void getNextFrame(int tick);
+    void getNextFrame(int64_t tick);
 /*! @brief  toggles the mute state of one point of the
  * MidiLfo::muteMask array.
  *

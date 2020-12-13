@@ -80,15 +80,15 @@ class JackDriver : public DriverBase
     bool jackRunning;
     uint32_t transportState;
     uint32_t jackNFrames;
-    uint32_t lastSchedTick;
-    uint32_t tempoChangeTick;
+    uint64_t lastSchedTick;
+    uint64_t tempoChangeTick;
     uint64_t curJFrame;
     uint64_t tempoChangeJPosFrame;
-    QVector<uint32_t> echoTickQueue;
+    QVector<uint64_t> echoTickQueue;
     QVector<bool> echoTrigFlagQueue;
     QVector<MidiEvent> evQueue;
-    QVector<uint32_t> evTickQueue;
-    QVector<uint32_t> evPortQueue;
+    QVector<uint64_t> evTickQueue;
+    QVector<uint64_t> evPortQueue;
     uint32_t bufPtr;
     uint32_t echoPtr;
     jack_client_t *jack_handle;
@@ -128,11 +128,11 @@ class JackDriver : public DriverBase
 
     void setJackRunning(bool on);
 
-    void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0);
+    void sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned int outport, unsigned int duration = 0);
     jack_transport_state_t getState();
     void jackTrCheckState();
     jack_position_t getCurrentPos();
-    bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
+    bool requestEchoAt(uint64_t echoTick, bool echo_from_trig = 0);
     void setTransportStatus(bool run);
     void setTempo(double bpm);
     int getClientId() {return 0; }

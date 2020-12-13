@@ -70,8 +70,8 @@ class SeqDriver : public DriverBase {
         bool startQueue;
         bool threadAbort;
 
-        double tickToDelta(int tick);
-        int deltaToTick (double curtime);
+        double tickToDelta(uint64_t tick);
+        uint64_t deltaToTick (double curtime);
         double aTimeToDelta(snd_seq_real_time_t* atime);
         const snd_seq_real_time_t* deltaToATime(double curtime);
         snd_seq_remove_events_t *remove_ev;
@@ -83,11 +83,11 @@ class SeqDriver : public DriverBase {
         JackDriver *jackSync;
         jack_position_t jPos;
 
-        int midiTick;
-        int lastRatioTick;
-        int midiTempoRefreshTick;
-        int lastSchedTick;
-        int tempoChangeTick;
+        uint64_t midiTick;
+        uint64_t lastRatioTick;
+        uint64_t midiTempoRefreshTick;
+        uint64_t lastSchedTick;
+        uint64_t tempoChangeTick;
         uint64_t tempoChangeFrame;
 
         double tempoChangeTime;
@@ -95,8 +95,8 @@ class SeqDriver : public DriverBase {
 
 
     public:
-        void sendMidiEvent(MidiEvent ev, int n_tick, unsigned int outport, unsigned int duration = 0);
-        bool requestEchoAt(int echoTick, bool echo_from_trig = 0);
+        void sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned int outport, unsigned int duration = 0);
+        bool requestEchoAt(uint64_t echoTick, bool echo_from_trig = 0);
 
     public:
         SeqDriver(

@@ -84,7 +84,7 @@ SeqWidget::SeqWidget():
     resBox = new QComboBox;
     resBoxLabel->setBuddy(resBox);
     names.clear();
-    for (int i = 0; i < sizeof(seqResValues)/sizeof(seqResValues[0]); i++) {
+    for (uint64_t i = 0; i < sizeof(seqResValues)/sizeof(seqResValues[0]); i++) {
         names << QString::number(seqResValues[i]);
     }
     resBox->insertItems(0, names);
@@ -103,7 +103,7 @@ SeqWidget::SeqWidget():
     sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    for (int i = 0; i < sizeof(seqSizeValues)/sizeof(seqSizeValues[0]); i++) {
+    for (uint64_t i = 0; i < sizeof(seqSizeValues)/sizeof(seqSizeValues[0]); i++) {
         names << QString::number(seqSizeValues[i]);
     }
     sizeBox->insertItems(0, names);
@@ -418,7 +418,7 @@ void SeqWidget::setRecord(bool on)
 
 void SeqWidget::updateRes(int val)
 {
-    if (val >= sizeof(seqResValues)/sizeof(seqResValues[0])) return;
+    if ((uint64_t)val >= sizeof(seqResValues)/sizeof(seqResValues[0])) return;
     resBoxIndex = val;
     modified = true;
     if (!midiSeq) return;
@@ -433,7 +433,7 @@ void SeqWidget::updateRes(int val)
 
 void SeqWidget::updateSize(int val)
 {
-    if (val >= sizeof(seqSizeValues)/sizeof(seqSizeValues[0])) return;
+    if ((uint64_t)val >= sizeof(seqSizeValues)/sizeof(seqSizeValues[0])) return;
     sizeBoxIndex = val;
     modified = true;
     if (!midiSeq) return;
@@ -677,11 +677,11 @@ void SeqWidget::handleController(int ccnumber, int channel, int value)
                 break;
                 case SEQ_RESOLUTION:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < sizeof(seqResValues)/sizeof(seqResValues[0])) resBoxIndex = sval;
+                        if ((uint64_t)sval < sizeof(seqResValues)/sizeof(seqResValues[0])) resBoxIndex = sval;
                 break;
                 case SEQ_SIZE:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < sizeof(seqSizeValues)/sizeof(seqResValues[0])) sizeBoxIndex = sval;
+                        if ((uint64_t)sval < sizeof(seqSizeValues)/sizeof(seqResValues[0])) sizeBoxIndex = sval;
                 break;
                 case SEQ_LOOP_MODE:
                         sval = min + ((double)value * (max - min) / 127);

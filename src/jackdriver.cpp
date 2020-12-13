@@ -202,9 +202,9 @@ int JackDriver::process_callback(jack_nframes_t nframes, void *arg)
     uint64_t cur_j_frame = rd->curJFrame;
     bool forward_unmatched = rd->forwardUnmatched;
     int port_unmatched = rd->portUnmatched;
-    uint32_t tempochangetick = rd->tempoChangeTick;
-    uint32_t nexttick = 0;
-    uint32_t tmptick = 0;
+    uint64_t tempochangetick = rd->tempoChangeTick;
+    uint64_t nexttick = 0;
+    uint64_t tmptick = 0;
     uint32_t idx = 0;
     int evport;
     uint64_t ev_jframe, ev_sample;
@@ -422,7 +422,7 @@ jack_position_t JackDriver::getCurrentPos()
     return currentPos;
 }
 
-void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsigned duration)
+void JackDriver::sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned outport, unsigned duration)
 {
   //qWarning("sendMidiEvent([%d, %d, %d, %d], %u, %u) at tick %d", ev.type, ev.channel, ev.data, ev.value, outport, duration, n_tick);
 
@@ -444,13 +444,13 @@ void JackDriver::sendMidiEvent(MidiEvent ev, int n_tick, unsigned outport, unsig
     }
 }
 
-bool JackDriver::requestEchoAt(int echo_tick, bool echo_from_trig)
+bool JackDriver::requestEchoAt(uint64_t echo_tick, bool echo_from_trig)
 {
     if (echoPtr > JQ_BUFSZ - 1) {
         printf("WARNING: Echo buffer overflow. Buffer cleared.\n");
         echoPtr = 0;
     }
-    if ((echo_tick == (int)lastSchedTick) && (echo_tick)) return false;
+    if ((echo_tick == lastSchedTick) && (echo_tick)) return false;
     echoTickQueue.replace(echoPtr, echo_tick);
     echoTrigFlagQueue.replace(echoPtr, echo_from_trig);
     echoPtr++;

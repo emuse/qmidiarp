@@ -223,7 +223,7 @@ void MidiSeqLV2::run (uint32_t nframes )
     for (uint32_t f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
-        if ((curTick >= nextTick) && (transportSpeed)) {
+        if ((curTick >= (uint64_t)nextTick) && (transportSpeed)) {
             getNextFrame(curTick);
             if (!returnNote.muted && !isMuted) {
                 unsigned char d[3];
@@ -240,10 +240,10 @@ void MidiSeqLV2::run (uint32_t nframes )
         }
 
         // Note Off Queue handling
-        int noteofftick = evTickQueue[0];
+        uint64_t noteofftick = evTickQueue[0];
         int idx = 0;
         for (int l1 = 0; l1 < bufPtr; l1++) {
-            int tmptick = evTickQueue[l1];
+            uint64_t tmptick = evTickQueue[l1];
             if (noteofftick > tmptick) {
                 idx = l1;
                 noteofftick = tmptick;
@@ -472,8 +472,6 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
     Sample sample;
-    int step = TPQN / pPlugin->res;
-    int lt = 0;
 
     for (l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
         int hi = 0;
@@ -485,10 +483,9 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
         if (value[2*l1 + 1] <= 'f' && value[2*l1 + 1] >= 'a') lo = value[2*l1 + 1] - 'a' + 10;
 
         sample.value = hi * 16 + lo;
-        sample.tick = lt;
+        sample.tick = l1 * TPQN / pPlugin->res;
         sample.muted = pPlugin->muteMask[l1];
         pPlugin->customWave[l1] = sample;
-        lt+=step;
     }
 
     pPlugin->getData(&pPlugin->data);

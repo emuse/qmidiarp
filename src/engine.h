@@ -96,7 +96,7 @@ class Engine : public QObject  {
     bool useMidiClock;
 
     int restoreRequest;
-    int restoreTick;
+    int64_t restoreTick;
     int schedRestoreLocation; /**< When Engine requests restore during running this is the location, it is -1 otherwise */
 
     double tempo;

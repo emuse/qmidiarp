@@ -108,7 +108,7 @@ LfoWidget::LfoWidget():
     resBox = new QComboBox;
     resBoxLabel->setBuddy(resBox);
     names.clear();
-    for (int i = 0; i < sizeof(lfoResValues)/sizeof(lfoResValues[0]); i++) {
+    for (uint64_t i = 0; i < sizeof(lfoResValues)/sizeof(lfoResValues[0]); i++) {
         names << QString::number(lfoResValues[i]);
     }
     resBox->insertItems(0, names);
@@ -126,7 +126,7 @@ LfoWidget::LfoWidget():
     sizeBox = new QComboBox;
     sizeBoxLabel->setBuddy(sizeBox);
     names.clear();
-    for (int i = 0; i < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0]); i++) {
+    for (uint64_t i = 0; i < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0]); i++) {
         names << QString::number(lfoSizeValues[i]);
     }
     sizeBox->insertItems(0, names);
@@ -429,7 +429,7 @@ void LfoWidget::updateWaveForm(int val)
 
 void LfoWidget::updateFreq(int val)
 {
-    if (val >= sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0])) return;
+    if ((uint64_t)val >= sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0])) return;
     freqBoxIndex = val;
     modified = true;
     if (!midiLfo) return;
@@ -442,7 +442,7 @@ void LfoWidget::updateFreq(int val)
 
 void LfoWidget::updateRes(int val)
 {
-    if (val >= sizeof(lfoResValues)/sizeof(lfoResValues[0])) return;
+    if ((uint64_t)val >= sizeof(lfoResValues)/sizeof(lfoResValues[0])) return;
     resBoxIndex = val;
     modified = true;
     if (!midiLfo) return;
@@ -456,7 +456,7 @@ void LfoWidget::updateRes(int val)
 
 void LfoWidget::updateSize(int val)
 {
-    if (val >= sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0])) return;
+    if ((uint64_t)val >= sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0])) return;
     sizeBoxIndex = val;
     modified = true;
     if (!midiLfo) return;
@@ -720,7 +720,7 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                 break;
                 case LFO_FREQUENCY:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0])) freqBoxIndex = sval;
+                        if ((uint64_t)sval < sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0])) freqBoxIndex = sval;
                 break;
                 case LFO_RECORD: if (min == max) {
                             if (value == max) {
@@ -740,11 +740,11 @@ void LfoWidget::handleController(int ccnumber, int channel, int value)
                 break;
                 case LFO_RESOLUTION:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < sizeof(lfoResValues)/sizeof(lfoResValues[0])) resBoxIndex = sval;
+                        if ((uint64_t)sval < sizeof(lfoResValues)/sizeof(lfoResValues[0])) resBoxIndex = sval;
                 break;
                 case LFO_SIZE:
                         sval = min + ((double)value * (max - min) / 127);
-                        if (sval < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0])) sizeBoxIndex = sval;
+                        if ((uint64_t)sval < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0])) sizeBoxIndex = sval;
                 break;
                 case LFO_LOOPMODE:
                         sval = min + ((double)value * (max - min) / 127);

@@ -128,7 +128,7 @@ MidiArp::MidiArp()
     trigDelayTicks = 4;
 }
 
-bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
+bool MidiArp::handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel)
 {
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && 
@@ -184,7 +184,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
             latchBuffer[latchBufferCount] = inEv.data;
             latchBufferCount++;
             if (latchBufferCount != noteCount) {
-                if ((uint32_t)tick > (uint32_t)(lastLatchTick + 30) 
+                if ((uint64_t)tick > (uint64_t)(lastLatchTick + 30) 
                     && (latchBufferCount > 1)) purgeLatchBuffer(tick);
                 lastLatchTick = tick;
             }
@@ -197,7 +197,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, int tick, int keep_rel)
     return(false);
 }
 
-void MidiArp::addNote(int note, int vel, int tick)
+void MidiArp::addNote(int note, int vel, int64_t tick)
 {
         // modify buffer that is not accessed by arpeggio output
     int bufPtr = (noteBufPtr) ? 0 : 1;
@@ -224,7 +224,7 @@ void MidiArp::addNote(int note, int vel, int tick)
     copyNoteBuffer();
 }
 
-void MidiArp::releaseNote(int note, int tick, bool keep_rel)
+void MidiArp::releaseNote(int note, int64_t tick, bool keep_rel)
 {
     // modify buffer that is not accessed by arpeggio output
     int bufPtr = (noteBufPtr) ? 0 : 1;
@@ -249,7 +249,7 @@ void MidiArp::releaseNote(int note, int tick, bool keep_rel)
     copyNoteBuffer();
 }
 
-void MidiArp::removeNote(int *noteptr, int tick, int keep_rel)
+void MidiArp::removeNote(int64_t *noteptr, int64_t tick, int keep_rel)
 {
     int bufPtr, note ;
     note = *noteptr;
@@ -306,7 +306,7 @@ void MidiArp::deleteNoteAt(int index, int bufPtr)
     noteCount--;
 }
 
-void MidiArp::tagAsReleased(int note, int tick, int bufPtr)
+void MidiArp::tagAsReleased(int note, int64_t tick, int bufPtr)
 {
     //mark as released but keep with note off time tick
     int l1 = 0;
@@ -334,7 +334,7 @@ void MidiArp::copyNoteBuffer()
     }
 }
 
-void MidiArp::getNote(int *tick, int note[], int velocity[], int *length)
+void MidiArp::getNote(int64_t *tick, int64_t note[], int velocity[], int *length)
 {
     char c;
     int l1, tmpIndex[MAXCHORD], chordIndex, grooveTmp;
@@ -603,7 +603,7 @@ void MidiArp::initLoop()
     framePtr = 0;
 }
 
-void MidiArp::getNextFrame(int askedTick)
+void MidiArp::getNextFrame(int64_t askedTick)
 {
     gotKbdTrig = false;
     
@@ -627,7 +627,7 @@ void MidiArp::getNextFrame(int askedTick)
     returnNote[l1] = -1; // mark end of chord
 }
 
-void MidiArp::foldReleaseTicks(int tick)
+void MidiArp::foldReleaseTicks(uint64_t tick)
 {
     int bufPtr, l2;
 
@@ -646,7 +646,7 @@ void MidiArp::foldReleaseTicks(int tick)
     lastLatchTick -= tick;    
 }
 
-void MidiArp::initArpTick(int tick)
+void MidiArp::initArpTick(uint64_t tick)
 {
     arpTick = tick;
     returnVelocity[0] = 0;
@@ -739,7 +739,7 @@ void MidiArp::updatePattern(const std::string& p_pattern)
             case 'p':
                 if (!chordmd) {
                     nsteps += stepwd;
-               	    npoints++;
+                    npoints++;
                 }
                 break;
 
@@ -846,7 +846,7 @@ int MidiArp::getPressedNoteCount()
     return(c);
 }
 
-void MidiArp::setSustain(bool on, int sustick)
+void MidiArp::setSustain(bool on, uint64_t sustick)
 {
     sustain = on;
     if (!sustain) {
@@ -855,10 +855,10 @@ void MidiArp::setSustain(bool on, int sustick)
     }
 }
 
-void MidiArp::purgeSustainBuffer(int sustick)
+void MidiArp::purgeSustainBuffer(uint64_t sustick)
 {
     for (int l1 = 0; l1 < sustainBufferCount; l1++) {
-        int buf = sustainBuffer[l1];
+        int64_t buf = sustainBuffer[l1];
         removeNote(&buf, sustick, 1);
     }
     sustainBufferCount = 0;
@@ -870,10 +870,10 @@ void MidiArp::setLatchMode(bool on)
     if (!latch_mode) purgeLatchBuffer(arpTick);
 }
 
-void MidiArp::purgeLatchBuffer(int latchtick)
+void MidiArp::purgeLatchBuffer(uint64_t latchtick)
 {
     for (int l1 = 0; l1 < latchBufferCount; l1++) {
-        int buf = latchBuffer[l1];
+        int64_t buf = latchBuffer[l1];
         removeNote(&buf, latchtick, 1);
     }
     latchBufferCount = 0;
@@ -901,7 +901,7 @@ void MidiArp::applyPendingParChanges()
     needsGUIUpdate = true;
 }
 
-void MidiArp::setNextTick(int tick)
+void MidiArp::setNextTick(uint64_t tick)
 {
     if (nSteps == 0) return;
 

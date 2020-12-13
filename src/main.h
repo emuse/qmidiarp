@@ -35,7 +35,7 @@
 #define JQ_BUFSZ        1024
 #define LFO_FRAMELIMIT    16
 #define MAXNOTES         128
-#define TPQN             192
+#define TPQN           48000
 #define MIDICLK_TPQN      24
 #define MAXCHORD          33
 #define OMNI              16
@@ -61,11 +61,11 @@ const int lfoSizeValues[18] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 
 /*! @brief This array holds the currently available LFO resolution values.
  */
-const int lfoResValues[9] = {1, 2, 4, 8, 16, 32, 64, 96, 192};
+const int lfoResValues[13] = {1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 96, 192};
 
 /*! @brief This array holds the currently available Seq resolution values.
  */
-const int seqResValues[5] = {1, 2, 4, 8, 16};
+const int seqResValues[13] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16};
 
 /*! @brief This array holds the currently available Seq size values.
  */
