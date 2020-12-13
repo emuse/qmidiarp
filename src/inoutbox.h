@@ -58,8 +58,8 @@ class InOutBox: public QWidget
 {
   Q_OBJECT
   
-	public:
-	MidiWorker *midiWorker;
+    public:
+    MidiWorker *midiWorker;
 #ifdef APPBUILD
     QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
     GlobStore *globStore;
@@ -74,7 +74,7 @@ class InOutBox: public QWidget
  * @param inOutVisible Add the module with visible InOutBox or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-	InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
+    InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
             Prefs *p_prefs, bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
@@ -83,12 +83,12 @@ class InOutBox: public QWidget
     ParStore *parStore;
     MidiControl *midiControl;
 #else
-	InOutBox(const QString& name);
+    InOutBox(const QString& name);
 #endif
     ~InOutBox();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
-	bool dataChanged;
-	bool needsGUIUpdate;
+    bool dataChanged;
+    bool needsGUIUpdate;
     QLabel *rangeInLabel, *indexInLabel;
     QGroupBox *inputFilterBox;
     QComboBox *chIn;                        // Channel of input events
@@ -103,14 +103,14 @@ class InOutBox: public QWidget
     QCheckBox *enableNoteOff;
     QSpinBox  *ccnumberInBox;
     QSpinBox  *ccnumberBox;
-	QAction *hideInOutBoxAction;
-	QToolButton *hideInOutBoxButton;
+    QAction *hideInOutBoxAction;
+    QToolButton *hideInOutBoxButton;
     QAction *muteOutAction;
     QToolButton *muteOut;
     QAction *deferChangesAction;
     QToolButton *deferChangesButton;
 
-	QWidget *inOutBoxWidget;
+    QWidget *inOutBoxWidget;
 
     virtual bool isModified();
     virtual void setModified(bool);
@@ -136,12 +136,12 @@ class InOutBox: public QWidget
 * @brief Writes common module parameters to disk
 * @param xml XML stream to write to
 */
-	virtual void writeCommonData(QXmlStreamWriter& xml);
+    virtual void writeCommonData(QXmlStreamWriter& xml);
 /*!
 * @brief Reads common module parameters from disk
 * @param xml XML stream to read from
 */
-	virtual void readCommonData(QXmlStreamReader& xml);
+    virtual void readCommonData(QXmlStreamReader& xml);
 /*!
 * @brief Setter for the InOutBox::portOut spinbox setting the output
 * port of this module.
@@ -195,7 +195,7 @@ class InOutBox: public QWidget
  */
     virtual void updateDisplay() = 0;
     virtual void updateIndicators();
-    virtual void checkIfRestore(int *restoreTick, bool *restoreFlag);
+    virtual void checkIfRestore(int64_t *restoreTick, bool *restoreFlag);
 /*!
 * @brief allows ignoring one XML element in the XML stream
 * passed by the caller.
@@ -207,7 +207,7 @@ class InOutBox: public QWidget
 */
     virtual void skipXmlElement(QXmlStreamReader& xml);
 #endif
-	
+    
   public slots:
 /*!
 * @brief Slot for InOutBox::deleteAction.
@@ -244,7 +244,7 @@ class InOutBox: public QWidget
 * @param ix The storage location index to write to
 * @param empty Signal an empty location
 */
-	virtual void storeParams(int ix, bool empty = 0);
+    virtual void storeParams(int ix, bool empty = 0);
 /*!
 * @brief Restore common module parameters and call doRestoreParams
 * 
@@ -254,7 +254,7 @@ class InOutBox: public QWidget
 * 
 * @param ix The storage location index to read from
 */
-	virtual void restoreParams(int ix);
+    virtual void restoreParams(int ix);
 /*!
 * @brief Slot for the InOutBox::channelOut spinbox setting the output
 * channel of this module.

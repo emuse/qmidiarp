@@ -87,35 +87,35 @@ InOutBox::InOutBox(const QString& name):
 
     // Input group box on left side
     QGroupBox *inBox = new QGroupBox(tr("Input"));
-	
+    
     QLabel *enableNoteInLabel = new QLabel(tr("&Note"));
     enableNoteIn = new QCheckBox;
     enableNoteInLabel->setBuddy(enableNoteIn);
     enableNoteIn->setToolTip(tr("Transpose the sequence following incoming notes"));
     if (!name.startsWith('S')) {
-		enableNoteIn->hide();
-		enableNoteInLabel->hide();
-	}
-	else enableNoteIn->setChecked(true);
+        enableNoteIn->hide();
+        enableNoteInLabel->hide();
+    }
+    else enableNoteIn->setChecked(true);
 
     QLabel *enableVelInLabel = new QLabel(tr("&Velocity"));
     enableVelIn = new QCheckBox;
     enableVelInLabel->setBuddy(enableVelIn);
     enableVelIn->setToolTip(tr("Set sequence velocity to that of incoming notes"));
     if (!name.startsWith('S')) {
-		enableVelIn->hide();
-		enableVelInLabel->hide();
-	}
-	else enableVelIn->setChecked(true);
+        enableVelIn->hide();
+        enableVelInLabel->hide();
+    }
+    else enableVelIn->setChecked(true);
 
     QLabel *enableNoteOffLabel = new QLabel(tr("&Note Off"));
     enableNoteOff = new QCheckBox;
     enableNoteOffLabel->setBuddy(enableNoteOff);
     enableNoteOff->setToolTip(tr("Stop output when Note is released"));
     if (name.startsWith('A')) {
-		enableNoteOff->hide();
-		enableNoteOffLabel->hide();
-	}
+        enableNoteOff->hide();
+        enableNoteOffLabel->hide();
+    }
 
     QLabel *ccnumberInLabel = new QLabel(tr("MIDI &CC#"));
     ccnumberInBox = new QSpinBox;
@@ -125,9 +125,9 @@ InOutBox::InOutBox(const QString& name):
     ccnumberInBox->setValue(74);
     ccnumberInBox->setToolTip(tr("MIDI Controller number to record"));
     if (!name.startsWith('L')) {
-		ccnumberInBox->hide();
-		ccnumberInLabel->hide();
-	}
+        ccnumberInBox->hide();
+        ccnumberInLabel->hide();
+    }
 
     QLabel *enableRestartByKbdLabel = new QLabel(tr("&Restart"));
     enableRestartByKbd = new QCheckBox;
@@ -226,10 +226,10 @@ InOutBox::InOutBox(const QString& name):
     ccnumberBox->setValue(74);
     ccnumberBox->setToolTip(tr("MIDI Controller number sent to output"));
     if (!name.startsWith('L')) {
-		ccnumberBox->hide();
-		ccnumberLabel->hide();
-	}
-	
+        ccnumberBox->hide();
+        ccnumberLabel->hide();
+    }
+    
 
     QLabel *channelLabel = new QLabel(tr("C&hannel"));
     channelOut = new QComboBox;
@@ -242,12 +242,12 @@ InOutBox::InOutBox(const QString& name):
     portBoxLayout->addWidget(channelLabel, 1, 0);
     portBoxLayout->addWidget(channelOut, 1, 1);
 #ifdef APPBUILD
-	QLabel *portLabel = new QLabel(tr("&Port"));
-	portOut = new QComboBox;
-	portLabel->setBuddy(portOut);
-	for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
-	portBoxLayout->addWidget(portLabel, 2, 0);
-	portBoxLayout->addWidget(portOut, 2, 1);
+    QLabel *portLabel = new QLabel(tr("&Port"));
+    portOut = new QComboBox;
+    portLabel->setBuddy(portOut);
+    for (l1 = 0; l1 < portCount; l1++) portOut->addItem(QString::number(l1 + 1));
+    portBoxLayout->addWidget(portLabel, 2, 0);
+    portBoxLayout->addWidget(portOut, 2, 1);
 #endif
     if (compactStyle) {
         portBoxLayout->setMargin(2);
@@ -286,7 +286,7 @@ InOutBox::InOutBox(const QString& name):
 
 #ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction
-					, deferChangesAction, this);
+                    , deferChangesAction, this);
         connect(parStore, SIGNAL(store(int, bool)),
                  this, SLOT(storeParams(int, bool)));
         connect(parStore, SIGNAL(restore(int)),
@@ -344,7 +344,7 @@ InOutBox::InOutBox(const QString& name):
             SLOT(updatePortOut(int)));
 #endif
     connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
-				SLOT(setVisible(bool)));
+                SLOT(setVisible(bool)));
     needsGUIUpdate=false;
     dataChanged = false;
 }
@@ -358,9 +358,9 @@ InOutBox::~InOutBox()
 
 bool InOutBox::isModified()
 {
-	bool mcmod = false;
+    bool mcmod = false;
 #ifdef APPBUILD
-	mcmod = midiControl->isModified();
+    mcmod = midiControl->isModified();
 #endif
     return (modified || mcmod);
 }
@@ -570,7 +570,7 @@ void InOutBox::moduleRename()
 #ifdef APPBUILD
     QString newname, oldname;
     bool ok;
-	qWarning("name %s", qPrintable(name));
+    qWarning("name %s", qPrintable(name));
     oldname = name;
 
     newname = QInputDialog::getText(this, APP_NAME,
@@ -601,13 +601,13 @@ void InOutBox::writeCommonData(QXmlStreamWriter& xml)
             if (!name.startsWith('A')) {
             xml.writeTextElement("enableNoteOff", QString::number(
                 enableNoteOff->isChecked()));
-			}
+            }
             if (name.startsWith('S')) {
             xml.writeTextElement("enableNote", QString::number(
                 enableNoteIn->isChecked()));
             xml.writeTextElement("enableVelocity", QString::number(
                 enableVelIn->isChecked()));
-			}
+            }
             xml.writeTextElement("restartByKbd", QString::number(
                 enableRestartByKbd->isChecked()));
             xml.writeTextElement("trigByKbd", QString::number(
@@ -627,7 +627,7 @@ void InOutBox::writeCommonData(QXmlStreamWriter& xml)
             if (name.startsWith('L')) {
             xml.writeTextElement("ccnumber", QString::number(
                 ccnumberInBox->value()));
-			}
+            }
         xml.writeEndElement();
 
         xml.writeStartElement("output");
@@ -642,7 +642,7 @@ void InOutBox::writeCommonData(QXmlStreamWriter& xml)
             if (name.startsWith('L')) {
             xml.writeTextElement("ccnumber", QString::number(
                 ccnumberBox->value()));
-			}
+            }
         xml.writeEndElement();
         
         midiControl->writeData(xml);
@@ -652,72 +652,72 @@ void InOutBox::writeCommonData(QXmlStreamWriter& xml)
 
 void InOutBox::readCommonData(QXmlStreamReader& xml)
 {
-	int tmp = 0;
-	
+    int tmp = 0;
+    
     if (xml.isStartElement() && (xml.name() == "midiControllers")) {
-		midiControl->readData(xml);
-	}
-	else if (xml.isStartElement() && (xml.name() == "globalStores")) {
-		parStore->readData(xml);
-	}
+        midiControl->readData(xml);
+    }
+    else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+        parStore->readData(xml);
+    }
 
-	else if (xml.isStartElement() && (xml.name() == "input")) {
-		while (!xml.atEnd()) {
-			xml.readNext();
-			if (xml.isEndElement())
-				break;
-				
-			if (xml.name() == "enableNote")
-				enableNoteIn->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "enableNoteOff")
-				enableNoteOff->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "enableVelocity")
-				enableVelIn->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "restartByKbd")
-				enableRestartByKbd->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "trigByKbd")
-				enableTrigByKbd->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "trigLegato")
-				enableTrigLegato->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "channel") {
-				tmp = xml.readElementText().toInt();
-				chIn->setCurrentIndex(tmp);
-			}
-			else if (xml.name() == "indexMin")
-				indexIn[0]->setValue(xml.readElementText().toInt());
-			else if (xml.name() == "indexMax")
-				indexIn[1]->setValue(xml.readElementText().toInt());
-			else if (xml.name() == "rangeMin")
-				rangeIn[0]->setValue(xml.readElementText().toInt());
-			else if (xml.name() == "rangeMax")
-				rangeIn[1]->setValue(xml.readElementText().toInt());
-			else if (xml.name() == "ccnumber")
-				ccnumberInBox->setValue(xml.readElementText().toInt());
-			else skipXmlElement(xml);
-		}
-	}
-	else if (xml.isStartElement() && (xml.name() == "output")) {
-		while (!xml.atEnd()) {
-			xml.readNext();
-			if (xml.isEndElement())
-				break;
-			if (xml.name() == "muted")
-				muteOutAction->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "defer")
-				deferChangesAction->setChecked(xml.readElementText().toInt());
-			else if (xml.name() == "channel") {
-				tmp = xml.readElementText().toInt();
-				channelOut->setCurrentIndex(tmp);
-			}
-			else if (xml.name() == "port") {
-				tmp = xml.readElementText().toInt();
-				portOut->setCurrentIndex(tmp);
-			}
-			else if (xml.name() == "ccnumber")
-				ccnumberBox->setValue(xml.readElementText().toInt());
-			else skipXmlElement(xml);
-		}
-	}
+    else if (xml.isStartElement() && (xml.name() == "input")) {
+        while (!xml.atEnd()) {
+            xml.readNext();
+            if (xml.isEndElement())
+                break;
+                
+            if (xml.name() == "enableNote")
+                enableNoteIn->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "enableNoteOff")
+                enableNoteOff->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "enableVelocity")
+                enableVelIn->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "restartByKbd")
+                enableRestartByKbd->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "trigByKbd")
+                enableTrigByKbd->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "trigLegato")
+                enableTrigLegato->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "channel") {
+                tmp = xml.readElementText().toInt();
+                chIn->setCurrentIndex(tmp);
+            }
+            else if (xml.name() == "indexMin")
+                indexIn[0]->setValue(xml.readElementText().toInt());
+            else if (xml.name() == "indexMax")
+                indexIn[1]->setValue(xml.readElementText().toInt());
+            else if (xml.name() == "rangeMin")
+                rangeIn[0]->setValue(xml.readElementText().toInt());
+            else if (xml.name() == "rangeMax")
+                rangeIn[1]->setValue(xml.readElementText().toInt());
+            else if (xml.name() == "ccnumber")
+                ccnumberInBox->setValue(xml.readElementText().toInt());
+            else skipXmlElement(xml);
+        }
+    }
+    else if (xml.isStartElement() && (xml.name() == "output")) {
+        while (!xml.atEnd()) {
+            xml.readNext();
+            if (xml.isEndElement())
+                break;
+            if (xml.name() == "muted")
+                muteOutAction->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "defer")
+                deferChangesAction->setChecked(xml.readElementText().toInt());
+            else if (xml.name() == "channel") {
+                tmp = xml.readElementText().toInt();
+                channelOut->setCurrentIndex(tmp);
+            }
+            else if (xml.name() == "port") {
+                tmp = xml.readElementText().toInt();
+                portOut->setCurrentIndex(tmp);
+            }
+            else if (xml.name() == "ccnumber")
+                ccnumberBox->setValue(xml.readElementText().toInt());
+            else skipXmlElement(xml);
+        }
+    }
 }
 
 void InOutBox::skipXmlElement(QXmlStreamReader& xml)
@@ -766,14 +766,14 @@ void InOutBox::updateIndicators()
     }
 }
 
-void InOutBox::checkIfRestore(int *restoreTick, bool *restoreFlag)
+void InOutBox::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
 {
-	if (!midiWorker->getFramePtr() && restoreFlag
-		&& parStore->isRestoreMaster
-		&& !globStore->timeModeBox->currentIndex()) {
-		*restoreTick = midiWorker->nextTick;
-		*restoreFlag = false;
-	}
+    if (!midiWorker->getFramePtr() && restoreFlag
+        && parStore->isRestoreMaster
+        && !globStore->timeModeBox->currentIndex()) {
+        *restoreTick = midiWorker->nextTick;
+        *restoreFlag = false;
+    }
 }
 
 #endif
