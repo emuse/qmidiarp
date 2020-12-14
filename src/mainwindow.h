@@ -210,7 +210,7 @@ class MainWindow : public QMainWindow
 *
 * @param xml Reference to QXmlStreamReader containing the open XML stream
 */
-    void readFilePartModules(QXmlStreamReader& xml);
+    void readFilePartModules(QXmlStreamReader& xml, const QString& qmaxVersion);
 /*!
 * @brief  reads the GUI settings block
 * from the XML session stream passed by the caller.

@@ -323,8 +323,10 @@ void ArpWidget::writeData(QXmlStreamWriter& xml)
     xml.writeEndElement();
 }
 
-void ArpWidget::readData(QXmlStreamReader& xml)
+void ArpWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
+    (void)qmaxVersion;
+    
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isEndElement())

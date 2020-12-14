@@ -277,7 +277,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
     xml.writeEndElement();
 }
 
-void SeqWidget::readData(QXmlStreamReader& xml)
+void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
     int tmp;
     Sample sample;
@@ -312,12 +312,22 @@ void SeqWidget::readData(QXmlStreamReader& xml)
                 }
                 else if (xml.name() == "resolution") {
                     tmp = xml.readElementText().toInt();
-                    resBox->setCurrentIndex(tmp);
+                    if (qmaxVersion != "" || tmp >= 5) {
+                        resBox->setCurrentIndex(tmp);
+                    }
+                    else {
+                        resBox->setCurrentIndex(mapOldSeqRes[tmp]);
+                    }
                     updateRes(tmp);
                 }
                 else if (xml.name() == "size") {
                     tmp = xml.readElementText().toInt();
-                    sizeBox->setCurrentIndex(tmp);
+                    if (qmaxVersion != "" || tmp >= 10) {
+                        sizeBox->setCurrentIndex(tmp);
+                    }
+                    else {
+                        sizeBox->setCurrentIndex(mapOldSeqSize[tmp]);
+                    }
                     updateSize(tmp);
                 }
                 else if (xml.name() == "velocity") {

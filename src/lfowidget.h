@@ -131,8 +131,9 @@ class LfoWidget : public InOutBox
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to read from
+* @param qmaxVersion QString with xml format version
 */
-    void readData(QXmlStreamReader& xml);
+    void readData(QXmlStreamReader& xml, const QString& qmaxVersion);
 /*!
 * @brief writes all parameters of this LFO to an XML stream
 * passed by the caller, i.e. MainWindow.

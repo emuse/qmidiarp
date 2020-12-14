@@ -756,6 +756,7 @@ void MainWindow::chooseFile()
 
 void MainWindow::openFile(const QString& fn)
 {
+    QString qmaxVersion = "";
 
     lastDir = fn.left(fn.lastIndexOf('/'));
 
@@ -794,6 +795,9 @@ void MainWindow::openFile(const QString& fn)
                     tr("This is not a valid xml file for ")+APP_NAME);
                 return;
             }
+            if (xml.attributes().hasAttribute("qMaxVersion")) {
+                qmaxVersion = xml.attributes().value("qMaxVersion").toString();
+            }
             while (!xml.atEnd()) {
                 xml.readNext();
 
@@ -803,7 +807,7 @@ void MainWindow::openFile(const QString& fn)
                 if ((xml.isStartElement()) && (xml.name() == "global"))
                     readFilePartGlobal(xml);
                 else if (xml.isStartElement() && (xml.name() == "modules"))
-                    readFilePartModules(xml);
+                    readFilePartModules(xml, qmaxVersion);
                 else if (xml.isStartElement() && (xml.name() == "GUI"))
                     readFilePartGUI(xml);
                 else if (xml.isStartElement() && (xml.name() == "globalstorage"))
@@ -863,7 +867,7 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
     prefsWidget->setModified(false);
 }
 
-void MainWindow::readFilePartModules(QXmlStreamReader& xml)
+void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
     int count = 0;
 
@@ -877,7 +881,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addArp("Arp:" + xml.attributes().value("name").toString(), true, iovis);
             engine->arpWidget(engine->midiArpCount() - 1)
-                    ->readData(xml);
+                    ->readData(xml, qmaxVersion);
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->arpWidget(0)->parStore->list.count(); l1++) {
@@ -889,8 +893,19 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addLfo("LFO:" + xml.attributes().value("name").toString(), true, -1, iovis);
-            engine->lfoWidget(engine->midiLfoCount() - 1)
-                    ->readData(xml);
+            int modNumber = engine->midiLfoCount() - 1;
+            engine->lfoWidget(modNumber)->readData(xml, qmaxVersion);
+            
+            // Compatibility with earlier versions //
+            ParStore *tempstore = engine->lfoWidget(modNumber)->parStore;
+            for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
+                if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
+                    tempstore->list[l1].res = mapOldLfoRes[tempstore->list[l1].res];
+                }
+                if (qmaxVersion == "" && tempstore->list[l1].size < 10) {
+                    tempstore->list[l1].size = mapOldLfoSize[tempstore->list[l1].size];
+                }
+            }
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->lfoWidget(0)->parStore->list.count(); l1++) {
@@ -902,8 +917,20 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml)
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addSeq("Seq:" + xml.attributes().value("name").toString(), true, -1, iovis);
-            engine->seqWidget(engine->midiSeqCount() - 1)
-                    ->readData(xml);
+            
+            int modNumber = engine->midiSeqCount() - 1;
+            engine->seqWidget(modNumber)->readData(xml, qmaxVersion);
+            
+            // Compatibility with earlier versions //
+            ParStore *tempstore = engine->seqWidget(modNumber)->parStore;
+            for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
+                if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
+                    tempstore->list[l1].res = mapOldSeqRes[tempstore->list[l1].res];
+                }
+                if (qmaxVersion == "" && tempstore->list[l1].size < 10) {
+                    tempstore->list[l1].size = mapOldSeqSize[tempstore->list[l1].size];
+                }
+            }
             count++;
             if (count == 1) {
                 for (int l1 = 0; l1 < engine->seqWidget(0)->parStore->list.count(); l1++) {
@@ -975,6 +1002,7 @@ bool MainWindow::saveFile()
     xml.writeDTD("<!DOCTYPE qmidiarpSession>");
     xml.writeStartElement("session");
     xml.writeAttribute("version", PACKAGE_VERSION);
+    xml.writeAttribute("qMaxVersion", "1.1");
     xml.writeAttribute("name", filename.mid(filename.lastIndexOf('/') + 1,
                     filename.count() - filename.lastIndexOf('/') - 6));
 
