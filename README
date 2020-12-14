@@ -1,10 +1,16 @@
-QMidiArp by Frank Kober 2009 - 2019
+QMidiArp by Frank Kober 2009 - 2021
             Nedko Arnaudov 2011
             Guido Scholz 2009
             Matthias Nagorni          (c)2004 by Novell
 
          published under the GNU General Public License.
          A copy of the License can be found in the COPYING file
+
+Contributions
+---------------------------------
+Roy Vegard Ovesen (work on nsm support)
+Matthew McGuire (LFO phase setting)
+
 ---------------------------------------------------------------
 
 

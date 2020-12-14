@@ -1,3 +1,25 @@
+qmidiarp-0.6.6 (2020-12-17)
+
+New Feature
+  o LFO: New control for phase of calculated waveforms (Matthew McGuire)
+
+Improvements
+  o LFO and SEQ: More size and resolution values including odd values
+    Although there is compatibility check in place for saved sessions,
+    this may lead to wrong values for saved LV2 states if someone
+    uses this at all.
+  o SEQ: Improved display of loop marker
+  o SEQ: Increased lower octave transpose range
+  o Global Store: Preferences option to choose whether to store mute states
+
+Fixed Bugs:
+  o Regression: Arp strayed in notes with zero velocity
+  o LV2: restored compatibility with suil > 0.10.2
+  o Crash when session managers tried to save/restore empty session
+  o Regression with application of compact widget style
+  o Regression when reading files with time module index -1
+  o Output port count could not be changed on commandline
+   
 qmidiarp-0.6.5 (2017-12-17)
 
 Improvements

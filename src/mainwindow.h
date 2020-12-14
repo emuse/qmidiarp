@@ -3,7 +3,7 @@
  * @brief Member definitions for the MainWindow top-level UI class.
  *
  *
- *      Copyright 2009 - 2019 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2021 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -44,12 +44,13 @@
 
 static const char ABOUTMSG[] =
             "<html> <p><b><big>" APP_NAME " " PACKAGE_VERSION "</big></b></p>"
-            "<p>(C) 2009 - 2019 Frank Kober<br/>"
+            "<p>(C) 2009 - 2021 Frank Kober<br/>"
             "(C) 2011 Nedko Arnaudov<br/>"
             "(C) 2009 Guido Scholz<br/>"
             "(C) 2002-2003 Matthias Nagorni (SuSE AG Nuremberg)<br/></p>"
             "<p><b>Contributions</b><br/>"
-            "Roy Vegard Ovesen (work on nsm support)<br/></p>"
+            "Roy Vegard Ovesen (work on nsm support)<br/>"
+            "Matthew McGuire (LFO phase setting)<br/></p>"
             "<p><b>Translations</b><br/>"
             "Pavel Fric<br/>"
             "Pedro Lopez-Cabanillas<br/>"
