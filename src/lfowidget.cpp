@@ -336,23 +336,18 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 }
                 else if (xml.name() == "resolution") {
                     tmp = xml.readElementText().toInt();
-                    if (qmaxVersion != "" || tmp >= 9) {
-                        resBox->setCurrentIndex(tmp);
+                    if (qmaxVersion == "" && tmp < 9) {
+                        tmp = mapOldLfoRes[tmp];
                     }
-                    else {
-                        resBox->setCurrentIndex(mapOldLfoRes[tmp]);
-                    }
+                    resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
                 else if (xml.name() == "size") {
                     tmp = xml.readElementText().toInt();
-                    if (qmaxVersion != "" || tmp >= 12) {
-                        sizeBox->setCurrentIndex(tmp);
+                    if (qmaxVersion == "" && tmp < 12) {
+                        tmp = mapOldLfoSize[tmp];
                     }
-                    else {
-                        sizeBox->setCurrentIndex(mapOldLfoSize[tmp]);
-                    }
-                        
+                    sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
                 }
                 else if (xml.name() == "amplitude")
