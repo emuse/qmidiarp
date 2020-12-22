@@ -41,20 +41,21 @@ MidiSeq::MidiSeq()
     transpDefer = 0;
     size = 4;
     res = 4;
-    maxNPoints = 16;
+    maxNPoints = res * size;
     notelength = 180;
     notelengthDefer = 180;
     lastMute = false;
     lastMouseLoc = 0;
     lastMouseY = 0;
+    const int wavesize = 8192;
 
-    customWave.resize(2048);
-    muteMask.resize(2048);
-    data.reserve(2048);
+    customWave.resize(wavesize);
+    muteMask.resize(wavesize);
+    data.reserve(wavesize);
     
     Sample sample;
     sample.value = 60;
-    for (int l1 = 0; l1 < 2048; l1++) {
+    for (int l1 = 0; l1 < wavesize; l1++) {
         sample.tick = l1 * TPQN / res;
         sample.muted = false;
         customWave[l1] = sample;

@@ -88,8 +88,8 @@ SeqWidget::SeqWidget():
         names << QString::number(seqResValues[i]);
     }
     resBox->insertItems(0, names);
-    resBox->setCurrentIndex(2);
-    resBoxIndex = 2;
+    resBoxIndex = 3;
+    resBox->setCurrentIndex(resBoxIndex);
     resBox->setToolTip(
             tr("Resolution (notes/beat): Number of notes produced every beat"));
     resBox->setMinimumContentsLength(3);
@@ -107,8 +107,8 @@ SeqWidget::SeqWidget():
         names << QString::number(seqSizeValues[i]);
     }
     sizeBox->insertItems(0, names);
-    sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
+    sizeBox->setCurrentIndex(sizeBoxIndex);
     sizeBox->setToolTip(tr("Length of Sequence in beats"));
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,

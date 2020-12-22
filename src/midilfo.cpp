@@ -41,16 +41,17 @@ MidiLfo::MidiLfo()
     isRecording = false;
     recValue = 0;
     cwmin = 0;
+    const int wavesize = 32768;
 
-    customWave.resize(8192);
-    muteMask.resize(8192);
-    data.reserve(8192);
+    customWave.resize(wavesize);
+    muteMask.resize(wavesize);
+    data.reserve(wavesize);
     frame.resize(32);
     
     Sample sample;
     sample.value = 63;
     sample.tick = 0;
-    for (int l1 = 0; l1 < size * res; l1++) {
+    for (int l1 = 0; l1 < wavesize; l1++) {
         sample.tick =  l1 * TPQN / res;;
         sample.muted = false;
         customWave[l1] = sample;

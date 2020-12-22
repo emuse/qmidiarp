@@ -48,7 +48,8 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
     int beat = 4;
     int tmpval = 0;
-    int ypos, xpos, xscale, yscale;
+    int ypos, xpos, yscale;
+    double xscale;
     w = QWidget::width();
     h = QWidget::height();
     int ofs;
@@ -62,7 +63,7 @@ void SeqScreen::paintEvent(QPaintEvent*)
     int beatRes = (p_data.count() - 1) / nsteps;
     int beatDiv = (beatRes * nsteps > 64) ? 64 / nsteps : beatRes;
     int npoints = beatRes * nsteps;
-    xscale = (w - 2 * SEQSCR_HMARG) / nsteps;
+    xscale = (double)TPQN * (w - 2 * SEQSCR_HMARG) / p_data.at(p_data.count() - 1).tick;
     yscale = h - SEQSCR_VMARG_BOT - SEQSCR_VMARG_TOP;
 
     //Blue Filled Frame

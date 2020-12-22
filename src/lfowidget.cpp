@@ -94,8 +94,8 @@ LfoWidget::LfoWidget():
         << "1/2" << "3/4" << "1" << "2" << "3"
         << "4" << "5" << "6" << "7" << "8";
     freqBox->insertItems(0, names);
-    freqBox->setCurrentIndex(4);
-    freqBoxIndex = 4;
+    freqBoxIndex = 3;
+    freqBox->setCurrentIndex(freqBoxIndex);
     freqBox->setToolTip(
             tr("Frequency (cycles/beat): Number of wave cycles produced every beat"));
     freqBox->setMinimumContentsLength(3);
@@ -112,8 +112,8 @@ LfoWidget::LfoWidget():
         names << QString::number(lfoResValues[i]);
     }
     resBox->insertItems(0, names);
-    resBox->setCurrentIndex(2);
-    resBoxIndex = 2;
+    resBoxIndex = 3;
+    resBox->setCurrentIndex(resBoxIndex);
     resBox->setToolTip(
             tr("Resolution (events/beat): Number of events produced every beat"));
     resBox->setMinimumContentsLength(3);
@@ -130,8 +130,8 @@ LfoWidget::LfoWidget():
         names << QString::number(lfoSizeValues[i]);
     }
     sizeBox->insertItems(0, names);
-    sizeBox->setCurrentIndex(3);
     sizeBoxIndex = 3;
+    sizeBox->setCurrentIndex(sizeBoxIndex);
     sizeBox->setToolTip(tr("Length of LFO wave in beats"));
     sizeBox->setMinimumContentsLength(3);
     connect(sizeBox, SIGNAL(activated(int)), this,
