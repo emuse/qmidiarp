@@ -171,6 +171,8 @@ void MidiSeq::advancePatternIndex()
         if (framePtr == pivot - 1) applyPendingParChanges();
         framePtr--;
         if (framePtr == -1) {
+            currentRepetition++;
+            currentRepetition %= nRepetitions;
             if (!enableLoop) seqFinished = true;
             if (reflect  || !backward) {
                 reverse = false;
@@ -179,6 +181,8 @@ void MidiSeq::advancePatternIndex()
             else framePtr = pivot - 1;
         }
         else if (framePtr == pivot - 1) {
+            currentRepetition++;
+            currentRepetition %= nRepetitions;
             if (!enableLoop) seqFinished = true;
             if (loopMarker < 0) reflect = true;
             if (loopMarker > 0) reflect = false;
@@ -193,6 +197,8 @@ void MidiSeq::advancePatternIndex()
         if (!framePtr) applyPendingParChanges();
         framePtr++;
         if (framePtr == npoints) {
+            currentRepetition++;
+            currentRepetition %= nRepetitions;
             if (!enableLoop) seqFinished = true;
 
             if (reflect || backward) {
@@ -202,6 +208,8 @@ void MidiSeq::advancePatternIndex()
             else framePtr = pivot;
         }
         else if ((framePtr == pivot)) {
+            currentRepetition++;
+            currentRepetition %= nRepetitions;
             if (!pivot) pivot = npoints;
             if (!enableLoop) seqFinished = true;
             if (loopMarker > 0) reflect = true;

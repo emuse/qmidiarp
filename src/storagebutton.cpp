@@ -29,9 +29,13 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
 {
     QHBoxLayout *boxlayout = new QHBoxLayout(this);
     secondText = new QLabel(this);
+    thirdText = new QLabel(this);
     setStyleSheet("font: 10pt; font-weight: bold");
+    // thirdText->setStyleSheet(
+    // "QFrame { color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 60%); }");
     boxlayout->setMargin(4);
     boxlayout->addStretch();
+    boxlayout->addWidget(thirdText);
     boxlayout->addWidget(secondText);
     setFixedSize(QSize(104, 25));
     setLayout(boxlayout);
@@ -41,6 +45,16 @@ StorageButton::~StorageButton()
 {
 }
 
+void StorageButton::setNRep(int nrep)
+{
+    thirdText->setText("[ "+QString::number(nrep)+" ]");
+    if (nrep <= 1) {
+        thirdText->hide();
+    }
+    else {
+        thirdText->show();
+    }
+}
 void StorageButton::setSecondText(const QString & newtext, int type)
 {
     secondText->setText(newtext);
@@ -58,3 +72,20 @@ void StorageButton::setSecondText(const QString & newtext, int type)
         break;
     };
 }
+
+void StorageButton::setBGColor(int color)
+{
+    QString styleSheet;
+
+    if (color == 1)         //green
+        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
+    else if (color == 2)    //yellow
+        styleSheet = "QToolButton { background-color: rgba(150, 255, 150, 10%); }";
+    else if (color == 3)    //blueish
+        styleSheet = "QToolButton { }";
+    else                    //no color
+        styleSheet = "QToolButton { }";
+
+    setStyleSheet(styleSheet);
+}
+

@@ -438,6 +438,9 @@ void Engine::setStatus(bool on)
     }
     status = on;
     driver->setTransportStatus(on);
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        ((InOutBox *)moduleWindow(l1)->widget())->parStore->engineRunning = on;
+    }
     if (on) {
         resetTicks(driver->getCurrentTick());
         driver->requestEchoAt(0);

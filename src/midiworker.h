@@ -71,6 +71,8 @@ class MidiWorker {
     int noteCount;      /*!< The number of notes in the MidiWorker::notes buffer */
     int newGrooveTick, grooveTick, grooveVelocity, grooveLength;
     int framePtr;       /*!< position of the currently output frame in sequence/wave/pattern */
+    int nRepetitions;  /*!< number of repetitions set by parStore at each restore */
+    int currentRepetition;  /*!< current repetition pointer of the pattern since pattern was restored */
     int nPoints;        /*!< Number of steps in pattern or sequence or wave */
     bool dataChanged; /*!< Flag set to true by recording loop and queried by InOutBox::updateDisplay() */
     bool needsGUIUpdate; /*!< Flag set to true when MidiWorker members changed and queried by InOutBox::updateDisplay() */

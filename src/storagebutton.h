@@ -29,9 +29,9 @@
 
 /*!
  * The StorageButton class derives from QToolButton and implements
- * supplemental display elements such as a second text label.
+ * supplemental display elements such as two more text labels.
 
- * @brief Button widget adding a second text label to QToolButton
+ * @brief Button widget adding a more text labels to QToolButton
  */
 class StorageButton : public QToolButton
 
@@ -40,6 +40,7 @@ class StorageButton : public QToolButton
 
   public:
     QLabel *secondText;
+    QLabel *thirdText;
 
     StorageButton(QWidget * parent);
     ~StorageButton();
@@ -47,6 +48,8 @@ class StorageButton : public QToolButton
   public slots:
 
     void setSecondText(const QString & newtext, int type = 0);
+    void setNRep(int nrep = 1);
+    void setBGColor(int color);
 };
 
 #endif

@@ -279,6 +279,7 @@ class InOutBox: public QWidget
     virtual void updateEnableRestartByKbd(bool on);
     virtual void updateEnableTrigByKbd(bool on);
     virtual void updateTrigLegato(bool on);
+    virtual void updateNRep(int nrep);
 /*!
 * @brief Slot for the InOutBox::ccnumberBox spinbox setting the output
 * controller CC number of this module.

@@ -706,7 +706,11 @@ void ArpWidget::handleController(int ccnumber, int channel, int value)
 
 void ArpWidget::updateDisplay()
 {
-    parStore->updateDisplay(getFramePtr() , false);
+    bool repetitionsFinished = (midiArp->currentRepetition == 0);
+    parStore->updateDisplay(getFramePtr(), midiArp->nPoints, repetitionsFinished, false);
+    if (parStore->nRepList.at(parStore->activeStore) != midiArp->nRepetitions) {
+        updateNRep(parStore->nRepList.at(parStore->activeStore));
+    }
 
     screen->updateDraw();
     midiControl->update();

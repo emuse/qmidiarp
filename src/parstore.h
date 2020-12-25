@@ -29,6 +29,7 @@
 
 #include "globstore.h"
 #include "midievent.h"
+#include "storagebutton.h"
 
 
 /*!
@@ -61,24 +62,33 @@ class ParStore : public QWidget
 *    @see ParStore::updateRunOnce()
 */
     QList<int> jumpToList; 
+/*! List of the number of repetitions the module performs before restoring
+*    @see ParStore::updateNRep()
+*/
+    QList<int> nRepList; 
 /*! List of switch configuration for each location
 *   @see ParStore::updateOnlyPattern()
 */
     QList<bool> onlyPatternList;
     QMenu *locContextMenu;
     QMenu *jumpToIndexMenu;
+    QMenu *nRepMenu;
     QActionGroup *jumpToGroup;
+    QActionGroup *nRepGroup;
 
     int activeStore; /**< Currently active location index*/
     int currentRequest; /**< Currently pending location index*/
     bool isRestoreMaster; /**< @brief Indicates whether this module triggers global restores */
-
+    bool engineRunning; /**< @brief Set by engine when changing running state*/
+    bool isManualRequest; /**< @brief Set to true when restore button pressed, set to false when restore done*/
+    
     struct TempStore {
         bool empty;
         bool muteOut;
         int res;
         int size;
         int loopMode;
+        int nRepetitions;
         int waveForm;
         int portOut;
         int channelOut;
@@ -168,6 +178,13 @@ class ParStore : public QWidget
 * @param ix Location index to be restored at pattern end
 */
     void setRestoreRequest(int ix);
+    
+/*!
+* @brief returns a pointer to the storage button at location index
+*
+* @param index Location index of the button
+*/
+    StorageButton* storageButtonAt(int index);
 /*!
 * @brief sets the color of location button row to the specified color index
 *
@@ -182,9 +199,11 @@ class ParStore : public QWidget
 * GUI requests and series parameters
 *
 * @param frame Current frame position of the parent module
+* @param nframes Number of frames in the module
+* @param set to True when at the end of the repetitions cycle
 * @param reverse Set to true if the parent module currently plays backward
 */
-    void updateDisplay(int frame, bool reverse);
+    void updateDisplay(int frame, int nframes, bool repetitionsFinished, bool reverse);
     
 #ifdef APPBUILD
 /*!
@@ -226,6 +245,13 @@ void skipXmlElement(QXmlStreamReader& xml);
 */
     void mapJumpToGroup(QAction *action);
 /*!
+* @brief a signal mapper for routing the ParStore::nRepMenu signals
+* to the ParStore::updateNRep) slot
+*
+* @param *action Pointer to the action that has been activated in the menu
+*/
+    void mapNRepGroup(QAction *action);
+/*!
 * @brief called by ParStore::mapJumpToGroup(). Configures the location
 * behavior at pattern end
 *
@@ -239,6 +265,15 @@ void skipXmlElement(QXmlStreamReader& xml);
 * >=0 (next location to jump to)
 */
     void updateRunOnce(int location, int choice);
+/*!
+* @brief called by ParStore::mapNRepGroup(). Sets the number of repetitions
+*
+* The nrep value is copied to ParStore::nRepList()
+*
+* @param location Location for which the loop count is set
+* @param nrep Loop count
+*/
+    void updateNRep(int location, int nrep);
 /*!
 * @brief adds all storage location GUI elements to the widget
 *

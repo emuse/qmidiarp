@@ -499,6 +499,12 @@ void InOutBox::updateDeferChanges(bool on)
     modified = true;
 }
 
+void InOutBox::updateNRep(int nrep)
+{
+    if (midiWorker) midiWorker->nRepetitions = nrep;
+    modified = true;
+}
+
 void InOutBox::storeParams(int ix, bool empty)
 {
 #ifdef APPBUILD
@@ -535,6 +541,7 @@ void InOutBox::restoreParams(int ix)
         updateChannelOut(parStore->list.at(ix).channelOut);
         setPortOut(parStore->list.at(ix).portOut);
         updatePortOut(parStore->list.at(ix).portOut);
+        midiWorker->currentRepetition = 0;
     }
 #else
     (void)ix;
@@ -752,9 +759,15 @@ void InOutBox::updateIndicators()
 {
     int ci = midiWorker->getFramePtr();
 
+    if (midiWorker->reverse) {
+        ci = midiWorker->nPoints - ci;
+    }
+
     int percent;
     if (midiWorker->nPoints)
-        percent = ci * 100 / (midiWorker->nPoints);
+        percent = (ci * 100 / (midiWorker->nPoints)  
+                + midiWorker->currentRepetition * 100 )
+                / midiWorker->nRepetitions;
     else
         percent = 0;
     
@@ -768,7 +781,12 @@ void InOutBox::updateIndicators()
 
 void InOutBox::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
 {
-    if (!midiWorker->getFramePtr() && restoreFlag
+    bool repetitionsFinished = (midiWorker->currentRepetition == 0);
+    if (midiWorker->reverse) {
+        repetitionsFinished = (midiWorker->currentRepetition >= midiWorker->nRepetitions - 1);
+    }
+    
+    if (!midiWorker->getFramePtr() && restoreFlag && repetitionsFinished
         && parStore->isRestoreMaster
         && !globStore->timeModeBox->currentIndex()) {
         *restoreTick = midiWorker->nextTick;

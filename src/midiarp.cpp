@@ -563,6 +563,8 @@ bool MidiArp::advancePatternIndex(bool reset)
         patternIndex = 0;
         restartFlag = false;
         applyPendingParChanges();
+        currentRepetition %= nRepetitions;
+        currentRepetition++;
 
         switch (repeatPatternThroughChord) {
             case 1:

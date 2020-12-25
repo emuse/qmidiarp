@@ -785,7 +785,15 @@ void LfoWidget::updateDisplay()
     QVector<Sample> data;
     std::vector<Sample> sdata;
 
-    parStore->updateDisplay(getFramePtr()/midiLfo->frameSize, midiLfo->reverse);
+    bool repetitionsFinished = (midiLfo->currentRepetition == 0);
+    if (midiLfo->reverse) {
+    repetitionsFinished = (midiLfo->currentRepetition >= midiLfo->nRepetitions - 1);
+    }
+    parStore->updateDisplay(getFramePtr()/midiLfo->frameSize, 
+        midiLfo->nPoints/midiLfo->frameSize, repetitionsFinished, midiLfo->reverse);
+    if (parStore->nRepList.at(parStore->activeStore) != midiLfo->nRepetitions) {
+        updateNRep(parStore->nRepList.at(parStore->activeStore));
+    }
 
     if (midiLfo->dataChanged) {
         midiLfo->getData(&sdata);

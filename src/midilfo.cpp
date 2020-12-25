@@ -140,6 +140,8 @@ void MidiLfo::getNextFrame(int64_t tick)
         if (reverse) {
             framePtr-=l1;
             if (framePtr < 0) {
+                currentRepetition++;
+                currentRepetition %= nRepetitions;
                 if (!enableLoop) seqFinished = true;
                 framePtr = npoints - l1;
                 if (reflect  || !backward) {
@@ -151,6 +153,8 @@ void MidiLfo::getNextFrame(int64_t tick)
         else {
             framePtr+=l1;
             if (framePtr >= npoints) {
+                currentRepetition++;
+                currentRepetition %= nRepetitions;
                 if (!enableLoop) seqFinished = true;
                 framePtr = 0;
                 if (reflect || backward) {
@@ -183,7 +187,6 @@ void MidiLfo::getNextFrame(int64_t tick)
     }
 
     if (seqFinished) framePtr = 0;
-
 }
 
 void MidiLfo::getData(std::vector<Sample> *p_data)

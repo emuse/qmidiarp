@@ -64,6 +64,8 @@ MidiWorker::MidiWorker()
     grooveVelocity = 0;
     grooveLength = 0;
     framePtr = 0;
+    nRepetitions = 1;
+    currentRepetition = 0;
     nPoints = 1;
 
     dataChanged = false;

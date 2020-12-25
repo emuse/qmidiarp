@@ -92,7 +92,6 @@ class MidiArp : public MidiWorker  {
   * */
     double old_attackfn[MAXNOTES];
     int64_t noteBufPtr;     /*!< Pointer to the currently active note buffer copy */
-    int patternLen;     /*!< Length of the arp text pattern */
     int noteOfs;        /*!< The current index in a chord. @see repeatPatternThroughChord */
     int octOfs;        /*!< The currently active octave shift. @see repeatPatternThroughChord */
     int octIncr;        /*!< The octave increment at repeat end. @see repeatPatternThroughChord */
@@ -229,6 +228,7 @@ class MidiArp : public MidiWorker  {
     int minOctave;      /*!< Minimum octave shift found in the pattern */
     double minStepWidth; /*!< Minimum step width of the pattern for quantization purposes*/
     double nSteps;      /*!< Musical length of the pattern in beats */
+    int patternLen;     /*!< Length of the arp text pattern */
     int patternMaxIndex;/*!< Maximum number of stacked notes in the pattern */
     int octMode;        /*!< The octave Mode 0=up, 1=down, 2=pingpong. @see repeatPatternThroughChord */
     int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */

@@ -23,7 +23,6 @@
 
 #include "main.h"
 #include "parstore.h"
-#include "storagebutton.h"
 
 #include "pixmaps/filesave.xpm"
 
@@ -124,37 +123,48 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
 
     locContextMenu = new QMenu(this);
 
-    QAction *storeHereAction = new QAction(tr("&Store here"), this);
-    storeHereAction->setProperty("index", list.count());
-    storeHereAction->setIcon(QPixmap(filesave_xpm));
-    locContextMenu->addAction(storeHereAction);
-    connect(storeHereAction, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
+    QAction *action;
+    action = locContextMenu->addAction(tr("&Store here"));
+    action->setProperty("index", list.count());
+    action->setIcon(QPixmap(filesave_xpm));
+    
+    connect(action, SIGNAL(triggered()), this, SLOT(mapStoreSignal()));
 
-    QAction *onlyPatternAction = new QAction(tr("&Act on pattern only"), this);
-    onlyPatternAction->setProperty("index", list.count());
-    onlyPatternAction->setCheckable(true);
-    locContextMenu->addAction(onlyPatternAction);
-    connect(onlyPatternAction, SIGNAL(toggled(bool)), this, SLOT(updateOnlyPattern(bool)));
+    action = locContextMenu->addAction(tr("&Act on pattern only"));
+    action->setProperty("index", list.count());
+    action->setCheckable(true);
+    connect(action, SIGNAL(toggled(bool)), this, SLOT(updateOnlyPattern(bool)));
+
+    nRepMenu = new QMenu(tr("Loop count"), this);
+    nRepGroup = new QActionGroup(this);
+    connect(nRepGroup, SIGNAL(triggered(QAction *))
+             , this, SLOT(mapNRepGroup(QAction *)));
+    
+    for (int l1 = 1; l1 <= 16; l1++) {
+        action = nRepMenu->addAction(QString::number(l1));
+        action->setActionGroup(nRepGroup);
+        action->setProperty("index", l1);
+        action->setCheckable(true);
+    }
+    locContextMenu->addMenu(nRepMenu);
 
     jumpToIndexMenu = new QMenu(tr("When finished"), this);
-
     jumpToGroup = new QActionGroup(this);
     connect(jumpToGroup, SIGNAL(triggered(QAction *))
              , this, SLOT(mapJumpToGroup(QAction *)));
 
-    jumpToIndexMenu->addAction(new QAction(tr("Stay here"), this));
-    jumpToIndexMenu->actions().last()->setProperty("index", -2);
-    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
-    jumpToIndexMenu->actions().last()->setCheckable(true);
-    jumpToIndexMenu->actions().last()->setChecked(true);
+    action = jumpToIndexMenu->addAction(tr("Stay here"));
+    action->setProperty("index", -2);
+    action->setActionGroup(jumpToGroup);
+    action->setCheckable(true);
+    action->setChecked(true);
 
-    jumpToIndexMenu->addAction(new QAction(tr("Jump back"), this));
-    jumpToIndexMenu->actions().last()->setProperty("index", -1);
-    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
-    jumpToIndexMenu->actions().last()->setCheckable(true);
+    action = jumpToIndexMenu->addAction(tr("Jump back"));
+    action->setProperty("index", -1);
+    action->setActionGroup(jumpToGroup);
+    action->setCheckable(true);
 
     jumpToIndexMenu->addSeparator()->setText(tr("Jump to:"));
-
     locContextMenu->addMenu(jumpToIndexMenu);
 
     for (int l1 = 0; l1 < list.size() - 1; l1++) addLocation();
@@ -168,9 +178,11 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
 
     globStore->indivButtonLayout->addWidget(this);
 
+    engineRunning = false;
     isRestoreMaster = false;
     restoreRequest = -1;
     oldRestoreRequest = 0;
+    isManualRequest = false;
     restoreRunOnce = false;
     activeStore = 0;
     currentRequest = 0;
@@ -221,6 +233,7 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             xml.writeTextElement("pattern", list.at(ix).pattern);
 
             xml.writeTextElement("jumpTo", QString::number(jumpToList.at(ix)));
+            xml.writeTextElement("nRep", QString::number(nRepList.at(ix)));
             xml.writeTextElement("onlyPattern", QString::number((int)onlyPatternList.at(ix)));
 
             tempArray.clear();
@@ -252,6 +265,7 @@ void ParStore::readData(QXmlStreamReader& xml)
     int ix = 0;
     int step = 0;
     int tmpjumpto = -2;
+    int tmpnrep = 1;
     int tmponlypattern = 0;
 
     while (!xml.atEnd()) {
@@ -328,6 +342,8 @@ void ParStore::readData(QXmlStreamReader& xml)
                     temp.pattern = xml.readElementText();
                 else if (xml.name() == "jumpTo")
                     tmpjumpto = xml.readElementText().toInt();
+                else if (xml.name() == "nRep")
+                    tmpnrep = xml.readElementText().toInt();
                 else if (xml.name() == "onlyPattern")
                     tmponlypattern = xml.readElementText().toInt();
                 else if (xml.isStartElement() && (xml.name() == "muteMask")) {
@@ -382,6 +398,7 @@ void ParStore::readData(QXmlStreamReader& xml)
             if (!(temp.rangeIn0 + temp.rangeIn1)) temp.rangeIn1 = 127;
             tempToList(ix);
             updateRunOnce(ix, tmpjumpto);
+            updateNRep(ix, tmpnrep);
             onlyPatternList.replace(ix, tmponlypattern);
             ix++;
         }
@@ -405,6 +422,14 @@ void ParStore::skipXmlElement(QXmlStreamReader& xml)
     }
 }
 
+StorageButton* ParStore::storageButtonAt(int index)
+{
+    StorageButton *button = ((StorageButton *)(layout()->itemAt(0)
+    ->layout()->itemAt(index + 1)->widget()));
+    
+    return button;    
+}
+
 void ParStore::addLocation()
 {
     StorageButton *toolButton = new StorageButton(this);
@@ -417,13 +442,15 @@ void ParStore::addLocation()
     connect(toolButton, SIGNAL(customContextMenuRequested(const QPoint &))
                     , this, SLOT(showLocContextMenu(const QPoint &)));
 
-    jumpToIndexMenu->addAction(new QAction(QString::number(list.count()), this));
-    jumpToIndexMenu->actions().last()->setActionGroup(jumpToGroup);
-    jumpToIndexMenu->actions().last()->setProperty("index", list.count() - 1);
-    jumpToIndexMenu->actions().last()->setCheckable(true);
+    QAction *action;
+    action = jumpToIndexMenu->addAction(QString::number(list.count()));
+    action->setActionGroup(jumpToGroup);
+    action->setProperty("index", list.count() - 1);
+    action->setCheckable(true);
 
     layout()->itemAt(0)->layout()->addWidget(toolButton);
     jumpToList.append(-2);
+    nRepList.append(1);
     onlyPatternList.append(false);
 }
 
@@ -448,6 +475,7 @@ void ParStore::removeLocation(int ix)
 void ParStore::setRestoreRequest(int ix)
 {
     restoreRequest = ix;
+    isManualRequest = true;
     restoreRunOnce = (jumpToList.at(ix) > -2 );
 
     setDispState(ix, 2);
@@ -461,42 +489,39 @@ void ParStore::mapJumpToGroup(QAction *action)
     updateRunOnce(location, choice);
 }
 
+void ParStore::mapNRepGroup(QAction *action)
+{
+    int nrep = action->property("index").toInt();
+    int location = sender()->property("index").toInt();
+
+    updateNRep(location, nrep);
+}
+
+void ParStore::updateNRep(int location, int nrep)
+{
+    nRepList.replace(location, nrep);
+    storageButtonAt(location)->setNRep(nrep);
+}
+
 void ParStore::updateRunOnce(int location, int choice)
 {
+    StorageButton *button = storageButtonAt(location);
+                    
     if (choice == -2) { //stay here
         jumpToList.replace(location, -2);
-        setBGColorAt(location + 1, 0);
-        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setSecondText("", 0);
+        button->setBGColor(0);
+        button->setSecondText("", 0);
     }
     else if (choice == -1) { //jump back to last
         jumpToList.replace(location, -1);
-        setBGColorAt(location + 1, 3);
-        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setSecondText("<- ", 1);
+        button->setBGColor(3);
+        button->setSecondText("<- ", 1);
     }
     else if (choice >= 0) { //jump to location
         jumpToList.replace(location, choice);
-        ((StorageButton *)(layout()->itemAt(0)->layout()->itemAt(location + 1)
-            ->widget()))->setSecondText("-> "+QString::number(choice + 1), 2);
-        setBGColorAt(location + 1, 3);
+        button->setSecondText("-> "+QString::number(choice + 1), 2);
+        button->setBGColor(3);
     }
-}
-
-void ParStore::setBGColorAt(int row, int color)
-{
-    QString styleSheet;
-
-    if (color == 1)         //green
-        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
-    else if (color == 2)    //yellow
-        styleSheet = "QToolButton { background-color: rgba(150, 255, 150, 10%); }";
-    else if (color == 3)    //blueish
-        styleSheet = "QToolButton { }";
-    else                    //no color
-        styleSheet = "QToolButton { }";
-
-    layout()->itemAt(0)->layout()->itemAt(row)->widget()->setStyleSheet(styleSheet);
 }
 
 void ParStore::tempToList(int ix)
@@ -527,18 +552,18 @@ void ParStore::mapStoreSignal()
 }
 
 void ParStore::setDispState(int ix, int selected)
-{
+{    
     if (selected == 1) {
-        for (int l2 = 1; l2 <= list.count(); l2++) {
-            setBGColorAt(l2, 3 * (jumpToList.at(l2 - 1) > -2));
+        for (int l2 = 0; l2 < list.count(); l2++) {
+            storageButtonAt(l2)->setBGColor(3 * (jumpToList.at(l2) > -2));
         }
-        setBGColorAt(ix + 1, 1);
+        storageButtonAt(ix)->setBGColor(1);
         activeStore = ix;
     }
     else if (selected == 2) {
-        setBGColorAt(ix + 1, 2);
+        storageButtonAt(ix)->setBGColor(2);
         if (currentRequest != activeStore) {
-            setBGColorAt(currentRequest + 1, 0);
+            storageButtonAt(currentRequest)->setBGColor(0);
         }
         currentRequest = ix;
     }
@@ -551,7 +576,7 @@ void ParStore::requestDispState(int ix, int selected)
     needsGUIUpdate = true;
 }
 
-void ParStore::updateDisplay(int frame, bool reverse)
+void ParStore::updateDisplay(int frame, int nframes, bool repetitionsFinished, bool reverse)
 {
     ndc->updateDraw();
 
@@ -560,31 +585,34 @@ void ParStore::updateDisplay(int frame, bool reverse)
         setDispState(dispReqIx, dispReqSelected);
     }
 
-    if ((restoreRequest >= 0) && !frame) {
-        int req = restoreRequest;
-        setDispState(req, 1);
-        emit restore(req);
-        restoreRequest = -1;
-        if (!restoreRunOnce) {
-            oldRestoreRequest = req;
+    if (restoreRequest >= 0) {
+        if (!engineRunning || (!frame && repetitionsFinished)) {
+            int req = restoreRequest;
+            setDispState(req, 1);
+            emit restore(req);
+            isManualRequest = false;
+            restoreRequest = -1;
+            if (!restoreRunOnce) {
+                oldRestoreRequest = req;
+            }
         }
     }
+    
+    if (!engineRunning) return;
 
-    if ((frame == 1)
-            && (restoreRequest != oldRestoreRequest)
-            && restoreRunOnce
-            && !reverse) {
-        if (jumpToList.at(activeStore) >= 0) {
-            restoreRequest = jumpToList.at(activeStore);
-            oldRestoreRequest = restoreRequest;
+    if ((restoreRequest != oldRestoreRequest) && restoreRunOnce && !isManualRequest) {
+        if ((frame == 1 && !reverse) || ((frame == nframes - 1) && reverse)){
+           if (jumpToList.at(activeStore) >= 0) {
+                restoreRequest = jumpToList.at(activeStore);
+                oldRestoreRequest = restoreRequest;
+            }
+            else {
+                restoreRequest = oldRestoreRequest;
+            }
+            restoreRunOnce = (jumpToList.at(restoreRequest) > -2);
+            setDispState(restoreRequest, 2);
         }
-        else {
-            restoreRequest = oldRestoreRequest;
-        }
-        restoreRunOnce = (jumpToList.at(restoreRequest) > -2);
-        setDispState(restoreRequest, 2);
     }
-
 }
 
 void ParStore::showLocContextMenu(const QPoint &pos)
@@ -601,11 +629,15 @@ void ParStore::showLocContextMenu(const QPoint &pos)
                 ->setDisabled(l1 == senderlocation);
     }
 
-    locContextMenu->setProperty("index", senderlocation);
     jumpToGroup->setProperty("index", senderlocation);
-
     jumpToGroup->actions().at(jumpToList.at(senderlocation) + 2)
             ->setChecked(true);
+
+    nRepGroup->actions().at(nRepList.at(senderlocation) - 1)
+            ->setChecked(true);
+    nRepGroup->setProperty("index", senderlocation);
+    
+    locContextMenu->setProperty("index", senderlocation);
     locContextMenu->actions().at(1)->setChecked(onlyPatternList.at(senderlocation));
     locContextMenu->popup(QWidget::mapToGlobal(pos));
 }

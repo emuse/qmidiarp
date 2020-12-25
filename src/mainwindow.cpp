@@ -484,6 +484,7 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
     widgetID = engine->arpWidgetCount();
     moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
+    moduleWidget->parStore->engineRunning = engine->status;
 
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
@@ -527,6 +528,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
     //TODO: transfer these items to constructor
     moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
+    moduleWidget->parStore->engineRunning = engine->status;
 
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
@@ -575,6 +577,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, boo
     }
     moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
+    moduleWidget->parStore->engineRunning = engine->status;
 
     // if the module is added at a time when global stores are already
     // present we fill up the new global parameter storage list with dummies
