@@ -183,6 +183,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     restoreRequest = -1;
     oldRestoreRequest = 0;
     isManualRequest = false;
+    isForcedToStay = false;
     restoreRunOnce = false;
     activeStore = 0;
     currentRequest = 0;
@@ -472,10 +473,11 @@ void ParStore::removeLocation(int ix)
 }
 
 
-void ParStore::setRestoreRequest(int ix)
+void ParStore::setRestoreRequest(int ix, bool forcestay)
 {
     restoreRequest = ix;
     isManualRequest = true;
+    isForcedToStay = forcestay;
     restoreRunOnce = (jumpToList.at(ix) > -2 );
 
     setDispState(ix, 2);
@@ -540,8 +542,10 @@ void ParStore::tempToList(int ix)
 void ParStore::mapRestoreSignal()
 {
     int ix = sender()->property("index").toInt();
+    bool forcestay = sender()->property("forceStay").toBool();
+    sender()->setProperty("forceStay", false);
 
-    setRestoreRequest(ix - 1);
+    setRestoreRequest(ix - 1, forcestay);
 }
 
 void ParStore::mapStoreSignal()
@@ -602,6 +606,11 @@ void ParStore::updateDisplay(int frame, int nframes, bool repetitionsFinished, b
 
     if ((restoreRequest != oldRestoreRequest) && restoreRunOnce && !isManualRequest) {
         if ((frame == 1 && !reverse) || ((frame == nframes - 1) && reverse)){
+            if (isForcedToStay) {
+                restoreRequest = oldRestoreRequest;
+                isForcedToStay = false;
+                return;
+            }            
            if (jumpToList.at(activeStore) >= 0) {
                 restoreRequest = jumpToList.at(activeStore);
                 oldRestoreRequest = restoreRequest;

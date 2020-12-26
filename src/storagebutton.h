@@ -26,10 +26,14 @@
 
 #include <QLabel>
 #include <QToolButton>
+#include <QMouseEvent>
 
 /*!
  * The StorageButton class derives from QToolButton and implements
  * supplemental display elements such as two more text labels.
+ * It also provides a special area within the button that, when clicked,
+ * sets a property "forceStay" indicating to the receiver that the
+ * automatic jump settings shall be ignored.
 
  * @brief Button widget adding a more text labels to QToolButton
  */
@@ -41,12 +45,17 @@ class StorageButton : public QToolButton
   public:
     QLabel *secondText;
     QLabel *thirdText;
+    QLabel *hitLabel;
 
     StorageButton(QWidget * parent);
     ~StorageButton();
 
+    bool hitButtonPressed;
+    
+    void mousePressEvent(QMouseEvent *e);
+    bool hitForceButton(const QPoint &pos) const;
+    
   public slots:
-
     void setSecondText(const QString & newtext, int type = 0);
     void setNRep(int nrep = 1);
     void setBGColor(int color);

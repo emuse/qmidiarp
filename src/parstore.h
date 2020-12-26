@@ -81,6 +81,7 @@ class ParStore : public QWidget
     bool isRestoreMaster; /**< @brief Indicates whether this module triggers global restores */
     bool engineRunning; /**< @brief Set by engine when changing running state*/
     bool isManualRequest; /**< @brief Set to true when restore button pressed, set to false when restore done*/
+    bool isForcedToStay; /**< @brief Set to true when Stay area was clicked on restore button, overrides automatic jumps*/
     
     struct TempStore {
         bool empty;
@@ -177,7 +178,7 @@ class ParStore : public QWidget
 *
 * @param ix Location index to be restored at pattern end
 */
-    void setRestoreRequest(int ix);
+    void setRestoreRequest(int ix, bool forcestay);
     
 /*!
 * @brief returns a pointer to the storage button at location index
