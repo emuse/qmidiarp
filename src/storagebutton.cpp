@@ -33,18 +33,16 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
     // thirdText->setStyleSheet(
     // "QFrame { color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 60%); }");
     boxlayout->setMargin(4);
-    hitLabel = new QLabel(">|<", this);
-    hitLabel->setStyleSheet("QFrame { color:rgba(255, 255, 250); \
-                            background-color: rgba(100, 100, 100, 60%); }");
-    boxlayout->addWidget(hitLabel);
+    forceLabel = new HitLabel(">|<", this);
+    forceLabel->setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+                            background-color: rgba(100, 100, 100, 40%); }");
+    boxlayout->addWidget(forceLabel);
     boxlayout->addStretch();
     boxlayout->addWidget(thirdText);
     boxlayout->addWidget(secondText);
     setFixedSize(QSize(104, 25));
     setLayout(boxlayout);
-    setStyleSheet("font: 12pt; font-weight: bold");
-    
-    hitButtonPressed = false;
+    setStyleSheet("font: 14pt; font-weight: bold");
 }
 
 StorageButton::~StorageButton()
@@ -95,20 +93,23 @@ void StorageButton::setBGColor(int color)
     setStyleSheet(styleSheet);
 }
 
-void StorageButton::mousePressEvent(QMouseEvent *e)
+HitLabel::HitLabel(const QString& text, QWidget * parent): QLabel(text, parent)
 {
-    if(e->button() == Qt::LeftButton && hitForceButton(e->pos())) {
-        setProperty("forceStay", true);
-    }
-    else {
-        setProperty("forceStay", false);
-    }
-        
-    QToolButton::mousePressEvent(e);
+    setMouseTracking(true);
 }
 
-bool StorageButton::hitForceButton(const QPoint &pos) const
+void HitLabel::enterEvent(QEvent *e)
 {
-    return hitLabel->frameRect().contains(pos);
+    (void)e;
+    setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+                            background-color: rgba(200, 100, 100, 80%); }");
+    setProperty("forceStay", true);
 }
 
+void HitLabel::leaveEvent(QEvent *e)
+{
+    (void)e;
+    setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+                            background-color: rgba(100, 100, 100, 40%); }");
+    setProperty("forceStay", false);
+}

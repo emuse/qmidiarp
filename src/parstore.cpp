@@ -542,9 +542,8 @@ void ParStore::tempToList(int ix)
 void ParStore::mapRestoreSignal()
 {
     int ix = sender()->property("index").toInt();
-    bool forcestay = sender()->property("forceStay").toBool();
-    sender()->setProperty("forceStay", false);
-
+    bool forcestay = ((StorageButton *)sender())->forceLabel->property("forceStay").toBool();
+    
     setRestoreRequest(ix - 1, forcestay);
 }
 
@@ -607,7 +606,8 @@ void ParStore::updateDisplay(int frame, int nframes, bool repetitionsFinished, b
     if ((restoreRequest != oldRestoreRequest) && restoreRunOnce && !isManualRequest) {
         if ((frame == 1 && !reverse) || ((frame == nframes - 1) && reverse)){
             if (isForcedToStay) {
-                restoreRequest = oldRestoreRequest;
+                restoreRequest = -1;
+                oldRestoreRequest = -1;
                 isForcedToStay = false;
                 return;
             }            

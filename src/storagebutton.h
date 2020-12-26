@@ -29,6 +29,18 @@
 #include <QMouseEvent>
 
 /*!
+ * Special Label that changes background color when mouse enters
+ */
+class HitLabel : public QLabel
+{
+    Q_OBJECT
+    
+    public:
+    HitLabel(const QString& text, QWidget * parent);
+    void enterEvent(QEvent *e);
+    void leaveEvent(QEvent *e);
+};
+/*!
  * The StorageButton class derives from QToolButton and implements
  * supplemental display elements such as two more text labels.
  * It also provides a special area within the button that, when clicked,
@@ -45,20 +57,14 @@ class StorageButton : public QToolButton
   public:
     QLabel *secondText;
     QLabel *thirdText;
-    QLabel *hitLabel;
+    HitLabel *forceLabel;
 
     StorageButton(QWidget * parent);
     ~StorageButton();
 
-    bool hitButtonPressed;
-    
-    void mousePressEvent(QMouseEvent *e);
-    bool hitForceButton(const QPoint &pos) const;
-    
   public slots:
     void setSecondText(const QString & newtext, int type = 0);
     void setNRep(int nrep = 1);
     void setBGColor(int color);
 };
-
 #endif
