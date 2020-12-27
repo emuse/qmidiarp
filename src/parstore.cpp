@@ -598,6 +598,10 @@ void ParStore::updateDisplay(int frame, int nframes, bool repetitionsFinished, b
             if (!restoreRunOnce) {
                 oldRestoreRequest = req;
             }
+            if (isForcedToStay) {
+                isForcedToStay = false;
+                isManualRequest = true;
+            }            
         }
     }
     
@@ -605,12 +609,6 @@ void ParStore::updateDisplay(int frame, int nframes, bool repetitionsFinished, b
 
     if ((restoreRequest != oldRestoreRequest) && restoreRunOnce && !isManualRequest) {
         if ((frame == 1 && !reverse) || ((frame == nframes - 1) && reverse)){
-            if (isForcedToStay) {
-                restoreRequest = -1;
-                oldRestoreRequest = -1;
-                isForcedToStay = false;
-                return;
-            }            
            if (jumpToList.at(activeStore) >= 0) {
                 restoreRequest = jumpToList.at(activeStore);
                 oldRestoreRequest = restoreRequest;
