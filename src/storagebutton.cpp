@@ -30,11 +30,12 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
     QHBoxLayout *boxlayout = new QHBoxLayout(this);
     secondText = new QLabel(this);
     thirdText = new QLabel(this);
-    // thirdText->setStyleSheet(
+    thirdText->setStyleSheet("QFrame {font: 7pt}");
     // "QFrame { color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 60%); }");
     boxlayout->setMargin(4);
     forceLabel = new HitLabel(">|<", this);
-    forceLabel->setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+    forceLabel->setStyleSheet("QFrame {font: 7pt; font-weight: bold; \
+                            color:rgba(255, 255, 250); \
                             background-color: rgba(100, 100, 100, 40%); }");
     boxlayout->addWidget(forceLabel);
     boxlayout->addStretch();
@@ -42,7 +43,6 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
     boxlayout->addWidget(secondText);
     setFixedSize(QSize(104, 25));
     setLayout(boxlayout);
-    setStyleSheet("font: 14pt; font-weight: bold");
 }
 
 StorageButton::~StorageButton()
@@ -64,15 +64,15 @@ void StorageButton::setSecondText(const QString & newtext, int type)
     secondText->setText(newtext);
     switch (type) {
         case 0:
-            secondText->setStyleSheet("");
+            secondText->setStyleSheet("QFrame {font: 7pt}");
         break;
         case 1:
             secondText->setStyleSheet(
-            "QFrame { color:rgba(255, 255, 250); background-color: rgba(180, 0, 0, 60%); }");
+            "QFrame {font: 7pt; color:rgba(255, 255, 250); background-color: rgba(180, 0, 0, 60%); }");
         break;
         case 2:
             secondText->setStyleSheet(
-            "QFrame { color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 40%); }");
+            "QFrame {font: 7pt;  color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 40%); }");
         break;
     };
 }
@@ -82,13 +82,13 @@ void StorageButton::setBGColor(int color)
     QString styleSheet;
 
     if (color == 1)         //green
-        styleSheet = "QToolButton { background-color: rgba(50, 255, 50, 40%); }";
+        styleSheet = "QToolButton {font: 12pt; font-weight: bold;  background-color: rgba(50, 255, 50, 40%); }";
     else if (color == 2)    //yellow
-        styleSheet = "QToolButton { background-color: rgba(150, 255, 150, 10%); }";
+        styleSheet = "QToolButton {font: 12pt; font-weight: bold;  background-color: rgba(150, 255, 150, 10%); }";
     else if (color == 3)    //blueish
-        styleSheet = "QToolButton { }";
+        styleSheet = "QToolButton {font: 12pt; font-weight: bold  }";
     else                    //no color
-        styleSheet = "QToolButton { }";
+        styleSheet = "QToolButton {font: 12pt; font-weight: bold  }";
 
     setStyleSheet(styleSheet);
 }
@@ -96,12 +96,14 @@ void StorageButton::setBGColor(int color)
 HitLabel::HitLabel(const QString& text, QWidget * parent): QLabel(text, parent)
 {
     setMouseTracking(true);
+    setToolTip(tr("Go and stay here"));
 }
 
 void HitLabel::enterEvent(QEvent *e)
 {
     (void)e;
-    setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+    setStyleSheet("QFrame { font: 7pt; \
+                            color:rgba(255, 255, 250); \
                             background-color: rgba(200, 100, 100, 80%); }");
     setProperty("forceStay", true);
 }
@@ -109,7 +111,8 @@ void HitLabel::enterEvent(QEvent *e)
 void HitLabel::leaveEvent(QEvent *e)
 {
     (void)e;
-    setStyleSheet("QFrame { color:rgba(255, 255, 250); \
+    setStyleSheet("QFrame { font: 7pt; \
+                            color:rgba(255, 255, 250); \
                             background-color: rgba(100, 100, 100, 40%); }");
     setProperty("forceStay", false);
 }
