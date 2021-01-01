@@ -857,7 +857,7 @@ void Engine::requestRestore(int ix)
     if (globStoreWidget->timeModeBox->currentIndex()) {
         requestTick = currentTick;
         restoreTick = TPQN * (2 + globStoreWidget->switchAtBeatBox
-            ->currentIndex() + currentTick / TPQN);
+            ->currentIndex()) + currentTick;
     }
 }
 
@@ -869,7 +869,7 @@ void Engine::schedRestore(int ix)
 void Engine::restore(int ix)
 {
     for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->restoreParams(ix);
+        ((InOutBox *)moduleWindow(l1)->widget())->parStore->setRestoreRequest(ix, true);
         ((InOutBox *)moduleWindow(l1)->widget())->parStore->oldRestoreRequest = ix;
     }
 

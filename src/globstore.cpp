@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QToolButton>
 
+#include "storagebutton.h"
 #include "globstore.h"
 #include "main.h"
 #include "pixmaps/filesave.xpm"
@@ -279,8 +280,8 @@ void GlobStore::setBGColorAt(int column, int row, int color)
     else                    //no color
         styleSheet = "QToolButton { }";
 
-    indivButtonLayout->itemAt(column)->widget()->layout()->itemAt(0)->layout()
-                ->itemAt(row)->widget()->setStyleSheet(styleSheet);
+    ((StorageButton *)(indivButtonLayout->itemAt(column)->widget()->layout()->itemAt(0)->layout()
+                ->itemAt(row)->widget()))->setBGColor(color);
 }
 
 void GlobStore::addModule(const QString& name)
