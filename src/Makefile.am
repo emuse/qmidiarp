@@ -68,7 +68,7 @@ qmidiarp_SOURCES = \
 	storagebutton.cpp storagebutton.h
 
 qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD -Wno-deprecated-copy
-qmidiarp_LDADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_LDADD = $(LIBS_APP) $(Qt4_LIBS) $(Qt5_LIBS)
 
 endif
 
