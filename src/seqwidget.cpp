@@ -733,8 +733,10 @@ void SeqWidget::updateDisplay()
         repetitionsFinished = (midiSeq->currentRepetition >= midiSeq->nRepetitions - 1);
     }
     parStore->updateDisplay(getFramePtr(), midiSeq->nPoints, repetitionsFinished, midiSeq->reverse);
-    if (parStore->nRepList.at(parStore->activeStore) != midiSeq->nRepetitions) {
-        updateNRep(parStore->nRepList.at(parStore->activeStore));
+    if (parStore->nRepList.count() > 0) {
+        if (parStore->nRepList.at(parStore->activeStore) != midiSeq->nRepetitions) {
+            updateNRep(parStore->nRepList.at(parStore->activeStore));
+        }
     }
 
     if (dataChanged || midiSeq->dataChanged) {

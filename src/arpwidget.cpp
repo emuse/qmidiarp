@@ -708,10 +708,11 @@ void ArpWidget::updateDisplay()
 {
     bool repetitionsFinished = (midiArp->currentRepetition == 0);
     parStore->updateDisplay(getFramePtr(), midiArp->nPoints, repetitionsFinished, false);
-    if (parStore->nRepList.at(parStore->activeStore) != midiArp->nRepetitions) {
-        updateNRep(parStore->nRepList.at(parStore->activeStore));
+    if (parStore->nRepList.count() > 0) {
+        if (parStore->nRepList.at(parStore->activeStore) != midiArp->nRepetitions) {
+            updateNRep(parStore->nRepList.at(parStore->activeStore));
+        }
     }
-
     screen->updateDraw();
     midiControl->update();
 

@@ -618,7 +618,9 @@ void LfoWidget::doRestoreParams(int ix)
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
         ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
     }
-    midiLfo->setFramePtr(0);
+    int frame = 0;
+    //int frame = ( midiLfo->reverse ? midiLfo->nPoints : 0);
+    midiLfo->setFramePtr(frame);
 }
 
 void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
@@ -789,12 +791,13 @@ void LfoWidget::updateDisplay()
     if (midiLfo->reverse) {
     repetitionsFinished = (midiLfo->currentRepetition >= midiLfo->nRepetitions - 1);
     }
-    parStore->updateDisplay(getFramePtr()/midiLfo->frameSize, 
-        midiLfo->nPoints/midiLfo->frameSize, repetitionsFinished, midiLfo->reverse);
-    if (parStore->nRepList.at(parStore->activeStore) != midiLfo->nRepetitions) {
-        updateNRep(parStore->nRepList.at(parStore->activeStore));
+    parStore->updateDisplay(getFramePtr(), 
+        midiLfo->nPoints, repetitionsFinished, midiLfo->reverse);
+    if (parStore->nRepList.count() > 0) {
+        if (parStore->nRepList.at(parStore->activeStore) != midiLfo->nRepetitions) {
+            updateNRep(parStore->nRepList.at(parStore->activeStore));
+        }
     }
-
     if (midiLfo->dataChanged) {
         midiLfo->getData(&sdata);
         data = QVector<Sample>::fromStdVector(sdata);
