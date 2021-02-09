@@ -202,7 +202,7 @@ class MidiLfo : public MidiWorker  {
  *
  * @param tick current tick
  */
-    void getNextFrame(int64_t tick);
+    void getNextFrame(int64_t tick) override;
 /*! @brief  toggles the mute state of one point of the
  * MidiLfo::muteMask array.
  *
@@ -229,7 +229,7 @@ class MidiLfo : public MidiWorker  {
  * @param tick The current tick to which the module position should be
  * aligned.
  */
-    void setNextTick(int tick);
+    void setNextTick(uint64_t tick);
 };
 
 #endif

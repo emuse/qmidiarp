@@ -30,6 +30,8 @@ MidiLfoLV2::MidiLfoLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
     :MidiLfo()
 {
+    for (int l1 = 0; l1 < 35; l1++) val[l1] = 0;
+    
     MidiEventID = 0;
     sampleRate = sample_rate;
     curFrame = 0;
@@ -64,10 +66,6 @@ MidiLfoLV2::MidiLfoLV2 (
     for (int i = 0; host_features[i]; ++i) {
         if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
             urid_map = (LV2_URID_Map *) host_features[i]->data;
-            if (urid_map) {
-                MidiEventID = urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
-                break;
-            }
         }
     }
     if (!urid_map) {
@@ -334,7 +332,7 @@ void MidiLfoLV2::updateParams()
     if (recordMode != ((bool)*val[RECORD])) {
         setRecordMode((bool)*val[RECORD]);
     }
-    if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);
+    deferChanges = ((bool)*val[DEFER]);
     if (isMuted != (bool)*val[MUTE] && !parChangesPending) {
         setMuted((bool)(*val[MUTE]));
         changed = true;
@@ -437,7 +435,6 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     if (type == 0) return LV2_STATE_ERR_BAD_TYPE;
 
     size_t size = 0;
-    int l1;
     uint32_t key = uris->hex_mutemask;
     if (!key) return LV2_STATE_ERR_NO_PROPERTY;
 
@@ -449,7 +446,7 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
     pPlugin->setFramePtr(0);
     pPlugin->maxNPoints = (size - 1 ) / 2;
 
-    for (l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
+    for (int l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
         pPlugin->muteMask[l1] = (value1[2 * l1 + 1] == '1');
     }
 

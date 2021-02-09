@@ -126,7 +126,6 @@ private:
         const LV2_Atom_Sequence *outEventBuffer;
 
         int sliderToTickLen(int val) { return (val * TPQN / 64); }
-        int tickLenToSlider(int val) { return (val * 64 / TPQN); }
 };
 
 #endif

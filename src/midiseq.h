@@ -185,7 +185,7 @@ class MidiSeq : public MidiWorker  {
  * @param tick the current tick at which we request a note. This tick will be
  * used to calculate the nextTick which is quantized to the pattern
  */
-    void getNextFrame(int64_t tick);
+    void getNextFrame(int64_t tick) override;
 /*! @brief  toggles the mute state of one point of the
  * MidiSeq::muteMask array.
  *
@@ -211,7 +211,7 @@ class MidiSeq : public MidiWorker  {
  * @param tick The current tick to which the module position should be
  * aligned.
  */
-    void setNextTick(int tick);
+    void setNextTick(uint64_t tick);
 };
 
 #endif

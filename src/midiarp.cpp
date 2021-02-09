@@ -101,7 +101,6 @@ MidiArp::MidiArp()
     nSteps = 1.0;
     len = 0.5;       // note length
     vel = 0.8;  // velocity relative to global velocity
-    noteIndex[0] = 0;
     patternIndex = 0;
     patternLen = 0;
     semitone = 0;
@@ -126,6 +125,25 @@ MidiArp::MidiArp()
     latchBufferCount = 0;
     lastLatchTick = 0;
     trigDelayTicks = 4;
+    
+    returnLength = 0;
+    nextLength = 0;
+    for (int l1 = 0; l1 < MAXCHORD; l1++) {
+        noteIndex[l1] = 0;
+        chordSemitone[l1] = 0;
+        returnVelocity[l1] = 0;
+        returnNote[l1] = 0;
+        nextVelocity[l1] = 0;
+        nextNote[l1] = 0;
+    }
+    for (int l1 = 0; l1 < MAXNOTES; l1++) {
+        for (int l2 = 0; l2 < 4; l2++) notes[0][l2][l1] = 0;
+        for (int l2 = 0; l2 < 4; l2++) notes[1][l2][l1] = 0;
+        sustainBuffer[l1] = 0;
+        latchBuffer[l1] = 0;
+        old_attackfn[l1] = 0.;
+    }
+    
 }
 
 bool MidiArp::handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel)
@@ -371,7 +389,7 @@ void MidiArp::getNote(int64_t *tick, int64_t note[], int velocity[], int *length
         if (c != ' ') {
             if (isdigit(c) || (c == 'p')) {
                 tmpIndex[chordIndex] = c - '0' + noteOfs;
-                if ((chordIndex < MAXNOTES - 1) && chordMode) {
+                if ((chordIndex < MAXCHORD - 1) && chordMode) {
                     chordIndex++;
                     chordSemitone[chordIndex] = semitone;
                 }
@@ -520,7 +538,6 @@ void MidiArp::checkOctaveAtEdge(bool reset)
     }
     
     if (reset) {
-        octOfs = octLow;
         if (octMode == 2) {
             octOfs = octHigh;
             octIncr = -1;
@@ -629,7 +646,7 @@ void MidiArp::getNextFrame(int64_t askedTick)
     returnNote[l1] = -1; // mark end of chord
 }
 
-void MidiArp::foldReleaseTicks(uint64_t tick)
+void MidiArp::foldReleaseTicks(int64_t tick)
 {
     int bufPtr, l2;
 
@@ -681,7 +698,6 @@ std::string MidiArp::stripPattern(const std::string& p_pattern)
 void MidiArp::updatePattern(const std::string& p_pattern)
 {
     int l1;
-    char c;
 
     pattern = p_pattern;
     patternMaxIndex = 0;
@@ -702,7 +718,7 @@ void MidiArp::updatePattern(const std::string& p_pattern)
     // number of points
 
     for (l1 = 0; l1 < patternLen; l1++) {
-        c = pattern[l1];
+        char c = pattern[l1];
 
         if (isdigit(c)) {
             if (!chordindex) {

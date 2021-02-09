@@ -285,7 +285,7 @@ class MidiArp : public MidiWorker  {
  * @param askedTick the current transport position in ticks.
  *
  */
-    void getNextFrame(int64_t askedTick);
+    void getNextFrame(int64_t tick) override;
 /**
  * @brief  resets the pattern index and sets the current
  * timing of the arpeggio to currentTick.
@@ -307,7 +307,7 @@ class MidiArp : public MidiWorker  {
 
  * @param tick The current time position in internal ticks.
  */
-    void foldReleaseTicks(uint64_t tick);
+    void foldReleaseTicks(int64_t tick);
 /**
  * @brief  seeds new random values for the three parameters
  * concerned, timing (tick), velocity and length.

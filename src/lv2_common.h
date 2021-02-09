@@ -25,17 +25,15 @@
 #ifndef LV2_COMMON_H
 #define LV2_COMMON_H
 
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
-#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
-#include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/atom/forge.h"
-#include "lv2/lv2plug.in/ns/ext/midi/midi.h"
-#include "lv2/lv2plug.in/ns/ext/atom/util.h"
-#include "lv2/lv2plug.in/ns/ext/time/time.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-
-#define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
+#include "lv2/ui/ui.h"
+#include "lv2/urid/urid.h"
+#include "lv2/atom/atom.h"
+#include "lv2/atom/forge.h"
+#include "lv2/midi/midi.h"
+#include "lv2/atom/util.h"
+#include "lv2/time/time.h"
+#include "lv2/state/state.h"
+#include "lv2.h"
 
 #define QMIDIARP_LV2_URI "https://git.code.sf.net/p/qmidiarp"
 #define QMIDIARP_LV2_PREFIX QMIDIARP_LV2_URI "#"

@@ -30,6 +30,8 @@ MidiArpLV2::MidiArpLV2 (
     double sample_rate, const LV2_Feature *const *host_features )
     :MidiArp()
 {
+    for (int l1 = 0; l1 < 30; l1++) val[l1] = 0;
+
     MidiEventID = 0;
     sampleRate = sample_rate;
     curFrame = 0;
@@ -47,6 +49,11 @@ MidiArpLV2::MidiArpLV2 (
     trStartingTick = 0;
     transportAtomReceived = false;
 
+    for (int l1 = 0; l1 < JQ_BUFSZ; l1++) {
+        evQueue[l1] = 0;
+        evTickQueue[l1] = 0;
+    }
+
     sendPatternFlag = false;
     ui_up = false;
 
@@ -60,10 +67,6 @@ MidiArpLV2::MidiArpLV2 (
     for (int i = 0; host_features[i]; ++i) {
         if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
             urid_map = (LV2_URID_Map *) host_features[i]->data;
-            if (urid_map) {
-                MidiEventID = urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
-                break;
-            }
         }
     }
     if (!urid_map) {
@@ -344,7 +347,7 @@ void MidiArpLV2::updateParams()
     octHigh     =   (int)*val[OCTAVE_HIGH];
 
 
-    if (deferChanges != ((bool)*val[DEFER])) deferChanges = ((bool)*val[DEFER]);
+    deferChanges = ((bool)*val[DEFER]);
     if (isMuted != (bool)*val[MUTE] && !parChangesPending) setMuted((bool)(*val[MUTE]));
 
     indexIn[0]   =   (int)*val[INDEX_IN1];

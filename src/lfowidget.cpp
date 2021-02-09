@@ -618,8 +618,7 @@ void LfoWidget::doRestoreParams(int ix)
         ccnumberInBox->setValue(parStore->list.at(ix).ccnumberIn);
         ccnumberBox->setValue(parStore->list.at(ix).ccnumber);
     }
-    int frame = 0;
-    //int frame = ( midiLfo->reverse ? midiLfo->nPoints : 0);
+    int frame = ( midiLfo->reverse ? midiLfo->nPoints : 0);
     midiLfo->setFramePtr(frame);
 }
 
