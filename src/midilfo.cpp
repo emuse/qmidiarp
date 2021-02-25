@@ -605,7 +605,7 @@ void MidiLfo::applyPendingParChanges()
     needsGUIUpdate = true;
 }
 
-void MidiLfo::setNextTick(int tick)
+void MidiLfo::setNextTick(uint64_t tick)
 {
     int tickres = TPQN/res;
     int pos = (tick/tickres) % nPoints;

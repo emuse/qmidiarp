@@ -484,7 +484,7 @@ void MidiSeq::applyPendingParChanges()
 
 }
 
-void MidiSeq::setNextTick(int tick)
+void MidiSeq::setNextTick(uint64_t tick)
 {
     int tickres = TPQN/res;
     int pos = (tick/tickres) % nPoints;
