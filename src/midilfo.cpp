@@ -50,7 +50,6 @@ MidiLfo::MidiLfo()
     
     Sample sample;
     sample.value = 63;
-    sample.tick = 0;
     for (int l1 = 0; l1 < wavesize; l1++) {
         sample.tick =  l1 * TPQN / res;;
         sample.muted = false;
@@ -528,13 +527,15 @@ int MidiLfo::setMutePoint(double mouseX, bool on)
 
 void MidiLfo::setFramePtr(int idx)
 {
+
     framePtr = idx;
-    if (!idx) {
+    if (!idx || idx == nPoints) {
         reverse = curLoopMode&1;
         seqFinished = (enableNoteOff && !noteCount);
         restartFlag = false;
         if (reverse) framePtr = res * size - 1;
     }
+    
 }
 
 void MidiLfo::setRecordMode(bool on)
@@ -605,16 +606,15 @@ void MidiLfo::applyPendingParChanges()
     needsGUIUpdate = true;
 }
 
-void MidiLfo::setNextTick(int tick)
+void MidiLfo::setNextTick(uint64_t tick)
 {
-    int tickres = TPQN/res;
-    int pos = (tick/tickres) % nPoints;
+    int pos = (tick * res / TPQN) % nPoints;
 
     reverse = false;
-    if (pingpong) reverse = (((tick/tickres) / nPoints) % 2);
+    if (pingpong) reverse = ((tick * res / TPQN / nPoints) % 2);
 
     if (backward) reverse = !reverse;
-    if (reverse) pos = nPoints - pos;
+    if (reverse) pos = nPoints - pos - 1;
 
     setFramePtr(pos);
     nextTick = tick;
