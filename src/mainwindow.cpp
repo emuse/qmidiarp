@@ -858,6 +858,10 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
                     }
                 else if (xml.name() == "forwardPort")
                     prefsWidget->setPortUnmatched(xml.readElementText().toInt());
+                else if (xml.name() == "outputMidiClock")
+                    prefsWidget->setOutputMidiClock(xml.readElementText().toInt());
+                else if (xml.name() == "midiClockPort")
+                    prefsWidget->setPortMidiClock(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
@@ -1024,6 +1028,10 @@ bool MainWindow::saveFile()
                 QString::number((int)prefsWidget->forwardCheck->isChecked()));
             xml.writeTextElement("forwardPort",
                 QString::number(prefsWidget->portUnmatchedSpin->currentIndex()));
+            xml.writeTextElement("outputMidiClock",
+                QString::number((int)prefsWidget->outputMidiClockCheck->isChecked()));
+            xml.writeTextElement("midiClockPort",
+                QString::number(prefsWidget->portMidiClockSpin->currentIndex()));
             xml.writeTextElement("storeMuteState",
                 QString::number(prefsWidget->storeMuteStateCheck->isChecked()));
         xml.writeEndElement();

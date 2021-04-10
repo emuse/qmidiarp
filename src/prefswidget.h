@@ -50,9 +50,11 @@ class PrefsWidget : public QDialog
     ~PrefsWidget();
     void setForward(bool on);
     void setPortUnmatched(int id);
+    void setOutputMidiClock(bool on);
+    void setPortMidiClock(int id);
     QCheckBox *cbuttonCheck, *compactStyleCheck, *mutedAddCheck;
-    QCheckBox *forwardCheck, *storeMuteStateCheck;
-    QComboBox *portUnmatchedSpin;
+    QCheckBox *forwardCheck, *storeMuteStateCheck, *outputMidiClockCheck;
+    QComboBox *portUnmatchedSpin, *portMidiClockSpin;
     bool isModified() { return modified;};
     void setModified(bool on) { modified = on; };
 
@@ -66,6 +68,8 @@ class PrefsWidget : public QDialog
     void updateCompactStyle(bool);
     void updateMutedAdd(bool);
     void updateStoreMuteState(bool);
+    void updateOutputMidiClock(bool on);
+    void updatePortMidiClock(int);
 };
 
 #endif

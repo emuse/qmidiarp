@@ -40,7 +40,9 @@ public:
 
     bool useMidiClock, useJackSync;
     bool forwardUnmatched, queueStatus;
+    bool outputMidiClock;
     int portUnmatched;
+    int portMidiClock;
     QString jsFilename;
     uint64_t trStartingTick;
     uint64_t trLoopingTick;
@@ -76,6 +78,16 @@ public:
     virtual void setUseMidiClock(bool on)
     {
         useMidiClock = on;
+    }
+
+    virtual void setOutputMidiClock(bool on)
+    {
+        outputMidiClock = on;
+    }
+
+    virtual void setPortMidiClock(int id)
+    {
+        portMidiClock = id;
     }
 
     virtual void setForwardUnmatched(bool on)
@@ -133,6 +145,8 @@ protected:
     useJackSync = false;
     queueStatus = false;
     useMidiClock = false;
+    outputMidiClock = false;
+    portMidiClock = 0;
     }
 
     uint64_t tickToBackendOffset(unsigned int tick)
@@ -163,6 +177,17 @@ protected:
     void tick_callback(bool echo_from_trig)
     {
         m_tick_callback(m_callback_context, echo_from_trig);
+    }
+
+    /*! @brief Convenience function for creating a new MidiEvent struct */
+    MidiEvent mkMidiEvent(int type, int channel=0, int data=0, int value=0)
+    {
+        MidiEvent ev;
+        ev.type = type;
+        ev.channel = channel;
+        ev.data = data;
+        ev.value = value;
+        return ev;
     }
 
     bool (* m_midi_event_received_callback)(void * context, MidiEvent ev);

@@ -76,7 +76,7 @@ class SeqDriver : public DriverBase {
         const snd_seq_real_time_t* deltaToATime(double curtime);
         snd_seq_remove_events_t *remove_ev;
         void calcMidiClockTempo(double realtime);
-
+        void sendMidiClock();
         void initTempo();
         bool callJack(int portcount, const QString & clientname=PACKAGE);
 
@@ -86,6 +86,8 @@ class SeqDriver : public DriverBase {
         uint64_t midiTick;
         uint64_t lastRatioTick;
         uint64_t midiTempoRefreshTick;
+        uint64_t nextMidiClockTick;
+        uint64_t clockStartOffsetTick;
         uint64_t lastSchedTick;
         uint64_t tempoChangeTick;
         uint64_t tempoChangeFrame;

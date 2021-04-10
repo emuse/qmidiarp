@@ -40,5 +40,7 @@ class Prefs {
     bool storeMuteState;
     bool mutedAdd;
     bool midiControllable;
+    bool outputMidiClock;
+    int portMidiClock;
 };
 #endif

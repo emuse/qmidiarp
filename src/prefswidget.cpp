@@ -72,6 +72,26 @@ PrefsWidget::PrefsWidget(Engine *p_engine, Prefs *p_prefs, QWidget *parent)
     QObject::connect(storeMuteStateCheck, SIGNAL(toggled(bool)), this,
             SLOT(updateStoreMuteState(bool)));
 
+    outputMidiClockCheck = new QCheckBox(this);
+    outputMidiClockCheck->setText(tr("&Output MIDI Clock to port"));
+    outputMidiClockCheck->setChecked(false);
+    QObject::connect(outputMidiClockCheck, SIGNAL(toggled(bool)), this,
+            SLOT(updateOutputMidiClock(bool)));
+    if (!(engine->alsaMidi)) outputMidiClockCheck->setEnabled(false);
+
+    portMidiClockSpin = new QComboBox(this);
+    portMidiClockSpin->setDisabled(true);
+    for (l1 = 0; l1 < p_prefs->portCount; l1++) portMidiClockSpin->addItem(QString::number(l1 + 1));
+    QObject::connect(portMidiClockSpin, SIGNAL(activated(int)), this,
+            SLOT(updatePortMidiClock(int)));
+    if (!(engine->alsaMidi)) portMidiClockSpin->setEnabled(false);
+
+    QHBoxLayout *portMidiClockLayout = new QHBoxLayout;
+    portMidiClockLayout->addWidget(outputMidiClockCheck);
+    portMidiClockLayout->addStretch(1);
+    portMidiClockLayout->addWidget(portMidiClockSpin);
+    if (!(engine->alsaMidi)) portMidiClockSpin->setEnabled(false);
+
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close);
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -83,6 +103,7 @@ PrefsWidget::PrefsWidget(Engine *p_engine, Prefs *p_prefs, QWidget *parent)
     prefsWidgetLayout->addWidget(compactStyleCheck);
     prefsWidgetLayout->addWidget(mutedAddCheck);
     prefsWidgetLayout->addWidget(storeMuteStateCheck);
+    prefsWidgetLayout->addLayout(portMidiClockLayout);
     prefsWidgetLayout->addWidget(buttonBox);
     prefsWidgetLayout->addStretch();
 
@@ -144,3 +165,31 @@ void PrefsWidget::updateMutedAdd(bool on)
 {
     prefs->mutedAdd = on;
 }
+
+void PrefsWidget::updateOutputMidiClock(bool on)
+{
+    engine->driver->setOutputMidiClock(on);
+    portMidiClockSpin->setDisabled(!on);
+    modified = true;
+}
+
+void PrefsWidget::updatePortMidiClock(int id)
+{
+    engine->driver->setPortMidiClock(id);
+    prefs->portMidiClock = id;
+    modified = true;
+}
+
+void PrefsWidget::setOutputMidiClock(bool on)
+{
+    outputMidiClockCheck->setChecked(on);
+    prefs->outputMidiClock = on;
+}
+
+void PrefsWidget::setPortMidiClock(int id)
+{
+    portMidiClockSpin->setCurrentIndex(id);
+    prefs->portMidiClock = id;
+    updatePortMidiClock(id);
+}
+

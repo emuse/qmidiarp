@@ -33,4 +33,6 @@ Prefs::Prefs()
     storeMuteState = false;
     mutedAdd = false;
     midiControllable = true;
+    outputMidiClock = false;
+    portMidiClock = 0;
 }

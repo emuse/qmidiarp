@@ -100,7 +100,13 @@ SeqDriver::SeqDriver(
     tempoChangeFrame = 0;
     initTempo();
     tempoChangeTime = 0;
-
+    useMidiClock = false;
+    
+    outputMidiClock = false;
+    portMidiClock = 0;
+    
+    nextMidiClockTick = 0;
+    clockStartOffsetTick = 0;    
     threadAbort = false;
     start(Priority(6));
 }
@@ -120,7 +126,6 @@ void SeqDriver::run()
     snd_seq_event_t *evIn;
     bool unmatched = true;
     double tmpTime = 0;
-    MidiEvent inEv;
     int pollr = 0;
 
     int nfds;
@@ -138,11 +143,8 @@ void SeqDriver::run()
             tmpTime = getCurrentTime();
 
             snd_seq_event_input(seq_handle, &evIn);
-
-            inEv.type = evIn->type;
-            inEv.data = evIn->data.note.note;
-            inEv.channel = 0;
-            inEv.value = 0;
+            
+            MidiEvent inEv = mkMidiEvent(evIn->type, evIn->data.note.note);
 
             if ((inEv.type == EV_CLOCK)&& useMidiClock) {
                 m_current_tick = midiTick * TPQN / MIDICLK_TPQN;
@@ -158,8 +160,9 @@ void SeqDriver::run()
                 midiTick++;
             }
             if (((inEv.type == EV_ECHO) || startQueue) && queueStatus) {
-                startQueue = false;
                 calcCurrentTick(tmpTime);
+                sendMidiClock();
+                startQueue = false;
                 tick_callback((inEv.data));
             }
             else {
@@ -192,6 +195,24 @@ void SeqDriver::run()
     }
 }
 
+void SeqDriver::sendMidiClock() 
+{
+    if (not outputMidiClock) return;
+    
+    if (startQueue) {
+        clockStartOffsetTick = m_current_tick % (TPQN/MIDICLK_TPQN);
+        sendMidiEvent(mkMidiEvent(EV_START), m_current_tick, portMidiClock, 0);
+    }
+        
+    if (m_current_tick >= nextMidiClockTick) {
+        uint64_t evtick = (uint64_t)(m_current_tick/(TPQN/MIDICLK_TPQN)) * TPQN/MIDICLK_TPQN;
+        evtick += clockStartOffsetTick;
+        sendMidiEvent(mkMidiEvent(EV_CLOCK), evtick, portMidiClock, 0);
+        nextMidiClockTick = evtick + TPQN / MIDICLK_TPQN ;
+        requestEchoAt(nextMidiClockTick, false);
+    }
+}
+
 void SeqDriver::calcCurrentTick(double tmpTime) {
 
     if (useJackSync) {
@@ -201,7 +222,6 @@ void SeqDriver::calcCurrentTick(double tmpTime) {
         m_current_tick = (uint64_t)(jPos.frame - tempoChangeFrame) * TPQN  * tempo
                 / jPos.frame_rate / 60.
                 + tempoChangeTick;
-
         tmpTime = tickToDelta(m_current_tick);
         snd_seq_event_t ev;
         snd_seq_ev_clear(&ev);
@@ -319,6 +339,7 @@ void SeqDriver::setTransportStatus(bool run)
         tempoChangeTick = 0;
         tempoChangeTime = 0;
         tempoChangeFrame = 0;
+        nextMidiClockTick = 0;
         if (useJackSync)
             trStartingTick = jackSync->trStartingTick;
         else
@@ -330,6 +351,10 @@ void SeqDriver::setTransportStatus(bool run)
     }
     else {
         queueStatus = false;
+        if (outputMidiClock) {
+            sendMidiEvent(mkMidiEvent(EV_STOP), m_current_tick, portMidiClock, 0);
+        }
+        
         snd_seq_remove_events_set_queue(remove_ev, queue_id);
         snd_seq_remove_events_set_condition(remove_ev,
                 SND_SEQ_REMOVE_OUTPUT | SND_SEQ_REMOVE_IGNORE_OFF);

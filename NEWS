@@ -1,9 +1,11 @@
-qmidiarp-0.6.6 (2020-12-??)
+qmidiarp-0.6.6 (2021-??-??)
 
 New Features
   o LFO: New control for phase of calculated waveforms (Matthew McGuire)
   o Global Store: Added Loop count property to storage locations. This
     is accessible via the context menu of each location button
+  o ALSA MIDI: Sending MIDI Clock to a specified ALSA port is now 
+               available as a new preferences option
 
 Improvements
   o LFO and SEQ: More size and resolution values including odd values
@@ -15,6 +17,7 @@ Improvements
   o SEQ: Improved display of loop marker
   o SEQ: Increased lower octave transpose range
   o Global Store: Preferences option to choose whether to store mute states
+  o LV2: a X11 plugin UI interface is now available
 
 Fixed Bugs:
   o Regression: Arp strayed in notes with zero velocity
