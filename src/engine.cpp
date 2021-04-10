@@ -73,6 +73,8 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget,
     }
 #endif
 
+    alsaMidi = p_alsamidi;
+    alsaSyncTol = 2;
     midiLearnFlag = false;
     midiControllable = true;
     grooveTick = 0;
@@ -455,6 +457,7 @@ void Engine::tick_callback(void * context, bool echo_from_trig)
 void Engine::echoCallback(bool echo_from_trig)
 {
     int l1, l2;
+    int tol = alsaSyncTol;
     int tick = driver->getCurrentTick();
     int length;
     int outport;
@@ -470,11 +473,11 @@ void Engine::echoCallback(bool echo_from_trig)
 
     //LFO data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if ((tick + 8) >= nextMinLfoTick && midiLfoCount()) {
+    if ((tick + tol) >= nextMinLfoTick && midiLfoCount()) {
         for (l1 = 0; l1 < midiLfoCount(); l1++) {
             if ((echo_from_trig && midiLfo(l1)->gotKbdTrig)
                     || (!midiLfo(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + 8) >= midiLfo(l1)->nextTick) {
+                if ((tick + tol) >= midiLfo(l1)->nextTick) {
                     lfoWidget(l1)->updateCursorPos();
                     lfoWidget(l1)->updateIndicators();
                     midiLfo(l1)->getNextFrame(tick);
@@ -504,11 +507,11 @@ void Engine::echoCallback(bool echo_from_trig)
 
     //Seq notes data request and queueing
     //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if ((tick + 8) >= nextMinSeqTick && midiSeqCount()) {
+    if ((tick + tol) >= nextMinSeqTick && midiSeqCount()) {
         for (l1 = 0; l1 < midiSeqCount(); l1++) {
             if ((echo_from_trig && midiSeq(l1)->gotKbdTrig)
                     || (!midiSeq(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + 8) >= midiSeq(l1)->nextTick) {
+                if ((tick + tol) >= midiSeq(l1)->nextTick) {
                     seqWidget(l1)->updateCursorPos();
                     seqWidget(l1)->updateIndicators();
                     midiSeq(l1)->getNextFrame(tick);
@@ -533,11 +536,11 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 
     //Arp Note queueing
-    if ((tick + 8) >= nextMinArpTick) {
+    if ((tick + tol) >= nextMinArpTick) {
         for (l1 = 0; l1 < midiArpCount(); l1++) {
             if ((echo_from_trig && midiArp(l1)->gotKbdTrig)
                     || (!midiArp(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + 8) >= midiArp(l1)->nextTick) {
+                if ((tick + tol) >= midiArp(l1)->nextTick) {
                     arpWidget(l1)->updateCursorPos();
                     arpWidget(l1)->updateIndicators();
                     midiArp(l1)->getNextFrame(tick + schedDelayTicks);
@@ -781,6 +784,11 @@ void Engine::setMidiControllable(bool on)
 
 void Engine::setUseMidiClock(bool on)
 {
+    if (alsaMidi and on)
+        alsaSyncTol = 3000;
+    else
+        alsaSyncTol = 2;
+    
     setStatus(false);
     driver->setUseMidiClock(on);
     useMidiClock = on;
@@ -789,6 +797,11 @@ void Engine::setUseMidiClock(bool on)
 
 void Engine::setUseJackTransport(bool on)
 {
+    if (alsaMidi and on)
+        alsaSyncTol = 1000;
+    else
+        alsaSyncTol = 2;
+    
     driver->setUseJackTransport(on);
     modified = true;
 }

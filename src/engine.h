@@ -94,6 +94,7 @@ class Engine : public QObject  {
     int midiLearnID, midiLearnWindowID, midiLearnModuleID;
     bool midiLearnFlag;
     bool useMidiClock;
+    int alsaSyncTol; /**< Tolerance in ticks set when synching alsa to jack */
 
     int restoreRequest;
     int64_t restoreTick;
@@ -137,6 +138,7 @@ class Engine : public QObject  {
     ~Engine();
     int getPortCount();
     bool isModified();
+    bool alsaMidi; /**< True when using alsa MIDI driver */
 
 
     void addModuleWindow(QDockWidget *moduleWindow);
