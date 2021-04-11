@@ -98,12 +98,28 @@ PrefsWidget::PrefsWidget(Engine *p_engine, Prefs *p_prefs, QWidget *parent)
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     QVBoxLayout *prefsWidgetLayout = new QVBoxLayout;
-    prefsWidgetLayout->addLayout(portBoxLayout);
-    prefsWidgetLayout->addWidget(cbuttonCheck);
-    prefsWidgetLayout->addWidget(compactStyleCheck);
-    prefsWidgetLayout->addWidget(mutedAddCheck);
-    prefsWidgetLayout->addWidget(storeMuteStateCheck);
-    prefsWidgetLayout->addLayout(portMidiClockLayout);
+
+    QVBoxLayout *midiBoxLayout = new QVBoxLayout(this);
+    midiBoxLayout->addLayout(portBoxLayout);
+    midiBoxLayout->addLayout(portMidiClockLayout);
+    midiBoxLayout->addWidget(cbuttonCheck);
+    QGroupBox *midiBox = new QGroupBox(tr("Midi"), this);
+    midiBox->setLayout(midiBoxLayout);
+    
+    QVBoxLayout *dispBoxLayout = new QVBoxLayout(this);
+    dispBoxLayout->addWidget(compactStyleCheck);
+    QGroupBox *dispBox = new QGroupBox(tr("Display"), this);
+    dispBox->setLayout(dispBoxLayout);
+
+    QVBoxLayout *modBoxLayout = new QVBoxLayout(this);
+    modBoxLayout->addWidget(mutedAddCheck);
+    modBoxLayout->addWidget(storeMuteStateCheck);
+    QGroupBox *modBox = new QGroupBox(tr("Modules"), this);
+    modBox->setLayout(modBoxLayout);
+
+    prefsWidgetLayout->addWidget(midiBox);
+    prefsWidgetLayout->addWidget(dispBox);
+    prefsWidgetLayout->addWidget(modBox);
     prefsWidgetLayout->addWidget(buttonBox);
     prefsWidgetLayout->addStretch();
 
