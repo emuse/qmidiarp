@@ -25,6 +25,7 @@
 #ifndef LV2_COMMON_H
 #define LV2_COMMON_H
 
+#define LV2_MIDI_EVENT_URI "http://lv2plug.in/ns/ext/midi#MidiEvent"
 #include "lv2/ui/ui.h"
 #include "lv2/urid/urid.h"
 #include "lv2/atom/atom.h"

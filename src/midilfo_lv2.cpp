@@ -66,6 +66,10 @@ MidiLfoLV2::MidiLfoLV2 (
     for (int i = 0; host_features[i]; ++i) {
         if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
             urid_map = (LV2_URID_Map *) host_features[i]->data;
+            if (urid_map) {
+                MidiEventID = urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
+                break;
+            }
         }
     }
     if (!urid_map) {
