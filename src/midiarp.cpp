@@ -84,6 +84,7 @@ MidiArp::MidiArp()
         qWarning("seq: %d (after update)", rdata->foo);
     }
 */
+    int latchDelayMsec = 50;
     noteBufPtr = 0;
     releaseNoteCount = 0;
     purgeReleaseFlag = false;
@@ -124,6 +125,7 @@ MidiArp::MidiArp()
     latch_mode = false;
     latchBufferCount = 0;
     lastLatchTick = 0;
+    latchDelayTicks = latchDelayMsec * TPQN / 1000;
     trigDelayTicks = 4;
     
     returnLength = 0;
@@ -146,7 +148,7 @@ MidiArp::MidiArp()
     
 }
 
-bool MidiArp::handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel)
+bool MidiArp::handleEvent(MidiEvent inEv, int64_t tick, int keep_rel)
 {
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && 
@@ -202,7 +204,7 @@ bool MidiArp::handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel)
             latchBuffer[latchBufferCount] = inEv.data;
             latchBufferCount++;
             if (latchBufferCount != noteCount) {
-                if ((uint64_t)tick > (uint64_t)(lastLatchTick + 30) 
+                if ((uint64_t)tick > (uint64_t)(lastLatchTick + latchDelayTicks) 
                     && (latchBufferCount > 1)) purgeLatchBuffer(tick);
                 lastLatchTick = tick;
             }

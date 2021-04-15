@@ -113,7 +113,6 @@ private:
         void updateParams();
         void forgeMidiEvent(uint32_t f, const uint8_t* const buffer, uint32_t size);
 
-        uint32_t MidiEventID;
         uint64_t transportFramesDelta;  /**< Frames since last click start */
         float transportBpm;
         float transportSpeed;

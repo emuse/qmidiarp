@@ -105,9 +105,7 @@ class Engine : public QObject  {
 
     //From SeqDriver
     int schedDelayTicks;
-    int nextMinLfoTick;
-    int nextMinSeqTick;
-    int nextMinArpTick;
+    int nextMinTick;
     int currentTick;
     int requestTick;
     bool sendLogEvents;
@@ -414,6 +412,16 @@ class Engine : public QObject  {
 */
     void updateGlobRestoreTimeModule(int windowIndex);
 
+/*! @brief Convenience function for creating a new MidiEvent struct */
+    MidiEvent mkMidiEvent(int type, int channel=0, int data=0, int value=0)
+    {
+        MidiEvent ev;
+        ev.type = type;
+        ev.channel = channel;
+        ev.data = data;
+        ev.value = value;
+        return ev;
+    }
 };
 
 #endif

@@ -86,15 +86,8 @@ class MidiSeq : public MidiWorker  {
     void updateDispVert(int mode);
 
     void recordNote(int note);
-/**
- * @brief  does the actions related to a newly received note.
- *
- * It is called by Engine when a new note is received on the MIDI input port.
 
- * @param inEv MidiEvent to check and process or not
- * @param tick The time the note was received in internal ticks
- */
-    bool handleEvent(MidiEvent inEv, int tick);
+    bool handleEvent(MidiEvent inEv, int64_t tick, int keep_rel = 0) override;
 /*! @brief  sets the (controller) value of one point of the
  * MidiSeq::customWave array. It is used for handling drawing functionality.
  *
@@ -204,14 +197,8 @@ class MidiSeq : public MidiWorker  {
  * them if so
  */
     void applyPendingParChanges();
-/**
- * @brief sets MidiSeq::nextTick and MidiSeq::framePtr position
- * according to the specified tick.
- *
- * @param tick The current tick to which the module position should be
- * aligned.
- */
-    void setNextTick(uint64_t tick);
+    
+    void setNextTick(uint64_t tick) override;
 };
 
 #endif

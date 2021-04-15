@@ -94,9 +94,7 @@ Engine::Engine(GlobStore *p_globStore, GrooveWidget *p_grooveWidget,
     restoreTick = -1;
     schedRestoreLocation = -1;
 
-    nextMinArpTick = 0;
-    nextMinLfoTick = 0;
-    nextMinSeqTick = 0;
+    nextMinTick = 0;
     resetTicks(0);
     dispTimer = new MTimer();
     connect(dispTimer, SIGNAL(timeout()), this, SLOT(updateDisplay()));
@@ -462,114 +460,73 @@ void Engine::echoCallback(bool echo_from_trig)
     int length;
     int outport;
     bool restoreFlag = (restoreRequest >= 0);
-    MidiEvent outEv;
-
+    
     currentTick = tick;
 
         //~ printf("       tick %d     ",tick);
-        //~ printf("nextMinLfoTick %d  ",nextMinLfoTick);
-        //~ printf("nextMinSeqTick %d  ",nextMinSeqTick);
-        //~ printf("nextMinArpTick %d  \n",nextMinArpTick);
-
+        //~ printf("nextMinTick %d  ",nextMinTick);
+    
     //LFO data request and queueing
-    //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if ((tick + tol) >= nextMinLfoTick && midiLfoCount()) {
-        for (l1 = 0; l1 < midiLfoCount(); l1++) {
-            if ((echo_from_trig && midiLfo(l1)->gotKbdTrig)
-                    || (!midiLfo(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + tol) >= midiLfo(l1)->nextTick) {
-                    lfoWidget(l1)->updateCursorPos();
-                    lfoWidget(l1)->updateIndicators();
-                    midiLfo(l1)->getNextFrame(tick);
-                    lfoWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
-                    outEv.type = EV_CONTROLLER;
-                    outEv.data = midiLfo(l1)->ccnumber;
-                    outEv.channel = midiLfo(l1)->channelOut;
-                    outport = midiLfo(l1)->portOut;
-                    l2 = 0;
-                    while (midiLfo(l1)->frame.at(l2).value > -1) {
-                        if (!midiLfo(l1)->frame.at(l2).muted && !midiLfo(l1)->isMuted) {
-                            outEv.value = midiLfo(l1)->frame.at(l2).value;
-                            driver->sendMidiEvent(outEv, midiLfo(l1)->frame.at(l2).tick
-                                , outport);
-                        }
-                        l2++;
-                    }
+    for (l1 = 0; l1 < midiLfoCount(); l1++) {
+        if (lfoWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick, 
+                                       &restoreTick, &restoreFlag)) {
+            MidiEvent outEv = mkMidiEvent(EV_CONTROLLER, midiLfo(l1)->channelOut, 
+                                        midiLfo(l1)->ccnumber);
+            outport = midiLfo(l1)->portOut;
+            l2 = 0;
+            while (midiLfo(l1)->frame.at(l2).value > -1) {
+                if (!midiLfo(l1)->frame.at(l2).muted && !midiLfo(l1)->isMuted) {
+                    outEv.value = midiLfo(l1)->frame.at(l2).value;
+                    driver->sendMidiEvent(outEv, midiLfo(l1)->frame.at(l2).tick
+                        , outport);
                 }
+                l2++;
             }
-            if (!l1)
-                nextMinLfoTick = midiLfo(l1)->nextTick - schedDelayTicks;
-            else if (midiLfo(l1)->nextTick < nextMinLfoTick + schedDelayTicks)
-                nextMinLfoTick = midiLfo(l1)->nextTick - schedDelayTicks;
         }
-        driver->requestEchoAt(nextMinLfoTick, 0);
     }
 
     //Seq notes data request and queueing
-    //add 8 ticks to startoff condition to cope with initial sync imperfections
-    if ((tick + tol) >= nextMinSeqTick && midiSeqCount()) {
-        for (l1 = 0; l1 < midiSeqCount(); l1++) {
-            if ((echo_from_trig && midiSeq(l1)->gotKbdTrig)
-                    || (!midiSeq(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + tol) >= midiSeq(l1)->nextTick) {
-                    seqWidget(l1)->updateCursorPos();
-                    seqWidget(l1)->updateIndicators();
-                    midiSeq(l1)->getNextFrame(tick);
-                    seqWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
-                    outEv.type = EV_NOTEON;
-                    outEv.value = midiSeq(l1)->vel;
-                    outEv.channel = midiSeq(l1)->channelOut;
-                    length = midiSeq(l1)->notelength;
-                    outport = midiSeq(l1)->portOut;
-                    if ((!midiSeq(l1)->isMuted) && (!midiSeq(l1)->returnNote.muted)) {
-                        outEv.data = midiSeq(l1)->returnNote.value;
-                        driver->sendMidiEvent(outEv, midiSeq(l1)->returnNote.tick, outport, length);
-                    }
-                }
+    for (l1 = 0; l1 < midiSeqCount(); l1++) {
+        if (seqWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick, 
+                                       &restoreTick, &restoreFlag)) {
+            MidiEvent outEv = mkMidiEvent(EV_NOTEON, midiSeq(l1)->channelOut, 0,
+                                        midiSeq(l1)->vel);
+            length = midiSeq(l1)->notelength;
+            outport = midiSeq(l1)->portOut;
+            if ((!midiSeq(l1)->isMuted) && (!midiSeq(l1)->returnNote.muted)) {
+                outEv.data = midiSeq(l1)->returnNote.value;
+                driver->sendMidiEvent(outEv, midiSeq(l1)->returnNote.tick, outport, length);
             }
-            if (!l1)
-                nextMinSeqTick = midiSeq(l1)->nextTick - schedDelayTicks;
-            else if (midiSeq(l1)->nextTick < nextMinSeqTick + schedDelayTicks)
-                nextMinSeqTick = midiSeq(l1)->nextTick - schedDelayTicks;
         }
-        driver->requestEchoAt(nextMinSeqTick, 0);
     }
 
     //Arp Note queueing
-    if ((tick + tol) >= nextMinArpTick) {
-        for (l1 = 0; l1 < midiArpCount(); l1++) {
-            if ((echo_from_trig && midiArp(l1)->gotKbdTrig)
-                    || (!midiArp(l1)->gotKbdTrig && !echo_from_trig)) {
-                if ((tick + tol) >= midiArp(l1)->nextTick) {
-                    arpWidget(l1)->updateCursorPos();
-                    arpWidget(l1)->updateIndicators();
-                    midiArp(l1)->getNextFrame(tick + schedDelayTicks);
-                    arpWidget(l1)->checkIfRestore(&restoreTick, &restoreFlag);
-                    outEv.type = EV_NOTEON;
-                    outEv.channel = midiArp(l1)->channelOut;
-                    length = midiArp(l1)->returnLength * 4;
-                    int note_tick = midiArp(l1)->returnTick;
-                    outport = midiArp(l1)->portOut;
-                    if (midiArp(l1)->hasNewNotes && midiArp(l1)->returnVelocity[0]) {
-                        l2 = 0;
-                        while(midiArp(l1)->returnNote[l2] >= 0) {
-                            outEv.data = midiArp(l1)->returnNote[l2];
-                            outEv.value = midiArp(l1)->returnVelocity[l2];
-                            driver->sendMidiEvent(outEv, note_tick, outport, length);
-                            l2++;
-                        }
-                    }
+    for (l1 = 0; l1 < midiArpCount(); l1++) {
+        if (arpWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick + schedDelayTicks, 
+                                       &restoreTick, &restoreFlag)) {
+            MidiEvent outEv = mkMidiEvent(EV_NOTEON, midiArp(l1)->channelOut);
+            length = midiArp(l1)->returnLength * 4;
+            int note_tick = midiArp(l1)->returnTick;
+            outport = midiArp(l1)->portOut;
+            if (midiArp(l1)->hasNewNotes && midiArp(l1)->returnVelocity[0]) {
+                l2 = 0;
+                while(midiArp(l1)->returnNote[l2] >= 0) {
+                    outEv.data = midiArp(l1)->returnNote[l2];
+                    outEv.value = midiArp(l1)->returnVelocity[l2];
+                    driver->sendMidiEvent(outEv, note_tick, outport, length);
+                    l2++;
                 }
             }
-            if (!l1)
-                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
-            else if (midiArp(l1)->nextTick < nextMinArpTick + schedDelayTicks)
-                nextMinArpTick = midiArp(l1)->nextTick - schedDelayTicks;
         }
-
-        if (0 > nextMinArpTick) nextMinArpTick = 0;
-        if (midiArpCount()) driver->requestEchoAt(nextMinArpTick, 0);
     }
+    
+    //Calculate timing of next echo to be requested (minimum of all modules)
+    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
+        int64_t nt = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker->nextTick - schedDelayTicks;
+        if (nt < nextMinTick + schedDelayTicks || !l1) nextMinTick = nt;            
+    }
+    if (nextMinTick < 0) nextMinTick = 0;
+    if (moduleWindowCount()) driver->requestEchoAt(nextMinTick, 0);
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
         int percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
@@ -577,9 +534,7 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 
     if ((restoreTick > -1)
-        && (!midiArpCount() || (nextMinArpTick + schedDelayTicks >= restoreTick))
-        && (!midiLfoCount() || (nextMinLfoTick + schedDelayTicks >= restoreTick))
-        && (!midiSeqCount() || (nextMinSeqTick + schedDelayTicks >= restoreTick))) {
+        && (!moduleWindowCount() || (nextMinTick + schedDelayTicks >= restoreTick))) {
         restoreTick = -1;
         // TODO: At term the following should be restore() instead of
         // schedRestore(). restore is not yet fit for realtime. But
@@ -636,36 +591,18 @@ bool Engine::eventCallback(MidiEvent inEv)
             midiLearnFlag = false;
         }
     }
-    for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        unmatched = midiLfo(l1)->handleEvent(inEv, tick);
-        if (midiLfo(l1)->gotKbdTrig) {
-            nextMinLfoTick = midiLfo(l1)->nextTick;
-            no_collision = driver->requestEchoAt(nextMinLfoTick, true);
-            if (!no_collision) midiLfo(l1)->gotKbdTrig = false;
-        }
-    }
-    for (l1 = 0; l1 < midiSeqCount(); l1++) {
-        unmatched = midiSeq(l1)->handleEvent(inEv, tick);
-        if (midiSeq(l1)->gotKbdTrig) {
-            nextMinSeqTick = midiSeq(l1)->nextTick;
-            no_collision = driver->requestEchoAt(nextMinSeqTick, true);
-            if (!no_collision) midiSeq(l1)->gotKbdTrig = false;
-        }
-    }
-    for (l1 = 0; l1 < midiArpCount(); l1++) {
-        /* In case transport is stopped we cause note off events
-         * to remove the note from the buffer (ignoring the Release 
-         * time */
-        if (!status) {
-            unmatched = midiArp(l1)->handleEvent(inEv, tick, 0);
+    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
+        MidiWorker *midiWorker = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker;
+        if (status && moduleWindow(l1)->objectName().startsWith("Arp:")) {
+            unmatched = midiWorker->handleEvent(inEv, tick, 1);
         }
         else {
-            unmatched = midiArp(l1)->handleEvent(inEv, tick, 1);
+            unmatched = midiWorker->handleEvent(inEv, tick);
         }
-        if (midiArp(l1)->gotKbdTrig) {
-            nextMinArpTick = midiArp(l1)->nextTick;
-            no_collision = driver->requestEchoAt(nextMinArpTick, true);
-            if (!no_collision) midiArp(l1)->gotKbdTrig = false;
+        if (midiWorker->gotKbdTrig) {
+            nextMinTick = midiWorker->nextTick;
+            no_collision = driver->requestEchoAt(nextMinTick, true);
+            if (!no_collision) midiWorker->gotKbdTrig = false;
         }
     }
 
@@ -751,28 +688,15 @@ void Engine::handleController(int ccnumber, int channel, int value)
 
 void Engine::resetTicks(int curtick)
 {
-    int l1;
-
-    for (l1 = 0; l1 < midiArpCount(); l1++) {
-        midiArp(l1)->foldReleaseTicks(driver->trStartingTick - curtick);
-        midiArp(l1)->setNextTick(curtick);
-        if (!l1) nextMinArpTick = midiArp(l1)->nextTick;
-        if (midiArp(l1)->nextTick < nextMinArpTick)
-            nextMinArpTick=midiArp(l1)->nextTick;
-    }
-
-    for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        midiLfo(l1)->setNextTick(curtick);
-        if (!l1) nextMinLfoTick = midiLfo(l1)->nextTick;
-        if (midiLfo(l1)->nextTick < nextMinLfoTick)
-            nextMinLfoTick=midiLfo(l1)->nextTick;
-    }
-
-    for (l1 = 0; l1 < midiSeqCount(); l1++) {
-        midiSeq(l1)->setNextTick(curtick);
-        if (!l1) nextMinSeqTick = midiSeq(l1)->nextTick;
-        if (midiSeq(l1)->nextTick < nextMinSeqTick)
-            nextMinSeqTick=midiSeq(l1)->nextTick;
+    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
+        MidiWorker *midiWorker = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker;
+        if (status && moduleWindow(l1)->objectName().startsWith("Arp:")) {
+            midiWorker->foldReleaseTicks(driver->trStartingTick - curtick);
+        }
+        midiWorker->setNextTick(curtick);
+        if (!l1) nextMinTick = midiWorker->nextTick;
+        if (midiWorker->nextTick < nextMinTick)
+            nextMinTick=midiWorker->nextTick;
     }
 }
 

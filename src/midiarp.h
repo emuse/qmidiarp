@@ -60,6 +60,7 @@ class MidiArp : public MidiWorker  {
     int randomTick, randomVelocity, randomLength;
     int sustainBufferCount, latchBufferCount;
     uint64_t lastLatchTick;
+    int latchDelayTicks;
     double stepWidth, len, vel;
     int sustainBuffer[MAXNOTES]; /*!< Holds released note values when MidiArp::sustain is True */
     int latchBuffer[MAXNOTES];   /*!< Holds released note values when MidiArp::latch_mode is True */
@@ -260,18 +261,8 @@ class MidiArp : public MidiWorker  {
  * @return True if the pattern index is now zero
  */
     bool advancePatternIndex(bool reset);
-/**
- * @brief  does the actions related to a newly received event.
- *
- * It is called by Engine when a new event is received on the MIDI input port.
 
- * @param inEv MidiEvent to check and process or not
- * @param tick The time the event was received in internal ticks
- * @param keep_rel If set to True, a NOTE_OFF event should cause the note to
- * remain in the release buffer. It will definitely be removed if keep_rel is false
- * @return True if inEv is in not the input range of the module (event is unmatched)
- */
-    bool handleEvent(MidiEvent inEv, uint64_t tick, int keep_rel = 0);
+    bool handleEvent(MidiEvent inEv, int64_t tick, int keep_rel = 0) override;
 /**
  * @brief Causes calculation of a new note set at a step and copies it
  * to arrays accessed by Engine.
@@ -297,17 +288,8 @@ class MidiArp : public MidiWorker  {
  * the following arpeggio notes are calculated.
  */
     void initArpTick(uint64_t tick);
-/**
- * @brief  ensures continuity of the release function
- * when the currentTick position jumps into
- * the past.
- *
- * It should be called whenever the transport position is looping. At
- * this time, this is the case when JACK Transport is looping.
 
- * @param tick The current time position in internal ticks.
- */
-    void foldReleaseTicks(int64_t tick);
+    void foldReleaseTicks(int64_t tick) override;
 /**
  * @brief  seeds new random values for the three parameters
  * concerned, timing (tick), velocity and length.

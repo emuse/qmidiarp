@@ -42,6 +42,7 @@ MidiSeq::MidiSeq()
     size = 4;
     res = 4;
     maxNPoints = res * size;
+    nPoints = maxNPoints;
     notelength = 180;
     notelengthDefer = 180;
     lastMute = false;
@@ -65,8 +66,9 @@ MidiSeq::MidiSeq()
     returnNote = sample;
 }
 
-bool MidiSeq::handleEvent(MidiEvent inEv, int tick)
+bool MidiSeq::handleEvent(MidiEvent inEv, int64_t tick, int keep_rel)
 {
+    (void)keep_rel;
     if (inEv.type != EV_NOTEON) return(true);
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.data < 36) || (inEv.data >= 84)) return(true);

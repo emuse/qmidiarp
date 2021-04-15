@@ -93,6 +93,19 @@ class MidiWorker {
  */
     virtual void updateDeferChanges(bool on) { deferChanges = on; }
 /**
+ * @brief  does the actions related to a newly received event.
+ *
+ * It is called by Engine when a new event is received on the MIDI input port.
+
+ * @param inEv MidiEvent to check and process or not
+ * @param tick The time the event was received in internal ticks
+ * @param keep_rel Only relevant for the Arp module. If set to True, 
+ * a NOTE_OFF event should cause the note to
+ * remain in the release buffer. It will definitely be removed if keep_rel is false
+ * @return True if inEv is in not the input range of the module (event is unmatched)
+ */
+    virtual bool handleEvent(MidiEvent inEv, int64_t tick, int keep_rel = 0) = 0;
+/**
  * @brief allows forcing an integer value within the
  * specified range (clip).
  *
@@ -104,7 +117,31 @@ class MidiWorker {
  */
     virtual int clip(int value, int min, int max, bool *outOfRange);
     virtual int getFramePtr() { return framePtr; }
+/*! @brief  transfers the next Midi data Frame to an intermediate internal object
+ * 
+ * @param tick the current tick at which we request a note. This tick will be
+ * used to calculate the nextTick which is quantized to the pattern
+ */
     virtual void getNextFrame(int64_t tick) = 0;
+/**
+ * @brief sets MidiSeq::nextTick and MidiSeq::framePtr position
+ * according to the specified tick.
+ *
+ * @param tick The current tick to which the module position should be
+ * aligned.
+ */
+    virtual void setNextTick(uint64_t tick) = 0;
+/**
+ * @brief  Implemented in Arp only. Ensures continuity of the Arp's 
+ * release function when the currentTick position jumps into
+ * the past.
+ *
+ * It should be called whenever the transport position is looping. At
+ * this time, this is the case when JACK Transport is looping.
+
+ * @param tick The current time position in internal ticks.
+ */
+    virtual void foldReleaseTicks(int64_t tick) { (void)tick; };
 };
 
 #endif

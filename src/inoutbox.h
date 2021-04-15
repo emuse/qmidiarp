@@ -195,7 +195,10 @@ class InOutBox: public QWidget
  */
     virtual void updateDisplay() = 0;
     virtual void updateIndicators();
+    virtual void updateCursorPos() = 0;
     virtual void checkIfRestore(int64_t *restoreTick, bool *restoreFlag);
+    virtual bool prepareNextFrame(bool echo_from_trig, int syncTol,
+                int64_t tick, int64_t *restoreTick, bool *restoreFlag);
 /*!
 * @brief allows ignoring one XML element in the XML stream
 * passed by the caller.

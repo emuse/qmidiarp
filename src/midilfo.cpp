@@ -34,7 +34,8 @@ MidiLfo::MidiLfo()
     freq = 8;
     size = 4;
     res = 4;
-    maxNPoints = 16;
+    maxNPoints = res * size;
+    nPoints = maxNPoints;
     old_res = 0;
     waveFormIndex = 0;
     recordMode = false;
@@ -554,9 +555,9 @@ void MidiLfo::record(int value)
     isRecording = true;
 }
 
-bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
+bool MidiLfo::handleEvent(MidiEvent inEv, int64_t tick, int keep_rel)
 {
-
+    (void)keep_rel;
     if (!recordMode && (inEv.type == EV_CONTROLLER)) return(true);
     if (inEv.channel != chIn && chIn != OMNI) return(true);
     if ((inEv.type == EV_CONTROLLER) && (inEv.data != ccnumberIn)) return(true);
@@ -566,7 +567,9 @@ bool MidiLfo::handleEvent(MidiEvent inEv, int tick)
         return (false);
     }
     if (inEv.type != EV_NOTEON) return (true);
-    if (!(trigByKbd || trigLegato || restartByKbd || enableNoteOff)) return (true);
+    if (!(trigByKbd || trigLegato || restartByKbd || enableNoteOff)) {
+        return (true);
+    }
     
     if (((inEv.data < indexIn[0]) || (inEv.data > indexIn[1]))
         || ((inEv.value < rangeIn[0]) || (inEv.value > rangeIn[1]))) {
@@ -608,7 +611,7 @@ void MidiLfo::applyPendingParChanges()
 
 void MidiLfo::setNextTick(uint64_t tick)
 {
-    int pos = (tick * res / TPQN) % nPoints;
+    uint64_t pos = (tick * res / TPQN) % nPoints;
 
     reverse = false;
     if (pingpong) reverse = ((tick * res / TPQN / nPoints) % 2);

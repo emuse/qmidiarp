@@ -794,4 +794,19 @@ void InOutBox::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
     }
 }
 
+bool InOutBox::prepareNextFrame(bool echo_from_trig, int syncTol,
+                int64_t tick, int64_t *restoreTick, bool *restoreFlag)
+{
+    if ((echo_from_trig && midiWorker->gotKbdTrig)
+            || (!midiWorker->gotKbdTrig && !echo_from_trig)) {
+        if ((tick + syncTol) >= midiWorker->nextTick) {
+            updateCursorPos();
+            updateIndicators();
+            midiWorker->getNextFrame(tick);
+            checkIfRestore(restoreTick, restoreFlag);
+            return true;
+        }
+    }
+    return false;
+}
 #endif

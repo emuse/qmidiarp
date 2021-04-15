@@ -173,16 +173,9 @@ class MidiLfo : public MidiWorker  {
  * @param idx Index to which the framePtr is set
  */
     void setFramePtr(int idx);
-/**
- * @brief  does the actions related to a newly received event.
- *
- * It is called by Engine when a new event is received on the MIDI input port.
 
- * @param inEv MidiEvent to check and process or not
- * @param tick The time the event was received in internal ticks
- * @return True if inEv is in not the input range of the module (event is unmatched)
- */
-    bool handleEvent(MidiEvent inEv, int tick);
+    bool handleEvent(MidiEvent inEv, int64_t tick, int keep_rel = 0) override;
+
 /*! @brief  is the main calculator for the data contained
  * in a waveform.
  *
@@ -222,14 +215,8 @@ class MidiLfo : public MidiWorker  {
  * them if so
  */
     void applyPendingParChanges();
-/**
- * @brief sets MidiLfo::nextTick and MidiLfo::framePtr position
- * according to the specified tick.
- *
- * @param tick The current tick to which the module position should be
- * aligned.
- */
-    void setNextTick(uint64_t tick);
+
+    void setNextTick(uint64_t tick) override;
 };
 
 #endif
