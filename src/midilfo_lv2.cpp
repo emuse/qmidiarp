@@ -32,7 +32,6 @@ MidiLfoLV2::MidiLfoLV2 (
 {
     for (int l1 = 0; l1 < 35; l1++) val[l1] = 0;
     
-    MidiEventID = 0;
     sampleRate = sample_rate;
     curFrame = 0;
     inLfoFrame = 0;
@@ -66,10 +65,6 @@ MidiLfoLV2::MidiLfoLV2 (
     for (int i = 0; host_features[i]; ++i) {
         if (::strcmp(host_features[i]->URI, LV2_URID_URI "#map") == 0) {
             urid_map = (LV2_URID_Map *) host_features[i]->data;
-            if (urid_map) {
-                MidiEventID = urid_map->map(urid_map->handle, LV2_MIDI_EVENT_URI);
-                break;
-            }
         }
     }
     if (!urid_map) {
@@ -202,7 +197,7 @@ void MidiLfoLV2::run ( uint32_t nframes )
                 }
             }
             // MIDI Input
-            else if (event && event->body.type == MidiEventID) {
+            else if (event && event->body.type == uris->midi_MidiEvent) {
                 uint8_t *di = (uint8_t *) LV2_ATOM_BODY(&event->body);
                 MidiEvent inEv = {0, 0, 0, 0};
                 if ( (di[0] & 0xf0) == 0x90 ) {
