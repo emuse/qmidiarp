@@ -83,7 +83,7 @@ class Engine : public QObject  {
   private:
     QList<MidiArp *> midiArpList;
     QList<ArpWidget *> arpWidgetList;
-    QList<InOutBox *> moduleWidgetList;
+    QList<ModuleWidget *> moduleWidgetList;
     QList<MidiLfo *> midiLfoList;
     QList<LfoWidget *> lfoWidgetList;
     QList<MidiSeq *> midiSeqList;
@@ -139,9 +139,9 @@ class Engine : public QObject  {
     bool alsaMidi; /**< True when using alsa MIDI driver */
 
 
-    void addModuleWidget(InOutBox *moduleWidget);
-    void removeModuleWidget(InOutBox *moduleWidget);
-    InOutBox *moduleWidget(int index);
+    void addModuleWidget(ModuleWidget *moduleWidget);
+    void removeModuleWidget(ModuleWidget *moduleWidget);
+    ModuleWidget *moduleWidget(int index);
     /**
      * @brief Returns the number of modules of type specified or all modules if not
      *

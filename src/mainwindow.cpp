@@ -443,7 +443,7 @@ void MainWindow::seqNew()
     addSeq("Seq:"+name);
 }
 
-void MainWindow::addLfo(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
+void MainWindow::addLfo(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
 {
 
     MidiLfo *midiWorker = new MidiLfo();
@@ -453,7 +453,7 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, InOutBox *clonefro
     addModule(moduleWidget, midiWorker, fromfile, clonefrom);
 }
 
-void MainWindow::addSeq(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
+void MainWindow::addSeq(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
 {
 
     MidiSeq *midiWorker = new MidiSeq();
@@ -463,7 +463,7 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, InOutBox *clonefro
     addModule(moduleWidget, midiWorker, fromfile, clonefrom);
 }
 
-void MainWindow::addArp(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
+void MainWindow::addArp(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
 {
     (void)clonefrom;
     
@@ -473,7 +473,7 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, InOutBox *clonefro
     
     addModule(moduleWidget, midiWorker, fromfile, nullptr);
 }
-void MainWindow::addModule(InOutBox *moduleWidget, MidiWorker *midiWorker, bool fromfile, InOutBox *clonefrom)
+void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, bool fromfile, ModuleWidget *clonefrom)
 {
 
     int widgetID, count;
@@ -525,8 +525,8 @@ void MainWindow::addModule(InOutBox *moduleWidget, MidiWorker *midiWorker, bool 
 
 void MainWindow::cloneModule()
 {
-    QString name = ((InOutBox *)sender())->name + "_0";
-    InOutBox *clonefrom = (InOutBox *)sender();
+    QString name = ((ModuleWidget *)sender())->name + "_0";
+    ModuleWidget *clonefrom = (ModuleWidget *)sender();
     
     if (name.startsWith("LFO:"))
         addLfo(name, false, clonefrom);
@@ -536,7 +536,7 @@ void MainWindow::cloneModule()
         addArp(name, false, clonefrom);
 }
 
-void MainWindow::appendDock(InOutBox *moduleWidget, int count)
+void MainWindow::appendDock(ModuleWidget *moduleWidget, int count)
 {
     QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
@@ -553,7 +553,7 @@ void MainWindow::appendDock(InOutBox *moduleWidget, int count)
 
 void MainWindow::removeModule()
 {
-    InOutBox *moduleWidget = (InOutBox *)sender();
+    ModuleWidget *moduleWidget = (ModuleWidget *)sender();
     int parentDockID = moduleWidget->parentDockID;
 
     globStore->removeModule(parentDockID);

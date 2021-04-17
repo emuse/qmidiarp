@@ -39,13 +39,13 @@
 #ifdef APPBUILD
 LfoWidget::LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore,
     Prefs *p_prefs, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiLfo, p_globStore, p_prefs, inOutVisible, p_name),
+    ModuleWidget(p_midiLfo, p_globStore, p_prefs, inOutVisible, p_name),
     midiLfo(p_midiLfo)
 {
     bool compactStyle = p_prefs->compactStyle;
 #else
 LfoWidget::LfoWidget():
-    InOutBox("LFO:"),
+    ModuleWidget("LFO:"),
     midiLfo(NULL)
 {
     bool compactStyle = true;
@@ -242,7 +242,7 @@ LfoWidget::LfoWidget():
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
-    widgetLayout->addWidget(hideInOutBoxButton, 0);
+    widgetLayout->addWidget(hideModuleWidgetButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
     setLayout(widgetLayout);
@@ -622,7 +622,7 @@ void LfoWidget::doRestoreParams(int ix)
     midiLfo->setFramePtr(frame);
 }
 
-void LfoWidget::copyParamsFrom(InOutBox *p_fromWidget)
+void LfoWidget::copyParamsFrom(ModuleWidget *p_fromWidget)
 {
     LfoWidget *fromWidget = (LfoWidget *)p_fromWidget;
 

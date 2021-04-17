@@ -1,6 +1,6 @@
 /*!
- * @file inoutbox.h
- * @brief Member definitions for the InOutBox GUI class.
+ * @file modulewidget.h
+ * @brief Member definitions for the ModuleWidget GUI class.
  *
  *
  *      Copyright 2009 - 2021 <qmidiarp-devel@lists.sourceforge.net>
@@ -21,8 +21,8 @@
  *      MA 02110-1301, USA.
  */
 
-#ifndef INOUTBOX_H
-#define INOUTBOX_H
+#ifndef MODULEWIDGET_H
+#define MODULEWIDGET_H
 
 #include <QBoxLayout>
 #include <QGridLayout>
@@ -53,7 +53,7 @@
  * output settings and widget and handlers and some other small functions
  * and member variables
 */
-class InOutBox: public QWidget
+class ModuleWidget: public QWidget
 {
   Q_OBJECT
   
@@ -63,17 +63,17 @@ class InOutBox: public QWidget
     QString name;       /**< @brief The name of this Widget as shown in the DockWidget TitleBar */
     GlobStore *globStore;
 /*!
- * @brief Constructor for InOutBox. Creates the base class and widget for a module
+ * @brief Constructor for ModuleWidget. Creates the base class and widget for a module
  * 
  *
  * @param p_midiWorker Associated MidiWorker Base Object
  * @param p_globStore The Application-wide globStore widget
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
- * @param inOutVisible Add the module with visible InOutBox or not
+ * @param inOutVisible Add the module with visible ModuleWidget or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
-    InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
+    ModuleWidget(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
             Prefs *p_prefs, bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
@@ -82,9 +82,9 @@ class InOutBox: public QWidget
     ParStore *parStore;
     MidiControl *midiControl;
 #else
-    InOutBox(const QString& name);
+    ModuleWidget(const QString& name);
 #endif
-    ~InOutBox();
+    ~ModuleWidget();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     bool dataChanged;
     bool needsGUIUpdate;
@@ -102,8 +102,8 @@ class InOutBox: public QWidget
     QCheckBox *enableNoteOff;
     QSpinBox  *ccnumberInBox;
     QSpinBox  *ccnumberBox;
-    QAction *hideInOutBoxAction;
-    QToolButton *hideInOutBoxButton;
+    QAction *hideModuleWidgetAction;
+    QToolButton *hideModuleWidgetButton;
     QAction *muteOutAction;
     QToolButton *muteOut;
     QAction *deferChangesAction;
@@ -119,7 +119,7 @@ class InOutBox: public QWidget
 
 /*!
  * @brief ENUM for Internal MIDI Control IDs supported 
- * by the InOutBox widget
+ * by the ModuleWidget widget
  * NOTE: These are used by the arp, lfo, and seq widgets
  */         
     enum INOUTBOX_CTRL_IDS {
@@ -142,7 +142,7 @@ class InOutBox: public QWidget
 */
     virtual void readCommonData(QXmlStreamReader& xml);
 /*!
-* @brief Setter for the InOutBox::portOut spinbox setting the output
+* @brief Setter for the ModuleWidget::portOut spinbox setting the output
 * port of this module.
 * @param value Number of the output port to send data to
 *
@@ -219,24 +219,24 @@ class InOutBox: public QWidget
     
   public slots:
 /*!
-* @brief Slot for InOutBox::deleteAction.
+* @brief Slot for ModuleWidget::deleteAction.
 *
 * This function displays a warning and then emits the
-* InOutBox::moduleRemove signal to MainWindow with the module ID as
+* ModuleWidget::moduleRemove signal to MainWindow with the module ID as
 * parameter.
 */
     virtual void moduleDelete();
 /*!
-* @brief Slot for InOutBox::renameAction.
+* @brief Slot for ModuleWidget::renameAction.
 *
-* This function queries a new name then emits the InOutBox::dockRename
+* This function queries a new name then emits the ModuleWidget::dockRename
 * signal to MainWindow with the new name and the dockWidget ID to rename.
 */
     virtual void moduleRename();
 /*!
-* @brief Slot for InOutBox::cloneAction.
+* @brief Slot for ModuleWidget::cloneAction.
 *
-* This function emits the InOutBox::moduleClone()
+* This function emits the ModuleWidget::moduleClone()
 * signal to MainWindow with the module ID and the dockWidget ID.
 */
     virtual void moduleClone();
@@ -247,7 +247,7 @@ class InOutBox: public QWidget
 * @brief Store common module parameters and call doStoreParams
 * 
 * Stores common module parameters to ParStore::list and then calls 
-* InOutBox::doStoreParams(), which is reimplemented in each module widget
+* ModuleWidget::doStoreParams(), which is reimplemented in each module widget
 * to store module specific parameters.
 * 
 * @param ix The storage location index to write to
@@ -258,24 +258,24 @@ class InOutBox: public QWidget
 * @brief Restore common module parameters and call doRestoreParams
 * 
 * Restores common module parameters from ParStore::list and then calls 
-* InOutBox::doRestoreParams(), which is reimplemented in each module widget
+* ModuleWidget::doRestoreParams(), which is reimplemented in each module widget
 * to restore module specific parameters.
 * 
 * @param ix The storage location index to read from
 */
     virtual void restoreParams(int ix);
 
-    virtual void copyParamsFrom(InOutBox *fromWidget) { (void)fromWidget; };
+    virtual void copyParamsFrom(ModuleWidget *fromWidget) { (void)fromWidget; };
 
 /*!
-* @brief Slot for the InOutBox::channelOut spinbox setting the output
+* @brief Slot for the ModuleWidget::channelOut spinbox setting the output
 * channel of this module.
 * @param value Number of the output channel to send data to
 *
 */
     virtual void updateChannelOut(int value);
 /*!
-* @brief Slot for the InOutBox::portOut spinbox setting the output
+* @brief Slot for the ModuleWidget::portOut spinbox setting the output
 * port of this module.
 * @param value Number of the output port to send data to
 *
@@ -293,14 +293,14 @@ class InOutBox: public QWidget
     virtual void updateTrigLegato(bool on);
     virtual void updateNRep(int nrep);
 /*!
-* @brief Slot for the InOutBox::ccnumberBox spinbox setting the output
+* @brief Slot for the ModuleWidget::ccnumberBox spinbox setting the output
 * controller CC number of this module.
 * @param val CC number to send data to
 *
 */
     virtual void updateCcnumber(int val);
 /*!
-* @brief Slot for the InOutBox::deferChangesAction.
+* @brief Slot for the ModuleWidget::deferChangesAction.
 *
 * Sets a flag in the midi worker causing parameter changes to become
 * active/inactive only at pattern end.
@@ -309,7 +309,7 @@ class InOutBox: public QWidget
 */
     virtual void updateDeferChanges(bool on);
 /*!
-* @brief Slot for the InOutBox::muteOut checkbox.
+* @brief Slot for the ModuleWidget::muteOut checkbox.
 * suppresses output of MIDI data.
 *
 * It sets MidiWorker::isMuted and causes a needsGUIUpdate

@@ -31,13 +31,13 @@
 #ifdef APPBUILD
 SeqWidget::SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
     Prefs *p_prefs, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiSeq, p_globStore, p_prefs, inOutVisible, p_name),
+    ModuleWidget(p_midiSeq, p_globStore, p_prefs, inOutVisible, p_name),
     midiSeq(p_midiSeq)
 {
     bool compactStyle = p_prefs->compactStyle;
 #else
 SeqWidget::SeqWidget():
-    InOutBox("Seq:"),
+    ModuleWidget("Seq:"),
     midiSeq(NULL)
 {
     bool compactStyle = true;
@@ -204,7 +204,7 @@ SeqWidget::SeqWidget():
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
-    widgetLayout->addWidget(hideInOutBoxButton, 0);
+    widgetLayout->addWidget(hideModuleWidgetButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
 #ifdef APPBUILD
@@ -558,7 +558,7 @@ void SeqWidget::doRestoreParams(int ix)
     needsGUIUpdate = true;
 }
 
-void SeqWidget::copyParamsFrom(InOutBox *p_fromWidget)
+void SeqWidget::copyParamsFrom(ModuleWidget *p_fromWidget)
 {
     SeqWidget *fromWidget = (SeqWidget *)p_fromWidget;
     

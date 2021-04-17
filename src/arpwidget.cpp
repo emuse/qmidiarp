@@ -44,13 +44,13 @@
 #ifdef APPBUILD
 ArpWidget::ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore,
     Prefs *p_prefs, bool inOutVisible, const QString& p_name):
-    InOutBox(p_midiArp, p_globStore, p_prefs, inOutVisible, p_name),
+    ModuleWidget(p_midiArp, p_globStore, p_prefs, inOutVisible, p_name),
     midiArp(p_midiArp)
 {
     bool compactStyle = p_prefs->compactStyle;
 #else
 ArpWidget::ArpWidget():
-    InOutBox("Arp:"),
+    ModuleWidget("Arp:"),
     midiArp(NULL)
 {
     bool compactStyle = true;
@@ -270,7 +270,7 @@ ArpWidget::ArpWidget():
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);
     widgetLayout->addWidget(envelopeBox, 2, 0);
-    widgetLayout->addWidget(hideInOutBoxButton, 0, 1);
+    widgetLayout->addWidget(hideModuleWidgetButton, 0, 1);
     widgetLayout->addWidget(inOutBoxWidget, 0, 2, 3, 1);
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);

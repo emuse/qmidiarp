@@ -43,8 +43,8 @@ class MidiWorker {
     int eventType;      /*!< Midi Event Type needs to be set for every module instance*/
     double queueTempo;  /*!< current tempo of the transport, not in use here */
     int chIn;           /**< Channel of input events */
-    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by InOutBox */
-    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by InOutBox */
+    int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by ModuleWidget */
+    int rangeIn[2]; /*!< Velocity range filter 0: lower, 1: upper limit, set by ModuleWidget */
     bool enableNoteIn;
     bool enableNoteOff;
     bool enableVelIn;
@@ -76,8 +76,8 @@ class MidiWorker {
     int nRepetitions;  /*!< number of repetitions set by parStore at each restore */
     int currentRepetition;  /*!< current repetition pointer of the pattern since pattern was restored */
     int nPoints;        /*!< Number of steps in pattern or sequence or wave */
-    bool dataChanged; /*!< Flag set to true by recording loop and queried by InOutBox::updateDisplay() */
-    bool needsGUIUpdate; /*!< Flag set to true when MidiWorker members changed and queried by InOutBox::updateDisplay() */
+    bool dataChanged; /*!< Flag set to true by recording loop and queried by ModuleWidget::updateDisplay() */
+    bool needsGUIUpdate; /*!< Flag set to true when MidiWorker members changed and queried by ModuleWidget::updateDisplay() */
     int frameSize;                  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
     std::vector<Sample> outFrame;   /*!< Vector of Sample points holding the current frame for transfer */
     int returnLength; /*!< Holds the note length of the currently active step */

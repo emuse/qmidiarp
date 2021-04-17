@@ -27,7 +27,7 @@
 #include <QLineEdit>
 
 #include "midiarp.h"
-#include "inoutbox.h"
+#include "modulewidget.h"
 #include "slider.h"
 #include "arpscreen.h"
 
@@ -40,7 +40,7 @@
  * and interacts with it.
 class ArpWidget : public QWidget
 */
-class ArpWidget :  public InOutBox
+class ArpWidget :  public ModuleWidget
 {
   Q_OBJECT
 
@@ -65,7 +65,7 @@ class ArpWidget :  public InOutBox
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
- * @param inOutVisible Add the module with visible InOutBox or not
+ * @param inOutVisible Add the module with visible ModuleWidget or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
     ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore, Prefs *p_prefs,

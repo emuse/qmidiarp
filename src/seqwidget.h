@@ -27,7 +27,7 @@
 #include <QSignalMapper>
 
 #include "midiseq.h"
-#include "inoutbox.h"
+#include "modulewidget.h"
 #include "slider.h"
 #include "seqscreen.h"
 #include "cursor.h"
@@ -43,7 +43,7 @@
  * and interacts with it.
  *
 */
-class SeqWidget : public InOutBox
+class SeqWidget : public ModuleWidget
 {
     Q_OBJECT
 
@@ -63,7 +63,7 @@ class SeqWidget : public InOutBox
  * @param portCount Number of available MIDI output ports
  * @param compactStyle If set to True, Widget will use reduced spacing and small fonts
  * @param mutedAdd If set to True, the module will be added in muted state
- * @param inOutVisible Add the module with visible InOutBox or not
+ * @param inOutVisible Add the module with visible ModuleWidget or not
  * @param name The name of the module preceded by its type (Arp: , etc...)
  */
     SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore, Prefs *p_prefs,
@@ -135,7 +135,7 @@ class SeqWidget : public InOutBox
 *
 * @param fromWidget pointer to the SeqWidget parameters are to be taken from
 */
-    void copyParamsFrom(InOutBox *fromWidget) override;
+    void copyParamsFrom(ModuleWidget *fromWidget) override;
 
     void doStoreParams(int ix);
     void doRestoreParams(int ix);

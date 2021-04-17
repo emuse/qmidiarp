@@ -1,6 +1,6 @@
 /*!
- * @file inoutbox.cpp
- * @brief Implements the InOutBox GUI class
+ * @file modulewidget.cpp
+ * @brief Implements the ModuleWidget GUI class
  *
  *
  *      Copyright 2009 - 2021 <qmidiarp-devel@lists.sourceforge.net>
@@ -21,7 +21,7 @@
  *      MA 02110-1301, USA.
  */
 
-#include "inoutbox.h"
+#include "modulewidget.h"
 #include "config.h"
 
 #ifdef APPBUILD
@@ -32,7 +32,7 @@
 #include "pixmaps/arprename.xpm"
 
 
-InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
+ModuleWidget::ModuleWidget(MidiWorker *p_midiWorker, GlobStore *p_globStore, 
     Prefs *p_prefs, bool inOutVisible, const QString& p_name):
     midiWorker(p_midiWorker),
     name(p_name),
@@ -77,7 +77,7 @@ InOutBox::InOutBox(MidiWorker *p_midiWorker, GlobStore *p_globStore,
     manageBoxLayout->addWidget(deleteButton);
 
 #else
-InOutBox::InOutBox(const QString& name):
+ModuleWidget::ModuleWidget(const QString& name):
     midiWorker(NULL),
     modified(false)
 {
@@ -276,13 +276,13 @@ InOutBox::InOutBox(const QString& name):
     deferChangesButton->setFixedSize(20, 20);
 
     // Hiding button that has to be added to each module widget outside the box
-    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
-    hideInOutBoxButton = new QToolButton;
-    hideInOutBoxAction->setCheckable(true);
-    hideInOutBoxAction->setChecked(inOutVisible);
-    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
-    hideInOutBoxButton->setFixedSize(10, 80);
-    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
+    hideModuleWidgetAction = new QAction(tr("&Show/hide in-out settings"), this);
+    hideModuleWidgetButton = new QToolButton;
+    hideModuleWidgetAction->setCheckable(true);
+    hideModuleWidgetAction->setChecked(inOutVisible);
+    hideModuleWidgetButton->setDefaultAction(hideModuleWidgetAction);
+    hideModuleWidgetButton->setFixedSize(10, 80);
+    hideModuleWidgetButton->setArrowType (Qt::ArrowType(0));
 
 #ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction
@@ -343,20 +343,20 @@ InOutBox::InOutBox(const QString& name):
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
 #endif
-    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
+    connect(hideModuleWidgetAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
                 SLOT(setVisible(bool)));
     needsGUIUpdate=false;
     dataChanged = false;
 }
 
-InOutBox::~InOutBox()
+ModuleWidget::~ModuleWidget()
 {
 #ifdef APPBUILD
     delete parStore;
 #endif
 }
 
-bool InOutBox::isModified()
+bool ModuleWidget::isModified()
 {
     bool mcmod = false;
 #ifdef APPBUILD
@@ -365,7 +365,7 @@ bool InOutBox::isModified()
     return (modified || mcmod);
 }
 
-void InOutBox::setModified(bool m)
+void ModuleWidget::setModified(bool m)
 {
     modified = m;
 #ifdef APPBUILD
@@ -373,7 +373,7 @@ void InOutBox::setModified(bool m)
 #endif
 }
 
-void InOutBox::setInputFilterVisible(bool on)
+void ModuleWidget::setInputFilterVisible(bool on)
 {
     rangeIn[0]->setVisible(on);
     rangeIn[1]->setVisible(on);
@@ -383,7 +383,7 @@ void InOutBox::setInputFilterVisible(bool on)
     indexInLabel->setVisible(on);
 }
 
-void InOutBox::checkIfInputFilterSet()
+void ModuleWidget::checkIfInputFilterSet()
 {
     if (((indexIn[1]->value() - indexIn[0]->value()) < 127)
             || ((rangeIn[1]->value() - rangeIn[0]->value()) < 127)) {
@@ -396,13 +396,13 @@ void InOutBox::checkIfInputFilterSet()
     }
 }
 
-void InOutBox::updateChIn(int value)
+void ModuleWidget::updateChIn(int value)
 {
     if (midiWorker) midiWorker->chIn = value;
     modified = true;
 }
 
-void InOutBox::updateIndexIn(int value)
+void ModuleWidget::updateIndexIn(int value)
 {
     if (indexIn[0] == sender()) {
         if (midiWorker) midiWorker->indexIn[0] = value;
@@ -413,7 +413,7 @@ void InOutBox::updateIndexIn(int value)
     modified = true;
 }
 
-void InOutBox::updateRangeIn(int value)
+void ModuleWidget::updateRangeIn(int value)
 {
     if (rangeIn[0] == sender()) {
         if (midiWorker) midiWorker->rangeIn[0] = value;
@@ -424,68 +424,68 @@ void InOutBox::updateRangeIn(int value)
     modified = true;
 }
 
-void InOutBox::updateChannelOut(int value)
+void ModuleWidget::updateChannelOut(int value)
 {
     if (midiWorker) midiWorker->channelOut = value;
     modified = true;
 }
 
-void InOutBox::updateCcnumber(int val)
+void ModuleWidget::updateCcnumber(int val)
 {
     if (midiWorker)
         midiWorker->ccnumber = val;
     modified = true;
 }
 
-void InOutBox::updateCcnumberIn(int val)
+void ModuleWidget::updateCcnumberIn(int val)
 {
     if (midiWorker) midiWorker->ccnumberIn = val;
     modified = true;
 }
 
-void InOutBox::updatePortOut(int value)
+void ModuleWidget::updatePortOut(int value)
 {
     if (midiWorker) midiWorker->portOut = value;
     modified = true;
 }
 
-void InOutBox::updateEnableNoteIn(bool on)
+void ModuleWidget::updateEnableNoteIn(bool on)
 {
     if (midiWorker) midiWorker->enableNoteIn = on;
     modified = true;
 }
 
-void InOutBox::updateEnableVelIn(bool on)
+void ModuleWidget::updateEnableVelIn(bool on)
 {
     if (midiWorker) midiWorker->enableVelIn = on;
     modified = true;
 }
 
-void InOutBox::updateEnableNoteOff(bool on)
+void ModuleWidget::updateEnableNoteOff(bool on)
 {
     if (midiWorker) midiWorker->enableNoteOff = on;
     modified = true;
 }
 
-void InOutBox::updateEnableRestartByKbd(bool on)
+void ModuleWidget::updateEnableRestartByKbd(bool on)
 {
     if (midiWorker) midiWorker->restartByKbd = on;
     modified = true;
 }
 
-void InOutBox::updateEnableTrigByKbd(bool on)
+void ModuleWidget::updateEnableTrigByKbd(bool on)
 {
     if (midiWorker) midiWorker->trigByKbd = on;
     modified = true;
 }
 
-void InOutBox::updateTrigLegato(bool on)
+void ModuleWidget::updateTrigLegato(bool on)
 {
     if (midiWorker) midiWorker->trigLegato = on;
     modified = true;
 }
 
-void InOutBox::setMuted(bool on)
+void ModuleWidget::setMuted(bool on)
 {
     if (!midiWorker) return;
     midiWorker->setMuted(on);
@@ -493,19 +493,19 @@ void InOutBox::setMuted(bool on)
     modified = true;
 }
 
-void InOutBox::updateDeferChanges(bool on)
+void ModuleWidget::updateDeferChanges(bool on)
 {
     if (midiWorker) midiWorker->updateDeferChanges(on);
     modified = true;
 }
 
-void InOutBox::updateNRep(int nrep)
+void ModuleWidget::updateNRep(int nrep)
 {
     if (midiWorker) midiWorker->nRepetitions = nrep;
     modified = true;
 }
 
-void InOutBox::storeParams(int ix, bool empty)
+void ModuleWidget::storeParams(int ix, bool empty)
 {
 #ifdef APPBUILD
     parStore->temp.empty = empty;
@@ -525,7 +525,7 @@ void InOutBox::storeParams(int ix, bool empty)
 #endif
 }
 
-void InOutBox::restoreParams(int ix)
+void ModuleWidget::restoreParams(int ix)
 {
 #ifdef APPBUILD
     doRestoreParams(ix);
@@ -549,14 +549,14 @@ void InOutBox::restoreParams(int ix)
 }
 
 #ifdef APPBUILD
-void InOutBox::setPortOut(int value)
+void ModuleWidget::setPortOut(int value)
 {
     portOut->setCurrentIndex(value);
     modified = true;
 }
 #endif
 
-void InOutBox::moduleDelete()
+void ModuleWidget::moduleDelete()
 {
 #ifdef APPBUILD
     QString qs;
@@ -572,7 +572,7 @@ void InOutBox::moduleDelete()
 #endif
 }
 
-void InOutBox::moduleRename()
+void ModuleWidget::moduleRename()
 {
 #ifdef APPBUILD
     QString newname, oldname;
@@ -590,7 +590,7 @@ void InOutBox::moduleRename()
 #endif
 }
 
-void InOutBox::moduleClone()
+void ModuleWidget::moduleClone()
 {
 #ifdef APPBUILD
         emit cloneModule();
@@ -598,7 +598,7 @@ void InOutBox::moduleClone()
 }
 
 #ifdef APPBUILD
-void InOutBox::writeCommonData(QXmlStreamWriter& xml)
+void ModuleWidget::writeCommonData(QXmlStreamWriter& xml)
 {
     xml.writeStartElement(name.left(3));
     xml.writeAttribute("name", name.mid(name.indexOf(':') + 1));
@@ -657,7 +657,7 @@ void InOutBox::writeCommonData(QXmlStreamWriter& xml)
         parStore->writeData(xml);
 }
 
-void InOutBox::readCommonData(QXmlStreamReader& xml)
+void ModuleWidget::readCommonData(QXmlStreamReader& xml)
 {
     int tmp = 0;
     
@@ -727,7 +727,7 @@ void InOutBox::readCommonData(QXmlStreamReader& xml)
     }
 }
 
-void InOutBox::skipXmlElement(QXmlStreamReader& xml)
+void ModuleWidget::skipXmlElement(QXmlStreamReader& xml)
 {
     if (xml.isStartElement()) {
         qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
@@ -744,7 +744,7 @@ void InOutBox::skipXmlElement(QXmlStreamReader& xml)
     }
 }
 
-void InOutBox::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
+void ModuleWidget::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
         int p_grooveLength)
 {
     // grooveTick is only updated on pair steps to keep quantization
@@ -755,7 +755,7 @@ void InOutBox::newGrooveValues(int p_grooveTick, int p_grooveVelocity,
     midiWorker->needsGUIUpdate = true;
 }
 
-void InOutBox::updateIndicators()
+void ModuleWidget::updateIndicators()
 {
     int ci = midiWorker->getFramePtr();
 
@@ -779,7 +779,7 @@ void InOutBox::updateIndicators()
     }
 }
 
-void InOutBox::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
+void ModuleWidget::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
 {
     bool repetitionsFinished = (midiWorker->currentRepetition == 0);
     if (midiWorker->reverse) {
@@ -794,7 +794,7 @@ void InOutBox::checkIfRestore(int64_t *restoreTick, bool *restoreFlag)
     }
 }
 
-bool InOutBox::prepareNextFrame(bool echo_from_trig, int syncTol,
+bool ModuleWidget::prepareNextFrame(bool echo_from_trig, int syncTol,
                 int64_t tick, int64_t *restoreTick, bool *restoreFlag)
 {
     if ((echo_from_trig && midiWorker->gotKbdTrig)

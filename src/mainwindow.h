@@ -139,8 +139,8 @@ class MainWindow : public QMainWindow
 */
     bool isModified();
 
-    void addModule(InOutBox *moduleWidget, MidiWorker *midiWorker, bool fromfile, 
-                    InOutBox *clonefrom = nullptr);
+    void addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, bool fromfile, 
+                    ModuleWidget *clonefrom = nullptr);
 
 /*!
 * @brief  creates and adds a new MidiArp to Engine.
@@ -155,7 +155,7 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addArp(const QString& name, bool fromfile = false,
-            InOutBox *clonefrom = nullptr, bool inOutVisible = true);
+            ModuleWidget *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiLfo to Engine.
 *
@@ -171,7 +171,7 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addLfo(const QString& name, bool fromfile = false,
-                InOutBox *clonefrom = nullptr, bool inOutVisible = true);
+                ModuleWidget *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiSeq to Engine.
 *
@@ -187,7 +187,7 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addSeq(const QString& name, bool fromfile = false,
-                InOutBox *clonefrom = nullptr, bool inOutVisible = true);
+                ModuleWidget *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
@@ -195,7 +195,7 @@ class MainWindow : public QMainWindow
 * @param *moduleWidget The QWidget to be embedded
 * @param count DockWidget list location at which the window is insertet
 */
-    void appendDock(InOutBox *moduleWidget, int count);
+    void appendDock(ModuleWidget *moduleWidget, int count);
 /*!
 * @brief  reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
