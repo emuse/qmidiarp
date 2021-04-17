@@ -295,13 +295,13 @@ void SeqWidgetLV2::receiveWave(LV2_Atom* atom)
 
 void SeqWidgetLV2::receiveWavePoint(int index, int value)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     if (value < 0) {
         sample.muted = true;
         value = -value;
     }
     else sample.muted = false;
-    sample.value = value;
+    sample.data = value;
     sample.tick = index * TPQN / res;
     if (index >= data.count()) data.append(sample);
     else data.replace(index, sample);

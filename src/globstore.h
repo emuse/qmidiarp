@@ -96,9 +96,9 @@ class GlobStore : public QWidget
 /*!
 * @brief removes the module with name name from GlobStore
 *
-* @param moduleWindowIndex index in the Engine::moduleWindowList of the module to remove
+* @param moduleWidgetIndex index in the Engine::moduleWidgetList of the module to remove
 */
-    void removeModule(int moduleWindowIndex);
+    void removeModule(int moduleWidgetIndex);
 /*!
 * @brief reads all parameters of this Object from an XML stream
 * passed by the caller, i.e. MainWindow.
@@ -153,10 +153,10 @@ class GlobStore : public QWidget
 * @brief signel emitted to Engine::updateGlobRestoreTimeModule()
 * 
 * Causes Engine to make the module at index windowIndex in the
-* Engine::moduleWindowList to trigger a global restore when its cursor
+* Engine::moduleWidgetList to trigger a global restore when its cursor
 * reaches the end.
 *
-* @param windowIndex Engine::moduleWindowList index of the module to become
+* @param windowIndex Engine::moduleWidgetList index of the module to become
 * switch trigger
 */
   void updateGlobRestoreTimeModule(int windowIndex);

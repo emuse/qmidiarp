@@ -147,7 +147,7 @@ class LfoWidget : public InOutBox
 *
 * @param fromWidget pointer to the LfoWidget parameters are to be taken from
 */
-    void copyParamsFrom(LfoWidget *fromWidget);
+    void copyParamsFrom(InOutBox *fromWidget) override;
 
     void doStoreParams(int ix);
     void doRestoreParams(int ix);
@@ -290,8 +290,6 @@ class LfoWidget : public InOutBox
 *
 */
     void updateFlipWaveVertical();
-
-    bool getReverse() { return midiLfo->reverse; }
 };
 
 #endif

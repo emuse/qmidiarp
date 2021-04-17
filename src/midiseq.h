@@ -68,7 +68,6 @@ class MidiSeq : public MidiWorker  {
     int maxNPoints;        /*!< Maximum number of steps that have been used in the session */
     int nOctaves;
     int baseOctave;
-    Sample returnNote;
     std::vector<Sample> customWave;
     std::vector<bool> muteMask;
     std::vector<Sample> data;

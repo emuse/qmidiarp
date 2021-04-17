@@ -156,10 +156,10 @@ void SeqScreen::paintEvent(QPaintEvent*)
     p.setPen(pen);
     for (int l1 = 0; l1 < npoints; l1++) {
         x = (l1 + .01 * (double)grooveTick * (l1 % 2)) * nsteps * xscale / npoints;
-        tmpval = p_data.at(l1).value;
+        tmpval = p_data.at(l1).data;
         if ((tmpval >= 12 * baseOctave) && (tmpval < 12 * maxOctave)) {
             ypos = yscale - yscale
-                * (p_data.at(l1).value - 12 * baseOctave) / nOctaves / 12
+                * (p_data.at(l1).data - 12 * baseOctave) / nOctaves / 12
                 + SEQSCR_VMARG_TOP - pen.width() / 2;
             xpos = SEQSCR_HMARG + x + pen.width() / 2;
             if (p_data.at(l1).muted) {

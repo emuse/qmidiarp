@@ -50,6 +50,7 @@ MidiSeqLV2::MidiSeqLV2 (
     curTick = 0;
     
     currentSample.tick = 0;
+    currentSample.data = 0;
     currentSample.value = 0;
     currentSample.muted = false;
     
@@ -232,14 +233,14 @@ void MidiSeqLV2::run (uint32_t nframes )
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
         if ((curTick >= (uint64_t)nextTick) && (transportSpeed)) {
             getNextFrame(curTick);
-            if (!returnNote.muted && !isMuted) {
+            if (!outFrame[0].muted && !isMuted) {
                 unsigned char d[3];
                 d[0] = 0x90 + channelOut;
-                d[1] = returnNote.value;
+                d[1] = outFrame[0].data;
                 d[2] = vel;
                 forgeMidiEvent(f, d, 3);
                 evTickQueue[bufPtr] = curTick + notelength / 4;
-                evQueue[bufPtr] = returnNote.value;
+                evQueue[bufPtr] = outFrame[0].data;
                 bufPtr++;
             }
             float pos = (float)getFramePtr();
@@ -422,7 +423,7 @@ void MidiSeqLV2::sendWave()
     int tempArray[ct];
 
     for (int l1 = 0; l1 < ct; l1++) {
-        tempArray[l1]=data[l1].value*((data[l1].muted) ? -1 : 1);
+        tempArray[l1]=data[l1].data*((data[l1].muted) ? -1 : 1);
     }
 
     /* forge container object of type 'hex_customwave' */
@@ -477,7 +478,7 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
 
     for (int l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
         int hi = 0;
@@ -488,7 +489,7 @@ static LV2_State_Status MidiSeqLV2_state_restore ( LV2_Handle instance,
         if (value[2*l1 + 1] <= '9' && value[2*l1 + 1] >= '0') lo = value[2*l1 + 1] - '0';
         if (value[2*l1 + 1] <= 'f' && value[2*l1 + 1] >= 'a') lo = value[2*l1 + 1] - 'a' + 10;
 
-        sample.value = hi * 16 + lo;
+        sample.data = hi * 16 + lo;
         sample.tick = l1 * TPQN / pPlugin->res;
         sample.muted = pPlugin->muteMask[l1];
         pPlugin->customWave[l1] = sample;
@@ -521,8 +522,8 @@ static LV2_State_Status MidiSeqLV2_state_save ( LV2_Handle instance,
     char bt[pPlugin->maxNPoints * 2 + 1];
     
     for (l1 = 0; l1 < pPlugin->maxNPoints; l1++) {
-        bt[2*l1] = hexmap[(pPlugin->customWave[l1].value  & 0xF0) >> 4];
-        bt[2*l1 + 1] = hexmap[pPlugin->customWave[l1].value  & 0x0F];
+        bt[2*l1] = hexmap[(pPlugin->customWave[l1].data  & 0xF0) >> 4];
+        bt[2*l1 + 1] = hexmap[pPlugin->customWave[l1].data  & 0x0F];
     }
     bt[pPlugin->maxNPoints * 2] = '\0';
     

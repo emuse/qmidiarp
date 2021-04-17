@@ -215,7 +215,6 @@ class MidiArp : public MidiWorker  {
 
   public:
     bool latch_mode; /*!< If True hold notes released earlier than latch delay in latch buffer */
-    bool hasNewNotes; /*!< True when getNextFrame() was called with a tick causing new note calculation */
     int repeatPatternThroughChord; /*!< Repeat mode "Static", "Up", "Down", "As Played" set by ArpWidget */
     double attack_time;/*!< Attack time in seconds, set by ArpWidget */
     double release_time;/*!< Release time in seconds, set by ArpWidget */
@@ -235,10 +234,7 @@ class MidiArp : public MidiWorker  {
     int octLow;        /*!< The lower octave limit. @see repeatPatternThroughChord */
     int octHigh;        /*!< The higher octave limit. @see repeatPatternThroughChord */
 
-    int returnNote[MAXCHORD]; /*!< Holds the notes of the currently active arpeggio step */
-    int returnVelocity[MAXCHORD]; /*!< Holds the velocities of the currently active arpeggio step */
     uint64_t returnTick; /*!< Holds the time in internal ticks of the currently active arpeggio step */
-    int returnLength; /*!< Holds the note length of the currently active arpeggio step */
 
   public:
     MidiArp();
@@ -350,7 +346,7 @@ class MidiArp : public MidiWorker  {
  * @param tick The current tick to which the module position should be
  * aligned.
  */
-    void setNextTick(uint64_t tick);
+    void setNextTick(uint64_t tick) override;
 
 };
 

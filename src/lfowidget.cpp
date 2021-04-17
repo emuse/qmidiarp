@@ -308,7 +308,7 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
     int tmp;
     int wvtmp = 0;
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -622,8 +622,10 @@ void LfoWidget::doRestoreParams(int ix)
     midiLfo->setFramePtr(frame);
 }
 
-void LfoWidget::copyParamsFrom(LfoWidget *fromWidget)
+void LfoWidget::copyParamsFrom(InOutBox *p_fromWidget)
 {
+    LfoWidget *fromWidget = (LfoWidget *)p_fromWidget;
+
     int tmp;
 
     enableNoteOff->setChecked(fromWidget->enableNoteOff->isChecked());

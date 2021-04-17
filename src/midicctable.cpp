@@ -33,7 +33,7 @@ MidiCCTable::MidiCCTable(Engine *p_engine, QWidget *parent) : QDialog(parent)
     midiCCTable = new QTableWidget(this);
 
     midiCCTable->clear();
-    midiCCTable->setRowCount(engine->moduleWindowCount()*10);
+    midiCCTable->setRowCount(engine->moduleWidgetCount()*10);
     midiCCTable->setColumnCount(7);
     midiCCTable->setColumnHidden(5, true);
     midiCCTable->setColumnHidden(6, true);
@@ -104,18 +104,16 @@ void MidiCCTable::getCurrentControls()
         nrows++;
     }
 
-    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++) {
-        
-        InOutBox *moduleWidget = (InOutBox *)engine->moduleWindow(l1)->widget();
-        
-        ccList = moduleWidget->midiControl->ccList;
+    for (l1 = 0; l1 < engine->moduleWidgetCount(); l1++) {
+                
+        ccList = engine->moduleWidget(l1)->midiControl->ccList;
 
         for (l2 = 0; l2 < ccList.count(); l2++) {
 
             midiCCTable->setVerticalHeaderItem(nrows,
-                    new QTableWidgetItem(moduleWidget->name));
+                    new QTableWidgetItem(engine->moduleWidget(l1)->name));
 
-            fillControlRow(nrows, ccList.at(l2), moduleWidget->ID);
+            fillControlRow(nrows, ccList.at(l2), engine->moduleWidget(l1)->ID);
             nrows++;
         }
     }
@@ -155,8 +153,8 @@ void MidiCCTable::apply()
     engine->globStoreWidget->midiControl->ccList.clear();
     engine->grooveWidget->midiControl->ccList.clear();
 
-    for (int l1 = 0; l1 < engine->moduleWindowCount(); l1++)
-        ((InOutBox *)engine->moduleWindow(l1)->widget())->midiControl->ccList.clear();
+    for (int l1 = 0; l1 < engine->moduleWidgetCount(); l1++)
+        engine->moduleWidget(l1)->midiControl->ccList.clear();
 
     for (int l1 = 0; l1 < midiCCTable->rowCount(); l1++) {
         int ccnumber = midiCCTable->item(l1, 1)->text().toInt();
@@ -276,7 +274,7 @@ void MidiCCTable::fillControlRow(int row, MidiCC midiCC, int moduleID)
 
 void MidiCCTable::revert()
 {
-    midiCCTable->setRowCount(engine->moduleWindowCount()*10);
+    midiCCTable->setRowCount(engine->moduleWidgetCount()*10);
     getCurrentControls();
 }
 

@@ -138,6 +138,10 @@ class MainWindow : public QMainWindow
 *
 */
     bool isModified();
+
+    void addModule(InOutBox *moduleWidget, MidiWorker *midiWorker, bool fromfile, 
+                    InOutBox *clonefrom = nullptr);
+
 /*!
 * @brief  creates and adds a new MidiArp to Engine.
 *
@@ -151,7 +155,7 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addArp(const QString& name, bool fromfile = false,
-                bool inOutVisible = true);
+            InOutBox *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiLfo to Engine.
 *
@@ -167,7 +171,7 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addLfo(const QString& name, bool fromfile = false,
-                int clonefrom = -1, bool inOutVisible = true);
+                InOutBox *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  creates and adds a new MidiSeq to Engine.
 *
@@ -183,16 +187,15 @@ class MainWindow : public QMainWindow
 * @param inOutVisible Set to True if In-Out panel should be shown
 */
     void addSeq(const QString& name, bool fromfile = false,
-                int clonefrom = -1, bool inOutVisible = true);
+                InOutBox *clonefrom = nullptr, bool inOutVisible = true);
 /*!
 * @brief  wraps the given widget in a QDockWidget and adds
 * it to the list in Engine.
 *
 * @param *moduleWidget The QWidget to be embedded
-* @param name Name attribute of this module
 * @param count DockWidget list location at which the window is insertet
 */
-    void appendDock(QWidget *moduleWidget, const QString& name, int count);
+    void appendDock(InOutBox *moduleWidget, int count);
 /*!
 * @brief  reads global parameter block from an XML session
 * stream using the QXmlStreamReader passed by the caller.
@@ -411,24 +414,6 @@ class MainWindow : public QMainWindow
 */
     void seqNew();
 /*!
-* @brief  removes and deletes an Arpeggiator module.
-*
-* It removes all components MidiArp, ArpWidget and
-* DockWidget from the corresponding lists in Engine.
-*
-* @param index The Engine::midiArpList index of the arpeggiator to remove
-*/
-    void removeArp(int index);
-/*!
-* @brief  removes and deletes an LFO module.
-*
-* It removes all components MidiLfo, LfoWidget and
-* DockWidget from the corresponding lists in Engine.
-*
-* @param index The Engine::midiLfoList index of the LFO to
-*/
-    void removeLfo(int index);
-/*!
 * @brief  removes and deletes a Seq module.
 *
 * It removes all components MidiSeq, SeqWidget and
@@ -436,19 +421,13 @@ class MainWindow : public QMainWindow
 *
 * @param index The Engine::midiSeqList index of the sequencer to remove
 */
-    void removeSeq(int index);
+    void removeModule();
 /*!
 * @brief  duplicates and adds a MidiLfo to the Engine.
 *
 * @param ID List ID of the module to copy
 */
-    void cloneLfo(int ID);
-/*!
-* @brief  duplicates and adds a MidiSeq to the Engine.
-*
-* @param ID List ID of the module to copy
-*/
-    void cloneSeq(int ID);
+    void cloneModule();
 
     void helpAbout();
     void helpAboutQt();

@@ -135,7 +135,7 @@ class SeqWidget : public InOutBox
 *
 * @param fromWidget pointer to the SeqWidget parameters are to be taken from
 */
-    void copyParamsFrom(SeqWidget *fromWidget);
+    void copyParamsFrom(InOutBox *fromWidget) override;
 
     void doStoreParams(int ix);
     void doRestoreParams(int ix);
@@ -230,7 +230,6 @@ class SeqWidget : public InOutBox
     void mouseEvent(double, double, int, int pressed);
 
     int getLoopMarker() { return midiSeq->loopMarker; }
-    bool getReverse() { return midiSeq->reverse; }
     int sliderToTickLen(int val) { return (val * TPQN / 64); }
     int tickLenToSlider(int val) { return (val * 64 / TPQN); }
 };

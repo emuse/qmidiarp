@@ -329,7 +329,7 @@ void LfoWidgetLV2::receiveWave(LV2_Atom* atom)
 
 void LfoWidgetLV2::receiveWavePoint(int index, int value)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     if (value < 0) {
         sample.muted = true;
         value = -value;

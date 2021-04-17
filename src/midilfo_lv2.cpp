@@ -231,13 +231,13 @@ void MidiLfoLV2::run ( uint32_t nframes )
     for (uint32_t f = 0 ; f < nframes; f++) {
         curTick = (uint64_t)(curFrame - transportFramesDelta)
                         *TPQN*tempo/60/sampleRate + tempoChangeTick;
-        if ((curTick >= (uint64_t)frame.at(inLfoFrame).tick)
+        if ((curTick >= (uint64_t)outFrame.at(inLfoFrame).tick)
             && (transportSpeed)) {
-            if (!frame.at(inLfoFrame).muted && !isMuted) {
+            if (!outFrame.at(inLfoFrame).muted && !isMuted) {
                 unsigned char d[3];
                 d[0] = 0xb0 + channelOut;
                 d[1] = ccnumber;
-                d[2] = frame.at(inLfoFrame).value;
+                d[2] = outFrame.at(inLfoFrame).value;
                 forgeMidiEvent(f, d, 3);
                 *val[WaveOut] = (float)d[2] / 128;
             }
@@ -457,7 +457,7 @@ static LV2_State_Status MidiLfoLV2_state_restore ( LV2_Handle instance,
 
     if (size < 2) return LV2_STATE_ERR_UNKNOWN;
 
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     int min = 127;
     for (int l1 = 0; l1 <  pPlugin->maxNPoints; l1++) {
         int hi = 0;

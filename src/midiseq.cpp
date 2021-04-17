@@ -28,6 +28,8 @@
 
 MidiSeq::MidiSeq()
 {
+    eventType = EV_NOTEON;
+    
     recordMode = false;
     currentRecStep = 0;
     loopMarker = 0;
@@ -35,6 +37,8 @@ MidiSeq::MidiSeq()
     nOctaves = 4;
     baseOctave = 3;
 
+    ccnumber = -1;
+    
     vel = 0;
     velDefer = 0;
     transp = 0;
@@ -53,9 +57,12 @@ MidiSeq::MidiSeq()
     customWave.resize(wavesize);
     muteMask.resize(wavesize);
     data.reserve(wavesize);
+    outFrame.resize(2);
     
-    Sample sample;
-    sample.value = 60;
+    Sample sample = {0, 0, 0, false};
+    sample.data = 60;
+    sample.value = 0;
+    
     for (int l1 = 0; l1 < wavesize; l1++) {
         sample.tick = l1 * TPQN / res;
         sample.muted = false;
@@ -63,7 +70,11 @@ MidiSeq::MidiSeq()
         data[l1] = sample;
         muteMask[l1] = false;
     }
-    returnNote = sample;
+    outFrame[0] = sample;
+    sample.data = -1;
+    sample.tick = nextTick;
+    outFrame[1] = sample;
+
 }
 
 bool MidiSeq::handleEvent(MidiEvent inEv, int64_t tick, int keep_rel)
@@ -116,7 +127,7 @@ bool MidiSeq::handleEvent(MidiEvent inEv, int64_t tick, int keep_rel)
 void MidiSeq::getNextFrame(int64_t tick)
 {
     const int frame_nticks = TPQN / res;
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     int cur_grv_sft;
 
     gotKbdTrig = false;
@@ -128,7 +139,8 @@ void MidiSeq::getNextFrame(int64_t tick)
 
     if (nextTick < (tick - frame_nticks)) nextTick = tick;
 
-    sample.value+=transp;
+    sample.data+=transp;
+    sample.value = vel;
     sample.tick = nextTick;
 
 
@@ -151,7 +163,12 @@ void MidiSeq::getNextFrame(int64_t tick)
         sample.muted = true;
         framePtr = 0;
     }
-    returnNote = sample;
+    
+    returnLength = notelength;
+    outFrame[0] = sample;
+    sample.data = -1;
+    sample.tick = nextTick;
+    outFrame[1] = sample;
 }
 
 void MidiSeq::advancePatternIndex()
@@ -227,13 +244,14 @@ void MidiSeq::advancePatternIndex()
 
 void MidiSeq::getData(std::vector<Sample> * p_data)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
+    
     const int npoints = res * size;
 
     data.resize(npoints);
 
     for (int l1 = 0; l1 < npoints; l1++) data[l1] = customWave[l1];
-    sample.value = -1;
+    sample.data = -1;
     sample.tick = npoints * TPQN / res;
     sample.muted = false;
     data.push_back(sample);
@@ -391,10 +409,10 @@ void MidiSeq::setRecordMode(int on)
 
 void MidiSeq::setRecordedNote(int note)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
 
     sample = customWave[currentRecStep];
-    sample.value = note;
+    sample.data = note;
     sample.tick = currentRecStep * TPQN / res;
     customWave[currentRecStep] = sample;
 }
@@ -402,7 +420,7 @@ void MidiSeq::setRecordedNote(int note)
 void MidiSeq::resizeAll()
 {
     const int npoints = res * size;
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
 
     framePtr%=npoints;
     currentRecStep%=npoints;
@@ -426,7 +444,7 @@ void MidiSeq::resizeAll()
 
 bool MidiSeq::toggleMutePoint(double mouseX)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     bool m;
     int loc = mouseX * (res * size);
 
@@ -440,7 +458,7 @@ bool MidiSeq::toggleMutePoint(double mouseX)
 
 int MidiSeq::setMutePoint(double mouseX, bool on)
 {
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
     int loc = mouseX * (res * size);
 
     sample = customWave[loc];

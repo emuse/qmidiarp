@@ -45,7 +45,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     temp.muteMask.clear();
     /* LFO Modules */
     temp.ccnumber = -1;
-    temp.ccnumberIn = 0;
+    temp.ccnumberIn = -1;
     temp.freq = 0;
     temp.ampl = 0;
     temp.offs = 0;
@@ -250,7 +250,10 @@ void ParStore::writeData(QXmlStreamWriter& xml)
             tempArray.clear();
             l1 = 0;
             while (l1 < list.at(ix).wave.count()) {
-                tempArray.append(list.at(ix).wave.at(l1).value);
+                if (list.at(ix).ccnumber >= 0)
+                    tempArray.append(list.at(ix).wave.at(l1).value);
+                else
+                    tempArray.append(list.at(ix).wave.at(l1).data);
                 l1++;
             }
             xml.writeStartElement("wave");
@@ -373,15 +376,20 @@ void ParStore::readData(QXmlStreamReader& xml)
                             QByteArray tmpArray =
                                     QByteArray::fromHex(xml.readElementText().toLatin1());
 
-                            if (temp.ccnumberIn >= 0)
+                            if (temp.ccnumber >= 0)
                                 step = TPQN / lfoResValues[temp.res];
                             else
                                 step = TPQN / seqResValues[temp.res];
 
                             int lt = 0;
-                            Sample sample;
+                            Sample sample = {0, 0, 0, false};
                             for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                                sample.value = tmpArray.at(l1);
+                                if (temp.ccnumber >= 0) {
+                                    sample.value = tmpArray.at(l1);
+                                } 
+                                else {
+                                    sample.data = tmpArray.at(l1);
+                                }
                                 sample.tick = lt;
                                 sample.muted = temp.muteMask.at(l1);
                                 temp.wave.append(sample);

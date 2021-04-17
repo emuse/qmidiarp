@@ -256,16 +256,16 @@ void MidiArpLV2::run ( uint32_t nframes )
         if ((curTick >= nextTick) && (transportSpeed)) {
             getNextFrame(curTick);
             if (!isMuted) {
-                if (hasNewNotes && returnVelocity[0]) {
+                if (outFrame[0].value) {
                     int l2 = 0;
-                    while(returnNote[l2] >= 0) {
+                    while(outFrame[l2].data >= 0) {
                         unsigned char d[3];
                         d[0] = 0x90 + channelOut;
-                        d[1] = returnNote[l2];
-                        d[2] = returnVelocity[l2];
+                        d[1] = outFrame[l2].data;
+                        d[2] = outFrame[l2].value;
                         forgeMidiEvent(f, d, 3);
-                        evTickQueue[bufPtr] = curTick + returnLength;
-                        evQueue[bufPtr] = returnNote[l2];
+                        evTickQueue[bufPtr] = curTick + returnLength / 4;
+                        evQueue[bufPtr] = outFrame[l2].data;
                         bufPtr++;
                         l2++;
                     }

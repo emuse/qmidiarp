@@ -84,6 +84,8 @@ MidiArp::MidiArp()
         qWarning("seq: %d (after update)", rdata->foo);
     }
 */
+    eventType = EV_NOTEON;
+
     int latchDelayMsec = 50;
     noteBufPtr = 0;
     releaseNoteCount = 0;
@@ -116,7 +118,6 @@ MidiArp::MidiArp()
     randomTickAmp = 0;
     randomVelocityAmp = 0;
     randomLengthAmp = 0;
-    hasNewNotes = false;
     repeatPatternThroughChord = 1;
     attack_time = 0.0;
     release_time = 0.0;
@@ -128,13 +129,14 @@ MidiArp::MidiArp()
     latchDelayTicks = latchDelayMsec * TPQN / 1000;
     trigDelayTicks = 4;
     
-    returnLength = 0;
     nextLength = 0;
+    Sample sample = {0, 0, 0, false};
+    outFrame.resize(MAXCHORD);
+    
     for (int l1 = 0; l1 < MAXCHORD; l1++) {
         noteIndex[l1] = 0;
         chordSemitone[l1] = 0;
-        returnVelocity[l1] = 0;
-        returnNote[l1] = 0;
+        outFrame[l1] = sample;
         nextVelocity[l1] = 0;
         nextNote[l1] = 0;
     }
@@ -506,7 +508,7 @@ void MidiArp::getNote(int64_t *tick, int64_t note[], int velocity[], int *length
     grooveTmp = (framePtr % 2) ? grooveLength : -grooveLength;
     *length = clip(len * stepWidth * (double)TPQN
             * (1.0 + 0.005 * (double)(randomLength + grooveTmp)), 2,
-            1000000,  &outOfRange);
+            1000000,  &outOfRange) * 4;
 
     if (!framePtr) grooveTick = newGrooveTick;
     grooveTmp = TPQN * stepWidth * grooveTick * 0.01;
@@ -627,25 +629,29 @@ void MidiArp::initLoop()
 void MidiArp::getNextFrame(int64_t askedTick)
 {
     gotKbdTrig = false;
+    Sample sample = {0, 0, 0, false};
     
     newRandomValues();
 
     int l1 = 0;
-    //allow 8 ticks of tolerance for echo tick for external sync
-    if ((askedTick + 8) >= nextTick) {
+    if (askedTick >= nextTick) {
         returnTick = nextTick;
         getNote(&nextTick, nextNote, nextVelocity, &nextLength);
         while ((l1 < MAXCHORD - 1) && (nextNote[l1] >= 0)) {
-            returnNote[l1] = nextNote[l1];
-            returnVelocity[l1] = nextVelocity[l1];
+            sample.data = nextNote[l1];
+            sample.value = nextVelocity[l1];
+            sample.tick = returnTick;
+            outFrame[l1] = sample;
             l1++;
         }
         returnLength = nextLength;
-        hasNewNotes = true;
     }
-    else hasNewNotes = false;
-    
-    returnNote[l1] = -1; // mark end of chord
+    else {
+        sample.data = -1;
+        outFrame[0] = sample;
+    }
+    sample.data = -1;
+    outFrame[l1] = sample; // mark end of chord
 }
 
 void MidiArp::foldReleaseTicks(int64_t tick)
@@ -670,7 +676,6 @@ void MidiArp::foldReleaseTicks(int64_t tick)
 void MidiArp::initArpTick(uint64_t tick)
 {
     arpTick = tick;
-    returnVelocity[0] = 0;
     nextTick  = tick;
     nextVelocity[0] = 0;
     noteIndex[0] = -1;

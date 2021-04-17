@@ -427,102 +427,66 @@ void MainWindow::helpAboutQt()
 
 void MainWindow::arpNew()
 {
-    QString name;
-    bool ok;
-
-    name = QInputDialog::getText(this, APP_NAME,
-            tr("Add MIDI Arpeggiator"), QLineEdit::Normal,
-            tr("%1").arg(engine->midiArpCount() + 1), &ok);
-    if (ok && !name.isEmpty()) {
-        addArp("Arp:"+name);
-    }
+    QString name = QString::number(engine->moduleWidgetCount("Arp") + 1);
+    addArp("Arp:"+name);
 }
 
 void MainWindow::lfoNew()
 {
-    QString name;
-    bool ok;
-
-    name = QInputDialog::getText(this, APP_NAME,
-            tr("Add MIDI LFO"), QLineEdit::Normal,
-            tr("%1").arg(engine->midiLfoCount() + 1), &ok);
-    if (ok && !name.isEmpty()) {
-        addLfo("LFO:"+name);
-    }
+    QString name = QString::number(engine->moduleWidgetCount("LFO") + 1);
+    addLfo("LFO:"+name);
 }
 
 void MainWindow::seqNew()
 {
-    QString name;
-    bool ok;
-
-    name = QInputDialog::getText(this, APP_NAME,
-            tr("Add Step Sequencer"), QLineEdit::Normal,
-            tr("%1").arg(engine->midiSeqCount() + 1), &ok);
-    if (ok && !name.isEmpty()) {
-        addSeq("Seq:"+name);
-    }
+    QString name = QString::number(engine->moduleWidgetCount("Seq") + 1);
+    addSeq("Seq:"+name);
 }
 
-void MainWindow::addArp(const QString& p_name, bool fromfile, bool inOutVisible)
+void MainWindow::addLfo(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
 {
-    int count, widgetID;
-    MidiArp *midiArp = new MidiArp();
-    ArpWidget *moduleWidget = new ArpWidget(midiArp, globStore,
+
+    MidiLfo *midiWorker = new MidiLfo();
+    LfoWidget *moduleWidget = new LfoWidget(midiWorker, globStore,
             prefs, inOutVisible, p_name);
-    connect(moduleWidget, SIGNAL(presetsChanged(const QString&, const
-                    QString&, int)),
-            this, SLOT(updatePatternPresets(const QString&, const
-                    QString&, int)));
-    connect(moduleWidget, SIGNAL(moduleRemove(int)),
-            this, SLOT(removeArp(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
-            engine, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
-            engine, SLOT(setMidiLearn(int, int)));
-
-    widgetID = engine->arpWidgetCount();
-    moduleWidget->ID = widgetID;
-    moduleWidget->midiControl->ID = widgetID;
-    moduleWidget->parStore->engineRunning = engine->status;
-
-    // if the module is added at a time when global stores are already
-    // present we fill up the new global parameter storage list with dummies
-    // and tag them empty
-    if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
-        moduleWidget->storeParams(l1, true);
-    }
-
-    engine->addMidiArp(midiArp);
-    engine->addArpWidget(moduleWidget);
-
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    moduleWidget->midiControl->parentDockID = count;
-    appendDock(moduleWidget, p_name, count);
-    connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
-            , engine->moduleWindow(count), SLOT(raise()));
-    checkIfFirstModule();
+    
+    addModule(moduleWidget, midiWorker, fromfile, clonefrom);
 }
 
-void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
+void MainWindow::addSeq(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
 {
+
+    MidiSeq *midiWorker = new MidiSeq();
+    SeqWidget *moduleWidget = new SeqWidget(midiWorker, globStore,
+            prefs, inOutVisible, p_name);
+    
+    addModule(moduleWidget, midiWorker, fromfile, clonefrom);
+}
+
+void MainWindow::addArp(const QString& p_name, bool fromfile, InOutBox *clonefrom, bool inOutVisible)
+{
+    (void)clonefrom;
+    
+    MidiArp *midiWorker = new MidiArp();
+    ArpWidget *moduleWidget = new ArpWidget(midiWorker, globStore,
+            prefs, inOutVisible, p_name);
+    
+    addModule(moduleWidget, midiWorker, fromfile, nullptr);
+}
+void MainWindow::addModule(InOutBox *moduleWidget, MidiWorker *midiWorker, bool fromfile, InOutBox *clonefrom)
+{
+
     int widgetID, count;
-
-    MidiLfo *midiLfo = new MidiLfo();
-    LfoWidget *moduleWidget = new LfoWidget(midiLfo, globStore,
-            prefs, inOutVisible, p_name);
-    connect(moduleWidget, SIGNAL(moduleRemove(int)),
-            this, SLOT(removeLfo(int)));
-    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneLfo(int)));
+    connect(moduleWidget, SIGNAL(removeModule()), this, SLOT(removeModule()));
+    connect(moduleWidget, SIGNAL(cloneModule()), this, SLOT(cloneModule()));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
             engine, SLOT(renameDock(const QString&, int)));
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
             engine, SLOT(setMidiLearn(int, int)));
 
-    widgetID = engine->lfoWidgetCount();
-    if (clonefrom >= 0) {
-        moduleWidget->copyParamsFrom(engine->lfoWidget(clonefrom));
+    widgetID = engine->moduleWidgetCount(moduleWidget->name);
+    if (clonefrom != nullptr) {
+        moduleWidget->copyParamsFrom(clonefrom);
     }
 
     //TODO: transfer these items to constructor
@@ -537,152 +501,64 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, int clonefrom, boo
         moduleWidget->storeParams(l1, true);
     }
 
-    if (clonefrom >= 0) {
-        midiLfo->reverse = engine->lfoWidget(clonefrom)->getReverse();
-        midiLfo->setNextTick(engine->lfoWidget(clonefrom)->getNextTick());
+    if (clonefrom != nullptr) {
+        midiWorker->reverse = clonefrom->getReverse();
+        midiWorker->setNextTick(clonefrom->getNextTick());
     }
-    else if (engine->lfoWidgetCount())
-        midiLfo->setNextTick(engine->lfoWidget(0)->getNextTick());
+    else if (engine->moduleWidgetCount())
+        midiWorker->setNextTick(engine->moduleWidget(0)->getNextTick());
 
-    engine->addMidiLfo(midiLfo);
-    engine->addLfoWidget(moduleWidget);
 
-    count = engine->moduleWindowCount();
+    count = engine->moduleWidgetCount();
     moduleWidget->parentDockID = count;
     moduleWidget->midiControl->parentDockID = count;
-    appendDock(moduleWidget, p_name, count);
+    appendDock(moduleWidget, count);
+
+    engine->addModuleWidget(moduleWidget);
+    globStore->addModule(moduleWidget->name);
+
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
-            , engine->moduleWindow(count), SLOT(raise()));
+            , engine->moduleWidget(count)->parent(), SLOT(raise()));
 
     checkIfFirstModule();
 }
 
-void MainWindow::addSeq(const QString& p_name, bool fromfile, int clonefrom, bool inOutVisible)
+void MainWindow::cloneModule()
 {
-    int widgetID, count;
-
-    MidiSeq *midiSeq = new MidiSeq();
-    SeqWidget *moduleWidget = new SeqWidget(midiSeq, globStore,
-            prefs, inOutVisible, p_name);
-    connect(moduleWidget, SIGNAL(moduleRemove(int)), this, SLOT(removeSeq(int)));
-    connect(moduleWidget, SIGNAL(moduleClone(int)), this, SLOT(cloneSeq(int)));
-    connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
-            engine, SLOT(renameDock(const QString&, int)));
-    connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
-            engine, SLOT(setMidiLearn(int, int)));
-
-    widgetID = engine->seqWidgetCount();
-    if (clonefrom >= 0) {
-        moduleWidget->copyParamsFrom(engine->seqWidget(clonefrom));
-    }
-    moduleWidget->ID = widgetID;
-    moduleWidget->midiControl->ID = widgetID;
-    moduleWidget->parStore->engineRunning = engine->status;
-
-    // if the module is added at a time when global stores are already
-    // present we fill up the new global parameter storage list with dummies
-    // and tag them empty
-    if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
-        moduleWidget->storeParams(l1, true);
-    }
-
-    if (clonefrom >= 0) {
-        midiSeq->reverse = engine->seqWidget(clonefrom)->getReverse();
-        midiSeq->setNextTick(engine->seqWidget(clonefrom)->getNextTick());
-    }
-    else if (engine->seqWidgetCount())
-        midiSeq->setNextTick(engine->seqWidget(0)->getNextTick());
-
-    engine->addMidiSeq(midiSeq);
-    engine->addSeqWidget(moduleWidget);
-
-    count = engine->moduleWindowCount();
-    moduleWidget->parentDockID = count;
-    moduleWidget->midiControl->parentDockID = count;
-    appendDock(moduleWidget, p_name, count);
-    connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
-            , engine->moduleWindow(count), SLOT(raise()));
-    checkIfFirstModule();
+    QString name = ((InOutBox *)sender())->name + "_0";
+    InOutBox *clonefrom = (InOutBox *)sender();
+    
+    if (name.startsWith("LFO:"))
+        addLfo(name, false, clonefrom);
+    else if (name.startsWith("Seq:"))
+        addSeq(name, false, clonefrom);
+    else if (name.startsWith("Arp:"))
+        addArp(name, false, clonefrom);
 }
 
-void MainWindow::cloneLfo(int ID)
+void MainWindow::appendDock(InOutBox *moduleWidget, int count)
 {
-    QString name;
-    name = engine->lfoWidget(ID)->name + "_0";
-    addLfo(name, false, ID);
-}
-
-void MainWindow::cloneSeq(int ID)
-{
-    QString name;
-    name = engine->seqWidget(ID)->name + "_0";
-    addSeq(name, false, ID);
-}
-
-void MainWindow::appendDock(QWidget *moduleWidget, const QString &name, int count)
-{
-    QDockWidget *moduleWindow = new QDockWidget(name, this);
+    QDockWidget *moduleWindow = new QDockWidget(moduleWidget->name, this);
     moduleWindow->setFeatures(QDockWidget::DockWidgetMovable
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(moduleWidget);
-    moduleWindow->setObjectName(name);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
-    if (prefs->compactStyle) moduleWindow->setStyleSheet(COMPACT_STYLE);
+    if (prefs->compactStyle) moduleWidget->setStyleSheet(COMPACT_STYLE);
 
-    if (count) tabifyDockWidget(engine->moduleWindow(count - 1), moduleWindow);
+    if (count) tabifyDockWidget(((QDockWidget *)engine->moduleWidget(count - 1)->parent()), moduleWindow);
+    moduleWindow->setObjectName(moduleWindow->windowTitle());
     moduleWindow->show();
     moduleWindow->raise();
-    engine->addModuleWindow(moduleWindow);
-    globStore->addModule(name);
 }
 
-void MainWindow::removeArp(int index)
+void MainWindow::removeModule()
 {
-    int parentDockID;
-    ArpWidget *arpWidget = engine->arpWidget(index);
+    InOutBox *moduleWidget = (InOutBox *)sender();
+    int parentDockID = moduleWidget->parentDockID;
 
-    parentDockID = arpWidget->parentDockID;
-    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
     globStore->removeModule(parentDockID);
-
-    engine->removeMidiArp(arpWidget->getMidiWorker());
-    engine->removeArpWidget(arpWidget);
-    delete arpWidget;
-    engine->removeModuleWindow(dockWidget);
-    engine->updateIDs(parentDockID);
-    checkIfLastModule();
-}
-
-void MainWindow::removeLfo(int index)
-{
-    int parentDockID;
-    LfoWidget *lfoWidget = engine->lfoWidget(index);
-
-    parentDockID = lfoWidget->parentDockID;
-    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->removeModule(parentDockID);
-
-    engine->removeMidiLfo(lfoWidget->getMidiWorker());
-    engine->removeLfoWidget(lfoWidget);
-    delete lfoWidget;
-    engine->removeModuleWindow(dockWidget);
-    engine->updateIDs(parentDockID);
-    checkIfLastModule();
-}
-
-void MainWindow::removeSeq(int index)
-{
-    int parentDockID;
-    SeqWidget *seqWidget = engine->seqWidget(index);
-
-    parentDockID = seqWidget->parentDockID;
-    QDockWidget *dockWidget = engine->moduleWindow(parentDockID);
-    globStore->removeModule(parentDockID);
-
-    engine->removeMidiSeq(seqWidget->getMidiWorker());
-    engine->removeSeqWidget(seqWidget);
-    delete seqWidget;
-    engine->removeModuleWindow(dockWidget);
+    engine->removeModuleWidget(moduleWidget);
+    
     engine->updateIDs(parentDockID);
     checkIfLastModule();
 }
@@ -697,18 +573,11 @@ void MainWindow::clear()
     }
     globStore->setDispState(0, 0);
     globStore->midiControl->ccList.clear();
-    while (engine->midiArpCount()) {
-        removeArp(engine->midiArpCount() - 1);
+    while (engine->moduleWidgetCount()) {
+        globStore->removeModule(0);
+        engine->removeModuleWidget(engine->moduleWidget(0));
     }
-
-    while (engine->midiLfoCount()) {
-        removeLfo(engine->midiLfoCount() - 1);
-    }
-
-    while (engine->midiSeqCount()) {
-        removeSeq(engine->midiSeqCount() - 1);
-    }
-
+    checkIfLastModule();
     grooveWidget->midiControl->ccList.clear();
 
 }
@@ -886,7 +755,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
         if (xml.isStartElement() && (xml.name() == "Arp")) {
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addArp("Arp:" + xml.attributes().value("name").toString(), true, iovis);
+            addArp("Arp:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
             engine->arpWidget(engine->midiArpCount() - 1)
                     ->readData(xml, qmaxVersion);
             count++;
@@ -899,7 +768,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addLfo("LFO:" + xml.attributes().value("name").toString(), true, -1, iovis);
+            addLfo("LFO:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
             int modNumber = engine->midiLfoCount() - 1;
             engine->lfoWidget(modNumber)->readData(xml, qmaxVersion);
             
@@ -923,7 +792,7 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addSeq("Seq:" + xml.attributes().value("name").toString(), true, -1, iovis);
+            addSeq("Seq:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
             
             int modNumber = engine->midiSeqCount() - 1;
             engine->seqWidget(modNumber)->readData(xml, qmaxVersion);
@@ -990,11 +859,6 @@ void MainWindow::fileSave()
 
 bool MainWindow::saveFile()
 {
-    int l1;
-    int ns = 0;
-    int nl = 0;
-    int na = 0;
-
     QFile f(filename);
     QString nameTest;
 
@@ -1043,23 +907,8 @@ bool MainWindow::saveFile()
 
     xml.writeStartElement("modules");
 
-    for (l1 = 0; l1 < engine->moduleWindowCount(); l1++) {
-
-        nameTest = engine->moduleWindow(l1)->objectName();
-
-        if (nameTest.startsWith('S')) {
-            engine->seqWidget(ns)->writeData(xml);
-            ns++;
-        }
-        if (nameTest.startsWith('L')) {
-            engine->lfoWidget(nl)->writeData(xml);
-            nl++;
-        }
-        if (nameTest.startsWith('A')) {
-            engine->arpWidget(na)->writeData(xml);
-            na++;
-        }
-    }
+    for (int l1 = 0; l1 < engine->moduleWidgetCount(); l1++)
+            engine->moduleWidget(l1)->writeData(xml);
 
     xml.writeEndElement();
 
@@ -1426,7 +1275,7 @@ void MainWindow::updatePatternPresets(const QString& n, const QString& p,
 
 void MainWindow::checkIfLastModule()
 {
-    if (!engine->moduleWindowCount()) {
+    if (!engine->moduleWidgetCount()) {
         runAction->setDisabled(true);
         runAction->setChecked(false);
         midiClockAction->setDisabled(true);
@@ -1442,7 +1291,7 @@ void MainWindow::checkIfLastModule()
 
 void MainWindow::checkIfFirstModule()
 {
-    if (engine->moduleWindowCount() == 1) {
+    if (engine->moduleWidgetCount() == 1) {
         if (alsaMidi) midiClockAction->setEnabled(true);
         jackSyncAction->setEnabled(true);
         fileSaveAction->setEnabled(true);

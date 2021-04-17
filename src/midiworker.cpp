@@ -59,6 +59,9 @@ MidiWorker::MidiWorker()
     curLoopMode = 0;
     noteCount = 0;
     nextTick = 0;
+
+    returnLength = 0;
+
     grooveTick = 0;
     newGrooveTick = 0;
     grooveVelocity = 0;

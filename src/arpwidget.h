@@ -114,7 +114,7 @@ class ArpWidget :  public InOutBox
 *
 * @param xml QXmlStreamWriter to write to
 */
-    void writeData(QXmlStreamWriter& xml);
+    void writeData(QXmlStreamWriter& xml) override;
 /*!
 * @brief returns the MidiArp instance associated with this GUI
 * Widget.

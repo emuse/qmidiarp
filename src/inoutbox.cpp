@@ -568,7 +568,7 @@ void InOutBox::moduleDelete()
             == QMessageBox::No) {
         return;
     }
-    emit moduleRemove(ID);
+    emit removeModule();
 #endif
 }
 
@@ -593,7 +593,7 @@ void InOutBox::moduleRename()
 void InOutBox::moduleClone()
 {
 #ifdef APPBUILD
-        emit moduleClone(ID);
+        emit cloneModule();
 #endif
 }
 

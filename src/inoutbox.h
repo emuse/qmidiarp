@@ -40,7 +40,6 @@
 
 #ifdef APPBUILD
 #include <QInputDialog>
-
 #include "parstore.h"
 #include "prefs.h"
 #endif
@@ -78,7 +77,7 @@ class InOutBox: public QWidget
             Prefs *p_prefs, bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
-    int parentDockID;   /**< @brief The index of the Widget's parent DockWidget in Engine::moduleWindowList */
+    int parentDockID;   /**< @brief The index of the Widget in Engine::moduleWidgetList */
     Prefs *prefs;
     ParStore *parStore;
     MidiControl *midiControl;
@@ -200,6 +199,13 @@ class InOutBox: public QWidget
     virtual bool prepareNextFrame(bool echo_from_trig, int syncTol,
                 int64_t tick, int64_t *restoreTick, bool *restoreFlag);
 /*!
+* @brief writes all parameters of this module to an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to write to
+*/
+    virtual void writeData(QXmlStreamWriter& xml) = 0;
+/*!
 * @brief allows ignoring one XML element in the XML stream
 * passed by the caller.
 *
@@ -258,6 +264,9 @@ class InOutBox: public QWidget
 * @param ix The storage location index to read from
 */
     virtual void restoreParams(int ix);
+
+    virtual void copyParamsFrom(InOutBox *fromWidget) { (void)fromWidget; };
+
 /*!
 * @brief Slot for the InOutBox::channelOut spinbox setting the output
 * channel of this module.
@@ -309,20 +318,20 @@ class InOutBox: public QWidget
 */
     virtual void setMuted(bool on);
 
+    bool getReverse() { return midiWorker->reverse; }
+
   signals:
 
 /*! @brief Emitted to MainWindow::removeSeq for module deletion.
- *  @param ID The internal module ID of the module to remove
  *  */
-    void moduleRemove(int ID);
+    void removeModule();
 /*! @brief Emitted to MainWindow::renameDock for module rename.
  *  @param mname New name of the module
  *  @param parentDockID parentDockID of the module to rename
  * */
     void dockRename(const QString& mname, int parentDockID);
 /*! @brief Emitted to MainWindow::cloneSeq for module duplication.
- *  @param ID module ID of the module to clone
  * */
-    void moduleClone(int ID);
+    void cloneModule();
 };
 #endif

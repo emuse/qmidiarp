@@ -108,20 +108,9 @@ Engine::~Engine()
 }
 
 //Arp handling
-void Engine::addMidiArp(MidiArp *midiArp)
-{
-    midiArpList.append(midiArp);
-}
-
-void Engine::addArpWidget(ArpWidget *arpWidget)
-{
-    arpWidgetList.append(arpWidget);
-    modified = true;
-}
-
 void Engine::removeMidiArp(MidiArp *midiArp)
 {
-    if (status && (moduleWindowCount() < 1)) {
+    if (status && (moduleWidgetCount() < 1)) {
         setStatus(false);
     }
     int i = midiArpList.indexOf(midiArp);
@@ -146,11 +135,6 @@ void Engine::updatePatternPresets(const QString& n, const QString& p, int index)
 int Engine::midiArpCount()
 {
     return(midiArpList.count());
-}
-
-int Engine::arpWidgetCount()
-{
-    return(arpWidgetList.count());
 }
 
 MidiArp *Engine::midiArp(int index)
@@ -188,31 +172,17 @@ void Engine::setGrooveLength(int val)
 void Engine::sendGroove(int ix)
 {
     if (ix  == -1)
-        for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-            ((InOutBox *)moduleWindow(l1)->widget())
-                ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
+        for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+            moduleWidget(l1)->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
         }
     else
-        ((InOutBox *)moduleWindow(ix)->widget())
-                ->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
+        moduleWidget(ix)->newGrooveValues(grooveTick, grooveVelocity, grooveLength);
 }
 
 //LFO handling
-
-void Engine::addMidiLfo(MidiLfo *midiLfo)
-{
-    midiLfoList.append(midiLfo);
-}
-
-void Engine::addLfoWidget(LfoWidget *lfoWidget)
-{
-    lfoWidgetList.append(lfoWidget);
-    modified = true;
-}
-
 void Engine::removeMidiLfo(MidiLfo *midiLfo)
 {
-    if (status && (moduleWindowCount() < 1)) {
+    if (status && (moduleWidgetCount() < 1)) {
         setStatus(false);
     }
     int i = midiLfoList.indexOf(midiLfo);
@@ -232,11 +202,6 @@ int Engine::midiLfoCount()
     return(midiLfoList.count());
 }
 
-int Engine::lfoWidgetCount()
-{
-    return(lfoWidgetList.count());
-}
-
 MidiLfo *Engine::midiLfo(int index)
 {
     return(midiLfoList.at(index));
@@ -249,20 +214,9 @@ LfoWidget *Engine::lfoWidget(int index)
 
 //SEQ handling
 
-void Engine::addMidiSeq(MidiSeq *midiSeq)
-{
-    midiSeqList.append(midiSeq);
-}
-
-void Engine::addSeqWidget(SeqWidget *seqWidget)
-{
-    seqWidgetList.append(seqWidget);
-    modified = true;
-}
-
 void Engine::removeMidiSeq(MidiSeq *midiSeq)
 {
-    if (status && (moduleWindowCount() < 1)) {
+    if (status && (moduleWidgetCount() < 1)) {
         setStatus(false);
     }
     int i = midiSeqList.indexOf(midiSeq);
@@ -282,11 +236,6 @@ int Engine::midiSeqCount()
     return(midiSeqList.count());
 }
 
-int Engine::seqWidgetCount()
-{
-    return(seqWidgetList.count());
-}
-
 MidiSeq *Engine::midiSeq(int index)
 {
     return(midiSeqList.at(index));
@@ -299,37 +248,68 @@ SeqWidget *Engine::seqWidget(int index)
 
 //module Window handling (dockWidgets)
 
-void Engine::addModuleWindow(QDockWidget *moduleWindow)
+void Engine::addModuleWidget(InOutBox *moduleWidget)
 {
-    moduleWindowList.append(moduleWindow);
-    sendGroove(moduleWindowCount() - 1);
+
+    if (moduleWidget->name.startsWith("LFO:")) {
+        midiLfoList.append((MidiLfo *)moduleWidget->midiWorker);
+        lfoWidgetList.append((LfoWidget *)moduleWidget);
+    }
+    else if (moduleWidget->name.startsWith("Arp:")) {
+        midiArpList.append((MidiArp *)moduleWidget->midiWorker);
+        arpWidgetList.append((ArpWidget *)moduleWidget);
+    }
+    else if (moduleWidget->name.startsWith("Seq:")) {
+        midiSeqList.append((MidiSeq *)moduleWidget->midiWorker);
+        seqWidgetList.append((SeqWidget *)moduleWidget);
+    }
+    
+    moduleWidgetList.append(moduleWidget);
+    sendGroove(moduleWidgetCount() - 1);
     updateGlobRestoreTimeModule(restoreModIx);
 
     modified = true;
 }
 
-void Engine::removeModuleWindow(QDockWidget *moduleWindow)
+void Engine::removeModuleWidget(InOutBox *moduleWidget)
 {
-    moduleWindowList.removeOne(moduleWindow);
-    delete moduleWindow;
+    moduleWidgetList.removeOne(moduleWidget);
+    
+    if (moduleWidget->name.startsWith("LFO:")) {
+        removeLfoWidget((LfoWidget *)moduleWidget);
+    }
+    else if (moduleWidget->name.startsWith("Arp:")) {
+        removeArpWidget((ArpWidget *)moduleWidget);
+    }
+    else if (moduleWidget->name.startsWith("Seq:")) {
+        removeSeqWidget((SeqWidget *)moduleWidget);
+    }
+    
+    delete moduleWidget->parent();
     modified = true;
 }
 
-QDockWidget *Engine::moduleWindow(int index)
+InOutBox *Engine::moduleWidget(int index)
 {
-    return(moduleWindowList.at(index));
+    return(moduleWidgetList.at(index));
 }
 
-int Engine::moduleWindowCount()
+int Engine::moduleWidgetCount(const QString &mtype)
 {
-    return(moduleWindowList.count());
+    if (mtype.startsWith("LFO"))
+        return(lfoWidgetList.count());
+    else if (mtype.startsWith("Seq"))
+        return(seqWidgetList.count());
+    else if (mtype.startsWith("Arp"))
+        return(arpWidgetList.count());
+    else 
+        return moduleWidgetList.count();
 }
 
 void Engine::renameDock(const QString& name, int parentDockID)
 {
-    moduleWindow(parentDockID)->setWindowTitle(name);
-    ((InOutBox *)moduleWindow(parentDockID)->widget())
-            ->parStore->topButton->setText(name);
+    ( (QDockWidget *)(moduleWidget(parentDockID)->parent()) )->setWindowTitle(name);
+    moduleWidget(parentDockID)->parStore->topButton->setText(name);
     setModified(true);
 }
 
@@ -337,7 +317,7 @@ void Engine::renameDock(const QString& name, int parentDockID)
 void Engine::updateIDs(int curID)
 {
     int l1, tempDockID;
-    for (l1 = 0; l1 < arpWidgetCount(); l1++) {
+    for (l1 = 0; l1 < moduleWidgetCount("Arp"); l1++) {
         arpWidget(l1)->ID = l1;
         arpWidget(l1)->midiControl->ID = l1;
         tempDockID = arpWidget(l1)->parentDockID;
@@ -346,7 +326,7 @@ void Engine::updateIDs(int curID)
             arpWidget(l1)->midiControl->parentDockID = tempDockID - 1;
         }
     }
-    for (l1 = 0; l1 < lfoWidgetCount(); l1++) {
+    for (l1 = 0; l1 < moduleWidgetCount("LFO"); l1++) {
         lfoWidget(l1)->ID = l1;
         lfoWidget(l1)->midiControl->ID = l1;
         tempDockID = lfoWidget(l1)->parentDockID;
@@ -355,7 +335,7 @@ void Engine::updateIDs(int curID)
             lfoWidget(l1)->midiControl->parentDockID = tempDockID - 1;
         }
     }
-    for (l1 = 0; l1 < seqWidgetCount(); l1++) {
+    for (l1 = 0; l1 < moduleWidgetCount("Seq"); l1++) {
         seqWidget(l1)->ID = l1;
         seqWidget(l1)->midiControl->ID = l1;
         tempDockID = seqWidget(l1)->parentDockID;
@@ -372,25 +352,25 @@ void Engine::setCompactStyle(bool on)
 {
     int l1;
     if (on) {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++) {
-            moduleWindow(l1)->setStyleSheet(COMPACT_STYLE);
+        for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+            moduleWidget(l1)->setStyleSheet(COMPACT_STYLE);
         }
     }
     else {
-        for (l1 = 0; l1 < moduleWindowCount(); l1++) {
-            moduleWindow(l1)->setStyleSheet("");
+        for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+            moduleWidget(l1)->setStyleSheet("");
         }
     }
 }
 
 bool Engine::isModified()
 {
-    if (!moduleWindowCount()) return false;
+    if (!moduleWidgetCount()) return false;
 
     bool modmodified = false;
 
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        if ( ((InOutBox *)moduleWindow(l1)->widget())->isModified() ) {
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        if ( moduleWidget(l1)->isModified() ) {
             modmodified = true;
             break;
         }
@@ -403,9 +383,9 @@ void Engine::setModified(bool m)
 {
     modified = m;
 
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->needsGUIUpdate = false;
-        ((InOutBox *)moduleWindow(l1)->widget())->setModified(m);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->needsGUIUpdate = false;
+        moduleWidget(l1)->setModified(m);
     }
 
     globStoreWidget->setModified(m);
@@ -430,7 +410,7 @@ int Engine::getClientId()
 
 void Engine::setStatus(bool on)
 {
-    if (!moduleWindowCount()) return;
+    if (!moduleWidgetCount()) return;
     if (!on) {
         for (int l1 = 0; l1 < midiArpCount(); l1++) {
             midiArp(l1)->clearNoteBuffer();
@@ -438,8 +418,8 @@ void Engine::setStatus(bool on)
     }
     status = on;
     driver->setTransportStatus(on);
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->parStore->engineRunning = on;
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->parStore->engineRunning = on;
     }
     if (on) {
         resetTicks(driver->getCurrentTick());
@@ -457,8 +437,6 @@ void Engine::echoCallback(bool echo_from_trig)
     int l1, l2;
     int tol = alsaSyncTol;
     int tick = driver->getCurrentTick();
-    int length;
-    int outport;
     bool restoreFlag = (restoreRequest >= 0);
     
     currentTick = tick;
@@ -466,67 +444,37 @@ void Engine::echoCallback(bool echo_from_trig)
         //~ printf("       tick %d     ",tick);
         //~ printf("nextMinTick %d  ",nextMinTick);
     
-    //LFO data request and queueing
-    for (l1 = 0; l1 < midiLfoCount(); l1++) {
-        if (lfoWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick, 
+    //Module data request and queueing
+    for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        if (moduleWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick, 
                                        &restoreTick, &restoreFlag)) {
-            MidiEvent outEv = mkMidiEvent(EV_CONTROLLER, midiLfo(l1)->channelOut, 
-                                        midiLfo(l1)->ccnumber);
-            outport = midiLfo(l1)->portOut;
+            MidiWorker *midiWorker = moduleWidget(l1)->midiWorker;
+            
             l2 = 0;
-            while (midiLfo(l1)->frame.at(l2).value > -1) {
-                if (!midiLfo(l1)->frame.at(l2).muted && !midiLfo(l1)->isMuted) {
-                    outEv.value = midiLfo(l1)->frame.at(l2).value;
-                    driver->sendMidiEvent(outEv, midiLfo(l1)->frame.at(l2).tick
-                        , outport);
+            while (midiWorker->outFrame[l2].data > -1) {
+                if (!midiWorker->outFrame[l2].muted && !midiWorker->isMuted) {
+                    MidiEvent outEv = mkMidiEvent(
+                                        midiWorker->eventType, 
+                                        midiWorker->channelOut, 
+                                        midiWorker->outFrame[l2].data, 
+                                        midiWorker->outFrame[l2].value);
+                    driver->sendMidiEvent(outEv, 
+                                        midiWorker->outFrame[l2].tick,
+                                        midiWorker->portOut, 
+                                        midiWorker->returnLength);
                 }
                 l2++;
             }
         }
     }
-
-    //Seq notes data request and queueing
-    for (l1 = 0; l1 < midiSeqCount(); l1++) {
-        if (seqWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick, 
-                                       &restoreTick, &restoreFlag)) {
-            MidiEvent outEv = mkMidiEvent(EV_NOTEON, midiSeq(l1)->channelOut, 0,
-                                        midiSeq(l1)->vel);
-            length = midiSeq(l1)->notelength;
-            outport = midiSeq(l1)->portOut;
-            if ((!midiSeq(l1)->isMuted) && (!midiSeq(l1)->returnNote.muted)) {
-                outEv.data = midiSeq(l1)->returnNote.value;
-                driver->sendMidiEvent(outEv, midiSeq(l1)->returnNote.tick, outport, length);
-            }
-        }
-    }
-
-    //Arp Note queueing
-    for (l1 = 0; l1 < midiArpCount(); l1++) {
-        if (arpWidget(l1)->prepareNextFrame(echo_from_trig, tol, tick + schedDelayTicks, 
-                                       &restoreTick, &restoreFlag)) {
-            MidiEvent outEv = mkMidiEvent(EV_NOTEON, midiArp(l1)->channelOut);
-            length = midiArp(l1)->returnLength * 4;
-            int note_tick = midiArp(l1)->returnTick;
-            outport = midiArp(l1)->portOut;
-            if (midiArp(l1)->hasNewNotes && midiArp(l1)->returnVelocity[0]) {
-                l2 = 0;
-                while(midiArp(l1)->returnNote[l2] >= 0) {
-                    outEv.data = midiArp(l1)->returnNote[l2];
-                    outEv.value = midiArp(l1)->returnVelocity[l2];
-                    driver->sendMidiEvent(outEv, note_tick, outport, length);
-                    l2++;
-                }
-            }
-        }
-    }
     
     //Calculate timing of next echo to be requested (minimum of all modules)
-    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
-        int64_t nt = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker->nextTick - schedDelayTicks;
+    for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        int64_t nt = moduleWidget(l1)->midiWorker->nextTick - schedDelayTicks;
         if (nt < nextMinTick + schedDelayTicks || !l1) nextMinTick = nt;            
     }
     if (nextMinTick < 0) nextMinTick = 0;
-    if (moduleWindowCount()) driver->requestEchoAt(nextMinTick, 0);
+    if (moduleWidgetCount()) driver->requestEchoAt(nextMinTick, 0);
 
     if (restoreFlag && (globStoreWidget->timeModeBox->currentIndex())) {
         int percent = 100 * (currentTick - requestTick) / (restoreTick - requestTick);
@@ -534,7 +482,7 @@ void Engine::echoCallback(bool echo_from_trig)
     }
 
     if ((restoreTick > -1)
-        && (!moduleWindowCount() || (nextMinTick + schedDelayTicks >= restoreTick))) {
+        && (!moduleWidgetCount() || (nextMinTick + schedDelayTicks >= restoreTick))) {
         restoreTick = -1;
         // TODO: At term the following should be restore() instead of
         // schedRestore(). restore is not yet fit for realtime. But
@@ -581,19 +529,17 @@ bool Engine::eventCallback(MidiEvent inEv)
     if (midiLearnFlag && inEv.type == EV_NOTEON) {   //input range midi learn
         if (midiLearnWindowID > 0) {
             if (midiLearnID == 10) {
-                ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
-                    ->indexIn[0]->setValue(inEv.data);
+                moduleWidget(midiLearnModuleID)->indexIn[0]->setValue(inEv.data);
             }
             else if (midiLearnID == 11) {
-                ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
-                    ->indexIn[1]->setValue(inEv.data);
+                moduleWidget(midiLearnModuleID)->indexIn[1]->setValue(inEv.data);
             }
             midiLearnFlag = false;
         }
     }
-    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
-        MidiWorker *midiWorker = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker;
-        if (status && moduleWindow(l1)->objectName().startsWith("Arp:")) {
+    for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        MidiWorker *midiWorker = moduleWidget(l1)->midiWorker;
+        if (status && moduleWidget(l1)->name.startsWith("Arp:")) {
             unmatched = midiWorker->handleEvent(inEv, tick, 1);
         }
         else {
@@ -621,8 +567,8 @@ bool Engine::eventCallback(MidiEvent inEv)
 
 void Engine::showAllIOPanels(bool on)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->hideInOutBoxAction->setChecked(on);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->hideInOutBoxAction->setChecked(on);
     }
 }
 
@@ -632,9 +578,8 @@ void Engine::sendController(int ccnumber, int channel, int value)
     grooveWidget->handleController(ccnumber, channel, value);
     globStoreWidget->handleController(ccnumber, channel, value);
 
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())
-            ->handleController(ccnumber, channel, value);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->handleController(ccnumber, channel, value);
     }
 }
 
@@ -655,8 +600,7 @@ void Engine::learnController(int ccnumber, int channel)
         }
 
     if (midiLearnWindowID == -3) {
-        midiControl->requestAppendMidiCC(midiLearnID,
-                ccnumber, channel, 0, 127);
+        midiControl->requestAppendMidiCC(midiLearnID, ccnumber, channel, 0, 127);
         midiLearnFlag = false;
         return;
         }
@@ -664,9 +608,8 @@ void Engine::learnController(int ccnumber, int channel)
     int min = (midiLearnID) ? 0 : 127; //if control is toggle min=max
 
     if (midiLearnWindowID > 0) {
-        ((InOutBox *)moduleWindow(midiLearnModuleID)->widget())
-                ->midiControl->requestAppendMidiCC(midiLearnID,
-                ccnumber, channel, min, 127);
+        moduleWidget(midiLearnModuleID)->midiControl
+            ->requestAppendMidiCC(midiLearnID, ccnumber, channel, min, 127);
     }
     midiLearnFlag = false;
 }
@@ -688,15 +631,14 @@ void Engine::handleController(int ccnumber, int channel, int value)
 
 void Engine::resetTicks(int curtick)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        MidiWorker *midiWorker = ((InOutBox *)moduleWindow(l1)->widget())->midiWorker;
-        if (status && moduleWindow(l1)->objectName().startsWith("Arp:")) {
-            midiWorker->foldReleaseTicks(driver->trStartingTick - curtick);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        if (status && moduleWidget(l1)->name.startsWith("Arp:")) {
+            moduleWidget(l1)->midiWorker->foldReleaseTicks(driver->trStartingTick - curtick);
         }
-        midiWorker->setNextTick(curtick);
-        if (!l1) nextMinTick = midiWorker->nextTick;
-        if (midiWorker->nextTick < nextMinTick)
-            nextMinTick=midiWorker->nextTick;
+        moduleWidget(l1)->midiWorker->setNextTick(curtick);
+        if (!l1) nextMinTick = moduleWidget(l1)->midiWorker->nextTick;
+        if (moduleWidget(l1)->midiWorker->nextTick < nextMinTick)
+            nextMinTick=moduleWidget(l1)->midiWorker->nextTick;
     }
 }
 
@@ -730,7 +672,7 @@ void Engine::setUseJackTransport(bool on)
     modified = true;
 }
 
-void Engine::setMidiLearn(int moduleWindowID, int controlID)
+void Engine::setMidiLearn(int moduleWidgetID, int controlID)
 {
     if (0 > controlID) {
         midiLearnFlag = false;
@@ -738,9 +680,9 @@ void Engine::setMidiLearn(int moduleWindowID, int controlID)
     }
     else {
         midiLearnFlag = true;
-        midiLearnWindowID = moduleWindowID;
+        midiLearnWindowID = moduleWidgetID;
         if (midiLearnWindowID >= 0) midiLearnWindowID = 1;
-        midiLearnModuleID = moduleWindowID;
+        midiLearnModuleID = moduleWidgetID;
         midiLearnID = controlID;
     }
 }
@@ -776,8 +718,8 @@ void Engine::tr_state_cb(bool on, void *context)
 
 void Engine::store(int ix)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->storeParams(ix);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->storeParams(ix);
     }
 }
 
@@ -805,9 +747,9 @@ void Engine::schedRestore(int ix)
 
 void Engine::restore(int ix)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->parStore->setRestoreRequest(ix, true);
-        ((InOutBox *)moduleWindow(l1)->widget())->parStore->oldRestoreRequest = ix;
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->parStore->setRestoreRequest(ix, true);
+        moduleWidget(l1)->parStore->oldRestoreRequest = ix;
     }
 
     restoreRequest = -1;
@@ -817,17 +759,15 @@ void Engine::restore(int ix)
 
 void Engine::removeParStores(int ix)
 {
-    for (int l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->parStore->removeLocation(ix);
+    for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->parStore->removeLocation(ix);
     }
 }
 
 void Engine::updateGlobRestoreTimeModule(int windowIndex)
 {
-    ((InOutBox *)moduleWindow(restoreModIx)->widget())
-            ->parStore->isRestoreMaster = false;
-    ((InOutBox *)moduleWindow(windowIndex)->widget())
-            ->parStore->isRestoreMaster = true;
+    moduleWidget(restoreModIx)->parStore->isRestoreMaster = false;
+    moduleWidget(windowIndex)->parStore->isRestoreMaster = true;
 
     restoreModIx = windowIndex;
 }
@@ -845,8 +785,8 @@ void Engine::updateDisplay()
         schedRestoreLocation = -1;
     }
 
-    for (l1 = 0; l1 < moduleWindowCount(); l1++) {
-        ((InOutBox *)moduleWindow(l1)->widget())->updateDisplay();
+    for (l1 = 0; l1 < moduleWidgetCount(); l1++) {
+        moduleWidget(l1)->updateDisplay();
     }
 
     globStoreWidget->updateDisplay();

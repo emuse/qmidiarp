@@ -265,7 +265,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
         tempArray.clear();
         l1 = 0;
         while (l1 < midiSeq->maxNPoints) {
-            tempArray.append(midiSeq->customWave.at(l1).value);
+            tempArray.append(midiSeq->customWave.at(l1).data);
             l1++;
         }
         xml.writeStartElement("sequence");
@@ -280,7 +280,7 @@ void SeqWidget::writeData(QXmlStreamWriter& xml)
 void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
     int tmp;
-    Sample sample;
+    Sample sample = {0, 0, 0, false};
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -369,7 +369,7 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     int step = TPQN / midiSeq->res;
                     int lt = 0;
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
-                        sample.value = tmpArray.at(l1);
+                        sample.data = tmpArray.at(l1);
                         sample.tick = lt;
                         sample.muted = midiSeq->muteMask[l1];
                         midiSeq->customWave[l1] = sample;
@@ -558,8 +558,10 @@ void SeqWidget::doRestoreParams(int ix)
     needsGUIUpdate = true;
 }
 
-void SeqWidget::copyParamsFrom(SeqWidget *fromWidget)
+void SeqWidget::copyParamsFrom(InOutBox *p_fromWidget)
 {
+    SeqWidget *fromWidget = (SeqWidget *)p_fromWidget;
+    
     int tmp;
     setDispVert(fromWidget->dispVertIndex);
     enableNoteIn->setChecked(fromWidget->enableNoteIn->isChecked());

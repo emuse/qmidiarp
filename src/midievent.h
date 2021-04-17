@@ -29,6 +29,7 @@
  * one point of a waveform
  */
     struct Sample {
+        int data;
         int value;
         int tick;
         bool muted;

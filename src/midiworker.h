@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstdint>
+#include <vector>
 
 /*! @brief MIDI worker base class for QMidiArp modules.
  *
@@ -39,6 +40,7 @@
 class MidiWorker {
 
   public:
+    int eventType;      /*!< Midi Event Type needs to be set for every module instance*/
     double queueTempo;  /*!< current tempo of the transport, not in use here */
     int chIn;           /**< Channel of input events */
     int indexIn[2]; /*!< Note range filter 0: lower, 1: upper limit, set by InOutBox */
@@ -76,6 +78,9 @@ class MidiWorker {
     int nPoints;        /*!< Number of steps in pattern or sequence or wave */
     bool dataChanged; /*!< Flag set to true by recording loop and queried by InOutBox::updateDisplay() */
     bool needsGUIUpdate; /*!< Flag set to true when MidiWorker members changed and queried by InOutBox::updateDisplay() */
+    int frameSize;                  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
+    std::vector<Sample> outFrame;   /*!< Vector of Sample points holding the current frame for transfer */
+    int returnLength; /*!< Holds the note length of the currently active step */
 
   public:
     MidiWorker();

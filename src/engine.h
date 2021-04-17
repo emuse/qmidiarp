@@ -83,7 +83,7 @@ class Engine : public QObject  {
   private:
     QList<MidiArp *> midiArpList;
     QList<ArpWidget *> arpWidgetList;
-    QList<QDockWidget *> moduleWindowList;
+    QList<InOutBox *> moduleWidgetList;
     QList<MidiLfo *> midiLfoList;
     QList<LfoWidget *> lfoWidgetList;
     QList<MidiSeq *> midiSeqList;
@@ -139,38 +139,37 @@ class Engine : public QObject  {
     bool alsaMidi; /**< True when using alsa MIDI driver */
 
 
-    void addModuleWindow(QDockWidget *moduleWindow);
-    void removeModuleWindow(QDockWidget *moduleWindow);
-    QDockWidget *moduleWindow(int index);
-    int moduleWindowCount();
+    void addModuleWidget(InOutBox *moduleWidget);
+    void removeModuleWidget(InOutBox *moduleWidget);
+    InOutBox *moduleWidget(int index);
+    /**
+     * @brief Returns the number of modules of type specified or all modules if not
+     *
+     * If called without name the total number of models is returned
+     * @param name option to choose the module type (LFO, Arp, Seq)
+     */
+    int moduleWidgetCount(const QString& name = "");
     void updateIDs(int curID);
 
-    void addMidiArp(MidiArp *midiArp);
-    void addArpWidget(ArpWidget *arpWidget);
     void removeMidiArp(MidiArp *midiArp);
     void removeArpWidget(ArpWidget *arpWidget);
     int midiArpCount();
-    int arpWidgetCount();
     MidiArp *midiArp(int index);
     ArpWidget *arpWidget(int index);
 
-    void addMidiLfo(MidiLfo *midiLfo);
-    void addLfoWidget(LfoWidget *lfoWidget);
     void removeMidiLfo(MidiLfo *midiLfo);
     void removeLfoWidget(LfoWidget *lfoWidget);
     int midiLfoCount();
-    int lfoWidgetCount();
     MidiLfo *midiLfo(int index);
     LfoWidget *lfoWidget(int index);
 
-    void addMidiSeq(MidiSeq *midiSeq);
-    void addSeqWidget(SeqWidget *seqWidget);
     void removeMidiSeq(MidiSeq *midiSeq);
     void removeSeqWidget(SeqWidget *seqWidget);
     int midiSeqCount();
-    int seqWidgetCount();
     MidiSeq *midiSeq(int index);
     SeqWidget *seqWidget(int index);
+
+    int widgetCount(); 
 
     int getClientId();
     void setTempo(double bpm);
@@ -265,15 +264,15 @@ class Engine : public QObject  {
     void handleController(int ccnumber, int channel, int value);
 /**
  * @brief Slot for MidiControl::setMidiLearn(). Sets Engine into MIDI Learn status for
- * moduleWindowID and controlID.
+ * moduleWidgetID and controlID.
  *
  * Engine will then wait for an incoming controller event and trigger the
  * attribution by calling MidiControl::appendMidiCC().
  *
- * @param moduleWindowID dockWidget ID of the module
+ * @param moduleWidgetID dockWidget ID of the module
  * @param controlID ID of the controllable widget requesting MIDI learn
  */
-    void setMidiLearn(int moduleWindowID, int controlID);
+    void setMidiLearn(int moduleWidgetID, int controlID);
 /**
  * @brief turns on and off MIDI controller handling globally
  *
@@ -407,7 +406,7 @@ class Engine : public QObject  {
 * reaches the end. It determines the type (Arp, LFO, Seq) and the index of the selected
 * module the module storage lists and stores these in local variables.
 *
-* @param windowIndex moduleWindowList index of the module to become switch
+* @param windowIndex moduleWidgetList index of the module to become switch
 * trigger when its cursor reaches the end of the pattern
 */
     void updateGlobRestoreTimeModule(int windowIndex);

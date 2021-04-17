@@ -25,7 +25,6 @@
 #ifndef MIDILFO_H
 #define MIDILFO_H
 
-#include <vector>
 #include "midiworker.h"
 
 
@@ -69,7 +68,6 @@ class MidiLfo : public MidiWorker  {
     int phase;                      /*!< Starting Phase position of the waveform based on resolution */
     int size;                       /*!< Size of the waveform in quarter notes */
     int res;                        /*!< Resolution of the waveform in ticks per quarter note */
-    int frameSize;                  /*!< Current size of a vector returned by MidiLfo::getNextFrame() */
     int maxNPoints;                 /*!< Maximum number of steps that have been used in the session */
     int waveFormIndex;              /*!< Index of the waveform to produce
                                         @par 0: Sine
@@ -81,7 +79,6 @@ class MidiLfo : public MidiWorker  {
     int cwmin;                      /*!< The minimum of MidiLfo::customWave */
     std::vector<Sample> customWave; /*!< Vector of Sample points holding the custom drawn wave */
     std::vector<bool> muteMask;     /*!< Vector of booleans with mute state information for each wave point */
-    std::vector<Sample> frame;      /*!< Vector of Sample points holding the current frame for transfer */
     std::vector<Sample> data;
 
   public:
