@@ -27,7 +27,6 @@ MidiControl::MidiControl(QWidget *parent)
 {
     setParent(parent);
     ID = 0;
-    parentDockID = 0;
     // QSignalMappers allow identifying signal senders for MIDI learn/forget
     learnSignalMapper = new QSignalMapper(this);
     connect(learnSignalMapper, SIGNAL(mapped(int)),
@@ -123,7 +122,7 @@ void MidiControl::removeMidiCC(int controlID, int ccnumber, int channel)
 
 void MidiControl::midiLearn(int controlID)
 {
-    emit setMidiLearn(parentDockID, controlID);
+    emit setMidiLearn(ID, controlID);
     qWarning("Requesting Midi Learn for %s", qPrintable(names[controlID]));
     cancelMidiLearnAction->setEnabled(true);
 }
@@ -135,7 +134,7 @@ void MidiControl::midiForget(int controlID)
 
 void MidiControl::midiLearnCancel()
 {
-    emit setMidiLearn(parentDockID, -1);
+    emit setMidiLearn(ID, -1);
     qWarning("Cancelling Midi Learn request");
     cancelMidiLearnAction->setEnabled(false);
 }

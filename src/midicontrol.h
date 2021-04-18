@@ -83,7 +83,6 @@ class MidiControl : public QObject
     QStringList names;      /**< Contains a list of convenient names
                                     of controllable widgets */
     int ID;
-    int parentDockID;
     QVector<MidiCC> ccList; /**< Contains MIDI controller - GUI element bindings */
 /*!
 * @brief Accessor for the modified flag.
@@ -124,10 +123,10 @@ void skipXmlElement(QXmlStreamReader& xml);
 
   signals:
 /*! @brief Connected to Engine::setMidiLearn() to listen for incoming events.
-*  @param parentdockid parentDockID of the module requesting MIDI learn
+*  @param ID ID of the module requesting MIDI learn
 *  @param controlID ID of the GUI element to be assigned to the controller
 */
-    void setMidiLearn(int parentdockid, int controlID);
+    void setMidiLearn(int ID, int controlID);
 
   public slots:
 /*!

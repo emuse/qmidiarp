@@ -31,7 +31,6 @@ GrooveWidget::GrooveWidget()
 {
     midiControl = new MidiControl(this);
     midiControl->ID = -1;
-    midiControl->parentDockID = -1;
 
     QVBoxLayout *GrooveWidgetLayout = new QVBoxLayout;
 

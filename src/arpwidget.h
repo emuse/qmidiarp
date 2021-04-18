@@ -107,7 +107,7 @@ class ArpWidget :  public ModuleWidget
 * @param xml QXmlStreamWriter to read from
 * @param qmaxVersion QString with xml format version
 */
-    void readData(QXmlStreamReader& xml, const QString& qmaxVersion);
+    void readData(QXmlStreamReader& xml, const QString& qmaxVersion) override;
 /*!
 * @brief writes all parameters of this module to an XML stream
 * passed by the caller, i.e. MainWindow.

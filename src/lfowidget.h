@@ -133,14 +133,14 @@ class LfoWidget : public ModuleWidget
 * @param xml QXmlStreamWriter to read from
 * @param qmaxVersion QString with xml format version
 */
-    void readData(QXmlStreamReader& xml, const QString& qmaxVersion);
+    void readData(QXmlStreamReader& xml, const QString& qmaxVersion) override;
 /*!
 * @brief writes all parameters of this LFO to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
 */
-    void writeData(QXmlStreamWriter& xml);
+    void writeData(QXmlStreamWriter& xml) override;
 /*!
 * @brief copies all LFO module GUI parameters from
 * fromWidget

@@ -81,13 +81,8 @@ class Engine : public QObject  {
   Q_OBJECT
 
   private:
-    QList<MidiArp *> midiArpList;
-    QList<ArpWidget *> arpWidgetList;
+    QList<MidiWorker *> midiWorkerList;
     QList<ModuleWidget *> moduleWidgetList;
-    QList<MidiLfo *> midiLfoList;
-    QList<LfoWidget *> lfoWidgetList;
-    QList<MidiSeq *> midiSeqList;
-    QList<SeqWidget *> seqWidgetList;
 
     int portCount;
     bool modified;
@@ -151,25 +146,10 @@ class Engine : public QObject  {
     int moduleWidgetCount(const QString& name = "");
     void updateIDs(int curID);
 
-    void removeMidiArp(MidiArp *midiArp);
-    void removeArpWidget(ArpWidget *arpWidget);
-    int midiArpCount();
-    MidiArp *midiArp(int index);
-    ArpWidget *arpWidget(int index);
-
-    void removeMidiLfo(MidiLfo *midiLfo);
-    void removeLfoWidget(LfoWidget *lfoWidget);
-    int midiLfoCount();
-    MidiLfo *midiLfo(int index);
-    LfoWidget *lfoWidget(int index);
-
-    void removeMidiSeq(MidiSeq *midiSeq);
-    void removeSeqWidget(SeqWidget *seqWidget);
-    int midiSeqCount();
-    MidiSeq *midiSeq(int index);
-    SeqWidget *seqWidget(int index);
-
-    int widgetCount(); 
+    void addMidiWorker(MidiWorker *midiWorker);
+    void removeMidiWorker(MidiWorker *midiWorker);
+    int midiWorkerCount();
+    MidiWorker *midiWorker(int index);
 
     int getClientId();
     void setTempo(double bpm);

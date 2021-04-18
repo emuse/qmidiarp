@@ -317,7 +317,7 @@ class MidiArp : public MidiWorker  {
   * @param sustick Time in internal ticks at which the controller was received */
     void purgeSustainBuffer(uint64_t sustick);
  /*! @brief sets MidiArp::noteCount to zero and clears MidiArp::latchBuffer. */
-    void clearNoteBuffer();
+    void clearNoteBuffer() override;
 /*! @brief Checks if deferred parameter changes are pending and applies
  * them if so
  */

@@ -55,6 +55,7 @@ MidiCCTable::MidiCCTable(Engine *p_engine, QWidget *parent) : QDialog(parent)
     boxLayout->addWidget(buttonBox, 1, 0);
 
     setLayout(boxLayout);
+    setMinimumSize(420, 200);
     setModal(true);
     setWindowTitle(tr("MIDI Controllers - ") + APP_NAME);
 }
@@ -179,15 +180,9 @@ void MidiCCTable::apply()
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
             case 'A':
-                    engine->arpWidget(moduleID)->midiControl
-                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
-            break;
             case 'L':
-                    engine->lfoWidget(moduleID)->midiControl
-                    ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
-            break;
             case 'S':
-                    engine->seqWidget(moduleID)->midiControl
+                    engine->moduleWidget(moduleID)->midiControl
                     ->appendMidiCC(ctrlID, ccnumber, channel, min, max);
             break;
         }

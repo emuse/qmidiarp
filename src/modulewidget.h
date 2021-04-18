@@ -77,14 +77,13 @@ class ModuleWidget: public QWidget
             Prefs *p_prefs, bool inOutVisible, const QString& name);
     QAction *deleteAction, *renameAction, *cloneAction;
     int ID;             /**< @brief Corresponds to the Engine::midi*List index of the associated MidiSeq */
-    int parentDockID;   /**< @brief The index of the Widget in Engine::moduleWidgetList */
     Prefs *prefs;
     ParStore *parStore;
     MidiControl *midiControl;
 #else
     ModuleWidget(const QString& name);
 #endif
-    ~ModuleWidget();
+    virtual ~ModuleWidget();
     bool modified;      /**< @brief Is set to True if unsaved parameter modifications exist */
     bool dataChanged;
     bool needsGUIUpdate;
@@ -198,6 +197,14 @@ class ModuleWidget: public QWidget
     virtual void checkIfRestore(int64_t *restoreTick, bool *restoreFlag);
     virtual bool prepareNextFrame(bool echo_from_trig, int syncTol,
                 int64_t tick, int64_t *restoreTick, bool *restoreFlag);
+/*!
+* @brief reads all parameters of this LFO from an XML stream
+* passed by the caller, i.e. MainWindow.
+*
+* @param xml QXmlStreamWriter to read from
+* @param qmaxVersion QString with xml format version
+*/
+    virtual void readData(QXmlStreamReader& xml, const QString& qmaxVersion) = 0;
 /*!
 * @brief writes all parameters of this module to an XML stream
 * passed by the caller, i.e. MainWindow.
@@ -327,9 +334,9 @@ class ModuleWidget: public QWidget
     void removeModule();
 /*! @brief Emitted to MainWindow::renameDock for module rename.
  *  @param mname New name of the module
- *  @param parentDockID parentDockID of the module to rename
+ *  @param ID ID of the module to rename
  * */
-    void dockRename(const QString& mname, int parentDockID);
+    void dockRename(const QString& mname, int ID);
 /*! @brief Emitted to MainWindow::cloneSeq for module duplication.
  * */
     void cloneModule();

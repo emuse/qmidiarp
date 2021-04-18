@@ -84,6 +84,7 @@ class MidiWorker {
 
   public:
     MidiWorker();
+    virtual ~MidiWorker() { };
 /*! @brief sets MidiWorker::isMuted, which is checked by
  * Engine and which suppresses data output globally if set to True.
  *
@@ -147,6 +148,12 @@ class MidiWorker {
  * @param tick The current time position in internal ticks.
  */
     virtual void foldReleaseTicks(int64_t tick) { (void)tick; };
+
+/** 
+ * @brief Implemented in Arp only. Sets MidiArp::noteCount to zero and 
+ * clears MidiArp::latchBuffer. 
+ */
+    virtual void clearNoteBuffer() { };
 };
 
 #endif

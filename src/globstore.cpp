@@ -36,7 +36,6 @@ GlobStore::GlobStore(QWidget *parent)
 
     midiControl = new MidiControl(this);
     midiControl->ID = -2;
-    midiControl->parentDockID = -2;
 
     activeStore = 0;
     currentRequest = 0;

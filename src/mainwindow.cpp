@@ -443,7 +443,8 @@ void MainWindow::seqNew()
     addSeq("Seq:"+name);
 }
 
-void MainWindow::addLfo(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
+void MainWindow::addLfo(const QString& p_name, bool fromfile, 
+                        ModuleWidget *clonefrom, bool inOutVisible)
 {
 
     MidiLfo *midiWorker = new MidiLfo();
@@ -453,7 +454,8 @@ void MainWindow::addLfo(const QString& p_name, bool fromfile, ModuleWidget *clon
     addModule(moduleWidget, midiWorker, fromfile, clonefrom);
 }
 
-void MainWindow::addSeq(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
+void MainWindow::addSeq(const QString& p_name, bool fromfile, 
+                        ModuleWidget *clonefrom, bool inOutVisible)
 {
 
     MidiSeq *midiWorker = new MidiSeq();
@@ -463,7 +465,8 @@ void MainWindow::addSeq(const QString& p_name, bool fromfile, ModuleWidget *clon
     addModule(moduleWidget, midiWorker, fromfile, clonefrom);
 }
 
-void MainWindow::addArp(const QString& p_name, bool fromfile, ModuleWidget *clonefrom, bool inOutVisible)
+void MainWindow::addArp(const QString& p_name, bool fromfile, 
+                        ModuleWidget *clonefrom, bool inOutVisible)
 {
     (void)clonefrom;
     
@@ -473,10 +476,11 @@ void MainWindow::addArp(const QString& p_name, bool fromfile, ModuleWidget *clon
     
     addModule(moduleWidget, midiWorker, fromfile, nullptr);
 }
-void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, bool fromfile, ModuleWidget *clonefrom)
+void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, bool fromfile, 
+                        ModuleWidget *clonefrom)
 {
 
-    int widgetID, count;
+    int widgetID;
     connect(moduleWidget, SIGNAL(removeModule()), this, SLOT(removeModule()));
     connect(moduleWidget, SIGNAL(cloneModule()), this, SLOT(cloneModule()));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
@@ -484,12 +488,12 @@ void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, b
     connect(moduleWidget->midiControl, SIGNAL(setMidiLearn(int, int)),
             engine, SLOT(setMidiLearn(int, int)));
 
-    widgetID = engine->moduleWidgetCount(moduleWidget->name);
     if (clonefrom != nullptr) {
         moduleWidget->copyParamsFrom(clonefrom);
     }
 
     //TODO: transfer these items to constructor
+    widgetID = engine->moduleWidgetCount();
     moduleWidget->ID = widgetID;
     moduleWidget->midiControl->ID = widgetID;
     moduleWidget->parStore->engineRunning = engine->status;
@@ -509,24 +513,21 @@ void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, b
         midiWorker->setNextTick(engine->moduleWidget(0)->getNextTick());
 
 
-    count = engine->moduleWidgetCount();
-    moduleWidget->parentDockID = count;
-    moduleWidget->midiControl->parentDockID = count;
-    appendDock(moduleWidget, count);
+    appendDock(moduleWidget, widgetID);
 
     engine->addModuleWidget(moduleWidget);
     globStore->addModule(moduleWidget->name);
 
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
-            , engine->moduleWidget(count)->parent(), SLOT(raise()));
+            , engine->moduleWidget(widgetID)->parent(), SLOT(raise()));
 
     checkIfFirstModule();
 }
 
 void MainWindow::cloneModule()
 {
-    QString name = ((ModuleWidget *)sender())->name + "_0";
     ModuleWidget *clonefrom = (ModuleWidget *)sender();
+    QString name = clonefrom->name + "_0";
     
     if (name.startsWith("LFO:"))
         addLfo(name, false, clonefrom);
@@ -543,9 +544,12 @@ void MainWindow::appendDock(ModuleWidget *moduleWidget, int count)
             | QDockWidget::DockWidgetFloatable);
     moduleWindow->setWidget(moduleWidget);
     addDockWidget(Qt::TopDockWidgetArea, moduleWindow);
+    
     if (prefs->compactStyle) moduleWidget->setStyleSheet(COMPACT_STYLE);
-
-    if (count) tabifyDockWidget(((QDockWidget *)engine->moduleWidget(count - 1)->parent()), moduleWindow);
+    
+    QDockWidget *lastWindow = (QDockWidget *)(engine->moduleWidget(count - 1)->parent());
+    if (count) tabifyDockWidget(lastWindow, moduleWindow);
+    
     moduleWindow->setObjectName(moduleWindow->windowTitle());
     moduleWindow->show();
     moduleWindow->raise();
@@ -554,12 +558,12 @@ void MainWindow::appendDock(ModuleWidget *moduleWidget, int count)
 void MainWindow::removeModule()
 {
     ModuleWidget *moduleWidget = (ModuleWidget *)sender();
-    int parentDockID = moduleWidget->parentDockID;
+    int ID = moduleWidget->ID;
 
-    globStore->removeModule(parentDockID);
+    globStore->removeModule(ID);
     engine->removeModuleWidget(moduleWidget);
     
-    engine->updateIDs(parentDockID);
+    engine->updateIDs(ID);
     checkIfLastModule();
 }
 
@@ -756,24 +760,19 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addArp("Arp:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
-            engine->arpWidget(engine->midiArpCount() - 1)
+            engine->moduleWidget(engine->midiWorkerCount() - 1)
                     ->readData(xml, qmaxVersion);
             count++;
-            if (count == 1) {
-                for (int l1 = 0; l1 < engine->arpWidget(0)->parStore->list.count(); l1++) {
-                    globStore->addLocation();
-                }
-            }
         }
         else if (xml.isStartElement() && (xml.name() == "LFO")) {
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addLfo("LFO:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
-            int modNumber = engine->midiLfoCount() - 1;
-            engine->lfoWidget(modNumber)->readData(xml, qmaxVersion);
+            int modNumber = engine->midiWorkerCount() - 1;
+            engine->moduleWidget(modNumber)->readData(xml, qmaxVersion);
             
             // Compatibility with earlier versions //
-            ParStore *tempstore = engine->lfoWidget(modNumber)->parStore;
+            ParStore *tempstore = engine->moduleWidget(modNumber)->parStore;
             for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
                 if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
                     tempstore->list[l1].res = mapOldLfoRes[tempstore->list[l1].res];
@@ -783,22 +782,17 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
                 }
             }
             count++;
-            if (count == 1) {
-                for (int l1 = 0; l1 < engine->lfoWidget(0)->parStore->list.count(); l1++) {
-                    globStore->addLocation();
-                }
-            }
         }
         else if (xml.isStartElement() && (xml.name() == "Seq")) {
             if (xml.attributes().hasAttribute("inOutVisible"))
                 iovis = xml.attributes().value("inOutVisible").toString().toInt();
             addSeq("Seq:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
             
-            int modNumber = engine->midiSeqCount() - 1;
-            engine->seqWidget(modNumber)->readData(xml, qmaxVersion);
+            int modNumber = engine->midiWorkerCount() - 1;
+            engine->moduleWidget(modNumber)->readData(xml, qmaxVersion);
             
             // Compatibility with earlier versions //
-            ParStore *tempstore = engine->seqWidget(modNumber)->parStore;
+            ParStore *tempstore = engine->moduleWidget(modNumber)->parStore;
             for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
                 if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
                     tempstore->list[l1].res = mapOldSeqRes[tempstore->list[l1].res];
@@ -808,13 +802,17 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
                 }
             }
             count++;
-            if (count == 1) {
-                for (int l1 = 0; l1 < engine->seqWidget(0)->parStore->list.count(); l1++) {
-                    globStore->addLocation();
-                }
+        }
+        else {
+            skipXmlElement(xml);
+            continue;
+        }
+        
+        if (count == 1) {
+            for (int l1 = 0; l1 < engine->moduleWidget(0)->parStore->list.count(); l1++) {
+                globStore->addLocation();
             }
         }
-        else skipXmlElement(xml);
     }
 }
 

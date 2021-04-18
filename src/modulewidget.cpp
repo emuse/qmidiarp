@@ -585,7 +585,7 @@ void ModuleWidget::moduleRename()
 
     if (ok && !newname.isEmpty()) {
         name = oldname.left(4) + newname;
-        emit dockRename(name, parentDockID);
+        emit dockRename(name, ID);
     }
 #endif
 }

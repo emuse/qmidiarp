@@ -121,14 +121,14 @@ class SeqWidget : public ModuleWidget
 * @param xml QXmlStreamWriter to read from
 * @param qMaxVersion QString with xml format version
 */
-    void readData(QXmlStreamReader& xml, const QString& qmaxVersion);
+    void readData(QXmlStreamReader& xml, const QString& qmaxVersion) override;
 /*!
 * @brief writes all parameters of this module to an XML stream
 * passed by the caller, i.e. MainWindow.
 *
 * @param xml QXmlStreamWriter to write to
 */
-    void writeData(QXmlStreamWriter& xml);
+    void writeData(QXmlStreamWriter& xml) override;
 /*!
 * @brief copies all Seq module GUI parameters from
 * fromWidget
