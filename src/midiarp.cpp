@@ -607,7 +607,14 @@ bool MidiArp::advancePatternIndex(bool reset)
                 }
                 break;
             case 3:
-                if (noteCount) noteOfs = rand() % noteCount;
+                if (noteCount > 1) {
+                    int oldnoteofs = noteOfs;
+                    while (noteOfs == oldnoteofs) noteOfs = rand() % noteCount;
+                }
+                if ((noteOfs == noteCount) || (noteOfs == 0) || reset) {
+                    octOfs+=octIncr;
+                    checkOctaveAtEdge(reset);
+                }
                 break;
             default:
                 noteOfs = 0;
