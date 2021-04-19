@@ -135,7 +135,7 @@ ArpWidget::ArpWidget():
     octaveHighBox->setToolTip(tr("High octave limit"));
     connect(octaveHighBox, SIGNAL(currentIndexChanged(int)), this,
             SLOT(updateOctaveHigh(int)));
-    octaveHighBox->setCurrentIndex(0);
+    octaveHighBox->setCurrentIndex(1);
 
     latchModeButton = new QToolButton;
     latchModeAction = new QAction(QPixmap(latchmodeon_xpm),
@@ -275,6 +275,10 @@ ArpWidget::ArpWidget():
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
     setLayout(widgetLayout);
+    patternText->setText(">0");
+    repeatPatternThroughChord->setCurrentIndex(3);
+    octaveModeBox->setCurrentIndex(3);
+
     modified = false;
 }
 
