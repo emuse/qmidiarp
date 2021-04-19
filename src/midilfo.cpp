@@ -79,7 +79,6 @@ void MidiLfo::getNextFrame(int64_t tick)
     if ((uint32_t)framePtr >= data.size()) return;
     
     Sample sample = {0, 0, 0, false};
-    const int step = TPQN * frameSize / res;
     const int npoints = size * res;
     int lt, l1;
     int framelimit;
@@ -90,6 +89,8 @@ void MidiLfo::getNextFrame(int64_t tick)
     if (isRecording) framelimit = 32; else framelimit = LFO_FRAMELIMIT;
     frameSize = res / framelimit;
     if (!frameSize) frameSize = 1;
+
+    const int step = TPQN * frameSize / res;
 
     if (restartFlag) setFramePtr(0);
     if (!framePtr) grooveTick = newGrooveTick;
