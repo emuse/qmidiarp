@@ -809,4 +809,11 @@ bool ModuleWidget::prepareNextFrame(bool echo_from_trig, int syncTol,
     }
     return false;
 }
+
+void ModuleWidget::setID(int id)
+{
+    ID = id;
+    midiControl->ID = id;
+}
+    
 #endif

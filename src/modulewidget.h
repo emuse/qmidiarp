@@ -130,6 +130,7 @@ class ModuleWidget: public QWidget
 
 #ifdef APPBUILD
 
+    virtual void setID(int ID);
 /*!
 * @brief Writes common module parameters to disk
 * @param xml XML stream to write to
@@ -325,7 +326,7 @@ class ModuleWidget: public QWidget
 */
     virtual void setMuted(bool on);
 
-    bool getReverse() { return midiWorker->reverse; }
+    virtual bool getReverse() { return midiWorker->reverse; }
 
   signals:
 

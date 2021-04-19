@@ -334,6 +334,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     fileToolBar->addAction(fileSaveAsAction);
     fileToolBar->setObjectName("fileToolBar");
     fileToolBar->setMaximumHeight(30);
+    fileToolBar->setMinimumWidth(150);
     connect(fileToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
             SLOT(ftb_update_orientation(Qt::Orientation)));
 
@@ -355,6 +356,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     controlToolBar->addAction(jackSyncAction);
     controlToolBar->setObjectName("controlToolBar");
     controlToolBar->setMaximumHeight(30);
+    controlToolBar->setMinimumWidth(460);
     connect(controlToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this,
             SLOT(ctb_update_orientation(Qt::Orientation)));
 
@@ -476,11 +478,11 @@ void MainWindow::addArp(const QString& p_name, bool fromfile,
     
     addModule(moduleWidget, midiWorker, fromfile, nullptr);
 }
+
 void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, bool fromfile, 
                         ModuleWidget *clonefrom)
 {
 
-    int widgetID;
     connect(moduleWidget, SIGNAL(removeModule()), this, SLOT(removeModule()));
     connect(moduleWidget, SIGNAL(cloneModule()), this, SLOT(cloneModule()));
     connect(moduleWidget, SIGNAL(dockRename(const QString&, int)),
@@ -492,10 +494,9 @@ void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, b
         moduleWidget->copyParamsFrom(clonefrom);
     }
 
-    //TODO: transfer these items to constructor
-    widgetID = engine->moduleWidgetCount();
-    moduleWidget->ID = widgetID;
-    moduleWidget->midiControl->ID = widgetID;
+    int widgetID = engine->moduleWidgetCount();
+    moduleWidget->setID(widgetID);
+
     moduleWidget->parStore->engineRunning = engine->status;
 
     // if the module is added at a time when global stores are already
@@ -504,7 +505,6 @@ void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, b
     if (!fromfile) for (int l1 = 0; l1 < (globStore->widgetList.count() - 1); l1++) {
         moduleWidget->storeParams(l1, true);
     }
-
     if (clonefrom != nullptr) {
         midiWorker->reverse = clonefrom->getReverse();
         midiWorker->setNextTick(clonefrom->getNextTick());
@@ -519,7 +519,7 @@ void MainWindow::addModule(ModuleWidget *moduleWidget, MidiWorker *midiWorker, b
     globStore->addModule(moduleWidget->name);
 
     connect(moduleWidget->parStore->topButton, SIGNAL(pressed())
-            , engine->moduleWidget(widgetID)->parent(), SLOT(raise()));
+            , moduleWidget->parent(), SLOT(raise()));
 
     checkIfFirstModule();
 }
@@ -547,8 +547,10 @@ void MainWindow::appendDock(ModuleWidget *moduleWidget, int count)
     
     if (prefs->compactStyle) moduleWidget->setStyleSheet(COMPACT_STYLE);
     
-    QDockWidget *lastWindow = (QDockWidget *)(engine->moduleWidget(count - 1)->parent());
-    if (count) tabifyDockWidget(lastWindow, moduleWindow);
+    if (count) {
+        QDockWidget *lastWindow = (QDockWidget *)(engine->moduleWidget(count - 1)->parent());
+        tabifyDockWidget(lastWindow, moduleWindow);
+    }
     
     moduleWindow->setObjectName(moduleWindow->windowTitle());
     moduleWindow->show();
@@ -749,66 +751,31 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
 
 void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxVersion)
 {
-    int count = 0;
-
     while (!xml.atEnd()) {
         bool iovis = true;
         xml.readNext();
+
         if (xml.isEndElement())
             break;
-        if (xml.isStartElement() && (xml.name() == "Arp")) {
-            if (xml.attributes().hasAttribute("inOutVisible"))
-                iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addArp("Arp:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
-            engine->moduleWidget(engine->midiWorkerCount() - 1)
-                    ->readData(xml, qmaxVersion);
-            count++;
-        }
-        else if (xml.isStartElement() && (xml.name() == "LFO")) {
-            if (xml.attributes().hasAttribute("inOutVisible"))
-                iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addLfo("LFO:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
-            int modNumber = engine->midiWorkerCount() - 1;
-            engine->moduleWidget(modNumber)->readData(xml, qmaxVersion);
-            
-            // Compatibility with earlier versions //
-            ParStore *tempstore = engine->moduleWidget(modNumber)->parStore;
-            for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
-                if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
-                    tempstore->list[l1].res = mapOldLfoRes[tempstore->list[l1].res];
-                }
-                if (qmaxVersion == "" && tempstore->list[l1].size < 10) {
-                    tempstore->list[l1].size = mapOldLfoSize[tempstore->list[l1].size];
-                }
-            }
-            count++;
-        }
-        else if (xml.isStartElement() && (xml.name() == "Seq")) {
-            if (xml.attributes().hasAttribute("inOutVisible"))
-                iovis = xml.attributes().value("inOutVisible").toString().toInt();
-            addSeq("Seq:" + xml.attributes().value("name").toString(), true, nullptr, iovis);
-            
-            int modNumber = engine->midiWorkerCount() - 1;
-            engine->moduleWidget(modNumber)->readData(xml, qmaxVersion);
-            
-            // Compatibility with earlier versions //
-            ParStore *tempstore = engine->moduleWidget(modNumber)->parStore;
-            for (int l1 = 0; l1 < tempstore->list.count(); l1++) {
-                if (qmaxVersion == "" && tempstore->list[l1].res < 5) {
-                    tempstore->list[l1].res = mapOldSeqRes[tempstore->list[l1].res];
-                }
-                if (qmaxVersion == "" && tempstore->list[l1].size < 10) {
-                    tempstore->list[l1].size = mapOldSeqSize[tempstore->list[l1].size];
-                }
-            }
-            count++;
-        }
-        else {
+
+        if (!xml.isStartElement()) {
             skipXmlElement(xml);
             continue;
         }
+        if (xml.attributes().hasAttribute("inOutVisible"))
+            iovis = xml.attributes().value("inOutVisible").toString().toInt();
+            
+        QString name = xml.name() + ":" + xml.attributes().value("name").toString();
+        if (xml.name() == "Arp")
+            addArp(name, true, nullptr, iovis);
+        else if (xml.name() == "LFO")
+            addLfo(name, true, nullptr, iovis);
+        else if (xml.name() == "Seq")
+            addSeq(name, true, nullptr, iovis);            
+
+        engine->moduleWidget(-1)->readData(xml, qmaxVersion);
         
-        if (count == 1) {
+        if (engine->moduleWidgetCount() == 1) {
             for (int l1 = 0; l1 < engine->moduleWidget(0)->parStore->list.count(); l1++) {
                 globStore->addLocation();
             }

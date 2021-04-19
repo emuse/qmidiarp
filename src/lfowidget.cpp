@@ -316,6 +316,16 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
             break;
         
         readCommonData(xml);
+            
+        // Compatibility with earlier versions //
+        for (int l1 = 0; l1 < parStore->list.count(); l1++) {
+            if (qmaxVersion == "" && parStore->list[l1].res < 5) {
+                parStore->list[l1].res = mapOldLfoRes[parStore->list[l1].res];
+            }
+            if (qmaxVersion == "" && parStore->list[l1].size < 10) {
+                parStore->list[l1].size = mapOldLfoSize[parStore->list[l1].size];
+            }
+        }
 
         if (xml.isStartElement() && (xml.name() == "waveParams")) {
             while (!xml.atEnd()) {

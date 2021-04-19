@@ -149,6 +149,7 @@ void Engine::sendGroove(int ix)
 
 MidiWorker *Engine::midiWorker(int index)
 {
+    if (index == -1) index = midiWorkerList.count() - 1;
     return(midiWorkerList.at(index));
 }
 
@@ -175,6 +176,7 @@ int Engine::midiWorkerCount()
 
 ModuleWidget *Engine::moduleWidget(int index)
 {
+    if (index == -1) index = moduleWidgetList.count() - 1;
     return(moduleWidgetList.at(index));
 }
 
@@ -219,11 +221,9 @@ void Engine::renameDock(const QString& name, int ID)
 void Engine::updateIDs(int curID)
 {
     for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
-        moduleWidget(l1)->ID = l1;
-        moduleWidget(l1)->midiControl->ID = l1;
+        moduleWidget(l1)->setID(l1);
         if (l1 > curID) {
-            moduleWidget(l1)->ID = l1 - 1;
-            moduleWidget(l1)->midiControl->ID = l1 - 1;
+            moduleWidget(l1)->setID(l1 - 1);
         }
     }
 }
