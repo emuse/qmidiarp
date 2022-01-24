@@ -65,6 +65,7 @@
 #endif
 #include <QLocale>
 #include <QLibraryInfo>
+#include <unistd.h>
 
 #include "mainwindow.h"
 #include "main.h"

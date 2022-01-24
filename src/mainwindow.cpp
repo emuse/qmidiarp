@@ -1417,6 +1417,9 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
         engine->driver->callJack(-1);
         engine->driver->callJack(engine->getPortCount(), client_id);
     }
+    else {
+        snd_seq_set_client_name(engine->driver->getClientId(), client_id);
+    }
     configFile.append(".qmax");
     emit nsmOpenFile(configFile);
     return ERR_OK;
