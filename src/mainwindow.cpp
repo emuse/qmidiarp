@@ -1411,11 +1411,17 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
     qWarning("QMidiArp: NSM asks us to open file %s", name);
     (void)out_msg;
     (void)display_name;
+    int client_id_int = 0;
 
     configFile = name;
     if (!alsaMidi) {
         engine->driver->callJack(-1);
         engine->driver->callJack(engine->getPortCount(), client_id);
+    }
+    else {
+        client_id_int = engine->getClientId();
+        QByteArray ba = ( QString::number(client_id_int) ).toLocal8Bit();
+        client_id = ba.data();
     }
     configFile.append(".qmax");
     emit nsmOpenFile(configFile);
