@@ -204,7 +204,7 @@ SeqWidget::SeqWidget():
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(seqBox, 1);
-    widgetLayout->addWidget(hideModuleWidgetButton, 0);
+    widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
 #ifdef APPBUILD

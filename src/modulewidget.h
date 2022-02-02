@@ -101,8 +101,8 @@ class ModuleWidget: public QWidget
     QCheckBox *enableNoteOff;
     QSpinBox  *ccnumberInBox;
     QSpinBox  *ccnumberBox;
-    QAction *hideModuleWidgetAction;
-    QToolButton *hideModuleWidgetButton;
+    QAction *hideInOutBoxAction;
+    QToolButton *hideInOutBoxButton;
     QAction *muteOutAction;
     QToolButton *muteOut;
     QAction *deferChangesAction;

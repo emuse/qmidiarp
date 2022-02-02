@@ -242,7 +242,7 @@ LfoWidget::LfoWidget():
 
     QHBoxLayout *widgetLayout = new QHBoxLayout;
     widgetLayout->addWidget(waveBox, 1);
-    widgetLayout->addWidget(hideModuleWidgetButton, 0);
+    widgetLayout->addWidget(hideInOutBoxButton, 0);
     widgetLayout->addWidget(inOutBoxWidget, 0);
 
     setLayout(widgetLayout);

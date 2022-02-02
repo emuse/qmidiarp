@@ -276,13 +276,13 @@ ModuleWidget::ModuleWidget(const QString& name):
     deferChangesButton->setFixedSize(20, 20);
 
     // Hiding button that has to be added to each module widget outside the box
-    hideModuleWidgetAction = new QAction(tr("&Show/hide in-out settings"), this);
-    hideModuleWidgetButton = new QToolButton;
-    hideModuleWidgetAction->setCheckable(true);
-    hideModuleWidgetAction->setChecked(inOutVisible);
-    hideModuleWidgetButton->setDefaultAction(hideModuleWidgetAction);
-    hideModuleWidgetButton->setFixedSize(10, 80);
-    hideModuleWidgetButton->setArrowType (Qt::ArrowType(0));
+    hideInOutBoxAction = new QAction(tr("&Show/hide in-out settings"), this);
+    hideInOutBoxButton = new QToolButton;
+    hideInOutBoxAction->setCheckable(true);
+    hideInOutBoxAction->setChecked(inOutVisible);
+    hideInOutBoxButton->setDefaultAction(hideInOutBoxAction);
+    hideInOutBoxButton->setFixedSize(10, 80);
+    hideInOutBoxButton->setArrowType (Qt::ArrowType(0));
 
 #ifdef APPBUILD
         parStore = new ParStore(globStore, name, muteOutAction
@@ -343,7 +343,7 @@ ModuleWidget::ModuleWidget(const QString& name):
     connect(portOut, SIGNAL(activated(int)), this, 
             SLOT(updatePortOut(int)));
 #endif
-    connect(hideModuleWidgetAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
+    connect(hideInOutBoxAction, SIGNAL(toggled(bool)), inOutBoxWidget, 
                 SLOT(setVisible(bool)));
     needsGUIUpdate=false;
     dataChanged = false;

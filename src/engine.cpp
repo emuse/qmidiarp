@@ -447,7 +447,7 @@ bool Engine::eventCallback(MidiEvent inEv)
 void Engine::showAllIOPanels(bool on)
 {
     for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
-        moduleWidget(l1)->hideModuleWidgetAction->setChecked(on);
+        moduleWidget(l1)->hideInOutBoxAction->setChecked(on);
     }
 }
 

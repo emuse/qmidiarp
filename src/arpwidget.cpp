@@ -270,7 +270,7 @@ ArpWidget::ArpWidget():
     widgetLayout->addWidget(patternBox, 0, 0);
     widgetLayout->addWidget(randomBox, 1, 0);
     widgetLayout->addWidget(envelopeBox, 2, 0);
-    widgetLayout->addWidget(hideModuleWidgetButton, 0, 1);
+    widgetLayout->addWidget(hideInOutBoxButton, 0, 1);
     widgetLayout->addWidget(inOutBoxWidget, 0, 2, 3, 1);
     widgetLayout->setRowStretch(3, 1);
     widgetLayout->setColumnStretch(0, 5);
