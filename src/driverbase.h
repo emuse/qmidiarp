@@ -117,6 +117,10 @@ public:
     virtual void sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned int outport, unsigned int duration = 0) = 0;
     virtual bool requestEchoAt(uint64_t echoTick, bool echo_from_trig = 0) = 0;
 
+    virtual void setClientNameSuffix(const QString & suffix="") 
+    {
+        (void)suffix;
+    }
 
     virtual void setTransportStatus(bool run) = 0;
     virtual int getClientId() = 0;

@@ -419,7 +419,7 @@ void SeqWidget::updateWaveForm(int val)
     if (!midiSeq) return;
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -442,7 +442,7 @@ void SeqWidget::updateRes(int val)
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
 }
@@ -457,7 +457,7 @@ void SeqWidget::updateSize(int val)
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
 }
@@ -631,12 +631,12 @@ void SeqWidget::copyParamsFrom(ModuleWidget *p_fromWidget)
 
 QVector<Sample> SeqWidget::getCustomWave()
 {
-    return QVector<Sample>::fromStdVector(midiSeq->customWave);
+    return QVector<Sample>(midiSeq->customWave.begin(), midiSeq->customWave.end());
 }
 
 QVector<bool> SeqWidget::getMuteMask()
 {
-    return QVector<bool>::fromStdVector(midiSeq->muteMask);
+    return QVector<bool>(midiSeq->muteMask.begin(), midiSeq->muteMask.end());
 }
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
@@ -755,7 +755,7 @@ void SeqWidget::updateDisplay()
         dataChanged=false;
         midiSeq->dataChanged=false;
         midiSeq->getData(&sdata);
-        data = QVector<Sample>::fromStdVector(sdata);
+        data=QVector<Sample>(sdata.begin(), sdata.end());
         screen->updateData(data);
         if (recordMode) screen->setCurrentRecStep(midiSeq->currentRecStep);
         cursor->updateNumbers(midiSeq->res, midiSeq->size);

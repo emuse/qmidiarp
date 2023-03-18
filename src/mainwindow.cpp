@@ -1155,31 +1155,31 @@ void MainWindow::writeRcFile()
     {
         writeText << "#Pattern%";
         writeText << qPrintable(patternNames.at(l1)) << "%";
-        writeText << qPrintable(patternPresets.at(l1)) << endl;
+        writeText << qPrintable(patternPresets.at(l1)) << Qt::endl;
     }
 
     writeText << "#CompactStyle%";
-    writeText << prefs->compactStyle << endl;
+    writeText << prefs->compactStyle << Qt::endl;
     writeText << "#MutedAdd%";
-    writeText << prefs->mutedAdd << endl;
+    writeText << prefs->mutedAdd << Qt::endl;
     writeText << "#StoreMuteState%";
-    writeText << prefs->storeMuteState << endl;
+    writeText << prefs->storeMuteState << Qt::endl;
     writeText << "#EnableLog%";
-    writeText << logWidget->enableLog->isChecked() << endl;
+    writeText << logWidget->enableLog->isChecked() << Qt::endl;
     writeText << "#LogMidiClock%";
-    writeText << logWidget->logMidiClock->isChecked() << endl;
+    writeText << logWidget->logMidiClock->isChecked() << Qt::endl;
     writeText << "#GUIState%";
-    writeText << saveState().toHex() << endl;
+    writeText << saveState().toHex() << Qt::endl;
 
     writeText << "#LastDir%";
-    writeText << lastDir << endl;
+    writeText << lastDir << Qt::endl;
 
     // save recently opened files (all recent files code taken from AMS)
     if (recentFiles.count() > 0) {
         QStringList::Iterator it = recentFiles.begin();
         for (; it != recentFiles.end(); ++it) {
             writeText << "#RecentFile%";
-            writeText << *it << endl;
+            writeText << *it << Qt::endl;
         }
     }
 }
@@ -1416,6 +1416,9 @@ int MainWindow::nsm_open(const char *name, const char *display_name, const char 
     if (!alsaMidi) {
         engine->driver->callJack(-1);
         engine->driver->callJack(engine->getPortCount(), client_id);
+    }
+    else {
+        engine->driver->setClientNameSuffix(client_id);
     }
     configFile.append(".qmax");
     emit nsmOpenFile(configFile);

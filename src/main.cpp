@@ -107,21 +107,21 @@ int main(int argc, char *argv[])
                 exit(EXIT_SUCCESS);
 
             case 'h':
-                out << "Usage: " PACKAGE " [OPTION] [FILENAME]" << endl;
-                out << endl;
-                out << "Options:" << endl;
+                out << "Usage: " PACKAGE " [OPTION] [FILENAME]" << Qt::endl;
+                out << Qt::endl;
+                out << "Options:" << Qt::endl;
                 out << "  -v, --version            "
-                    "Print application version" << endl;
+                    "Print application version" << Qt::endl;
                 out << "  -h, --help               "
-                    "Print this message" << endl;
+                    "Print this message" << Qt::endl;
 #ifdef HAVE_ALSA
                 out << "  -a, --alsa               "
-                    "Use ALSA MIDI interface" << endl;
+                    "Use ALSA MIDI interface" << Qt::endl;
                 out << "  -j, --jack               "
-                    "Use JACK MIDI interface (default)" << endl;
+                    "Use JACK MIDI interface (default)" << Qt::endl;
 #endif
                 out << QString("  -p, --portCount <num>    "
-                        "Number of output ports [%1]").arg(portCount) << endl;
+                        "Number of output ports [%1]").arg(portCount) << Qt::endl;
                 out.flush();
                 exit(EXIT_SUCCESS);
 #ifdef HAVE_ALSA

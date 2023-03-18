@@ -99,6 +99,7 @@ class SeqDriver : public DriverBase {
     public:
         void sendMidiEvent(MidiEvent ev, uint64_t n_tick, unsigned int outport, unsigned int duration = 0);
         bool requestEchoAt(uint64_t echoTick, bool echo_from_trig = 0);
+        void setClientNameSuffix(const QString& suffix="");
 
     public:
         SeqDriver(

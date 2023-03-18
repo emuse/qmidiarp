@@ -121,6 +121,12 @@ SeqDriver::~SeqDriver(){
 
 }
 
+void SeqDriver::setClientNameSuffix(const QString& suffix)
+{
+    QString name = PACKAGE + suffix;
+    snd_seq_set_client_name(seq_handle, qPrintable(name));
+}
+
 void SeqDriver::run()
 {
     snd_seq_event_t *evIn;

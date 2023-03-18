@@ -71,7 +71,7 @@ void Screen::mouseReleaseEvent(QMouseEvent *event)
 
 void Screen::wheelEvent(QWheelEvent *event)
 {
-    mouseW = event->delta();
+    mouseW = event->angleDelta().y();
     emit mouseWheel(mouseW / 120);
     event->accept();
 }

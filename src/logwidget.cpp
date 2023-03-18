@@ -76,28 +76,28 @@ void LogWidget::appendEvent(MidiEvent ev, int tick) {
     }
     switch (ev.type) {
         case EV_NOTEON:
-            qs.sprintf("Ch %2d, Note On %3d, Vel %3d, tick %d",
-                    ev.channel + 1,
-                    ev.data, ev.value, tick);
+            qs = QString("Ch %2d, Note On %3d, Vel %3d, tick %d").
+                    arg(ev.channel + 1).
+                    arg(ev.data).arg(ev.value).arg(tick);
             break;
         case EV_NOTEOFF:
-            qs.sprintf("Ch %2d, Note Off %3d, tick %d", ev.channel+1,
-                    ev.data, tick);
+            qs = QString("Ch %2d, Note Off %3d, tick %d").arg(ev.channel+1).
+                    arg(ev.data).arg(tick);
             break;
         case EV_CONTROLLER:
             logText->setTextColor(QColor(100,160,0));
-            qs.sprintf("Ch %2d, Ctrl %3d, Val %3d, tick %d", ev.channel+1,
-                    ev.data, ev.value, tick);
+            qs = QString("Ch %2d, Ctrl %3d, Val %3d, tick %d").arg(ev.channel+1).
+                    arg(ev.data).arg(ev.value).arg(tick);
             break;
         case EV_PITCHBEND:
             logText->setTextColor(QColor(100,0,255));
-            qs.sprintf("Ch %2d, Pitch %5d, tick %d", ev.channel+1,
-                    ev.value, tick);
+            qs = QString("Ch %2d, Pitch %5d, tick %d").arg(ev.channel+1).
+                    arg(ev.value).arg(tick);
             break;
         case EV_PGMCHANGE:
             logText->setTextColor(QColor(0,100,100));
-            qs.sprintf("Ch %2d, PrgChg %5d, tick %d", ev.channel+1,
-                    ev.value, tick);
+            qs = QString("Ch %2d, PrgChg %5d, tick %d").arg(ev.channel+1).
+                    arg(ev.value).arg(tick);
             break;
         case EV_CLOCK:
             if (logMidiActive) {

@@ -432,7 +432,7 @@ void LfoWidget::updateWaveForm(int val)
     if (midiLfo) midiLfo->updateWaveForm(val);
     std::vector<Sample> sdata;
     if (midiLfo) midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     if (midiLfo) screen->updateData(data);
     bool isCustom = (val == 5);
     if (isCustom && midiLfo) midiLfo->newCustomOffset();
@@ -452,7 +452,7 @@ void LfoWidget::updateFreq(int val)
     midiLfo->updateFrequency(lfoFreqValues[val]);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -465,7 +465,7 @@ void LfoWidget::updateRes(int val)
     midiLfo->updateResolution(lfoResValues[val]);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
     if (waveFormBoxIndex == 5) midiLfo->newCustomOffset();
 }
@@ -479,7 +479,7 @@ void LfoWidget::updateSize(int val)
     midiLfo->updateSize(sizeBox->currentText().toInt());
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
     if (waveFormBoxIndex == 5) midiLfo->newCustomOffset();
 }
@@ -498,7 +498,7 @@ void LfoWidget::updateAmp(int val)
     midiLfo->updateAmplitude(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -509,7 +509,7 @@ void LfoWidget::updateOffs(int val)
     midiLfo->updateOffset(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -520,7 +520,7 @@ void LfoWidget::updatePhase(int val)
     midiLfo->updatePhase(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -540,7 +540,7 @@ void LfoWidget::updateFlipWaveVertical()
     midiLfo->flipWaveVertical();
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
-    data=QVector<Sample>::fromStdVector(sdata);
+    data=QVector<Sample>(sdata.begin(), sdata.end());
     screen->updateData(data);
 }
 
@@ -572,12 +572,12 @@ void LfoWidget::setRecord(bool on)
 
 QVector<Sample> LfoWidget::getCustomWave()
 {
-    return QVector<Sample>::fromStdVector(midiLfo->customWave);
+    return QVector<Sample>(midiLfo->customWave.begin(), midiLfo->customWave.end());
 }
 
 QVector<bool> LfoWidget::getMuteMask()
 {
-    return QVector<bool>::fromStdVector(midiLfo->muteMask);
+    return QVector<bool>(midiLfo->muteMask.begin(), midiLfo->muteMask.end());
 }
 
 #ifdef APPBUILD
@@ -811,7 +811,7 @@ void LfoWidget::updateDisplay()
     }
     if (midiLfo->dataChanged) {
         midiLfo->getData(&sdata);
-        data = QVector<Sample>::fromStdVector(sdata);
+        data=QVector<Sample>(sdata.begin(), sdata.end());
         screen->updateData(data);
         cursor->updateNumbers(midiLfo->res, midiLfo->size);
         offset->setValue(midiLfo->offs);
