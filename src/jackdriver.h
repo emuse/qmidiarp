@@ -30,14 +30,8 @@
 #include <jack/transport.h>
 #include <jack/midiport.h>
 
-#ifdef JACK_SESSION
-#include <jack/session.h>
-#endif
-
 #include "main.h"
 #include "driverbase.h"
-
-extern QString global_jack_session_uuid;
 
 /*!
  * The JackDriver class provides access from Engine to the MIDI interface
@@ -69,9 +63,6 @@ class JackDriver : public DriverBase
   private:
     static int process_callback(jack_nframes_t nframes, void *arg);
     static void jack_shutdown(void *arg);
-#ifdef JACK_SESSION
-    static void session_callback(jack_session_event_t *ev, void *arg);
-#endif
     void update_ports();
 
     jack_port_t * in_port;
@@ -94,12 +85,6 @@ class JackDriver : public DriverBase
     jack_client_t *jack_handle;
     jack_position_t currentPos;
     void handleEchoes(int nframes);
-
-#ifdef JACK_SESSION
-  public:
-    jack_session_event_t *jsEv;
-    bool jack_session_event();
-#endif
 
 
   public:

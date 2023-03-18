@@ -244,15 +244,8 @@ if test "x$ac_buildapp" = "xyes" ; then
     fi
     ], [AC_MSG_NOTICE([NSM support is disabled])])
 
-    # JACK session support
-    
-    AC_CHECK_HEADER(jack/session.h, jack_session_found="yes", jack_session_found="no")
-    if test "$jack_session_found" = "yes"; then
-        AC_DEFINE(JACK_SESSION, 1, [Define to enable jack session support])
-    fi
 else
     AM_CONDITIONAL([ENABLE_NSM], false)
-    AC_DEFINE(JACK_SESSION, 0)
 fi
 
 # Use the found libraries only for APPBUILD target

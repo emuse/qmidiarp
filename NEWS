@@ -1,4 +1,4 @@
-qmidiarp-0.6.6 (2021-??-??)
+qmidiarp-0.6.6 (2023-??-??)
 
 New Features
   o LFO: New control for phase of calculated waveforms (Matthew McGuire)
@@ -26,7 +26,9 @@ Fixed Bugs:
   o Regression with application of compact widget style
   o Regression when reading files with time module index -1
   o Output port count could not be changed on commandline
-  
+
+Changes:
+  o Jack-Session support has been removed due to "official deprecation"
 
 qmidiarp-0.6.5 (2017-12-17)
 

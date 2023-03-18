@@ -77,12 +77,9 @@ static struct option options[] = {
     {"alsa", 0, 0, 'a'},
     {"jack", 0, 0, 'j'},
 #endif
-    {"jack_session_uuid", required_argument, 0, 'U' },
     {"portCount", 1, 0, 'p'},
     {0, 0, 0, 0}
 };
-
-QString global_jack_session_uuid = "";
 
 int main(int argc, char *argv[])
 {
@@ -132,9 +129,6 @@ int main(int argc, char *argv[])
                 alsamidi = false;
                 break;
 #endif
-            case 'U':
-                global_jack_session_uuid = QString(optarg);
-                break;
             case 'p':
                 portCount = atoi(optarg);
                 if (portCount > MAX_PORTS)
