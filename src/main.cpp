@@ -69,7 +69,6 @@
 #include "mainwindow.h"
 #include "main.h"
 
-
 static struct option options[] = {
     {"version", 0, 0, 'v'},
     {"help", 0, 0, 'h'},
@@ -104,21 +103,21 @@ int main(int argc, char *argv[])
                 exit(EXIT_SUCCESS);
 
             case 'h':
-                out << "Usage: " PACKAGE " [OPTION] [FILENAME]" << Qt::endl;
-                out << Qt::endl;
-                out << "Options:" << Qt::endl;
+                out << "Usage: " PACKAGE " [OPTION] [FILENAME]" << "\n";
+                out << "\n";
+                out << "Options:" << "\n";
                 out << "  -v, --version            "
-                    "Print application version" << Qt::endl;
+                    "Print application version" << "\n";
                 out << "  -h, --help               "
-                    "Print this message" << Qt::endl;
+                    "Print this message" << "\n";
 #ifdef HAVE_ALSA
                 out << "  -a, --alsa               "
-                    "Use ALSA MIDI interface" << Qt::endl;
+                    "Use ALSA MIDI interface" << "\n";
                 out << "  -j, --jack               "
-                    "Use JACK MIDI interface (default)" << Qt::endl;
+                    "Use JACK MIDI interface (default)" << "\n";
 #endif
                 out << QString("  -p, --portCount <num>    "
-                        "Number of output ports [%1]").arg(portCount) << Qt::endl;
+                        "Number of output ports [%1]").arg(portCount) << "\n";
                 out.flush();
                 exit(EXIT_SUCCESS);
 #ifdef HAVE_ALSA

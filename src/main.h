@@ -50,7 +50,6 @@
     QCheckBox { font: 7pt; max-height: 20px;} \
     QGroupBox { font: 7pt; }"
 
-
 /*! This array holds the currently available frequency values.
  */
 const int lfoFreqValues[14] = {1, 2, 4, 8, 16, 24, 32, 64, 96, 128, 160, 192, 224, 256};

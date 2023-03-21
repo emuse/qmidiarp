@@ -419,7 +419,11 @@ void SeqWidget::updateWaveForm(int val)
     if (!midiSeq) return;
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+    data=QVector<Sample>::fromStdVector(sdata);
+#else
     data=QVector<Sample>(sdata.begin(), sdata.end());
+#endif
     screen->updateData(data);
 }
 
@@ -442,7 +446,11 @@ void SeqWidget::updateRes(int val)
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+    data=QVector<Sample>::fromStdVector(sdata);
+#else
     data=QVector<Sample>(sdata.begin(), sdata.end());
+#endif
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
 }
@@ -457,7 +465,11 @@ void SeqWidget::updateSize(int val)
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+    data=QVector<Sample>::fromStdVector(sdata);
+#else
     data=QVector<Sample>(sdata.begin(), sdata.end());
+#endif
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
 }
@@ -631,12 +643,20 @@ void SeqWidget::copyParamsFrom(ModuleWidget *p_fromWidget)
 
 QVector<Sample> SeqWidget::getCustomWave()
 {
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+    return QVector<Sample>::fromStdVector(midiSeq->customWave);
+#else
     return QVector<Sample>(midiSeq->customWave.begin(), midiSeq->customWave.end());
+#endif
 }
 
 QVector<bool> SeqWidget::getMuteMask()
 {
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+    return QVector<bool>::fromStdVector(midiSeq->muteMask);
+#else
     return QVector<bool>(midiSeq->muteMask.begin(), midiSeq->muteMask.end());
+#endif
 }
 
 void SeqWidget::handleController(int ccnumber, int channel, int value)
@@ -755,7 +775,11 @@ void SeqWidget::updateDisplay()
         dataChanged=false;
         midiSeq->dataChanged=false;
         midiSeq->getData(&sdata);
+#if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
+        data=QVector<Sample>::fromStdVector(sdata);
+#else
         data=QVector<Sample>(sdata.begin(), sdata.end());
+#endif
         screen->updateData(data);
         if (recordMode) screen->setCurrentRecStep(midiSeq->currentRecStep);
         cursor->updateNumbers(midiSeq->res, midiSeq->size);
