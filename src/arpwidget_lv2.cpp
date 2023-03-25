@@ -110,6 +110,7 @@ ArpWidgetLV2::ArpWidgetLV2 (
     mouseXCur = 0.0;
     mouseYCur = 0.0;
     receivedPatternOnce = false;
+    uiIsUp = true;
     sendUIisUp(true);
 }
 
@@ -361,6 +362,7 @@ void ArpWidgetLV2::sendUIisUp(bool on)
     uint8_t obj_buf[64];
     int state;
 
+    uiIsUp = on;
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);
 
@@ -444,6 +446,12 @@ void ArpWidgetLV2::updateParam(int index, float fValue) const
         writeFunction(m_controller, index, sizeof(float), 0, &fValue);
 }
 
+bool ArpWidgetLV2::isIdleClosed()
+{
+    return (uiIsUp == false);
+}
+
+
 //=== The following comes from the synthv1 plugin by rncbc ====
 QApplication *ArpWidgetLV2::g_qAppInstance = nullptr;
 unsigned int  ArpWidgetLV2::qAppCount = 0;
@@ -485,17 +493,70 @@ int MidiArpLV2ui_resize ( LV2UI_Handle ui, int width, int height )
     }
 }
 
+int MidiArpLV2ui_idle ( LV2UI_Handle ui )
+{
+    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
+    if  (pWidget && !pWidget->isIdleClosed()) {
+        QApplication::processEvents();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+int MidiArpLV2ui_show ( LV2UI_Handle ui )
+{
+    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
+    if (pWidget) {
+        pWidget->show();
+        pWidget->raise();
+        pWidget->activateWindow();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+int MidiArpLV2ui_hide ( LV2UI_Handle ui )
+{
+    ArpWidgetLV2 *pWidget = static_cast<ArpWidgetLV2 *> (ui);
+    if (pWidget) {
+        pWidget->hide();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 static const LV2UI_Resize MidiArpLV2ui_resize_interface =
 {
     nullptr, // handle: host should use its own when calling ui_resize().
     MidiArpLV2ui_resize
 };
 
+static const LV2UI_Idle_Interface MidiArpLV2ui_idle_interface =
+{
+    MidiArpLV2ui_idle
+};
+
+static const LV2UI_Show_Interface MidiArpLV2ui_show_interface =
+{
+    MidiArpLV2ui_show,
+    MidiArpLV2ui_hide
+};
+
+
 static const void *MidiArpLV2ui_extension_data ( const char *uri )
 {
     if (::strcmp(uri, LV2_UI__resize) == 0)
         return (void *) &MidiArpLV2ui_resize_interface;
-    else
+    else 
+    if (::strcmp(uri, LV2_UI__idleInterface) == 0)
+        return (void *) &MidiArpLV2ui_idle_interface;
+    else 
+    if (::strcmp(uri, LV2_UI__showInterface) == 0)
+        return (void *) &MidiArpLV2ui_show_interface;
+     else
         return nullptr;
 }
 

@@ -114,6 +114,7 @@ LfoWidgetLV2::LfoWidgetLV2 (
     size = 4;
     mouseXCur = 0.0;
     mouseYCur = 0.0;
+    uiIsUp = true;
     sendUIisUp(true);
     copiedToCustomFlag = false;
 }
@@ -244,6 +245,7 @@ void LfoWidgetLV2::sendUIisUp(bool on)
     uint8_t obj_buf[64];
     int state;
 
+    uiIsUp = on;
     LV2_Atom_Forge_Frame frame;
     lv2_atom_forge_frame_time(&forge, 0);
 
@@ -258,6 +260,12 @@ void LfoWidgetLV2::sendUIisUp(bool on)
     lv2_atom_forge_pop(&forge, &frame);
     writeFunction(m_controller, MidiIn, lv2_atom_total_size(msg), uris->atom_eventTransfer, msg);
 }
+
+bool LfoWidgetLV2::isIdleClosed()
+{
+    return (uiIsUp == false);
+}
+
 
 void LfoWidgetLV2::sendFlipWaveVertical()
 {
@@ -443,16 +451,69 @@ int MidiLfoLV2ui_resize ( LV2UI_Handle ui, int width, int height )
     }
 }
 
+int MidiLfoLV2ui_idle ( LV2UI_Handle ui )
+{
+    LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
+    if  (pWidget && !pWidget->isIdleClosed()) {
+        QApplication::processEvents();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+int MidiLfoLV2ui_show ( LV2UI_Handle ui )
+{
+    LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
+    if (pWidget) {
+        pWidget->show();
+        pWidget->raise();
+        pWidget->activateWindow();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+int MidiLfoLV2ui_hide ( LV2UI_Handle ui )
+{
+    LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
+    if (pWidget) {
+        pWidget->hide();
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 static const LV2UI_Resize MidiLfoLV2ui_resize_interface =
 {
     nullptr, // handle: host should use its own when calling ui_resize().
     MidiLfoLV2ui_resize
 };
 
+
+static const LV2UI_Idle_Interface MidiLfoLV2ui_idle_interface =
+{
+    MidiLfoLV2ui_idle
+};
+
+static const LV2UI_Show_Interface MidiLfoLV2ui_show_interface =
+{
+    MidiLfoLV2ui_show,
+    MidiLfoLV2ui_hide
+};
+
 static const void *MidiLfoLV2ui_extension_data ( const char *uri )
 {
     if (::strcmp(uri, LV2_UI__resize) == 0)
         return (void *) &MidiLfoLV2ui_resize_interface;
+    else 
+    if (::strcmp(uri, LV2_UI__idleInterface) == 0)
+        return (void *) &MidiLfoLV2ui_idle_interface;
+    else 
+    if (::strcmp(uri, LV2_UI__showInterface) == 0)
+        return (void *) &MidiLfoLV2ui_show_interface;
     else
         return nullptr;
 }

@@ -84,11 +84,12 @@ class ArpWidgetLV2 : public ArpWidget
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
+    
     void sendUIisUp(bool on);
-
+    bool isIdleClosed();
+    
     static void qAppInstantiate();
     static void qAppCleanup();
-    
     static QApplication *qAppInstance();
 
   public slots:
@@ -114,6 +115,7 @@ class ArpWidgetLV2 : public ArpWidget
     double mouseXCur, mouseYCur;
     bool receivePatternFlag;
     bool receivedPatternOnce;
+    bool uiIsUp;
 
     static QApplication *g_qAppInstance;
     static unsigned int  qAppCount;

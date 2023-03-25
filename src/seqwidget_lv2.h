@@ -91,8 +91,10 @@ class SeqWidgetLV2 : public SeqWidget
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
-    void sendUIisUp(bool on);
 
+    void sendUIisUp(bool on);
+    bool isIdleClosed();
+    
     static void qAppInstantiate();
     static void qAppCleanup();
 
@@ -119,6 +121,7 @@ class SeqWidgetLV2 : public SeqWidget
     LV2_Atom_Forge_Frame frame;
 
     int res, size;
+    bool uiIsUp;
     double mouseXCur, mouseYCur;
     
     static QApplication *g_qAppInstance;

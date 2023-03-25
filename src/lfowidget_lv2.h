@@ -88,7 +88,9 @@ class LfoWidgetLV2 : public LfoWidget
 
     void port_event(uint32_t port_index,
         uint32_t buffer_size, uint32_t format, const void *buffer);
+
     void sendUIisUp(bool on);
+    bool isIdleClosed();
 
     static void qAppInstantiate();
     static void qAppCleanup();
@@ -119,6 +121,7 @@ class LfoWidgetLV2 : public LfoWidget
     int res, size;
     double mouseXCur, mouseYCur;
     bool copiedToCustomFlag;
+    bool uiIsUp;
 
     static QApplication *g_qAppInstance;
     static unsigned int  qAppCount;
