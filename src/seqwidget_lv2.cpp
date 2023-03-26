@@ -562,10 +562,10 @@ static const LV2UI_Descriptor MidiSeqLV2ui_x11_descriptor =
 LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
     if (index == 0)
-        return &MidiSeqLV2ui_descriptor;
+        return &MidiSeqLV2ui_x11_descriptor;
     else
     if (index == 1)
-        return &MidiSeqLV2ui_x11_descriptor;
+        return &MidiSeqLV2ui_descriptor;
     else
         return NULL;
 }

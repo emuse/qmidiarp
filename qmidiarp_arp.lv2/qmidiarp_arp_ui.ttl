@@ -1,14 +1,14 @@
 @prefix lv2:     <http://lv2plug.in/ns/lv2core#> .
 @prefix lv2ui:   <http://lv2plug.in/ns/extensions/ui#> .
 
-<https://git.code.sf.net/p/qmidiarp/arp#ui>
-    lv2:optionalFeature lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
-    lv2:extensionData lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
-    a lv2ui:Qt5UI ;
-    lv2ui:binary <qmidiarp_arp_ui.so> .
-
 <https://git.code.sf.net/p/qmidiarp/arp#ui_x11>
     lv2:optionalFeature lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
     lv2:extensionData lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
     a lv2ui:X11UI ;
+    lv2ui:binary <qmidiarp_arp_ui.so> .
+
+<https://git.code.sf.net/p/qmidiarp/arp#ui>
+    lv2:optionalFeature lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
+    lv2:extensionData lv2ui:resize, lv2ui:idleInterface, lv2ui:showInterface ;
+    a lv2ui:Qt5UI ;
     lv2ui:binary <qmidiarp_arp_ui.so> .
