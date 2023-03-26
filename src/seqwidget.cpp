@@ -495,13 +495,6 @@ void SeqWidget::updateTranspose(int val)
 
 void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if (!midiSeq) {
-        emit mouseSig(mouseX, mouseY, buttons, pressed);
-    }
-    else {
-        midiSeq->mouseEvent(mouseX, mouseY, buttons, pressed);
-    }
-
     if ((mouseY < 0) && (pressed != 2)) { // we have to recalculate loopMarker for screen update
         if (mouseX < 0) mouseX = 0;
         if (buttons == 2) mouseX = - mouseX;
@@ -513,6 +506,13 @@ void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int presse
         screen->setLoopMarker(lm);
         screen->updateDraw();
     }
+    if (!midiSeq) {
+        emit mouseSig(mouseX, mouseY, buttons, pressed);
+    }
+    else {
+        midiSeq->mouseEvent(mouseX, mouseY, buttons, pressed);
+    }
+
     modified = true;
 }
 
