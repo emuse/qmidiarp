@@ -353,8 +353,9 @@ void LfoWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender()) {
-        updateParam(MUTE, value);
         screen->setMuted(value);
+        screen->update();
+        updateParam(MUTE, value);
     }
     else if (enableNoteOff == sender())         updateParam(ENABLE_NOTEOFF, value);
     else if (enableRestartByKbd == sender())    updateParam(ENABLE_RESTARTBYKBD, value);

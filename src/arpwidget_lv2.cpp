@@ -409,8 +409,9 @@ void ArpWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender()) {
-        updateParam(MUTE, value);
         screen->setMuted(value);
+        screen->update();
+        updateParam(MUTE, value);
     }
     else if (deferChangesAction == sender())    updateParam(DEFER, value);
     else if (latchModeAction == sender())       updateParam(LATCH_MODE, value);

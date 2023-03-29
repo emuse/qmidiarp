@@ -313,8 +313,9 @@ void SeqWidgetLV2::mapBool(bool on)
 {
     float value = (float)on;
     if (muteOutAction == sender()) {
-        updateParam(MUTE, value);
         screen->setMuted(value);
+        screen->update();
+        updateParam(MUTE, value);
     }
     else if (enableNoteIn == sender())          updateParam(ENABLE_NOTEIN, value);
     else if (enableVelIn == sender())           updateParam(ENABLE_VELIN, value);
