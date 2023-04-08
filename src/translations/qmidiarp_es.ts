@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es">
+<TS version="2.1" language="es">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -135,11 +135,11 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <source>Low octave limit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>High octave limit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>As Played</source>
@@ -154,11 +154,11 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
     <message>
         <source>&amp;Sync with Host</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -200,138 +200,10 @@ cuando todas las notas han sido reproducidas</translation>
     </message>
 </context>
 <context>
-    <name>InOutBox</name>
+    <name>HitLabel</name>
     <message>
-        <source>&amp;Clone...</source>
-        <translation>&amp;Clonar...</translation>
-    </message>
-    <message>
-        <source>Duplicate this Module in muted state</source>
-        <translation>Duplicar este módulo en estado silenciado</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation>&amp;Renombrar...</translation>
-    </message>
-    <message>
-        <source>Rename this Module</source>
-        <translation>Renombrar este módulo</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation>&amp;Borrar...</translation>
-    </message>
-    <message>
-        <source>Delete this Module</source>
-        <translation>Borrar este módulo</translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation>Entrada</translation>
-    </message>
-    <message>
-        <source>&amp;Note</source>
-        <translation>&amp;Nota</translation>
-    </message>
-    <message>
-        <source>Transpose the sequence following incoming notes</source>
-        <translation>Transponer la secuencia siguiendo las notas entrantes</translation>
-    </message>
-    <message>
-        <source>&amp;Velocity</source>
-        <translation>&amp;Velocidad</translation>
-    </message>
-    <message>
-        <source>Set sequence velocity to that of incoming notes</source>
-        <translation>Establecer la velocidad de la secuencia igual a las notas recibidas</translation>
-    </message>
-    <message>
-        <source>&amp;Note Off</source>
-        <translation>Desconectar &amp;Nota</translation>
-    </message>
-    <message>
-        <source>Stop output when Note is released</source>
-        <translation>Parar la salida cuando la nota sea liberada</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;CC#</source>
-        <translation>MIDI &amp;CC#</translation>
-    </message>
-    <message>
-        <source>MIDI Controller number to record</source>
-        <translation>Número de controlador MIDI a grabar</translation>
-    </message>
-    <message>
-        <source>&amp;Restart</source>
-        <translation>&amp;Reinicio</translation>
-    </message>
-    <message>
-        <source>Restart when a new note is received</source>
-        <translation>Reiniciar la secuencia cuando una nueva nota sea recibida</translation>
-    </message>
-    <message>
-        <source>&amp;Trigger</source>
-        <translation>&amp;Disparador</translation>
-    </message>
-    <message>
-        <source>Retrigger when a new note is received</source>
-        <translation>Volver a disparar cuando una nueva nota sea recibida</translation>
-    </message>
-    <message>
-        <source>&amp;Legato</source>
-        <translation>&amp;Ligado</translation>
-    </message>
-    <message>
-        <source>Retrigger / restart upon new legato note as well</source>
-        <translation>Volver a disparar/reiniciar también cada nueva nota ligada</translation>
-    </message>
-    <message>
-        <source>&amp;Channel</source>
-        <translation>&amp;Canal</translation>
-    </message>
-    <message>
-        <source>Note Filter</source>
-        <translation>Filtro de nota</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Salida</translation>
-    </message>
-    <message>
-        <source>MIDI Controller number sent to output</source>
-        <translation>Número de controlador MIDI enviado a la salida</translation>
-    </message>
-    <message>
-        <source>C&amp;hannel</source>
-        <translation>&amp;Canal</translation>
-    </message>
-    <message>
-        <source>&amp;Port</source>
-        <translation>&amp;Puerto</translation>
-    </message>
-    <message>
-        <source>&amp;Mute</source>
-        <translation>&amp;Silenciar</translation>
-    </message>
-    <message>
-        <source>Defer mute to pattern end</source>
-        <translation>Retrasar silenciar al final del patrón</translation>
-    </message>
-    <message>
-        <source>&amp;Show/hide in-out settings</source>
-        <translation>&amp;Mostrar/Ocultar los paneles de E/S</translation>
-    </message>
-    <message>
-        <source>Note Filter - ACTIVE</source>
-        <translation>Filtro de notas - ACTIVO</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation>¿Eliminar &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation>Nuevo nombre</translation>
+        <source>Go and stay here</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -430,6 +302,10 @@ Rueda para cambiar desplazamiento</translation>
     </message>
     <message>
         <source>Do a vertical flip of the wave about its mid value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Phase</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -723,22 +599,6 @@ Rueda para cambiar desplazamiento</translation>
         <translation>Acerca de Qt</translation>
     </message>
     <message>
-        <source>Add MIDI Arpeggiator</source>
-        <translation>Añadir arpegiador MIDI</translation>
-    </message>
-    <message>
-        <source>%1</source>
-        <translation>%1</translation>
-    </message>
-    <message>
-        <source>Add MIDI LFO</source>
-        <translation>Añadir LFO MIDI</translation>
-    </message>
-    <message>
-        <source>Add Step Sequencer</source>
-        <translation>Añadir secuenciador de pasos</translation>
-    </message>
-    <message>
         <source>QMidiArp XML files</source>
         <translation>Archivos XML de QMidiArp</translation>
     </message>
@@ -811,7 +671,7 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     </message>
     <message>
         <source>MIDI Controllers - </source>
-        <translation>Controladores MIDI</translation>
+        <translation>Controladores MIDI- </translation>
     </message>
     <message>
         <source>Control</source>
@@ -850,6 +710,141 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     </message>
 </context>
 <context>
+    <name>ModuleWidget</name>
+    <message>
+        <source>&amp;Clone...</source>
+        <translation>&amp;Clonar...</translation>
+    </message>
+    <message>
+        <source>Duplicate this Module in muted state</source>
+        <translation>Duplicar este módulo en estado silenciado</translation>
+    </message>
+    <message>
+        <source>&amp;Rename...</source>
+        <translation>&amp;Renombrar...</translation>
+    </message>
+    <message>
+        <source>Rename this Module</source>
+        <translation>Renombrar este módulo</translation>
+    </message>
+    <message>
+        <source>&amp;Delete...</source>
+        <translation>&amp;Borrar...</translation>
+    </message>
+    <message>
+        <source>Delete this Module</source>
+        <translation>Borrar este módulo</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Entrada</translation>
+    </message>
+    <message>
+        <source>&amp;Note</source>
+        <translation>&amp;Nota</translation>
+    </message>
+    <message>
+        <source>Transpose the sequence following incoming notes</source>
+        <translation>Transponer la secuencia siguiendo las notas entrantes</translation>
+    </message>
+    <message>
+        <source>&amp;Velocity</source>
+        <translation>&amp;Velocidad</translation>
+    </message>
+    <message>
+        <source>Set sequence velocity to that of incoming notes</source>
+        <translation>Establecer la velocidad de la secuencia igual a las notas recibidas</translation>
+    </message>
+    <message>
+        <source>&amp;Note Off</source>
+        <translation>Desconectar &amp;Nota</translation>
+    </message>
+    <message>
+        <source>Stop output when Note is released</source>
+        <translation>Parar la salida cuando la nota sea liberada</translation>
+    </message>
+    <message>
+        <source>MIDI &amp;CC#</source>
+        <translation>MIDI &amp;CC#</translation>
+    </message>
+    <message>
+        <source>MIDI Controller number to record</source>
+        <translation>Número de controlador MIDI a grabar</translation>
+    </message>
+    <message>
+        <source>&amp;Restart</source>
+        <translation>&amp;Reinicio</translation>
+    </message>
+    <message>
+        <source>Restart when a new note is received</source>
+        <translation>Reiniciar la secuencia cuando una nueva nota sea recibida</translation>
+    </message>
+    <message>
+        <source>&amp;Trigger</source>
+        <translation>&amp;Disparador</translation>
+    </message>
+    <message>
+        <source>Retrigger when a new note is received</source>
+        <translation>Volver a disparar cuando una nueva nota sea recibida</translation>
+    </message>
+    <message>
+        <source>&amp;Legato</source>
+        <translation>&amp;Ligado</translation>
+    </message>
+    <message>
+        <source>Retrigger / restart upon new legato note as well</source>
+        <translation>Volver a disparar/reiniciar también cada nueva nota ligada</translation>
+    </message>
+    <message>
+        <source>&amp;Channel</source>
+        <translation>&amp;Canal</translation>
+    </message>
+    <message>
+        <source>Note Filter</source>
+        <translation>Filtro de nota</translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation>Salida</translation>
+    </message>
+    <message>
+        <source>MIDI Controller number sent to output</source>
+        <translation>Número de controlador MIDI enviado a la salida</translation>
+    </message>
+    <message>
+        <source>C&amp;hannel</source>
+        <translation>&amp;Canal</translation>
+    </message>
+    <message>
+        <source>&amp;Port</source>
+        <translation>&amp;Puerto</translation>
+    </message>
+    <message>
+        <source>&amp;Mute</source>
+        <translation>&amp;Silenciar</translation>
+    </message>
+    <message>
+        <source>Defer mute to pattern end</source>
+        <translation>Retrasar silenciar al final del patrón</translation>
+    </message>
+    <message>
+        <source>&amp;Show/hide in-out settings</source>
+        <translation>&amp;Mostrar/Ocultar los paneles de E/S</translation>
+    </message>
+    <message>
+        <source>Note Filter - ACTIVE</source>
+        <translation>Filtro de notas - ACTIVO</translation>
+    </message>
+    <message>
+        <source>Delete &quot;%1&quot;?</source>
+        <translation>¿Eliminar &quot;%1&quot;?</translation>
+    </message>
+    <message>
+        <source>New Name</source>
+        <translation>Nuevo nombre</translation>
+    </message>
+</context>
+<context>
     <name>ParStore</name>
     <message>
         <source>&amp;Store here</source>
@@ -875,28 +870,9 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
         <source>Jump to:</source>
         <translation>Saltar a:</translation>
     </message>
-</context>
-<context>
-    <name>PassWidget</name>
     <message>
-        <source>&amp;Forward unmatched events to port</source>
-        <translation>&amp;Redireccionar eventos no coincidentes al puerto</translation>
-    </message>
-    <message>
-        <source>&amp;Modules controllable by MIDI controller</source>
-        <translation>&amp;Módulos controlables por controlador MIDI</translation>
-    </message>
-    <message>
-        <source>&amp;Compact module layout style</source>
-        <translation>Estilo &amp;compacto de distribución de módulo</translation>
-    </message>
-    <message>
-        <source>&amp;Add new modules in muted state</source>
-        <translation>&amp;Añadir nuevos módulos en estado silenciado</translation>
-    </message>
-    <message>
-        <source>Settings - </source>
-        <translation>Preferencias - </translation>
+        <source>Loop count</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -924,6 +900,22 @@ Alternativamente usted puede utilizar el motor ALSA MIDI mediante la orden qmidi
     <message>
         <source>Settings - </source>
         <translation>Preferencias - </translation>
+    </message>
+    <message>
+        <source>&amp;Output MIDI Clock to port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Midi</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Display</source>
+        <translation>Mostrar</translation>
+    </message>
+    <message>
+        <source>Modules</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

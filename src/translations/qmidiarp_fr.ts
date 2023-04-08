@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<TS version="2.1" language="fr">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -139,7 +139,7 @@ d h durée de note augm/dim
     </message>
     <message>
         <source>As Played</source>
-        <translation type="unfinished">Suivant jeu</translation>
+        <translation>Suivant jeu</translation>
     </message>
 </context>
 <context>
@@ -196,138 +196,10 @@ d h durée de note augm/dim
     </message>
 </context>
 <context>
-    <name>InOutBox</name>
+    <name>HitLabel</name>
     <message>
-        <source>&amp;Clone...</source>
-        <translation>&amp;Dupliquer...</translation>
-    </message>
-    <message>
-        <source>Duplicate this Module in muted state</source>
-        <translation>Dupliquer ce module en état muet</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation>&amp;Renommer...</translation>
-    </message>
-    <message>
-        <source>Rename this Module</source>
-        <translation>Renommer ce module</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation>&amp;Supprimer...</translation>
-    </message>
-    <message>
-        <source>Delete this Module</source>
-        <translation>Supprimer ce module</translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation>Entrée</translation>
-    </message>
-    <message>
-        <source>&amp;Note</source>
-        <translation>&amp;Note</translation>
-    </message>
-    <message>
-        <source>Transpose the sequence following incoming notes</source>
-        <translation>Transposer la séquence suivant les notes entrants</translation>
-    </message>
-    <message>
-        <source>&amp;Velocity</source>
-        <translation>&amp;Vélocité</translation>
-    </message>
-    <message>
-        <source>Set sequence velocity to that of incoming notes</source>
-        <translation>La vélocité de la séquence suit celle des notes à l&apos;entrée</translation>
-    </message>
-    <message>
-        <source>&amp;Note Off</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Stop output when Note is released</source>
-        <translation>Arrêter l&apos;envoi de notes quand la touche est relâchée</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;CC#</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>MIDI Controller number to record</source>
-        <translation>Le numéro du contrôleur MIDI à enregistrer</translation>
-    </message>
-    <message>
-        <source>&amp;Restart</source>
-        <translation>&amp;Redémarre</translation>
-    </message>
-    <message>
-        <source>Restart when a new note is received</source>
-        <translation>Redémarrer la séquence quand une nouvelle note est reçue</translation>
-    </message>
-    <message>
-        <source>&amp;Trigger</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Retrigger when a new note is received</source>
-        <translation>Déclencher la séquence avec les notes reçues</translation>
-    </message>
-    <message>
-        <source>&amp;Legato</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Retrigger / restart upon new legato note as well</source>
-        <translation>Redémarrer / déclencher également sur des notes en legato</translation>
-    </message>
-    <message>
-        <source>&amp;Channel</source>
-        <translation>&amp;Canal</translation>
-    </message>
-    <message>
-        <source>Note Filter</source>
-        <translation>Filtre</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Sortie</translation>
-    </message>
-    <message>
-        <source>MIDI Controller number sent to output</source>
-        <translation>Numéro du contrôleur envoyé à la sortie</translation>
-    </message>
-    <message>
-        <source>C&amp;hannel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>&amp;Port</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>&amp;Mute</source>
-        <translation>&amp;Muet</translation>
-    </message>
-    <message>
-        <source>Defer mute to pattern end</source>
-        <translation>N&apos;appliquer la fonction muet qu&apos;à la fin du motif</translation>
-    </message>
-    <message>
-        <source>&amp;Show/hide in-out settings</source>
-        <translation>&amp;Monter/Cacher les panneaux Entrée-Sortie</translation>
-    </message>
-    <message>
-        <source>Note Filter - ACTIVE</source>
-        <translation>Filtre - AKTIF</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation>Supprimer &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation>Nouveau nom</translation>
+        <source>Go and stay here</source>
+        <translation>Aller ici et y rester</translation>
     </message>
 </context>
 <context>
@@ -426,6 +298,10 @@ Molette pour changer l&apos;offset</translation>
     </message>
     <message>
         <source>Triangle</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>&amp;Phase</source>
         <translation></translation>
     </message>
 </context>
@@ -584,14 +460,6 @@ Molette pour changer l&apos;offset</translation>
         <translation>Vider</translation>
     </message>
     <message>
-        <source>Add MIDI LFO</source>
-        <translation>Ajouter un LFO MIDI</translation>
-    </message>
-    <message>
-        <source>Add Step Sequencer</source>
-        <translation>Ajouter un séquenceur</translation>
-    </message>
-    <message>
         <source>QMidiArp XML files</source>
         <translation>Fichiers QMidiArp XML</translation>
     </message>
@@ -702,10 +570,6 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <translation>A propos de Qt</translation>
     </message>
     <message>
-        <source>Add MIDI Arpeggiator</source>
-        <translation>Ajouter un arpège MIDI</translation>
-    </message>
-    <message>
         <source>Open arpeggiator file</source>
         <translation>Ouvrir un fichier arpège</translation>
     </message>
@@ -792,10 +656,6 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <comment>View|MidiControllers</comment>
         <translation></translation>
     </message>
-    <message>
-        <source>%1</source>
-        <translation></translation>
-    </message>
 </context>
 <context>
     <name>MidiCCTable</name>
@@ -848,6 +708,141 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
     </message>
 </context>
 <context>
+    <name>ModuleWidget</name>
+    <message>
+        <source>&amp;Clone...</source>
+        <translation>&amp;Dupliquer...</translation>
+    </message>
+    <message>
+        <source>Duplicate this Module in muted state</source>
+        <translation>Dupliquer ce module en état muet</translation>
+    </message>
+    <message>
+        <source>&amp;Rename...</source>
+        <translation>&amp;Renommer...</translation>
+    </message>
+    <message>
+        <source>Rename this Module</source>
+        <translation>Renommer ce module</translation>
+    </message>
+    <message>
+        <source>&amp;Delete...</source>
+        <translation>&amp;Supprimer...</translation>
+    </message>
+    <message>
+        <source>Delete this Module</source>
+        <translation>Supprimer ce module</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Entrée</translation>
+    </message>
+    <message>
+        <source>&amp;Note</source>
+        <translation>&amp;Note</translation>
+    </message>
+    <message>
+        <source>Transpose the sequence following incoming notes</source>
+        <translation>Transposer la séquence suivant les notes entrants</translation>
+    </message>
+    <message>
+        <source>&amp;Velocity</source>
+        <translation>&amp;Vélocité</translation>
+    </message>
+    <message>
+        <source>Set sequence velocity to that of incoming notes</source>
+        <translation>La vélocité de la séquence suit celle des notes à l&apos;entrée</translation>
+    </message>
+    <message>
+        <source>&amp;Note Off</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Stop output when Note is released</source>
+        <translation>Arrêter l&apos;envoi de notes quand la touche est relâchée</translation>
+    </message>
+    <message>
+        <source>MIDI &amp;CC#</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>MIDI Controller number to record</source>
+        <translation>Le numéro du contrôleur MIDI à enregistrer</translation>
+    </message>
+    <message>
+        <source>&amp;Restart</source>
+        <translation>&amp;Redémarre</translation>
+    </message>
+    <message>
+        <source>Restart when a new note is received</source>
+        <translation>Redémarrer la séquence quand une nouvelle note est reçue</translation>
+    </message>
+    <message>
+        <source>&amp;Trigger</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Retrigger when a new note is received</source>
+        <translation>Déclencher la séquence avec les notes reçues</translation>
+    </message>
+    <message>
+        <source>&amp;Legato</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Retrigger / restart upon new legato note as well</source>
+        <translation>Redémarrer / déclencher également sur des notes en legato</translation>
+    </message>
+    <message>
+        <source>&amp;Channel</source>
+        <translation>&amp;Canal</translation>
+    </message>
+    <message>
+        <source>Note Filter</source>
+        <translation>Filtre</translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation>Sortie</translation>
+    </message>
+    <message>
+        <source>MIDI Controller number sent to output</source>
+        <translation>Numéro du contrôleur envoyé à la sortie</translation>
+    </message>
+    <message>
+        <source>C&amp;hannel</source>
+        <translation>&amp;Canal</translation>
+    </message>
+    <message>
+        <source>&amp;Port</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>&amp;Mute</source>
+        <translation>&amp;Muet</translation>
+    </message>
+    <message>
+        <source>Defer mute to pattern end</source>
+        <translation>N&apos;appliquer la fonction muet qu&apos;à la fin du motif</translation>
+    </message>
+    <message>
+        <source>&amp;Show/hide in-out settings</source>
+        <translation>&amp;Monter/Cacher les panneaux Entrée-Sortie</translation>
+    </message>
+    <message>
+        <source>Note Filter - ACTIVE</source>
+        <translation>Filtre - AKTIF</translation>
+    </message>
+    <message>
+        <source>Delete &quot;%1&quot;?</source>
+        <translation>Supprimer &quot;%1&quot;?</translation>
+    </message>
+    <message>
+        <source>New Name</source>
+        <translation>Nouveau nom</translation>
+    </message>
+</context>
+<context>
     <name>ParStore</name>
     <message>
         <source>&amp;Store here</source>
@@ -873,28 +868,9 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
         <source>Jump to:</source>
         <translation>Enchaîner:</translation>
     </message>
-</context>
-<context>
-    <name>PassWidget</name>
     <message>
-        <source>&amp;Forward unmatched events to port</source>
-        <translation>&amp;Acheminer les évênements non-traités au port</translation>
-    </message>
-    <message>
-        <source>&amp;Compact module layout style</source>
-        <translation>Style &amp;compact d&apos;affichage des modules</translation>
-    </message>
-    <message>
-        <source>&amp;Modules controllable by MIDI controller</source>
-        <translation>&amp;Modules contrôlables par MIDI</translation>
-    </message>
-    <message>
-        <source>&amp;Add new modules in muted state</source>
-        <translation>&amp;Ajout de nouveaux modules en état muet</translation>
-    </message>
-    <message>
-        <source>Settings - </source>
-        <translation>Paramètres - </translation>
+        <source>Loop count</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -922,6 +898,22 @@ Alternativement vous pouvez utiliser QMidiArp avec pilote ALSA en démarrant ave
     <message>
         <source>Settings - </source>
         <translation>Paramètres - </translation>
+    </message>
+    <message>
+        <source>&amp;Output MIDI Clock to port</source>
+        <translation>&amp;Port pour l&apos;horloge Midi</translation>
+    </message>
+    <message>
+        <source>Midi</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Display</source>
+        <translation>Affichage</translation>
+    </message>
+    <message>
+        <source>Modules</source>
+        <translation>Modules</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="cs_CZ">
+<TS version="2.1" language="cs_CZ">
 <context>
     <name>ArpWidget</name>
     <message>
@@ -135,11 +135,11 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
     <message>
         <source>Low octave limit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>High octave limit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>As Played</source>
@@ -154,11 +154,11 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
     <message>
         <source>&amp;Sync with Host</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Sync to Transport from Host</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -200,138 +200,10 @@ tohoto souboru, prosím, prostě spusťte qmidiarp.</translation>
     </message>
 </context>
 <context>
-    <name>InOutBox</name>
+    <name>HitLabel</name>
     <message>
-        <source>&amp;Clone...</source>
-        <translation>&amp;Klonovat...</translation>
-    </message>
-    <message>
-        <source>Duplicate this Module in muted state</source>
-        <translation>Zdvojit tento modul ve ztlumeném stavu</translation>
-    </message>
-    <message>
-        <source>&amp;Rename...</source>
-        <translation>&amp;Přejmenovat...</translation>
-    </message>
-    <message>
-        <source>Rename this Module</source>
-        <translation>Přejmenovat tento modul</translation>
-    </message>
-    <message>
-        <source>&amp;Delete...</source>
-        <translation>&amp;Smazat...</translation>
-    </message>
-    <message>
-        <source>Delete this Module</source>
-        <translation>Smazat tento modul</translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation>Vstup</translation>
-    </message>
-    <message>
-        <source>&amp;Note</source>
-        <translation>&amp;Nota</translation>
-    </message>
-    <message>
-        <source>Transpose the sequence following incoming notes</source>
-        <translation>Převést sekvenci skrz příchozí noty</translation>
-    </message>
-    <message>
-        <source>&amp;Velocity</source>
-        <translation>&amp;Dynamika</translation>
-    </message>
-    <message>
-        <source>Set sequence velocity to that of incoming notes</source>
-        <translation>Nastavit dynamiku sekvence na dynamiku příchozích not</translation>
-    </message>
-    <message>
-        <source>&amp;Note Off</source>
-        <translation>&amp;Nota vypnuta</translation>
-    </message>
-    <message>
-        <source>Stop output when Note is released</source>
-        <translation>Zastavit výstup, když je nota vydána</translation>
-    </message>
-    <message>
-        <source>MIDI &amp;CC#</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>MIDI Controller number to record</source>
-        <translation>Číslo ovladače MIDI pro nahrávání</translation>
-    </message>
-    <message>
-        <source>&amp;Restart</source>
-        <translation>&amp;Spustit znovu</translation>
-    </message>
-    <message>
-        <source>Restart when a new note is received</source>
-        <translation>Spustit sekvenci znovu, když je nota přijata</translation>
-    </message>
-    <message>
-        <source>&amp;Trigger</source>
-        <translation>&amp;Spoušť</translation>
-    </message>
-    <message>
-        <source>Retrigger when a new note is received</source>
-        <translation>Spustit sekvenci znovu, když je přijata nová nota</translation>
-    </message>
-    <message>
-        <source>&amp;Legato</source>
-        <translation>&amp;Legato</translation>
-    </message>
-    <message>
-        <source>Retrigger / restart upon new legato note as well</source>
-        <translation>Spustit/Spustit znovu i na notách s legatem</translation>
-    </message>
-    <message>
-        <source>&amp;Channel</source>
-        <translation>&amp;Каnál</translation>
-    </message>
-    <message>
-        <source>Note Filter</source>
-        <translation>Notový filtr</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Výstup</translation>
-    </message>
-    <message>
-        <source>MIDI Controller number sent to output</source>
-        <translation>Číslo ovladače MIDI poslaného do výstupu</translation>
-    </message>
-    <message>
-        <source>C&amp;hannel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>&amp;Port</source>
-        <translation>&amp;Přípojka</translation>
-    </message>
-    <message>
-        <source>&amp;Mute</source>
-        <translation>&amp;Ztlumit</translation>
-    </message>
-    <message>
-        <source>Defer mute to pattern end</source>
-        <translation>Pozdržet ztlumení až na konec vzoru</translation>
-    </message>
-    <message>
-        <source>&amp;Show/hide in-out settings</source>
-        <translation>&amp;Ukázat/Skrýt nastavení pro vstup-výstup</translation>
-    </message>
-    <message>
-        <source>Note Filter - ACTIVE</source>
-        <translation>Notový filtr - ČINNÝ</translation>
-    </message>
-    <message>
-        <source>Delete &quot;%1&quot;?</source>
-        <translation>Smazat &quot;%1&quot;?</translation>
-    </message>
-    <message>
-        <source>New Name</source>
-        <translation>Nový název</translation>
+        <source>Go and stay here</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -430,6 +302,10 @@ Kolečko myši: změna posunu</translation>
     </message>
     <message>
         <source>Do a vertical flip of the wave about its mid value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Phase</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -612,18 +488,6 @@ Kolečko myši: změna posunu</translation>
         <translation>Vyprázdnit</translation>
     </message>
     <message>
-        <source>%1</source>
-        <translation>%1</translation>
-    </message>
-    <message>
-        <source>Add MIDI LFO</source>
-        <translation>Přidat MIDI LFO</translation>
-    </message>
-    <message>
-        <source>Add Step Sequencer</source>
-        <translation>Přidat krokový sekvencer</translation>
-    </message>
-    <message>
         <source>QMidiArp XML files</source>
         <translation>Soubory QMidiArp XML</translation>
     </message>
@@ -723,10 +587,6 @@ Uložit změny?</translation>
     <message>
         <source>About Qt</source>
         <translation>O Qt</translation>
-    </message>
-    <message>
-        <source>Add MIDI Arpeggiator</source>
-        <translation>Přidat MIDI arpeggiator</translation>
     </message>
     <message>
         <source>Open arpeggiator file</source>
@@ -854,6 +714,141 @@ zavoláním qmidiarp -a</translation>
     </message>
 </context>
 <context>
+    <name>ModuleWidget</name>
+    <message>
+        <source>&amp;Clone...</source>
+        <translation>&amp;Klonovat...</translation>
+    </message>
+    <message>
+        <source>Duplicate this Module in muted state</source>
+        <translation>Zdvojit tento modul ve ztlumeném stavu</translation>
+    </message>
+    <message>
+        <source>&amp;Rename...</source>
+        <translation>&amp;Přejmenovat...</translation>
+    </message>
+    <message>
+        <source>Rename this Module</source>
+        <translation>Přejmenovat tento modul</translation>
+    </message>
+    <message>
+        <source>&amp;Delete...</source>
+        <translation>&amp;Smazat...</translation>
+    </message>
+    <message>
+        <source>Delete this Module</source>
+        <translation>Smazat tento modul</translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation>Vstup</translation>
+    </message>
+    <message>
+        <source>&amp;Note</source>
+        <translation>&amp;Nota</translation>
+    </message>
+    <message>
+        <source>Transpose the sequence following incoming notes</source>
+        <translation>Převést sekvenci skrz příchozí noty</translation>
+    </message>
+    <message>
+        <source>&amp;Velocity</source>
+        <translation>&amp;Dynamika</translation>
+    </message>
+    <message>
+        <source>Set sequence velocity to that of incoming notes</source>
+        <translation>Nastavit dynamiku sekvence na dynamiku příchozích not</translation>
+    </message>
+    <message>
+        <source>&amp;Note Off</source>
+        <translation>&amp;Nota vypnuta</translation>
+    </message>
+    <message>
+        <source>Stop output when Note is released</source>
+        <translation>Zastavit výstup, když je nota vydána</translation>
+    </message>
+    <message>
+        <source>MIDI &amp;CC#</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>MIDI Controller number to record</source>
+        <translation>Číslo ovladače MIDI pro nahrávání</translation>
+    </message>
+    <message>
+        <source>&amp;Restart</source>
+        <translation>&amp;Spustit znovu</translation>
+    </message>
+    <message>
+        <source>Restart when a new note is received</source>
+        <translation>Spustit sekvenci znovu, když je nota přijata</translation>
+    </message>
+    <message>
+        <source>&amp;Trigger</source>
+        <translation>&amp;Spoušť</translation>
+    </message>
+    <message>
+        <source>Retrigger when a new note is received</source>
+        <translation>Spustit sekvenci znovu, když je přijata nová nota</translation>
+    </message>
+    <message>
+        <source>&amp;Legato</source>
+        <translation>&amp;Legato</translation>
+    </message>
+    <message>
+        <source>Retrigger / restart upon new legato note as well</source>
+        <translation>Spustit/Spustit znovu i na notách s legatem</translation>
+    </message>
+    <message>
+        <source>&amp;Channel</source>
+        <translation>&amp;Каnál</translation>
+    </message>
+    <message>
+        <source>Note Filter</source>
+        <translation>Notový filtr</translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation>Výstup</translation>
+    </message>
+    <message>
+        <source>MIDI Controller number sent to output</source>
+        <translation>Číslo ovladače MIDI poslaného do výstupu</translation>
+    </message>
+    <message>
+        <source>C&amp;hannel</source>
+        <translation>&amp;Каnál</translation>
+    </message>
+    <message>
+        <source>&amp;Port</source>
+        <translation>&amp;Přípojka</translation>
+    </message>
+    <message>
+        <source>&amp;Mute</source>
+        <translation>&amp;Ztlumit</translation>
+    </message>
+    <message>
+        <source>Defer mute to pattern end</source>
+        <translation>Pozdržet ztlumení až na konec vzoru</translation>
+    </message>
+    <message>
+        <source>&amp;Show/hide in-out settings</source>
+        <translation>&amp;Ukázat/Skrýt nastavení pro vstup-výstup</translation>
+    </message>
+    <message>
+        <source>Note Filter - ACTIVE</source>
+        <translation>Notový filtr - ČINNÝ</translation>
+    </message>
+    <message>
+        <source>Delete &quot;%1&quot;?</source>
+        <translation>Smazat &quot;%1&quot;?</translation>
+    </message>
+    <message>
+        <source>New Name</source>
+        <translation>Nový název</translation>
+    </message>
+</context>
+<context>
     <name>ParStore</name>
     <message>
         <source>&amp;Store here</source>
@@ -879,28 +874,9 @@ zavoláním qmidiarp -a</translation>
         <source>Jump to:</source>
         <translation>Skočit na:</translation>
     </message>
-</context>
-<context>
-    <name>PassWidget</name>
     <message>
-        <source>&amp;Forward unmatched events to port</source>
-        <translation>&amp;Neodpovídající události (signály MIDI) vést dál na přípojku</translation>
-    </message>
-    <message>
-        <source>&amp;Compact module layout style</source>
-        <translation>&amp;Kompaktní styl rozvržení pro moduly</translation>
-    </message>
-    <message>
-        <source>&amp;Modules controllable by MIDI controller</source>
-        <translation>&amp;Moduly jsou říditelné ovladačem MIDI</translation>
-    </message>
-    <message>
-        <source>&amp;Add new modules in muted state</source>
-        <translation>&amp;Přidat nové moduly ve ztlumeném stavu</translation>
-    </message>
-    <message>
-        <source>Settings - </source>
-        <translation>Nastavení - </translation>
+        <source>Loop count</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -928,6 +904,22 @@ zavoláním qmidiarp -a</translation>
     <message>
         <source>Settings - </source>
         <translation>Nastavení - </translation>
+    </message>
+    <message>
+        <source>&amp;Output MIDI Clock to port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Midi</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Display</source>
+        <translation>Zobrazit</translation>
+    </message>
+    <message>
+        <source>Modules</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
