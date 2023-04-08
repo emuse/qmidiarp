@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 dnl AC_PREREQ([2.71])
-AC_INIT([qmidiarp],[0.6.6],[qmidiarp-devel@lists.sourceforge.net])
+AC_INIT([qmidiarp],[0.6.7],[qmidiarp-devel@lists.sourceforge.net])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS(src/config.h)
 AC_CONFIG_MACRO_DIR([m4])
