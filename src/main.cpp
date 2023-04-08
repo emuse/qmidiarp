@@ -31,13 +31,13 @@
  * events in colors depending on their type. 
  *
  *   @section AUTHORS
- * Frank Kober 2009 - 2021 <BR> 
+ * Frank Kober 2009 - 2023 <BR> 
  * Nedko Arnaudov 2011 <BR> 
  * Guido Scholz 2009 <BR> 
  * Matthias Nagorni 2003 <BR> 
  * 
  *
- *      Copyright 2009 - 2021 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2023 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
