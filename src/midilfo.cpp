@@ -47,7 +47,7 @@ MidiLfo::MidiLfo()
 
     customWave.resize(wavesize);
     muteMask.resize(wavesize);
-    data.reserve(wavesize);
+    data.resize(wavesize);
     outFrame.resize(32);
     
     Sample sample = {0, 0, 0, false};
@@ -202,9 +202,6 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
     const int npoints = size * res;
     int val = 0;
     bool cl = false;
-    std::vector<Sample> tmpdata;
-
-    tmpdata.clear();
 
     int phase_max = res * 32 / freq;
     int ph = phase_max * phase / 128;
@@ -216,7 +213,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                 res * freq / 32)) + 1) * amp / 2 + offs, 0, 127, &cl);
                 sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
-                tmpdata.push_back(sample);
+                data[l1] = sample;
             }
         break;
         case 1: //sawtooth up
@@ -227,7 +224,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                 + offs, 0, 127, &cl);
                 sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
-                tmpdata.push_back(sample);
+                data[l1] = sample;
                 val += freq;
                 val %= res * 32;
             }
@@ -242,7 +239,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                         / res / 16 + offs, 0, 127, &cl);
                 sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
-                tmpdata.push_back(sample);
+                data[l1] = sample;
                 val += freq;
                 val %= res * 32;
             }
@@ -255,7 +252,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                         * amp / res / 32 + offs, 0, 127, &cl);
                 sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
-                tmpdata.push_back(sample);
+                data[l1] = sample;
                 val += freq;
                 val %= res * 32;
             }
@@ -266,12 +263,12 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
                         / res) % 2 == 0) + offs, 0, 127, &cl);
                 sample.tick = l1 * TPQN / res;;
                 sample.muted = muteMask.at(l1);
-                tmpdata.push_back(sample);
+                data[l1] = sample;
             }
         break;
         case 5: //custom
             for (int l1 = 0; l1 < npoints; l1++) {
-                tmpdata.push_back(customWave[l1]);
+                data[l1] = customWave[l1];
             }
         break;
         default:
@@ -279,8 +276,7 @@ void MidiLfo::getData(std::vector<Sample> *p_data)
     }
     sample.data = -1;
     sample.tick = npoints * TPQN / res;;
-    tmpdata.push_back(sample);
-    data = tmpdata;
+    data[npoints] = sample;
     *p_data = data;
 }
 
