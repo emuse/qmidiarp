@@ -441,6 +441,8 @@ QApplication *LfoWidgetLV2::qAppInstance(void)
     return g_qAppInstance;
 }
 
+/*
+// now deprecated LV2 feature
 int MidiLfoLV2ui_resize ( LV2UI_Handle ui, int width, int height )
 {
     LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
@@ -451,7 +453,7 @@ int MidiLfoLV2ui_resize ( LV2UI_Handle ui, int width, int height )
         return 1;
     }
 }
-
+*/
 int MidiLfoLV2ui_idle ( LV2UI_Handle ui )
 {
     LfoWidgetLV2 *pWidget = static_cast<LfoWidgetLV2 *> (ui);
@@ -486,13 +488,13 @@ int MidiLfoLV2ui_hide ( LV2UI_Handle ui )
         return 1;
     }
 }
-
+/*
 static const LV2UI_Resize MidiLfoLV2ui_resize_interface =
 {
     nullptr, // handle: host should use its own when calling ui_resize().
     MidiLfoLV2ui_resize
 };
-
+*/
 
 static const LV2UI_Idle_Interface MidiLfoLV2ui_idle_interface =
 {
@@ -507,9 +509,11 @@ static const LV2UI_Show_Interface MidiLfoLV2ui_show_interface =
 
 static const void *MidiLfoLV2ui_extension_data ( const char *uri )
 {
+    /*
     if (::strcmp(uri, LV2_UI__resize) == 0)
         return (void *) &MidiLfoLV2ui_resize_interface;
     else 
+    */
     if (::strcmp(uri, LV2_UI__idleInterface) == 0)
         return (void *) &MidiLfoLV2ui_idle_interface;
     else 
@@ -518,7 +522,7 @@ static const void *MidiLfoLV2ui_extension_data ( const char *uri )
     else
         return nullptr;
 }
-
+/*
 static LV2UI_Handle MidiLfoLV2ui_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
@@ -531,7 +535,7 @@ static LV2UI_Handle MidiLfoLV2ui_instantiate (
     *widget = pWidget;
     return pWidget;
 }
-
+*/
 static LV2UI_Handle MidiLfoLV2ui_x11_instantiate (
     const LV2UI_Descriptor *, const char *, const char *,
     LV2UI_Write_Function write_function,
@@ -539,14 +543,16 @@ static LV2UI_Handle MidiLfoLV2ui_x11_instantiate (
     const LV2_Feature *const *ui_features )
 {
     WId winid, parent = 0;
-    LV2UI_Resize *resize = nullptr;
+    // LV2UI_Resize *resize = nullptr;
 
     for (int i = 0; ui_features[i]; ++i) {
         if (::strcmp(ui_features[i]->URI, LV2_UI__parent) == 0)
             parent = (WId) ui_features[i]->data;
+        /*
         else
         if (::strcmp(ui_features[i]->URI, LV2_UI__resize) == 0)
             resize = (LV2UI_Resize *) ui_features[i]->data;
+        */
     }
 
     if (!parent)
@@ -555,10 +561,12 @@ static LV2UI_Handle MidiLfoLV2ui_x11_instantiate (
     LfoWidgetLV2::qAppInstantiate();
     LfoWidgetLV2 *pWidget
         = new LfoWidgetLV2(controller, write_function, ui_features);
+    /*
     if (resize && resize->handle) {
         const QSize& hint = pWidget->sizeHint();
         resize->ui_resize(resize->handle, hint.width(), hint.height());
     }
+    */
     winid = pWidget->winId();
     pWidget->windowHandle()->setParent(QWindow::fromWinId(parent));
     pWidget->show();
@@ -585,7 +593,7 @@ static void MidiLfoLV2ui_port_event (
     if (pWidget)
         pWidget->port_event(port_index, buffer_size, format, buffer);
 }
-
+/*
 static const LV2UI_Descriptor MidiLfoLV2ui_descriptor =
 {
     QMIDIARP_LFO_LV2UI_URI,
@@ -594,7 +602,7 @@ static const LV2UI_Descriptor MidiLfoLV2ui_descriptor =
     MidiLfoLV2ui_port_event,
     MidiLfoLV2ui_extension_data
 };
-
+*/
 static const LV2UI_Descriptor MidiLfoLV2ui_x11_descriptor =
 {
     QMIDIARP_LFO_LV2UI_X11_URI,
@@ -608,9 +616,11 @@ LV2_SYMBOL_EXPORT const LV2UI_Descriptor *lv2ui_descriptor ( uint32_t index )
 {
     if (index == 0)
         return &MidiLfoLV2ui_x11_descriptor;
+    /*
     else
     if (index == 1)
         return &MidiLfoLV2ui_descriptor;
+    */
     else
         return NULL;
 }
