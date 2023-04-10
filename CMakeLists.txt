@@ -24,6 +24,8 @@ endif ()
 
 set (CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set (CONFIG_LV2DIR "${CMAKE_INSTALL_PREFIX}/lib/lv2")
+set (CONFIG_LUPDATE "${CMAKE_INSTALL_PREFIX}/bin/lupdate")
+set (CONFIG_LRELEASE "${CMAKE_INSTALL_PREFIX}/bin/lrelease")
 
 include (GNUInstallDirs)
 set (CONFIG_BINDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_BINDIR}")
@@ -42,6 +44,10 @@ option (CONFIG_LV2_UI "Build LV2 plug-in UIs (default=yes)" 1)
 # Enable NSM support.
 option (CONFIG_NSM "Enable NSM support (default=yes)" 1)
 set (APPBUILD ${CONFIG_APBUILD})
+
+# Enable translations.
+option (CONFIG_TRANSLATIONS "Build and install translations (default=yes)" 1)
+set (APPBUILD ${CONFIG_TRANSLATIONS})
 
 # Fix for new CMAKE_REQUIRED_LIBRARIES policy.
 if (POLICY CMP0075)
@@ -183,7 +189,7 @@ add_subdirectory(qmidiarp_arp.lv2)
 add_subdirectory(qmidiarp_lfo.lv2)
 add_subdirectory(qmidiarp_seq.lv2)
 
-add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} | bzip2 > ${PACKAGE_STRING}.tar.bz2 )
+add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} bzip2 > ${PACKAGE_STRING}.tar.bz2 )
 add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} | gzip > ${PACKAGE_STRING}.tar.gz )
 
 

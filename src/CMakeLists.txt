@@ -75,6 +75,12 @@ if (APPBUILD)
         slider.cpp
         storagebutton.cpp
     )
+    set( DTRANSLATIONSDIR "")
+    
+    if (CONFIG_TRANSLATIONS)
+        add_subdirectory(translations)
+        set( DTRANSLATIONSDIR -DTRANSLATIONSDIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PACKAGE}/translations/" )
+    endif()
     
     add_executable (${PROJECT_NAME}
       ${HEADERS}
@@ -82,7 +88,7 @@ if (APPBUILD)
     )
 
     set_target_properties (${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
-    target_compile_options(${PROJECT_NAME} PRIVATE "-DAPPBUILD")
+    target_compile_options(${PROJECT_NAME} PRIVATE -DAPPBUILD ${DTRANSLATIONSDIR})
 
     if (CONFIG_JACK_MIDI)
       target_link_libraries (${PROJECT_NAME} PRIVATE PkgConfig::JACK)
@@ -330,3 +336,4 @@ if (BUILD_LV2_UI)
     endif ()
     
 endif()
+
