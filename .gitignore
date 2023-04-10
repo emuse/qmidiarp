@@ -7,6 +7,10 @@
 *_moc.cpp
 /CMakeFiles
 CMakeCache.txt
+src/translations/CMakeFiles
+src/translations/CMakeCache.txt
+src/translations/cmake_install.cmake
+src/translations/config.h
 /build
 Makefile
 Makefile.in

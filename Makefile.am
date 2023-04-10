@@ -14,7 +14,10 @@ appdatadir = @datadir@/metainfo
 dist_appdata_DATA = qmidiarp.appdata.xml
 
 include $(top_srcdir)/aminclude.am
-EXTRA_DIST = Doxyfile html/qmidiarp_logo_med2.png
+EXTRA_DIST = Doxyfile html/qmidiarp_logo_med2.png \
+	CMakeLists.txt \
+	qmidiarp_arp.lv2/CMakeLists.txt qmidiarp_lfo.lv2/CMakeLists.txt \
+	qmidiarp_seq.lv2/CMakeLists.txt
 
 if BUILD_LV2
 arp_lv2datadir=@libdir@/lv2/qmidiarp_arp.lv2
