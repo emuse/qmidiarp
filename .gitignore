@@ -5,6 +5,9 @@
 *.lo
 *~
 *_moc.cpp
+/CMakeFiles
+CMakeCache.txt
+/build
 Makefile
 Makefile.in
 .deps
