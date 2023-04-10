@@ -180,16 +180,17 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
     ], [AC_MSG_NOTICE([translations are disabled])])
     
     # Modify the entries in the LV2 ttl files according to Qt version
+    # This has currently no effect since the Qt LV2 UI desriptors were disabled
         
     if test "x$ac_qtversion" = "xqt5"; then
-        sed -i"" "s/Qt4UI/Qt5UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
-        sed -i"" "s/Qt4UI/Qt5UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
-        sed -i"" "s/Qt4UI/Qt5UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+        sed --in-place="" "s/Qt4UI/Qt5UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+        sed --in-place="" "s/Qt4UI/Qt5UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+        sed --in-place="" "s/Qt4UI/Qt5UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
     fi
     if test "x$ac_qtversion" = "xqt4"; then
-        sed -i"" "s/Qt5UI/Qt4UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
-        sed -i"" "s/Qt5UI/Qt4UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
-        sed -i"" "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
+        sed --in-place="" "s/Qt5UI/Qt4UI/g" qmidiarp_arp.lv2/qmidiarp_arp_ui.ttl
+        sed --in-place="" "s/Qt5UI/Qt4UI/g" qmidiarp_lfo.lv2/qmidiarp_lfo_ui.ttl
+        sed --in-place="" "s/Qt5UI/Qt4UI/g" qmidiarp_seq.lv2/qmidiarp_seq_ui.ttl
     fi
 else
     AM_CONDITIONAL([ENABLE_TRANSLATIONS], false)
