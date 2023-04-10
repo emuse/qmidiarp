@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(qmidiarp VERSION 6.6.7 
+project(qmidiarp VERSION 0.6.7
         DESCRIPTION "MIDI arpeggiator, sequencer and LFO for ALSA and JACK"
         HOMEPAGE_URL "https://qmidiarp.sourceforge.net"
         LANGUAGES C CXX)
@@ -12,7 +12,7 @@ set (PACKAGE "qmidiarp")
 set (PACKAGE_NAME "qmidiarp")
 set (PACKAGE_VERSION "${PROJECT_VERSION}")
 set (PACKAGE_BUGREPORT "emuse@users.sourceforge.net")
-set (PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+set (PACKAGE_STRING "${PACKAGE_NAME}-${PACKAGE_VERSION}")
 set (PACKAGE_TARNAME "qmidiarp")
 set (VERSION "${PROJECT_VERSION}")
 
@@ -182,6 +182,9 @@ add_subdirectory(src)
 add_subdirectory(qmidiarp_arp.lv2)
 add_subdirectory(qmidiarp_lfo.lv2)
 add_subdirectory(qmidiarp_seq.lv2)
+
+add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} | bzip2 > ${PACKAGE_STRING}.tar.bz2 )
+add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} | gzip > ${PACKAGE_STRING}.tar.gz )
 
 
 install (FILES man/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)

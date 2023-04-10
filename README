@@ -25,16 +25,31 @@ Dependencies
 ------------
 You need the following development headers and libraries for building.
 
-libqt4-dev     (qt4-devel)
+libqt5-dev     (qt4-devel)
 libasound2-dev (libalsa-devel)
 libjack-dev    (jackit-devel)
 liblo-dev      (liblo-devel) for nsm support
 lv2-dev        (lv2-devel) for building the LV2 modules
 
-Installation
--------------
-qmidiarp uses autoconf/automake as build system. For short
 
+
+Installation with cmake (qmidiarp >= 0.6.7)
+-------------------------------------------
+After unpacking:
+cd qmidiarp-<version>
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+
+
+Installation with auto* tools
+---------------------------
+For building with autoconf/automake as build system. For short
+  
+  autoreconf -i (only right after unpacking the archive, qmidiarp >= 0.6.7)
+  
   ./configure
   make
   make install
