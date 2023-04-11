@@ -1,3 +1,17 @@
+qmidiarp-0.6.7 (2023-04-11)
+
+New Features
+  o Package: a cmake build environment is now available with the goal
+    of less pain with libtool.
+  
+Fixed Bugs:
+  o fixed two small non-realtime function calls that had sneaked in last
+    year.
+  o fixed several lv2lint FAILS: lv2:resize extension was removed, 
+    lv2ui:qt5ui is no longer exposed, globally visible library symbols 
+    were hidden. lv2lint still reports being unable to instantiate the 
+    uis, but all tested hosts were able to do it.
+    
 qmidiarp-0.6.6 (2023-04-08)
 
 New Features

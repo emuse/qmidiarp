@@ -47,9 +47,7 @@ sudo make install
 Installation with auto* tools
 ---------------------------
 For building with autoconf/automake as build system. For short
-  
-  autoreconf -i (only right after unpacking the archive, qmidiarp >= 0.6.7)
-  
+
   ./configure
   make
   make install
