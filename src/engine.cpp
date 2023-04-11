@@ -199,9 +199,9 @@ void Engine::removeModuleWidget(ModuleWidget *moduleWidget)
     modified = true;
 }
 
-int Engine::moduleWidgetCount(const QString &mtype)
+int Engine::moduleWidgetCount(const char mtype)
 {
-    if (mtype == "") return moduleWidgetList.count();
+    if (mtype == ' ') return moduleWidgetList.count();
     
     int count = 0;
     for (int l1 = 0; l1 < moduleWidgetList.count(); l1++) {

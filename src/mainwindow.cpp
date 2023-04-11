@@ -429,19 +429,19 @@ void MainWindow::helpAboutQt()
 
 void MainWindow::arpNew()
 {
-    QString name = QString::number(engine->moduleWidgetCount("Arp") + 1);
+    QString name = QString::number(engine->moduleWidgetCount('A') + 1);
     addArp("Arp:"+name);
 }
 
 void MainWindow::lfoNew()
 {
-    QString name = QString::number(engine->moduleWidgetCount("LFO") + 1);
+    QString name = QString::number(engine->moduleWidgetCount('L') + 1);
     addLfo("LFO:"+name);
 }
 
 void MainWindow::seqNew()
 {
-    QString name = QString::number(engine->moduleWidgetCount("Seq") + 1);
+    QString name = QString::number(engine->moduleWidgetCount('S') + 1);
     addSeq("Seq:"+name);
 }
 

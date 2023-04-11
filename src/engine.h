@@ -141,9 +141,9 @@ class Engine : public QObject  {
      * @brief Returns the number of modules of type specified or all modules if not
      *
      * If called without name the total number of models is returned
-     * @param name option to choose the module type (LFO, Arp, Seq)
+     * @param type option to choose the module type ('L': LFO, 'A': Arp, 'S': Seq)
      */
-    int moduleWidgetCount(const QString& name = "");
+    int moduleWidgetCount(const char type = ' ');
     void updateIDs(int curID);
 
     void addMidiWorker(MidiWorker *midiWorker);
