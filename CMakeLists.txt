@@ -189,8 +189,22 @@ add_subdirectory(qmidiarp_arp.lv2)
 add_subdirectory(qmidiarp_lfo.lv2)
 add_subdirectory(qmidiarp_seq.lv2)
 
-add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} bzip2 > ${PACKAGE_STRING}.tar.bz2 )
-add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive --format=tar --prefix=${PACKAGE_STRING}/ ${PACKAGE_STRING}^{tree} | gzip > ${PACKAGE_STRING}.tar.gz )
+if (EXISTS ${CMAKE_SOURCE_DIR}/configure)
+    set(ADD_CONFIGURE_FILE --add-file=${CMAKE_SOURCE_DIR}/configure)
+else ()
+    set(ADD_CONFIGURE_FILE )
+    message("Warning: No configure file found, will be missing when creating a dist archive")
+endif ()
+
+add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
+                        --format=tar 
+                        --prefix=${PACKAGE_STRING}/ ${ADD_CONFIGURE_FILE}
+                        ${PACKAGE_STRING}^{tree} | bzip2 > ${PACKAGE_STRING}.tar.bz2 )
+add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
+                        --format=tar 
+                        --prefix=${PACKAGE_STRING}/ ${ADD_CONFIGURE_FILE}
+                        ${PACKAGE_STRING}^{tree} | gzip 
+                        > ${PACKAGE_STRING}.tar.gz )
 
 
 install (FILES man/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
