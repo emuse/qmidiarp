@@ -227,7 +227,8 @@ DEFS = -std=c++11 -Wall -Wextra -Wno-deprecated-copy -D_REENTRANT -fvisibility=h
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations) \
-	CMakeLists.txt translations/CMakeLists.txt
+	CMakeLists.txt translations/CMakeLists.txt \
+	cmake_config.h.in
 
 # all generated files to be removed by "make clean"
 CLEANFILES = \

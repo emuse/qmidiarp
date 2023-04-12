@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(qmidiarp VERSION 0.6.7
+project(qmidiarp VERSION 0.6.8
         DESCRIPTION "MIDI arpeggiator, sequencer and LFO for ALSA and JACK"
         HOMEPAGE_URL "https://qmidiarp.sourceforge.net"
         LANGUAGES C CXX)
@@ -190,19 +190,49 @@ add_subdirectory(qmidiarp_lfo.lv2)
 add_subdirectory(qmidiarp_seq.lv2)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/configure)
-    set(ADD_CONFIGURE_FILE --add-file=${CMAKE_SOURCE_DIR}/configure)
+    set(ADD_AUTOCONF_FILES  --add-file=${CMAKE_SOURCE_DIR}/configure
+                            --add-file=${CMAKE_SOURCE_DIR}/aclocal.m4
+                            --add-file=${CMAKE_SOURCE_DIR}/compile
+                            --add-file=${CMAKE_SOURCE_DIR}/config.guess
+                            --add-file=${CMAKE_SOURCE_DIR}/config.sub
+                            --add-file=${CMAKE_SOURCE_DIR}/depcomp
+                            --add-file=${CMAKE_SOURCE_DIR}/install-sh
+                            --add-file=${CMAKE_SOURCE_DIR}/ltmain.sh
+                            --add-file=${CMAKE_SOURCE_DIR}/missing
+                            --add-file=${CMAKE_SOURCE_DIR}/Makefile.in
+                            --prefix=${PACKAGE_STRING}/m4/
+                            --add-file=${CMAKE_SOURCE_DIR}/m4/libtool.m4
+                            --add-file=${CMAKE_SOURCE_DIR}/m4/ltoptions.m4
+                            --add-file=${CMAKE_SOURCE_DIR}/m4/ltsugar.m4
+                            --add-file=${CMAKE_SOURCE_DIR}/m4/ltversion.m4
+                            --add-file=${CMAKE_SOURCE_DIR}/m4/lt~obsolete.m4
+                            --prefix=${PACKAGE_STRING}/man/
+                            --add-file=${CMAKE_SOURCE_DIR}/man/Makefile.in
+                            --prefix=${PACKAGE_STRING}/man/de/
+                            --add-file=${CMAKE_SOURCE_DIR}/man//de/Makefile.in
+                            --prefix=${PACKAGE_STRING}/man/fr/
+                            --add-file=${CMAKE_SOURCE_DIR}/man//fr/Makefile.in
+                            --prefix=${PACKAGE_STRING}/examples/
+                            --add-file=${CMAKE_SOURCE_DIR}/examples/Makefile.in
+                            --prefix=${PACKAGE_STRING}/src/
+                            --add-file=${CMAKE_SOURCE_DIR}/src/config.h.in
+                            --add-file=${CMAKE_SOURCE_DIR}/src/Makefile.in
+                            --prefix=${PACKAGE_STRING}/src/pixmaps/
+                            --add-file=${CMAKE_SOURCE_DIR}/src/pixmaps/Makefile.in
+                            --prefix=${PACKAGE_STRING}/)
+
 else ()
-    set(ADD_CONFIGURE_FILE )
+    set(ADD_AUTOTOOLS_FILES )
     message("Warning: No configure file found, will be missing when creating a dist archive")
 endif ()
 
 add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
                         --format=tar 
-                        --prefix=${PACKAGE_STRING}/ ${ADD_CONFIGURE_FILE}
+                        --prefix=${PACKAGE_STRING}/ ${ADD_AUTOCONF_FILES}
                         ${PACKAGE_STRING}^{tree} | bzip2 > ${PACKAGE_STRING}.tar.bz2 )
 add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
                         --format=tar 
-                        --prefix=${PACKAGE_STRING}/ ${ADD_CONFIGURE_FILE}
+                        --prefix=${PACKAGE_STRING}/ ${ADD_AUTOCONF_FILES}
                         ${PACKAGE_STRING}^{tree} | gzip 
                         > ${PACKAGE_STRING}.tar.gz )
 
