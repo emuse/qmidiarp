@@ -104,7 +104,7 @@ if (CONFIG_NSM)
 endif ()
 
 # Check for JACK libraries.
-if (CONFIG_APBUILD)
+if (CONFIG_APPBUILD)
   pkg_check_modules (JACK IMPORTED_TARGET jack>=0.100.0)
   if (JACK_FOUND)
     include_directories (${JACK_INCLUDE_DIRS})
