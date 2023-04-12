@@ -515,6 +515,9 @@ void Engine::resetTicks(int curtick)
             midiWorker(l1)->foldReleaseTicks(driver->trStartingTick - curtick);
         }
         midiWorker(l1)->setNextTick(curtick);
+        if (curtick == 0) {
+            midiWorker(l1)->currentRepetition = 0;
+        }
         if (!l1) nextMinTick = midiWorker(l1)->nextTick;
         if (midiWorker(l1)->nextTick < nextMinTick)
             nextMinTick=midiWorker(l1)->nextTick;
