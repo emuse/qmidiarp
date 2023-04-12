@@ -104,7 +104,7 @@ if (CONFIG_NSM)
 endif ()
 
 # Check for JACK libraries.
-if (CONFIG_APBUILD OR CONFIG_LV2_UI)
+if (CONFIG_APBUILD)
   pkg_check_modules (JACK IMPORTED_TARGET jack>=0.100.0)
   if (JACK_FOUND)
     include_directories (${JACK_INCLUDE_DIRS})
@@ -222,7 +222,7 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/configure)
                             --prefix=${PACKAGE_STRING}/)
 
 else ()
-    set(ADD_AUTOTOOLS_FILES )
+    set(ADD_AUTOCONF_FILES )
     message("Warning: No configure file found, will be missing when creating a dist archive")
 endif ()
 
