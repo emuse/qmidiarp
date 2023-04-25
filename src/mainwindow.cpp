@@ -529,11 +529,11 @@ void MainWindow::cloneModule()
     ModuleWidget *clonefrom = (ModuleWidget *)sender();
     QString name = clonefrom->name + "_0";
     
-    if (name.startsWith("LFO:"))
+    if (name.front() == 'L')
         addLfo(name, false, clonefrom);
-    else if (name.startsWith("Seq:"))
+    else if (name.front() == 'S')
         addSeq(name, false, clonefrom);
-    else if (name.startsWith("Arp:"))
+    else if (name.front() == 'A')
         addArp(name, false, clonefrom);
 }
 
