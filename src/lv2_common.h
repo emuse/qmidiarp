@@ -84,6 +84,7 @@ static inline void map_uris(LV2_URID_Map* urid_map, QMidiArpURIs* uris) {
     uris->hex_mutemask        = urid_map->map(urid_map->handle, QMIDIARP_LV2_PREFIX "MUTEHEX");
     uris->pattern_string      = urid_map->map(urid_map->handle, QMIDIARP_LV2_PREFIX "ARPPATTERN");
     uris->ui_up               = urid_map->map(urid_map->handle, QMIDIARP_LV2_PREFIX "UI_UP");
+    uris->ui_down             = urid_map->map(urid_map->handle, QMIDIARP_LV2_PREFIX "UI_DOWN");
     uris->flip_wave           = urid_map->map(urid_map->handle, QMIDIARP_LV2_PREFIX "FLIP_WAVE");
 }
 #endif

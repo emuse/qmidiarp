@@ -63,7 +63,7 @@ public:
             INDEX_IN2 = 18,
             RANGE_IN1 = 19,
             RANGE_IN2 = 20,
-             ENABLE_NOTEOFF = 21,
+            ENABLE_NOTEOFF = 21,
             ENABLE_RESTARTBYKBD = 22,
             ENABLE_TRIGBYKBD = 23,
             ENABLE_TRIGLEGATO = 24,

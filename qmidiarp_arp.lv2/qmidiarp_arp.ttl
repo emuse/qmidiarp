@@ -27,6 +27,7 @@
     lv2:requiredFeature <http://lv2plug.in/ns/ext/urid#map> ;
     lv2:optionalFeature lv2:hardRTCapable ;
     lv2:extensionData <http://lv2plug.in/ns/ext/state#interface> ;
+    lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui_gl> ;
     lv2ui:ui <https://git.code.sf.net/p/qmidiarp/arp#ui_x11> ;
     lv2:port [
         a lv2:InputPort, atom:AtomPort ;

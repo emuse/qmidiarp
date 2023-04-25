@@ -310,14 +310,14 @@ void MidiSeqLV2::updateParams()
 
         mouseXCur = *val[MOUSEX];
         mouseYCur = *val[MOUSEY];
-        if ((mouseEvCur == 2) && (*val[MOUSEPRESSED] != 2))
-            evtype = 1;
-        else
-            evtype = *val[MOUSEPRESSED];
-
-        mouseEvCur = *val[MOUSEPRESSED];
-
-        if (mouseEvCur == 2) return; // mouse was released
+        if ((mouseEvCur == 2) && (*val[MOUSEPRESSED] != 2)) {
+            evtype = 1; // mouse was pressed
+            mouseEvCur = 1;
+        }
+        else if (mouseEvCur != 2 && (*val[MOUSEPRESSED] == 2)) {
+            evtype = 2;
+            mouseEvCur = 2; // mouse was released
+        }
         ix = mouseEvent(mouseXCur, mouseYCur, *val[MOUSEBUTTON], evtype);
         if (evtype == 1) lastMouseIndex = ix; // if we have a new press event set last point index here
     }
