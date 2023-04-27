@@ -283,7 +283,7 @@ static bool update_transpose (RobWidget *widget, void* data)
 static bool update_res (RobWidget *widget, void* data)
 {
     QMidiArpSeqUI* ui = (QMidiArpSeqUI*) data;
-    uint64_t val = robtk_select_get_item(ui->res_box);
+    uint8_t val = robtk_select_get_item(ui->res_box);
     if (val >= sizeof(seqResValues)/sizeof(seqResValues[0]))
       return TRUE;
 
@@ -296,7 +296,7 @@ static bool update_res (RobWidget *widget, void* data)
 static bool update_size (RobWidget *widget, void* data)
 {
     QMidiArpSeqUI* ui = (QMidiArpSeqUI*) data;
-    uint64_t val = robtk_select_get_item(ui->size_box);
+    uint8_t val = robtk_select_get_item(ui->size_box);
     if (val >= sizeof(seqSizeValues)/sizeof(seqSizeValues[0]))
       return TRUE;
 
@@ -841,7 +841,7 @@ size_request(RobWidget* handle, int *w, int *h) {
 static void in_out_box_new(QMidiArpSeqUI* ui)
 {
 // In-Out boxes
-  for (int i = 0; i < 4; i++) {
+  for (uint8_t i = 0; i < 4; i++) {
     ui->sep_inout[i] = robtk_sep_new(TRUE);
   }
   robtk_sep_set_linewidth(ui->sep_inout[0], 0);
@@ -883,7 +883,7 @@ static void in_out_box_new(QMidiArpSeqUI* ui)
 
   ui->lbl_ch_in = robtk_lbl_new("Ch");
   ui->ch_in = robtk_select_new();
-  for (int i = 0; i < 16; i++) {
+  for (uint8_t i = 0; i < 16; i++) {
         char int_str[16];
         sprintf(int_str, "%d", i + 1 );
         robtk_select_add_item(ui->ch_in, i, int_str);
@@ -1087,7 +1087,7 @@ static RobWidget * toplevel(QMidiArpSeqUI* ui, void * const top)
   // Resolution and Size selectboxes (comboboxes)
   ui->lbl_res = robtk_lbl_new("Resolution");
   ui->res_box = robtk_select_new();
-  for (uint i = 0; i < sizeof(seqResValues)/sizeof(seqResValues[0]); i++) {
+  for (uint8_t i = 0; i < sizeof(seqResValues)/sizeof(seqResValues[0]); i++) {
         char int_str[16];
         sprintf(int_str, "%d", seqResValues[i]);
         robtk_select_add_item(ui->res_box, i, int_str);
@@ -1099,7 +1099,7 @@ static RobWidget * toplevel(QMidiArpSeqUI* ui, void * const top)
 
   ui->lbl_size = robtk_lbl_new("Length");
   ui->size_box = robtk_select_new();
-  for (uint i = 0; i < sizeof(seqSizeValues)/sizeof(seqSizeValues[0]); i++) {
+  for (uint8_t i = 0; i < sizeof(seqSizeValues)/sizeof(seqSizeValues[0]); i++) {
         char int_str[16];
         sprintf(int_str, "%d", seqSizeValues[i]);
         robtk_select_add_item(ui->size_box, i, int_str);
@@ -1117,7 +1117,7 @@ static RobWidget * toplevel(QMidiArpSeqUI* ui, void * const top)
 
   int dial_defaults[3] = {127, 64, 0};
   
-  for (int i = 0; i < 3; i++) {
+  for (uint8_t i = 0; i < 3; i++) {
     if (i < 2) {
       ui->dial_control[i] = robtk_dial_new_with_size(0, 127, 1,
                           75, 60, 40, 30, 25);

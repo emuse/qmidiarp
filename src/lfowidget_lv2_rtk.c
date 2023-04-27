@@ -320,7 +320,7 @@ static bool update_phase (RobWidget *widget, void* data)
 static bool update_res (RobWidget *widget, void* data)
 {
     QMidiArpLfoUI* ui = (QMidiArpLfoUI*) data;
-    uint64_t val = robtk_select_get_item(ui->res_box);
+    uint8_t val = robtk_select_get_item(ui->res_box);
     if (val >= sizeof(lfoResValues)/sizeof(lfoResValues[0]))
       return TRUE;
 
@@ -333,7 +333,7 @@ static bool update_res (RobWidget *widget, void* data)
 static bool update_size (RobWidget *widget, void* data)
 {
     QMidiArpLfoUI* ui = (QMidiArpLfoUI*) data;
-    uint64_t val = robtk_select_get_item(ui->size_box);
+    uint8_t val = robtk_select_get_item(ui->size_box);
     if (val >= sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0]))
       return TRUE;
 
@@ -1063,7 +1063,7 @@ static RobWidget * toplevel(QMidiArpLfoUI* ui, void * const top)
   // Resolution and Size selectboxes (comboboxes)
   ui->lbl_res = robtk_lbl_new("Resolution");
   ui->res_box = robtk_select_new();
-  for (uint i = 0; i < sizeof(lfoResValues)/sizeof(lfoResValues[0]); i++) {
+  for (uint8_t i = 0; i < sizeof(lfoResValues)/sizeof(lfoResValues[0]); i++) {
         char int_str[16];
         sprintf(int_str, "%d", lfoResValues[i]);
         robtk_select_add_item(ui->res_box, i, int_str);
@@ -1075,7 +1075,7 @@ static RobWidget * toplevel(QMidiArpLfoUI* ui, void * const top)
 
   ui->lbl_size = robtk_lbl_new("Length");
   ui->size_box = robtk_select_new();
-  for (uint i = 0; i < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0]); i++) {
+  for (uint8_t i = 0; i < sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0]); i++) {
         char int_str[16];
         sprintf(int_str, "%d", lfoSizeValues[i]);
         robtk_select_add_item(ui->size_box, i, int_str);
@@ -1104,7 +1104,7 @@ static RobWidget * toplevel(QMidiArpLfoUI* ui, void * const top)
 
   ui->lbl_freq = robtk_lbl_new("Frequency");
   ui->sel_freq = robtk_select_new();
-  for (uint i = 0; i < sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0]); i++) {
+  for (uint8_t i = 0; i < sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0]); i++) {
         char int_str[16];
         sprintf(int_str, "%d", lfoFreqValues[i]);
         robtk_select_add_item(ui->sel_freq, i, int_str);
