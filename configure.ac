@@ -79,6 +79,14 @@ AC_ARG_ENABLE(lv2pluginuis,
 
 AM_CONDITIONAL([BUILD_LV2_UI], [test "x$ac_lv2pluginuis" = "xyes" -a "x$ac_lv2willbuild" = "xyes"])
 
+# Build LV2 plugin RTK UIs ?
+AC_ARG_ENABLE(lv2rtkpluginuis,
+    AS_HELP_STRING([--enable-lv2rtkpluginuis],[build LV2 RTK plugin UIs (default=yes)]),
+  [ac_lv2rtkpluginuis="$enableval"],
+  [ac_lv2rtkpluginuis="yes"])
+
+AM_CONDITIONAL([BUILD_LV2_UI_RTK], [test "x$ac_lv2rtkpluginuis" = "xyes" -a "x$ac_lv2willbuild" = "xyes"])
+
 # Build QMidiArp standalone application ?
 AC_ARG_ENABLE(buildapp,
     AS_HELP_STRING([--enable-buildapp],[build standalone application (default=yes)]),
@@ -253,6 +261,56 @@ LIBS_APP=$LIBS
 AC_SUBST(LIBS_APP)
 # And minimal libraries for other targets
 LIBS=$LIBSmin
+
+if test "x$ac_lv2rtkpluginuis" = "xyes" -a "x$lv2Works" = "xyes"; then
+    PKG_CHECK_MODULES(PANGO, pango >= 0.1, libpangoWorks="yes", libpangoWorks="no")
+    AC_SUBST(PANGO_CFLAGS)
+
+    AC_CHECK_HEADER( cairo/cairo.h, cairoinclude_found="yes", cairoinclude_found="no" )
+    PKG_CHECK_MODULES(CAIRO, cairo >= 0.1, libcairoWorks="yes", libcairoWorks="no")
+    AC_SUBST(CAIRO_CFLAGS)
+
+    PKG_CHECK_MODULES(PANGOCAIRO, pangocairo >= 0.1, libpangocairoWorks="yes", libpangocairoWorks="no")
+    AC_SUBST(PANGOCAIRO_CFLAGS)
+
+    PKG_CHECK_MODULES(GL, gl >= 0.1, libglWorks="yes", libglWorks="no")
+    AC_SUBST(GL_CFLAGS)
+
+    PKG_CHECK_MODULES(GLU, glu >= 0.1, libgluWorks="yes", libgluWorks="no")
+
+    LIBS=$LIBSmin
+    CFLAGS=$CFLAGSsave
+
+    if test "x$libpangoWorks" = "xno" -o "x$libcairoWorks" = "xno" ; then
+        AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)    
+    fi
+    if test "x$libpangocairoWorks" = "xno" -a "x$libgluWorks" = "xno" ; then
+        AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)    
+    fi
+    if test "x$libgluWorks" = "xno"; then
+        AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)
+        echo "Will not build LV2 GL UIs, missing libraries"    
+    fi
+    AM_CONDITIONAL([BUILD_LV2_UI_RTK], true)    
+    echo "Will build LV2 GL UIs"
+    LV2_UI_RTK_LIBS="-lX11 $CAIRO_LIBS $PANGOCAIRO_LIBS $PANGO_LIBS $GLU_LIBS $GL_LIBS"
+    LV2_UI_RTK_LDFLAGS="-shared -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -pthread"
+    
+    LV2_UI_RTK_CFLAGS="-g -Wall -Wno-unused-function -DHAVE_LV2_1_8 -I. $GLU_CFLAGS \
+    -pthread -DHAVE_IDLE_IFACE -I. -g -Wall -Wno-unused-function -DHAVE_LV2_1_8 $LV2_CFLAGS \
+    -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -O3 -fno-finite-math-only \
+    -DNDEBUG -DVERSION=\\\"0.0.0\\\" -fPIC -fvisibility=hidden $CAIRO_CFLAGS $PANGO_CFLAGS \
+    -DUSE_GUI_THREAD -pthread -DUINQHACK=\\\"168162529512469\\\" "
+    
+    AC_SUBST(LV2_UI_RTK_LIBS)
+    AC_SUBST(LV2_UI_RTK_LDFLAGS)
+    AC_SUBST(LV2_UI_RTK_CFLAGS)
+
+else
+    AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)    
+    echo "LV2 GL UI build disabled by configuration"    
+
+fi
 
 if test "x$alsalib_found" = "xyes" -a "x$ac_alsa" = "xyes" ; then
     AC_DEFINE(HAVE_ALSA, 1, [Define to enable ALSA backend availabilty])
