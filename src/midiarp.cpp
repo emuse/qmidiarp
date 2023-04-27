@@ -525,8 +525,8 @@ void MidiArp::getNote(int64_t *tick, int64_t note[], int velocity[], int *length
         arpTick*= (TPQN * minStepWidth);
     }
 
-    *tick = arpTick + clip(stepWidth * 0.25 * (double)randomTick, 0,
-            1000, &outOfRange);
+    *tick = arpTick + clip(stepWidth * TPQN * 0.005 * (double)randomTick, 0,
+            1000000, &outOfRange);
 
     if (!(patternLen && noteCount) || pause || isMuted) {
         velocity[0] = 0;
