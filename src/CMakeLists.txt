@@ -101,7 +101,7 @@ if (APPBUILD)
     target_link_libraries (${PROJECT_NAME} PUBLIC   Qt${QT_VERSION_MAJOR}::Core 
                                                     Qt${QT_VERSION_MAJOR}::Gui
                                                     Qt${QT_VERSION_MAJOR}::Widgets
-                                                    Qt${QT_VERSION_MAJOR}::Xml)
+                                                    )
     
     if (UNIX AND NOT APPLE AND NOT CONFIG_DEBUG)
       add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -300,19 +300,16 @@ if (BUILD_LV2_UI)
     target_link_libraries (${PROJECT_NAME}_arp_ui PUBLIC   Qt${QT_VERSION_MAJOR}::Core 
                                                     Qt${QT_VERSION_MAJOR}::Gui
                                                     Qt${QT_VERSION_MAJOR}::Widgets
-                                                    Qt${QT_VERSION_MAJOR}::Xml
                                                     )
     
     target_link_libraries (${PROJECT_NAME}_lfo_ui PUBLIC   Qt${QT_VERSION_MAJOR}::Core 
                                                     Qt${QT_VERSION_MAJOR}::Gui
                                                     Qt${QT_VERSION_MAJOR}::Widgets
-                                                    Qt${QT_VERSION_MAJOR}::Xml
                                                     )
     
     target_link_libraries (${PROJECT_NAME}_seq_ui PUBLIC   Qt${QT_VERSION_MAJOR}::Core 
                                                     Qt${QT_VERSION_MAJOR}::Gui
                                                     Qt${QT_VERSION_MAJOR}::Widgets
-                                                    Qt${QT_VERSION_MAJOR}::Xml
                                                     )
     if (UNIX AND NOT APPLE AND NOT CONFIG_DEBUG)
       add_custom_command(TARGET ${PROJECT_NAME}_arp_ui  POST_BUILD
@@ -335,5 +332,88 @@ if (BUILD_LV2_UI)
          DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_seq.lv2)
     endif ()
     
+endif()
+
+# LV2 RobTk UIs
+if (BUILD_LV2_UI_RTK)
+    
+    set(LV2UI_RTK_ARP_SOURCES
+        ../robtk/pugl/pugl_x11.c
+        ../robtk/ui_gl.c 
+    )
+  
+    add_library (${PROJECT_NAME}_arp_ui_gl MODULE
+      ${LV2UI_RTK_ARP_HEADERS}
+      ${LV2UI_RTK_ARP_SOURCES}
+    )
+
+    set_target_properties (${PROJECT_NAME}_arp_ui_gl PROPERTIES C_STANDARD 11 PREFIX "")
+    target_compile_options(${PROJECT_NAME}_arp_ui_gl PRIVATE   -g -Wall 
+                                    -Wno-unused-function -DHAVE_LV2_1_8
+                                    -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
+                                    -DPLUGIN_SOURCE="arpwidget_lv2_rtk.c"
+                                    -g -Wall -Wno-unused-function 
+                                    -DHAVE_LV2_1_8 -I.. -I. 
+                                    -pthread -DHAVE_IDLE_IFACE -I.
+                                    )
+    
+    target_link_libraries (${PROJECT_NAME}_arp_ui_gl PUBLIC -lX11)
+
+    set(LV2UI_RTK_LFO_SOURCES
+        ../robtk/pugl/pugl_x11.c
+        ../robtk/ui_gl.c 
+    )
+  
+    add_library (${PROJECT_NAME}_lfo_ui_gl MODULE
+      ${LV2UI_RTK_LFO_HEADERS}
+      ${LV2UI_RTK_LFO_SOURCES}
+    )
+
+    set_target_properties (${PROJECT_NAME}_lfo_ui_gl PROPERTIES C_STANDARD 11 PREFIX "")
+    target_compile_options(${PROJECT_NAME}_lfo_ui_gl PRIVATE   -g -Wall 
+                                    -Wno-unused-function -DHAVE_LV2_1_8
+                                    -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
+                                    -DPLUGIN_SOURCE="lfowidget_lv2_rtk.c"
+                                    -g -Wall -Wno-unused-function 
+                                    -DHAVE_LV2_1_8 -I.. -I. 
+                                    -pthread -DHAVE_IDLE_IFACE -I.
+                                    )
+    
+    target_link_libraries (${PROJECT_NAME}_lfo_ui_gl PUBLIC -lX11)
+
+    set(LV2UI_RTK_SEQ_SOURCES
+        ../robtk/pugl/pugl_x11.c
+        ../robtk/ui_gl.c 
+    )
+  
+    add_library (${PROJECT_NAME}_seq_ui_gl MODULE
+      ${LV2UI_RTK_SEQ_HEADERS}
+      ${LV2UI_RTK_SEQ_SOURCES}
+    )
+
+    set_target_properties (${PROJECT_NAME}_seq_ui_gl PROPERTIES C_STANDARD 11 PREFIX "")
+    target_compile_options(${PROJECT_NAME}_seq_ui_gl PRIVATE   -g -Wall 
+                                    -Wno-unused-function -DHAVE_LV2_1_8
+                                    -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
+                                    -DPLUGIN_SOURCE="seqwidget_lv2_rtk.c"
+                                    -g -Wall -Wno-unused-function 
+                                    -DHAVE_LV2_1_8 -I.. -I. 
+                                    -pthread -DHAVE_IDLE_IFACE -I.
+                                    )
+    
+    target_link_libraries (${PROJECT_NAME}_seq_ui_gl PUBLIC -lX11)
+
+    if (UNIX AND NOT APPLE)
+      if (CONFIG_PREFIX MATCHES $ENV{HOME})
+        set (CONFIG_LV2DIR ${CONFIG_PREFIX}/.lv2)
+      endif ()
+      install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_arp_ui_gl.so
+         DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_arp.lv2)
+      install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_lfo_ui_gl.so
+         DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_lfo.lv2)
+      install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_seq_ui_gl.so
+         DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_seq.lv2)
+    endif ()
+
 endif()
 
