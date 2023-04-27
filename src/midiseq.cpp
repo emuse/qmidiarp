@@ -353,8 +353,12 @@ int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
     else if (pressed != 2) {
         ix = setCustomWavePoint(mouseX, mouseY);
     }
+    else if (pressed == 2) {
+        ix = lastMouseLoc;
+    }
     
-    if ( (ix != lastMouseLoc) || (lastMouseY != Y) || (mute) ) dataChanged = true;
+    if ( (ix != lastMouseLoc) || (lastMouseY != Y) || (mute) ) 
+        dataChanged = true;
 
     lastMouseLoc = ix;
     lastMouseY = Y;

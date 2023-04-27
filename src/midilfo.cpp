@@ -382,6 +382,10 @@ int MidiLfo::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
         if (waveFormIndex < 5) copyToCustom();
         ix = setCustomWavePoint(mouseX, mouseY, pressed);
     }
+    else if (pressed == 2) {
+        ix = lastMouseLoc;
+        return (ix);
+    }
     
     // if value is negative data hasn't changed
     if (ix < 0)
