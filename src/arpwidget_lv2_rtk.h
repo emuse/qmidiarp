@@ -45,6 +45,7 @@
 #define CSR_VMARG     4
 #define CSR_HMARG    ARPSCR_HMARG
 
+#define PATTERNBUFSIZE 256
 
 enum PortIndex {
     MidiIn = 0,

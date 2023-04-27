@@ -83,7 +83,7 @@ void receivePattern(LV2UI_Handle handle, LV2_Atom* atom)
     if (!plen) return;
 
     ui->pattern[0] = '\0';
-    strcat(ui->pattern, p);
+    strncat(ui->pattern, p, PATTERNBUFSIZE - 1);
     ui->patternLen = plen;
     //robtk_lbl_set_text(ui->lbl_pattern_text, ui->pattern);
     ui->receivePatternFlag = false;
@@ -103,7 +103,7 @@ void sendPattern(LV2UI_Handle handle)
     lv2_atom_forge_frame_time(&ui->forge, 0);
 
     // prepare forge buffer and initialize atom-sequence
-    lv2_atom_forge_set_buffer(&ui->forge, obj_buf, 256);
+    lv2_atom_forge_set_buffer(&ui->forge, obj_buf, sizeof(obj_buf));
     LV2_Atom* msg = (LV2_Atom*)lv2_atom_forge_object(&ui->forge, &frame, 1, uris->pattern_string);
 
     // forge container object of type 'pattern_string'
@@ -308,7 +308,7 @@ static bool update_release (RobWidget *widget, void* data)
 static bool update_repeat_mode (RobWidget *widget, void* data)
 {
     QMidiArpArpUI* ui = (QMidiArpArpUI*) data;
-    uint64_t val = robtk_select_get_item(ui->sel_repeat_mode);
+    uint8_t val = robtk_select_get_item(ui->sel_repeat_mode);
     updateParam(ui, REPEAT_MODE, val);
     return TRUE;
 
@@ -317,7 +317,7 @@ static bool update_repeat_mode (RobWidget *widget, void* data)
 static bool update_oct_mode (RobWidget *widget, void* data)
 {
     QMidiArpArpUI* ui = (QMidiArpArpUI*) data;
-    uint64_t val = robtk_select_get_item(ui->sel_oct_mode);
+    uint8_t val = robtk_select_get_item(ui->sel_oct_mode);
     updateParam(ui, OCTAVE_MODE, val);
     return TRUE;
 
@@ -327,7 +327,7 @@ static bool update_oct_low (RobWidget *widget, void* data)
 {
     QMidiArpArpUI* ui = (QMidiArpArpUI*) data;
     // here we have negative values : cannot use uint !! //
-    int64_t val = robtk_select_get_item(ui->sel_oct_low);
+    int8_t val = robtk_select_get_item(ui->sel_oct_low);
     updateParam(ui, OCTAVE_LOW, val - 3);
     return TRUE;
 
@@ -336,7 +336,7 @@ static bool update_oct_low (RobWidget *widget, void* data)
 static bool update_oct_high (RobWidget *widget, void* data)
 {
     QMidiArpArpUI* ui = (QMidiArpArpUI*) data;
-    uint64_t val = robtk_select_get_item(ui->sel_oct_high);
+    uint8_t val = robtk_select_get_item(ui->sel_oct_high);
     updateParam(ui, OCTAVE_HIGH, val);
     return TRUE;
 
@@ -1349,10 +1349,11 @@ instantiate(
   ui->patternLen = 0;
   
 /* Default pattern */
-  ui->pattern = (char *) malloc(256);
+  ui->pattern = (char *) malloc(PATTERNBUFSIZE);
   ui->pattern[0] = '\0';
-  strcat(ui->pattern, ">>0");  
-
+  strncat(ui->pattern, ">>0", PATTERNBUFSIZE - 1);
+  ui->patternLen = strlen(ui->pattern);
+  
   
   ui->currentIndex = 0;
   ui->isMuted = false;
