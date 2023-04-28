@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(qmidiarp VERSION 0.6.8
         DESCRIPTION "MIDI arpeggiator, sequencer and LFO for ALSA and JACK"
-        HOMEPAGE_URL "https://qmidiarp.sourceforge.net"
         LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -24,8 +23,6 @@ endif ()
 
 set (CONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set (CONFIG_LV2DIR "${CMAKE_INSTALL_PREFIX}/lib/lv2")
-set (CONFIG_LUPDATE "${CMAKE_INSTALL_PREFIX}/bin/lupdate")
-set (CONFIG_LRELEASE "${CMAKE_INSTALL_PREFIX}/bin/lrelease")
 
 include (GNUInstallDirs)
 set (CONFIG_BINDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_BINDIR}")
@@ -47,7 +44,7 @@ option (CONFIG_NSM "Enable NSM support (default=yes)" 1)
 set (APPBUILD ${CONFIG_APBUILD})
 
 # Enable translations.
-option (CONFIG_TRANSLATIONS "Build and install translations (default=yes)" 1)
+option (CONFIG_TRANSLATIONS "Build and install translations (default=no)" 1)
 set (APPBUILD ${CONFIG_TRANSLATIONS})
 
 # Fix for new CMAKE_REQUIRED_LIBRARIES policy.
@@ -66,6 +63,18 @@ endif ()
 if (CONFIG_APPBUILD OR CONFIG_LV2_UI)
   find_package (QT NAMES Qt5 COMPONENTS Core REQUIRED)
   find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Xml)
+  # Check for lrelease translations
+  if (CONFIG_TRANSLATIONS)
+    find_program (CONFIG_LRELEASE NAMES "lrelease" DOC "lrelease executable location")
+    if (NOT CONFIG_LRELEASE)
+        set(CONFIG_TRANSLATIONS  0)
+        message("Translation generation disabled, lrelease not found")
+    else()
+        find_program (CONFIG_LUPDATE NAMES "lupdate" DOC "lupdate executable location")
+        message("lrelease found: ${CONFIG_LRELEASE}")
+        message("Will build translations")
+    endif()
+  endif()
 endif ()
 
 #find_package (Qt${QT_VERSION_MAJOR}LinguistTools)
@@ -90,6 +99,7 @@ if (NOT CONFIG_APPBUILD)
   set (CONFIG_NSM 0)
 endif ()
 
+    
 # Check for liblo
 if (CONFIG_NSM)
   pkg_check_modules (LIBLO IMPORTED_TARGET liblo)
