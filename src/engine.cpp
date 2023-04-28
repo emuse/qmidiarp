@@ -109,7 +109,7 @@ Engine::~Engine()
 void Engine::updatePatternPresets(const QString& n, const QString& p, int index)
 {
     for (int l1 = 0; l1 < midiWorkerCount(); l1++) {
-        if (moduleWidget(l1)->name.front() == 'A')
+        if (moduleWidget(l1)->name.at(0) == 'A')
             ((ArpWidget *)moduleWidget(l1))->updatePatternPresets(n, p, index);
     }
 }
@@ -205,7 +205,7 @@ int Engine::moduleWidgetCount(const char mtype)
     
     int count = 0;
     for (int l1 = 0; l1 < moduleWidgetList.count(); l1++) {
-        if (moduleWidget(l1)->name.front() == mtype) count++;
+        if (moduleWidget(l1)->name.at(0) == mtype) count++;
     }
     return count;
 }
@@ -418,7 +418,7 @@ bool Engine::eventCallback(MidiEvent inEv)
         }
     }
     for (l1 = 0; l1 < midiWorkerCount(); l1++) {
-        if (status && moduleWidget(l1)->name.front() == 'A') {
+        if (status && moduleWidget(l1)->name.at(0) == 'A') {
             unmatched = midiWorker(l1)->handleEvent(inEv, tick, 1);
         }
         else {
@@ -511,7 +511,7 @@ void Engine::handleController(int ccnumber, int channel, int value)
 void Engine::resetTicks(int curtick)
 {
     for (int l1 = 0; l1 < moduleWidgetCount(); l1++) {
-        if (status && moduleWidget(l1)->name.front() == 'A') {
+        if (status && moduleWidget(l1)->name.at(0) == 'A') {
             midiWorker(l1)->foldReleaseTicks(driver->trStartingTick - curtick);
         }
         midiWorker(l1)->setNextTick(curtick);
