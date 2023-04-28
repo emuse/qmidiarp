@@ -281,6 +281,7 @@ if test "x$ac_lv2rtkpluginuis" = "xyes" -a "x$lv2Works" = "xyes"; then
     LIBS=$LIBSmin
     CFLAGS=$CFLAGSsave
 
+    AM_CONDITIONAL([BUILD_LV2_UI_RTK], true)
     if test "x$libpangoWorks" = "xno" -o "x$libcairoWorks" = "xno" ; then
         AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)    
     fi
@@ -291,21 +292,22 @@ if test "x$ac_lv2rtkpluginuis" = "xyes" -a "x$lv2Works" = "xyes"; then
         AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)
         echo "Will not build LV2 GL UIs, missing libraries"    
     fi
-    AM_CONDITIONAL([BUILD_LV2_UI_RTK], true)    
-    echo "Will build LV2 GL UIs"
-    LV2_UI_RTK_LIBS="-lX11 $CAIRO_LIBS $PANGOCAIRO_LIBS $PANGO_LIBS $GLU_LIBS $GL_LIBS"
-    LV2_UI_RTK_LDFLAGS="-shared -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -pthread"
-    
-    LV2_UI_RTK_CFLAGS="-g -Wall -Wno-unused-function -DHAVE_LV2_1_8 -I. $GLU_CFLAGS \
-    -pthread -DHAVE_IDLE_IFACE -I. -g -Wall -Wno-unused-function -DHAVE_LV2_1_8 $LV2_CFLAGS \
-    -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -O3 -fno-finite-math-only \
-    -DNDEBUG -DVERSION=\\\"0.0.0\\\" -fPIC -fvisibility=hidden $CAIRO_CFLAGS $PANGO_CFLAGS \
-    -DUSE_GUI_THREAD -pthread -DUINQHACK=\\\"168162529512469\\\" "
-    
-    AC_SUBST(LV2_UI_RTK_LIBS)
-    AC_SUBST(LV2_UI_RTK_LDFLAGS)
-    AC_SUBST(LV2_UI_RTK_CFLAGS)
+    AM_COND_IF([BUILD_LV2_UI_RTK],[
 
+        echo "Will build LV2 GL UIs"
+        LV2_UI_RTK_LIBS="-lX11 $CAIRO_LIBS $PANGOCAIRO_LIBS $PANGO_LIBS $GLU_LIBS $GL_LIBS"
+        LV2_UI_RTK_LDFLAGS="-shared -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -pthread"
+        
+        LV2_UI_RTK_CFLAGS="-g -Wall -Wno-unused-function -DHAVE_LV2_1_8 -I. $GLU_CFLAGS \
+        -pthread -DHAVE_IDLE_IFACE -I. -g -Wall -Wno-unused-function -DHAVE_LV2_1_8 $LV2_CFLAGS \
+        -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -O3 -fno-finite-math-only \
+        -DNDEBUG -DVERSION=\\\"0.0.0\\\" -fPIC -fvisibility=hidden $CAIRO_CFLAGS $PANGO_CFLAGS \
+        -DUSE_GUI_THREAD -pthread -DUINQHACK=\\\"168162529512469\\\" "
+        
+        AC_SUBST(LV2_UI_RTK_LIBS)
+        AC_SUBST(LV2_UI_RTK_LDFLAGS)
+        AC_SUBST(LV2_UI_RTK_CFLAGS)
+    ], [AC_MSG_NOTICE([LV2 GL UI build disabled])])
 else
     AM_CONDITIONAL([BUILD_LV2_UI_RTK], false)    
     echo "LV2 GL UI build disabled by configuration"    
