@@ -87,8 +87,6 @@ void receiveWave(LV2UI_Handle handle, LV2_Atom* atom)
     QMidiArpLfoUI* ui = (QMidiArpLfoUI*)handle;
     const QMidiArpURIs* uris = &ui->uris;
     
-    int ofs = robtk_dial_get_value(ui->dial_control[1]);
-    
     if ( (atom->type != uris->atom_Blank) 
             && (atom->type != uris->atom_Object)) {
               return;
@@ -110,7 +108,8 @@ void receiveWave(LV2UI_Handle handle, LV2_Atom* atom)
     const size_t n_elem = (a0->size - sizeof(LV2_Atom_Vector_Body)) / voi->atom.size;
     /* typecast, dereference pointer to vector */
     const int *recdata = (int*) LV2_ATOM_BODY(&voi->atom);
-
+    
+    int ofs = 127;
     for (uint32_t l1 = 0; l1 < n_elem; l1++) {
         ui->datavalues[l1] = recdata[l1];
         ui->dataticks[l1] = l1 * TPQN / ui->res;
@@ -125,6 +124,11 @@ void receiveWave(LV2UI_Handle handle, LV2_Atom* atom)
         robtk_select_set_item(ui->waveform, 5);
         updateParam(ui, WAVEFORM, 5);
         ui->copiedToCustomFlag = false;
+    }
+    if (ofs != robtk_dial_get_value(ui->dial_control[1])) {
+        ui->offset_suppress_callback = true;
+        robtk_dial_set_value(ui->dial_control[1], ofs);
+        ui->offset_suppress_callback = false;
     }
 }
 
@@ -300,8 +304,10 @@ static bool update_offset (RobWidget *widget, void* data)
     QMidiArpLfoUI* ui = (QMidiArpLfoUI*) data;
     char txt[16];
     snprintf(txt, 16, "%d", (int)robtk_dial_get_value(ui->dial_control[1]));
-    updateParam(ui, OFFSET, robtk_dial_get_value(ui->dial_control[1]));
     robtk_lbl_set_text(ui->dial_control_ann[1], txt);
+    if (ui->offset_suppress_callback) return FALSE;
+
+    updateParam(ui, OFFSET, robtk_dial_get_value(ui->dial_control[1]));
     return TRUE;
 
 }
