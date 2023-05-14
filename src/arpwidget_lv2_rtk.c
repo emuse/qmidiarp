@@ -366,7 +366,7 @@ static bool update_defer (RobWidget *widget, void* data)
     return TRUE;
 }
 
-void updatePattern(LV2UI_Handle handle)
+void updatePattern(LV2UI_Handle handle, bool send)
 {
     QMidiArpArpUI* ui = (QMidiArpArpUI*) handle;
     
@@ -397,7 +397,7 @@ void updatePattern(LV2UI_Handle handle)
     
     int patternLen = strlen(ui->pattern);
     
-    if (!ui->receivePatternFlag) sendPattern(handle);
+    if (!ui->receivePatternFlag && send) sendPattern(handle);
 
     // determine some useful properties of the arp pattern,
     // number of octaves, step width and number of steps in beats and
@@ -884,7 +884,7 @@ static bool expose_event(RobWidget* handle, cairo_t* cr, cairo_rectangle_t *ev)
 static void
 size_request(RobWidget* handle, int *w, int *h) {
   (void)handle;
-  *w = 320;
+  *w = 330;
   *h = ARPSCR_MIN_H + CSR_MIN_H + CSR_VMARG;
 }
 
@@ -1566,7 +1566,7 @@ port_event(LV2UI_Handle handle,
     if (format == uris->atom_eventTransfer
       && (atom->type == uris->atom_Object) ) {
         receivePattern(handle, atom);
-        updatePattern(handle);
+        updatePattern(handle, false);
     }
     else if (format == 0 && buffer_size == sizeof(float)) {
 
