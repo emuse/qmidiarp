@@ -326,15 +326,18 @@ else ()
     message("Warning: No configure file found, will be missing when creating a dist archive")
 endif ()
 
-add_custom_target(dist-bz2 COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
+set(DIST_TARCOMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
                         --format=tar 
                         --prefix=${PACKAGE_STRING}/ ${ADD_AUTOCONF_FILES}
-                        ${PACKAGE_STRING}^{tree} | bzip2 > ${PACKAGE_STRING}.tar.bz2 )
-add_custom_target(dist COMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive 
+                        ${PACKAGE_STRING}^{tree} -o ${PACKAGE_STRING}.tar &&
+                        git --git-dir=${CMAKE_SOURCE_DIR}/robtk/.git archive 
                         --format=tar 
-                        --prefix=${PACKAGE_STRING}/ ${ADD_AUTOCONF_FILES}
-                        ${PACKAGE_STRING}^{tree} | gzip 
-                        > ${PACKAGE_STRING}.tar.gz )
+                        --prefix=${PACKAGE_STRING}/robtk/ HEAD -o robtk.tar &&
+                        tar --concatenate --file=${PACKAGE_STRING}.tar robtk.tar && 
+                        rm -f robtk.tar)
+
+add_custom_target(dist-bz2 COMMAND ${DIST_TARCOMMAND} && bzip2 -f ${PACKAGE_STRING}.tar )
+add_custom_target(dist COMMAND ${DIST_TARCOMMAND} && gzip -f ${PACKAGE_STRING}.tar )
 
 
 install (FILES man/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)

@@ -206,14 +206,14 @@ qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 endif
 endif
 
-if ENABLE_TRANSLATIONS
-translationsdir = $(pkgdatadir)/translations
 translations = \
 	translations/qmidiarp_cs.ts \
 	translations/qmidiarp_de.ts \
 	translations/qmidiarp_es.ts \
 	translations/qmidiarp_fr.ts
 
+if ENABLE_TRANSLATIONS
+translationsdir = $(pkgdatadir)/translations
 translations_DATA = \
 	translations/qmidiarp_cs.qm \
 	translations/qmidiarp_de.qm \
