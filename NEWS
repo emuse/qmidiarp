@@ -1,3 +1,15 @@
+qmidiarp-0.7.0 (2023-05-18)
+
+New Feature
+  o The LV2 plugins of the modules now also ship with new UIs based on 
+    the robtk toolkit by Robin Gareus. A copy of robtk is included in 
+    the source tarball. Depending on the LV2 host, either the Qt-based 
+    X11 UIs or the new RTK UIs will be displayed. They feature all 
+    functions of the original UIs with exception of the Arp plugin's 
+    pattern string editor, which wasn't working properly on some LV2 
+    hosts anyway. The provided Arp presets are, however, selectable 
+    from the host.
+    
 qmidiarp-0.6.7 (2023-04-11)
 
 New Features
