@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(qmidiarp VERSION 0.6.8
+project(qmidiarp VERSION 0.7.0
         DESCRIPTION "MIDI arpeggiator, sequencer and LFO for ALSA and JACK"
         LANGUAGES C CXX)
 
