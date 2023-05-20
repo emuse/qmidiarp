@@ -114,7 +114,7 @@ endif ()
 #LV2 DSPs
 
 if (BUILD_LV2)
-    set(HEADERS_arp
+    set(LV2_ARP_HEADERS
         lv2_common.h
         main.h
         midiworker.h
@@ -122,7 +122,7 @@ if (BUILD_LV2)
         midiarp_lv2.h
     )
     
-    set(SOURCES_arp
+    set(LV2_ARP_SOURCES
         midiworker.cpp
         midiarp.cpp
         midiarp_lv2.cpp
@@ -157,8 +157,8 @@ if (BUILD_LV2)
     )
     
     add_library (${PROJECT_NAME}_arp MODULE
-      ${HEADERS_arp}
-      ${SOURCES_arp}
+      ${LV2_ARP_HEADERS}
+      ${LV2_ARP_SOURCES}
     )
     
     add_library (${PROJECT_NAME}_lfo MODULE
@@ -204,8 +204,6 @@ if (BUILD_LV2_UI)
         cursor.h
         lv2_common.h
         main.h
-        midiworker.h
-        midiarp.h
         modulewidget.h
         arpwidget.h
         arpscreen.h
@@ -216,8 +214,6 @@ if (BUILD_LV2_UI)
     
     set(LV2UI_ARP_SOURCES
         cursor.cpp
-        midiworker.cpp
-        midiarp.cpp
         modulewidget.cpp
         arpwidget.cpp
         arpscreen.cpp
@@ -230,8 +226,6 @@ if (BUILD_LV2_UI)
         cursor.h
         lv2_common.h
         main.h
-        midiworker.h
-        midilfo.h
         modulewidget.h
         lfowidget.h
         lfoscreen.h
@@ -242,8 +236,6 @@ if (BUILD_LV2_UI)
     
     set(LV2UI_LFO_SOURCES
         cursor.cpp
-        midiworker.cpp
-        midilfo.cpp
         modulewidget.cpp
         lfowidget.cpp
         lfoscreen.cpp
@@ -256,8 +248,6 @@ if (BUILD_LV2_UI)
         cursor.h
         lv2_common.h
         main.h
-        midiworker.h
-        midiseq.h
         modulewidget.h
         seqwidget.h
         seqscreen.h
@@ -268,8 +258,6 @@ if (BUILD_LV2_UI)
     
     set(LV2UI_SEQ_SOURCES
         cursor.cpp
-        midiworker.cpp
-        midiseq.cpp
         modulewidget.cpp
         seqwidget.cpp
         seqscreen.cpp

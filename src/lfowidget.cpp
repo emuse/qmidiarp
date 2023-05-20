@@ -45,8 +45,7 @@ LfoWidget::LfoWidget(MidiLfo *p_midiLfo, GlobStore *p_globStore,
     bool compactStyle = p_prefs->compactStyle;
 #else
 LfoWidget::LfoWidget():
-    ModuleWidget("LFO:"),
-    midiLfo(NULL)
+    ModuleWidget("LFO:")
 {
     bool compactStyle = true;
 #endif
@@ -428,23 +427,24 @@ void LfoWidget::loadWaveForms()
 void LfoWidget::updateWaveForm(int val)
 {
     if (val > 5) return;
+    bool isCustom = (val == 5);
     waveFormBoxIndex = val;
-    if (midiLfo) midiLfo->updateWaveForm(val);
+    amplitude->setDisabled(isCustom);
+    freqBox->setDisabled(isCustom);
+    phase->setDisabled(isCustom);
+    modified = true;
+#ifdef APPBUILD
+    midiLfo->updateWaveForm(val);
     std::vector<Sample> sdata;
-    if (midiLfo) midiLfo->getData(&sdata);
+    midiLfo->getData(&sdata);
 #if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
     data=QVector<Sample>::fromStdVector(sdata);
 #else
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
-    if (midiLfo) screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
-    bool isCustom = (val == 5);
-    if (isCustom && midiLfo) midiLfo->newCustomOffset();
-    amplitude->setDisabled(isCustom);
-    freqBox->setDisabled(isCustom);
-    phase->setDisabled(isCustom);
-    modified = true;
-
+    screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+    if (isCustom) midiLfo->newCustomOffset();
+#endif
 }
 
 void LfoWidget::updateFreq(int val)
@@ -452,7 +452,7 @@ void LfoWidget::updateFreq(int val)
     if ((uint64_t)val >= sizeof(lfoFreqValues)/sizeof(lfoFreqValues[0])) return;
     freqBoxIndex = val;
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updateFrequency(lfoFreqValues[val]);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -462,6 +462,7 @@ void LfoWidget::updateFreq(int val)
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+#endif
 }
 
 void LfoWidget::updateRes(int val)
@@ -469,7 +470,7 @@ void LfoWidget::updateRes(int val)
     if ((uint64_t)val >= sizeof(lfoResValues)/sizeof(lfoResValues[0])) return;
     resBoxIndex = val;
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updateResolution(lfoResValues[val]);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -480,6 +481,7 @@ void LfoWidget::updateRes(int val)
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
     if (waveFormBoxIndex == 5) midiLfo->newCustomOffset();
+#endif
 }
 
 void LfoWidget::updateSize(int val)
@@ -487,7 +489,7 @@ void LfoWidget::updateSize(int val)
     if ((uint64_t)val >= sizeof(lfoSizeValues)/sizeof(lfoSizeValues[0])) return;
     sizeBoxIndex = val;
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updateSize(sizeBox->currentText().toInt());
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -498,19 +500,22 @@ void LfoWidget::updateSize(int val)
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
     if (waveFormBoxIndex == 5) midiLfo->newCustomOffset();
+#endif
 }
 
 void LfoWidget::updateLoop(int val)
 {
     if (val > 6) return;
-    if (midiLfo) midiLfo->updateLoop(val);
+#ifdef APPBUILD
+    midiLfo->updateLoop(val);
+#endif
     modified = true;
 }
 
 void LfoWidget::updateAmp(int val)
 {
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updateAmplitude(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -520,12 +525,15 @@ void LfoWidget::updateAmp(int val)
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+#else
+    (void)val;
+#endif
 }
 
 void LfoWidget::updateOffs(int val)
 {
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updateOffset(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -535,12 +543,16 @@ void LfoWidget::updateOffs(int val)
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+#else
+    (void)val;
+#endif
+
 }
 
 void LfoWidget::updatePhase(int val)
 {
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     midiLfo->updatePhase(val);
     std::vector<Sample> sdata;
     midiLfo->getData(&sdata);
@@ -550,11 +562,16 @@ void LfoWidget::updatePhase(int val)
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+#else
+    (void)val;
+#endif
 }
 
 void LfoWidget::copyToCustom()
 {
-    if (midiLfo) midiLfo->copyToCustom();
+#ifdef APPBUILD
+    midiLfo->copyToCustom();
+#endif
     waveFormBox->setCurrentIndex(5);
     updateWaveForm(5);
     modified = true;
@@ -563,7 +580,7 @@ void LfoWidget::copyToCustom()
 void LfoWidget::updateFlipWaveVertical()
 {
     modified = true;
-    if (!midiLfo) return;
+#ifdef APPBUILD
     if (waveFormBox->currentIndex() != 5) copyToCustom();
     midiLfo->flipWaveVertical();
     std::vector<Sample> sdata;
@@ -574,13 +591,16 @@ void LfoWidget::updateFlipWaveVertical()
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data.mid(0, midiLfo->res * midiLfo->size + 1));
+#endif
 }
 
 void LfoWidget::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
 {
-    if (!midiLfo) emit mouseSig(mouseX, mouseY, buttons, pressed);
-    else midiLfo->mouseEvent(mouseX, mouseY, buttons, pressed);
-
+#ifdef APPBUILD
+    midiLfo->mouseEvent(mouseX, mouseY, buttons, pressed);
+#else
+    emit mouseSig(mouseX, mouseY, buttons, pressed);
+#endif
     if ((buttons == 1) && (waveFormBox->currentIndex() != 5)) {
         waveFormBox->setCurrentIndex(5);
         updateWaveForm(5);
@@ -598,10 +618,13 @@ void LfoWidget::mouseWheel(int step)
 
 void LfoWidget::setRecord(bool on)
 {
-    if (midiLfo) midiLfo->setRecordMode(on);
+#ifdef APPBUILD
+    midiLfo->setRecordMode(on);
+#endif
     screen->setRecordMode(on);
 }
 
+#ifdef APPBUILD
 QVector<Sample> LfoWidget::getCustomWave()
 {
 #if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
@@ -620,7 +643,6 @@ QVector<bool> LfoWidget::getMuteMask()
 #endif
 }
 
-#ifdef APPBUILD
 
 void LfoWidget::doStoreParams(int ix)
 {
@@ -635,8 +657,8 @@ void LfoWidget::doStoreParams(int ix)
     parStore->temp.phase = phase->value();
     parStore->temp.waveForm = waveFormBox->currentIndex();
 
-    if (midiLfo) parStore->temp.wave = getCustomWave().mid(0, midiLfo->maxNPoints);
-    if (midiLfo) parStore->temp.muteMask = getMuteMask().mid(0, midiLfo->maxNPoints);
+    parStore->temp.wave = getCustomWave().mid(0, midiLfo->maxNPoints);
+    parStore->temp.muteMask = getMuteMask().mid(0, midiLfo->maxNPoints);
 
     parStore->tempToList(ix);
 }

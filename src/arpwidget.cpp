@@ -26,7 +26,9 @@
 #include <QInputDialog>
 #include <QDir>
 
+#ifdef APPBUILD
 #include "midiarp.h"
+#endif
 #include "arpwidget.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -50,8 +52,7 @@ ArpWidget::ArpWidget(MidiArp *p_midiArp, GlobStore *p_globStore,
     bool compactStyle = p_prefs->compactStyle;
 #else
 ArpWidget::ArpWidget():
-    ModuleWidget("Arp:"),
-    midiArp(NULL)
+    ModuleWidget("Arp:")
 {
     bool compactStyle = true;
 #endif
@@ -400,14 +401,16 @@ void ArpWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 void ArpWidget::updateText(const QString& newtext)
 {
     patternPresetBox->setCurrentIndex(0);
-    if (!midiArp) return;
+#ifdef APPBUILD
     textRemoveAction->setEnabled(false);
     textStoreAction->setEnabled(true);
     midiArp->updatePattern(newtext.toStdString());
     screen->updateData(newtext, midiArp->minOctave,
                     midiArp->maxOctave, midiArp->minStepWidth,
                     midiArp->nSteps, midiArp->patternMaxIndex);
-
+#else
+    (void)newtext;
+#endif
     modified = true;
 }
 
@@ -417,14 +420,16 @@ void ArpWidget::selectPatternPreset(int val)
         if (val) {
             patternText->setText("");
             patternText->setText(patternPresets.at(val));
-            if (!midiArp) return;
+#ifdef APPBUILD
             patternPresetBox->setCurrentIndex(val);
             textStoreAction->setEnabled(false);
             textRemoveAction->setEnabled(true);
+#endif
         }
         else {
-            if (!midiArp) return;
+#ifdef APPBUILD
             textRemoveAction->setEnabled(false);
+#endif
         }
         modified = true;
     }
@@ -465,45 +470,73 @@ void ArpWidget::loadPatternPresets()
 
 void ArpWidget::updateRepeatPattern(int val)
 {
-    if (midiArp) midiArp->repeatPatternThroughChord = val;
+#ifdef APPBUILD
+    midiArp->repeatPatternThroughChord = val;
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void ArpWidget::updateOctaveMode(int val)
 {
-    if (midiArp) midiArp->updateOctaveMode(val);
+#ifdef APPBUILD
+    midiArp->updateOctaveMode(val);
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void ArpWidget::updateOctaveLow(int val)
 {
-    if (midiArp) midiArp->octLow = -val;
+#ifdef APPBUILD
+    midiArp->octLow = -val;
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void ArpWidget::updateOctaveHigh(int val)
 {
-    if (midiArp) midiArp->octHigh = val;
+#ifdef APPBUILD
+    midiArp->octHigh = val;
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void ArpWidget::updateRandomLengthAmp(int val)
 {
-    if (midiArp) midiArp->updateRandomLengthAmp(val);
+#ifdef APPBUILD
+    midiArp->updateRandomLengthAmp(val);
+#else
+    (void)val;
+#endif
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomTickAmp(int val)
 {
-    if (midiArp) midiArp->updateRandomTickAmp(val);
+#ifdef APPBUILD
+    midiArp->updateRandomTickAmp(val);
+#else
+    (void)val;
+#endif
     checkIfRandomSet();
     modified = true;
 }
 
 void ArpWidget::updateRandomVelocityAmp(int val)
 {
-    if (midiArp) midiArp->updateRandomVelocityAmp(val);
+#ifdef APPBUILD
+    midiArp->updateRandomVelocityAmp(val);
+#else
+    (void)val;
+#endif
     checkIfRandomSet();
     modified = true;
 }
@@ -523,14 +556,22 @@ void ArpWidget::checkIfRandomSet()
 
 void ArpWidget::updateAttackTime(int val)
 {
-    if (midiArp) midiArp->updateAttackTime(val);
+#ifdef APPBUILD
+    midiArp->updateAttackTime(val);
+#else
+    (void)val;
+#endif
     checkIfEnvelopeSet();
     modified = true;
 }
 
 void ArpWidget::updateReleaseTime(int val)
 {
-    if (midiArp) midiArp->updateReleaseTime(val);
+#ifdef APPBUILD
+    midiArp->updateReleaseTime(val);
+#else
+    (void)val;
+#endif
     checkIfEnvelopeSet();
     modified = true;
 }
@@ -621,7 +662,11 @@ void ArpWidget::setEnvelopeVisible(bool on)
 
 void ArpWidget::setLatchMode(bool on)
 {
-    if (midiArp) midiArp->setLatchMode(on);
+#ifdef APPBUILD
+    midiArp->setLatchMode(on);
+#else
+    (void)on;
+#endif
     modified = true;
 }
 

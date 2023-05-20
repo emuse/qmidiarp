@@ -124,8 +124,6 @@ seqpluginui_LTLIBRARIES = qmidiarp_seq_ui.la
 
 nodist_qmidiarp_lfo_ui_la_SOURCES = \
 	cursor_moc.cpp \
-	midiworker_moc.cpp \
-	midilfo_moc.cpp \
 	modulewidget_moc.cpp \
 	lfowidget_moc.cpp \
 	lfoscreen_moc.cpp \
@@ -135,8 +133,6 @@ nodist_qmidiarp_lfo_ui_la_SOURCES = \
 
 qmidiarp_lfo_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
-	midiworker.cpp midiworker.h \
-	midilfo.cpp midilfo.h \
 	modulewidget.cpp modulewidget.h \
 	lfowidget.cpp lfowidget.h \
 	lfoscreen.cpp lfoscreen.h \
@@ -151,8 +147,6 @@ qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
-	midiworker_moc.cpp \
-	midiseq_moc.cpp \
 	modulewidget_moc.cpp \
 	screen_moc.cpp \
 	seqwidget_moc.cpp \
@@ -164,8 +158,6 @@ qmidiarp_seq_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
 	main.h \
-	midiworker.cpp midiworker.h \
-	midiseq.cpp midiseq.h \
 	modulewidget.cpp modulewidget.h \
 	screen.cpp screen.h \
 	seqwidget.cpp seqwidget.h \
@@ -179,8 +171,6 @@ qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
 	modulewidget_moc.cpp \
-	midiworker_moc.cpp \
-	midiarp_moc.cpp \
 	arpwidget_moc.cpp \
 	arpscreen_moc.cpp \
 	screen_moc.cpp \
@@ -191,8 +181,6 @@ qmidiarp_arp_ui_la_SOURCES = \
 	cursor.cpp cursor.h \
 	lv2_common.h \
 	main.h \
-	midiworker.cpp midiworker.h \
-	midiarp.cpp midiarp.h \
 	modulewidget.cpp modulewidget.h \
 	arpwidget.cpp arpwidget.h \
 	arpscreen.cpp arpscreen.h \

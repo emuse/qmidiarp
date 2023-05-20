@@ -37,8 +37,7 @@ SeqWidget::SeqWidget(MidiSeq *p_midiSeq, GlobStore *p_globStore,
     bool compactStyle = p_prefs->compactStyle;
 #else
 SeqWidget::SeqWidget():
-    ModuleWidget("Seq:"),
-    midiSeq(NULL)
+    ModuleWidget("Seq:")
 {
     bool compactStyle = true;
 #endif
@@ -408,7 +407,11 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 
 void SeqWidget::updateNoteLength(int val)
 {
-    if (midiSeq) midiSeq->updateNoteLength(sliderToTickLen(val));
+#ifdef APPBUILD
+    midiSeq->updateNoteLength(sliderToTickLen(val));
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
@@ -416,7 +419,7 @@ void SeqWidget::updateWaveForm(int val)
 {
     (void)val;
     modified = true;
-    if (!midiSeq) return;
+#ifdef APPBUILD
     std::vector<Sample> sdata;
     midiSeq->getData(&sdata);
 #if QT_VERSION <= QT_VERSION_CHECK(5,14,0)
@@ -425,15 +428,17 @@ void SeqWidget::updateWaveForm(int val)
     data=QVector<Sample>(sdata.begin(), sdata.end());
 #endif
     screen->updateData(data);
+#endif
 }
 
 void SeqWidget::setRecord(bool on)
 {
     recordMode = on;
     screen->setRecordMode(on);
-    if (!midiSeq) return;
+#ifdef APPBUILD
     midiSeq->setRecordMode(on);
     screen->setCurrentRecStep(midiSeq->currentRecStep);
+#endif
 }
 
 void SeqWidget::updateRes(int val)
@@ -441,7 +446,7 @@ void SeqWidget::updateRes(int val)
     if ((uint64_t)val >= sizeof(seqResValues)/sizeof(seqResValues[0])) return;
     resBoxIndex = val;
     modified = true;
-    if (!midiSeq) return;
+#ifdef APPBUILD
     midiSeq->res = seqResValues[val];
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
@@ -453,6 +458,7 @@ void SeqWidget::updateRes(int val)
 #endif
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
+#endif
 }
 
 void SeqWidget::updateSize(int val)
@@ -460,7 +466,7 @@ void SeqWidget::updateSize(int val)
     if ((uint64_t)val >= sizeof(seqSizeValues)/sizeof(seqSizeValues[0])) return;
     sizeBoxIndex = val;
     modified = true;
-    if (!midiSeq) return;
+#ifdef APPBUILD
     midiSeq->size = sizeBox->currentText().toInt();
     midiSeq->resizeAll();
     std::vector<Sample> sdata;
@@ -472,24 +478,37 @@ void SeqWidget::updateSize(int val)
 #endif
     screen->setCurrentRecStep(midiSeq->currentRecStep);
     screen->updateData(data);
+#endif
 }
 
 void SeqWidget::updateLoop(int val)
 {
     if (val > 6) return;
-    if (midiSeq) midiSeq->updateLoop(val);
+#ifdef APPBUILD
+    midiSeq->updateLoop(val);
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void SeqWidget::updateVelocity(int val)
 {
-    if (midiSeq) midiSeq->updateVelocity(val);
+#ifdef APPBUILD
+    midiSeq->updateVelocity(val);
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
 void SeqWidget::updateTranspose(int val)
 {
-    if (midiSeq) midiSeq->updateTranspose(val);
+#ifdef APPBUILD
+    midiSeq->updateTranspose(val);
+#else
+    (void)val;
+#endif
     modified = true;
 }
 
@@ -506,12 +525,11 @@ void SeqWidget::mouseEvent(double mouseX, double mouseY, int buttons, int presse
         screen->setLoopMarker(lm);
         screen->updateDraw();
     }
-    if (!midiSeq) {
-        emit mouseSig(mouseX, mouseY, buttons, pressed);
-    }
-    else {
-        midiSeq->mouseEvent(mouseX, mouseY, buttons, pressed);
-    }
+#ifdef APPBUILD
+    midiSeq->mouseEvent(mouseX, mouseY, buttons, pressed);
+#else
+    emit mouseSig(mouseX, mouseY, buttons, pressed);
+#endif
 
     modified = true;
 }
@@ -524,7 +542,9 @@ void SeqWidget::setDispVert(int mode)
 void SeqWidget::updateDispVert(int mode)
 {
     dispVertIndex = mode;
-    if (midiSeq) midiSeq->updateDispVert(mode);
+#ifdef APPBUILD
+    midiSeq->updateDispVert(mode);
+#endif
     screen->updateDispVert(mode);
     modified = true;
 }

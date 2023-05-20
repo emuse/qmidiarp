@@ -23,8 +23,9 @@
 
 #ifndef LFOWIDGET_H
 #define LFOWIDGET_H
-
+#ifdef APPBUILD
 #include "midilfo.h"
+#endif
 #include "modulewidget.h"
 #include "cursor.h"
 #include "slider.h"
@@ -45,7 +46,9 @@ class LfoWidget : public ModuleWidget
 {
     Q_OBJECT
 
+#ifdef APPBUILD
     MidiLfo *midiLfo;
+#endif
 /*!
 * @brief populates the LfoWidget::waveForms list with
 * waveform names.
@@ -95,8 +98,10 @@ class LfoWidget : public ModuleWidget
     QAction *flipWaveVerticalAction;
     QComboBox *waveFormBox, *freqBox;
 
+#ifdef APPBUILD
     QVector<Sample> getCustomWave();
     QVector<bool> getMuteMask();
+#endif
     int resBoxIndex;
     int sizeBoxIndex;
     int freqBoxIndex;

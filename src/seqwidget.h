@@ -26,7 +26,10 @@
 
 #include <QSignalMapper>
 
+#ifdef APPBUILD
 #include "midiseq.h"
+#endif
+
 #include "modulewidget.h"
 #include "slider.h"
 #include "seqscreen.h"
@@ -47,7 +50,9 @@ class SeqWidget : public ModuleWidget
 {
     Q_OBJECT
 
+#ifdef APPBUILD
     MidiSeq *midiSeq;
+#endif
     bool lastMute;      /**< Contains the mute state of the last waveForm point modified by mouse click*/
     bool recordMode;    /**< Is set to True if incoming notes are to be step-recorded*/
 
@@ -142,6 +147,7 @@ class SeqWidget : public ModuleWidget
     void updateDisplay();
     void handleController(int ccnumber, int channel, int value);
     void updateCursorPos() {cursor->updatePosition(getFramePtr()); }
+    int getLoopMarker() { return midiSeq->loopMarker; }
 #endif
 
 /* SIGNALS */
@@ -229,7 +235,6 @@ class SeqWidget : public ModuleWidget
 */
     void mouseEvent(double, double, int, int pressed);
 
-    int getLoopMarker() { return midiSeq->loopMarker; }
     int sliderToTickLen(int val) { return (val * TPQN / 64); }
     int tickLenToSlider(int val) { return (val * 64 / TPQN); }
 };

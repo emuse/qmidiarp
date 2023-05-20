@@ -26,7 +26,9 @@
 
 #include <QLineEdit>
 
+#ifdef APPBUILD
 #include "midiarp.h"
+#endif
 #include "modulewidget.h"
 #include "slider.h"
 #include "arpscreen.h"
@@ -44,7 +46,9 @@ class ArpWidget :  public ModuleWidget
 {
   Q_OBJECT
 
+#ifdef APPBUILD
     MidiArp *midiArp;
+#endif
 
     QGroupBox *randomBox, *envelopeBox;
     QToolButton *textEditButton, *textStoreButton, *textRemoveButton;
@@ -126,9 +130,9 @@ class ArpWidget :  public ModuleWidget
     void doRestoreParams(int ix);
     void updateDisplay();
     void handleController(int ccnumber, int channel, int value);
-#endif
 
     void updateCursorPos() { screen->updateCursor(midiArp->getFramePtr()); }
+#endif
     
 /* SIGNALS */
   signals:
