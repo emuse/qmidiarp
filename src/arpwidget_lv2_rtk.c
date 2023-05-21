@@ -476,6 +476,69 @@ void updatePattern(LV2UI_Handle handle, bool send)
     queue_draw(ui->darea);
 }
 
+static bool update_presets (RobWidget *widget, void* data)
+{
+    QMidiArpArpUI* ui = (QMidiArpArpUI*) data;
+    ui->pattern[0]='\0';
+    int index = robtk_select_get_item(ui->sel_presets);
+    strncat(ui->pattern, ui->patternPresets[index], 256);
+    updatePattern(ui, true);
+    return TRUE;
+}
+
+void loadPatternPresets(LV2_Handle handle)
+{
+  QMidiArpArpUI* ui = (QMidiArpArpUI*) handle;
+  
+  FILE * fp;
+  char * line = NULL;
+  size_t len = 0;
+  ssize_t read;
+  char qmarcpath[256];  
+  qmarcpath[0] = '\0';
+  
+  strncat(qmarcpath, getenv("HOME"), 128);
+  strncat(qmarcpath, "/.qmidiarprc", 32);
+  
+  fp = fopen(qmarcpath, "r");
+  if (fp == NULL) {
+    printf("qmidiarprc file: %s\n", qmarcpath);
+    printf("Could not read the pattern presets from the \n .qmidiarprc resource file.\n");
+    printf("To create this file please just run the qmidiarp main application once.\n");
+    return;
+  }
+  char type[32];
+  int i = 0;
+  bool skip_firstline = true;
+  while ((read = getline(&line, &len, fp)) != -1 && i < MAXNPATTERNS) {
+    if (line[0] == '#') {
+      char * sp = strtok(line, "%");
+      if (sp == NULL) continue;
+      type[0] = '\0';
+      strncat(type, sp, 16);
+      if (strcmp(type, "#Pattern")) continue;
+      if (skip_firstline) {
+        skip_firstline = false;
+        continue;
+      }
+      sp = strtok(NULL, "%");
+      if (sp == NULL || strlen(sp) == 0) continue;
+      ui->presetNames[i][0] = '\0';
+      strncat(ui->presetNames[i], sp, 64);
+      sp = strtok(NULL, "%");
+      if (sp == NULL || strlen(sp) == 0) continue;
+      ui->patternPresets[i][0] = '\0';
+      strncat(ui->patternPresets[i], sp, PATTERNBUFSIZE);
+      i++;
+    }
+  }
+  ui->n_presets = i;
+  
+  fclose(fp);
+  if (line)
+      free(line);
+}
+
 /*
 static void update_mouse(RobWidget* handle) {  
   QMidiArpArpUI* ui = (QMidiArpArpUI*) GET_HANDLE(handle);
@@ -1136,8 +1199,16 @@ static RobWidget * toplevel(QMidiArpArpUI* ui, void * const top)
   //ui->lbl_pattern_text->min_width_scaled = 300;
   //ui->lbl_pattern_text->w_width = 300;
   
+  ui->lbl_presets = robtk_lbl_new("Preset");
+  ui->sel_presets = robtk_select_new();
+  for (int i = 0; i < ui->n_presets; i++) {
+    robtk_select_add_item(ui->sel_presets, i, ui->presetNames[i]);
+  }
+  robtk_select_set_item(ui->sel_presets, 2);
+  robtk_select_set_default_item(ui->sel_presets, 2);
+  robtk_select_set_callback(ui->sel_presets, update_presets, ui);
+  
   ui->lbl_repeat_mode = robtk_lbl_new("Repeat");
-
   ui->sel_repeat_mode = robtk_select_new();
   robtk_select_add_item(ui->sel_repeat_mode, 0, "Static");
   robtk_select_add_item(ui->sel_repeat_mode, 1, "Up");
@@ -1249,7 +1320,7 @@ static RobWidget * toplevel(QMidiArpArpUI* ui, void * const top)
 
   /* Repeat and octave mode */
 
-  ui->ctable_wave = rob_table_new(/*rows*/3, /*cols*/ 14, FALSE);
+  ui->ctable_wave = rob_table_new(/*rows*/4, /*cols*/ 14, FALSE);
 
 #define TBLWAVEADD(WIDGET, X0, X1, Y0, Y1) \
   rob_table_attach(ui->ctable_wave, WIDGET, X0, X1, Y0, Y1, 0, 0, RTK_EXANDF, RTK_EXANDF)
@@ -1258,6 +1329,9 @@ static RobWidget * toplevel(QMidiArpArpUI* ui, void * const top)
   rob_table_attach(ui->ctable_wave, WIDGET, X0, X1, Y0, Y1, 0, 0, XX, XY)
 
   int row = 0;
+  TBLWAVEADD(robtk_lbl_widget(ui->lbl_presets), 0, 2, row, row+1);
+  TBLWAVEADD(robtk_select_widget(ui->sel_presets), 3, 7, row, row+1);
+  row++;
   TBLWAVEADD(robtk_lbl_widget(ui->lbl_repeat_mode), 6, 7, row, row+1);
   TBLWAVEADD(robtk_lbl_widget(ui->lbl_oct_mode), 8, 11, row, row+1);
   row++;
@@ -1349,12 +1423,20 @@ instantiate(
   ui->patternLen = 0;
   
 /* Default pattern */
-  ui->pattern = (char *) malloc(PATTERNBUFSIZE);
+  ui->patternPresets[0][0] = '\0';
+  strncat(ui->patternPresets[0], ">>0", PATTERNBUFSIZE);
+  ui->patternLen = strlen(ui->patternPresets[0]);
+  
+  ui->presetNames[0][0] = '\0';
+  strncat(ui->presetNames[0], "Simple 16", 32 - 1);
+  ui->n_presets = 1;
+
+  loadPatternPresets(ui);
+  
+  ui->pattern = (char *) malloc(PATTERNBUFSIZE + 2);
   ui->pattern[0] = '\0';
-  strncat(ui->pattern, ">>0", PATTERNBUFSIZE - 1);
-  ui->patternLen = strlen(ui->pattern);
-  
-  
+  strncat(ui->pattern, ui->patternPresets[0], PATTERNBUFSIZE);
+
   ui->currentIndex = 0;
   ui->isMuted = false;
   
@@ -1424,8 +1506,8 @@ instantiate(
   ui_enable(ui);
   
   robwidget_hide(ui->ctable_notefilter, FALSE);
-  
   updatePattern(ui, true);
+  
   return ui;
 }
 
@@ -1492,7 +1574,9 @@ cleanup(LV2UI_Handle handle)
   
   robtk_lbl_destroy(ui->lbl_oct_mode);
   robtk_lbl_destroy(ui->lbl_repeat_mode);
+  robtk_lbl_destroy(ui->lbl_presets);
   
+  robtk_select_destroy(ui->sel_presets);
   robtk_select_destroy(ui->sel_oct_mode);
   robtk_select_destroy(ui->sel_oct_low);
   robtk_select_destroy(ui->sel_oct_high);

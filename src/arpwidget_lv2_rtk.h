@@ -45,8 +45,6 @@
 #define CSR_VMARG     4
 #define CSR_HMARG    ARPSCR_HMARG
 
-#define PATTERNBUFSIZE 256
-
 enum PortIndex {
     MidiIn = 0,
     MidiOut = 1,
@@ -109,6 +107,8 @@ enum PortIndex {
 #define DACENTER (rintf(.5 * (DAHEIGHT)))
 
 #define WAVEBUFSIZE 32768
+#define PATTERNBUFSIZE 256
+#define MAXNPATTERNS 64
 
 
 typedef struct {
@@ -141,6 +141,10 @@ typedef struct {
   bool receivedPatternOnce;
   bool receivePatternFlag;
 
+  char presetNames[MAXNPATTERNS][128];
+  char patternPresets[MAXNPATTERNS][PATTERNBUFSIZE];
+  int n_presets;
+  
   char *pattern;
   int patternLen;
 
@@ -181,7 +185,7 @@ typedef struct {
   RobTkLbl   *dial_control_ann[5];
   RobWidget  *dial_control_box[5];
   
-  RobTkLbl  *lbl_repeat_mode, *lbl_oct_mode;
+  RobTkLbl  *lbl_repeat_mode, *lbl_oct_mode, *lbl_presets;
   RobTkSelect *sel_repeat_mode, *sel_presets;
   
   RobTkSelect *sel_oct_mode, *sel_oct_low, *sel_oct_high;
