@@ -1115,7 +1115,7 @@ static RobWidget * toplevel(QMidiArpSeqUI* ui, void * const top)
   ui->lbl_notelength = robtk_lbl_new("Note Length");
   ui->lbl_transpose = robtk_lbl_new("Transpose");
 
-  int dial_defaults[3] = {127, 64, 0};
+  int dial_defaults[3] = {127, 60, 0};
   
   for (uint8_t i = 0; i < 3; i++) {
     if (i < 2) {

@@ -1424,7 +1424,8 @@ instantiate(
   ui_enable(ui);
   
   robwidget_hide(ui->ctable_notefilter, FALSE);
-
+  
+  updatePattern(ui, true);
   return ui;
 }
 
