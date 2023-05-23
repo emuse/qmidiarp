@@ -36,9 +36,9 @@
 #define QMIDIARP_ARP_LV2UI_X11_URI QMIDIARP_ARP_LV2_PREFIX "ui_x11"
 
 #define ARPSCR_MIN_W   250
-#define ARPSCR_MIN_H   120
-#define ARPSCR_VMARG    22
-#define ARPSCR_HMARG    26
+#define ARPSCR_MIN_H   100
+#define ARPSCR_VMARG    16
+#define ARPSCR_HMARG    12
 
 #define CSR_MIN_W   250
 #define CSR_MIN_H     6

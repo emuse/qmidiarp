@@ -750,7 +750,7 @@ static bool expose_event(RobWidget* handle, cairo_t* cr, cairo_rectangle_t *ev)
         sprintf(int_str, "%d", l1+1);
         render_text(cr, int_str, ui->font[1], 
                 ofs + x + tx_w / 2, 
-                ARPSCR_VMARG - tx_h / 2, 0, 1, color_txt2);
+                ARPSCR_VMARG - tx_h / 2 - 2, 0, 1, color_txt2);
 
         // Beat divisor separators
         cairo_set_source_rgba(cr, 40./256, 100./256, 40./256, 1);
@@ -777,7 +777,7 @@ static bool expose_event(RobWidget* handle, cairo_t* cr, cairo_rectangle_t *ev)
       char int_str[20];
       sprintf(int_str, "%d", noctaves - l1 + ui->minOctave - 1);
       render_text(cr, int_str, ui->font[1], 
-            ARPSCR_HMARG / 2 - 3 + tx_w / 2, 
+            ARPSCR_HMARG / 2 + tx_w / 2, 
             yscale * (l1 + 0.5) / noctaves + ARPSCR_VMARG, 0, 1, color_txt2);
     }
   }
@@ -932,7 +932,7 @@ static bool expose_event(RobWidget* handle, cairo_t* cr, cairo_rectangle_t *ev)
   get_text_geometry(ui->pattern, ui->font[2], &tx_w, &tx_h);
   render_text(cr, ui->pattern, ui->font[2], 
       ARPSCR_HMARG + tx_w, 
-      h - tx_h / 2 + 5, 0, 1, color_txt2);
+      h + 8, 0, 1, color_txt2);
 
   cairo_restore(cr);
   
@@ -1236,7 +1236,7 @@ static RobWidget * toplevel(QMidiArpArpUI* ui, void * const top)
   robtk_cbtn_set_callback(ui->btn_latch, update_latch, ui);
   
   // Octave mode/high/low selectboxes (comboboxes)
-  ui->lbl_oct_mode = robtk_lbl_new("Octave Mode and Range");
+  ui->lbl_oct_mode = robtk_lbl_new("Octave Mode");
   
   ui->sel_oct_mode = robtk_select_new();
   robtk_select_add_item(ui->sel_oct_mode, 0, "Static");
@@ -1333,7 +1333,7 @@ static RobWidget * toplevel(QMidiArpArpUI* ui, void * const top)
   TBLWAVEADD(robtk_select_widget(ui->sel_presets), 3, 7, row, row+1);
   row++;
   TBLWAVEADD(robtk_lbl_widget(ui->lbl_repeat_mode), 6, 7, row, row+1);
-  TBLWAVEADD(robtk_lbl_widget(ui->lbl_oct_mode), 8, 11, row, row+1);
+  TBLWAVEADD(robtk_lbl_widget(ui->lbl_oct_mode), 8, 9, row, row+1);
   row++;
   TBLWAVEADD(robtk_cbtn_widget(ui->btn_mute), 0, 2, row, row+1);
   TBLWAVEADD(robtk_cbtn_widget(ui->btn_defer), 3, 4, row, row+1);
@@ -1435,7 +1435,6 @@ instantiate(
   
   ui->pattern = (char *) malloc(PATTERNBUFSIZE + 2);
   ui->pattern[0] = '\0';
-  strncat(ui->pattern, ui->patternPresets[0], PATTERNBUFSIZE);
 
   ui->currentIndex = 0;
   ui->isMuted = false;
@@ -1481,7 +1480,7 @@ instantiate(
 
   /* On Screen Display -- annotations */
   ui->font[0] = pango_font_description_from_string("Mono 9");
-  ui->font[1] = pango_font_description_from_string("Sans 10");
+  ui->font[1] = pango_font_description_from_string("Sans 9");
   ui->font[2] = pango_font_description_from_string("Sans 8px");
   ui->font[3] = pango_font_description_from_string("Mono 8");
 
@@ -1506,7 +1505,6 @@ instantiate(
   ui_enable(ui);
   
   robwidget_hide(ui->ctable_notefilter, FALSE);
-  updatePattern(ui, true);
   
   return ui;
 }

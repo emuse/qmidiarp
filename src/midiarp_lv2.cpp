@@ -53,7 +53,8 @@ MidiArpLV2::MidiArpLV2 (
         evTickQueue[l1] = 0;
     }
 
-    sendPatternFlag = false;
+    updatePattern(">>0");
+    sendPatternFlag = true;
     ui_up = false;
 
     bufPtr = 0;
