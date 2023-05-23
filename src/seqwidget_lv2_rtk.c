@@ -789,7 +789,7 @@ static bool expose_event(RobWidget* handle, cairo_t* cr, cairo_rectangle_t *ev)
 static void
 size_request(RobWidget* handle, int *w, int *h) {
   (void)handle;
-  *w = 720;
+  *w = 680;
   *h = SEQSCR_MIN_H + CSR_MIN_H + CSR_VMARG;
 }
 
