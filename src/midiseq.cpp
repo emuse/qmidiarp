@@ -57,6 +57,7 @@ MidiSeq::MidiSeq()
     customWave.resize(wavesize);
     muteMask.resize(wavesize);
     data.reserve(wavesize);
+    data.resize(wavesize);
     outFrame.resize(2);
     
     Sample sample = {0, 0, 0, false};
