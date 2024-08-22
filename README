@@ -25,7 +25,7 @@ Dependencies
 ------------
 You need the following development headers and libraries for building.
 
-libqt5-dev     (qt4-devel)
+libqt5-dev     (qt5-devel)
 libasound2-dev (libalsa-devel)
 libjack-dev    (jackit-devel)
 liblo-dev      (liblo-devel) for nsm support

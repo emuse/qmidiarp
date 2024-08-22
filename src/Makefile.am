@@ -90,7 +90,7 @@ qmidiarp_lfo_la_SOURCES = \
 	midilfo.cpp midilfo.h \
 	midilfo_lv2.cpp midilfo_lv2.h
 
-qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_lfo_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 
 qmidiarp_seq_la_SOURCES = \
 	lv2_common.h \
@@ -99,7 +99,7 @@ qmidiarp_seq_la_SOURCES = \
 	midiseq.cpp midiseq.h \
 	midiseq_lv2.cpp midiseq_lv2.h
 
-qmidiarp_seq_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_seq_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 
 qmidiarp_arp_la_SOURCES = \
 	lv2_common.h \
@@ -108,7 +108,7 @@ qmidiarp_arp_la_SOURCES = \
 	midiarp.cpp midiarp.h \
 	midiarp_lv2.cpp midiarp_lv2.h
 
-qmidiarp_arp_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_arp_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 
 
 if BUILD_LV2_UI
@@ -142,7 +142,7 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	slider.cpp slider.h \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 
-qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_seq_ui_la_SOURCES = \
@@ -165,7 +165,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	slider.cpp slider.h \
 	seqwidget_lv2.cpp seqwidget_lv2.h
 
-qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 nodist_qmidiarp_arp_ui_la_SOURCES = \
@@ -188,7 +188,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	slider.cpp slider.h \
 	arpwidget_lv2.cpp arpwidget_lv2.h
 
-qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -E -Wl,--as-needed
+qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
 qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
 
 endif

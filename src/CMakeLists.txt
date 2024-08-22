@@ -338,11 +338,9 @@ if (BUILD_LV2_UI_RTK)
     set_target_properties (${PROJECT_NAME}_arp_ui_gl PROPERTIES C_STANDARD 11 PREFIX "")
     target_compile_options(${PROJECT_NAME}_arp_ui_gl PRIVATE   -g -Wall 
                                     -Wno-unused-function -fvisibility=hidden -DHAVE_LV2_1_8
+                                    -DHAVE_IDLE_IFACE -I.
                                     -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
                                     -DPLUGIN_SOURCE="arpwidget_lv2_rtk.c"
-                                    -g -Wall -Wno-unused-function 
-                                    -DHAVE_LV2_1_8 -I.. -I. 
-                                    -pthread -DHAVE_IDLE_IFACE -I.
                                     )
     
     target_link_libraries (${PROJECT_NAME}_arp_ui_gl PUBLIC -lX11)
@@ -361,10 +359,8 @@ if (BUILD_LV2_UI_RTK)
     target_compile_options(${PROJECT_NAME}_lfo_ui_gl PRIVATE   -g -Wall 
                                     -Wno-unused-function -fvisibility=hidden -DHAVE_LV2_1_8
                                     -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
+                                    -DHAVE_IDLE_IFACE -I.
                                     -DPLUGIN_SOURCE="lfowidget_lv2_rtk.c"
-                                    -g -Wall -Wno-unused-function 
-                                    -DHAVE_LV2_1_8 -I.. -I. 
-                                    -pthread -DHAVE_IDLE_IFACE -I.
                                     )
     
     target_link_libraries (${PROJECT_NAME}_lfo_ui_gl PUBLIC -lX11)
@@ -383,10 +379,8 @@ if (BUILD_LV2_UI_RTK)
     target_compile_options(${PROJECT_NAME}_seq_ui_gl PRIVATE   -g -Wall 
                                     -Wno-unused-function -fvisibility=hidden -DHAVE_LV2_1_8
                                     -DUSE_GUI_THREAD -pthread -DUINQHACK="168162529512469" 
+                                    -DHAVE_IDLE_IFACE -I.
                                     -DPLUGIN_SOURCE="seqwidget_lv2_rtk.c"
-                                    -g -Wall -Wno-unused-function 
-                                    -DHAVE_LV2_1_8 -I.. -I. 
-                                    -pthread -DHAVE_IDLE_IFACE -I.
                                     )
     
     target_link_libraries (${PROJECT_NAME}_seq_ui_gl PUBLIC -lX11)

@@ -111,9 +111,9 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
           QT_INCLUDE_DIR=`$PKG_CONFIG --variable=includedir QtGui`
           QT_CXXFLAGS=`$PKG_CONFIG --cflags QtCore QtGui`
           EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-          AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
+          AS_IF([test -e $QT_INCLUDE_DIR/QWidget],
           AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-          AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
+          AS_IF([test -e $EXTRA_QT_INCLUDE_DIR/QWidget],
                      QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
                      AC_MSG_WARN([QWidget not found])))
         
@@ -137,9 +137,9 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
           QT_CXXFLAGS=`$PKG_CONFIG --cflags Qt5Core Qt5Gui Qt5Widgets`
           QT_CXXFLAGS="$QT_CXXFLAGS -fPIC"
           EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-          AC_CHECK_FILE([$QT_INCLUDE_DIR/QtWidgets/QWidget],
+          AS_IF([test -e $QT_INCLUDE_DIR/QtWidgets/QWidget],
             AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-              AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
+              AS_IF([test -e $EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
                 QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
                   AC_MSG_WARN([QWidget not found])))
         
