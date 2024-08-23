@@ -1,3 +1,12 @@
+qmidiarp-0.7.1 (2024-08-23)
+
+Fixed Bugs:
+  o long-standing issue exposing on some c++ system implementations and 
+    reported by several users on github: QMidiArp crashed when adding a 
+    Seq module or calling the QMidiArp_Seq LV2 plugin. 
+  o when building with cmake, some symbols of the lv2 .so were globally 
+    visible.
+    
 qmidiarp-0.7.0 (2023-05-18)
 
 New Feature
