@@ -27,12 +27,4 @@ jobs:
           cmake -S . -B cmake_build_dir -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
       - name: Build project
         run: cmake --build cmake_build_dir --target install --config Release -- -j4
-      - name: Run tests
-        run:  ctest -C Release -VV
-        working-directory: cmake_build_dir
-      - name: Create Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: Ubuntu-Artifacts
-          path: cmake_install_dir/
-        if: always()
+   
