@@ -28,4 +28,10 @@ jobs:
           cmake -S . -B cmake_build_dir -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=cmake_install_dir
       - name: Build project
         run: cmake --build cmake_build_dir --target install --config Release -- -j4
-   
+      - name: Test 
+        working-directory: ${{github.workspace}}/cmake_install_dir/bin
+        run: |
+          sudo apt-get install jackd jalv
+          ./qmidiarp ../share/qmidiarp/demo_seqlfo.qmax
+          jalv.gtk https://git.code.sf.net/p/qmidiarp/arp
+
