@@ -1,0 +1,5 @@
+install (FILES demo.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
+install (FILES demo_seqlfo.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
+install (FILES demo_seqlfo2.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
+install (FILES demo_up_down.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
+install (FILES old_arp.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)

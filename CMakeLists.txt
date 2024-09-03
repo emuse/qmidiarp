@@ -285,9 +285,11 @@ if (BUILD_LV2 AND CONFIG_LV2_UI_RTK)
 endif ()
 
 add_subdirectory(src)
-add_subdirectory(qmidiarp_arp.lv2)
-add_subdirectory(qmidiarp_lfo.lv2)
-add_subdirectory(qmidiarp_seq.lv2)
+add_subdirectory(${PROJECT_NAME}_arp.lv2)
+add_subdirectory(${PROJECT_NAME}_lfo.lv2)
+add_subdirectory(${PROJECT_NAME}_seq.lv2)
+add_subdirectory(man)
+add_subdirectory(examples)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/configure)
     set(ADD_AUTOCONF_FILES  --add-file=${CMAKE_SOURCE_DIR}/configure
@@ -339,15 +341,6 @@ set(DIST_TARCOMMAND git --git-dir=${CMAKE_SOURCE_DIR}/.git archive
 add_custom_target(dist-bz2 COMMAND ${DIST_TARCOMMAND} && bzip2 -f ${PACKAGE_STRING}.tar )
 add_custom_target(dist COMMAND ${DIST_TARCOMMAND} && gzip -f ${PACKAGE_STRING}.tar )
 
-
-install (FILES man/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
-install (FILES man/fr/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/fr/man1)
-install (FILES man/de/qmidiarp.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/de/man1)
-install (FILES examples/demo.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
-install (FILES examples/demo_seqlfo.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
-install (FILES examples/demo_seqlfo2.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
-install (FILES examples/demo_up_down.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
-install (FILES examples/old_arp.qmax DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE_NAME}/examples)
 install (FILES ${PROJECT_NAME}.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 install (FILES ${PROJECT_NAME}.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 install (FILES ${PROJECT_NAME}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
