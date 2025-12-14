@@ -79,7 +79,7 @@ if (APPBUILD)
     
     if (CONFIG_TRANSLATIONS)
         add_subdirectory(translations)
-        set( DTRANSLATIONSDIR -DTRANSLATIONSDIR="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PACKAGE}/translations/" )
+        set( DTRANSLATIONSDIR -DTRANSLATIONSDIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}/translations/" )
     endif()
     
     add_executable (${PROJECT_NAME}
@@ -185,9 +185,6 @@ if (BUILD_LV2)
     endif ()
 
     if (UNIX AND NOT APPLE)
-      if (CONFIG_PREFIX MATCHES $ENV{HOME})
-        set (CONFIG_LV2DIR ${CONFIG_PREFIX}/.lv2)
-      endif ()
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_arp.so
          DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_arp.lv2)
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_lfo.so
@@ -309,9 +306,6 @@ if (BUILD_LV2_UI)
     endif ()
 
     if (UNIX AND NOT APPLE)
-      if (CONFIG_PREFIX MATCHES $ENV{HOME})
-        set (CONFIG_LV2DIR ${CONFIG_PREFIX}/.lv2)
-      endif ()
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_arp_ui.so
          DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_arp.lv2)
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_lfo_ui.so
@@ -386,9 +380,6 @@ if (BUILD_LV2_UI_RTK)
     target_link_libraries (${PROJECT_NAME}_seq_ui_gl PUBLIC -lX11)
 
     if (UNIX AND NOT APPLE)
-      if (CONFIG_PREFIX MATCHES $ENV{HOME})
-        set (CONFIG_LV2DIR ${CONFIG_PREFIX}/.lv2)
-      endif ()
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_arp_ui_gl.so
          DESTINATION ${CONFIG_LV2DIR}/${PROJECT_NAME}_arp.lv2)
       install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_lfo_ui_gl.so
