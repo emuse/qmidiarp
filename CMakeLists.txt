@@ -30,7 +30,7 @@ else ()
 endif ()
 
 option (CONFIG_APPBUILD "Build QMidiArp Application (default=yes)" 1)
-option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=no)" 1)
+option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=no)" 0)
 option (CONFIG_JACK_MIDI "Enable JACK MIDI support (default=yes)" 1)
 option (CONFIG_ALSA_MIDI "Enable ALSA MIDI support (default=yes)" 1)
 
@@ -44,7 +44,7 @@ option (CONFIG_NSM "Enable NSM support (default=yes)" 1)
 set (APPBUILD ${CONFIG_APPBUILD})
 
 # Enable translations.
-option (CONFIG_TRANSLATIONS "Build and install translations (default=no)" 1)
+option (CONFIG_TRANSLATIONS "Build and install translations (default=no)" 0)
 set (APPBUILD ${CONFIG_TRANSLATIONS})
 
 # Fix for new CMAKE_REQUIRED_LIBRARIES policy.
