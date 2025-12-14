@@ -14,5 +14,5 @@ set (QM_FILES
 
 # add_custom_target(lupdate ALL COMMAND ${CONFIG_LUPDATE} ${CMAKE_SOURCE_DIR}/src -ts ${TS_SOURCES})
 
-add_custom_target(lrelease ALL COMMAND ${CONFIG_LRELEASE} ${TS_SOURCES})
+add_custom_target(lrelease ALL COMMAND Qt${QT_VERSION_MAJOR}::lrelease ${TS_SOURCES})
 install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/${PACKAGE}/translations/)
