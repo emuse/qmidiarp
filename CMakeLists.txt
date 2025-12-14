@@ -41,7 +41,7 @@ option (CONFIG_LV2_UI_RTK  "Build LV2 plug-in UIs with RobTk (default=yes)" 1)
 
 # Enable NSM support.
 option (CONFIG_NSM "Enable NSM support (default=yes)" 1)
-set (APPBUILD ${CONFIG_APBUILD})
+set (APPBUILD ${CONFIG_APPBUILD})
 
 # Enable translations.
 option (CONFIG_TRANSLATIONS "Build and install translations (default=no)" 1)
