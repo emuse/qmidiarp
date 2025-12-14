@@ -85,7 +85,7 @@ class MainWindow : public QMainWindow
     Engine *engine;
     MidiCCTable *midiCCTable;
     Prefs *prefs;
-    QString lastDir, filename;
+    QString lastDir, filename, platformName;
     QStringList patternNames, patternPresets;
     QStringList recentFiles;
     QDockWidget *logWindow, *grooveWindow, *passWindow, *globStoreWindow;
@@ -335,7 +335,8 @@ class MainWindow : public QMainWindow
 * @param p_alsamidi Start as ALSA MIDI client
 * @param *execName Name of the application's executable
 */
-    MainWindow(int p_portCount, bool p_alsamidi, char *execName);
+    MainWindow(int p_portCount, bool p_alsamidi, char *execName, 
+                                const QString & platform_name);
     ~MainWindow();
 
     bool jackFailed;

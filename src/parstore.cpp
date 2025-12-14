@@ -90,13 +90,13 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     muteRowLayout->addStretch();
     muteRowLayout->addWidget(muteOut);
     muteRowLayout->addWidget(deferChanges);
-    muteRowLayout->setMargin(0);
+    muteRowLayout->setContentsMargins(0, 0, 0, 0);
     muteRowLayout->setSpacing(0);
 
     QVBoxLayout *controlLayout = new QVBoxLayout;
     controlLayout->addWidget(topButton);
     controlLayout->addLayout(muteRowLayout);
-    controlLayout->setMargin(0);
+    controlLayout->setContentsMargins(0, 0, 0, 0);
     controlLayout->setSpacing(0);
 
     QWidget *indicatorBox = new QWidget;
@@ -104,7 +104,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     indicatorBox->setMinimumHeight(20);
     indicatorBox->setMinimumWidth(25);
     indicatorLayout->addWidget(ndc);
-    indicatorLayout->setMargin(2);
+    indicatorLayout->setContentsMargins(2, 2, 2, 2);
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
@@ -113,7 +113,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     topRowLayout->addWidget(indicatorBox);
     topRowLayout->addLayout(controlLayout);
     topRowLayout->setSpacing(0);
-    topRowLayout->setMargin(0);
+    topRowLayout->setContentsMargins(0, 0, 0, 0);
     topRow->setMinimumSize(QSize(104,46));;
     topRow->setFrameStyle(QFrame::StyledPanel);
     topRow->setLayout(topRowLayout);
@@ -172,7 +172,7 @@ ParStore::ParStore(GlobStore *p_globStore, const QString &name,
     QVBoxLayout *columnLayout = new QVBoxLayout;
     columnLayout->addLayout(buttonLayout);
     columnLayout->addStretch();
-    columnLayout->setMargin(0);
+    columnLayout->setContentsMargins(0, 0, 0, 0);
     columnLayout->setSpacing(0);
     setLayout(columnLayout);
 
@@ -277,85 +277,85 @@ void ParStore::readData(QXmlStreamReader& xml)
         if (xml.isEndElement())
             break;
 
-        if (xml.isStartElement() && (xml.name() == "parStore")) {
+        if (xml.isStartElement() && (xml.name() == QString("parStore"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "empty")
+                if (xml.name() == QString("empty"))
                     temp.empty = xml.readElementText().toInt();
-                else if (xml.name() == "muteOut")
+                else if (xml.name() == QString("muteOut"))
                     temp.muteOut = xml.readElementText().toInt();
-                else if (xml.name() == "res")
+                else if (xml.name() == QString("res"))
                     temp.res = xml.readElementText().toInt();
-                else if (xml.name() == "size")
+                else if (xml.name() == QString("size"))
                     temp.size = xml.readElementText().toInt();
-                else if (xml.name() == "loopMode")
+                else if (xml.name() == QString("loopMode"))
                     temp.loopMode = xml.readElementText().toInt();
-                else if (xml.name() == "waveForm")
+                else if (xml.name() == QString("waveForm"))
                     temp.waveForm = xml.readElementText().toInt();
-                else if (xml.name() == "portOut")
+                else if (xml.name() == QString("portOut"))
                     temp.portOut = xml.readElementText().toInt();
-                else if (xml.name() == "channelOut")
+                else if (xml.name() == QString("channelOut"))
                     temp.channelOut = xml.readElementText().toInt();
-                else if (xml.name() == "chIn")
+                else if (xml.name() == QString("chIn"))
                     temp.chIn = xml.readElementText().toInt();
-                else if (xml.name() == "ccnumber")
+                else if (xml.name() == QString("ccnumber"))
                     temp.ccnumber = xml.readElementText().toInt();
-                else if (xml.name() == "ccnumberIn")
+                else if (xml.name() == QString("ccnumberIn"))
                     temp.ccnumberIn = xml.readElementText().toInt();
-                else if (xml.name() == "freq")
+                else if (xml.name() == QString("freq"))
                     temp.freq = xml.readElementText().toInt();
-                else if (xml.name() == "ampl")
+                else if (xml.name() == QString("ampl"))
                     temp.ampl = xml.readElementText().toInt();
-                else if (xml.name() == "offs")
+                else if (xml.name() == QString("offs"))
                     temp.offs = xml.readElementText().toInt();
-                else if (xml.name() == "phase")
+                else if (xml.name() == QString("phase"))
                     temp.phase = xml.readElementText().toInt();
-                else if (xml.name() == "vel")
+                else if (xml.name() == QString("vel"))
                     temp.vel = xml.readElementText().toInt();
-                else if (xml.name() == "dispVertical")
+                else if (xml.name() == QString("dispVertical"))
                     temp.dispVertIndex = xml.readElementText().toInt();
-                else if (xml.name() == "transp")
+                else if (xml.name() == QString("transp"))
                     temp.transp = xml.readElementText().toInt();
-                else if (xml.name() == "notelen")
+                else if (xml.name() == QString("notelen"))
                     temp.notelen = xml.readElementText().toInt();
-                else if (xml.name() == "loopMarker")
+                else if (xml.name() == QString("loopMarker"))
                     temp.loopMarker = xml.readElementText().toInt();
-                else if (xml.name() == "indexIn0")
+                else if (xml.name() == QString("indexIn0"))
                     temp.indexIn0 = xml.readElementText().toInt();
-                else if (xml.name() == "indexIn1")
+                else if (xml.name() == QString("indexIn1"))
                     temp.indexIn1 = xml.readElementText().toInt();
-                else if (xml.name() == "rangeIn0")
+                else if (xml.name() == QString("rangeIn0"))
                     temp.rangeIn0 = xml.readElementText().toInt();
-                else if (xml.name() == "rangeIn1")
+                else if (xml.name() == QString("rangeIn1"))
                     temp.rangeIn1 = xml.readElementText().toInt();
-                else if (xml.name() == "attack")
+                else if (xml.name() == QString("attack"))
                     temp.attack = xml.readElementText().toInt();
-                else if (xml.name() == "release")
+                else if (xml.name() == QString("release"))
                     temp.release = xml.readElementText().toInt();
-                else if (xml.name() == "repeatMode")
+                else if (xml.name() == QString("repeatMode"))
                     temp.repeatMode = xml.readElementText().toInt();
-                else if (xml.name() == "rndTick")
+                else if (xml.name() == QString("rndTick"))
                     temp.rndTick = xml.readElementText().toInt();
-                else if (xml.name() == "rndLen")
+                else if (xml.name() == QString("rndLen"))
                     temp.rndLen = xml.readElementText().toInt();
-                else if (xml.name() == "rndVel")
+                else if (xml.name() == QString("rndVel"))
                     temp.rndVel = xml.readElementText().toInt();
-                else if (xml.name() == "pattern")
+                else if (xml.name() == QString("pattern"))
                     temp.pattern = xml.readElementText();
-                else if (xml.name() == "jumpTo")
+                else if (xml.name() == QString("jumpTo"))
                     tmpjumpto = xml.readElementText().toInt();
-                else if (xml.name() == "nRep")
+                else if (xml.name() == QString("nRep"))
                     tmpnrep = xml.readElementText().toInt();
-                else if (xml.name() == "onlyPattern")
+                else if (xml.name() == QString("onlyPattern"))
                     tmponlypattern = xml.readElementText().toInt();
-                else if (xml.isStartElement() && (xml.name() == "muteMask")) {
+                else if (xml.isStartElement() && (xml.name() == QString("muteMask"))) {
                     while (!xml.atEnd()) {
                         xml.readNext();
                         if (xml.isEndElement())
                             break;
-                        if (xml.isStartElement() && (xml.name() == "data")) {
+                        if (xml.isStartElement() && (xml.name() == QString("data"))) {
                             temp.muteMask.clear();
                             QByteArray tmpArray =
                                     QByteArray::fromHex(xml.readElementText().toLatin1());
@@ -366,12 +366,12 @@ void ParStore::readData(QXmlStreamReader& xml)
                         else skipXmlElement(xml);
                     }
                 }
-                else if (xml.isStartElement() && (xml.name() == "wave")) {
+                else if (xml.isStartElement() && (xml.name() == QString("wave"))) {
                     while (!xml.atEnd()) {
                         xml.readNext();
                         if (xml.isEndElement())
                             break;
-                        if (xml.isStartElement() && (xml.name() == "data")) {
+                        if (xml.isStartElement() && (xml.name() == QString("data"))) {
                             temp.wave.clear();
                             QByteArray tmpArray =
                                     QByteArray::fromHex(xml.readElementText().toLatin1());

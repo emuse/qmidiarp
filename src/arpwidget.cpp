@@ -148,7 +148,7 @@ ArpWidget::ArpWidget():
 
     QHBoxLayout *patternPresetLayout = new QHBoxLayout;
     if (compactStyle) {
-        patternPresetLayout->setMargin(2);
+        patternPresetLayout->setContentsMargins(2, 2, 2, 2);
         patternPresetLayout->setSpacing(1);
     }
     patternPresetLayout->addWidget(patternPresetBox);
@@ -161,7 +161,7 @@ ArpWidget::ArpWidget():
 
     QHBoxLayout *modeLayout = new QHBoxLayout;
     if (compactStyle) {
-        modeLayout->setMargin(2);
+        modeLayout->setContentsMargins(2, 2, 2, 2);
         modeLayout->setSpacing(1);
     }
 
@@ -194,7 +194,7 @@ ArpWidget::ArpWidget():
     screen = new ArpScreen(this);
     screenBox->setMinimumHeight(80);
     screenBoxLayout->addWidget(screen);
-    screenBoxLayout->setMargin(2);
+    screenBoxLayout->setContentsMargins(2, 2, 2, 2);
     screenBoxLayout->setSpacing(1);
     screenBox->setLayout(screenBoxLayout);
 
@@ -203,7 +203,7 @@ ArpWidget::ArpWidget():
     patternBoxLayout->addWidget(patternText);
     patternBoxLayout->addLayout(modeLayout);
     if (compactStyle) {
-        patternBoxLayout->setMargin(2);
+        patternBoxLayout->setContentsMargins(2, 2, 2, 2);
         patternBoxLayout->setSpacing(1);
     }
     patternBox->setLayout(patternBoxLayout);
@@ -233,7 +233,7 @@ ArpWidget::ArpWidget():
     randomBoxLayout->addStretch();
     if (compactStyle) {
         randomBoxLayout->setSpacing(1);
-        randomBoxLayout->setMargin(2);
+        randomBoxLayout->setContentsMargins(2, 2, 2, 2);
     }
     randomBox->setCheckable(true);
     connect(randomBox, SIGNAL(toggled(bool)), this,
@@ -258,7 +258,7 @@ ArpWidget::ArpWidget():
     envelopeBoxLayout->addStretch();
     if (compactStyle) {
         envelopeBoxLayout->setSpacing(1);
-        envelopeBoxLayout->setMargin(2);
+        envelopeBoxLayout->setContentsMargins(2, 2, 2, 2);
     }
     envelopeBox->setCheckable(true);
     connect(envelopeBox, SIGNAL(toggled(bool)), this,
@@ -339,49 +339,49 @@ void ArpWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
 
         readCommonData(xml);
 
-        if (xml.isStartElement() && (xml.name() == "pattern")) {
+        if (xml.isStartElement() && (xml.name() == QString("pattern"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "pattern")
+                if (xml.name() == QString("pattern"))
                     patternText->setText(xml.readElementText());
-                else if (xml.name() == "repeatMode")
+                else if (xml.name() == QString("repeatMode"))
                     repeatPatternThroughChord->setCurrentIndex(xml.readElementText().toInt());
-                else if (xml.name() == "octaveMode")
+                else if (xml.name() == QString("octaveMode"))
                     octaveModeBox->setCurrentIndex(xml.readElementText().toInt());
-                else if (xml.name() == "octaveLow")
+                else if (xml.name() == QString("octaveLow"))
                     octaveLowBox->setCurrentIndex(-xml.readElementText().toInt());
-                else if (xml.name() == "octaveHigh")
+                else if (xml.name() == QString("octaveHigh"))
                     octaveHighBox->setCurrentIndex(xml.readElementText().toInt());
-                else if (xml.name() == "latchMode")
+                else if (xml.name() == QString("latchMode"))
                     latchModeAction->setChecked(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
 
-        else if (xml.isStartElement() && (xml.name() == "random")) {
+        else if (xml.isStartElement() && (xml.name() == QString("random"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "tick")
+                if (xml.name() == QString("tick"))
                     randomTick->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "velocity")
+                else if (xml.name() == QString("velocity"))
                     randomVelocity->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "length")
+                else if (xml.name() == QString("length"))
                     randomLength->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "envelope")) {
+        else if (xml.isStartElement() && (xml.name() == QString("envelope"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "attack")
+                if (xml.name() == QString("attack"))
                     attackTime->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "release")
+                else if (xml.name() == QString("release"))
                     releaseTime->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
              }
@@ -637,9 +637,9 @@ void ArpWidget::removeCurrentPattern()
 
     qs = tr("Remove \"%1\"?").arg(patternPresetBox->currentText());
 
-    if (QMessageBox::question(0, PACKAGE, qs, QMessageBox::Yes,
+    if (QMessageBox::question(0, PACKAGE, qs,
                 QMessageBox::No | QMessageBox::Default
-                | QMessageBox::Escape, QMessageBox::NoButton)
+                | QMessageBox::Escape, QMessageBox::No)
             == QMessageBox::No) {
         return;
     }

@@ -29,11 +29,11 @@ MidiControl::MidiControl(QWidget *parent)
     ID = 0;
     // QSignalMappers allow identifying signal senders for MIDI learn/forget
     learnSignalMapper = new QSignalMapper(this);
-    connect(learnSignalMapper, SIGNAL(mapped(int)),
+    connect(learnSignalMapper, SIGNAL(mappedInt(int)),
              this, SLOT(midiLearn(int)));
 
     forgetSignalMapper = new QSignalMapper(this);
-    connect(forgetSignalMapper, SIGNAL(mapped(int)),
+    connect(forgetSignalMapper, SIGNAL(mappedInt(int)),
              this, SLOT(midiForget(int)));
 
     // we need the cancel MIDI Learn action only once for all
@@ -163,7 +163,7 @@ void MidiControl::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
-        if (xml.isStartElement() && (xml.name() == "MIDICC")) {
+        if (xml.isStartElement() && (xml.name() == QString("MIDICC"))) {
             controlID = xml.attributes().value("CtrlID").toString().toInt();
             ccnumber = -1;
             channel = -1;
@@ -173,13 +173,13 @@ void MidiControl::readData(QXmlStreamReader& xml)
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "ccnumber")
+                if (xml.name() == QString("ccnumber"))
                     ccnumber = xml.readElementText().toInt();
-                else if (xml.name() == "channel")
+                else if (xml.name() == QString("channel"))
                     channel = xml.readElementText().toInt();
-                else if (xml.name() == "min")
+                else if (xml.name() == QString("min"))
                     min = xml.readElementText().toInt();
-                else if (xml.name() == "max")
+                else if (xml.name() == QString("max"))
                     max = xml.readElementText().toInt();
                 else skipXmlElement(xml);
             }

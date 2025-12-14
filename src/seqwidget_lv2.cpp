@@ -87,7 +87,7 @@ SeqWidgetLV2::SeqWidgetLV2 (
     connect(rangeIn[0],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(rangeIn[1],         SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
     connect(tempoSpin,          SIGNAL(valueChanged(int)), this, SLOT(mapParam(int)));
-    connect(dispSignalMapper,   SIGNAL(mapped(int)),   this, SLOT(mapParam(int)));
+    connect(dispSignalMapper,   SIGNAL(mappedInt(int)),   this, SLOT(mapParam(int)));
 
     connect(muteOutAction,      SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));
     connect(enableNoteIn,       SIGNAL(toggled(bool)), this, SLOT(mapBool(bool)));

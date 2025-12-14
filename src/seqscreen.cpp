@@ -206,8 +206,13 @@ void SeqScreen::paintEvent(QPaintEvent*)
 
 void SeqScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mouseX = event->x();
     mouseY = event->y();
+#else
+    mouseX = event->position().x();
+    mouseY = event->position().y();
+#endif
 
     emit mouseEvent(((double)mouseX - SEQSCR_HMARG) /
                             (w - 2 * SEQSCR_HMARG),

@@ -202,7 +202,7 @@ LfoWidget::LfoWidget():
     sliderLayout->addStretch();
     if (compactStyle) {
         sliderLayout->setSpacing(1);
-        sliderLayout->setMargin(2);
+        sliderLayout->setContentsMargins(2, 2, 2, 2);
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
@@ -224,7 +224,7 @@ LfoWidget::LfoWidget():
 
     if (compactStyle) {
         paramBoxLayout->setSpacing(1);
-        paramBoxLayout->setMargin(2);
+        paramBoxLayout->setContentsMargins(2, 2, 2, 2);
     }
 
     QGridLayout* waveBoxLayout = new QGridLayout;
@@ -234,7 +234,7 @@ LfoWidget::LfoWidget():
     waveBoxLayout->addLayout(sliderLayout, 3, 0);
     if (compactStyle) {
         waveBoxLayout->setSpacing(0);
-        waveBoxLayout->setMargin(2);
+        waveBoxLayout->setContentsMargins(2, 2, 2, 2);
     }
     waveBox->setLayout(waveBoxLayout);
 
@@ -326,24 +326,24 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
             }
         }
 
-        if (xml.isStartElement() && (xml.name() == "waveParams")) {
+        if (xml.isStartElement() && (xml.name() == QString("waveParams"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "loopmode") {
+                if (xml.name() == QString("loopmode")) {
                     tmp = xml.readElementText().toInt();
                     loopBox->setCurrentIndex(tmp);
                     updateLoop(tmp);
                 }
-                else if (xml.name() == "waveform")
+                else if (xml.name() == QString("waveform"))
                     wvtmp = xml.readElementText().toInt();
-                else if (xml.name() == "frequency") {
+                else if (xml.name() == QString("frequency")) {
                     tmp = xml.readElementText().toInt();
                     freqBox->setCurrentIndex(tmp);
                     updateFreq(tmp);
                 }
-                else if (xml.name() == "resolution") {
+                else if (xml.name() == QString("resolution")) {
                     tmp = xml.readElementText().toInt();
                     if (qmaxVersion == "" && tmp < 9) {
                         tmp = mapOldLfoRes[tmp];
@@ -351,7 +351,7 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
-                else if (xml.name() == "size") {
+                else if (xml.name() == QString("size")) {
                     tmp = xml.readElementText().toInt();
                     if (qmaxVersion == "" && tmp < 12) {
                         tmp = mapOldLfoSize[tmp];
@@ -359,21 +359,21 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
                 }
-                else if (xml.name() == "amplitude")
+                else if (xml.name() == QString("amplitude"))
                     amplitude->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "offset")
+                else if (xml.name() == QString("offset"))
                     offset->setValue(xml.readElementText().toInt());
-                else if (xml.name() == "phase")
+                else if (xml.name() == QString("phase"))
                     phase->setValue(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "muteMask")) {
+        else if (xml.isStartElement() && (xml.name() == QString("muteMask"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.isStartElement() && (xml.name() == "data")) {
+                if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
@@ -384,12 +384,12 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "customWave")) {
+        else if (xml.isStartElement() && (xml.name() == QString("customWave"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.isStartElement() && (xml.name() == "data")) {
+                if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TPQN / midiLfo->res;

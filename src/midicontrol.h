@@ -25,9 +25,11 @@
 #define MIDICONTROL_H
 
 #include <QAction>
+#include <QActionGroup>
 #include <QSignalMapper>
 #include <QStringList>
 #include <QVector>
+#include <QWidget>
 #include <QXmlStreamWriter>
 
 #include <cstdio>

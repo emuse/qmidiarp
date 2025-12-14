@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
                 s = QString(ABOUTMSG);
                 s.replace(QString("<br/>"), QString("\n"));
                 s.replace(QString("</p>"), QString("\n"));
-                s.remove(QRegExp("<[^>]*>"));
+                s.remove(QRegularExpression("<[^>]*>"));
                 out << s;
                 out.flush();
                 exit(EXIT_SUCCESS);
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     QTranslator qtTr;
 
     if (qtTr.load(QString("qt_") + loc.name(),
-                QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+                QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
         app.installTranslator(&qtTr);
 
     // translator for qmidiarp messages
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         app.installTranslator(&qmidiarpTr);
 #endif
 
-    MainWindow* qmidiarp = new MainWindow(portCount, alsamidi, argv[0]);
+    MainWindow* qmidiarp = new MainWindow(portCount, alsamidi, argv[0], app.platformName());
     if (optind < argc) {
         QFileInfo fi(argv[optind]);
         if (fi.exists())

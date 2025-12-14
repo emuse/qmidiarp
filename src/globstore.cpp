@@ -42,7 +42,7 @@ GlobStore::GlobStore(QWidget *parent)
     switchAtBeat = 0;
 
     storeSignalMapper = new QSignalMapper(this);
-    connect(storeSignalMapper, SIGNAL(mapped(int)),
+    connect(storeSignalMapper, SIGNAL(mappedInt(int)),
              this, SLOT(storeAll(int)));
 
     timeModeBox = new QComboBox;
@@ -70,7 +70,7 @@ GlobStore::GlobStore(QWidget *parent)
     indicatorBox->setMinimumHeight(30);
     indicatorBox->setMinimumWidth(30);
     indicatorLayout->addWidget(indicator);
-    indicatorLayout->setMargin(2);
+    indicatorLayout->setContentsMargins(2, 2, 2, 2);
     indicatorLayout->setSpacing(1);
     indicatorBox->setLayout(indicatorLayout);
 
@@ -103,7 +103,7 @@ GlobStore::GlobStore(QWidget *parent)
     topRowLayout->addWidget(toolButton);
     topRowLayout->addStretch();
     topRowLayout->setSpacing(0);
-    topRowLayout->setMargin(0);
+    topRowLayout->setContentsMargins(0, 0, 0, 0);
     topRow->setFrameStyle(QFrame::StyledPanel);
     topRow->setMinimumSize(QSize(48,48));;
     topRow->setLayout(topRowLayout);
@@ -118,7 +118,7 @@ GlobStore::GlobStore(QWidget *parent)
 
     indivButtonLayout = new QHBoxLayout;
     indivButtonLayout->setSpacing(0);
-    indivButtonLayout->setMargin(0);
+    indivButtonLayout->setContentsMargins(0, 0, 0, 0);
     indivButtonLayout->addLayout(columnLayout);
     indivButtonLayout->setSizeConstraint(QLayout::SetFixedSize);
 
@@ -179,7 +179,7 @@ void GlobStore::addLocation()
     QWidget* globWidget = new QWidget;
     QHBoxLayout* globLayout = new QHBoxLayout;
     globLayout->setSpacing(0);
-    globLayout->setMargin(0);
+    globLayout->setContentsMargins(0, 0, 0, 0);
     globLayout->addWidget(storeButton);
     globLayout->addWidget(restoreButton);
     globWidget->setLayout(globLayout);
@@ -187,7 +187,9 @@ void GlobStore::addLocation()
     indivButtonLayout->itemAt(0)->layout()->itemAt(0)->layout()->addWidget(globWidget);
 
     if (widgetList.count()) {
-        widgetList.last()->layout()->itemAt(1)->widget()->setEnabled(true);
+        QToolButton *button = static_cast<QToolButton *>(widgetList.last()->layout()->itemAt(1)->widget());
+        button->setEnabled(true);
+        button->defaultAction()->setEnabled(true);
     }
     widgetList.append(globWidget);
     modified = true;
@@ -200,7 +202,10 @@ void GlobStore::removeLocation(int ix)
 
     emit removeParStores(ix - 1);
     if (widgetList.count() > 1) delete widgetList.takeAt(ix);
-    widgetList.last()->layout()->itemAt(1)->widget()->setDisabled(true);
+    QToolButton *button = static_cast<QToolButton *>(widgetList.last()->layout()->itemAt(1)->widget());
+    button->setDisabled(true);
+    button->defaultAction()->setDisabled(true);
+    
     if (timeModuleBox->count()) updateTimeModule(0);
     modified = true;
 }
@@ -306,7 +311,6 @@ void GlobStore::removeModule(int ix)
 void GlobStore::mapRestoreSignal()
 {
     int ix = sender()->property("index").toInt();
-
     emit requestRestore(ix - 1);
 }
 
@@ -324,22 +328,22 @@ void GlobStore::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
-        if (xml.name() == "timeMode") {
+        if (xml.name() == QString("timeMode")) {
             tmp =xml.readElementText().toInt();
             timeModeBox->setCurrentIndex(tmp);
             updateTimeModeBox(tmp);
         }
-        else if (xml.name() == "switchAtBeat") {
+        else if (xml.name() == QString("switchAtBeat")) {
             tmp =xml.readElementText().toInt();
             switchAtBeatBox->setCurrentIndex(tmp);
             updateSwitchAtBeat(tmp);
         }
-        else if (xml.name() == "timeModule") {
+        else if (xml.name() == QString("timeModule")) {
             tmp =xml.readElementText().toInt();
             if (tmp > -1) timeModuleBox->setCurrentIndex(tmp);
             updateTimeModule(tmp);
         }
-        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+        else if (xml.isStartElement() && (xml.name() == QString("midiControllers"))) {
             midiControl->readData(xml);
         }
         else skipXmlElement(xml);

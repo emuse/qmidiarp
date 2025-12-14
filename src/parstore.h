@@ -26,6 +26,7 @@
 
 #include <QMenu>
 #include <QToolButton>
+#include <QActionGroup>
 
 #include "globstore.h"
 #include "midievent.h"

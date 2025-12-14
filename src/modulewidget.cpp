@@ -181,7 +181,7 @@ ModuleWidget::ModuleWidget(const QString& name):
     inputFilterBoxLayout->addWidget(rangeInLabel, 1, 0);
     inputFilterBoxLayout->addWidget(rangeIn[0], 1, 1);
     inputFilterBoxLayout->addWidget(rangeIn[1], 1, 2);
-    inputFilterBoxLayout->setMargin(2);
+    inputFilterBoxLayout->setContentsMargins(2, 2, 2, 2);
     inputFilterBoxLayout->setSpacing(2);
     connect(inputFilterBox, SIGNAL(toggled(bool)), this,
             SLOT(setInputFilterVisible(bool)));
@@ -209,7 +209,7 @@ ModuleWidget::ModuleWidget(const QString& name):
     inBoxLayout->addWidget(chIn, 7, 1);
     inBoxLayout->addWidget(inputFilterBox, 8, 0, 1, 2);
     if (compactStyle) {
-        inBoxLayout->setMargin(2);
+        inBoxLayout->setContentsMargins(2, 2, 2, 2);
         inBoxLayout->setSpacing(1);
     }
     inBox->setLayout(inBoxLayout);
@@ -250,7 +250,7 @@ ModuleWidget::ModuleWidget(const QString& name):
     portBoxLayout->addWidget(portOut, 2, 1);
 #endif
     if (compactStyle) {
-        portBoxLayout->setMargin(2);
+        portBoxLayout->setContentsMargins(2, 2, 2, 2);
         portBoxLayout->setSpacing(1);
     }
     portBox->setLayout(portBoxLayout);
@@ -562,9 +562,9 @@ void ModuleWidget::moduleDelete()
     QString qs;
     qs = tr("Delete \"%1\"?")
         .arg(name);
-    if (QMessageBox::question(0, APP_NAME, qs, QMessageBox::Yes,
+    if (QMessageBox::question(0, APP_NAME, qs,
                 QMessageBox::No | QMessageBox::Default
-                | QMessageBox::Escape, QMessageBox::NoButton)
+                | QMessageBox::Escape, QMessageBox::No)
             == QMessageBox::No) {
         return;
     }
@@ -661,66 +661,66 @@ void ModuleWidget::readCommonData(QXmlStreamReader& xml)
 {
     int tmp = 0;
     
-    if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+    if (xml.isStartElement() && (xml.name() == QString("midiControllers"))) {
         midiControl->readData(xml);
     }
-    else if (xml.isStartElement() && (xml.name() == "globalStores")) {
+    else if (xml.isStartElement() && (xml.name() == QString("globalStores"))) {
         parStore->readData(xml);
     }
 
-    else if (xml.isStartElement() && (xml.name() == "input")) {
+    else if (xml.isStartElement() && (xml.name() == QString("input"))) {
         while (!xml.atEnd()) {
             xml.readNext();
             if (xml.isEndElement())
                 break;
                 
-            if (xml.name() == "enableNote")
+            if (xml.name() == QString("enableNote"))
                 enableNoteIn->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "enableNoteOff")
+            else if (xml.name() == QString("enableNoteOff"))
                 enableNoteOff->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "enableVelocity")
+            else if (xml.name() == QString("enableVelocity"))
                 enableVelIn->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "restartByKbd")
+            else if (xml.name() == QString("restartByKbd"))
                 enableRestartByKbd->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "trigByKbd")
+            else if (xml.name() == QString("trigByKbd"))
                 enableTrigByKbd->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "trigLegato")
+            else if (xml.name() == QString("trigLegato"))
                 enableTrigLegato->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "channel") {
+            else if (xml.name() == QString("channel")) {
                 tmp = xml.readElementText().toInt();
                 chIn->setCurrentIndex(tmp);
             }
-            else if (xml.name() == "indexMin")
+            else if (xml.name() == QString("indexMin"))
                 indexIn[0]->setValue(xml.readElementText().toInt());
-            else if (xml.name() == "indexMax")
+            else if (xml.name() == QString("indexMax"))
                 indexIn[1]->setValue(xml.readElementText().toInt());
-            else if (xml.name() == "rangeMin")
+            else if (xml.name() == QString("rangeMin"))
                 rangeIn[0]->setValue(xml.readElementText().toInt());
-            else if (xml.name() == "rangeMax")
+            else if (xml.name() == QString("rangeMax"))
                 rangeIn[1]->setValue(xml.readElementText().toInt());
-            else if (xml.name() == "ccnumber")
+            else if (xml.name() == QString("ccnumber"))
                 ccnumberInBox->setValue(xml.readElementText().toInt());
             else skipXmlElement(xml);
         }
     }
-    else if (xml.isStartElement() && (xml.name() == "output")) {
+    else if (xml.isStartElement() && (xml.name() == QString("output"))) {
         while (!xml.atEnd()) {
             xml.readNext();
             if (xml.isEndElement())
                 break;
-            if (xml.name() == "muted")
+            if (xml.name() == QString("muted"))
                 muteOutAction->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "defer")
+            else if (xml.name() == QString("defer"))
                 deferChangesAction->setChecked(xml.readElementText().toInt());
-            else if (xml.name() == "channel") {
+            else if (xml.name() == QString("channel")) {
                 tmp = xml.readElementText().toInt();
                 channelOut->setCurrentIndex(tmp);
             }
-            else if (xml.name() == "port") {
+            else if (xml.name() == QString("port")) {
                 tmp = xml.readElementText().toInt();
                 portOut->setCurrentIndex(tmp);
             }
-            else if (xml.name() == "ccnumber")
+            else if (xml.name() == QString("ccnumber"))
                 ccnumberBox->setValue(xml.readElementText().toInt());
             else skipXmlElement(xml);
         }

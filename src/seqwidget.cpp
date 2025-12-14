@@ -140,7 +140,7 @@ SeqWidget::SeqWidget():
 
     dispVert[0]->setChecked(true);
     dispVertIndex = 0;
-    connect(dispSignalMapper, SIGNAL(mapped(int)),
+    connect(dispSignalMapper, SIGNAL(mappedInt(int)),
              this, SLOT(updateDispVert(int)));
 
     velocity = new Slider(0, 127, 1, 8, 64, Qt::Horizontal,
@@ -175,7 +175,7 @@ SeqWidget::SeqWidget():
     sliderLayout->setRowStretch(5, 1);
     if (compactStyle) {
         sliderLayout->setSpacing(1);
-        sliderLayout->setMargin(2);
+        sliderLayout->setContentsMargins(2, 2, 2, 2);
     }
 
     QGridLayout *paramBoxLayout = new QGridLayout;
@@ -196,7 +196,7 @@ SeqWidget::SeqWidget():
     seqBoxLayout->addLayout(paramBoxLayout, 2, 0);
     seqBoxLayout->addLayout(sliderLayout, 2, 1);
     if (compactStyle) {
-        seqBoxLayout->setMargin(2);
+        seqBoxLayout->setContentsMargins(2, 2, 2, 2);
         seqBoxLayout->setSpacing(0);
     }
     seqBox->setLayout(seqBoxLayout);
@@ -298,28 +298,28 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
             }
         }
         
-        if (xml.isStartElement() && (xml.name() == "display")) {
+        if (xml.isStartElement() && (xml.name() == QString("display"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "vertical")
+                if (xml.name() == QString("vertical"))
                     setDispVert(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
 
-        else if (xml.isStartElement() && (xml.name() == "seqParams")) {
+        else if (xml.isStartElement() && (xml.name() == QString("seqParams"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "loopmode") {
+                if (xml.name() == QString("loopmode")) {
                     tmp = xml.readElementText().toInt();
                     loopBox->setCurrentIndex(tmp);
                     updateLoop(tmp);
                 }
-                else if (xml.name() == "resolution") {
+                else if (xml.name() == QString("resolution")) {
                     tmp = xml.readElementText().toInt();
                     if (qmaxVersion == "" && tmp < 5) {
                         tmp = mapOldSeqRes[tmp];
@@ -327,7 +327,7 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     resBox->setCurrentIndex(tmp);
                     updateRes(tmp);
                 }
-                else if (xml.name() == "size") {
+                else if (xml.name() == QString("size")) {
                     tmp = xml.readElementText().toInt();
                     if (qmaxVersion == "" && tmp < 10) {
                         tmp = mapOldSeqSize[tmp];
@@ -335,15 +335,15 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     sizeBox->setCurrentIndex(tmp);
                     updateSize(tmp);
                 }
-                else if (xml.name() == "velocity") {
+                else if (xml.name() == QString("velocity")) {
                     tmp = xml.readElementText().toInt();
                     velocity->setValue(tmp);
                     updateVelocity(tmp);
                 }
-                else if (xml.name() == "noteLength") {
+                else if (xml.name() == QString("noteLength")) {
                     notelength->setValue(xml.readElementText().toInt());
                 }
-                else if (xml.name() == "transp") {
+                else if (xml.name() == QString("transp")) {
                     tmp = xml.readElementText().toInt();
                     transpose->setValue(tmp);
                     updateTranspose(tmp);
@@ -351,12 +351,12 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "muteMask")) {
+        else if (xml.isStartElement() && (xml.name() == QString("muteMask"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.isStartElement() && (xml.name() == "data")) {
+                if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     for (int l1 = 0; l1 < tmpArray.count(); l1++) {
@@ -367,12 +367,12 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "sequence")) {
+        else if (xml.isStartElement() && (xml.name() == QString("sequence"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.isStartElement() && (xml.name() == "data")) {
+                if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TPQN / midiSeq->res;
@@ -386,7 +386,7 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                     }
                     updateWaveForm(0);
                 }
-                else if (xml.name() == "loopmarker") {
+                else if (xml.name() == QString("loopmarker")) {
                     tmp = xml.readElementText().toInt();
                     midiSeq->setLoopMarker(tmp);
                     screen->setLoopMarker(tmp);

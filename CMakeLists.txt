@@ -31,6 +31,7 @@ set (CONFIG_DATADIR "${CONFIG_PREFIX}/${CMAKE_INSTALL_DATADIR}")
 set (CONFIG_MANDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 
 option (CONFIG_APPBUILD "Build QMidiArp Application (default=yes)" 1)
+option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=yes)" 1)
 option (CONFIG_JACK_MIDI "Enable JACK MIDI support (default=yes)" 1)
 option (CONFIG_ALSA_MIDI "Enable ALSA MIDI support (default=yes)" 1)
 
@@ -60,9 +61,15 @@ if (POLICY CMP0063)
 endif ()
 
 # Check for Qt
-if (CONFIG_APPBUILD OR CONFIG_LV2_UI)
-  find_package (QT NAMES Qt5 COMPONENTS Core REQUIRED)
+if (CONFIG_APPBUILD OR CONFIG_LV2_UI)  
+  if (NOT CONFIG_FORCE_QT5)
+    find_package (QT NAMES Qt6 COMPONENTS Core OPTIONAL)
+  endif()
+  if (NOT QT_FOUND OR CONFIG_FORCE_QT5)
+    find_package (QT NAMES Qt5 COMPONENTS Core REQUIRED)
+  endif()
   find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Xml)
+  message("Will build GUIs using Qt ${QT_VERSION}")
   # Check for lrelease translations
   if (CONFIG_TRANSLATIONS)
     find_program (CONFIG_LRELEASE NAMES "lrelease" DOC "lrelease executable location")

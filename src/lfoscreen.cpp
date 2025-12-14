@@ -142,8 +142,13 @@ void LfoScreen::paintEvent(QPaintEvent*)
 
 void LfoScreen::emitMouseEvent(QMouseEvent *event, int pressed)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mouseX = event->x();
     mouseY = event->y();
+#else
+    mouseX = event->position().x();
+    mouseY = event->position().y();
+#endif
     bool cl = false;
 
     mouseX = clip(mouseX, LFOSCR_HMARG, xMax, &cl);

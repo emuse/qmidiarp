@@ -113,13 +113,13 @@ void GrooveWidget::readData(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
-        if (xml.name() == "tick")
+        if (xml.name() == QString("tick"))
             grooveTick->setValue(xml.readElementText().toInt());
-        else if (xml.name() == "velocity")
+        else if (xml.name() == QString("velocity"))
             grooveVelocity->setValue(xml.readElementText().toInt());
-        else if (xml.name() == "length")
+        else if (xml.name() == QString("length"))
             grooveLength->setValue(xml.readElementText().toInt());
-        else if (xml.isStartElement() && (xml.name() == "midiControllers")) {
+        else if (xml.isStartElement() && (xml.name() == QString("midiControllers"))) {
             midiControl->readData(xml);
         }
         else skipXmlElement(xml);

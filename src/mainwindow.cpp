@@ -74,7 +74,8 @@ int MainWindow::sigpipe[2];
 nsm_client_t *MainWindow::nsm = 0;
 #endif
 
-MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
+MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName,
+                                const QString & platform_name)
 {
 #ifndef NSM
 (void)execName;
@@ -83,6 +84,7 @@ MainWindow::MainWindow(int p_portCount, bool p_alsamidi, char *execName)
     filename = "";
     lastDir = QDir::homePath();
     alsaMidi = p_alsamidi;
+    platformName = platform_name;
 
     grooveWidget = new GrooveWidget;
     grooveWindow = new QDockWidget(tr("Groove"));
@@ -667,7 +669,7 @@ void MainWindow::openFile(const QString& fn)
             if (xml.isEndElement())
                 break;
 
-            if (xml.name() != "session") {
+            if (xml.name() != QString("session")) {
                 xml.raiseError(tr("Not a QMidiArp xml file."));
                 QMessageBox::warning(this, APP_NAME,
                     tr("This is not a valid xml file for ")+APP_NAME);
@@ -682,13 +684,13 @@ void MainWindow::openFile(const QString& fn)
                 if (xml.isEndElement())
                     break;
 
-                if ((xml.isStartElement()) && (xml.name() == "global"))
+                if ((xml.isStartElement()) && (xml.name() == QString("global")))
                     readFilePartGlobal(xml);
-                else if (xml.isStartElement() && (xml.name() == "modules"))
+                else if (xml.isStartElement() && (xml.name() == QString("modules")))
                     readFilePartModules(xml, qmaxVersion);
-                else if (xml.isStartElement() && (xml.name() == "GUI"))
+                else if (xml.isStartElement() && (xml.name() == QString("GUI")))
                     readFilePartGUI(xml);
-                else if (xml.isStartElement() && (xml.name() == "globalstorage"))
+                else if (xml.isStartElement() && (xml.name() == QString("globalstorage")))
                     globStore->readData(xml);
                 else skipXmlElement(xml);
             }
@@ -707,42 +709,42 @@ void MainWindow::readFilePartGlobal(QXmlStreamReader& xml)
         if (xml.isEndElement()) {
             break;
         }
-        if (xml.name() == "tempo") {
+        if (xml.name() == QString("tempo")) {
             tempoSpin->setValue(xml.readElementText().toInt());
         }
-        if (xml.isStartElement() && (xml.name() == "settings")) {
+        if (xml.isStartElement() && (xml.name() == QString("settings"))) {
             while (!xml.atEnd()) {
                 xml.readNext();
                 if (xml.isEndElement())
                     break;
-                if (xml.name() == "midiControlEnabled")
+                if (xml.name() == QString("midiControlEnabled"))
                     prefsWidget->cbuttonCheck->setChecked(xml.readElementText().toInt());
-                else if (xml.name() == "midiClockEnabled") {
+                else if (xml.name() == QString("midiClockEnabled") ){
                         bool tmp = xml.readElementText().toInt();
                         if (alsaMidi) midiClockAction->setChecked(tmp);
                     }
-                else if (xml.name() == "jackSyncEnabled") {
+                else if (xml.name() == QString("jackSyncEnabled")) {
                         bool tmp = xml.readElementText().toInt();
                         jackSyncAction->setChecked(tmp);
                     }
-                else if (xml.name() == "forwardUnmatched")
+                else if (xml.name() == QString("forwardUnmatched"))
                     prefsWidget->setForward(xml.readElementText().toInt());
-                else if (xml.name() == "storeMuteState") {
+                else if (xml.name() == QString("storeMuteState")) {
                         bool tmp = xml.readElementText().toInt();
                         prefsWidget->storeMuteStateCheck->setChecked(tmp);
                     }
-                else if (xml.name() == "forwardPort")
+                else if (xml.name() == QString("forwardPort"))
                     prefsWidget->setPortUnmatched(xml.readElementText().toInt());
-                else if (xml.name() == "outputMidiClock")
+                else if (xml.name() == QString("outputMidiClock"))
                     prefsWidget->setOutputMidiClock(xml.readElementText().toInt());
-                else if (xml.name() == "midiClockPort")
+                else if (xml.name() == QString("midiClockPort"))
                     prefsWidget->setPortMidiClock(xml.readElementText().toInt());
                 else skipXmlElement(xml);
             }
         }
-        else if (xml.isStartElement() && (xml.name() == "groove"))
+        else if (xml.isStartElement() && (xml.name() == QString("groove")))
             grooveWidget->readData(xml);
-        else if (xml.isStartElement() && (xml.name() == "midiControllers"))
+        else if (xml.isStartElement() && (xml.name() == QString("midiControllers")))
             engine->midiControl->readData(xml);
         else skipXmlElement(xml);
     }
@@ -765,12 +767,12 @@ void MainWindow::readFilePartModules(QXmlStreamReader& xml, const QString& qmaxV
         if (xml.attributes().hasAttribute("inOutVisible"))
             iovis = xml.attributes().value("inOutVisible").toString().toInt();
             
-        QString name = xml.name() + ":" + xml.attributes().value("name").toString();
-        if (xml.name() == "Arp")
+        QString name = xml.name().toString() + ":" + xml.attributes().value("name").toString();
+        if (xml.name() == QString("Arp"))
             addArp(name, true, nullptr, iovis);
-        else if (xml.name() == "LFO")
+        else if (xml.name() == QString("LFO"))
             addLfo(name, true, nullptr, iovis);
-        else if (xml.name() == "Seq")
+        else if (xml.name() == QString("Seq"))
             addSeq(name, true, nullptr, iovis);            
 
         engine->moduleWidget(-1)->readData(xml, qmaxVersion);
@@ -789,7 +791,7 @@ void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
         xml.readNext();
         if (xml.isEndElement())
             break;
-        if (xml.name() == "windowState") {
+        if (xml.name() == QString("windowState") && platformName != "wayland") {
             restoreState(QByteArray::fromHex(
             xml.readElementText().toLatin1()));
         }
@@ -800,7 +802,7 @@ void MainWindow::readFilePartGUI(QXmlStreamReader& xml)
 void MainWindow::skipXmlElement(QXmlStreamReader& xml)
 {
     if (xml.isStartElement()) {
-        qWarning("Unknown Element in XML File: %s",qPrintable(xml.name().toString()));
+        qWarning("Unknown Element in XML File: %s", qPrintable(xml.name().toString()));
         while (!xml.atEnd()) {
             xml.readNext();
 
@@ -1126,7 +1128,7 @@ void MainWindow::readRcFile()
                 logWidget->enableLog->setChecked(value.at(1).toInt());
             else if ((value.at(0) == "#LogMidiClock"))
                 logWidget->logMidiClock->setChecked(value.at(1).toInt());
-            else if ((value.at(0) == "#GUIState"))
+            else if ((value.at(0) == "#GUIState") && (platformName != "wayland"))
                 restoreState(QByteArray::fromHex(value.at(1).toUtf8()));
             else if ((value.at(0) == "#LastDir"))
                 lastDir = value.at(1);

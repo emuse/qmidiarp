@@ -24,6 +24,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <QtGlobal>
 #include <QPainter>
 #include <QPaintDevice>
 #include <QPen>

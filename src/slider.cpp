@@ -60,9 +60,9 @@ Slider::Slider(int minValue, int maxValue, int pageStep, int tickStep,
     QLabel* sliderLabel = new QLabel(this);
     sliderLabel->setText(label);
     sliderLabel->setBuddy(sliderSpin);
-    sliderLabel->setMinimumWidth(5*sliderLabel->fontMetrics().maxWidth());
+    sliderLabel->setMinimumWidth(sliderLabel->fontMetrics().maxWidth());
     QBoxLayout *sliderLayout = new QBoxLayout(QBoxLayout::LeftToRight,this);
-    sliderLayout->setMargin(0);
+    sliderLayout->setContentsMargins(0, 0, 0, 0);
     sliderLayout->addWidget(sliderLabel);
     sliderLayout->addWidget(slider);
     sliderLayout->addSpacing(2);

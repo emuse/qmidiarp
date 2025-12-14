@@ -32,10 +32,10 @@ StorageButton::StorageButton(QWidget * parent): QToolButton(parent)
     thirdText = new QLabel(this);
     thirdText->setStyleSheet("QFrame {font: 7pt}");
     // "QFrame { color:rgba(255, 255, 250); background-color: rgba(0, 0, 0, 60%); }");
-    boxlayout->setMargin(4);
+    boxlayout->setContentsMargins(4, 4, 4, 4);
     forceLabel = new HitLabel(">|<", this);
     forceLabel->setStyleSheet("QFrame {font: 7pt; font-weight: bold; \
-                            color:rgba(255, 255, 250); \
+                            color:rgba(255, 255, 250, 100%); \
                             background-color: rgba(100, 100, 100, 40%); }");
     boxlayout->addWidget(forceLabel);
     boxlayout->addStretch();
@@ -103,7 +103,7 @@ void HitLabel::enterEvent(QEvent *e)
 {
     (void)e;
     setStyleSheet("QFrame { font: 7pt; \
-                            color:rgba(255, 255, 250); \
+                            color:rgba(255, 255, 250, 100%); \
                             background-color: rgba(200, 100, 100, 80%); }");
     setProperty("forceStay", true);
 }
@@ -112,7 +112,7 @@ void HitLabel::leaveEvent(QEvent *e)
 {
     (void)e;
     setStyleSheet("QFrame { font: 7pt; \
-                            color:rgba(255, 255, 250); \
+                            color:rgba(255, 255, 250, 100%); \
                             background-color: rgba(100, 100, 100, 40%); }");
     setProperty("forceStay", false);
 }
