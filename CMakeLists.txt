@@ -32,6 +32,7 @@ option (CONFIG_APPBUILD "Build QMidiArp Application (default=yes)" 1)
 option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=no)" 0)
 option (CONFIG_JACK_MIDI "Enable JACK MIDI support (default=yes)" 1)
 option (CONFIG_ALSA_MIDI "Enable ALSA MIDI support (default=yes)" 1)
+option (CONFIG_EXAMPLES "Install examples (default=no)" 0)
 
 # Enable LV2 plugin build.
 option (CONFIG_LV2 "Build LV2 plug-ins (default=yes)" 1)
@@ -286,7 +287,9 @@ if (BUILD_LV2)
   add_subdirectory(${PROJECT_NAME}_seq.lv2)
 endif ()
 add_subdirectory(man)
-add_subdirectory(examples)
+if (CONFIG_EXAMPLES)
+  add_subdirectory(examples)
+endif ()
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/configure)
     set(ADD_AUTOCONF_FILES  --add-file=${CMAKE_SOURCE_DIR}/configure
