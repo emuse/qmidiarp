@@ -146,7 +146,11 @@ int main(int argc, char *argv[])
     QTranslator qtTr;
 
     if (qtTr.load(QString("qt_") + loc.name(),
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+#else
                 QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+#endif
         app.installTranslator(&qtTr);
 
     // translator for qmidiarp messages
