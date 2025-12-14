@@ -15,10 +15,9 @@ set (PACKAGE_STRING "${PACKAGE_NAME}-${PACKAGE_VERSION}")
 set (PACKAGE_TARNAME "qmidiarp")
 set (VERSION "${PROJECT_VERSION}")
 
+set(STRIP_DEBUG_SYMBOLS ON CACHE BOOL "Strip debug symbols (default=yes)")
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(CONFIG_DEBUG 1)
-else ()
-    set(CONFIG_DEBUG 0)
+  set(STRIP_DEBUG_SYMBOLS OFF)
 endif ()
 
 include (GNUInstallDirs)
