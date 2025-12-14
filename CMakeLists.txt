@@ -31,7 +31,7 @@ set (CONFIG_DATADIR "${CONFIG_PREFIX}/${CMAKE_INSTALL_DATADIR}")
 set (CONFIG_MANDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 
 option (CONFIG_APPBUILD "Build QMidiArp Application (default=yes)" 1)
-option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=yes)" 1)
+option (CONFIG_FORCE_QT5 "Force Qt5 instead of Qt6 (default=no)" 1)
 option (CONFIG_JACK_MIDI "Enable JACK MIDI support (default=yes)" 1)
 option (CONFIG_ALSA_MIDI "Enable ALSA MIDI support (default=yes)" 1)
 
