@@ -1,4 +1,4 @@
-QMidiArp by Frank Kober 2009 - 2024
+QMidiArp by Frank Kober 2009 - 2025
             Nedko Arnaudov 2011
             Guido Scholz 2009
             Matthias Nagorni          (c)2004 by Novell
@@ -25,12 +25,12 @@ Dependencies
 ------------
 You need the following development headers and libraries for building:
 
-qtbase5-dev     (qt5-devel)
-qttools5-dev-tools for language translations
-libasound2-dev (libalsa-devel)
-libjack-dev    (jackit-devel)
-liblo-dev      (liblo-devel) for nsm support
-lv2-dev        (lv2-devel) for building the LV2 modules
+qtbase(5 or 6)-dev     (qt(5 or 6)-devel)
+qt(5 or 6)-tools-dev                     for language translations
+libasound2-dev         (libalsa-devel)
+libjack-dev            (jackit-devel)
+liblo-dev              (liblo-devel)     for nsm support
+lv2-dev                (lv2-devel)       for building the LV2 modules
 
 For building the robtk LV2 UIs please also install the following:
 
@@ -39,18 +39,19 @@ libcairo2-dev
 libpugl-dev
 
 
-Installation with cmake (qmidiarp >= 0.6.7)
+Installation with cmake (qmidiarp >= 0.6.7, defaults to Qt6)
 -------------------------------------------
 After unpacking:
 cd qmidiarp-<version>
 mkdir build
 cd build
+(for configuration: ccmake ..)
 cmake ..
 make
 sudo make install
 
 
-Installation with auto* tools
+Installation with auto* tools (defaults to Qt5)
 ---------------------------
 For building with autoconf/automake as build system. For short
 
