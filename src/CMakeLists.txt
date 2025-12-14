@@ -103,7 +103,7 @@ if (APPBUILD)
                                                     Qt${QT_VERSION_MAJOR}::Widgets
                                                     )
     
-    if (UNIX AND NOT APPLE AND NOT CONFIG_DEBUG)
+    if (UNIX AND NOT APPLE AND STRIP_DEBUG_SYMBOLS)
       add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND strip ${PROJECT_NAME})
     endif ()
@@ -175,7 +175,7 @@ if (BUILD_LV2)
     set_target_properties (${PROJECT_NAME}_lfo PROPERTIES CXX_STANDARD 11 PREFIX "")
     set_target_properties (${PROJECT_NAME}_seq PROPERTIES CXX_STANDARD 11 PREFIX "")
 
-    if (UNIX AND NOT APPLE AND NOT CONFIG_DEBUG)
+    if (UNIX AND NOT APPLE AND STRIP_DEBUG_SYMBOLS)
       add_custom_command(TARGET ${PROJECT_NAME}_arp  POST_BUILD
         COMMAND strip ${PROJECT_NAME}_arp.so)
       add_custom_command(TARGET ${PROJECT_NAME}_lfo  POST_BUILD
@@ -296,7 +296,7 @@ if (BUILD_LV2_UI)
                                                     Qt${QT_VERSION_MAJOR}::Gui
                                                     Qt${QT_VERSION_MAJOR}::Widgets
                                                     )
-    if (UNIX AND NOT APPLE AND NOT CONFIG_DEBUG)
+    if (UNIX AND NOT APPLE AND STRIP_DEBUG_SYMBOLS)
       add_custom_command(TARGET ${PROJECT_NAME}_arp_ui  POST_BUILD
         COMMAND strip ${PROJECT_NAME}_arp_ui.so)
       add_custom_command(TARGET ${PROJECT_NAME}_lfo_ui  POST_BUILD
