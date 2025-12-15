@@ -56,6 +56,7 @@
  *
  */
 #include <getopt.h>
+#include <unistd.h>
 #include <QApplication>
 #include <QFileInfo>
 #include <QString>
