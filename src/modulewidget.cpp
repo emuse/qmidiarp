@@ -489,7 +489,9 @@ void ModuleWidget::setMuted(bool on)
 {
     if (!midiWorker) return;
     midiWorker->setMuted(on);
-    needsGUIUpdate = true;
+    if (!deferChangesAction->isChecked()) {
+        needsGUIUpdate = true;
+    }
     modified = true;
 }
 
