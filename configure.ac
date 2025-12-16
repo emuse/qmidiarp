@@ -121,7 +121,7 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
         
           AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])
           AC_SUBST(QT_CXXFLAGS)
-          AC_SUBST(Qt5_LIBS)https://doc.qt.io/https://doc.qt.io/qt-6/qstringref-members.htmlqt-6/qstringref-members.html
+          AC_SUBST(Qt5_LIBS)
         else
           AC_MSG_NOTICE([cannot find Qt5 library >= 5.0.0])
           AM_CONDITIONAL([BUILD_APP], false)
@@ -139,12 +139,13 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
           QT_CXXFLAGS=`$PKG_CONFIG --cflags Qt6Core Qt6Gui Qt6Widgets`
           QT_CXXFLAGS="$QT_CXXFLAGS -fPIC"
           EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-          AS_IF([test -e $QT_INCLUDE_DIR/QtWidgets/QWidget],
+          AS_IF([test -e $QT_INCLUDE_DIR/QWidget],
             AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-              AS_IF([test -e $EXTRA_QT_INCLUDE_DIR/QtWidgets/QWidget],
+              AS_IF([test -e $EXTRA_QT_INCLUDE_DIR/QWidget],
                 QT_CPPFLAGS="$QT_CPPFLAGS -I$EXTRA_QT_INCLUDE_DIR",
                   AC_MSG_WARN([QWidget not found])))
-        
+
+          AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])        
           AC_SUBST(QT_CXXFLAGS)
           AC_SUBST(Qt6_LIBS)
           AC_DEFINE([HAVE_QT6], [1],[Define to 1 if you have Qt6.])
