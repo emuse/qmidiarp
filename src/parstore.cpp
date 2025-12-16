@@ -359,7 +359,7 @@ void ParStore::readData(QXmlStreamReader& xml)
                             temp.muteMask.clear();
                             QByteArray tmpArray =
                                     QByteArray::fromHex(xml.readElementText().toLatin1());
-                            for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                            for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                                 temp.muteMask.append(tmpArray.at(l1));
                             }
                         }
@@ -383,7 +383,7 @@ void ParStore::readData(QXmlStreamReader& xml)
 
                             int lt = 0;
                             Sample sample = {0, 0, 0, false};
-                            for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                            for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                                 if (temp.ccnumber >= 0) {
                                     sample.value = tmpArray.at(l1);
                                 } 

@@ -376,10 +376,10 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                    for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                         midiLfo->muteMask[l1] = tmpArray.at(l1);
                     }
-                    midiLfo->maxNPoints = tmpArray.count();
+                    midiLfo->maxNPoints = tmpArray.length();
                 }
                 else skipXmlElement(xml);
             }
@@ -394,7 +394,7 @@ void LfoWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TPQN / midiLfo->res;
                     int lt = 0;
-                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                    for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                         sample.value = tmpArray.at(l1);
                         sample.tick = lt;
                         sample.muted = midiLfo->muteMask[l1];

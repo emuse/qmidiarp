@@ -842,7 +842,7 @@ bool MainWindow::saveFile()
     xml.writeAttribute("version", PACKAGE_VERSION);
     xml.writeAttribute("qMaxVersion", "1.1");
     xml.writeAttribute("name", filename.mid(filename.lastIndexOf('/') + 1,
-                    filename.count() - filename.lastIndexOf('/') - 6));
+                    filename.length() - filename.lastIndexOf('/') - 6));
 
     xml.writeStartElement("global");
 

@@ -359,10 +359,10 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                 if (xml.isStartElement() && (xml.name() == QString("data"))) {
                     QByteArray tmpArray =
                             QByteArray::fromHex(xml.readElementText().toLatin1());
-                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                    for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                         midiSeq->muteMask[l1] = tmpArray.at(l1);
                     }
-                    midiSeq->maxNPoints = tmpArray.count();
+                    midiSeq->maxNPoints = tmpArray.length();
                 }
                 else skipXmlElement(xml);
             }
@@ -377,7 +377,7 @@ void SeqWidget::readData(QXmlStreamReader& xml, const QString& qmaxVersion)
                             QByteArray::fromHex(xml.readElementText().toLatin1());
                     int step = TPQN / midiSeq->res;
                     int lt = 0;
-                    for (int l1 = 0; l1 < tmpArray.count(); l1++) {
+                    for (int l1 = 0; l1 < tmpArray.length(); l1++) {
                         sample.data = tmpArray.at(l1);
                         sample.tick = lt;
                         sample.muted = midiSeq->muteMask[l1];
