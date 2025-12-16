@@ -333,8 +333,6 @@ int MidiSeq::mouseEvent(double mouseX, double mouseY, int buttons, int pressed)
     int Y = 12 * (mouseY * nOctaves + baseOctave);
 
     if ((mouseY < 0) && (pressed != 2)) {
-        if (mouseX < 0) mouseX = 0;
-        if (buttons == 2) mouseX = - mouseX;
         setLoopMarkerMouse(mouseX);
         return (0);
     }
