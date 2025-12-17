@@ -1,10 +1,12 @@
 qmidiarp-0.7.2 (2025-12-23)
 
+Fixed Bug:
+  o Seq Loop Marker not effective in forward direction (right mouse click)
+  
 Changes:
-  o Qt6 can now be used for building. 
-    - CMake configures build against Qt6 by default
-    - Autotools configures build against Qt5 by default
-    - Both can be changed via the corresponding options
+  o Qt6 now used for building as default for both build systems
+  o Qt5 can still be used via configuration flags
+    (Thanks to Andreas Sturmlechner from Gentoo for cmake fixes)
     
 qmidiarp-0.7.1 (2024-08-23)
 

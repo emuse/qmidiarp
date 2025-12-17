@@ -3,7 +3,7 @@
  * @brief Headers for the RobTk-based LV2 GUI for the QMidiArp Seq plugin.
  *
  *
- *      Copyright 2009 - 2024 <qmidiarp-devel@lists.sourceforge.net>
+ *      Copyright 2009 - 2025 <qmidiarp-devel@lists.sourceforge.net>
  *
  *      The structure as well as some lines of code and functions were 
  *      taken from sisco lv2 by Robin Garaeus: https://github.com/x42/sisco.lv2 

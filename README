@@ -51,11 +51,11 @@ make
 sudo make install
 
 
-Installation with auto* tools (defaults to Qt5)
+Installation with auto* tools (defaults to Qt6)
 ---------------------------
 For building with autoconf/automake as build system. For short
 
-  ./configure
+  ./configure [--enable-qt5]
   make
   make install
 
