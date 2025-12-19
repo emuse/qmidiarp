@@ -122,6 +122,12 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
           AC_MSG_NOTICE([Set QT_CXXFLAGS... $QT_CXXFLAGS])
           AC_SUBST(QT_CXXFLAGS)
           AC_SUBST(Qt5_LIBS)
+          dnl check for moc
+          AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$PATH])
+          if test "x$MOC" = "xno" ; then
+            AC_MSG_ERROR(
+              [cannot find 'moc', please install the Qt development tools package.])
+          fi
         else
           AC_MSG_NOTICE([cannot find Qt5 library >= 5.0.0])
           AM_CONDITIONAL([BUILD_APP], false)
@@ -149,7 +155,13 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
           AC_SUBST(QT_CXXFLAGS)
           AC_SUBST(Qt6_LIBS)
           AC_DEFINE([HAVE_QT6], [1],[Define to 1 if you have Qt6.])
-        
+          dnl check for moc
+          UBUNTU_QT6_MOCDIR=`$PKG_CONFIG --variable=bindir Qt6Widgets`/../libexec
+          AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$UBUNTU_QT6_MOCDIR:$PATH])
+          if test "x$MOC" = "xno" ; then
+            AC_MSG_ERROR(
+              [cannot find 'moc', please install the Qt development tools package.])
+          fi
         else
           AC_MSG_NOTICE([cannot find Qt6 library >= 6.0.0])
           AM_CONDITIONAL([BUILD_APP], false)
@@ -158,14 +170,7 @@ if test "x$ac_buildapp" = "xyes" -o ["x$ac_lv2pluginuis" = "xyes"  -a "x$ac_lv2w
         ac_qtversion=qt6
     ])
     dnl endo of qt version test
-    
-    dnl check for moc
-    AC_PATH_PROGS(MOC, moc-$ac_qtversion moc, no, [$PATH:$QTDIR/bin])
-    if test "x$MOC" = "xno" ; then
-      AC_MSG_ERROR(
-        [cannot find 'moc', please install the Qt development tools package.])
-    fi
-    
+        
     # Enable translations.
     AC_ARG_ENABLE(translations,
       AS_HELP_STRING([--enable-translations],[enable translation file generation (default=no)]),

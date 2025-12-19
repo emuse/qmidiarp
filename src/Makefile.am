@@ -69,7 +69,7 @@ qmidiarp_SOURCES = \
 
 qmidiarp_CXXFLAGS = $(AM_CXXFLAGS) -DAPPBUILD -Wno-deprecated-copy
 qmidiarp_LDFLAGS =  -Wl,--as-needed
-qmidiarp_LDADD = $(LIBS_APP) $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_LDADD = $(LIBS_APP) $(Qt5_LIBS) $(Qt6_LIBS)
 
 endif
 
@@ -143,7 +143,7 @@ qmidiarp_lfo_ui_la_SOURCES = \
 	lfowidget_lv2.cpp lfowidget_lv2.h
 
 qmidiarp_lfo_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
-qmidiarp_lfo_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_lfo_ui_la_LIBADD = $(Qt5_LIBS) $(Qt6_LIBS)
 
 nodist_qmidiarp_seq_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -166,7 +166,7 @@ qmidiarp_seq_ui_la_SOURCES = \
 	seqwidget_lv2.cpp seqwidget_lv2.h
 
 qmidiarp_seq_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
-qmidiarp_seq_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_seq_ui_la_LIBADD = $(Qt5_LIBS) $(Qt6_LIBS)
 
 nodist_qmidiarp_arp_ui_la_SOURCES = \
 	cursor_moc.cpp \
@@ -189,7 +189,7 @@ qmidiarp_arp_ui_la_SOURCES = \
 	arpwidget_lv2.cpp arpwidget_lv2.h
 
 qmidiarp_arp_ui_la_LDFLAGS = -module -avoid-version -Wl,--as-needed
-qmidiarp_arp_ui_la_LIBADD = $(Qt4_LIBS) $(Qt5_LIBS)
+qmidiarp_arp_ui_la_LIBADD = $(Qt5_LIBS) $(Qt6_LIBS)
 
 endif
 endif
@@ -212,7 +212,7 @@ TRANSLATION_DEFS = -DTRANSLATIONSDIR=\"$(translationsdir)\"
 endif
 
 AM_CXXFLAGS = @QT_CXXFLAGS@
-DEFS = -std=c++11 -Wall -Wextra -Wno-deprecated-copy -D_REENTRANT -fvisibility=hidden $(TRANSLATION_DEFS) @DEFS@ 
+DEFS = -std=c++17 -Wall -Wextra -Wno-deprecated-copy -D_REENTRANT -fvisibility=hidden $(TRANSLATION_DEFS) @DEFS@ 
 
 # misc files which are distributed but not installed
 EXTRA_DIST = qmidiarp.pro $(translations) \

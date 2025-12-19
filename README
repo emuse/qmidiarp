@@ -27,16 +27,14 @@ You need the following development headers and libraries for building:
 
 qtbase(5 or 6)-dev     (qt(5 or 6)-devel)
 qt(5 or 6)-tools-dev                     for language translations
+qttools(5 or 6)-dev                      for language translations
 libasound2-dev         (libalsa-devel)
 libjack-dev            (jackit-devel)
 liblo-dev              (liblo-devel)     for nsm support
 lv2-dev                (lv2-devel)       for building the LV2 modules
-
-For building the robtk LV2 UIs please also install the following:
-
-libpango1.0-dev 
-libcairo2-dev 
-libpugl-dev
+libpango1.0-dev                          for building robtk LV2 UIs 
+libcairo2-dev                            for building robtk LV2 UIs 
+libpugl-dev                              for building robtk LV2 UIs
 
 
 Installation with cmake (qmidiarp >= 0.6.7, defaults to Qt6)
