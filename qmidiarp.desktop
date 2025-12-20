@@ -18,5 +18,7 @@ Icon=qmidiarp
 MimeType=application/qma;application/qmax;
 Exec=qmidiarp %F
 TryExec=qmidiarp
+X-NSM-Capable=true
+X-NSM-Exec=qmidiarp
 Terminal=false
 StartupNotify=true
