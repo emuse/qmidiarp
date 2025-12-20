@@ -19,12 +19,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - name: Configure with autotools
+      - name: Install dependencies
         run: |
           sudo apt-get -y update
           sudo apt-get -y install libjack-dev libasound2-dev qtbase5-dev  qttools5-dev-tools liblo-dev lv2-dev libpango1.0-dev libcairo2-dev libpugl-dev
+      - name: Configure with autotools
+        run: |
           autoreconf -i
-          ./configure
+          ./configure --enable-qt5
       - name: Build project
         run: make -j4
 
@@ -35,10 +37,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - name: Configure with autotools
+      - name: Install dependencies
         run: |
           sudo apt-get -y update
           sudo apt-get -y install libjack-dev libasound2-dev qt6-base-dev  qt6-tools-dev qt6-l10n-tools liblo-dev lv2-dev libpango1.0-dev libcairo2-dev libpugl-dev
+      - name: Configure with autotools
+        run: |
           autoreconf -i
           ./configure
       - name: Build project
