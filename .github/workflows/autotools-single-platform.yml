@@ -38,7 +38,7 @@ jobs:
       - name: Configure with autotools
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install libjack-dev libasound2-dev qtbase6-dev  qttools6-dev-tools qt6-l10n-tools liblo-dev lv2-dev libpango1.0-dev libcairo2-dev libpugl-dev
+          sudo apt-get -y install libjack-dev libasound2-dev qt6-base-dev  qt6-tools-dev qt6-l10n-tools liblo-dev lv2-dev libpango1.0-dev libcairo2-dev libpugl-dev
           autoreconf -i
           ./configure
       - name: Build project
