@@ -39,7 +39,6 @@ set (APPBUILD ${CONFIG_APPBUILD})
 
 # Enable translations.
 option (CONFIG_TRANSLATIONS "Build and install translations (default=no)" 0)
-set (APPBUILD ${CONFIG_TRANSLATIONS})
 
 # Fix for new CMAKE_REQUIRED_LIBRARIES policy.
 if (POLICY CMP0075)
