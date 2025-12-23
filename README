@@ -26,8 +26,9 @@ Dependencies
 You need the following development headers and libraries for building:
 
 qtbase(5 or 6)-dev     (qt(5 or 6)-devel)
-qt(5 or 6)-tools-dev                     for language translations
-qttools(5 or 6)-dev                      for language translations
+qt(5 or 6)-tools-dev
+qttools(5 or 6)-dev
+qt6-l10n-tools                           for language translations
 libasound2-dev         (libalsa-devel)
 libjack-dev            (jackit-devel)
 liblo-dev              (liblo-devel)     for nsm support
