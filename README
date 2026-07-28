@@ -73,7 +73,7 @@ libtool
 
 If this is the case, run
 
-  git submodule init --update
+  git submodule update --init
   autoreconf -i
 
 in the top of the source tree to get a proper configure script. For more 
