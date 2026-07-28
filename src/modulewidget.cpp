@@ -565,7 +565,7 @@ void ModuleWidget::moduleDelete()
     qs = tr("Delete \"%1\"?")
         .arg(name);
     if (QMessageBox::question(0, APP_NAME, qs,
-                QMessageBox::No | QMessageBox::Default
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Default
                 | QMessageBox::Escape, QMessageBox::No)
             == QMessageBox::No) {
         return;
