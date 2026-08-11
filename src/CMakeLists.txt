@@ -319,6 +319,7 @@ endif()
 # LV2 RobTk UIs
 if (BUILD_LV2_UI_RTK)
     
+    set(LV2UI_RTK_ARP_HEADERS text_input_X11.h)
     set(LV2UI_RTK_ARP_SOURCES
         ../robtk/pugl/pugl_x11.c
         ../robtk/ui_gl.c 

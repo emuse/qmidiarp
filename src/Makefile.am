@@ -220,7 +220,7 @@ qmidiarp_arp_ui_gl_la_SOURCES = ../robtk/ui_gl.c ../robtk/pugl/pugl_x11.c
 
 qmidiarp_seq_ui_gl_la_DEPENDENCIES = seqwidget_lv2_rtk.c seqwidget_lv2_rtk.h
 qmidiarp_lfo_ui_gl_la_DEPENDENCIES = lfowidget_lv2_rtk.c lfowidget_lv2_rtk.h
-qmidiarp_arp_ui_gl_la_DEPENDENCIES = arpwidget_lv2_rtk.c arpwidget_lv2_rtk.h
+qmidiarp_arp_ui_gl_la_DEPENDENCIES = arpwidget_lv2_rtk.c arpwidget_lv2_rtk.h text_input_X11.h
 
 qmidiarp_seq_ui_gl_la_LDFLAGS = $(LV2_UI_RTK_LDFLAGS) -module -avoid-version -Wl,--as-needed 
 qmidiarp_lfo_ui_gl_la_LDFLAGS = $(LV2_UI_RTK_LDFLAGS) -module -avoid-version -Wl,--as-needed
