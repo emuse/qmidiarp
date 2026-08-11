@@ -1,3 +1,15 @@
+qmidiarp-0.7.5 (2026-08-11)
+
+Improvements:
+  o Arp Robtk LV2 now allows basic editing of the arp pattern via an 
+    external ugly Xlib window that opens when clicking on the pattern 
+    display
+
+Fixed Bugs:
+  o Some Robtk Arp LV2 dials were controlling other dials
+  o Removing modules in the QMidiArp application was not possible due
+    to a missing dialog button (regression, sf bug #39 thanks)
+    
 qmidiarp-0.7.4 (2026-01-28)
 
 Improvements / Changes:
