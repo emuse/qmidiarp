@@ -740,8 +740,9 @@ void MidiArp::updatePattern(const std::string& p_pattern)
                 npoints++;
                 if (chordmd) chordindex++;
             }
-            if (isdigit(c) && (c  - '0' > patternMaxIndex))
+            if (c  - '0' > patternMaxIndex) {
                 patternMaxIndex = c - '0';
+            }
         }
         switch(c) {
             case '(':

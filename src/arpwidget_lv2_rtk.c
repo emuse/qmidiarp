@@ -107,8 +107,7 @@ void updatePattern(LV2UI_Handle handle, bool send)
     // Strip trailing control tokens from end of pattern
     char c = ui->pattern[strlen(ui->pattern) - 1];
     while ( strlen(ui->pattern) 
-                && !((int)c > 47) 
-                && !((int)c < 58)
+                && ((int)c <= 47 || (int)c >= 58)
                 && (c != 'p') 
                 && (c != ')') ) {
         ui->pattern[strlen(ui->pattern) - 1] = '\0';
