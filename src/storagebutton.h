@@ -37,7 +37,7 @@ class HitLabel : public QLabel
     
     public:
     HitLabel(const QString& text, QWidget * parent);
-    void enterEvent(QEvent *e);
+    void enterEvent(QEnterEvent *e);
     void leaveEvent(QEvent *e);
 };
 /*!

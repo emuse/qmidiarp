@@ -99,9 +99,9 @@ HitLabel::HitLabel(const QString& text, QWidget * parent): QLabel(text, parent)
     setToolTip(tr("Go and stay here"));
 }
 
-void HitLabel::enterEvent(QEvent *e)
+void HitLabel::enterEvent(QEnterEvent *e)
 {
-    (void)e;
+    QWidget::enterEvent(e);
     setStyleSheet("QFrame { font: 7pt; \
                             color:rgba(255, 255, 250, 100%); \
                             background-color: rgba(200, 100, 100, 80%); }");
@@ -110,7 +110,7 @@ void HitLabel::enterEvent(QEvent *e)
 
 void HitLabel::leaveEvent(QEvent *e)
 {
-    (void)e;
+    QWidget::leaveEvent(e);
     setStyleSheet("QFrame { font: 7pt; \
                             color:rgba(255, 255, 250, 100%); \
                             background-color: rgba(100, 100, 100, 40%); }");
